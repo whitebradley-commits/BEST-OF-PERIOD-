@@ -1457,6 +1457,7 @@
   }
   .wtf-always-visible-row{
     justify-content:center;
+    align-items:flex-start;
     gap:1.4rem;
     margin:0.4rem 0 1.2rem;
     background:#000;
@@ -1471,6 +1472,10 @@
   }
   .wtf-always-visible-row .thc24-chip{
     background:#0a0a0a;
+    box-shadow:0 0 10px rgba(76,175,80,0.6), 0 3px 0 #000 !important;
+  }
+  .wtf-always-visible-row .mini-map-btn{
+    box-shadow:0 3px 0 #000;
   }
   .mini-map-btn{
     background:#000;border:3px solid #1C1C1C;box-shadow:0 3px 0 var(--border);
@@ -1487,6 +1492,13 @@
   @keyframes thc24Glow{
     0%,100%{ box-shadow:0 0 8px rgba(76,175,80,0.5), 0 3px 0 var(--border); }
     50%{ box-shadow:0 0 20px rgba(76,175,80,0.95), 0 0 8px rgba(76,175,80,0.6), 0 3px 0 var(--border); }
+  }
+  @keyframes thc24GlowBlack{
+    0%,100%{ box-shadow:0 0 8px rgba(76,175,80,0.5), 0 3px 0 #000; }
+    50%{ box-shadow:0 0 20px rgba(76,175,80,0.95), 0 0 8px rgba(76,175,80,0.6), 0 3px 0 #000; }
+  }
+  .wtf-always-visible-row .thc24-chip{
+    animation:thc24GlowBlack 1.8s ease-in-out infinite;
   }
   .thc24-btn .label{
     color:#8BE28B;
@@ -3919,7 +3931,6 @@
       <p style="text-align:center;color:var(--text-dim,#9A9A9A);font-size:1.06rem;margin:28px 0 0;">Real direction. No filler. Just the best.</p>
       <p class="fine-print" style="margin-top:auto;padding-top:70px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
       <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
-      <p class="fine-print" style="margin-top:14px;color:#FFD700;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
       <p class="fine-print" style="margin-top:10px;"><button type="button" class="footer-hotlink" data-dest="promotions">Promotions &amp; Reach</button></p>
     </div>
   </div>
@@ -4955,7 +4966,7 @@
 
   <div class="directory-overlay" id="thc24Overlay">
     <div class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="thc24Title">
-      <button type="button" id="thc24Back" style="position:absolute;top:14px;left:14px;background:none;border:2px solid #4CAF50;color:#8BE28B;border-radius:20px;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:11px;padding:6px 12px;cursor:pointer;">← Back</button>
+      <button type="button" id="thc24Back" class="directory-close" aria-label="Close">✕</button>
       <h2 id="thc24Title" style="margin-top:36px;color:#8BE28B;">🌿 24 Hour THC</h2>
       <p style="color:var(--text-dim);font-family:'Archivo Narrow',sans-serif;font-size:0.9rem;line-height:1.5;margin:8px 0 20px;">Genuinely open around the clock, every day — no odd hours, no exceptions. Two dispensary groups keep every listed location running 24/7, spanning the Strip, Downtown, Henderson, and Summerlin.</p>
 
@@ -5293,7 +5304,7 @@
   <div class="top-bar-row wtf-always-visible-row">
     <button class="corner-btn" id="directoryBtn" aria-haspopup="dialog">
       <span class="chip-circle mini-map-btn">
-        <svg width="30" height="30" viewBox="0 0 300 420" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 300 420" aria-hidden="true">
           <defs>
             <clipPath id="miniNvClip">
               <path d="M70,15 L230,15 L230,250 L248,250 L248,330 L268,392 L172,392 L150,352 L112,322 L96,282 L64,232 L58,180 L84,142 L56,96 L70,15 Z"/>
@@ -5309,11 +5320,11 @@
                 fill="none" stroke="#fff" stroke-width="6"/>
         </svg>
       </span>
-      <span class="label">Map</span>
+      <span class="label">Nevada<br>Map</span>
     </button>
     <button class="corner-btn" id="shuttleBtn" aria-haspopup="dialog">
       <span class="chip-circle">🚌</span>
-      <span class="label">Free Shuttles</span>
+      <span class="label">Free<br>Shuttle</span>
     </button>
     <button class="corner-btn thc24-btn" id="thc24Btn" aria-haspopup="dialog">
       <span class="chip-circle thc24-chip">🌿</span>
@@ -5533,8 +5544,7 @@
 
 <p class="fine-print" style="margin-top:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
     <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
-    <p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="lvmember" style="color:#FFD700;">Become a Member</button></p>
-    <p class="fine-print" style="margin-top:14px;color:#FFD700;padding-bottom:40px;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
+    <p class="fine-print" style="margin-top:14px;padding-bottom:40px;"><button type="button" class="footer-hotlink" data-dest="lvmember" style="color:#FFD700;">Become a Member</button></p>
   </div>
 
   <div class="thank-you-overlay" id="tbotrLandingOverlay">
@@ -5844,8 +5854,6 @@
   <footer>
     <p class="fine-print"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
     <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
-<p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#FFD700;">Become a Member</button></p>
-    <p class="fine-print" style="margin-top:14px;color:#FFD700;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
     <p class="fine-print" style="margin-top:10px;"><a href="https://wtfddnews-imc8abbb.manus.space" target="_blank" rel="noopener" class="footer-hotlink" style="color:#FFD700;font-weight:700;animation:newsletterGlow 1.8s ease-in-out infinite;">Newsletter</a></p>
   </footer>
 
@@ -6559,13 +6567,26 @@ function setupDirectory(){
   if(!btn || !overlay || !closeBtn) return;
 
   btn.addEventListener('click', () => {
-    try{ overlay.classList.add('open'); showMapView(); }catch(err){ showDebugError('Directory open: ' + err.message); }
+    try{
+      overlay.classList.add('open');
+      showMapView();
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = 'none';
+    }catch(err){ showDebugError('Directory open: ' + err.message); }
   });
   closeBtn.addEventListener('click', () => {
-    try{ overlay.classList.remove('open'); }catch(err){ showDebugError('Directory close: ' + err.message); }
+    try{
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }catch(err){ showDebugError('Directory close: ' + err.message); }
   });
   overlay.addEventListener('click', (e) => {
-    if(e.target === overlay) overlay.classList.remove('open');
+    if(e.target === overlay){
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }
   });
   if(backBtn){
     backBtn.addEventListener('click', () => {
@@ -6586,13 +6607,25 @@ function setupShuttle(){
   if(!btn || !overlay || !closeBtn) return;
 
   btn.addEventListener('click', () => {
-    try{ overlay.classList.add('open'); }catch(err){ showDebugError('Shuttle open: ' + err.message); }
+    try{
+      overlay.classList.add('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = 'none';
+    }catch(err){ showDebugError('Shuttle open: ' + err.message); }
   });
   closeBtn.addEventListener('click', () => {
-    try{ overlay.classList.remove('open'); }catch(err){ showDebugError('Shuttle close: ' + err.message); }
+    try{
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }catch(err){ showDebugError('Shuttle close: ' + err.message); }
   });
   overlay.addEventListener('click', (e) => {
-    if(e.target === overlay) overlay.classList.remove('open');
+    if(e.target === overlay){
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }
   });
 }
 
@@ -6603,13 +6636,26 @@ function setupThc24(){
   if(!btn || !overlay || !backBtn) return;
 
   btn.addEventListener('click', () => {
-    try{ overlay.classList.add('open'); window.scrollTo(0,0); }catch(err){ showDebugError('THC24 open: ' + err.message); }
+    try{
+      overlay.classList.add('open');
+      window.scrollTo(0,0);
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = 'none';
+    }catch(err){ showDebugError('THC24 open: ' + err.message); }
   });
   backBtn.addEventListener('click', () => {
-    try{ overlay.classList.remove('open'); }catch(err){ showDebugError('THC24 close: ' + err.message); }
+    try{
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }catch(err){ showDebugError('THC24 close: ' + err.message); }
   });
   overlay.addEventListener('click', (e) => {
-    if(e.target === overlay) overlay.classList.remove('open');
+    if(e.target === overlay){
+      overlay.classList.remove('open');
+      const homeBtn = document.getElementById('bjsHomeBtn');
+      if(homeBtn) homeBtn.style.display = '';
+    }
   });
 }
 
