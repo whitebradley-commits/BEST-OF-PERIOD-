@@ -184,7 +184,7 @@
     border-radius:50%;
     border:1px solid rgba(255,215,0,0.4);
   }
-  #aboutUsBack::before, #promotionsBack::before, #botrToLandingBtn::before, #bopMemberBack::before, #lvMemberBack::before{
+  #aboutUsBack::before, #promotionsBack::before, #botrToLandingBtn::before, #bopMemberBack::before, #lvMemberBack::before, #lvBjsHomeBtn::before, #bjsHomeBtn::before{
     content:none;
   }
 
@@ -623,13 +623,13 @@
   .section-divider{
     display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--bg);
   }
-  .divider-line{flex:1;height:1px;background:var(--border);}
+  .divider-line{flex:1;height:1px;background:#000;}
   .divider-label{
     font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;
     text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
   }
 
-  .skyline-art{position:relative;width:100%;min-height:110px;border-bottom:1px solid var(--border);overflow:hidden;padding:10px 0;}
+  .skyline-art{position:relative;width:100%;min-height:110px;border-bottom:1px solid #000;overflow:hidden;padding:10px 0;}
   .skyline-overlay{
     position:relative;z-index:2;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -944,9 +944,9 @@
     .cloud, .scene-bird, .music-note{animation:none;display:none;}
   }
 
-  footer{border-top:1px solid var(--border);padding:24px 20px 40px;text-align:center;}
+  footer{border-top:1px solid #000;padding:24px 20px 40px;text-align:center;}
   .join-box-wrap{
-    position:relative;border-bottom:1px solid var(--border);padding:28px 20px;text-align:center;overflow:hidden;
+    position:relative;border-bottom:1px solid #000;padding:28px 20px;text-align:center;overflow:hidden;
   }
   .newsletter-sky{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
   .nf1{top:12%;left:-10%;font-size:20px;animation:float-across 22s ease-in-out infinite;animation-delay:2s;}
@@ -955,7 +955,7 @@
   .nf4{top:80%;left:-10%;font-size:19px;animation:float-across 28s ease-in-out infinite;animation-delay:5s;}
   .join-box{position:relative;z-index:1;
     max-width:420px;margin:0 auto;background:var(--surface);color:var(--text);
-    border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.35);
+    border:1px solid #000;border-radius:16px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.35);
   }
   .join-box h4{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:24px;letter-spacing:0.2px;color:var(--red);margin:0 0 8px;}
   .wtf-inline-logo{width:auto;height:3.4em;vertical-align:middle;position:relative;top:-0.35em;margin:0 -10px;}
@@ -1455,6 +1455,23 @@
     background:#000;border:3px solid #fff;color:#fff;
     box-shadow:0 3px 0 var(--border);
   }
+  .wtf-always-visible-row{
+    justify-content:center;
+    gap:1.4rem;
+    margin:0.4rem 0 1.2rem;
+    background:#000;
+  }
+  .wtf-always-visible-row .corner-btn .chip-circle{
+    width:66px;height:66px;font-size:26px;
+    background:#000;
+    box-shadow:0 3px 0 #000;
+  }
+  .wtf-always-visible-row .corner-btn .label{
+    font-size:11px;
+  }
+  .wtf-always-visible-row .thc24-chip{
+    background:#0a0a0a;
+  }
   .mini-map-btn{
     background:#000;border:3px solid #1C1C1C;box-shadow:0 3px 0 var(--border);
   }
@@ -1837,6 +1854,9 @@
     box-shadow:0 0 14px rgba(255,215,0,0.5);
     animation:lvBtnPulseSolid 2.2s ease-in-out infinite;
   }
+  .lvsteam-daypass-inline{
+    width:60px;height:60px;font-size:0.5rem;
+  }
   @keyframes lvBtnPulseSolid{
     0%,100%{ box-shadow:0 0 14px rgba(255,215,0,0.5); }
     50%{ box-shadow:0 0 26px rgba(255,215,0,0.9); }
@@ -1925,6 +1945,7 @@
   .lvsteam-dp-panel-line a{ color:#9fb8bb;text-decoration:none; }
   @media (max-width:640px){
     .lvsteam-chip-circle{ width:54px;height:54px;font-size:0.46rem; }
+    .lvsteam-daypass-inline{ width:54px;height:54px;font-size:0.46rem; }
     .lvsteam-controls{ gap:0.4rem; }
   }
 
@@ -1991,7 +2012,7 @@
     display:flex;
     align-items:center;
     gap:4px;
-    color:#ccc;
+    color:#9A9A9A;
     font-size:0.62rem;
     font-family:'Archivo Narrow',sans-serif;
     letter-spacing:0.01em;
@@ -2423,6 +2444,38 @@
     transition:max-height 0.4s ease, opacity 0.3s ease, padding 0.4s ease;
   }
 
+  #wtfCitiesWrap{
+    max-height:2000px;
+    opacity:1;
+    overflow:hidden;
+    transition:max-height 0.4s ease, opacity 0.3s ease;
+  }
+  #wtfCitiesWrap.wtf-cities-collapsed{
+    max-height:0;
+    opacity:0;
+  }
+  .wtf-cities-toggle{
+    background:none;
+    border:none;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    font-family:inherit;
+    padding:0;
+  }
+  .wtf-cities-toggle .divider-label{
+    cursor:pointer;
+  }
+  .wtf-cities-toggle-arrow{
+    color:#FFD700;
+    font-size:0.75rem;
+    transition:transform 0.3s ease;
+  }
+  .wtf-cities-toggle[aria-expanded="true"] .wtf-cities-toggle-arrow{
+    transform:rotate(180deg);
+  }
+
   .bo-dessert-solo-wrap.bo-collapsed{
     max-height:0;
     opacity:0;
@@ -2556,7 +2609,7 @@
   }
 
   .bo-hero h1 .bo-line2{
-    color:var(--ember-hot);
+    color:#e21f2b;
     font-style:italic;
     font-weight:600;
   }
@@ -3864,7 +3917,7 @@
         </button>
       </div>
       <p style="text-align:center;color:var(--text-dim,#9A9A9A);font-size:1.06rem;margin:28px 0 0;">Real direction. No filler. Just the best.</p>
-      <p class="fine-print" style="margin-top:auto;padding-top:70px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+      <p class="fine-print" style="margin-top:auto;padding-top:70px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
       <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
       <p class="fine-print" style="margin-top:14px;color:#FFD700;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
       <p class="fine-print" style="margin-top:10px;"><button type="button" class="footer-hotlink" data-dest="promotions">Promotions &amp; Reach</button></p>
@@ -3921,7 +3974,7 @@
 
       <div style="min-height:30px;"></div>
 
-      <p class="fine-print" style="margin-top:auto;padding-top:20px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+      <p class="fine-print" style="margin-top:auto;padding-top:20px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
       <p class="fine-print" style="margin-top:10px;padding-bottom:40px;"><button type="button" class="footer-hotlink" data-dest="promotions">Promotions &amp; Reach</button></p>
     </div>
   </div>
@@ -3958,7 +4011,7 @@
         <p style="color:#FFD700;font-size:0.75rem;margin:10px 0 0;max-width:220px;">⭐ For affiliate &amp; influencer information.</p>
       </div>
 
-      <p class="fine-print" style="margin-top:32px;padding-top:20px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+      <p class="fine-print" style="margin-top:32px;padding-top:20px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
       <p class="fine-print" style="margin-top:14px;color:#FFD700;padding-bottom:40px;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
 
     </div>
@@ -3972,7 +4025,7 @@
       <div class="bo-search-wrap bo-search-wrap-big" style="max-width:340px;">
         <input type="email" id="bopMemberEmail" class="bo-search-input bo-search-input-big" placeholder="...Email Address" autocomplete="off">
       </div>
-      <p style="text-align:center;color:#f2f2f2;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:0.98rem;font-weight:400;line-height:1.55;max-width:320px;margin:20px auto 0;">⭐ Be the first to know about the best <strong style="font-weight:700;">specials</strong>, hot <strong style="font-weight:700;">openings</strong>, <strong style="font-weight:700;">private events</strong>, <strong style="font-weight:700;">relocations</strong>, and <strong style="font-weight:700;">closures</strong> across every restaurant in <strong style="font-weight:700;">Las Vegas</strong>.</p>
+      <p style="text-align:center;color:#f2f2f2;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:0.98rem;font-weight:400;line-height:1.55;max-width:320px;margin:20px auto 0;">⭐ Be the first to know about the <strong style="font-weight:700;">best</strong> <strong style="font-weight:700;">specials</strong>, <strong style="font-weight:700;">hot</strong> <strong style="font-weight:700;">openings</strong>, <strong style="font-weight:700;">private events</strong>, relocations, and closures across every restaurant in <strong style="font-weight:700;">Las Vegas</strong>.</p>
       <button type="button" id="bopMemberSubmit" class="bo-expand-btn" style="width:auto;height:auto;border-radius:30px;padding:12px 28px;margin-top:22px;">
         <span class="bo-expand-label" style="font-size:0.85rem;">JOIN</span>
       </button>
@@ -3987,7 +4040,7 @@
       <div class="bo-search-wrap bo-search-wrap-big" style="max-width:340px;">
         <input type="email" id="lvMemberEmail" class="bo-search-input bo-search-input-big" placeholder="...Email Address" autocomplete="off">
       </div>
-      <p style="text-align:center;color:#f2f2f2;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:0.98rem;font-weight:400;line-height:1.55;max-width:320px;margin:20px auto 0;">⭐ Be the first to know about the best <strong style="font-weight:700;">specials</strong>, hot <strong style="font-weight:700;">openings</strong>, <strong style="font-weight:700;">private events</strong>, <strong style="font-weight:700;">relocations</strong>, and <strong style="font-weight:700;">closures</strong> across every spa, <strong style="font-weight:700;">steam</strong> room, and sauna in <strong style="font-weight:700;">Las Vegas</strong>.</p>
+      <p style="text-align:center;color:#f2f2f2;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:0.98rem;font-weight:400;line-height:1.55;max-width:320px;margin:20px auto 0;">⭐ Be the first to know about the <strong style="font-weight:700;">best</strong> <strong style="font-weight:700;">specials</strong>, <strong style="font-weight:700;">hot</strong> <strong style="font-weight:700;">openings</strong>, <strong style="font-weight:700;">private events</strong>, relocations, and closures across every <strong style="font-weight:700;">spa</strong>, <strong style="font-weight:700;">steam room</strong>, and <strong style="font-weight:700;">sauna</strong> in <strong style="font-weight:700;">Las Vegas</strong>.</p>
       <button type="button" id="lvMemberSubmit" class="bo-expand-btn" style="width:auto;height:auto;border-radius:30px;padding:12px 28px;margin-top:22px;">
         <span class="bo-expand-label" style="font-size:0.85rem;">JOIN</span>
       </button>
@@ -4075,7 +4128,7 @@
           <button type="button" id="tpaStakingBtn" style="color:#f5a623; font-size:0.8rem;background:none;border:none;padding:0;font-family:inherit;cursor:pointer;text-decoration:underline;">Staking</button>
         </div>
         <div style="font-size:0.75rem; color:#a9a396;">© 2026 The Poker Agency — a community, not a company.</div>
-        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
+        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
         <p class="fine-print" style="margin-top:14px;color:#a9a396;font-size:0.72rem;">For further information <a href="mailto:info@bestofperiod.com" style="color:#f5a623;text-decoration:underline;">info@bestofperiod.com</a></p>
         <p class="fine-print" style="margin-top:14px;color:#f5a623;font-size:0.72rem;"><strong>Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button></p>
       </footer>
@@ -4227,7 +4280,7 @@
       
       <footer class="tpa-footer">
         <div style="font-size:0.75rem; color:#a9a396;">© 2026 The Poker Agency — a community, not a company.</div>
-        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
+        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
         <p class="fine-print" style="margin-top:14px;color:#a9a396;font-size:0.72rem;">For further information <a href="mailto:info@bestofperiod.com" style="color:#f5a623;text-decoration:underline;">info@bestofperiod.com</a></p>
         <p class="fine-print" style="margin-top:14px;color:#f5a623;font-size:0.72rem;"><strong>Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button></p>
       </footer>
@@ -4370,7 +4423,7 @@
       
       <footer class="tpa-footer">
         <div style="font-size:0.75rem; color:#a9a396;">© 2026 The Poker Agency — a community, not a company.</div>
-        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
+        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
         <p class="fine-print" style="margin-top:14px;color:#a9a396;font-size:0.72rem;">For further information <a href="mailto:info@bestofperiod.com" style="color:#f5a623;text-decoration:underline;">info@bestofperiod.com</a></p>
         <p class="fine-print" style="margin-top:14px;color:#f5a623;font-size:0.72rem;"><strong>Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button></p>
       </footer>
@@ -4522,7 +4575,7 @@
 
       <footer class="tpa-footer">
         <div style="font-size:0.75rem; color:#a9a396;text-align:center;">© 2026 The Poker Agency — a community, not a company.</div>
-        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;text-align:center;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
+        <p class="fine-print" style="margin-top:24px;color:#a9a396;font-size:0.72rem;line-height:1.6;text-align:center;"><button type="button" class="footer-hotlink" data-dest="tpa" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">TPA</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
         <p class="fine-print" style="margin-top:14px;color:#a9a396;font-size:0.72rem;text-align:center;">For further information <a href="mailto:info@bestofperiod.com" style="color:#f5a623;text-decoration:underline;">info@bestofperiod.com</a></p>
         <p class="fine-print" style="margin-top:14px;color:#f5a623;font-size:0.72rem;text-align:center;"><strong>Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#f5a623;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;">BJS CO.</button></p>
       </footer>
@@ -5021,11 +5074,7 @@
   </div>
 
   <div class="bonus-dock">
-    <button type="button" class="lv-logo-btn" id="bjsHomeBtn" aria-label="BJS CO. — back to homepage">
-      <span class="lv-logo-circle bjs-home-circle">
-        <span class="bjs-home-text">BJS<br>CO.</span>
-      </span>
-    </button>
+    <button type="button" class="lv-logo-circle" id="bjsHomeBtn" aria-label="Back to homepage" style="position:fixed;top:90px;left:16px;width:48px;height:48px;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#ffd54a;cursor:pointer;z-index:50;">←<br>Back</button>
   </div>
 
   <header class="hero">
@@ -5227,7 +5276,7 @@
         </g>
       </svg>
     </span><span class="label">Tobacco</span></button>
-    <button class="cat-tab" id="hhOpenBtn" type="button"><span class="chip-circle" style="font-family:'Archivo Black', sans-serif;font-size:0.6rem;line-height:1.15;font-weight:900;color:#000;text-transform:uppercase;background:#FFD700;border-color:#FFD700;animation:hubSunGlow 2s ease-in-out infinite;">High<br>&amp;<br>Hungry</span></button>
+    <button class="cat-tab" id="hhOpenBtn" type="button"><span class="chip-circle" style="font-family:'Archivo Black', sans-serif;font-size:0.6rem;line-height:1.15;font-weight:900;color:#8B5A2B;text-transform:uppercase;text-shadow:0 0 6px rgba(139,90,43,0.7);">High<br>&amp;<br>Hungry</span><span class="label">Food</span></button>
 
   </div>
 
@@ -5241,12 +5290,45 @@
 
   </div>
 
-  <div class="section-divider">
-    <span class="divider-line"></span>
-    <span class="divider-label">Explore More Cities</span>
-    <span class="divider-line"></span>
+  <div class="top-bar-row wtf-always-visible-row">
+    <button class="corner-btn" id="directoryBtn" aria-haspopup="dialog">
+      <span class="chip-circle mini-map-btn">
+        <svg width="30" height="30" viewBox="0 0 300 420" aria-hidden="true">
+          <defs>
+            <clipPath id="miniNvClip">
+              <path d="M70,15 L230,15 L230,250 L248,250 L248,330 L268,392 L172,392 L150,352 L112,322 L96,282 L64,232 L58,180 L84,142 L56,96 L70,15 Z"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#miniNvClip)">
+            <rect x="0" y="0" width="162" height="203" fill="#5C7A45"/>
+            <rect x="162" y="0" width="138" height="203" fill="#3D6B4A"/>
+            <rect x="0" y="203" width="162" height="217" fill="#4C8055"/>
+            <rect x="162" y="203" width="138" height="217" fill="#6B8F5D"/>
+          </g>
+          <path d="M70,15 L230,15 L230,250 L248,250 L248,330 L268,392 L172,392 L150,352 L112,322 L96,282 L64,232 L58,180 L84,142 L56,96 L70,15 Z"
+                fill="none" stroke="#fff" stroke-width="6"/>
+        </svg>
+      </span>
+      <span class="label">Map</span>
+    </button>
+    <button class="corner-btn" id="shuttleBtn" aria-haspopup="dialog">
+      <span class="chip-circle">🚌</span>
+      <span class="label">Free Shuttles</span>
+    </button>
+    <button class="corner-btn thc24-btn" id="thc24Btn" aria-haspopup="dialog">
+      <span class="chip-circle thc24-chip">🌿</span>
+      <span class="label">24 Hour<br>THC</span>
+    </button>
   </div>
 
+  <button type="button" class="section-divider wtf-cities-toggle" id="wtfCitiesToggleBtn" aria-expanded="false" aria-controls="wtfCitiesWrap">
+    <span class="divider-line"></span>
+    <span class="divider-label">Explore More Cities</span>
+    <span class="wtf-cities-toggle-arrow">▼</span>
+    <span class="divider-line"></span>
+  </button>
+
+  <div id="wtfCitiesWrap" class="wtf-cities-collapsed">
   <div class="skyline-art">
     <div class="skyline-overlay">
       <div class="top-bar-row">
@@ -5255,36 +5337,6 @@
         <button class="mini-circle" data-city="MIA">MIA</button>
         <button class="mini-circle" data-city="NYC">NYC</button>
         <button class="mini-circle" data-city="SD">SD</button>
-      </div>
-      <div class="top-bar-row" style="margin-top:10px;">
-        <button class="corner-btn" id="directoryBtn" aria-haspopup="dialog">
-          <span class="chip-circle mini-map-btn">
-            <svg width="30" height="30" viewBox="0 0 300 420" aria-hidden="true">
-              <defs>
-                <clipPath id="miniNvClip">
-                  <path d="M70,15 L230,15 L230,250 L248,250 L248,330 L268,392 L172,392 L150,352 L112,322 L96,282 L64,232 L58,180 L84,142 L56,96 L70,15 Z"/>
-                </clipPath>
-              </defs>
-              <g clip-path="url(#miniNvClip)">
-                <rect x="0" y="0" width="162" height="203" fill="#5C7A45"/>
-                <rect x="162" y="0" width="138" height="203" fill="#3D6B4A"/>
-                <rect x="0" y="203" width="162" height="217" fill="#4C8055"/>
-                <rect x="162" y="203" width="138" height="217" fill="#6B8F5D"/>
-              </g>
-              <path d="M70,15 L230,15 L230,250 L248,250 L248,330 L268,392 L172,392 L150,352 L112,322 L96,282 L64,232 L58,180 L84,142 L56,96 L70,15 Z"
-                    fill="none" stroke="#fff" stroke-width="6"/>
-            </svg>
-          </span>
-          <span class="label">Map</span>
-        </button>
-        <button class="corner-btn" id="shuttleBtn" aria-haspopup="dialog">
-          <span class="chip-circle">🚌</span>
-          <span class="label">Free Shuttles</span>
-        </button>
-        <button class="corner-btn thc24-btn" id="thc24Btn" aria-haspopup="dialog">
-          <span class="chip-circle thc24-chip">🌿</span>
-          <span class="label">24 Hour<br>THC</span>
-        </button>
       </div>
       </div>
       <p id="cityNote" class="city-note" style="display:none;"></p>
@@ -5361,6 +5413,7 @@
       <text x="260" y="16" font-family="Archivo Narrow, sans-serif" font-weight="700" font-size="9" fill="#9A9A9A" letter-spacing="1">NYC</text>
     </svg>
   </div>
+  </div>
 
   <div class="join-box-wrap">
     <div class="newsletter-sky" aria-hidden="true">
@@ -5413,12 +5466,7 @@
 
   <div class="lvsteam-overlay" id="lvSteamOverlay">
     <div class="lvsteam-topbar">
-      <button class="lvsteam-daypass-toggle" id="lvDayPassToggle" type="button">Day<br>Passes</button>
-      <button type="button" class="lv-logo-btn" id="lvBjsHomeBtn" aria-label="BJS CO. — back to homepage">
-        <span class="lv-logo-circle bjs-home-circle">
-          <span class="bjs-home-text">BJS<br>CO.</span>
-        </span>
-      </button>
+      <button type="button" class="lv-logo-circle" id="lvBjsHomeBtn" aria-label="Back to homepage" style="position:relative;top:auto;left:auto;width:48px;height:48px;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#ffd54a;cursor:pointer;">←<br>Back</button>
     </div>
 
     <div class="brandbar">
@@ -5455,6 +5503,7 @@
         <button class="lvsteam-chip-circle" data-region="strip">The<br>Strip</button>
         <button class="lvsteam-chip-circle" data-region="henderson">Henderson</button>
         <button class="lvsteam-chip-circle" data-region="summerlin">Summerlin</button>
+        <button class="lvsteam-daypass-toggle lvsteam-daypass-inline" id="lvDayPassToggle" type="button">Day<br>Passes</button>
       </div>
       <div class="lvsteam-controls" id="lvTypeRow">
         <button class="lvsteam-chip active" data-type="all">All Venues</button>
@@ -5482,7 +5531,7 @@
 
     <p style="text-align:right;color:#FFD700;font-size:0.75rem;margin:24px 0 0;">⭐ TBD (to be determined)</p>
 
-<p class="fine-print" style="margin-top:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+<p class="fine-print" style="margin-top:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
     <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
     <p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="lvmember" style="color:#FFD700;">Become a Member</button></p>
     <p class="fine-print" style="margin-top:14px;color:#FFD700;padding-bottom:40px;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
@@ -5530,7 +5579,7 @@
         <button type="button" id="tbotrEnterBtn" class="tbotr-enter-circle">ENTER</button>
       </div>
 
-      <p class="fine-print" style="margin-top:auto;padding-top:50px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+      <p class="fine-print" style="margin-top:auto;padding-top:50px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
       <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
 <p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#FFD700;">Become a Member</button></p>
     </div>
@@ -5577,7 +5626,7 @@
 <div class="bo-list" id="boList"></div>
 
 
-<p class="fine-print" style="margin-top:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
+<p class="fine-print" style="margin-top:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.</p>
 <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
 <p class="fine-print" style="margin-top:14px;padding-bottom:40px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#FFD700;">Become a Member</button></p>
 
@@ -5622,14 +5671,14 @@
         <ellipse class="mini-puff" cx="76" cy="15" rx="3" ry="4" fill="#fff" opacity="0.55" style="animation-delay:1.9s;"/>
       </svg> Newsletter to receive insane deals.</p>
       <div class="hh-best-wrap">
-        <button type="button" class="hh-best-link" id="bestOfBtn">The<br>Best<br>Of</button>
+        <a href="https://bestofperiod.com" target="_blank" rel="noopener" class="hh-best-link" id="bestOfExternalLink" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">The<br>Best<br>Of</a>
         <span class="hh-best-hint">← Click<br>Here</span>
       </div>
       <div class="hh-list" id="hhList">
         <!-- populated by JS -->
       </div>
       <p class="fine-print" style="margin-top:48px;">
-        <button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.
+        <button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.
       </p>
       <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
 <p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#FFD700;">Become a Member</button></p>
@@ -5793,7 +5842,7 @@
   </div>
 
   <footer>
-    <p class="fine-print"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an Independent Listing Service, developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
+    <p class="fine-print"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
     <p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#fff;text-decoration:underline;">info@bestofperiod.com</a></p>
 <p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#FFD700;">Become a Member</button></p>
     <p class="fine-print" style="margin-top:14px;color:#FFD700;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
@@ -13235,6 +13284,22 @@ function setupBopMiniBadge(){
   startBopCityCycler('hubBestMiniCity', BOP_MINI_CITIES, 3000, 260, 140, 180);
 }
 
+function setupWtfCitiesToggle(){
+  const btn = document.getElementById('wtfCitiesToggleBtn');
+  const wrap = document.getElementById('wtfCitiesWrap');
+  if(!btn || !wrap) return;
+  btn.addEventListener('click', function(){
+    const isCollapsed = wrap.classList.contains('wtf-cities-collapsed');
+    if(isCollapsed){
+      wrap.classList.remove('wtf-cities-collapsed');
+      btn.setAttribute('aria-expanded', 'true');
+    } else {
+      wrap.classList.add('wtf-cities-collapsed');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 function setupCompanyHub(){
   const overlay = document.getElementById('companyHubOverlay');
   const closeBtn = document.getElementById('hubClose');
@@ -13972,6 +14037,7 @@ async function init(){
   setupThankYou();
   setupHighHungry();
   setupVendorVerify();
+  setupWtfCitiesToggle();
   setupCompanyHub();
   setupBopMiniBadge();
   setupBopLandingBadge();
