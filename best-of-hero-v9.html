@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Of — Vegas. Period.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --white: #f2f1ed;
+    --red: #e21f2b;
+    --gold: #c9a24b;
+    --gold-bright: #e6c77a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family:'Arial Narrow',Arial,sans-serif;
+  }
+
+  .badge {
+    position: relative;
+    width: min(78vmin, 560px);
+    height: min(78vmin, 560px);
+    border-radius: 50%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 0 2px rgba(0,0,0,1),
+      0 0 40px rgba(201,162,75,0.18),
+      inset 0 0 60px rgba(0,0,0,0.9);
+  }
+
+  /* gold ring, double-line for a printed-badge feel */
+  .ring-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 18px rgba(201,162,75,0.45), inset 0 0 18px rgba(201,162,75,0.25);
+  }
+  .ring-inner {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,162,75,0.55);
+  }
+
+  .hero {
+    text-align: center;
+    line-height: 0.95;
+    padding: 6%;
+  }
+
+  .line1 {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(2.3rem, 9.5vmin, 4.8rem);
+    color: var(--white);
+    letter-spacing: 0.02em;
+    text-shadow:
+      0 0 10px rgba(255,255,255,.95),
+      0 0 24px rgba(255,255,255,.9),
+      0 0 55px rgba(255,255,255,.55),
+      0 0 90px rgba(255,255,255,.30);
+    white-space: nowrap;
+  }
+
+  .line2 {
+    font-size: clamp(1.4rem, 6.5vmin, 3rem);
+    font-weight: 700;
+    position:relative;height:1.4em;
+    margin-top: 0.1em;
+    white-space: nowrap;
+  }
+
+  .city {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--red);
+    display: inline-block;
+    text-shadow:
+      0 0 16px rgba(226,31,43,0.65),
+      0 0 40px rgba(226,31,43,0.3);
+    line-height: 1;
+    min-width: 3ch;
+  }
+
+  .period {
+    color: var(--gold-bright);
+    text-shadow:
+      0 0 16px rgba(201,162,75,0.5),
+      0 0 40px rgba(201,162,75,0.22);
+  }
+
+  @keyframes cityIn {
+    0%   { opacity: 0; transform: translateY(0.35em); filter: blur(3px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes cityOut {
+    0%   { opacity: 1; transform: translateY(0); filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-0.3em); filter: blur(3px); }
+  }
+  .city.animating-in  { animation: cityIn 0.18s ease-out forwards; }
+  .city.animating-out { animation: cityOut 0.14s ease-in forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .city.animating-in, .city.animating-out { animation: none !important; }
+  }
+
+  .tagline {
+    margin-top: 1.35em;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(0.55rem, 1.5vmin, 0.75rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color:#fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="badge">
+  <div class="ring-outer"></div>
+  <div class="ring-inner"></div>
+  <div class="hero">
+    <div class="line1">Best Of</div>
+    <div class="line2">
+      <span class="city is-active" id="cityText" style="position:absolute;right:3.9em;font-family:'Arial Narrow',Arial,sans-serif;">Las Vegas</span><span class="period" style="position:absolute;right:0;">Period.</span>
+    </div>
+    <div class="tagline">Real direction. No filler. Just the best.</div>
+  </div>
+</div>
+
+<script>
+  const cities = [
+    "Las Vegas","New York","Los Angeles","Miami","Chicago","Dallas","Austin","Scottsdale","San Diego","San Francisco","Seattle","Boston","Washington DC","Atlanta","New Orleans","Toronto","Vancouver","Mexico City","Cancun","Cabo San Lucas","Cartagena","Rio de Janeiro","Sao Paulo","Buenos Aires","London","Paris","Rome","Milan","Barcelona","Madrid","Amsterdam","Berlin","Prague","Vienna","Zurich","Lisbon","Athens","Monaco","Mykonos","Ibiza","Dubai","Abu Dhabi","Doha","Singapore","Bangkok","Hong Kong","Tokyo","Osaka","Kyoto","Seoul","Taipei","Kuala Lumpur","Sydney","Melbourne","Cape Town","Istanbul",
+    "Paris", "Ibiza", "Cabo", "Cancun", "Nashville", "Austin", "Chicago",
+    "Aspen", "Monaco", "Barcelona", "Singapore", "Hong Kong", "Bangkok",
+    "Amsterdam", "Berlin", "Milan", "Sao Paulo", "Rio de Janeiro", "Sydney",
+    "Toronto", "Seoul", "Dallas", "Scottsdale", "New Orleans", "San Diego",
+    "Cartagena", "Mykonos", "Punta Cana"
+  ];
+
+  const el = document.getElementById("cityText");
+  let i = 0;
+
+  const FIRST_HOLD = 3000;  // Vegas holds 3s
+  const HOLD = 260;         // fast cycle after that
+  const OUT_MS = 140;
+  const IN_MS = 180;
+
+  function swap() {
+    i = (i + 1) % cities.length;
+    const next = cities[i];
+
+    el.classList.remove("is-active");
+    el.classList.add("animating-out");
+
+    setTimeout(() => {
+      el.textContent = next;
+      el.classList.remove("animating-out");
+      el.classList.add("animating-in");
+
+      setTimeout(() => {
+        el.classList.remove("animating-in");
+        el.classList.add("is-active");
+        setTimeout(swap, HOLD);
+      }, IN_MS);
+    }, OUT_MS);
+  }
+
+  setTimeout(swap, FIRST_HOLD);
+</script>
+
+</body>
+</html>
