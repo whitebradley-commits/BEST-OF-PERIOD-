@@ -213,10 +213,16 @@
   }
   .bop-splash-hero{ text-align:center; line-height:0.95; padding:2% 4%; font-family:'Playfair Display', serif; }
   .bop-splash-hero-nocircle .bop-splash-line1{
-    font-size:clamp(2.4rem, 10.8vmin, 4.2rem) !important;
+    font-size:clamp(2.16rem, 9.72vmin, 3.78rem) !important;
   }
   .bop-splash-hero-nocircle .bop-splash-line2{
     font-size:clamp(1.9rem, 8.6vmin, 3.6rem) !important;
+  }
+  .bop-splash-hero-nocircle .bop-splash-city{
+    font-size:1.38em !important;
+  }
+  .bop-splash-hero-nocircle .bop-splash-period{
+    font-size:1.035em !important;
   }
   .bop-splash-line1{
     font-weight:900; text-transform:uppercase;
@@ -228,17 +234,16 @@
   .bop-splash-line2{
     font-size:clamp(1.1rem, 5vmin, 2.2rem);
     font-weight:700; margin-top:0.15em;
-    display:grid; grid-template-columns:4.1em 4.6em;
+    display:grid; grid-template-columns:minmax(0, 4.1em) 4.6em; column-gap:0.25em;
     align-items:baseline; width:max-content;
     margin-left:auto; margin-right:auto; max-width:100%;
   }
-  .bop-splash-city-col{ position:relative; height:1em; overflow:visible; }
+  .bop-splash-city-col{ text-align:right; overflow:visible; min-width:0; }
   .bop-splash-city{
-    position:absolute; right:0.35em; bottom:0;
     font-style:italic; font-weight:700; font-size:1.15em;
     color:#e21f2b;
     text-shadow:0 0 16px rgba(226,31,43,0.65), 0 0 40px rgba(226,31,43,0.3);
-    line-height:1; white-space:nowrap; word-spacing:-0.15em; z-index:2;
+    white-space:nowrap; word-spacing:-0.15em;
   }
   .bop-splash-period{
     text-align:left; white-space:nowrap; font-size:1.15em;
@@ -12812,7 +12817,7 @@ function boRenderCategory(cat){
           <span class="bop-splash-period">Period.</span>
         </div>
       </div>`;
-      startBopVegasSlotCycler('bopResultsCityText', BOP_SPLASH_CITIES, 2, 5000, 1, 1);
+      startBopVegasSlotCycler('bopResultsCityText', BOP_SPLASH_CITIES, 2, 5000, 1, 1, 0, true);
     } else {
       const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="${vegasClass}">Vegas</span> <span class="bo-period">Period.</span>`;
@@ -13170,7 +13175,7 @@ function startBopCityCycler(elId, cities, firstHold, hold, outMs, inMs, rampSche
 
 const bopCyclerGenerations = {};
 
-function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs, spinCount){
+function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs, spinCount, oneShot){
   const el = document.getElementById(elId);
   if(!el) return;
   const vegas = cities[0];
@@ -13206,6 +13211,7 @@ function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs,
         el.classList.remove('animating-in');
         el.classList.add('is-active');
         if(isLastInSpin){
+          if(oneShot) return;
           setTimeout(() => {
             if(!isCurrent()) return;
             queue = buildSpinQueue();
@@ -13222,25 +13228,6 @@ function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs,
 }
 
 function setupBopLandingBadge(){
-  const el = document.getElementById('bopSplashCityText');
-  const periodEl = document.querySelector('.bop-splash-period');
-  if(!el) return;
-
-  function alignCityBottom(){
-    if(!el || !periodEl) return;
-    el.style.transform = 'translateY(0px)';
-    const cityRect = el.getBoundingClientRect();
-    const periodRect = periodEl.getBoundingClientRect();
-    const offset = periodRect.bottom - cityRect.bottom;
-    el.style.transform = `translateY(${offset}px)`;
-  }
-
-  const mo = new MutationObserver(alignCityBottom);
-  mo.observe(el, { childList: true });
-
-  alignCityBottom();
-  window.addEventListener('resize', alignCityBottom);
-
   startBopVegasSlotCycler('bopSplashCityText', BOP_SPLASH_CITIES, 30, 5000, 15, 15);
 }
 
