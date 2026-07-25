@@ -211,7 +211,13 @@
     position:absolute; inset:14px; border-radius:50%;
     border:1px solid rgba(255,215,0,0.55);
   }
-  .bop-splash-hero{ text-align:center; line-height:0.95; padding:6%; }
+  .bop-splash-hero{ text-align:center; line-height:0.95; padding:2% 4%; font-family:'Playfair Display', serif; }
+  .bop-splash-hero-nocircle .bop-splash-line1{
+    font-size:clamp(2.4rem, 10.8vmin, 4.2rem) !important;
+  }
+  .bop-splash-hero-nocircle .bop-splash-line2{
+    font-size:clamp(1.9rem, 8.6vmin, 3.6rem) !important;
+  }
   .bop-splash-line1{
     font-weight:900; text-transform:uppercase;
     font-size:clamp(1.4rem, 6.2vmin, 2.6rem);
@@ -236,7 +242,7 @@
   }
   .bop-splash-period{
     text-align:left; white-space:nowrap; font-size:1.15em;
-    color:#e6c77a;
+    color:#c9a24b;
     text-shadow:0 0 16px rgba(201,162,75,0.5), 0 0 40px rgba(201,162,75,0.22);
   }
   @keyframes bopSplashCityIn{ 0%{opacity:0;filter:blur(3px);} 100%{opacity:1;filter:blur(0);} }
@@ -244,8 +250,8 @@
   .bop-splash-city.animating-in{ animation:bopSplashCityIn 0.18s ease-out forwards; }
   .bop-splash-city.animating-out{ animation:bopSplashCityOut 0.14s ease-in forwards; }
   .bop-splash-tagline{
-    margin-top:2.8em; font-family:'Oswald', sans-serif; font-weight:400;
-    font-size:clamp(0.55rem, 1.6vmin, 0.78rem);
+    margin-top:2.6rem; font-family:'Oswald', sans-serif; font-weight:400;
+    font-size:clamp(0.72rem, 2.1vmin, 1rem);
     letter-spacing:0.1em; text-transform:uppercase;
     white-space:nowrap;
     color:#f2f1ed; text-align:center; margin-left:auto; margin-right:auto;
@@ -5478,26 +5484,19 @@
   </div>
 
   <div class="thank-you-overlay" id="tbotrLandingOverlay">
-    <div class="bop-corner-badge"><strong>Las Vegas</strong> is live!
-      See what's coming to a city near you! <span class="bo-expand-arrow">↓</span><span class="bo-expand-arrow">↓</span><span class="bo-expand-arrow">↓</span>
-    </div>
     <div class="ty-content" style="max-width:400px;display:flex;flex-direction:column;min-height:100vh;justify-content:center;padding-bottom:28px;padding-top:150px;">
       <div style="display:flex;justify-content:center;margin-bottom:4px;">
-        <div class="bop-splash-badge" style="width:min(59.5vmin, 272px);height:min(59.5vmin, 272px);">
-          <div class="ring-outer"></div>
-          <div class="ring-inner"></div>
-          <div class="bop-splash-hero">
-            <div class="bop-splash-line1">Best Of</div>
-            <div class="bop-splash-line2" id="bopSplashLine2Row">
-              <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopSplashCityText">Las Vegas</span></span>
-              <span class="bop-splash-period">Period.</span>
-            </div>
-            <div class="bop-splash-tagline">Real direction. No filler. Just the best.</div>
+        <div class="bop-splash-hero bop-splash-hero-nocircle">
+          <div class="bop-splash-line1">Best Of</div>
+          <div class="bop-splash-line2" id="bopSplashLine2Row">
+            <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopSplashCityText">Vegas</span></span>
+            <span class="bop-splash-period">Period.</span>
           </div>
+          <div class="bop-splash-tagline">Real direction. No filler. Just the best.</div>
         </div>
       </div>
 
-      <p style="text-align:center;color:#f2f2f2;font-size:1.05rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <strong style="font-weight:700;">BJS</strong><svg viewBox="0 0 40 40" width="14" height="14" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
+      <p style="text-align:center;color:#f2f2f2;font-size:0.82rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <strong style="font-weight:700;">BJS</strong><svg viewBox="0 0 40 40" width="12" height="12" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
 
       <div style="display:flex;justify-content:center;margin-top:26px;">
         <button type="button" id="tbotrLegendToggle" class="tbotr-legend-toggle">
@@ -12804,8 +12803,20 @@ function boRenderCategory(cat){
   boHeroSubEl.style.opacity = 0;
 
   setTimeout(() => {
-    const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
-    boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="${vegasClass}">Vegas</span> <span class="bo-period">Period.</span>`;
+    if(cat === 'bestof'){
+      const randomStartCity = BOP_SPLASH_CITIES[1 + Math.floor(Math.random() * (BOP_SPLASH_CITIES.length - 1))];
+      boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
+        <div class="bop-splash-line1">Best Of</div>
+        <div class="bop-splash-line2">
+          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopResultsCityText">${randomStartCity}</span></span>
+          <span class="bop-splash-period">Period.</span>
+        </div>
+      </div>`;
+      startBopVegasSlotCycler('bopResultsCityText', BOP_SPLASH_CITIES, 2, 5000, 1, 1);
+    } else {
+      const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
+      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="${vegasClass}">Vegas</span> <span class="bo-period">Period.</span>`;
+    }
     boHeroSubEl.textContent = boHeroCopy[cat].sub;
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = cat === 'bestof'
@@ -13082,21 +13093,21 @@ boBackBtnEl.addEventListener('click', (e) => {
 boRenderCategory('bestof');
 
 const BOP_SPLASH_CITIES = [
-  "Las Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
-  "Paris", "Ibiza", "Cabo", "Cancun", "Austin", "Aspen", "Monaco",
-  "BCN", "HK", "Bangkok", "Berlin", "Milan", "Rio",
-  "Sydney", "Seoul", "Dallas", "Mykonos", "Chicago",
-  "Toronto", "NOLA", "San Diego", "Zagreb", "Doha", "Cairo", "Osaka",
-  "Lima", "Saigon", "CDMX", "Melb", "Beijing", "Athens", "Lisbon",
-  "Cape Town", "Naples", "BA", "CPH", "Medellin",
-  "Rome", "Venice", "Madrid", "Vienna", "Prague", "Dublin", "Nice", "Cannes", "Marbella",
-  "Vancouver", "Montreal", "Boston", "DC", "Atlanta", "Havana", "Panama", "Bogota",
-  "Shanghai", "Manila", "KL", "Tel Aviv", "Riyadh", "Abu Dhabi"
+  "Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
+  "Paris", "Ibiza", "Monaco",
+  "Hong Kong", "Bangkok", "Berlin", "Milan",
+  "Sydney", "Chicago",
+  "Toronto", "Zagreb",
+  "Beijing", "Athens", "Lisbon",
+  "Cape Town",
+  "Rome", "Madrid", "Dublin",
+  "Vancouver", "Boston",
+  "Shanghai", "Tel Aviv", "Abu Dhabi"
 ];
 const BOP_MINI_CITIES = [
   "Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
   "Paris", "Ibiza", "Cabo", "Austin", "Aspen", "Monaco",
-  "BCN", "HK", "Berlin", "Milan", "Rio", "Sydney", "Seoul",
+  "HK", "Berlin", "Milan", "Rio", "Sydney", "Seoul",
   "Dallas", "Chicago", "Toronto", "Doha", "Osaka", "CDMX",
   "Athens", "Lisbon", "Naples", "Rome", "Venice", "Madrid",
   "Vienna", "Boston", "DC", "Atlanta", "Manila", "KL", "Tel Aviv"
@@ -13157,6 +13168,59 @@ function startBopCityCycler(elId, cities, firstHold, hold, outMs, inMs, rampSche
   setTimeout(swap, firstHold);
 }
 
+const bopCyclerGenerations = {};
+
+function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs, spinCount){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const vegas = cities[0];
+  const others = cities.slice(1);
+
+  bopCyclerGenerations[elId] = (bopCyclerGenerations[elId] || 0) + 1;
+  const myGeneration = bopCyclerGenerations[elId];
+  function isCurrent(){ return bopCyclerGenerations[elId] === myGeneration; }
+
+  function buildSpinQueue(){
+    const shuffled = bopShuffle(others);
+    const trimmed = spinCount ? shuffled.slice(0, spinCount) : shuffled;
+    return trimmed.concat([vegas]);
+  }
+
+  let queue = buildSpinQueue();
+  let qIndex = 0;
+
+  function swap(){
+    if(!isCurrent()) return;
+    const next = queue[qIndex];
+    const isLastInSpin = (qIndex === queue.length - 1);
+    qIndex++;
+    el.classList.remove('is-active');
+    el.classList.add('animating-out');
+    setTimeout(() => {
+      if(!isCurrent()) return;
+      el.textContent = next;
+      el.classList.remove('animating-out');
+      el.classList.add('animating-in');
+      setTimeout(() => {
+        if(!isCurrent()) return;
+        el.classList.remove('animating-in');
+        el.classList.add('is-active');
+        if(isLastInSpin){
+          setTimeout(() => {
+            if(!isCurrent()) return;
+            queue = buildSpinQueue();
+            qIndex = 0;
+            swap();
+          }, vegasHold);
+        } else {
+          setTimeout(swap, spinHold);
+        }
+      }, inMs);
+    }, outMs);
+  }
+  swap();
+}
+
 function setupBopLandingBadge(){
   const el = document.getElementById('bopSplashCityText');
   const periodEl = document.querySelector('.bop-splash-period');
@@ -13177,7 +13241,7 @@ function setupBopLandingBadge(){
   alignCityBottom();
   window.addEventListener('resize', alignCityBottom);
 
-  startBopCityCycler('bopSplashCityText', BOP_SPLASH_CITIES, 4000, 130, 70, 90, [2500, 2000, 1500, 1000, 500]);
+  startBopVegasSlotCycler('bopSplashCityText', BOP_SPLASH_CITIES, 30, 5000, 15, 15);
 }
 
 function setupBopMiniBadge(){
