@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Of — Las Vegas. Period.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Oswald:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --white: #f2f1ed;
+    --red: #e21f2b;
+    --gold: #c9a24b;
+    --gold-bright: #e6c77a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .badge {
+    position: relative;
+    width: min(78vmin, 560px);
+    height: min(78vmin, 560px);
+    border-radius: 50%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 2px rgba(0,0,0,1),
+      0 0 40px rgba(201,162,75,0.18),
+      inset 0 0 60px rgba(0,0,0,0.9);
+  }
+
+  .ring-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 18px rgba(201,162,75,0.45), inset 0 0 18px rgba(201,162,75,0.25);
+  }
+  .ring-inner {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,162,75,0.55);
+  }
+
+  .hero {
+    text-align: center;
+    line-height: 0.95;
+    padding: 6%;
+  }
+
+  .line1 {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(1.7rem, 7.8vmin, 3.5rem);
+    color: var(--white);
+    letter-spacing: 0.03em;
+    text-shadow:
+      0 0 16px rgba(255,255,255,0.5),
+      0 0 40px rgba(255,255,255,0.2);
+    white-space: nowrap;
+  }
+
+  /* Two FIXED-width columns, centered as one block. Because both
+     column widths are constants (not "auto"), the whole block's
+     total width never changes — so Period. never moves, period. */
+  .line2 {
+    font-size: clamp(1.4rem, 6.5vmin, 3rem);
+    font-weight: 700;
+    margin-top: 0.15em;
+    display: grid;
+    grid-template-columns: 4.1em 4.6em;
+    align-items: baseline;
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
+
+  .city-col {
+    position: relative;
+    height: 1em;
+    overflow: visible;
+  }
+
+  .city {
+    position: absolute;
+    right: 0.35em;
+    bottom: 0;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.15em;
+    color: var(--red);
+    text-shadow:
+      0 0 16px rgba(226,31,43,0.65),
+      0 0 40px rgba(226,31,43,0.3);
+    line-height: 1;
+    white-space: nowrap;
+    word-spacing: -0.15em;
+    z-index: 2;
+  }
+
+  .period {
+    text-align: left;
+    white-space: nowrap;
+    font-size: 1.15em;
+    color: var(--gold-bright);
+    text-shadow:
+      0 0 16px rgba(201,162,75,0.5),
+      0 0 40px rgba(201,162,75,0.22);
+  }
+
+  @keyframes cityIn {
+    0%   { opacity: 0; filter: blur(3px); }
+    100% { opacity: 1; filter: blur(0); }
+  }
+  @keyframes cityOut {
+    0%   { opacity: 1; filter: blur(0); }
+    100% { opacity: 0; filter: blur(3px); }
+  }
+  .city.animating-in  { animation: cityIn 0.18s ease-out forwards; }
+  .city.animating-out { animation: cityOut 0.14s ease-in forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .city.animating-in, .city.animating-out { animation: none !important; }
+  }
+
+  .tagline {
+    margin-top: 2.1em;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.5rem, 1.4vmin, 0.68rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    white-space: normal;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="badge">
+  <div class="ring-outer"></div>
+  <div class="ring-inner"></div>
+  <div class="hero">
+    <div class="line1">Best Of</div>
+    <div class="line2" id="line2Row">
+      <span class="city-col"><span class="city is-active" id="cityText">Las Vegas</span></span>
+      <span class="period">Period.</span>
+    </div>
+    <div class="tagline" id="tagline">Real direction. No filler. Just the best.</div>
+  </div>
+</div>
+
+<script>
+  // Abbreviated where it reads naturally — keeps every entry short
+  // so it never has to fight the fixed-width layout.
+  const cities = [
+    "Las Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
+    "Paris", "Ibiza", "Cabo", "Cancun", "Austin", "Aspen", "Monaco",
+    "BCN", "HK", "Bangkok", "Berlin", "Milan", "Rio",
+    "Sydney", "Seoul", "Dallas", "Mykonos", "Chicago",
+    "Toronto", "NOLA", "San Diego", "Zagreb", "Doha", "Cairo", "Osaka"
+  ];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let n = a.length - 1; n > 0; n--) {
+      const m = Math.floor(Math.random() * (n + 1));
+      [a[n], a[m]] = [a[m], a[n]];
+    }
+    return a;
+  }
+
+  let queue = shuffle(cities.filter(c => c !== "Las Vegas"));
+  let qIndex = 0;
+
+  function nextCity() {
+    if (qIndex >= queue.length) {
+      // reshuffle; make sure the new first city isn't the same as the last one shown
+      const lastShown = queue[queue.length - 1];
+      let reshuffled;
+      do {
+        reshuffled = shuffle(cities.filter(c => c !== "Las Vegas"));
+      } while (reshuffled[0] === lastShown);
+      queue = reshuffled;
+      qIndex = 0;
+    }
+    return queue[qIndex++];
+  }
+
+  const el = document.getElementById("cityText");
+  const line2Row = document.getElementById("line2Row");
+  const tagline = document.getElementById("tagline");
+  const periodEl = document.querySelector(".period");
+
+  function matchTaglineWidth() {
+    tagline.style.width = line2Row.getBoundingClientRect().width + "px";
+  }
+  matchTaglineWidth();
+  window.addEventListener("resize", matchTaglineWidth);
+
+  function alignCityBottom() {
+    el.style.transform = "translateY(0px)";
+    const cityRect = el.getBoundingClientRect();
+    const periodRect = periodEl.getBoundingClientRect();
+    const offset = periodRect.bottom - cityRect.bottom;
+    el.style.transform = `translateY(${offset}px)`;
+  }
+  alignCityBottom();
+  window.addEventListener("resize", alignCityBottom);
+
+  const FIRST_HOLD = 3000;  // Vegas holds 3s
+  const HOLD = 260;         // fast cycle after that
+  const OUT_MS = 140;
+  const IN_MS = 180;
+
+  function swap() {
+    const next = nextCity();
+
+    el.classList.remove("is-active");
+    el.classList.add("animating-out");
+
+    setTimeout(() => {
+      el.textContent = next;
+      alignCityBottom();
+      el.classList.remove("animating-out");
+      el.classList.add("animating-in");
+
+      setTimeout(() => {
+        el.classList.remove("animating-in");
+        el.classList.add("is-active");
+        setTimeout(swap, HOLD);
+      }, IN_MS);
+    }, OUT_MS);
+  }
+
+  setTimeout(swap, FIRST_HOLD);
+</script>
+
+</body>
+</html>
