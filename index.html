@@ -4993,6 +4993,7 @@
       <h2 id="restaurantMenuTitle" style="margin-top:36px;">Raku</h2>
       <p style="color:var(--text-dim);font-family:'Archivo Narrow',sans-serif;font-size:0.85rem;line-height:1.5;margin:4px 0 20px;">Robata Grill &amp; Izakaya — Chinatown</p>
 
+      <div id="restaurantMenuRakuContent">
       <div class="directory-area">Cold Dish</div>
       <div class="entry-site-row"><span class="bo-extended-name">Raku's Tofu</span><span style="margin-left:auto;color:var(--gold,#c9a24b);">$4.50</span></div>
       <div class="entry-site-row"><span class="bo-extended-name">Kobe Beef Liver Sashimi</span><span style="margin-left:auto;color:var(--gold,#c9a24b);">$9.50</span></div>
@@ -5025,6 +5026,12 @@
       <div class="entry-site-row"><span class="bo-extended-name">Grilled Bluefin Tuna, ikura oroshi</span><span style="margin-left:auto;color:var(--gold,#c9a24b);">$6.00</span></div>
 
       <p style="color:var(--text-dim);font-family:'Archivo Narrow',sans-serif;font-size:0.72rem;line-height:1.5;margin:20px 0 0;text-align:center;">Menu items and prices are approximate and may change. Call ahead to confirm: <a href="tel:+17023673511" style="color:#fff;">(702) 367-3511</a></p>
+      </div>
+
+      <div id="restaurantMenuGenericContent" style="display:none;text-align:center;padding:20px 0;">
+        <p style="color:var(--text-dim);font-family:'Archivo Narrow',sans-serif;font-size:0.9rem;line-height:1.6;">A full menu for this restaurant isn't loaded yet.</p>
+        <p style="color:var(--text-dim);font-family:'Archivo Narrow',sans-serif;font-size:0.85rem;line-height:1.6;">Please call ahead for current menu and pricing.</p>
+      </div>
     </div>
   </div>
 
@@ -6425,38 +6432,26 @@ function callButtonHTML(phone){
   return '<a class="icon-btn call-btn" href="tel:' + telDigits + '" title="Call">' + svg + '</a>';
 }
 
-function menuButtonHTML(name){
-  if(!name) return '<span class="menu-text-btn menu-text-btn-pending" title="Menu coming soon">MENU</span>';
-  if(name === 'Raku'){
-    return '<button type="button" class="menu-text-btn" data-menu-popup="raku" title="Menu">MENU</button>';
-  }
-  const q = encodeURIComponent(name + ' Las Vegas menu');
-  return '<a class="menu-text-btn" href="https://www.google.com/search?q=' + q + '" target="_blank" rel="noopener" title="Menu">MENU</a>';
+function menuButtonHTML(name, url){
+  return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
 }
 
 function setupRestaurantMenuPopup(){
-  const overlay = document.getElementById('restaurantMenuOverlay');
-  const closeBtn = document.getElementById('restaurantMenuCloseBtn');
-  if(!overlay) return;
-
-  document.addEventListener('click', function(e){
-    const trigger = e.target.closest('[data-menu-popup]');
-    if(trigger){
-      e.preventDefault();
-      overlay.classList.add('open');
-      return;
-    }
-  });
-
-  if(closeBtn){
-    closeBtn.addEventListener('click', function(){
-      overlay.classList.remove('open');
-    });
-  }
-  overlay.addEventListener('click', function(e){
-    if(e.target === overlay) overlay.classList.remove('open');
-  });
+  // Menu buttons are currently disabled (static/inert) per request - nothing to wire up.
 }
+
+// Global fix: force every link that opens externally to genuinely open in a
+// separate window/tab, so our site is never replaced/navigated away from,
+// even in contexts (like an installed home-screen app) where target="_blank"
+// alone doesn't reliably open a separate tab.
+document.addEventListener('click', function(e){
+  const link = e.target.closest('a[target="_blank"]');
+  if(!link) return;
+  const href = link.getAttribute('href');
+  if(!href) return;
+  e.preventDefault();
+  window.open(href, '_blank', 'noopener');
+});
 
 function siteButtonHTML(url){
   if(!url) return '<span class="site-btn site-btn-pending">WEB</span>';
@@ -7337,12 +7332,14 @@ function setupLvSteam(){
     lvBuildDayPassView();
     dayPassView.classList.add('open');
     gridView.style.display = 'none';
-    dayPassToggle.innerHTML = '← Back<br>to Venues';
+    dayPassToggle.innerHTML = 'View All<br>Venues';
     window.scrollTo(0,0);
   }
 
   if(dayPassToggle){
-    dayPassToggle.addEventListener('click', () => {
+    dayPassToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const showingDayPass = dayPassView.classList.contains('open');
       if(showingDayPass){ showGridView(); } else { showDayPassView(); }
     });
@@ -7986,21 +7983,6 @@ bestof: [
   },
   {
     rank: 2,
-    name: "Guy Savoy",
-    rating: "4.8 / 5",
-    why: "14 straight years of Forbes Five-Star recognition",
-    note: "At Caesars Palace, the only Guy Savoy location outside France. The artichoke and black truffle soup has its own permanent place in culinary history, served in a hushed room that feels worlds from the casino floor.",
-    url: "https://www.caesars.com/caesars-palace/restaurants/restaurant-guy-savoy",
-    address: "3570 Las Vegas Blvd S, Las Vegas, NV 89109",
-    phone: "(702) 731-7286",
-    hours: [{ days: [2,3,4,5,6], open: '17:00', close: '22:00' }],
-    hue: "0, 70%, 42%",
-    price: 4,
-    instagram: "guysavoylasvegas",
-    facebook: "GuySavoyLasVegas"
-  },
-  {
-    rank: 3,
     name: "é by José Andrés",
     rating: "4.8 / 5",
     why: "A tiny, avant-garde tasting counter unlike anything else in the city",
@@ -8015,7 +7997,7 @@ bestof: [
     facebook: "ebyjoseandres"
   },
   {
-    rank: 4,
+    rank: 3,
     name: "Nobu",
     rating: "4.8 / 5",
     why: "The name that made Vegas take sushi seriously",
@@ -8030,7 +8012,7 @@ bestof: [
     facebook: "NobuCaesarsPalace"
   },
   {
-    rank: 5,
+    rank: 4,
     name: "Bavette's Steakhouse",
     rating: "4.8 / 5",
     why: "Chicago import, French flair, zero stuffiness",
@@ -8045,7 +8027,7 @@ bestof: [
     facebook: "Bavetteslasvegas"
   },
   {
-    rank: 6,
+    rank: 5,
     name: "Good Pie",
     rating: "4.8 / 5",
     why: "Winner of several Best Pizza in Las Vegas awards",
@@ -8061,7 +8043,7 @@ bestof: [
     downtown: true
   },
   {
-    rank: 7,
+    rank: 6,
     name: "CUT by Wolfgang Puck",
     rating: "4.7 / 5",
     why: "Wagyu program, modern room, near-perfect execution",
@@ -8076,7 +8058,7 @@ bestof: [
     facebook: "CUTbyWolfgangPuckLasVegas"
   },
   {
-    rank: 8,
+    rank: 7,
     name: "Vic & Anthony's",
     rating: "4.6 / 5",
     why: "Top 1% of every restaurant in Las Vegas — one of the highest cross-checked ratings of any steakhouse in the city",
@@ -8092,7 +8074,7 @@ bestof: [
     facebook: "VicAndAnthonysLasVegas"
   },
   {
-    rank: 9,
+    rank: 8,
     name: "Ohlala French Bistro",
     rating: "4.6 / 5",
     why: "A genuine Summerlin neighborhood gem, in the top 15% of every restaurant in Las Vegas — higher than most Strip French spots",
@@ -8108,7 +8090,7 @@ bestof: [
     facebook: null
   },
   {
-    rank: 10,
+    rank: 9,
     name: "Il Chianti Italian Steak and Seafood",
     rating: "4.6 / 5",
     why: "In the top 4% of all restaurants in Henderson — a genuine hidden gem",
@@ -8124,7 +8106,7 @@ bestof: [
     facebook: "chiantiitalian"
   },
   {
-    rank: 11,
+    rank: 10,
     name: "Settebello Pizzeria Napoletana",
     rating: "4.5 / 5",
     why: "In the top 1% of all restaurants in Henderson",
@@ -8292,7 +8274,7 @@ dessert: [
 ,
 breakfastcasual: [
   {
-    rank: 1,
+    rank: 11,
     name: "Broken Yolk Cafe (Downtown)",
     rating: "4.7 / 5",
     why: "4.7/5 from 1,076 reviews — SoCal's famous 'boozy breakfast' chain, now with a real Downtown Las Vegas home, named Best Breakfast by Las Vegas Weekly",
@@ -8308,7 +8290,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 2,
+    rank: 12,
     name: "Egg & I",
     rating: "4.6 / 5",
     why: "Ranked in the top 1% of Vegas restaurants — the highest verified breakfast rating in the city",
@@ -8324,7 +8306,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 3,
+    rank: 13,
     name: "Eggslut",
     rating: "4.2 / 5",
     why: "Top 5% of every restaurant in Las Vegas — a Tripadvisor Travelers' Choice pick, top 10% citywide",
@@ -8339,7 +8321,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 4,
+    rank: 14,
     name: "Spago",
     rating: "4.0 / 5",
     why: "A Time Out 4-star critic review — Wolfgang Puck's flagship, front-row at the Bellagio Fountains — Vegas brunch glamour done right",
@@ -8354,7 +8336,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 6,
+    rank: 15,
     name: "Peppermill Restaurant & Fireside Lounge",
     rating: "4.4 / 5",
     why: "A 1972 Strip landmark and a James Beard America's Classics honoree",
@@ -8370,7 +8352,7 @@ breakfastcasual: [
     hours: [{ days: [1,2], open: '07:00', close: '02:00' }, { days: [3], open: '07:00', close: '23:59' }]
   },
   {
-    rank: 7,
+    rank: 16,
     name: "Bouchon Bistro",
     rating: "4.0 / 5",
     why: "A Time Out 4-star critic review — Thomas Keller's French bistro brunch, served on a Venetian courtyard terrace",
@@ -8385,7 +8367,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 8,
+    rank: 17,
     name: "Winnie & Ethel's Downtown Diner",
     rating: "4.5 / 5",
     why: "4.5/5 from 855 reviews — winner of Dapper Companies' Great Las Vegas Coffee Shop Giveaway, a $1M+ contest award",
@@ -8401,7 +8383,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 9,
+    rank: 18,
     name: "Sadelle's",
     rating: "3.5 / 5",
     why: "Bagel-forward New York breakfast inside Bellagio's Conservatory — the setting outshines the food",
@@ -8416,7 +8398,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 10,
+    rank: 19,
     name: "Denny's (Casino Royale)",
     rating: "3.5 / 5",
     why: "The flagship Strip location — reportedly the highest-grossing Denny's in the world",
@@ -8430,7 +8412,7 @@ breakfastcasual: [
     open24: true
   },
   {
-    rank: 11,
+    rank: 20,
     name: "The Coffee Cup",
     rating: "4.0 / 5",
     why: "A Time Out 4-star critic review — a Boulder City mainstay for more than 20 years, featured on Guy Fieri's Diners, Drive-Ins and Dives",
@@ -8446,7 +8428,7 @@ breakfastcasual: [
     facebook: null
   },
   {
-    rank: 12,
+    rank: 21,
     name: "Omelet House",
     rating: "4.6 / 5",
     why: "Top 1% of every restaurant in Las Vegas, with 886 reviews — family-owned since 1977, one of the oldest breakfast spots in the city",
@@ -13017,7 +12999,7 @@ function boRenderCategory(cat){
     boHeroSubEl.textContent = boHeroCopy[cat].sub;
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = cat === 'bestof'
-        ? "⭐ This is the top 11 of every restaurant, of every cuisine, across <strong style='font-weight:700;'>Las Vegas</strong>, <strong style='font-weight:700;'>Downtown</strong>, <strong style='font-weight:700;'>Summerlin</strong>, and <strong style='font-weight:700;'>Henderson</strong> — not just one genre. Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>"
+        ? "⭐ This is the <strong style='font-weight:700;'>BEST OF</strong> every restaurant, of every cuisine, across <strong style='font-weight:700;'>Las Vegas</strong>, <strong style='font-weight:700;'>Downtown</strong>, <strong style='font-weight:700;'>Summerlin</strong>, and <strong style='font-weight:700;'>Henderson</strong> — not just one genre. Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>"
         : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg> — hover any card for a closer look";
     }
     boHeroTitleEl.style.opacity = 1;
@@ -13147,7 +13129,7 @@ function boRenderCategory(cat){
                 <div class="bo-other-location-name">${loc.name}${loc.offStrip ? '<span class="bo-ots-badge">*OTS</span>' : ''}${loc.downtown ? '<span class="bo-dt-badge">*DT</span>' : ''}</div>
                 <div class="bo-other-location-meta">${loc.rating ? '★ ' + loc.rating : 'Not yet independently rated'} &middot; ${loc.address}</div>
                 <div class="bo-other-location-actions">
-                  ${menuButtonHTML(s.name)}
+                  ${menuButtonHTML(s.name, s.url)}
                   ${callButtonHTML(loc.phone)}
                   ${directionsButtonHTML(loc.address)}
                 </div>
@@ -13157,7 +13139,7 @@ function boRenderCategory(cat){
         </div>` : ''}
       </div>
       <div class="bo-icon-row">
-        ${menuButtonHTML(s.name)}
+        ${menuButtonHTML(s.name, s.url)}
         ${callButtonHTML(s.phone)}
         ${directionsButtonHTML(s.address)}
         ${siteButtonHTML(s.url)}
@@ -13480,6 +13462,16 @@ function setupCompanyHub(){
   if(lvBjsHomeBtn){
     lvBjsHomeBtn.addEventListener('click', function(e){
       e.preventDefault();
+      const dayPassViewEl = document.getElementById('lvDayPassView');
+      const gridViewEl = document.getElementById('lvGridView');
+      const dayPassToggleEl = document.getElementById('lvDayPassToggle');
+      if(dayPassViewEl && dayPassViewEl.classList.contains('open')){
+        dayPassViewEl.classList.remove('open');
+        if(gridViewEl) gridViewEl.style.display = 'block';
+        if(dayPassToggleEl) dayPassToggleEl.innerHTML = 'Day<br>Passes';
+        window.scrollTo(0,0);
+        return;
+      }
       const lvOverlay = document.getElementById('lvSteamOverlay');
       if(lvOverlay) lvOverlay.classList.remove('open');
       overlay.classList.add('open');
