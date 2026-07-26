@@ -6438,8 +6438,12 @@ function callButtonHTML(phone){
   return '<a class="icon-btn call-btn" href="tel:' + telDigits + '" title="Call">' + svg + '</a>';
 }
 
-function menuButtonHTML(name, url){
-  return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
+function menuButtonHTML(name, url, rank){
+  if(!name) return '<span class="menu-text-btn menu-text-btn-pending" title="Menu coming soon">MENU</span>';
+  if(rank && rank > 10) return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
+  const q = encodeURIComponent(name + ' Las Vegas');
+  const yelpUrl = 'https://www.yelp.com/search?find_desc=' + q;
+  return '<button type="button" class="menu-text-btn" data-web-popup="' + yelpUrl.replace(/"/g,'&quot;') + '" title="Menu">MENU</button>';
 }
 
 function setupWebPopup(){
@@ -6479,17 +6483,21 @@ function setupRestaurantMenuPopup(){
   // Menu buttons are currently disabled (static/inert) per request - nothing to wire up.
 }
 
-// Global fix: force every link that opens externally to genuinely open in a
-// separate window/tab, so our site is never replaced/navigated away from,
-// even in contexts (like an installed home-screen app) where target="_blank"
-// alone doesn't reliably open a separate tab.
+// Global fix: EVERY link that opens externally (website, Instagram, Facebook,
+// anything with target="_blank") opens inside our own in-page popup instead,
+// so our site is never replaced or navigated away from, under any circumstance.
 document.addEventListener('click', function(e){
   const link = e.target.closest('a[target="_blank"]');
   if(!link) return;
   const href = link.getAttribute('href');
   if(!href) return;
   e.preventDefault();
-  window.open(href, '_blank', 'noopener');
+  const overlay = document.getElementById('webPopupOverlay');
+  const frame = document.getElementById('webPopupFrame');
+  if(overlay && frame){
+    frame.src = href;
+    overlay.classList.add('open');
+  }
 });
 
 function siteButtonHTML(url){
@@ -13168,7 +13176,7 @@ function boRenderCategory(cat){
                 <div class="bo-other-location-name">${loc.name}${loc.offStrip ? '<span class="bo-ots-badge">*OTS</span>' : ''}${loc.downtown ? '<span class="bo-dt-badge">*DT</span>' : ''}</div>
                 <div class="bo-other-location-meta">${loc.rating ? '★ ' + loc.rating : 'Not yet independently rated'} &middot; ${loc.address}</div>
                 <div class="bo-other-location-actions">
-                  ${menuButtonHTML(s.name, s.url)}
+                  ${menuButtonHTML(s.name, s.url, s.rank)}
                   ${callButtonHTML(loc.phone)}
                   ${directionsButtonHTML(loc.address)}
                 </div>
@@ -13178,7 +13186,7 @@ function boRenderCategory(cat){
         </div>` : ''}
       </div>
       <div class="bo-icon-row">
-        ${menuButtonHTML(s.name, s.url)}
+        ${menuButtonHTML(s.name, s.url, s.rank)}
         ${callButtonHTML(s.phone)}
         ${directionsButtonHTML(s.address)}
         ${siteButtonHTML(s.url)}
