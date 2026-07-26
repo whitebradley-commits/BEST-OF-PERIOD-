@@ -4045,8 +4045,7 @@
         <p style="color:#FFD700;font-size:0.75rem;margin:10px 0 0;max-width:220px;">⭐ For affiliate &amp; influencer information.</p>
       </div>
 
-      <p class="fine-print" style="margin-top:32px;padding-top:20px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
-      <p class="fine-print" style="margin-top:14px;color:#FFD700;padding-bottom:40px;"><strong style="color:#FFD700;">Founders</strong>&nbsp;&nbsp;<button type="button" class="footer-hotlink" data-dest="about" style="color:#FFD700;">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
+      <p class="fine-print" style="margin-top:32px;padding-top:20px;padding-bottom:40px;"><button type="button" class="footer-hotlink" data-dest="best">BOP</button> is an independent listing service developed by <button type="button" class="footer-hotlink" data-dest="about">BJS CO.</button><svg viewBox="0 0 40 40" width="13" height="13" style="vertical-align:-2px;margin:0 2px 0 3px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.</p>
 
     </div>
   </div>
@@ -4984,6 +4983,13 @@
         <span style="color:var(--text-dim);">—</span>
         <a href="https://jadecannabisco.com" target="_blank" rel="noopener noreferrer" class="site-btn" style="font-size:10px;padding:5px 11px;">SITE</a>
       </div>
+    </div>
+  </div>
+
+  <div class="directory-overlay" id="webPopupOverlay" style="padding:20px;">
+    <div class="directory-panel" role="dialog" aria-modal="true" style="max-width:600px;width:100%;height:85vh;padding:0;display:flex;flex-direction:column;">
+      <button type="button" id="webPopupCloseBtn" class="directory-close" aria-label="Close" style="position:absolute;top:10px;right:10px;z-index:5;">✕</button>
+      <iframe id="webPopupFrame" src="" style="flex:1;width:100%;border:none;border-radius:16px;background:#fff;" title="Restaurant website"></iframe>
     </div>
   </div>
 
@@ -6436,6 +6442,39 @@ function menuButtonHTML(name, url){
   return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
 }
 
+function setupWebPopup(){
+  const overlay = document.getElementById('webPopupOverlay');
+  const closeBtn = document.getElementById('webPopupCloseBtn');
+  const frame = document.getElementById('webPopupFrame');
+  if(!overlay || !frame) return;
+
+  function closeWebPopup(){
+    overlay.classList.remove('open');
+    frame.src = '';
+  }
+
+  if(closeBtn){
+    closeBtn.addEventListener('click', closeWebPopup);
+  }
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeWebPopup();
+  });
+
+  setInterval(function(){
+    document.querySelectorAll('[data-web-popup]').forEach(function(btn){
+      if(btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        const url = btn.getAttribute('data-web-popup');
+        frame.src = url;
+        overlay.classList.add('open');
+      });
+    });
+  }, 300);
+}
+
 function setupRestaurantMenuPopup(){
   // Menu buttons are currently disabled (static/inert) per request - nothing to wire up.
 }
@@ -6455,7 +6494,7 @@ document.addEventListener('click', function(e){
 
 function siteButtonHTML(url){
   if(!url) return '<span class="site-btn site-btn-pending">WEB</span>';
-  return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="site-btn" title="Website">WEB</a>';
+  return '<button type="button" class="site-btn" data-web-popup="' + url.replace(/"/g,'&quot;') + '" title="Website">WEB</button>';
 }
 
 // hours format: { days: [0-6 where 0=Sun], open: "HH:MM", close: "HH:MM" } (24hr, close can cross midnight)
@@ -14176,6 +14215,7 @@ async function init(){
   setupVendorVerify();
   setupWtfCitiesToggle();
   setupRestaurantMenuPopup();
+  setupWebPopup();
   setupCompanyHub();
   setupBopMiniBadge();
   setupBopLandingBadge();
