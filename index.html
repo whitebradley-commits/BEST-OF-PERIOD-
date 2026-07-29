@@ -6610,13 +6610,20 @@ function setupRestaurantMenuPopup(){
   // Menu buttons are currently disabled (static/inert) per request - nothing to wire up.
 }
 
-// NOTE: links with target="_blank" (website, Instagram, Facebook, etc.) now use
-// the browser's normal new-tab behavior. We stopped forcing them into our
-// in-page iframe popup because sites like Facebook, Instagram, and most
-// restaurant/business websites block themselves from being loaded in an
-// iframe — so the popup was always blank/broken for those links, which made
-// the whole site feel non-functional. Normal target="_blank" links need no
-// extra JS at all; the browser handles them.
+// Links with target="_blank" (website, Instagram, Facebook, etc.) get routed
+// through window.open() below instead of left as plain navigation. On a
+// phone that has this site installed as a home-screen app, there's no
+// browser "tabs" — a plain link click just takes over that one app window.
+// window.open() forces it to pop out into the phone's actual browser app
+// instead, so this page stays open and running underneath it.
+document.addEventListener('click', function(e){
+  const link = e.target.closest('a[target="_blank"]');
+  if(!link) return;
+  const href = link.getAttribute('href');
+  if(!href) return;
+  e.preventDefault();
+  window.open(href, '_blank', 'noopener,noreferrer');
+});
 
 function siteButtonHTML(url){
   if(!url) return '<span class="site-btn site-btn-pending">WEB</span>';
