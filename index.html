@@ -6053,21 +6053,16 @@ async function fetchGooglePlacePhoto(name, address){
 // Fills in real photos for a rendered list of bo-card entries that don't
 // already have a hand-picked s.image set. Swaps the placeholder for an <img>
 // as each photo arrives, without needing to re-render the whole list.
-// TEMPORARY: also prints the exact error under the first card so we can see
-// what Google is rejecting. Remove the debug block once photos are working.
+// Fails silently if Google rejects a request (e.g. an API/billing issue) —
+// the card just keeps its current colored placeholder, same as before this
+// feature existed, so nothing looks broken to visitors either way.
 function loadPlacePhotosFor(entries){
   if(!GOOGLE_PLACES_API_KEY) return;
-  entries.forEach(async (s, i) => {
+  entries.forEach(async s => {
     if(s.image) return; // already has a hand-picked photo, leave it alone
-    const { url, error } = await fetchGooglePlacePhoto(s.name, s.address);
-    const card = document.getElementById('bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-    if(error && i === 0 && card){
-      const debugMsg = document.createElement('div');
-      debugMsg.style.cssText = 'background:#400;color:#ff8080;padding:10px;margin:8px 0;font-size:0.85rem;border:1px solid #f00;border-radius:8px;';
-      debugMsg.textContent = 'PHOTO DEBUG: ' + error;
-      card.insertBefore(debugMsg, card.firstChild);
-    }
+    const { url } = await fetchGooglePlacePhoto(s.name, s.address);
     if(!url) return;
+    const card = document.getElementById('bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
     const thumbWrap = card && card.querySelector('.bo-thumb-wrap');
     const placeholder = thumbWrap && thumbWrap.querySelector('.bo-sear');
     if(placeholder){
@@ -6078,6 +6073,7 @@ function loadPlacePhotosFor(entries){
     }
   });
 }
+
 
 let currentArea = 'All';
 let currentCategory = 'All';
