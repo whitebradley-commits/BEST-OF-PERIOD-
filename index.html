@@ -4022,7 +4022,7 @@
       </div>
 
       <div style="text-align:left;margin:0 auto 40px;max-width:340px;">
-        <p style="color:#ccc;font-size:0.9rem;line-height:1.75;margin:0 0 20px;">We're looking for people with knowledge and ambition — the kind who want to post, share their experience, and stay unbiased, helping people find their way to the places we actually stand behind. Our intention is simple: help us grow further, wherever that takes us. We're not just chasing the best. We're chasing the best of the rest.</p>
+        <p style="color:#ccc;font-size:0.9rem;line-height:1.75;margin:0 0 20px;">We're looking for people with knowledge and ambition — the kind who want to post, share their experience, and stay unbiased, helping people find their way to the places we actually stand behind. Our intention is simple: help us grow further, wherever that takes us.</p>
         <p style="color:#ccc;font-size:0.9rem;line-height:1.75;margin:0;">If this sounds like you, just reach out — a quick one-on-one is all we need to start the conversation.</p>
       </div>
 
@@ -5985,6 +5985,66 @@ function showDebugError(msg){
   console.error('DEBUG ERROR: ' + msg);
 }
 
+// ---- Real business photos (Google Places Photos API) ----
+// 1. Get a free API key: console.cloud.google.com -> create project -> enable
+//    "Places API (New)" -> Credentials -> Create API Key.
+// 2. Paste it below between the quotes.
+// 3. Google's free monthly credit covers thousands of photo loads for a site
+//    this size, so this costs nothing to run at our current traffic.
+// Until a key is pasted in, cards just show the existing colored placeholder
+// (exactly like today) — nothing breaks either way.
+const GOOGLE_PLACES_API_KEY = 'AIzaSyBA5LoXEm38v-tTEQfGBGvtrp36I_KX3bA';
+
+const placePhotoCache = {}; // avoids re-fetching the same business twice per visit
+
+async function fetchGooglePlacePhoto(name, address){
+  if(!GOOGLE_PLACES_API_KEY) return null;
+  const cacheKey = name + '|' + (address || '');
+  if(placePhotoCache[cacheKey] !== undefined) return placePhotoCache[cacheKey];
+  try{
+    const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+        'X-Goog-FieldMask': 'places.photos'
+      },
+      body: JSON.stringify({ textQuery: name + ' ' + (address || 'Las Vegas NV') })
+    });
+    const data = await res.json();
+    const photoName = data && data.places && data.places[0] && data.places[0].photos && data.places[0].photos[0] && data.places[0].photos[0].name;
+    const url = photoName
+      ? 'https://places.googleapis.com/v1/' + photoName + '/media?maxWidthPx=800&key=' + GOOGLE_PLACES_API_KEY
+      : null;
+    placePhotoCache[cacheKey] = url;
+    return url;
+  }catch(err){
+    placePhotoCache[cacheKey] = null;
+    return null;
+  }
+}
+
+// Fills in real photos for a rendered list of bo-card entries that don't
+// already have a hand-picked s.image set. Swaps the placeholder for an <img>
+// as each photo arrives, without needing to re-render the whole list.
+function loadPlacePhotosFor(entries){
+  if(!GOOGLE_PLACES_API_KEY) return;
+  entries.forEach(async s => {
+    if(s.image) return; // already has a hand-picked photo, leave it alone
+    const url = await fetchGooglePlacePhoto(s.name, s.address);
+    if(!url) return;
+    const card = document.getElementById('bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    const thumbWrap = card && card.querySelector('.bo-thumb-wrap');
+    const placeholder = thumbWrap && thumbWrap.querySelector('.bo-sear');
+    if(placeholder){
+      const photoDiv = document.createElement('div');
+      photoDiv.className = 'bo-thumb-photo';
+      photoDiv.innerHTML = '<img src="' + url + '" alt="' + s.name + '" loading="lazy">';
+      placeholder.replaceWith(photoDiv);
+    }
+  });
+}
+
 let currentArea = 'All';
 let currentCategory = 'All';
 let specials = [];
@@ -6510,8 +6570,7 @@ function setupWebPopup(){
         e.preventDefault();
         e.stopPropagation();
         const url = btn.getAttribute('data-web-popup');
-        frame.src = url;
-        overlay.classList.add('open');
+        window.open(url, '_blank', 'noopener,noreferrer');
       });
     });
   }, 300);
@@ -6521,22 +6580,13 @@ function setupRestaurantMenuPopup(){
   // Menu buttons are currently disabled (static/inert) per request - nothing to wire up.
 }
 
-// Global fix: EVERY link that opens externally (website, Instagram, Facebook,
-// anything with target="_blank") opens inside our own in-page popup instead,
-// so our site is never replaced or navigated away from, under any circumstance.
-document.addEventListener('click', function(e){
-  const link = e.target.closest('a[target="_blank"]');
-  if(!link) return;
-  const href = link.getAttribute('href');
-  if(!href) return;
-  e.preventDefault();
-  const overlay = document.getElementById('webPopupOverlay');
-  const frame = document.getElementById('webPopupFrame');
-  if(overlay && frame){
-    frame.src = href;
-    overlay.classList.add('open');
-  }
-});
+// NOTE: links with target="_blank" (website, Instagram, Facebook, etc.) now use
+// the browser's normal new-tab behavior. We stopped forcing them into our
+// in-page iframe popup because sites like Facebook, Instagram, and most
+// restaurant/business websites block themselves from being loaded in an
+// iframe — so the popup was always blank/broken for those links, which made
+// the whole site feel non-functional. Normal target="_blank" links need no
+// extra JS at all; the browser handles them.
 
 function siteButtonHTML(url){
   if(!url) return '<span class="site-btn site-btn-pending">WEB</span>';
@@ -13528,6 +13578,7 @@ function boRenderCategory(cat){
   });
 
   if(cat === 'bestof'){
+    loadPlacePhotosFor(sortedEntries);
     const shownNames = new Set(sortedEntries.map(r => r.name));
     const extended = boFullTop100.filter(r => !shownNames.has(r.name)).slice(0, 89);
     if(extended.length){
