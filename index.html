@@ -5993,47 +5993,81 @@ function showDebugError(msg){
 //    this size, so this costs nothing to run at our current traffic.
 // Until a key is pasted in, cards just show the existing colored placeholder
 // (exactly like today) — nothing breaks either way.
-const GOOGLE_PLACES_API_KEY = 'AIzaSyBA5LoXEm38v-tTEQfGBGvtrp36I_KX3bA';
+const GOOGLE_PLACES_API_KEY = 'AIzaSyDnrUZIc1IROc4GXj4nGLlRZQQTj8dEYqw';
 
 const placePhotoCache = {}; // avoids re-fetching the same business twice per visit
+let placesServiceInstance = null;
+let googleMapsLoadPromise = null;
+
+// Loads Google's official browser-side Maps JS library (this is the
+// Google-supported way to call Places from a webpage — the raw REST
+// endpoint we tried first gets blocked by the browser before it even
+// completes, because it isn't meant to be called directly from client-side
+// JavaScript).
+function loadGoogleMapsScript(){
+  if(googleMapsLoadPromise) return googleMapsLoadPromise;
+  googleMapsLoadPromise = new Promise((resolve, reject) => {
+    if(window.google && window.google.maps && window.google.maps.places){ resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_PLACES_API_KEY + '&libraries=places';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Google Maps script failed to load — check that "Maps JavaScript API" is enabled in Cloud Console'));
+    document.head.appendChild(script);
+  });
+  return googleMapsLoadPromise;
+}
 
 async function fetchGooglePlacePhoto(name, address){
-  if(!GOOGLE_PLACES_API_KEY) return null;
+  if(!GOOGLE_PLACES_API_KEY) return { url: null, error: 'No API key set' };
   const cacheKey = name + '|' + (address || '');
   if(placePhotoCache[cacheKey] !== undefined) return placePhotoCache[cacheKey];
   try{
-    const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
-        'X-Goog-FieldMask': 'places.photos'
-      },
-      body: JSON.stringify({ textQuery: name + ' ' + (address || 'Las Vegas NV') })
+    await loadGoogleMapsScript();
+    if(!placesServiceInstance){
+      placesServiceInstance = new google.maps.places.PlacesService(document.createElement('div'));
+    }
+    const result = await new Promise((resolve) => {
+      placesServiceInstance.textSearch({ query: name + ' ' + (address || 'Las Vegas NV') }, (results, status) => {
+        if(status !== google.maps.places.PlacesServiceStatus.OK || !results || !results.length){
+          resolve({ url: null, error: 'Places lookup status: ' + status });
+          return;
+        }
+        const photos = results[0].photos;
+        if(!photos || !photos.length){
+          resolve({ url: null, error: 'No photo found for this business' });
+          return;
+        }
+        resolve({ url: photos[0].getUrl({ maxWidth: 800 }), error: null });
+      });
     });
-    const data = await res.json();
-    const photoName = data && data.places && data.places[0] && data.places[0].photos && data.places[0].photos[0] && data.places[0].photos[0].name;
-    const url = photoName
-      ? 'https://places.googleapis.com/v1/' + photoName + '/media?maxWidthPx=800&key=' + GOOGLE_PLACES_API_KEY
-      : null;
-    placePhotoCache[cacheKey] = url;
-    return url;
+    placePhotoCache[cacheKey] = result;
+    return result;
   }catch(err){
-    placePhotoCache[cacheKey] = null;
-    return null;
+    const result = { url: null, error: err.message };
+    placePhotoCache[cacheKey] = result;
+    return result;
   }
 }
 
 // Fills in real photos for a rendered list of bo-card entries that don't
 // already have a hand-picked s.image set. Swaps the placeholder for an <img>
 // as each photo arrives, without needing to re-render the whole list.
+// TEMPORARY: also prints the exact error under the first card so we can see
+// what Google is rejecting. Remove the debug block once photos are working.
 function loadPlacePhotosFor(entries){
   if(!GOOGLE_PLACES_API_KEY) return;
-  entries.forEach(async s => {
+  entries.forEach(async (s, i) => {
     if(s.image) return; // already has a hand-picked photo, leave it alone
-    const url = await fetchGooglePlacePhoto(s.name, s.address);
-    if(!url) return;
+    const { url, error } = await fetchGooglePlacePhoto(s.name, s.address);
     const card = document.getElementById('bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    if(error && i === 0 && card){
+      const debugMsg = document.createElement('div');
+      debugMsg.style.cssText = 'background:#400;color:#ff8080;padding:10px;margin:8px 0;font-size:0.85rem;border:1px solid #f00;border-radius:8px;';
+      debugMsg.textContent = 'PHOTO DEBUG: ' + error;
+      card.insertBefore(debugMsg, card.firstChild);
+    }
+    if(!url) return;
     const thumbWrap = card && card.querySelector('.bo-thumb-wrap');
     const placeholder = thumbWrap && thumbWrap.querySelector('.bo-sear');
     if(placeholder){
