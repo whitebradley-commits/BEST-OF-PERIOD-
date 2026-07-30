@@ -14982,9 +14982,18 @@ async function init(){
   renderBoard();
   renderHighHungry();
 
-  // Standalone Best of Period app — opens directly into the picker.
+  // Standalone Best of Period app — opens straight onto the main Best Of page.
+  // The splash/landing step is skipped on purpose: visitors arriving from the
+  // wtfdd.com button already tapped ENTER once there, so showing the landing
+  // again would make them tap through twice to reach the same place. The
+  // landing page still exists and is reachable via the back badge.
   const botrLanding = document.getElementById('tbotrLandingOverlay');
-  if(botrLanding) botrLanding.classList.add('open');
+  if(botrLanding) botrLanding.classList.remove('open');
+  const bestOverlay = document.getElementById('bestOfOverlay');
+  if(bestOverlay){
+    bestOverlay.classList.add('open');
+    window.scrollTo(0,0);
+  }
 }
 
 init();
