@@ -3338,10 +3338,7 @@
     margin-right:auto;
     font-size:0.95rem;
     font-weight:600;
-    /* balance evens out the line lengths instead of just avoiding orphans,
-       which keeps the city names from stacking awkwardly now that they're
-       separated by spaces rather than commas. */
-    text-wrap:balance;
+    text-wrap:normal;
   }
 
   .bo-list{
@@ -12703,8 +12700,11 @@ boCategoryData.pizza = [
   {
     rank: 8,
     name: "Rocco's NY Pizzeria & Pasta",
-    rating: "5.0 / 5",
-    why: "5-star rating from 3,522 reviews on Slice — a genuine Summerlin neighborhood favorite that's only gotten better under new ownership",
+    rating: null,
+    reviews: null,
+    ratingSource: null,
+    ratingNote: "Pending verification. The old 5.0 came from Slice, an ordering platform whose order-ratings run far higher than review aggregates; Yelp shows 322-842 reviews per location with mixed sentiment.",
+    why: "A Summerlin neighborhood New York-style pizzeria with a loyal local following",
     note: "New York-style pizza, cheesesteaks, and subs near the Village Center Costco. Large cheese pizza Mondays and pasta meal special Tuesdays keep regulars coming back.",
     url: "https://www.roccospizzeria.net/",
     address: "1910 Village Center Cir, Las Vegas, NV 89134",
@@ -13110,8 +13110,11 @@ boCategoryData.buffet = [
   {
     rank: 4,
     name: "AYCE Buffet (Palms Casino Resort)",
-    rating: "5.0 / 5",
-    why: "(From $42.99) A 5-star Time Out critic review, plus Gold for Best Buffet from the Las Vegas Review-Journal three years running",
+    rating: null,
+    reviews: null,
+    ratingSource: null,
+    ratingNote: "Pending verification. The old 5.0 was a single Time Out critic score, not a customer review aggregate.",
+    why: "(From $42.99) Gold for Best Buffet from the Las Vegas Review-Journal three years running",
     note: "Named one of USA Today's Top 5 Best Casino Restaurants and one of Esquire's Top 50 Best Things to Do in Las Vegas. Themed nights rotate through lobster, snow crab, and prime rib carving stations — comparable to the Strip's best, for noticeably less.",
     url: "https://www.palms.com/dining/ayce-buffet",
     address: "4321 W Flamingo Rd, Las Vegas, NV 89103",
@@ -13450,8 +13453,11 @@ boCategoryData.filipino = [
   {
     rank: 1,
     name: "Oming's Kitchen",
-    rating: "4.9 / 5",
-    why: "4.9/5 with 500+ ratings on UberEats — awarded Best of Las Vegas after growing from a single food truck",
+    rating: "4.6 / 5",
+    reviews: 602,
+    ratingSource: "Sirved aggregate; Yelp shows 602 reviews at the Blue Diamond location",
+    ratingNote: "Corrected from 4.9. That figure was UberEats delivery ratings, which run well above review aggregates.",
+    why: "Awarded Best of Las Vegas after growing from a single food truck",
     note: "Started by Oming, born and raised in Dumaguete, Philippines. Award-winning Pork Belly Sinugba over jasmine rice, plus lumpia and four signature rice bowls — genuine Filipino comfort food with two real Las Vegas locations.",
     url: "https://omingskitchen.com/",
     address: "5180 Blue Diamond Rd Ste 105, Las Vegas, NV 89139",
@@ -13545,7 +13551,10 @@ boCategoryData.ethiopian = [
   {
     rank: 2,
     name: "Calabash African Kitchen",
-    rating: "5.0 / 5",
+    rating: null,
+    reviews: null,
+    ratingSource: null,
+    ratingNote: "Pending verification. The old 5.0 had no identifiable source or sample size.",
     why: "A West African kitchen praised directly by name and chef",
     note: "Genuine West African grill fare, with reviewers specifically calling out the chef and owner by name for the quality.",
     url: "",
@@ -13575,8 +13584,11 @@ boCategoryData.ethiopian = [
   {
     rank: 4,
     name: "Habesha Restaurant & Bar",
-    rating: "5.0 / 5",
-    why: "5.0/5 across multiple platforms — self-styled and widely praised as Las Vegas' #1 Ethiopian restaurant",
+    rating: "4.3 / 5",
+    reviews: null,
+    ratingSource: "Google",
+    ratingNote: "Verified: Google shows 4.3. The old 5.0 traced to a single Tripadvisor review.",
+    why: "Widely regarded as Las Vegas' leading Ethiopian kitchen",
     note: "A vibrant, community-centric spot with spacious mahogany and pine tables built for sharing. The veggie combo and kitfo draw particular praise, alongside a fully stocked bar serving cognac. Late hours make it a real option after a night out.",
     url: "https://habeshaloungevegas.com/",
     address: "6174 W Flamingo Rd, Las Vegas, NV 89103",
@@ -14314,6 +14326,16 @@ const boBjsPicks = {
 
 // Compute a full-site Top 100 across every category, deduped by name, sorted by rating.
 // Excludes the two categories that are themselves aggregates, to avoid double-counting.
+// RATING SCHEMA — every entry may carry, alongside `rating`:
+//   reviews:     number of reviews the rating is based on (null = unknown)
+//   ratingSource: which platform it came from, e.g. "Google" (null = unknown)
+//   ratingNote:  why it's trusted, or what still needs verifying
+// A bare `rating` with no source or count is unaudited and should be treated
+// with suspicion — that's how four bogus 5.0s ended up topping the Top 100
+// (one was a single Tripadvisor review, one a lone critic score, one from an
+// ordering platform's inflated order-ratings, one with no source at all).
+const RATING_MIN_REVIEWS = 100;   // below this a rating isn't a reliable signal
+
 const boFullTop100 = (() => {
   const excluded = new Set(['bestof', 'asianbestofrest']);
   const seen = new Map();
@@ -14323,6 +14345,14 @@ const boFullTop100 = (() => {
       if(!r || !r.rating) return;
       const val = parseFloat(r.rating);
       if(isNaN(val)) return;
+      // A perfect 5.0 aggregate isn't credible for a real restaurant — it
+      // always turns out to be a tiny sample or a critic score. Keep it out of
+      // the ranking rather than let it outrank places with thousands of reviews.
+      if(val >= 5.0) return;
+      // Once review counts are filled in, anything under the threshold is
+      // excluded too. Entries with an unknown count still pass for now, so the
+      // list doesn't empty out mid-audit.
+      if(typeof r.reviews === 'number' && r.reviews < RATING_MIN_REVIEWS) return;
       const existing = seen.get(r.name);
       if(!existing || val > existing.rating){
         seen.set(r.name, { name: r.name, shortName: r.shortName || null, rating: val, phone: r.phone || null, cat: cat });
@@ -14795,7 +14825,7 @@ function boRenderCategory(cat){
     boHeroSubEl.textContent = boHeroCopy[cat].sub;
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = cat === 'bestof'
-        ? "⭐ <strong style='font-weight:700;'>BEST OF</strong> every restaurant across <strong style='font-weight:700;'>Las Vegas</strong>&hellip; <strong style='font-weight:700;'>Downtown</strong>&nbsp; <strong style='font-weight:700;'>Summerlin</strong>&nbsp; <strong style='font-weight:700;'>Henderson</strong>. Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>"
+        ? "⭐ <strong style='font-weight:700;'>BEST OF</strong> every restaurant across <strong style='font-weight:700;'>Las Vegas</strong>&hellip; <span style='font-weight:400;'>includes</span> <strong style='font-weight:700;'>Downtown</strong>&nbsp; <strong style='font-weight:700;'>Summerlin</strong>&nbsp; <strong style='font-weight:700;'>Henderson</strong>. Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>"
         : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <strong style='font-weight:700;'>BJS</strong><svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg> — hover any card for a closer look";
     }
     boHeroTitleEl.style.opacity = 1;
