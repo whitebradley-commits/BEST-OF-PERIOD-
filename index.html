@@ -3212,6 +3212,40 @@
      A compact, tappable summary at the bottom of a page: the section it
      belongs to, the pick's name, and a link through to the full picks page.
      Deliberately not a full card — the details live on the picks page. */
+  /* TEMPORARY: two separate small buttons — PICK text, and the round BJS
+     logo — sitting side by side. Both go to the BJS Pick page. */
+  .bjs-footer-simple{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin:2rem auto 0;
+  }
+  .bjs-footer-simple-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border:1.5px solid #c9a24b;
+    border-radius:10px;
+    padding:10px 16px;
+    color:#c9a24b;
+    font-family:'Bebas Neue', sans-serif;
+    font-size:1rem;
+    letter-spacing:0.1em;
+    cursor:pointer;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .bjs-footer-simple-logo{
+    padding:8px 12px;
+  }
+
+  .bjs-footer-plain{
+    display:block;
+    margin:2.2rem auto 0;
+  }
+
   .bjs-footer{
     display:block;
     width:100%;
@@ -3238,6 +3272,7 @@
     color:#5f5f5f;
   }
   .bjs-footer-cue + .bjs-footer{ margin-top:1.4rem; }
+  .bjs-footer-cue + .bjs-footer-simple{ margin-top:1.4rem; }
   .bjs-footer-link{ cursor:pointer; transition:box-shadow 0.25s ease, transform 0.2s ease; }
   .bjs-footer-link:hover{ box-shadow:0 0 30px rgba(201,162,75,0.26); transform:translateY(-2px); }
   .bjs-footer-head{
@@ -14824,6 +14859,11 @@ const boAllRestaurantsFlat = (() => {
   return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 })();
 
+// Shared markup for the "BJS Picks" button — used both in the Other Bests
+// grid and as the small link at the bottom of the main Best Of page, so the
+// two always match exactly (same logo, same gold text, same size).
+const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" style="vertical-align:-6px;margin-right:2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg><span style="color:#c9a24b;">Picks</span>';
+
 const boPickerConfig = {
   sushi: [
     { label: 'Casual', cat: 'sushicasual' },
@@ -14866,7 +14906,7 @@ const boPickerConfig = {
   otheroptions: [
     // BJS No.1 Picks leads the Other Bests grid — our own editorial choices,
     // gathered from every category, independent of star ratings.
-    { label: '<span class="bjs-pick-row"><svg viewBox=\"0 0 40 40\" width=\"20\" height=\"20\" style=\"vertical-align:-5px;margin-right:4px;\"><circle cx=\"20\" cy=\"20\" r=\"18\" fill=\"#0a0a0a\" stroke=\"#FFD700\" stroke-width=\"2\"/><text x=\"20\" y=\"24\" text-anchor=\"middle\" font-family=\"Archivo Black, sans-serif\" font-size=\"12\" fill=\"#FFD700\">BJS</text></svg><span style=\"color:#c9a24b;\">PICK</span><span class=\"bjs-pick-mini-badge\"><span class=\"ring-outer\"></span><span class=\"ring-inner\"></span><span class=\"mini-label\">Best Of</span><span class=\"mini-city is-active\" id=\"bjsPickBtnCity\">Vegas</span><span class=\"mini-period\">Period<span class=\"period-mark\">&copy;</span></span></span></span>', cat: 'bjspicks' },
+    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
     { label: 'Breakfast', cat: 'breakfast' },
@@ -14942,7 +14982,7 @@ const boPickerParent = {
 
 const boHeroCopy = {
   bjspicks: {
-    title: '<svg viewBox="0 0 40 40" width="52" height="52" style="vertical-align:-11px;margin-right:9px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg><span style="color:#c9a24b;">PICK</span>',
+    title: '<svg viewBox="0 0 40 40" width="52" height="52" style="vertical-align:-11px;margin-right:9px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg><span style="color:#c9a24b;">PICKS</span>',
     sub: "\u2b50 Possible underrated gems \u2014 huge reputations, passionate regulars, and ratings that don't always tell the whole story."
   },
   steak: {
@@ -15289,22 +15329,13 @@ function renderBjsPickFooter(cat){
     ? 'Best Of Period'
     : ((picks[0].bjsSources && picks[0].bjsSources[0]) || '');
 
-  const cue = document.createElement('div');
-  cue.className = 'bjs-footer-cue';
-  cue.textContent = 'SCROLL \u2193';
-  boListEl.appendChild(cue);
-
+  // Exactly the same button as the Other Bests grid — same logo, same size,
+  // same gold "Picks" text. No lockup text, no restaurant name, no scroll
+  // cue above it. Tapping it goes straight to the BJS Picks page.
   const wrap = document.createElement('button');
   wrap.type = 'button';
-  wrap.className = 'bjs-footer bjs-footer-link';
-  wrap.innerHTML = `
-    <div class="bjs-footer-head">
-      <svg viewBox="0 0 40 40" width="24" height="24" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg>
-      <span>PICK</span>
-    </div>
-    <div class="bjs-footer-section">${formatPickLabel(label)}</div>
-    <div class="bjs-footer-names">${picks[0].name}</div>
-  `;
+  wrap.className = 'bo-picker-btn bo-picker-btn-bjs bjs-footer-plain';
+  wrap.innerHTML = BJS_PICKS_BUTTON_LABEL;
   wrap.addEventListener('click', function(){
     boRenderCategory('bjspicks');
   });
