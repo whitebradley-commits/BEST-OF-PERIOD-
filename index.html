@@ -3809,27 +3809,15 @@
      of the Back button (top-left) and Other Cities globe (top-right). Fixed
      to the viewport like Back, so it stays visible while scrolling on any
      page. */
+  /* All appearance (shape, color, font, border, hover) comes from the real
+     .bo-back-btn class now — guaranteed identical rather than approximated.
+     Only the position is overridden here, so it sits just below the real
+     Back button instead of on top of it, and it's always visible (not tied
+     to the category-based toggle .bo-back-btn normally uses). */
   #bopReturnToLandingBtn{
-    position:fixed;
     top:140px;
     left:9vw;
-    z-index:20;
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:#0c0c0c;
-    border:1.5px solid rgba(201,162,75,0.55);
-    color:#c9a24b;
-    font-size:1.15rem;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    box-shadow:0 0 10px rgba(201,162,75,0.35);
-    -webkit-appearance:none;
-    appearance:none;
   }
-  #bopReturnToLandingBtn:active{ transform:scale(0.94); }
 
   .bo-back-btn.bo-visible{
     display:flex;
@@ -6938,9 +6926,7 @@
          button (which moves within the site's own hierarchy) and separate
          from the Other Cities globe (which opens the world map). This is
          specifically "return to the search-anywhere landing page." -->
-    <button type="button" id="bopReturnToLandingBtn" aria-label="Back to search">
-      <svg id="bopReturnToLandingBtnIcon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#c9a24b" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.3" y1="15.3" x2="21" y2="21"/></svg>
-    </button>
+    <button type="button" id="bopReturnToLandingBtn" class="bo-back-btn bo-visible" aria-label="Back to landing page">&larr;<br>Main</button>
     <div class="sf-board" id="sfBoard" aria-live="polite" aria-label="Announcements"></div>
 
     <!-- Other Cities globe: back to its original spot, pinned to the
