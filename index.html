@@ -12572,6 +12572,22 @@ boCategoryData.mexicanhighend = [
   {
     rank: 2,
     name: "Casa Playa",
+    jamesBeard: true,
+    rating: "4.4 / 5",
+    ratingNote: "Yelp/Apple Maps aggregate 4.4 (354 reviews). Executive chef Sarah Thompson won the 2026 James Beard Award for Best Chef: Southwest \u2014 the first Las Vegas chef win in 15 years.",
+    why: "James Beard Award-winning coastal Mexican from Chef Sarah Thompson (2026 Best Chef: Southwest) inside Wynn/Encore",
+    note: "A colorful, lively space with Mayan-inspired design elements and hanging fish lanterns, next to Encore Beach Club. Family-style, interactive dishes built around a housemade heirloom masa program \u2014 pork belly al pastor and whole snapper tempura are signatures, alongside an extensive tequila and mezcal list.",
+    url: "https://www.wynnlasvegas.com/dining/fine-dining/casa-playa", address: "3131 Las Vegas Blvd S, Las Vegas, NV 89109",
+    phone: "(702) 770-5340",
+    hours: [{ days: [1,2,3,4,5], open: '07:30', close: '13:00' }, { days: [1,2,3,4,5], open: '17:00', close: '22:00' }, { days: [6,0], open: '07:30', close: '13:00' }, { days: [6,0], open: '17:00', close: '22:00' }],
+    hue: "15, 45%, 32%",
+    price: 3,
+    instagram: null,
+    facebook: null
+  },
+  {
+    rank: 2,
+    name: "Casa Playa",
     rating: "4.1 / 5",
     why: "Led by 2026 James Beard Award-winning chef Sarah Thompson",
     note: "At Wynn/Encore. Coastal Mexican cuisine with a housemade masa program using heritage corn from Oaxaca, family-style large-format dishes, and an extensive tequila and mezcal selection.",
@@ -15627,7 +15643,8 @@ boCategoryData.michelin = [].concat(
 // be populated with a guess.
 boCategoryData.jamesbeard = [].concat(
   boCategoryData.miami || [],
-  boCategoryData.indian || []
+  boCategoryData.indian || [],
+  boCategoryData.mexicanhighend || []
 ).filter(r => r && r.jamesBeard);
 
 const boFullTop100 = (() => {
@@ -16382,7 +16399,13 @@ function boRenderCategory(cat){
         <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
       </div>
     ` : '';
-    boListEl.innerHTML = specialCirclesHTML + `<div class="bo-picker-grid">` + boPickerConfig[cat].map(opt => `
+    // James Beard is a US-only award — it can never apply to London, so
+    // that tile is filtered out of Other Bests specifically when browsing
+    // from London's context. Every other city keeps it.
+    const pickerOptions = (cat === 'otheroptions' && boCityContext === 'london')
+      ? boPickerConfig[cat].filter(opt => opt.cat !== 'jamesbeard')
+      : boPickerConfig[cat];
+    boListEl.innerHTML = specialCirclesHTML + `<div class="bo-picker-grid">` + pickerOptions.map(opt => `
       <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
     `).join('') + `</div>` + moneyLegendHTML;
     boListEl.querySelectorAll('.bo-picker-btn').forEach(btn => {
