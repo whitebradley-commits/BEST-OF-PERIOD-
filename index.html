@@ -17572,6 +17572,16 @@ function setupPicsGallery(){
 }
 
 async function init(){
+  // Defensive safety net: this file is bestofperiod.com, so neither the
+  // WTF age-gate nor the shared company hub selector should ever be
+  // visible here. No active code path was found that opens either one
+  // automatically, but forcing both closed at the very start of init —
+  // before anything else runs — costs nothing and rules out any timing
+  // edge case where one might otherwise be visible for a moment on load.
+  const wtfGateOnLoad = document.getElementById('wtfLandingOverlay');
+  if(wtfGateOnLoad) wtfGateOnLoad.classList.remove('open');
+  const hubOnLoad = document.getElementById('companyHubOverlay');
+  if(hubOnLoad) hubOnLoad.classList.remove('open');
   setupDirectory();
   setupAccordionToggle();
   setupShuttle();
