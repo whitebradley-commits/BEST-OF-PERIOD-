@@ -1681,49 +1681,6 @@
     box-sizing:border-box;
   }
   #bopLandingOverlay.open{ display:flex; }
-  .bop-landing-search-wrap{
-    position:relative;
-    width:100%;
-    max-width:340px;
-  }
-  .bop-landing-search-input{
-    width:100%;
-    box-sizing:border-box;
-    background:#0c0c0c;
-    border:2px solid rgba(201,162,75,0.5);
-    border-radius:999px;
-    padding:0.85rem 5.6rem 0.85rem 1.3rem;
-    color:#fff;
-    font-family:'Archivo Narrow',sans-serif;
-    font-size:1rem;
-    outline:none;
-    animation:bop-landing-glow 2.4s ease-in-out infinite;
-  }
-  .bop-landing-search-input::placeholder{ color:#a08a5c; }
-  @keyframes bop-landing-glow{
-    0%,100%{ box-shadow:0 0 6px rgba(201,162,75,0.3); }
-    50%{ box-shadow:0 0 18px rgba(201,162,75,0.62); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .bop-landing-search-input{ animation:none; }
-  }
-  .bop-landing-powered-by{
-    position:absolute;
-    right:16px;
-    top:50%;
-    transform:translateY(-50%);
-    display:flex;
-    align-items:center;
-    gap:4px;
-    color:#c9a24b;
-    font-family:'Archivo Narrow',sans-serif;
-    font-size:0.62rem;
-    white-space:nowrap;
-    max-width:5.2rem;
-    overflow:hidden;
-    letter-spacing:0.02em;
-    pointer-events:none;
-  }
   .bop-landing-results{
     display:none;
     width:100%;
@@ -4792,9 +4749,13 @@
       <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
     </div>
   </div>
-  <div class="bop-landing-search-wrap">
-    <input type="text" id="bopLandingSearchInput" class="bop-landing-search-input" placeholder="Search anywhere..." autocomplete="off">
-    <div class="bop-landing-powered-by">
+  <!-- Exact same classes and structure as the real Best Of Period search bar
+       (bo-search-wrap bo-search-wrap-big / bo-search-input bo-search-input-big)
+       instead of a separate copy — guarantees identical size permanently,
+       same fix as the Best Of/Period lockup earlier. -->
+  <div class="bo-search-wrap bo-search-wrap-big">
+    <input type="text" id="bopLandingSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search anywhere..." autocomplete="off">
+    <div class="bo-search-powered-by">
       ⚡ Powered by
       <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg>
     </div>
@@ -6883,7 +6844,7 @@
         </div>
       </div>
 
-      <p style="text-align:center;color:#f2f2f2;font-size:0.82rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="12" height="12" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
+      <p style="text-align:center;color:#f2f2f2;font-size:0.82rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="16" height="16" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
 
       <div style="display:flex;justify-content:center;margin-top:26px;">
         <button type="button" id="tbotrLegendToggle" class="tbotr-legend-toggle">
@@ -6974,7 +6935,7 @@
 
 <div class="bo-section-head" id="boSectionHead">
   <h2 id="boSectionHeadTitle">The Top, Right Now</h2>
-  <p id="boSectionHeadPara" style="font-size:0.98rem;font-weight:400;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="14" height="14" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
+  <p id="boSectionHeadPara" style="font-size:0.98rem;font-weight:400;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="16" height="16" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></p>
 </div>
 
 <div class="bo-list" id="boList"></div>
@@ -9742,7 +9703,7 @@ function boMainCityIntroHTML(cfg){
     + "<span style='display:block;height:12px;'></span><span class='bo-inline-kicker'>Hot List</span> "
     + `<span style='font-weight:400;'>includes all genres across</span> ${areasHTML}. `
     + "Ranked by aggregate review data from <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and "
-    + "<svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>";
+    + "<svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>";
 }
 // Tracks which city's context the visitor is currently in, so pages shared
 // across cities (Other Bests, the globe, the ticker) reflect the right one
@@ -15832,7 +15793,7 @@ function boRenderCategory(cat){
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
         : cat === 'bjspicks'
         ? "⭐ Ranked by <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg> only"
-        : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <svg viewBox='0 0 40 40' width='14' height='14' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>";
+        : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Yelp</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#FFD700' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#FFD700'>BJS</text></svg>";
     }
     boHeroTitleEl.style.opacity = 1;
     boHeroSubEl.style.opacity = 1;
@@ -16138,7 +16099,7 @@ function boRenderCategory(cat){
       wrap.id = 'boExtendedListWrap';
       wrap.innerHTML = `
         <div class="bo-extended-heading">The Rest of the Top 100, Las Vegas County</div>
-        <div class="bo-extended-disclaimer">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="14" height="14" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></div>
+        <div class="bo-extended-disclaimer">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Yelp</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="16" height="16" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg></div>
         <div class="bo-extended-tap-hint">Tap a restaurant for more information &#9662;</div>
         ${extended.map((r, i) => `<div class="bo-extended-row"><span class="bo-extended-rank">${sortedEntries.length + i + 1}.</span> <span class="bo-extended-name bo-extended-name-link" data-cat="${r.cat}" data-jump-name="${r.name.replace(/"/g, '&quot;')}">${r.shortName || r.name}</span>${r.phone ? `<a class="bo-extended-phone" href="tel:${r.phone.replace(/[^0-9+]/g, '')}"><span class="bo-extended-phone-dot">\u2022</span>${r.phone}</a>` : ''}</div>`).join('')}
       `;
