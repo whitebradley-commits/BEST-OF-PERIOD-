@@ -1717,7 +1717,10 @@
     gap:4px;
     color:#c9a24b;
     font-family:'Archivo Narrow',sans-serif;
-    font-size:0.68rem;
+    font-size:0.62rem;
+    white-space:nowrap;
+    max-width:5.2rem;
+    overflow:hidden;
     letter-spacing:0.02em;
     pointer-events:none;
   }
@@ -1923,7 +1926,10 @@
     gap:4px;
     color:#3b9dff;
     font-family:'Archivo Narrow',sans-serif;
-    font-size:0.62rem;
+    font-size:0.58rem;
+    white-space:nowrap;
+    max-width:4.8rem;
+    overflow:hidden;
     letter-spacing:0.02em;
     pointer-events:none;
   }
@@ -2658,8 +2664,11 @@
     align-items:center;
     gap:4px;
     color:#9A9A9A;
-    font-size:0.62rem;
+    font-size:0.58rem;
     font-family:'Archivo Narrow',sans-serif;
+    white-space:nowrap;
+    max-width:4.8rem;
+    overflow:hidden;
     letter-spacing:0.01em;
     pointer-events:none;
     white-space:nowrap;
@@ -7970,9 +7979,11 @@ function setupBopLanding(){
   // Vegas included, unlike the old cycler which always rested on whichever
   // city sat first in its list.
   if(typeof startInfiniteCityCycler === 'function'){
-    // 2ms hold, matching startBopVegasSlotCycler's spinHold — same rapid
-    // slot-machine speed as the real Vegas one, just never stopping.
-    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 2);
+    // 2ms was already faster than a browser can visibly render (anything
+    // under ~16ms falls inside a single frame), so a literal 15% off that
+    // number wouldn't look like anything. Bumped to a value that's actually
+    // perceptibly slower while staying close to the real cycler's energy.
+    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 35);
   }
 
   input.addEventListener('input', function(){
