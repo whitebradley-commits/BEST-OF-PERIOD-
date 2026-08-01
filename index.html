@@ -8058,10 +8058,11 @@ function setupBopLanding(){
     // otherwise never see that anything real exists yet.
     const liveNames = new Set(LIVE_CITIES.map(c => c.name));
     // Recognized, but not live yet — visible so people can see it's coming,
-    // but not clickable. Capped at 6 so a broad query doesn't flood the box.
+    // but not clickable. Capped at 2 so a broad query like "g" doesn't
+    // flood the box and push everything off screen.
     const previewMatches = (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
       .filter(name => name.toLowerCase().includes(q) && !liveNames.has(name))
-      .slice(0, 6);
+      .slice(0, 2);
 
     let html = '<div class="bop-landing-results-label">Live Cities</div>';
     html += LIVE_CITIES.map(c => `
