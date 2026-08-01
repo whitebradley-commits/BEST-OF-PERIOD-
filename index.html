@@ -16469,16 +16469,29 @@ function boRenderCategory(cat){
   // now, so this always stays off.
   if(boHeroSectionEl) boHeroSectionEl.classList.remove('bo-hero-picker-mode');
 
+  // Vegas's Michelin page gets a standing pink announcement — the new
+  // MICHELIN Guide Southwest (the first official Vegas guide since 2009)
+  // debuts August 26, 2026. Shows above the list whether it's empty or has
+  // confirmed historic entries, so it's never mistaken for a complete or
+  // final picture.
+  const vegasMichelinBanner = (cat === 'michelin' && boCityContext === 'bestof')
+    ? `<div style="background:#ffcfe6;border-radius:999px;padding:14px 24px;margin:0 auto 24px;max-width:520px;text-align:center;box-shadow:0 0 22px rgba(255,105,180,0.4);">
+         <p style="margin:0;color:#7a1450;font-size:0.85rem;font-weight:700;line-height:1.5;">
+           &#10024; Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
+         </p>
+       </div>`
+    : '';
+
   if(boScopedCategoryList && boScopedCategoryList.length === 0){
     const comingSoonCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const comingSoonMsg = boCityContext !== 'bestof'
       ? `Coming soon to ${comingSoonCity} — we're still researching this list there.`
       : `Coming soon — we're still researching this list.`;
-    boListEl.innerHTML = `<p style="text-align:center;color:#999;padding:40px 20px;">${comingSoonMsg}</p>`;
+    boListEl.innerHTML = vegasMichelinBanner + `<p style="text-align:center;color:#999;padding:40px 20px;">${comingSoonMsg}</p>`;
     return;
   }
 
-  boListEl.innerHTML = '';
+  boListEl.innerHTML = vegasMichelinBanner;
   // The BJS Picks page isn't ranked by rating — every entry on it is already
   // a No. 1 pick in its own category, so it keeps whatever order the data
   // already built (Best Of Period first) instead of being re-sorted by star
