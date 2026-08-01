@@ -16119,10 +16119,11 @@ function boRenderCategory(cat){
       }
       boCityContext = cat;
     } else if(cat === 'otheroptions'){
-      // Other Bests is shared across every city — the actual genre content
-      // underneath it (Steak, Sushi, ...) still shows Vegas data regardless,
-      // but the title itself should reflect whichever city you arrived from
-      // instead of always defaulting to Vegas.
+      // Other Bests is shared across every city — genre content underneath
+      // it is scoped to the current city's own tagged entries (or "coming
+      // soon" when a city has nothing there yet), and the title reflects
+      // whichever city you arrived from instead of always defaulting to
+      // Vegas.
       const otherBestsCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="bo-line2">${otherBestsCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     } else if(isBjsPicksCat(cat)){
@@ -16132,8 +16133,16 @@ function boRenderCategory(cat){
       const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     } else {
+      // Same idea as Other Bests and BJS Picks above — every generic genre
+      // page (24 Hours, Dessert, Indian, Steak, ...) was still hardcoding
+      // "Vegas" in the title no matter which city you arrived from. The
+      // restaurant list underneath was already correctly scoped to the
+      // current city (or "coming soon" when empty), but the title sitting
+      // right above it kept saying Vegas regardless — which is exactly
+      // what made it look like the whole page had jumped to Vegas.
+      const genericCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
-      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="${vegasClass}">Vegas</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
+      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}<br><span class="${vegasClass}">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     }
     boHeroSubEl.textContent = boHeroCopy[cat].sub;
     if(boSectionHeadParaEl){
@@ -16274,7 +16283,11 @@ function boRenderCategory(cat){
   if(boHeroSectionEl) boHeroSectionEl.classList.remove('bo-hero-picker-mode');
 
   if(boScopedCategoryList && boScopedCategoryList.length === 0){
-    boListEl.innerHTML = `<p style="text-align:center;color:#999;padding:40px 20px;">Coming soon — we're still researching this list.</p>`;
+    const comingSoonCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+    const comingSoonMsg = boCityContext !== 'bestof'
+      ? `Coming soon to ${comingSoonCity} — we're still researching this list there.`
+      : `Coming soon — we're still researching this list.`;
+    boListEl.innerHTML = `<p style="text-align:center;color:#999;padding:40px 20px;">${comingSoonMsg}</p>`;
     return;
   }
 
