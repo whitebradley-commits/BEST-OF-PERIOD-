@@ -2030,11 +2030,28 @@
     letter-spacing:0.06em; font-size:0.85rem;
   }
   #ocCityGo.open{ display:block; }
+  /* Styled to match the real gold Back button (glowing ring, arrow + label)
+     but recolored blue for this page's theme, instead of the plain grey
+     circle it was before. */
+  @keyframes ocBackBtnPulse{
+    0%,100%{ box-shadow:0 0 0 1px rgba(59,157,255,0.15), 0 0 16px rgba(59,157,255,0.4); }
+    50%{ box-shadow:0 0 0 1px rgba(59,157,255,0.25), 0 0 30px rgba(59,157,255,0.75); }
+  }
   #ocWorldClose{
-    position:fixed;top:16px;left:16px;width:44px;height:44px;border-radius:50%;
-    background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.35);
-    color:#fff;font-size:20px;cursor:pointer;z-index:2;
-    display:flex;align-items:center;justify-content:center;
+    position:fixed;top:84px;left:9vw;z-index:20;
+    width:48px;height:48px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:inherit;font-weight:900;letter-spacing:0.02em;font-size:9px;line-height:1.15;text-align:center;
+    color:#3b9dff;
+    background:radial-gradient(circle at 50% 30%, rgba(59,157,255,0.2), transparent 65%), #0c0c0c;
+    border:2px solid #3b9dff;
+    cursor:pointer;
+    transition:all 0.25s ease;
+    animation:ocBackBtnPulse 2.2s ease-in-out infinite;
+  }
+  #ocWorldClose:hover{ transform:scale(1.08); }
+  @media (prefers-reduced-motion: reduce){
+    #ocWorldClose{ animation:none; }
   }
   /* Full-screen variant of the web popup, used when we open one of our own
      sites (e.g. bestofperiod.com) so it fills the screen while this page
@@ -6123,7 +6140,7 @@
   </div>
 
   <div id="ocWorldOverlay">
-    <button type="button" id="ocWorldClose" aria-label="Back">&#8592;</button>
+    <button type="button" id="ocWorldClose" aria-label="Back">&#8592;<br>Back</button>
     <div class="oc-world-inner">
       <h2 class="oc-world-title">OTHER CITIES</h2>
       <div class="oc-search-wrap">
@@ -6938,7 +6955,7 @@
          button (which moves within the site's own hierarchy) and separate
          from the Other Cities globe (which opens the world map). This is
          specifically "return to the search-anywhere landing page." -->
-    <button type="button" id="bopReturnToLandingBtn" class="bo-back-btn bo-visible" aria-label="Back to landing page"><span>&larr;</span><span>Main</span></button>
+    <button type="button" id="bopReturnToLandingBtn" class="bo-back-btn" aria-label="Back to landing page"><span>&larr;</span><span>Main</span></button>
     <div class="sf-board" id="sfBoard" aria-live="polite" aria-label="Announcements"></div>
 
     <!-- Other Cities globe: back to its original spot, pinned to the
@@ -15997,6 +16014,12 @@ function boRenderCategory(cat){
   // before, which is why Miami showed a Back button that didn't actually go
   // anywhere.
   boBackBtnEl.classList.toggle('bo-visible', !BO_CITY_CONFIG[cat]);
+  // Main only shows where Back doesn't — the main city pages themselves,
+  // where there's no in-site "back" to go to but you still want a way to
+  // the landing page. Everywhere else, Back already covers "go back," so
+  // showing both was just two back-style buttons stacked for no reason.
+  const returnToLandingBtnEl = document.getElementById('bopReturnToLandingBtn');
+  if(returnToLandingBtnEl) returnToLandingBtnEl.classList.toggle('bo-visible', !!BO_CITY_CONFIG[cat]);
   // Hot List belongs to the main Best Of page only, not the genre sub-pages.
   // Only the main Best Of page gets the full-screen hero. Genre list pages keep
   // the normal hero height so their "The Top N, Right Now" head sits up top,
