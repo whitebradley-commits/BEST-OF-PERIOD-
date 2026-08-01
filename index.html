@@ -1705,8 +1705,35 @@
     -webkit-appearance:none;
     appearance:none;
     text-align:left;
+    margin-bottom:8px;
   }
   .bop-landing-result:hover{ border-color:rgba(201,162,75,0.7); }
+  .bop-landing-result:last-child{ margin-bottom:0; }
+  /* A city that's recognized but not live yet — visible so people can see
+     it's coming, but deliberately not clickable, not styled like a real
+     button (no hover, no pointer cursor). */
+  .bop-landing-preview{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    background:transparent;
+    border:1px dashed rgba(255,255,255,0.15);
+    border-radius:12px;
+    padding:0.7rem 1.1rem;
+    color:#777;
+    font-family:'Archivo Narrow',sans-serif;
+    font-weight:500;
+    font-size:0.88rem;
+    text-align:left;
+    margin-bottom:8px;
+  }
+  .bop-landing-preview:last-child{ margin-bottom:0; }
+  .bop-landing-preview-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:#555;
+    flex-shrink:0;
+  }
   .bop-landing-result-dot{
     width:8px; height:8px; border-radius:50%;
     background:#3b9dff;
@@ -4760,11 +4787,7 @@
       <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg>
     </div>
   </div>
-  <div class="bop-landing-results" id="bopLandingResults">
-    <button type="button" class="bop-landing-result" id="bopLandingVegasResult">
-      <span class="bop-landing-result-dot"></span> Las Vegas, Nevada
-    </button>
-  </div>
+  <div class="bop-landing-results" id="bopLandingResults"></div>
 </div>
 <div id="siteFrame" aria-hidden="true"></div>
 <!-- Cover for the first paint: the Best Of overlay already starts open, this
@@ -7933,8 +7956,7 @@ function setupBopLanding(){
   const overlay = document.getElementById('bopLandingOverlay');
   const input = document.getElementById('bopLandingSearchInput');
   const results = document.getElementById('bopLandingResults');
-  const vegasBtn = document.getElementById('bopLandingVegasResult');
-  if(!overlay || !input || !results || !vegasBtn) return;
+  if(!overlay || !input || !results) return;
 
   // Genuinely infinite — never lands on or stops at any particular city,
   // Vegas included, unlike the old cycler which always rested on whichever
@@ -7947,16 +7969,59 @@ function setupBopLanding(){
     startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 35);
   }
 
-  input.addEventListener('input', function(){
-    results.classList.toggle('open', input.value.trim().length > 0);
-  });
+  // The cities that actually go somewhere when picked — reads straight from
+  // BO_CITY_CONFIG, so a new live city needs nothing added here at all.
+  const LIVE_CITIES = [
+    { name: 'Las Vegas', region: 'Nevada', dest: 'bestof' },
+    { name: 'Miami', region: 'Florida', dest: 'miami' }
+  ];
 
-  vegasBtn.addEventListener('click', function(){
+  function goToCity(dest){
     overlay.classList.remove('open');
     const best = document.getElementById('bestOfOverlay');
     if(best) best.classList.add('open');
-    if(typeof boRenderCategory === 'function') boRenderCategory('bestof');
+    if(typeof boRenderCategory === 'function') boRenderCategory(dest);
     window.scrollTo(0, 0);
+  }
+
+  input.addEventListener('input', function(){
+    const q = input.value.trim().toLowerCase();
+    if(!q){
+      results.classList.remove('open');
+      results.innerHTML = '';
+      return;
+    }
+
+    const liveMatches = LIVE_CITIES.filter(c => c.name.toLowerCase().includes(q));
+    const liveNames = new Set(liveMatches.map(c => c.name));
+    // Recognized, but not live yet — visible so people can see it's coming,
+    // but not clickable. Capped at 6 so a broad query doesn't flood the box.
+    const previewMatches = (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
+      .filter(name => name.toLowerCase().includes(q) && !liveNames.has(name))
+      .slice(0, 6);
+
+    let html = liveMatches.map(c => `
+      <button type="button" class="bop-landing-result" data-dest="${c.dest}">
+        <span class="bop-landing-result-dot"></span> ${c.name}, ${c.region}
+      </button>
+    `).join('');
+
+    html += previewMatches.map(name => `
+      <div class="bop-landing-preview">
+        <span class="bop-landing-preview-dot"></span> ${name}
+      </div>
+    `).join('');
+
+    if(!html){
+      html = '<div class="bop-landing-preview"><span class="bop-landing-preview-dot"></span> No cities found</div>';
+    }
+
+    results.innerHTML = html;
+    results.classList.add('open');
+
+    results.querySelectorAll('.bop-landing-result').forEach(btn => {
+      btn.addEventListener('click', () => goToCity(btn.dataset.dest));
+    });
   });
 }
 
@@ -15260,6 +15325,19 @@ const boAllRestaurantsFlat = (() => {
   return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 })();
 
+// Miami's own restaurants, kept completely separate from Vegas's — this is
+// what Miami's search bar reads from, instead of Vegas's site-wide list.
+// Just Komodo Miami right now, but any future Miami restaurant added to
+// boCategoryData.miami shows up here automatically.
+const boMiamiRestaurantsFlat = (() => {
+  const source = boCategoryData.miami || [];
+  return source.filter(r => r && r.name).map(r => ({
+    name: r.name,
+    rating: r.rating ? parseFloat(r.rating) : null,
+    cat: 'miami'
+  }));
+})();
+
 // Shared markup for the "BJS Picks" button — used both in the Other Bests
 // grid and as the small link at the bottom of the main Best Of page, so the
 // two always match exactly (same logo, same gold text, same size).
@@ -16782,7 +16860,14 @@ function setupSearchBar(){
       resultsEl.innerHTML = '';
       return;
     }
-    const matches = boAllRestaurantsFlat.filter(r => r.name.toLowerCase().includes(q)).slice(0, 8);
+    // Search only THIS city's own restaurants — Miami's page searches only
+    // Miami's list, Vegas's page (or any page reached from it) searches the
+    // full Vegas-wide list, instead of always searching everything regardless
+    // of which city you're actually on.
+    const searchSource = (typeof boCityContext !== 'undefined' && boCityContext === 'miami')
+      ? boMiamiRestaurantsFlat
+      : boAllRestaurantsFlat;
+    const matches = searchSource.filter(r => r.name.toLowerCase().includes(q)).slice(0, 8);
     if(matches.length === 0){
       resultsEl.innerHTML = '<div class="bo-search-no-results">No matches found</div>';
     } else {
