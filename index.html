@@ -16300,8 +16300,16 @@ function boRenderCategory(cat){
     ? boCategoryData[cat].filter(r => (r.city || 'bestof') === boCityContext)
     : boCategoryData[cat];
   const isSingleEntry = boScopedCategoryList && boScopedCategoryList.length <= 1;
-  if(boSectionHeadEl) boSectionHeadEl.style.display = (isSingleEntry && !isMainCityPage) ? 'none' : '';
-  if(boScrollCueEl) boScrollCueEl.style.display = (isSingleEntry && !isMainCityPage) ? 'none' : '';
+  // Main city pages and BJS Picks pages both always have real content below
+  // the fold (footer, Other Bests, the intro sentence) no matter how many
+  // entries are currently listed — a page with just one restaurant on it
+  // still has that content underneath. The single-entry check below is only
+  // meant for genuinely bare generic category pages, so both page types are
+  // exempted from it — this is exactly what happened to Miami's main page
+  // earlier, and resurfaced here on London's BJS Picks page once it dropped
+  // to a single entry (Fallow) after Dishoom moved to its own category.
+  if(boSectionHeadEl) boSectionHeadEl.style.display = (isSingleEntry && !isMainCityPage && !isBjsPick) ? 'none' : '';
+  if(boScrollCueEl) boScrollCueEl.style.display = (isSingleEntry && !isMainCityPage && !isBjsPick) ? 'none' : '';
   if(boHeroSubEl){
     const isDiveTier = cat.toLowerCase().includes('dive');
     boHeroSubEl.style.display = ((isSingleEntry && !isBjsPick && !isDiveTier)) || BO_CITY_CONFIG[cat] || cat === 'dessert' || cat === 'steakeggs' ? 'none' : '';
