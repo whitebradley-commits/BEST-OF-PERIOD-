@@ -1688,6 +1688,16 @@
     margin-top:14px;
   }
   .bop-landing-results.open{ display:block; }
+  .bop-landing-results-label{
+    color:#c9a24b;
+    font-family:'Archivo Narrow',sans-serif;
+    font-weight:700;
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-bottom:6px;
+    padding-left:2px;
+  }
   .bop-landing-result{
     display:flex;
     align-items:center;
@@ -8042,15 +8052,19 @@ function setupBopLanding(){
       return;
     }
 
-    const liveMatches = LIVE_CITIES.filter(c => c.name.toLowerCase().includes(q));
-    const liveNames = new Set(liveMatches.map(c => c.name));
+    // Always show the live cities once someone starts typing, regardless of
+    // whether what they typed actually matches "Vegas" or "Miami" — with
+    // only one or two cities live right now, someone typing "London" would
+    // otherwise never see that anything real exists yet.
+    const liveNames = new Set(LIVE_CITIES.map(c => c.name));
     // Recognized, but not live yet — visible so people can see it's coming,
     // but not clickable. Capped at 6 so a broad query doesn't flood the box.
     const previewMatches = (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
       .filter(name => name.toLowerCase().includes(q) && !liveNames.has(name))
       .slice(0, 6);
 
-    let html = liveMatches.map(c => `
+    let html = '<div class="bop-landing-results-label">Live Cities</div>';
+    html += LIVE_CITIES.map(c => `
       <button type="button" class="bop-landing-result" data-dest="${c.dest}">
         <span class="bop-landing-result-dot"></span> ${c.name}, ${c.region}
       </button>
@@ -8061,10 +8075,6 @@ function setupBopLanding(){
         <span class="bop-landing-preview-dot"></span> ${name}
       </div>
     `).join('');
-
-    if(!html){
-      html = '<div class="bop-landing-preview"><span class="bop-landing-preview-dot"></span> No cities found</div>';
-    }
 
     results.innerHTML = html;
     results.classList.add('open');
