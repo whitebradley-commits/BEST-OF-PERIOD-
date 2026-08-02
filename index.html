@@ -15712,6 +15712,18 @@ boCategoryData.bjspicks = (() => {
     // Miami pick never leaks into Vegas's list.
     if(isBjsPicksCat(cat) || !Array.isArray(list)) return;
     if(BO_CITY_CONFIG[cat] && cat !== 'bestof') return;
+    // Derived/combined categories (built by concatenating several other
+    // categories together, like asianbestofrest merging sushi+korean+
+    // chinese+thai+pho+vietnamese+indian+asianfusion) aren't standalone
+    // restaurant types — scanning them for a "first flagged pick" picks up
+    // whichever entry happens to survive that category's own filtering,
+    // regardless of which city it's from. That's how Dishoom Shoreditch
+    // (London's Indian pick) ended up on Vegas's own BJS Picks page: it was
+    // the first bjsPick:true entry left in asianbestofrest after Tamba got
+    // filtered out along the way. The category each of these is derived
+    // from is scanned on its own already, so skipping the derived versions
+    // here doesn't lose any real pick.
+    if(['asianbestofrest', 'michelin', 'jamesbeard'].includes(cat)) return;
     if(/bjspick$/.test(cat)){
       // ONE pick per category, always. These lists are arrays, so a second
       // entry can get added by accident — that's how Nobu ended up listed as a
@@ -15910,35 +15922,35 @@ const boPickerConfig = {
     { label: 'Italian', cat: 'italian' },
     { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Mexican', cat: 'mexican' },
-    { label: 'Pho', cat: 'pho' },
-    { label: 'Indian', cat: 'indian' },
-    { label: 'Buffet', cat: 'buffet' },
-    { label: 'Steak & Eggs', cat: 'steakeggs' },
-    { label: 'Coffee', cat: 'coffee' },
-    { label: 'Crepes', cat: 'crepes' },
-    { label: 'Tacos', cat: 'tacos' },
-    { label: 'French', cat: 'french' },
-    { label: 'Mediterranean', cat: 'mediterranean' },
-    { label: 'Greek', cat: 'greek' },
-    { label: 'Seafood', cat: 'seafood' },
-    { label: 'BBQ', cat: 'bbq' },
-    { label: 'Burgers', cat: 'burgers' },
-    { label: 'Pizza', cat: 'pizza' },
-    { label: 'Vegan & Vegetarian', cat: 'vegan' },
-    { label: 'Smoothies', cat: 'smoothies' },
-    { label: 'Chocolatier', cat: 'chocolatier' },
-    { label: 'Wings', cat: 'wings' },
-    { label: 'All You Can Eat', cat: 'ayce' },
     { label: 'Fast Food / Drive-Thru', cat: 'fastfood' },
-    { label: 'Peruvian', cat: 'peruvian' },
-    { label: 'Filipino', cat: 'filipino' },
-    { label: 'Ethiopian & African', cat: 'ethiopian' },
-    { label: 'Spanish & Tapas', cat: 'spanish' },
+    { label: 'Smoothies', cat: 'smoothies' },
+    { label: 'Coffee', cat: 'coffee' },
+    { label: 'Tacos', cat: 'tacos' },
     { label: 'Ramen', cat: 'ramen' },
+    { label: 'Peruvian', cat: 'peruvian' },
     { label: 'Hawaiian & Poke', cat: 'hawaiian' },
-    { label: 'Southern & Soul Food', cat: 'southern' },
-    { label: 'Deli & Sandwiches', cat: 'deli' },
+    { label: 'BBQ', cat: 'bbq' },
+    { label: 'Mediterranean', cat: 'mediterranean' },
+    { label: 'Vegan & Vegetarian', cat: 'vegan' },
+    { label: 'Crepes', cat: 'crepes' },
+    { label: 'French', cat: 'french' },
+    { label: 'Pizza', cat: 'pizza' },
+    { label: 'Greek', cat: 'greek' },
+    { label: 'Ethiopian & African', cat: 'ethiopian' },
+    { label: 'Indian', cat: 'indian' },
+    { label: 'All You Can Eat', cat: 'ayce' },
+    { label: 'Pho', cat: 'pho' },
+    { label: 'Chocolatier', cat: 'chocolatier' },
+    { label: 'Seafood', cat: 'seafood' },
+    { label: 'Steak & Eggs', cat: 'steakeggs' },
     { label: 'Diner', cat: 'diner' },
+    { label: 'Filipino', cat: 'filipino' },
+    { label: 'Spanish & Tapas', cat: 'spanish' },
+    { label: 'Wings', cat: 'wings' },
+    { label: 'Southern & Soul Food', cat: 'southern' },
+    { label: 'Burgers', cat: 'burgers' },
+    { label: 'Deli & Sandwiches', cat: 'deli' },
+    { label: 'Buffet', cat: 'buffet' },
     { label: 'Cheesesteak', cat: 'cheesesteak' }
   ],
   mexican: [
