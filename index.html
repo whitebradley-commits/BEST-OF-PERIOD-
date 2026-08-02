@@ -4348,6 +4348,23 @@
   /* The grey write-up is collapsed by default so the cards read cleanly —
      tapping MORE reveals it. */
   .bo-note-collapsed{ display:none; }
+  .bo-bjs-tip{
+    margin-top:0.7rem;
+    padding:0.6rem 0.8rem;
+    background:rgba(255,140,0,0.08);
+    border:1px solid rgba(255,140,0,0.4);
+    border-radius:8px;
+    color:var(--smoke);
+    font-size:0.85rem;
+    line-height:1.5;
+    max-width:56ch;
+  }
+  .bo-bjs-tip-label{
+    color:#ff9a3c;
+    font-weight:800;
+    letter-spacing:0.04em;
+    margin-right:4px;
+  }
   .bo-more-btn{
     background:none;
     border:none;
@@ -4437,7 +4454,8 @@
     margin-top:0.5rem;
   }
   .bo-other-location-item{
-    background:rgba(255,255,255,0.04);
+    background:rgba(255,140,0,0.06);
+    border:1px solid rgba(255,140,0,0.25);
     border-radius:8px;
     padding:0.6rem 0.7rem;
     margin-bottom:0.4rem;
@@ -4445,16 +4463,32 @@
   .bo-other-location-name{
     font-weight:600;
     font-size:0.85rem;
-    color:var(--paper);
+    color:#ff9a3c;
   }
   .bo-other-location-meta{
     font-size:0.78rem;
-    color:var(--smoke);
+    color:#ffb257;
     margin:0.15rem 0 0.4rem;
   }
   .bo-other-location-actions{
     display:flex;
     gap:0.5rem;
+  }
+  /* Scoped to the dropdown only — the same call/directions/menu buttons
+     elsewhere on a card keep their normal color, this just recolors them
+     specifically inside an expanded Other Locations panel so the whole
+     thing reads as one distinct, self-contained block. */
+  .bo-other-location-actions .icon-btn,
+  .bo-other-location-actions .directions-btn,
+  .bo-other-location-actions .menu-text-btn{
+    color:#ff9a3c;
+    border-color:rgba(255,140,0,0.4);
+  }
+  .bo-other-location-actions .icon-btn:hover,
+  .bo-other-location-actions .directions-btn:hover,
+  .bo-other-location-actions .menu-text-btn:hover{
+    color:#ffb257;
+    border-color:#ffb257;
   }
 
   .bo-secret-menu-link{
@@ -14663,6 +14697,28 @@ boCategoryData.fastfood = [
     instagram: null,
     facebook: null,
     offStrip: true
+  },
+  {
+    rank: 12,
+    name: "Raising Cane's",
+    bjsPick: true,
+    bjsPickLabel: "Fast Food",
+    rating: "4.4 / 5",
+    ratingNote: "Aggregate across Yelp and Tripadvisor for the Strip flagship location — small individual review counts, but this is our own editorial pick regardless of the raw number.",
+    why: "\"The Jackpot\" — Cane's landmark Las Vegas Strip location near MGM Grand, with an Elvis-themed second floor and disco balls",
+    note: "Cooked-to-order chicken fingers, crinkle-cut fries, Texas toast, coleslaw, and the signature Cane's Sauce made fresh daily. This Strip location is the chain's flagship in Las Vegas, with a distinctive Elvis museum-style upstairs dining room and disco balls. A one-item menu done right, fast.",
+    url: "https://locations.raisingcanes.com/nv/las-vegas/3791-south-las-vegas-blvd", address: "3791 S Las Vegas Blvd, Las Vegas, NV 89109",
+    phone: "(702) 931-3605",
+    hue: "45, 55%, 32%",
+    price: 1,
+    instagram: null,
+    facebook: null,
+    bjsTip: "Raising Cane's has an incredible honey mustard that isn't on any menu, isn't advertised, and most people have no idea it exists. Just ask for it.",
+    otherLocations: [
+      { name: "Raising Cane's (Centennial Center)", address: "5660 Centennial Center Blvd, Las Vegas, NV 89149", phone: "(702) 878-2263", rating: null, offStrip: true },
+      { name: "Raising Cane's (S Las Vegas Blvd)", address: "7550 S Las Vegas Blvd, Las Vegas, NV 89123", phone: "(702) 434-3644", rating: null, offStrip: true },
+      { name: "Raising Cane's (N Nellis Blvd)", address: "180 N Nellis Blvd, Las Vegas, NV 89110", phone: "(702) 331-1135", rating: null, offStrip: true }
+    ]
   }
 ];
 boCategoryData.peruvian = [
@@ -16489,7 +16545,7 @@ function boRenderCategory(cat){
     const specialCirclesHTML = cat === 'otheroptions' ? `
       <div class="bo-picker-grid" style="margin-bottom:1.4rem;flex-wrap:nowrap;gap:0.5rem;" id="boOtherTastesCircles">
         <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
-        <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="24hours">24 Hours</button>
+        <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="24hours">24 Hours${BO_24HR_ISH_CITIES.includes(boCityContext) ? '<span class="bo-hero-dessert-word" style="font-size:0.85em;">ish</span>' : ''}</button>
         <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="asian">Asian</button>
         <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
       </div>
@@ -16576,11 +16632,15 @@ function boRenderCategory(cat){
   // confirmed historic entries, so it's never mistaken for a complete or
   // final picture.
   const vegasMichelinBanner = (cat === 'michelin' && boCityContext === 'bestof')
-    ? `<div style="background:#ffcfe6;border-radius:999px;padding:14px 24px;margin:0 auto 24px;max-width:520px;text-align:center;box-shadow:0 0 22px rgba(255,105,180,0.4);">
-         <p style="margin:0;color:#7a1450;font-size:0.85rem;font-weight:700;line-height:1.5;">
-           &#10024; Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
+    ? `<div style="position:fixed;top:215px;left:50%;transform:translateX(-50%);z-index:50;background:#0a0a0a;border:2px solid #c9a24b;border-radius:255px 15px 225px 15px/15px 225px 15px 255px;padding:14px 22px;max-width:440px;width:82vw;text-align:center;box-shadow:0 0 22px rgba(201,162,75,0.35);">
+         <p style="margin:0;color:#c9a24b;font-size:0.8rem;font-weight:700;line-height:1.5;">
+           <span class="bo-michelin-badge" style="margin-left:0;"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;</span></span> Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
          </p>
-       </div>`
+         <div style="position:absolute;bottom:-16px;left:38px;width:16px;height:16px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
+         <div style="position:absolute;bottom:-30px;left:24px;width:10px;height:10px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
+         <div style="position:absolute;bottom:-40px;left:15px;width:6px;height:6px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
+       </div>
+       <div style="height:110px;"></div>`
     : '';
 
   if(boScopedCategoryList && boScopedCategoryList.length === 0){
@@ -16629,6 +16689,7 @@ function boRenderCategory(cat){
         <div class="bo-why">${s.why}</div>
         <button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button>
         <div class="bo-note bo-note-collapsed">${s.note}</div>
+        ${s.bjsTip ? `<div class="bo-bjs-tip"><span class="bo-bjs-tip-label"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#ff9a3c" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#ff9a3c">BJS</text></svg>TIP</span> ${s.bjsTip}</div>` : ''}
         ${hoursTextHTML(s.hours, s.open24)}
         ${s.otherLocations && s.otherLocations.length ? `
         <div class="bo-other-locations">
