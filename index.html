@@ -3434,6 +3434,35 @@
     margin:2.2rem auto 0;
   }
 
+  .bo-bottom-tile-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:0.6rem;
+    margin:2.2rem auto 0;
+  }
+  .bo-bottom-tile-row .bo-picker-btn-bjs{
+    margin:0;
+  }
+  .bo-bottom-tile-fixed{
+    width:96px;
+    min-width:96px;
+    max-width:96px;
+    height:52px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 8px;
+    text-align:center;
+  }
+  .bo-bottom-tile-send-label{
+    font-size:0.64rem;
+    line-height:1.15;
+    letter-spacing:0.01em;
+    color:#c9a24b;
+  }
+
   .bjs-footer{
     display:block;
     width:100%;
@@ -4081,6 +4110,17 @@
     color:#c9a24b;
     font-size:0.72rem;
     letter-spacing:-1px;
+  }
+
+  .bo-michelin-cloud-wrap{
+    animation: bo-cloud-float 4.5s ease-in-out infinite;
+  }
+  @keyframes bo-cloud-float{
+    0%,100%{ transform: translateY(0px); }
+    50%{ transform: translateY(-9px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bo-michelin-cloud-wrap{ animation: none; }
   }
 
   .bo-rating-row{
@@ -4910,7 +4950,7 @@
   <div class="thank-you-overlay" id="legendOverlay">
     <button type="button" id="legendBack" class="lv-logo-circle" style="position:absolute;top:36px;left:20px;width:48px;height:48px;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#ffd54a;cursor:pointer;z-index:2;">&larr;<br>Back</button>
     <div class="ty-content" style="max-width:420px;">
-      <h2 style="text-align:center;font-family:'Archivo Black',sans-serif;color:#FFD700;font-size:1.3rem;letter-spacing:0.03em;margin:76px 0 24px;text-shadow:0 0 10px rgba(255,215,0,0.7);">LEGEND</h2>
+      <h2 style="text-align:center;font-family:'Archivo Black',sans-serif;color:#c9a24b;font-size:1.3rem;letter-spacing:0.03em;margin:160px 0 44px;text-shadow:0 0 12px rgba(201,162,75,0.8), 0 0 26px rgba(201,162,75,0.4);">LEGEND</h2>
 
       <div class="bo-price-legend" style="display:flex;margin-top:8px;margin-bottom:2px;">
         <span class="bo-price-legend-item"><span class="bo-price-legend-sign">$</span> Dive</span>
@@ -4925,8 +4965,14 @@
         <span class="bo-price-legend-item" style="font-size:0.76rem;"><span class="bo-verified" title="Verified listing" style="margin-right:5px;width:17px;height:17px;"><svg viewBox="0 0 24 24" fill="none" style="width:11px;height:11px;"><path d="M4 12.6L9.2 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Verified Vendor</span>
         <span class="bo-price-legend-item"><span class="bo-new-badge">NEW</span><span style="margin-left:5px;color:#6effa0;">&lt; 1 year ish</span></span>
       </div>
-      <div class="bo-price-legend" style="display:flex;margin-top:16px;margin-bottom:34px;">
+      <div class="bo-price-legend" style="display:flex;margin-top:16px;">
         <span class="bo-price-legend-item"><span class="bo-michelin-badge" style="margin-left:0;"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;&#9733;</span></span><span style="margin-left:5px;color:#c9a24b;">Michelin Stars</span></span>
+      </div>
+      <div class="bo-price-legend" style="display:flex;margin-top:16px;">
+        <span class="bo-price-legend-item" style="font-size:0.76rem;"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:5px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#FFD700" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#FFD700">BJS</text></svg><span style="color:#c9a24b;">BJS Pick \u2014 gold-bordered card</span></span>
+      </div>
+      <div class="bo-price-legend" style="display:flex;margin-top:16px;margin-bottom:34px;">
+        <span class="bo-price-legend-item" style="font-size:0.76rem;"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:5px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#ff9a3c" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#ff9a3c">BJS</text></svg><span style="color:#ff9a3c;">BJS Tip \u2014 an insider secret worth knowing</span></span>
       </div>
     </div>
   </div>
@@ -16014,7 +16060,7 @@ const boPickerConfig = {
     // BJS No.1 Picks leads the Other Bests grid — our own editorial choices,
     // gathered from every category, independent of star ratings.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: 'Michelin', cat: 'michelin' },
+    { label: 'Michelin<br><span style="font-size:0.68em;color:#c9a24b;">(M&#9733;&#9733;&#9733;)</span>', cat: 'michelin' },
     { label: 'James Beard', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
@@ -16466,45 +16512,80 @@ function formatPickLabel(lbl, cityKey){
 }
 
 function renderBjsPickFooter(cat){
-  if(!boListEl || isBjsPicksCat(cat)) return;
-  // Pull from THIS page's own city's pick list — Vegas's page reads
-  // boCategoryData.bjspicks, Miami's reads boCategoryData.bjspicksmiami —
-  // instead of always reading Vegas's list regardless of which city's page
-  // is asking.
-  const cityCfgForFooter = BO_CITY_CONFIG[cat];
-  const all = boCategoryData[(cityCfgForFooter && cityCfgForFooter.bjsPicksCat) || 'bjspicks'] || [];
+  if(!boListEl) return;
 
-  // On any main city page, show only THAT city's own flagship pick — not
-  // every pick on the site. The rest belong on the BJS No. 1 Picks page,
-  // which this links to. Works for Vegas, Miami, or any future city, since
-  // it filters by bjsPickCity rather than assuming Vegas specifically.
-  const picks = BO_CITY_CONFIG[cat]
-    ? all.filter(p => p.bjsPickCity === cat)
-    : all.filter(p => p.bjsFromCat === cat || p.bjsFromCat === cat + 'bjspick');
-  // Miami doesn't have its own flagged pick yet, but the button itself is
-  // generic (no restaurant name on it) — so show it there anyway, matching
-  // Vegas's layout, rather than waiting on Miami-specific data that doesn't
-  // exist yet.
-  // A city may not have its own flagged pick yet, but the button itself is
-  // generic (no restaurant name on it) — so show it on any city page anyway,
-  // rather than waiting on city-specific data that doesn't exist yet.
-  if(!picks.length && !BO_CITY_CONFIG[cat]) return;
+  const row = document.createElement('div');
+  row.className = 'bo-bottom-tile-row';
 
-  const label = BO_CITY_CONFIG[cat]
-    ? 'Best Of Period'
-    : ((picks[0] && picks[0].bjsSources && picks[0].bjsSources[0]) || '');
+  // BJS Picks tile — same as before, just now one item in a row instead of
+  // its own full-width block. Hidden on the BJS Picks page itself, same as
+  // it always was — no reason to link to the page you're already on.
+  if(!isBjsPicksCat(cat)){
+    const cityCfgForFooter = BO_CITY_CONFIG[cat];
+    const all = boCategoryData[(cityCfgForFooter && cityCfgForFooter.bjsPicksCat) || 'bjspicks'] || [];
+    const picks = BO_CITY_CONFIG[cat]
+      ? all.filter(p => p.bjsPickCity === cat)
+      : all.filter(p => p.bjsFromCat === cat || p.bjsFromCat === cat + 'bjspick');
+    if(picks.length || BO_CITY_CONFIG[cat]){
+      const bjsBtn = document.createElement('button');
+      bjsBtn.type = 'button';
+      bjsBtn.className = 'bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed';
+      bjsBtn.innerHTML = BJS_PICKS_BUTTON_LABEL;
+      bjsBtn.addEventListener('click', function(){
+        boRenderCategory('bjspicks');
+      });
+      row.appendChild(bjsBtn);
+    }
+  }
 
-  // Exactly the same button as the Other Bests grid — same logo, same size,
-  // same gold "Picks" text. No lockup text, no restaurant name, no scroll
-  // cue above it. Tapping it goes straight to the BJS Picks page.
-  const wrap = document.createElement('button');
-  wrap.type = 'button';
-  wrap.className = 'bo-picker-btn bo-picker-btn-bjs bjs-footer-plain';
-  wrap.innerHTML = BJS_PICKS_BUTTON_LABEL;
-  wrap.addEventListener('click', function(){
-    boRenderCategory('bjspicks');
+  // Other Bests tile — hidden on the Other Bests page itself, same
+  // self-exclusion logic as the BJS Picks tile above.
+  if(cat !== 'otheroptions'){
+    const otherBtn = document.createElement('button');
+    otherBtn.type = 'button';
+    otherBtn.className = 'bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed';
+    otherBtn.innerHTML = '<span style="color:#c9a24b;">OTHER<br>BESTS</span>';
+    otherBtn.addEventListener('click', function(){
+      boRenderCategory('otheroptions');
+    });
+    row.appendChild(otherBtn);
+  }
+
+  // Send to a Friend tile — uses the native share sheet (Messages,
+  // Facebook, WhatsApp, Mail, etc.) where available, falling back to
+  // copying the link. Shares a real deep link to whichever exact page this
+  // is, via the URL hash set up above.
+  const shareBtn = document.createElement('button');
+  shareBtn.type = 'button';
+  shareBtn.className = 'bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed';
+  shareBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span class="bo-bottom-tile-send-label">SEND TO A FRIEND</span>`;
+  shareBtn.addEventListener('click', async () => {
+    const shareUrl = window.location.origin + window.location.pathname + window.location.hash;
+    const cityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+    const rawTitle = (boHeroCopy[cat] && boHeroCopy[cat].title) ? boHeroCopy[cat].title.replace(/<[^>]+>/g, '').trim() : cat;
+    const pageTitle = `${rawTitle} \u2014 Best Of ${cityLabel} Period`;
+    if(navigator.share){
+      try {
+        await navigator.share({ title: pageTitle, text: `Check out ${pageTitle}`, url: shareUrl });
+      } catch(shareErr) {
+        // User cancelled the share sheet — nothing to do.
+      }
+    } else if(navigator.clipboard && navigator.clipboard.writeText){
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        const original = shareBtn.innerHTML;
+        shareBtn.textContent = 'COPIED!';
+        setTimeout(() => { shareBtn.innerHTML = original; }, 2000);
+      } catch(copyErr) {
+        prompt('Copy this link to share:', shareUrl);
+      }
+    } else {
+      prompt('Copy this link to share:', shareUrl);
+    }
   });
-  boListEl.appendChild(wrap);
+  row.appendChild(shareBtn);
+
+  boListEl.appendChild(row);
 }
 
 function boRenderCategory(cat){
@@ -16745,13 +16826,18 @@ function boRenderCategory(cat){
   const vegasMichelinSlot = document.getElementById('vegasMichelinBannerSlot');
   if(vegasMichelinSlot){
     vegasMichelinSlot.innerHTML = (cat === 'michelin' && boCityContext === 'bestof')
-      ? `<div style="position:relative;background:#0a0a0a;border:2px solid #c9a24b;border-radius:255px 15px 225px 15px/15px 225px 15px 255px;padding:14px 22px;margin:0 auto 40px;max-width:440px;width:82vw;text-align:center;box-shadow:0 0 22px rgba(201,162,75,0.35);">
-           <p style="margin:0;color:#c9a24b;font-size:0.8rem;font-weight:700;line-height:1.5;">
-             <span class="bo-michelin-badge" style="margin-left:0;"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;</span></span> Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
-           </p>
-           <div style="position:absolute;bottom:-16px;left:38px;width:16px;height:16px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
-           <div style="position:absolute;bottom:-30px;left:24px;width:10px;height:10px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
-           <div style="position:absolute;bottom:-40px;left:15px;width:6px;height:6px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
+      ? `<div class="bo-michelin-cloud-wrap" style="position:relative;margin:0 auto 50px;max-width:400px;width:78vw;">
+           <svg viewBox="0 0 640 512" style="width:100%;height:auto;filter:drop-shadow(0 0 14px rgba(201,162,75,0.4));">
+             <path fill="#0a0a0a" stroke="#c9a24b" stroke-width="9" stroke-linejoin="round" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.1C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"/>
+           </svg>
+           <div style="position:absolute;top:58%;left:50%;transform:translate(-50%,-35%);width:64%;text-align:center;">
+             <p style="margin:0;color:#c9a24b;font-size:0.82rem;font-weight:800;line-height:1.4;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 0 6px rgba(0,0,0,0.8);">
+               <span class="bo-michelin-badge" style="margin-left:0;text-shadow:none;"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;</span></span> Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
+             </p>
+           </div>
+           <div style="position:absolute;bottom:-20px;left:70px;width:20px;height:20px;border-radius:50%;background:#0a0a0a;border:3px solid #c9a24b;"></div>
+           <div style="position:absolute;bottom:-38px;left:52px;width:13px;height:13px;border-radius:50%;background:#0a0a0a;border:3px solid #c9a24b;"></div>
+           <div style="position:absolute;bottom:-52px;left:40px;width:8px;height:8px;border-radius:50%;background:#0a0a0a;border:2px solid #c9a24b;"></div>
          </div>`
       : '';
   }
@@ -16891,27 +16977,6 @@ function boRenderCategory(cat){
       `;
       boListEl.appendChild(gate);
 
-      // The Other Bests button used to sit at the top of the page; it now
-      // lives directly under CONTINUE as the alternative route, so scrolling
-      // past CONTINUE leads straight to Other Bests instead of more cards.
-      // Built fresh here rather than moving the original element — the list
-      // gets wiped on every category switch, which would destroy a moved node.
-      const otherBtnWrap = document.createElement('div');
-      otherBtnWrap.style.cssText = 'display:flex;justify-content:center;width:100%;padding:0.5rem 0 0.6rem;';
-      otherBtnWrap.innerHTML = `
-        <button type="button" class="bo-expand-btn" id="boExpandBtnBottom" aria-expanded="false">
-          <span class="bo-expand-arrow bo-expand-arrow-left">&#8594;</span><span class="bo-expand-label" style="font-size:0.7rem;">OTHER<br>BESTS</span><span class="bo-expand-arrow bo-expand-arrow-right">&#8592;</span>
-        </button>
-      `;
-      gate.appendChild(otherBtnWrap);
-      const otherBtn = otherBtnWrap.querySelector('#boExpandBtnBottom');
-      if(otherBtn){
-        otherBtn.addEventListener('click', function(){
-          boRenderCategory('otheroptions');
-          window.scrollTo(0, 0);
-        });
-      }
-
       const hidden = document.createElement('div');
       hidden.className = 'bo-rest-wrap bo-rest-collapsed';
       hidden.id = 'boRestWrap';
@@ -16931,6 +16996,26 @@ function boRenderCategory(cat){
   });
 
   renderBjsPickFooter(cat);
+
+  // Deep-linking: reflect the current category (and city, if not Vegas) in
+  // the URL hash, so a shared link can jump straight back to this exact
+  // page instead of always landing on the homepage. replaceState (not
+  // pushState) so browsing around the site doesn't fill up the back-button
+  // history with every category visited — only an intentional share link
+  // needs to be a real, loadable address.
+  const boShareHash = '#' + cat + (boCityContext !== 'bestof' ? '/' + boCityContext : '');
+  if(window.location.hash !== boShareHash){
+    // Some browsers/webviews restrict the History API when a page is
+    // opened as a local file rather than served over http/https (which is
+    // how this gets tested outside the live site) — wrapped defensively so
+    // that restriction can never throw and break the rest of the page.
+    try {
+      history.replaceState(null, '', boShareHash);
+    } catch(hashErr) {
+      // No-op — deep-linking just won't update the visible URL in this
+      // context; every other feature on the page keeps working normally.
+    }
+  }
 
   if(cat === 'bestof'){
     loadPlacePhotosFor(sortedEntries);
@@ -16997,7 +17082,22 @@ boBackBtnEl.addEventListener('click', (e) => {
   boRenderCategory(parent || fallback);
 });
 
-boRenderCategory('bestof');
+// A shared "Send to a Friend" link lands here as #category or
+// #category/city — if the hash points to something real, open straight to
+// it instead of always starting on the Vegas homepage. Falls back to the
+// homepage for an empty, missing, or invalid hash so a normal visit (or a
+// stale/bad link) never breaks.
+(() => {
+  const rawHash = window.location.hash.replace(/^#/, '');
+  if(!rawHash){ boRenderCategory('bestof'); return; }
+  const [linkedCat, linkedCity] = rawHash.split('/');
+  const catIsReal = linkedCat && (Object.prototype.hasOwnProperty.call(boCategoryData, linkedCat) || Object.prototype.hasOwnProperty.call(boPickerConfig, linkedCat));
+  if(!catIsReal){ boRenderCategory('bestof'); return; }
+  if(linkedCity && BO_CITY_CONFIG[linkedCity]){
+    boCityContext = linkedCity;
+  }
+  boRenderCategory(linkedCat);
+})();
 
 const BOP_SPLASH_CITIES = [
   "Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
