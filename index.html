@@ -18164,5 +18164,85 @@ async function init(){
 init();
 </script>
 
+
+<script id="bopUnifiedNavigationPatch">
+/* Unified Best Of Period navigation patch.
+   This capture-phase router takes priority over older page-specific handlers
+   so Main and Back have one consistent meaning throughout the Best Of area. */
+(function(){
+  function validCityKey(key){
+    return typeof BO_CITY_CONFIG !== 'undefined' && key && BO_CITY_CONFIG[key];
+  }
+
+  function rememberCurrentCity(){
+    if(typeof boCurrentCat !== 'undefined' && validCityKey(boCurrentCat)){
+      boCityContext = boCurrentCat;
+    }
+    if(typeof boCityContext === 'undefined' || !validCityKey(boCityContext)){
+      boCityContext = 'bestof';
+    }
+  }
+
+  function openSelectedCityMainTiles(){
+    rememberCurrentCity();
+    const landing = document.getElementById('bopLandingOverlay');
+    const otherCities = document.getElementById('otherCitiesOverlay');
+    const bestOverlay = document.getElementById('bestOfOverlay');
+    if(landing) landing.classList.remove('open');
+    if(otherCities) otherCities.classList.remove('open');
+    if(bestOverlay) bestOverlay.classList.add('open');
+    if(typeof boRenderCategory === 'function') boRenderCategory('otheroptions');
+    window.scrollTo(0, 0);
+  }
+
+  function openRotatingCityLanding(){
+    const landing = document.getElementById('bopLandingOverlay');
+    const input = document.getElementById('bopLandingSearchInput');
+    const results = document.getElementById('bopLandingResults');
+    const otherCities = document.getElementById('otherCitiesOverlay');
+    if(otherCities) otherCities.classList.remove('open');
+    if(input) input.value = '';
+    if(results){
+      results.innerHTML = '';
+      results.classList.remove('open');
+    }
+    if(landing) landing.classList.add('open');
+    if(window.history && window.history.replaceState){
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener('click', function(event){
+    const mainBtn = event.target.closest('#bopReturnToLandingBtn');
+    if(mainBtn){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      // On a Best Of city/list page, Main means that city's tile grid.
+      // If somehow visible while already on the tile grid, it returns to search.
+      if(typeof boCurrentCat !== 'undefined' && boCurrentCat === 'otheroptions'){
+        openRotatingCityLanding();
+      } else {
+        openSelectedCityMainTiles();
+      }
+      return;
+    }
+
+    const backBtn = event.target.closest('#boBackBtn');
+    if(backBtn){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      // Back from the city tile grid returns to the rotating city selector.
+      if(typeof boCurrentCat !== 'undefined' && boCurrentCat === 'otheroptions'){
+        openRotatingCityLanding();
+      } else {
+        // Back from any Best Of category/list returns to the selected city's grid.
+        openSelectedCityMainTiles();
+      }
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
