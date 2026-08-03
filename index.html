@@ -17109,6 +17109,15 @@ boBackBtnEl.addEventListener('click', (e) => {
     return;
   }
 
+  // From a city's Best Of Period listings page, Back returns to that
+  // selected city's Main tile page. The Main tile page has its own Back
+  // behavior above, which returns to the rotating city-search landing page.
+  if(BO_CITY_CONFIG[boCurrentCat]){
+    boCityContext = boCurrentCat;
+    boRenderCategory('otheroptions');
+    return;
+  }
+
   const parent = boPickerParent[boCurrentCat];
   const fallback = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
   boRenderCategory(parent || fallback);
