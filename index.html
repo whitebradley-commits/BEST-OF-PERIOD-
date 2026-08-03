@@ -8629,9 +8629,9 @@ function ocShowCity(city){
   if(goEl){
     if(city.t === 'live'){
       goEl.classList.add('open');
-      // Jump straight to that city's Best Of page instead of reloading the
-      // site. Each live city carries its own `dest` category — Vegas goes to
-      // 'bestof', Miami goes to 'miami', and so on as more cities go live.
+      // Jump straight to that city's Main tile page instead of its former
+      // city-specific Best Of list. Each live city carries its own `dest`
+      // context — Vegas is 'bestof', Miami is 'miami', London is 'london'.
       goEl.onclick = function(){
         var world = document.getElementById('ocWorldOverlay');
         var card = document.getElementById('ocCityCard');
@@ -8641,7 +8641,10 @@ function ocShowCity(city){
         if(landing) landing.classList.remove('open');
         var best = document.getElementById('bestOfOverlay');
         if(best) best.classList.add('open');
-        if(typeof boRenderCategory === 'function') boRenderCategory(city.dest || 'bestof');
+        if(typeof boRenderCategory === 'function'){
+          boCityContext = city.dest || 'bestof';
+          boRenderCategory('otheroptions');
+        }
         window.scrollTo(0, 0);
       };
     } else {
