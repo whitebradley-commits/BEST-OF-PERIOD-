@@ -8149,6 +8149,28 @@ function setupBopReturnToLandingBtn(){
   const landing = document.getElementById('bopLandingOverlay');
   if(!btn || !landing) return;
   btn.addEventListener('click', function(){
+    // On any city/category Best Of page, the gold Main button must return
+    // to that selected city's Main tile grid — not the rotating landing page.
+    if(typeof boRenderCategory === 'function' && boCurrentCat !== 'otheroptions'){
+      if(BO_CITY_CONFIG[boCurrentCat]){
+        boCityContext = boCurrentCat;
+      } else if(!(typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext])){
+        boCityContext = 'bestof';
+      }
+      boRenderCategory('otheroptions');
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    // When already on the Main tile grid, this persistent button returns to
+    // the original rotating city-search landing page.
+    const input = document.getElementById('bopLandingSearchInput');
+    const results = document.getElementById('bopLandingResults');
+    if(input) input.value = '';
+    if(results){
+      results.innerHTML = '';
+      results.classList.remove('open');
+    }
     landing.classList.add('open');
     window.scrollTo(0, 0);
   });
