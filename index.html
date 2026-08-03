@@ -17089,11 +17089,27 @@ boCircles.forEach(c => {
 
 boBackBtnEl.addEventListener('click', (e) => {
   e.preventDefault();
+
+  // The former Other Bests tile grid is now each city's MAIN page. Its Back
+  // button must return to the original fast-rotating city-search landing page,
+  // not to the old city Best Of listings page.
+  if(boCurrentCat === 'otheroptions'){
+    const landing = document.getElementById('bopLandingOverlay');
+    const input = document.getElementById('bopLandingSearchInput');
+    const results = document.getElementById('bopLandingResults');
+    const otherCities = document.getElementById('otherCitiesOverlay');
+    if(otherCities) otherCities.classList.remove('open');
+    if(input) input.value = '';
+    if(results) results.innerHTML = '';
+    if(landing) landing.classList.add('open');
+    if(window.history && window.history.replaceState){
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo(0, 0);
+    return;
+  }
+
   const parent = boPickerParent[boCurrentCat];
-  // Other Bests has no single fixed parent — it's reached from both Vegas and
-  // Miami's main pages, so Back should return to whichever one you actually
-  // came from, tracked via boCityContext, rather than always dropping onto
-  // Vegas.
   const fallback = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
   boRenderCategory(parent || fallback);
 });
