@@ -5939,6 +5939,13 @@
   .bo-near-map-page{position:fixed;inset:0;z-index:10020;background:#000;display:none;overflow:hidden;}
   .bo-near-map-page.open{display:block;}
   .bo-near-map-canvas{position:absolute;top:33.333vh;left:4vw;right:4vw;height:33.334vh;background:#111;border:2px solid #F59E0B;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.18);}
+  .bo-near-map-loading{position:absolute;top:33.333vh;left:4vw;right:4vw;height:33.334vh;z-index:10024;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.48);border-radius:10px;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}
+  .bo-near-map-loading.is-hidden{opacity:0;visibility:hidden;}
+  .bo-near-loading-main{font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 8px rgba(245,158,11,.85),0 0 18px rgba(245,158,11,.45);animation:boNearLoadingPulse 1.15s ease-in-out infinite;}
+  .bo-near-loading-sub{font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;color:#b8b8b8;text-shadow:0 0 6px rgba(255,255,255,.35);}
+  @keyframes boNearLoadingPulse{0%,100%{opacity:.52;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
+  @media (prefers-reduced-motion:reduce){.bo-near-loading-main{animation:none;}}
+
   .bo-near-map-back{position:absolute;top:max(36px,env(safe-area-inset-top));left:20px;z-index:10025;width:48px;height:48px;padding:0;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#F59E0B;cursor:pointer;}
   .bo-near-map-meta{position:absolute;left:4vw;top:calc(66.667vh + 10px);z-index:10025;max-width:88vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#b8b8b8;text-align:left;text-shadow:0 0 5px rgba(255,255,255,.55),0 0 10px rgba(255,255,255,.22);}
   .bo-near-map-legend{display:flex;align-items:center;gap:15px;white-space:nowrap;}
@@ -5949,6 +5956,7 @@
   .bo-near-map-status{background:transparent;border:0;color:#b8b8b8;padding:0;}
   @media(max-width:600px){
     .bo-near-map-canvas{left:3vw;right:3vw;}
+    .bo-near-map-loading{left:3vw;right:3vw;}
     .bo-near-map-meta{left:3vw;max-width:94vw;}
   }
   .bo-near-map-page .leaflet-control-zoom a{background:#000;color:#F59E0B;border-color:#F59E0B;}
@@ -17145,6 +17153,7 @@ let boNearMappedRestaurants = [];
 let boNearViewportHandler = null;
 let boNearInitialRadiusMode = true;
 let boNearUserLatLng = null;
+let boNearGeocodingComplete = false;
 
 function boNearCityDefaults(cityKey){
   return {
@@ -17202,7 +17211,7 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status">Loading restaurants…</div></div>';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">Finding yummy spots near you…</div><div class="bo-near-loading-sub">This may take a moment the first time.</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status">Checking nearby restaurants…</div></div>';
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
   return page;
@@ -17248,8 +17257,10 @@ async function boOpenNearMap(){
   const restaurants=boGetMapRestaurants(cityKey);
   const page=boEnsureNearMapPage();
   const status=document.getElementById('boNearMapStatus');
+  const loading=document.getElementById('boNearMapLoading');
   page.classList.add('open'); document.body.style.overflow='hidden';
-  status.style.display='block'; status.textContent='Showing restaurants within 1 mile. Zoom out to see more.';
+  if(loading) loading.classList.remove('is-hidden');
+  status.style.display='block'; status.textContent='Checking nearby restaurants…';
   const run=++boNearMapGeocodeRun;
   try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
   if(run!==boNearMapGeocodeRun) return;
@@ -17263,6 +17274,7 @@ async function boOpenNearMap(){
   boNearMappedRestaurants=[];
   boNearInitialRadiusMode=true;
   boNearUserLatLng=null;
+  boNearGeocodingComplete=false;
   if(boNearViewportHandler){
     boNearMap.off('moveend',boNearViewportHandler);
     boNearMap.off('zoomend',boNearViewportHandler);
@@ -17318,10 +17330,15 @@ async function boOpenNearMap(){
       const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
       marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
     });
-    if(boNearInitialRadiusMode && boNearUserLatLng){
-      status.textContent='Showing restaurants within 1 mile. Zoom out to see more.';
+    if(visible.length && loading) loading.classList.add('is-hidden');
+    if(!boNearGeocodingComplete && !visible.length){
+      status.textContent='Checking nearby restaurants…';
+    }else if(boNearInitialRadiusMode && boNearUserLatLng){
+      status.textContent=visible.length
+        ? 'Showing yummy spots within 1 mile. Zoom out to see more.'
+        : 'No yummy spots are mapped within 1 mile yet. Zoom out to see more.';
     }else{
-      status.textContent=visible.length?'Showing '+visible.length+' restaurants in this map area.':'No restaurants are mapped in this view.';
+      status.textContent=visible.length?'Showing yummy spots in this map area.':'No yummy spots are mapped in this view.';
     }
   };
 
@@ -17355,6 +17372,9 @@ async function boOpenNearMap(){
     // Respect the public geocoder; cached addresses appear immediately.
     if(i<restaurants.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
   }
+  boNearGeocodingComplete=true;
+  renderVisibleRestaurants();
+  if(loading) loading.classList.add('is-hidden');
   if(!placed) status.textContent='No mapped restaurant addresses are available yet.';
 }
 window.boOpenNearMap=boOpenNearMap;
@@ -18225,7 +18245,7 @@ function boRenderCategory(cat){
   // earlier, and resurfaced here on London's BJS Picks page once it dropped
   // to a single entry (Fallow) after Dishoom moved to its own category.
   if(boSectionHeadEl) boSectionHeadEl.style.display = (isSingleEntry && !isMainCityPage && !isBjsPick) ? 'none' : '';
-  if(boScrollCueEl) boScrollCueEl.style.display = 'none';
+  if(boScrollCueEl) boScrollCueEl.style.display = (!isSingleEntry && !isBjsPick) ? 'flex' : 'none';
   if(boHeroSubEl){
     const isDiveTier = cat.toLowerCase().includes('dive');
     boHeroSubEl.style.display = ((isSingleEntry && !isBjsPick && !isDiveTier)) || BO_CITY_CONFIG[cat] || cat === 'dessert' || cat === 'steakeggs' ? 'none' : '';
