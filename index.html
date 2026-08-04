@@ -6152,6 +6152,9 @@
   .bo-near-info-copy{position:relative;min-width:0;padding:15px 42px 14px 16px;display:flex;flex-direction:column;gap:5px;}
   .bo-near-info-name{margin:0;color:#fff;font:800 19px/1.08 'Archivo Narrow',sans-serif;}
   .bo-near-info-category{color:#F59E0B;font:800 11px 'Archivo Narrow',sans-serif;text-transform:uppercase;letter-spacing:.04em;}
+  .bo-near-info-distance{width:max-content;color:#ff3434;font:900 12px 'Archivo Narrow',sans-serif;letter-spacing:.055em;text-transform:uppercase;text-shadow:0 0 5px rgba(255,52,52,.95),0 0 12px rgba(255,0,0,.6);animation:boNearDistancePulse 1.15s ease-in-out infinite;}
+  @keyframes boNearDistancePulse{0%,100%{opacity:.72;transform:scale(1);text-shadow:0 0 4px rgba(255,52,52,.75),0 0 9px rgba(255,0,0,.4);}50%{opacity:1;transform:scale(1.035);text-shadow:0 0 8px rgba(255,80,80,1),0 0 18px rgba(255,0,0,.9);}}
+  @media (prefers-reduced-motion:reduce){.bo-near-info-distance{animation:none;}}
   .bo-near-info-rating{color:#fff;font:700 12px 'Archivo Narrow',sans-serif;}
   .bo-near-info-address{color:#e8e8e8;font:600 11px/1.35 'Archivo Narrow',sans-serif;}
   .bo-near-info-phone{width:max-content;color:#55a9ff;font:800 12px 'Archivo Narrow',sans-serif;text-decoration:none;}
@@ -17540,17 +17543,27 @@ function boShowNearRestaurantCard(r,restaurantKey,parentCluster){
     .replace(/casual/ig,' Casual').replace(/dive/ig,' Dive')
     .replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,m=>m.toUpperCase()).trim();
   const ratingLabel=r.rating ? ('★ '+esc(r.ratingText||r.rating.toFixed(1))+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')) : 'Best Of Period selection';
+  let distanceLabel='';
+  if(boNearUserLatLng && r.__boNearGeo && Number.isFinite(Number(r.__boNearGeo.lat)) && Number.isFinite(Number(r.__boNearGeo.lon))){
+    const toRad=v=>v*Math.PI/180;
+    const lat1=toRad(boNearUserLatLng.lat), lat2=toRad(Number(r.__boNearGeo.lat));
+    const dLat=lat2-lat1, dLon=toRad(Number(r.__boNearGeo.lon)-boNearUserLatLng.lng);
+    const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    const miles=2*3958.8*Math.asin(Math.sqrt(h));
+    const shown=miles<0.05?'UNDER 0.1':miles.toFixed(1);
+    distanceLabel='<div class="bo-near-info-distance">'+shown+' MILES FROM YOU</div>';
+  }
   media.innerHTML=r.image
     ? '<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';">'
     : '<div class="bo-near-info-placeholder" aria-label="Restaurant image coming soon"><span class="bo-near-info-placeholder-mark">✦</span></div>';
   const phone=r.phone ? '<a class="bo-near-info-phone" href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'">'+esc(r.phone)+'</a>' : '';
   const directions='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address);
   const website=r.url ? '<a class="secondary" href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a>' : '';
-  copy.innerHTML='<h3 class="bo-near-info-name">'+esc(r.name)+'</h3>'+
+  copy.innerHTML='<h3 class="bo-near-info-name">'+esc(r.name)+'</h3>'+distanceLabel+
     '<div class="bo-near-info-category">'+esc(categoryLabel)+'</div>'+
     '<div class="bo-near-info-rating">'+ratingLabel+'</div>'+
     '<div class="bo-near-info-address">'+esc(r.address)+'</div>'+phone+
-    '<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a><button id="boNearOpenBestOf" type="button">OPEN RESTAURANT</button>'+website+'</div>';
+    '<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a><button id="boNearOpenBestOf" type="button">VIEW RESTAURANT</button>'+website+'</div>';
   const openBtn=document.getElementById('boNearOpenBestOf');
   if(openBtn) openBtn.addEventListener('click',()=>boOpenRestaurantFromMap(r.cat,r.name),{once:true});
   card.classList.remove('is-cluster');
@@ -17780,6 +17793,7 @@ async function boOpenNearMap(){
     let geo=null;
     try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
     if(geo){
+      r.__boNearGeo=geo;
       boNearMappedRestaurants.push({restaurant:r,geo});
       placed++;
       renderVisibleRestaurants();
