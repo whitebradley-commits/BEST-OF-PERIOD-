@@ -17203,6 +17203,7 @@ let boNearInitialRadiusMode = true;
 let boNearUserLatLng = null;
 let boNearGeocodingComplete = false;
 let boNearLoadingStartedAt = 0;
+let boNearSelectedRestaurantKey = null;
 const BO_NEAR_MIN_LOADING_MS = 6000;
 
 function boNearCityDefaults(cityKey){
@@ -17344,6 +17345,7 @@ async function boOpenNearMap(){
   boNearInitialRadiusMode=true;
   boNearUserLatLng=null;
   boNearGeocodingComplete=false;
+  boNearSelectedRestaurantKey=null;
   if(boNearViewportHandler){
     boNearMap.off('moveend',boNearViewportHandler);
     boNearMap.off('zoomend',boNearViewportHandler);
@@ -17393,9 +17395,11 @@ async function boOpenNearMap(){
       return bounds.contains(point);
     });
     const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    let selectedMarkerToReopen=null;
     visible.forEach(item=>{
       const r=item.restaurant, geo=item.geo;
-      const marker=L.marker([geo.lat,geo.lon],{icon,keyboard:true}).addTo(boNearMapLayer);
+      const restaurantKey=String(r.cat||'')+'||'+String(r.name||'')+'||'+String(r.address||'');
+      const marker=L.marker([geo.lat,geo.lon],{icon,keyboard:true,bubblingMouseEvents:false,riseOnHover:true}).addTo(boNearMapLayer);
       // Desktop users can preview a restaurant by hovering. On touch devices
       // we skip the temporary tooltip so a tap always opens the persistent popup.
       if(!touchMode){
@@ -17431,15 +17435,23 @@ async function boOpenNearMap(){
           '</div>'+
         '</div>'+
       '</div>';
-      marker.bindPopup(popupHtml,{autoClose:true,closeButton:true,closeOnEscapeKey:true,closeOnClick:false,maxWidth:340,minWidth:270,className:'bo-near-dark-popup'});
-      marker.on('click',function(e){
-        if(e && e.originalEvent){
-          L.DomEvent.stopPropagation(e.originalEvent);
-          L.DomEvent.preventDefault(e.originalEvent);
-        }
-        this.openPopup();
+      marker.bindPopup(popupHtml,{autoClose:true,closeButton:true,closeOnEscapeKey:true,closeOnClick:false,autoPan:false,maxWidth:340,minWidth:270,className:'bo-near-dark-popup'});
+      marker.on('click',function(){
+        boNearSelectedRestaurantKey=restaurantKey;
+        marker.openPopup();
       });
+      marker.on('popupclose',function(){
+        if(boNearSelectedRestaurantKey===restaurantKey) boNearSelectedRestaurantKey=null;
+      });
+      if(boNearSelectedRestaurantKey===restaurantKey) selectedMarkerToReopen=marker;
     });
+    // New geocoded restaurants are added progressively. Rebuilding the visible
+    // layer must not dismiss the card the visitor just opened.
+    if(selectedMarkerToReopen){
+      window.setTimeout(()=>{
+        if(boNearSelectedRestaurantKey) selectedMarkerToReopen.openPopup();
+      },0);
+    }
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
     const loadingRemaining = Math.max(0, BO_NEAR_MIN_LOADING_MS - loadingElapsed);
     if((visible.length || boNearGeocodingComplete) && loading){
