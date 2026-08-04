@@ -5703,177 +5703,167 @@
 </style>
 
 
-<style id="search-placeholder-polish">
-/* Search placeholders: subtle glow, gentle pulse, trailing ellipsis */
-input::placeholder,
-textarea::placeholder{
-  color:#9a9a9a !important;
-  text-shadow:0 0 4px rgba(255,255,255,.35);
-  opacity:1;
-  animation:placeholderPulse 2.8s ease-in-out infinite;
-}
-@keyframes placeholderPulse{
-  0%,100%{opacity:.78;text-shadow:0 0 3px rgba(255,255,255,.28);}
-  50%{opacity:1;text-shadow:0 0 6px rgba(255,255,255,.48);}
-}
-</style>
 
-
-<style id="searchbar-alignment-polish">
-/* Align placeholder and Powered by row on the same visual plane */
-.oc-search-wrap,
-.search-wrap,
-[class*="search-wrap"]{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.oc-search-input,
-.search-input,
-input[type="search"]{
-  margin-bottom:8px !important;
-}
-
-.oc-search-powered-by,
-.search-powered-by{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:6px !important;
-  line-height:1 !important;
-  min-height:20px;
-  color:#9a9a9a !important;
-  text-shadow:0 0 3px rgba(255,255,255,.25);
-  animation:poweredByPulse 3s ease-in-out infinite;
-}
-
-.oc-search-powered-by svg,
-.search-powered-by svg{
-  vertical-align:middle !important;
-}
-
-@keyframes poweredByPulse{
+<style id="powered-by-subtle-pulse">
+@keyframes bopPoweredPulse{
   0%,100%{
-    opacity:.78;
-    text-shadow:0 0 2px rgba(255,255,255,.20);
+    opacity:.88;
+    filter:drop-shadow(0 0 1px rgba(255,255,255,.18));
   }
   50%{
     opacity:1;
-    text-shadow:0 0 5px rgba(255,255,255,.40);
+    filter:drop-shadow(0 0 5px rgba(255,255,255,.35));
+  }
+}
+.bo-search-powered-by,
+#ocWorldOverlay .oc-search-powered-by{
+  animation:bopPoweredPulse 3.2s ease-in-out infinite !important;
+}
+@media(prefers-reduced-motion:reduce){
+  .bo-search-powered-by,
+  #ocWorldOverlay .oc-search-powered-by{
+    animation:none !important;
   }
 }
 </style>
 
 
-<style id="final-search-and-other-cities-alignment">
-/* Move the entire Other Cities content decisively below the Back button. */
-#ocWorldOverlay .oc-world-inner{
-  padding-top:190px !important;
+<style id="canonical-search-layout">
+/* One stable search-bar layout across Landing, Main/Best Of, and Other Cities. */
+.bo-search-wrap,
+#ocWorldOverlay .oc-search-wrap{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  overflow:visible !important;
+  box-sizing:border-box !important;
 }
 
-/* Make Search Anywhere / Search Any City placeholders visibly interactive. */
-#ocWorldOverlay .oc-search-input::placeholder,
-#bestOfOverlay input::placeholder,
-#bopLandingOverlay input::placeholder,
-#bestOfOverlay .bo-search-input::placeholder,
-#bestOfOverlay .bo-search-input-big::placeholder{
-  color:#9A9A9A !important;
-  opacity:1 !important;
-  text-shadow:0 0 4px rgba(255,255,255,.34) !important;
-  animation:bopUnifiedPlaceholderPulse 2.8s ease-in-out infinite !important;
-}
-
-/* All main search fields use consistent inner vertical alignment. */
-#ocWorldOverlay .oc-search-input,
-#bestOfOverlay .bo-search-input,
-#bestOfOverlay .bo-search-input-big,
-#bopLandingOverlay input{
+.bo-search-input,
+.bo-search-input-big,
+#ocWorldOverlay .oc-search-input{
+  display:block !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  margin:0 !important;
+  padding-left:18px !important;
+  padding-right:150px !important;
+  text-align:left !important;
   line-height:1.2 !important;
-  text-align:center !important;
+  color:#D0D0D0 !important;
+  -webkit-text-fill-color:#D0D0D0 !important;
+  background:#0C0C0C !important;
+  border-color:#F59E0B !important;
 }
 
-/* Powered-by rows: even, centered, and on one visual line. */
-#ocWorldOverlay .oc-search-powered-by,
-#bestOfOverlay .bo-search-powered-by,
-#bopLandingOverlay .bo-search-powered-by,
-.search-powered-by{
+.bo-search-input-big{
+  padding-top:.75rem !important;
+  padding-bottom:.75rem !important;
+}
+
+#ocWorldOverlay .oc-search-input{
+  padding-top:.67rem !important;
+  padding-bottom:.67rem !important;
+}
+
+.bo-search-input::placeholder,
+.bo-search-input-big::placeholder,
+#ocWorldOverlay .oc-search-input::placeholder{
+  color:#9A9A9A !important;
+  -webkit-text-fill-color:#9A9A9A !important;
+  opacity:1 !important;
+  text-align:left !important;
+  text-shadow:0 0 4px rgba(255,255,255,.38) !important;
+  animation:canonicalPlaceholderPulse 2.8s ease-in-out infinite !important;
+}
+
+.bo-search-powered-by,
+#ocWorldOverlay .oc-search-powered-by{
+  position:absolute !important;
+  right:46px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  z-index:10 !important;
   display:flex !important;
   flex-direction:row !important;
   align-items:center !important;
-  justify-content:center !important;
+  justify-content:flex-end !important;
   flex-wrap:nowrap !important;
-  gap:6px !important;
-  min-height:20px !important;
-  line-height:1 !important;
+  gap:4px !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
   white-space:nowrap !important;
-  margin-left:auto !important;
-  margin-right:auto !important;
+  pointer-events:none !important;
+  font-family:'Archivo Narrow',sans-serif !important;
+  font-size:.64rem !important;
+  line-height:1 !important;
+  letter-spacing:.01em !important;
   color:#F59E0B !important;
   -webkit-text-fill-color:#F59E0B !important;
-  text-shadow:0 0 3px rgba(255,255,255,.22) !important;
-  animation:bopUnifiedPoweredPulse 2.8s ease-in-out infinite !important;
+  text-shadow:0 0 3px rgba(255,255,255,.20) !important;
+  animation:none !important;
 }
 
-/* Keep lightning/BJS mark aligned with the text baseline. */
-#ocWorldOverlay .oc-search-powered-by svg,
-#bestOfOverlay .bo-search-powered-by svg,
-#bopLandingOverlay .bo-search-powered-by svg,
-.search-powered-by svg{
+.bo-search-powered-by svg,
+#ocWorldOverlay .oc-search-powered-by svg{
   display:block !important;
   flex:0 0 auto !important;
-  vertical-align:middle !important;
-  transform:translateY(0) !important;
+  margin:0 !important;
+  transform:none !important;
+  overflow:visible !important;
 }
 
-/* Orange stays orange; only the subtle white glow pulses. */
-#ocWorldOverlay .oc-search-powered-by svg:first-child,
-#bestOfOverlay .bo-search-powered-by svg:first-child,
-#bopLandingOverlay .bo-search-powered-by svg:first-child{
+.bo-search-powered-by svg:first-child,
+#ocWorldOverlay .oc-search-powered-by svg:first-child{
   fill:#F59E0B !important;
 }
-#ocWorldOverlay .oc-search-powered-by svg circle,
-#bestOfOverlay .bo-search-powered-by svg circle,
-#bopLandingOverlay .bo-search-powered-by svg circle{
+
+.bo-search-powered-by svg circle,
+#ocWorldOverlay .oc-search-powered-by svg circle{
   stroke:#F59E0B !important;
 }
-#ocWorldOverlay .oc-search-powered-by svg text,
-#bestOfOverlay .bo-search-powered-by svg text,
-#bopLandingOverlay .bo-search-powered-by svg text{
+
+.bo-search-powered-by svg text,
+#ocWorldOverlay .oc-search-powered-by svg text{
   fill:#F59E0B !important;
 }
 
-/* Make the search wrapper itself centered and consistently stacked. */
-#ocWorldOverlay .oc-search-wrap,
-#bestOfOverlay .bo-search-wrap,
-#bopLandingOverlay .bo-search-wrap,
-.search-wrap{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  width:100% !important;
+@media(max-width:390px){
+  .bo-search-input,
+  .bo-search-input-big,
+  #ocWorldOverlay .oc-search-input{
+    padding-left:15px !important;
+    padding-right:134px !important;
+  }
+
+  .bo-search-powered-by,
+  #ocWorldOverlay .oc-search-powered-by{
+    right:32px !important;
+    font-size:.58rem !important;
+    gap:3px !important;
+  }
 }
 
-@keyframes bopUnifiedPlaceholderPulse{
+@keyframes canonicalPlaceholderPulse{
   0%,100%{
     opacity:.76;
     text-shadow:0 0 3px rgba(255,255,255,.26);
   }
   50%{
     opacity:1;
-    text-shadow:0 0 6px rgba(255,255,255,.48);
+    text-shadow:0 0 7px rgba(255,255,255,.52);
   }
 }
 
-@keyframes bopUnifiedPoweredPulse{
-  0%,100%{
-    opacity:.80;
-    text-shadow:0 0 2px rgba(255,255,255,.18);
-  }
-  50%{
-    opacity:1;
-    text-shadow:0 0 5px rgba(255,255,255,.38);
+@media(prefers-reduced-motion:reduce){
+  .bo-search-input::placeholder,
+  .bo-search-input-big::placeholder,
+  #ocWorldOverlay .oc-search-input::placeholder{
+    animation:none !important;
   }
 }
 </style>
