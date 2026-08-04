@@ -17141,6 +17141,10 @@ let boNearMapLayer = null;
 let boNearUserMarker = null;
 let boNearAccuracyCircle = null;
 let boNearMapGeocodeRun = 0;
+let boNearMappedRestaurants = [];
+let boNearViewportHandler = null;
+let boNearInitialRadiusMode = true;
+let boNearUserLatLng = null;
 
 function boNearCityDefaults(cityKey){
   return {
@@ -17245,7 +17249,7 @@ async function boOpenNearMap(){
   const page=boEnsureNearMapPage();
   const status=document.getElementById('boNearMapStatus');
   page.classList.add('open'); document.body.style.overflow='hidden';
-  status.style.display='block'; status.textContent='Loading '+restaurants.length+' restaurants…';
+  status.style.display='block'; status.textContent='Showing restaurants within 1 mile. Zoom out to see more.';
   const run=++boNearMapGeocodeRun;
   try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
   if(run!==boNearMapGeocodeRun) return;
@@ -17256,6 +17260,13 @@ async function boOpenNearMap(){
   if(boNearMapLayer) boNearMapLayer.clearLayers(); else boNearMapLayer=L.layerGroup().addTo(boNearMap);
   if(boNearUserMarker){ boNearMap.removeLayer(boNearUserMarker); boNearUserMarker=null; }
   if(boNearAccuracyCircle){ boNearMap.removeLayer(boNearAccuracyCircle); boNearAccuracyCircle=null; }
+  boNearMappedRestaurants=[];
+  boNearInitialRadiusMode=true;
+  boNearUserLatLng=null;
+  if(boNearViewportHandler){
+    boNearMap.off('moveend',boNearViewportHandler);
+    boNearMap.off('zoomend',boNearViewportHandler);
+  }
   setTimeout(()=>boNearMap.invalidateSize(),50);
 
   // Show the visitor's live position as a distinct blue marker. If location
@@ -17270,13 +17281,66 @@ async function boOpenNearMap(){
       boNearUserMarker=L.marker([lat,lon],{icon:userIcon,zIndexOffset:1000}).addTo(boNearMap);
       boNearUserMarker.bindTooltip('Your location',{direction:'top',offset:[0,-12],opacity:.98});
       boNearAccuracyCircle=L.circle([lat,lon],{radius:Math.max(position.coords.accuracy||0,20),color:'#1687ff',weight:1,fillColor:'#1687ff',fillOpacity:.08,opacity:.45,interactive:false}).addTo(boNearMap);
-      boNearMap.setView([lat,lon],13);
+      boNearUserLatLng=L.latLng(lat,lon);
+      boNearMap.setView([lat,lon],14);
+      if(typeof boNearViewportHandler==='function') boNearViewportHandler();
     },()=>{
       // City-center fallback is intentional; no error message is needed.
     },{enableHighAccuracy:true,timeout:9000,maximumAge:120000});
   }
 
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
+
+  const milesBetween=(a,b)=>{
+    const toRad=v=>v*Math.PI/180;
+    const R=3958.8;
+    const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lng-a.lng);
+    const lat1=toRad(a.lat), lat2=toRad(b.lat);
+    const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    return 2*R*Math.asin(Math.sqrt(h));
+  };
+
+  const renderVisibleRestaurants=()=>{
+    if(!boNearMapLayer || !boNearMap) return;
+    boNearMapLayer.clearLayers();
+    const bounds=boNearMap.getBounds();
+    const visible=boNearMappedRestaurants.filter(item=>{
+      const point=L.latLng(item.geo.lat,item.geo.lon);
+      if(boNearInitialRadiusMode && boNearUserLatLng){
+        return milesBetween(boNearUserLatLng,point)<=1;
+      }
+      return bounds.contains(point);
+    });
+    visible.forEach(item=>{
+      const r=item.restaurant, geo=item.geo;
+      const marker=L.marker([geo.lat,geo.lon],{icon}).addTo(boNearMapLayer);
+      marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+      const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
+      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
+    });
+    if(boNearInitialRadiusMode && boNearUserLatLng){
+      status.textContent='Showing restaurants within 1 mile. Zoom out to see more.';
+    }else{
+      status.textContent=visible.length?'Showing '+visible.length+' restaurants in this map area.':'No restaurants are mapped in this view.';
+    }
+  };
+
+  boNearViewportHandler=()=>{
+    // The first user pan or zoom changes the map from the one-mile starting
+    // view to a live visible-area view, repopulating pins as the map moves.
+    if(boNearInitialRadiusMode && boNearUserLatLng){
+      const center=boNearMap.getCenter();
+      const moved=milesBetween(boNearUserLatLng,center)>.15;
+      const zoomedOut=boNearMap.getZoom()<14;
+      if(moved || zoomedOut) boNearInitialRadiusMode=false;
+    }else if(!boNearUserLatLng){
+      boNearInitialRadiusMode=false;
+    }
+    renderVisibleRestaurants();
+  };
+  boNearMap.on('moveend',boNearViewportHandler);
+  boNearMap.on('zoomend',boNearViewportHandler);
+
   let placed=0;
   for(let i=0;i<restaurants.length;i++){
     if(run!==boNearMapGeocodeRun) return;
@@ -17284,17 +17348,14 @@ async function boOpenNearMap(){
     let geo=null;
     try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
     if(geo){
-      const marker=L.marker([geo.lat,geo.lon],{icon}).addTo(boNearMapLayer);
-      marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
-      const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
-      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
+      boNearMappedRestaurants.push({restaurant:r,geo});
       placed++;
+      renderVisibleRestaurants();
     }
-    status.textContent='Showing '+placed+' of '+restaurants.length+' restaurants';
     // Respect the public geocoder; cached addresses appear immediately.
     if(i<restaurants.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
   }
-  status.textContent=placed?'Hover over any pin for more information.':'No mapped restaurant addresses are available yet.';
+  if(!placed) status.textContent='No mapped restaurant addresses are available yet.';
 }
 window.boOpenNearMap=boOpenNearMap;
 
