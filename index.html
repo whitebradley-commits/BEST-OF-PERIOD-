@@ -5934,6 +5934,27 @@
 }
 </style>
 
+
+<style id="boNearMePageStyles">
+  .bo-near-map-page{position:fixed;inset:0;z-index:10020;background:#000;display:none;overflow:hidden;}
+  .bo-near-map-page.open{display:block;}
+  .bo-near-map-canvas{position:absolute;inset:0;background:#111;}
+  .bo-near-map-back{position:absolute;top:max(18px,env(safe-area-inset-top));left:16px;z-index:10025;border:2px solid #F59E0B;background:#F59E0B;color:#000;border-radius:999px;padding:10px 17px;font-family:'Archivo Narrow',sans-serif;font-size:14px;font-weight:900;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 12px rgba(245,158,11,.85),0 0 25px rgba(245,158,11,.45);}
+  .bo-near-map-status{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:10025;max-width:calc(100% - 32px);background:rgba(0,0,0,.86);border:1px solid rgba(245,158,11,.7);color:#fff;border-radius:999px;padding:8px 14px;font-family:'Archivo Narrow',sans-serif;font-size:12px;text-align:center;box-shadow:0 0 14px rgba(245,158,11,.25);}
+  .bo-near-map-page .leaflet-control-zoom a{background:#000;color:#F59E0B;border-color:#F59E0B;}
+  .bo-near-map-page .leaflet-control-attribution{background:rgba(0,0,0,.72);color:#bbb;}
+  .bo-near-map-page .leaflet-control-attribution a{color:#F59E0B;}
+  .bo-orange-pin{width:22px;height:22px;border-radius:50% 50% 50% 0;background:#F59E0B;border:2px solid #000;transform:rotate(-45deg);box-shadow:0 0 10px rgba(245,158,11,.95),0 0 18px rgba(245,158,11,.5);position:relative;}
+  .bo-orange-pin:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#000;left:5.5px;top:5.5px;}
+  .bo-near-map-page .leaflet-tooltip{background:#050505;border:1px solid #F59E0B;color:#fff;border-radius:8px;box-shadow:0 0 12px rgba(245,158,11,.32);font-family:'Archivo Narrow',sans-serif;font-weight:700;}
+  .bo-near-map-page .leaflet-tooltip:before{border-top-color:#F59E0B;}
+  .bo-near-popup{min-width:190px;font-family:'Archivo Narrow',sans-serif;color:#111;}
+  .bo-near-popup strong{font-size:15px;display:block;margin-bottom:4px;}
+  .bo-near-popup small{display:block;line-height:1.35;margin-bottom:9px;color:#555;}
+  .bo-near-popup-actions{display:flex;gap:7px;flex-wrap:wrap;}
+  .bo-near-popup-actions button,.bo-near-popup-actions a{border:0;border-radius:999px;background:#F59E0B;color:#000;padding:7px 10px;font:800 11px 'Archivo Narrow',sans-serif;text-decoration:none;cursor:pointer;}
+</style>
+
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -17099,6 +17120,148 @@ Object.keys(BO_CITY_CONFIG).forEach(cityCat => {
 // two always match exactly (same logo, same gold text, same size).
 const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" style="vertical-align:-6px;margin-right:2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">Picks</span>';
 
+
+// ===== Near Me map page =====
+let boNearMap = null;
+let boNearMapLayer = null;
+let boNearMapGeocodeRun = 0;
+
+function boNearCityDefaults(cityKey){
+  return {
+    bestof: { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' },
+    miami:  { center:[25.7617,-80.1918], zoom:10, label:'Miami' },
+    london: { center:[51.5072,-0.1276], zoom:10, label:'London' }
+  }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
+}
+
+function boGetMapRestaurants(cityKey){
+  const seen = new Map();
+  const add = (r, cat) => {
+    if(!r || !r.name || !r.address) return;
+    const key = (r.name+'|'+r.address).toLowerCase();
+    const rating = r.rating ? parseFloat(r.rating) : null;
+    const current = seen.get(key);
+    if(!current || (rating && (!current.rating || rating > current.rating))){
+      seen.set(key,{name:r.name,address:r.address,url:r.url||'',rating:rating,cat:cat||'bestof'});
+    }
+  };
+  if(cityKey === 'bestof'){
+    const excluded = new Set(['bestof','miami','london','bjspicksmiami','bjspickslondon']);
+    Object.entries(boCategoryData).forEach(([cat,list])=>{
+      if(excluded.has(cat) || !Array.isArray(list)) return;
+      list.forEach(r=>add(r,cat));
+    });
+  }else{
+    const direct = boCategoryData[cityKey] || [];
+    direct.forEach(r=>add(r,cityKey));
+    const picks = boCategoryData['bjspicks'+cityKey] || [];
+    picks.forEach(r=>add(r,cityKey));
+  }
+  return Array.from(seen.values());
+}
+
+function boLoadLeaflet(){
+  if(window.L) return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    if(!document.querySelector('link[data-bo-leaflet]')){
+      const link=document.createElement('link');
+      link.rel='stylesheet'; link.dataset.boLeaflet='1';
+      link.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+    const existing=document.querySelector('script[data-bo-leaflet]');
+    if(existing){ existing.addEventListener('load',resolve,{once:true}); existing.addEventListener('error',reject,{once:true}); return; }
+    const script=document.createElement('script');
+    script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; script.dataset.boLeaflet='1';
+    script.onload=resolve; script.onerror=reject; document.head.appendChild(script);
+  });
+}
+
+function boEnsureNearMapPage(){
+  let page=document.getElementById('boNearMapPage');
+  if(page) return page;
+  page=document.createElement('section');
+  page.id='boNearMapPage'; page.className='bo-near-map-page';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><button id="boNearMapBack" class="bo-near-map-back" type="button">← Back</button><div id="boNearMapStatus" class="bo-near-map-status">Loading restaurants…</div>';
+  document.body.appendChild(page);
+  document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
+  return page;
+}
+
+function boCloseNearMap(){
+  boNearMapGeocodeRun++;
+  const page=document.getElementById('boNearMapPage');
+  if(page) page.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function boOpenRestaurantFromMap(cat,name){
+  boCloseNearMap();
+  boRenderCategory(cat || boCityContext || 'bestof');
+  setTimeout(()=>{
+    const headings=[...document.querySelectorAll('#boList h3')];
+    const target=headings.find(h=>h.textContent.trim().toLowerCase().startsWith(String(name).toLowerCase()));
+    if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+  },180);
+}
+window.boOpenRestaurantFromMap=boOpenRestaurantFromMap;
+
+async function boGeocodeRestaurant(r,cityLabel){
+  const cacheKey='boGeo:'+r.address.toLowerCase();
+  try{
+    const cached=localStorage.getItem(cacheKey);
+    if(cached){ const obj=JSON.parse(cached); if(obj && obj.lat && obj.lon) return obj; }
+  }catch(e){}
+  const q=encodeURIComponent(r.address+', '+cityLabel);
+  const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json'}});
+  if(!res.ok) return null;
+  const data=await res.json();
+  if(!data || !data[0]) return null;
+  const obj={lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon)};
+  try{localStorage.setItem(cacheKey,JSON.stringify(obj));}catch(e){}
+  return obj;
+}
+
+async function boOpenNearMap(){
+  const cityKey=(typeof boCityContext!=='undefined' && BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+  const defaults=boNearCityDefaults(cityKey);
+  const restaurants=boGetMapRestaurants(cityKey);
+  const page=boEnsureNearMapPage();
+  const status=document.getElementById('boNearMapStatus');
+  page.classList.add('open'); document.body.style.overflow='hidden';
+  status.style.display='block'; status.textContent='Loading '+restaurants.length+' restaurants…';
+  const run=++boNearMapGeocodeRun;
+  try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
+  if(run!==boNearMapGeocodeRun) return;
+  if(!boNearMap){
+    boNearMap=L.map('boNearMapCanvas',{zoomControl:true}).setView(defaults.center,defaults.zoom);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(boNearMap);
+  }else boNearMap.setView(defaults.center,defaults.zoom);
+  if(boNearMapLayer) boNearMapLayer.clearLayers(); else boNearMapLayer=L.layerGroup().addTo(boNearMap);
+  setTimeout(()=>boNearMap.invalidateSize(),50);
+  const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
+  let placed=0;
+  for(let i=0;i<restaurants.length;i++){
+    if(run!==boNearMapGeocodeRun) return;
+    const r=restaurants[i];
+    let geo=null;
+    try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
+    if(geo){
+      const marker=L.marker([geo.lat,geo.lon],{icon}).addTo(boNearMapLayer);
+      marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+      const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
+      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
+      placed++;
+    }
+    status.textContent='Showing '+placed+' of '+restaurants.length+' restaurants';
+    // Respect the public geocoder; cached addresses appear immediately.
+    if(i<restaurants.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
+  }
+  status.textContent=placed?placed+' restaurants on the map':'No mapped restaurant addresses are available yet.';
+  setTimeout(()=>{ if(status) status.style.display='none'; },2600);
+}
+window.boOpenNearMap=boOpenNearMap;
+
 const boPickerConfig = {
   sushi: [
     { label: 'Casual', cat: 'sushicasual' },
@@ -17139,46 +17302,46 @@ const boPickerConfig = {
     { label: '🏆 Best of Period', cat: 'asianbestofrest' }
   ],
   otheroptions: [
+    // Balanced rows: broad cuisines and signature categories are spread
+    // evenly instead of clustering similar tiles together.
     { label: 'Asian', cat: 'asian' },
-    // BJS No.1 Picks leads the Other Bests grid — our own editorial choices,
-    // gathered from every category, independent of star ratings.
-    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: 'Michelin<br><span style="font-size:0.68em;color:#F59E0B;">(M&#9733;&#9733;&#9733;)</span>', cat: 'michelin' },
-    { label: 'James Beard', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
-    { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Mexican', cat: 'mexican' },
-    { label: 'Fast Food / Drive-Thru', cat: 'fastfood' },
-    { label: 'Smoothies', cat: 'smoothies' },
+    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
+    { label: 'Michelin<br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
+    { label: 'James Beard', cat: 'jamesbeard' },
+    { label: 'Breakfast', cat: 'breakfast' },
+    { label: 'Pizza', cat: 'pizza' },
+    { label: 'Burgers', cat: 'burgers' },
+    { label: 'Seafood', cat: 'seafood' },
+    { label: 'BBQ', cat: 'bbq' },
     { label: 'Coffee', cat: 'coffee' },
+    { label: 'Smoothies', cat: 'smoothies' },
+    { label: 'Vegan & Vegetarian', cat: 'vegan' },
+    { label: 'Mediterranean', cat: 'mediterranean' },
     { label: 'Tacos', cat: 'tacos' },
     { label: 'Ramen', cat: 'ramen' },
+    { label: 'Pho', cat: 'pho' },
+    { label: 'Indian', cat: 'indian' },
+    { label: 'Fast Food / Drive-Thru', cat: 'fastfood' },
+    { label: 'Diner', cat: 'diner' },
+    { label: 'Buffet', cat: 'buffet' },
+    { label: 'All You Can Eat', cat: 'ayce' },
+    { label: 'French', cat: 'french' },
+    { label: 'Greek', cat: 'greek' },
     { label: 'Peruvian', cat: 'peruvian' },
     { label: 'Hawaiian & Poke', cat: 'hawaiian' },
-    { label: 'BBQ', cat: 'bbq' },
-    { label: 'Mediterranean', cat: 'mediterranean' },
-    { label: 'Vegan & Vegetarian', cat: 'vegan' },
-    { label: 'Crepes', cat: 'crepes' },
-    { label: 'French', cat: 'french' },
-    { label: 'Pizza', cat: 'pizza' },
-    { label: 'Greek', cat: 'greek' },
-    { label: 'Ethiopian & African', cat: 'ethiopian' },
-    { label: 'Indian', cat: 'indian' },
-    { label: 'All You Can Eat', cat: 'ayce' },
-    { label: 'Pho', cat: 'pho' },
-    { label: 'Chocolatier', cat: 'chocolatier' },
-    { label: 'Seafood', cat: 'seafood' },
-    { label: 'Steak & Eggs', cat: 'steakeggs' },
-    { label: 'Diner', cat: 'diner' },
     { label: 'Filipino', cat: 'filipino' },
+    { label: 'Ethiopian & African', cat: 'ethiopian' },
     { label: 'Spanish & Tapas', cat: 'spanish' },
-    { label: 'Wings', cat: 'wings' },
     { label: 'Southern & Soul Food', cat: 'southern' },
-    { label: 'Burgers', cat: 'burgers' },
+    { label: 'Wings', cat: 'wings' },
     { label: 'Deli & Sandwiches', cat: 'deli' },
-    { label: 'Buffet', cat: 'buffet' },
-    { label: 'Cheesesteak', cat: 'cheesesteak' }
+    { label: 'Cheesesteak', cat: 'cheesesteak' },
+    { label: 'Steak & Eggs', cat: 'steakeggs' },
+    { label: 'Crepes', cat: 'crepes' },
+    { label: 'Chocolatier', cat: 'chocolatier' }
   ],
   mexican: [
     { label: 'Dive', cat: 'mexicandive' },
@@ -17894,6 +18057,7 @@ function boRenderCategory(cat){
     if(nearMePreviewBtn){
       nearMePreviewBtn.addEventListener('click', () => {
         nearMePreviewBtn.blur();
+        boOpenNearMap();
       });
     }
 
