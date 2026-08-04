@@ -5128,6 +5128,125 @@
 }
 </style>
 
+
+<style id="bop-final-hub-grid-globe-city-colors">
+.bo-main-hub-title-wrap{
+  display:flex;
+  justify-content:center;
+  margin:0 auto 20px;
+}
+.bo-main-hub-title{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:8px 22px 7px;
+  border:1.5px solid #9FE2FF;
+  border-radius:14px;
+  background:#000;
+  color:#9FE2FF;
+  -webkit-text-fill-color:#9FE2FF;
+  font-family:'Fraunces','Playfair Display',serif;
+  font-size:clamp(1.2rem,4.6vw,1.8rem);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.035em;
+  text-align:center;
+  text-transform:uppercase;
+  text-shadow:0 0 5px rgba(255,255,255,.94),0 0 12px rgba(255,255,255,.50),0 0 22px rgba(159,226,255,.44);
+  box-shadow:0 0 11px rgba(159,226,255,.30),inset 0 0 13px rgba(159,226,255,.045);
+}
+.bo-main-hub-footer-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+  width:100% !important;
+}
+.bo-main-hub-blue-tile{
+  min-width:0 !important;
+  width:100% !important;
+  min-height:72px !important;
+  padding:9px 5px !important;
+  border-radius:13px !important;
+  font-size:clamp(.78rem,2.3vw,1rem) !important;
+  line-height:1.04 !important;
+}
+@media(max-width:560px){
+  .bo-main-hub-footer{
+    padding-left:2px !important;
+    padding-right:2px !important;
+  }
+  .bo-main-hub-footer-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:7px !important;
+  }
+  .bo-main-hub-blue-tile{
+    min-height:62px !important;
+    padding:7px 3px !important;
+    font-size:clamp(.65rem,3.05vw,.79rem) !important;
+    letter-spacing:.015em !important;
+  }
+  .bo-main-hub-title{
+    min-height:43px;
+    padding:7px 15px 6px;
+    font-size:clamp(1.05rem,5vw,1.38rem);
+  }
+}
+.oc-globe{
+  width:48px !important;
+  height:48px !important;
+  display:block !important;
+  line-height:0 !important;
+}
+.oc-globe svg{
+  display:block;
+  width:100%;
+  height:100%;
+  filter:drop-shadow(0 0 8px rgba(245,158,11,.72));
+}
+@keyframes oc-globe-glow{
+  0%,100%{ filter:drop-shadow(0 0 8px rgba(245,158,11,.34)); }
+  50%{ filter:drop-shadow(0 0 22px rgba(245,158,11,.88)); }
+}
+.oc-arrow{
+  color:#F59E0B !important;
+  text-shadow:0 0 10px rgba(245,158,11,.95) !important;
+}
+.oc-curve text{
+  fill:#F59E0B !important;
+  filter:drop-shadow(0 0 6px rgba(245,158,11,.62)) !important;
+}
+.bop-splash-city,
+.hub-best-mini-city{
+  color:#FF3B30 !important;
+  text-shadow:0 0 14px rgba(255,59,48,.76),0 0 34px rgba(255,59,48,.34) !important;
+}
+</style>
+
+
+<style id="bop-main-send-page-orange">
+.bo-main-hub-send-tile{
+  border-color:#F59E0B !important;
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+  background:#050505 !important;
+  box-shadow:
+    0 0 10px rgba(245,158,11,.56),
+    0 0 24px rgba(245,158,11,.24),
+    inset 0 0 16px rgba(245,158,11,.05) !important;
+}
+.bo-main-hub-send-tile:hover,
+.bo-main-hub-send-tile:focus-visible{
+  border-color:#FFC04A !important;
+  color:#FFC04A !important;
+  -webkit-text-fill-color:#FFC04A !important;
+  box-shadow:
+    0 0 15px rgba(245,158,11,.82),
+    0 0 34px rgba(245,158,11,.34),
+    inset 0 0 18px rgba(245,158,11,.08) !important;
+}
+</style>
+
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -7325,7 +7444,13 @@
         <span class="oc-arrow oc-arrow-r">&#9664;</span>
         <span class="oc-arrow oc-arrow-t">&#9660;</span>
         <span class="oc-arrow oc-arrow-b">&#9650;</span>
-        <span class="oc-globe">&#127758;</span>
+        <span class="oc-globe" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="27" fill="#050505" stroke="#F59E0B" stroke-width="4"/>
+            <ellipse cx="32" cy="32" rx="12" ry="27" fill="none" stroke="#F59E0B" stroke-width="3"/>
+            <path d="M7 32h50M11 20h42M11 44h42" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
       </button>
       <svg class="oc-curve" viewBox="0 0 100 32" aria-hidden="true">
         <defs>
@@ -17014,17 +17139,21 @@ function boRenderCategory(cat){
     const mainHubFooterHTML = cat === 'otheroptions' ? `
       <div class="bo-main-hub-footer">
         
+<div class="bo-main-hub-title-wrap">
+          <div class="bo-main-hub-title">OTHER ${otherBestsCity.toUpperCase()} BESTS</div>
+        </div>
+
 <div class="bo-main-hub-footer-grid">
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST HOTELS</button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST POOLS</button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST SPAS</button>
-  <button type="button" class="bo-main-hub-blue-tile" id="boMainHubSendPage">SEND PAGE</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST BARS</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST NIGHTCLUBS</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST MASSAGES</button>
 </div>
 <div class="bo-main-hub-footer-grid" style="margin-top:18px;">
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">COMING SOON</button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">COMING SOON</button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">COMING SOON</button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">COMING SOON</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST POOLS</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST SPAS</button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST MANI-PEDI</button>
+  <button type="button" class="bo-main-hub-blue-tile bo-main-hub-send-tile" id="boMainHubSendPage">SEND PAGE</button>
 </div>
 
     ` : '';
