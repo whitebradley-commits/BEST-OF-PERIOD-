@@ -8547,13 +8547,27 @@ function setupBopLanding(){
   ];
 
   function goToCity(dest){
+    // City selections from the top landing-page dropdown always open
+    // that city's Main/Hub page first.
+    if(typeof BO_CITY_CONFIG === 'undefined' || !BO_CITY_CONFIG[dest]) return;
+
+    boCityContext = dest;
+
     overlay.classList.remove('open');
+
+    const results = document.getElementById('bopLandingResults');
+    if(results){
+      results.classList.remove('open');
+      results.innerHTML = '';
+    }
+
     const best = document.getElementById('bestOfOverlay');
     if(best) best.classList.add('open');
+
     if(typeof boRenderCategory === 'function'){
-      boCityContext = dest;
       boRenderCategory('otheroptions');
     }
+
     window.scrollTo(0, 0);
   }
 
@@ -18656,69 +18670,6 @@ init();
 })();
 </script>
 
-
-<script id="bop-city-selector-main-route-final">
-/* Final priority route:
-   Every live city chosen from the rotating landing/search opens its Main/Hub
-   page first. The Best Of Period list is reached only from the tile on Main. */
-(function(){
-  function openCityMain(cityKey){
-    if(typeof BO_CITY_CONFIG === 'undefined' || !BO_CITY_CONFIG[cityKey]) return;
-
-    if(typeof boCityContext !== 'undefined') boCityContext = cityKey;
-
-    const landing = document.getElementById('bopLandingOverlay');
-    const results = document.getElementById('bopLandingResults');
-    const world = document.getElementById('ocWorldOverlay');
-    const cityCard = document.getElementById('ocCityCard');
-    const best = document.getElementById('bestOfOverlay');
-
-    if(landing) landing.classList.remove('open');
-    if(results){
-      results.classList.remove('open');
-      results.innerHTML = '';
-    }
-    if(world) world.classList.remove('open');
-    if(cityCard) cityCard.classList.remove('open');
-    if(best) best.classList.add('open');
-
-    if(typeof boRenderCategory === 'function'){
-      boRenderCategory('otheroptions');
-    }
-    window.scrollTo(0,0);
-  }
-
-  /* Capture phase prevents any older city-result listener from routing to
-     the city-specific Best Of Period page. */
-  document.addEventListener('click', function(event){
-    const result = event.target.closest('#bopLandingResults .bop-landing-result');
-    if(!result) return;
-
-    const cityKey = result.dataset.dest;
-    if(typeof BO_CITY_CONFIG === 'undefined' || !BO_CITY_CONFIG[cityKey]) return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    openCityMain(cityKey);
-  }, true);
-
-  /* The live-city button on the globe follows the same Main-first rule. */
-  document.addEventListener('click', function(event){
-    const goButton = event.target.closest('#ocCityGo');
-    if(!goButton || !goButton.classList.contains('open')) return;
-
-    const cityName = document.getElementById('ocCityName')?.textContent || '';
-    const liveCity = (typeof OC_CITIES !== 'undefined')
-      ? OC_CITIES.find(city => city.n === cityName && city.t === 'live')
-      : null;
-    if(!liveCity || !liveCity.dest) return;
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    openCityMain(liveCity.dest);
-  }, true);
-})();
-</script>
 
 </body>
 </html>
