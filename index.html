@@ -17345,12 +17345,21 @@ async function boOpenNearMap(){
       }
       return bounds.contains(point);
     });
+    const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
     visible.forEach(item=>{
       const r=item.restaurant, geo=item.geo;
-      const marker=L.marker([geo.lat,geo.lon],{icon}).addTo(boNearMapLayer);
-      marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+      const marker=L.marker([geo.lat,geo.lon],{icon,keyboard:true}).addTo(boNearMapLayer);
+      // Desktop users can preview a restaurant by hovering. On touch devices
+      // we skip the temporary tooltip so a tap always opens the persistent popup.
+      if(!touchMode){
+        marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+      }
       const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
-      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
+      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>',{autoClose:true,closeButton:true,closeOnEscapeKey:true});
+      marker.on('click',function(e){
+        if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+        this.openPopup();
+      });
     });
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
     const loadingRemaining = Math.max(0, BO_NEAR_MIN_LOADING_MS - loadingElapsed);
@@ -17366,7 +17375,7 @@ async function boOpenNearMap(){
       window.setTimeout(()=>{
         if(run!==boNearMapGeocodeRun) return;
         status.classList.remove('is-loading');
-        status.textContent='Hover over any pin for more information.';
+        status.textContent='Tap any pin for more information.';
       }, loadingRemaining);
     }
   };
