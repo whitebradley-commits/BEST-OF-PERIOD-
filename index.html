@@ -17042,7 +17042,7 @@ function boRenderCategory(cat){
       }
       boCityContext = cat;
     } else if(cat === 'otheroptions'){
-      // Other Bests is shared across every city — genre content underneath
+      // MAIN page (formerly Other Bests) is shared across every city — genre content underneath
       // it is scoped to the current city's own tagged entries (or "coming
       // soon" when a city has nothing there yet), and the title reflects
       // whichever city you arrived from instead of always defaulting to
@@ -17162,11 +17162,12 @@ function boRenderCategory(cat){
     const pickerOptions = (cat === 'otheroptions' && boCityContext === 'london')
       ? boPickerConfig[cat].filter(opt => opt.cat !== 'jamesbeard')
       : boPickerConfig[cat];
+    const mainHubCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const mainHubFooterHTML = cat === 'otheroptions' ? `
       <div class="bo-main-hub-footer">
         
 <div class="bo-main-hub-title-wrap">
-          <div class="bo-main-hub-title">OTHER ${otherBestsCity.toUpperCase()} BESTS</div>
+          <div class="bo-main-hub-title">OTHER ${mainHubCityName.toUpperCase()} BESTS</div>
         </div>
 
 <div class="bo-main-hub-footer-grid">
