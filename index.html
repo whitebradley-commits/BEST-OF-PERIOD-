@@ -17174,7 +17174,11 @@ let boNearInitialRadiusMode = true;
 let boNearUserLatLng = null;
 let boNearGeocodingComplete = false;
 let boNearLoadingStartedAt = 0;
+let boNearActivePopupMarker = null;
+let boNearPopupOpenedAt = 0;
+let boNearMapPopupCloseHandler = null;
 const BO_NEAR_MIN_LOADING_MS = 6000;
+const BO_NEAR_POPUP_HOLD_MS = 10000;
 
 function boNearCityDefaults(cityKey){
   return {
@@ -17287,7 +17291,7 @@ async function boOpenNearMap(){
   try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
   if(run!==boNearMapGeocodeRun) return;
   if(!boNearMap){
-    boNearMap=L.map('boNearMapCanvas',{zoomControl:true}).setView(defaults.center,defaults.zoom);
+    boNearMap=L.map('boNearMapCanvas',{zoomControl:true,closePopupOnClick:false}).setView(defaults.center,defaults.zoom);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(boNearMap);
   }else boNearMap.setView(defaults.center,defaults.zoom);
   if(boNearMapLayer) boNearMapLayer.clearLayers(); else boNearMapLayer=L.layerGroup().addTo(boNearMap);
@@ -17357,8 +17361,18 @@ async function boOpenNearMap(){
       const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
       marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>',{autoClose:true,closeButton:true,closeOnEscapeKey:true});
       marker.on('click',function(e){
-        if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+        if(e && e.originalEvent){
+          L.DomEvent.stopPropagation(e.originalEvent);
+          if(e.originalEvent.preventDefault) e.originalEvent.preventDefault();
+        }
+        // A tap locks this popup open. Small finger movement or a map drag will
+        // not dismiss it. Another pin can replace it immediately.
+        boNearActivePopupMarker=this;
+        boNearPopupOpenedAt=Date.now();
         this.openPopup();
+      });
+      marker.on('popupclose',function(){
+        if(boNearActivePopupMarker===this) boNearActivePopupMarker=null;
       });
     });
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
@@ -17395,6 +17409,18 @@ async function boOpenNearMap(){
   };
   boNearMap.on('moveend',boNearViewportHandler);
   boNearMap.on('zoomend',boNearViewportHandler);
+
+  // Close a locked popup only after an intentional map tap and only after it
+  // has remained readable for at least ten seconds. Dragging or shifting a
+  // finger does not close it.
+  if(boNearMapPopupCloseHandler) boNearMap.off('click',boNearMapPopupCloseHandler);
+  boNearMapPopupCloseHandler=function(){
+    if(!boNearActivePopupMarker) return;
+    if(Date.now()-boNearPopupOpenedAt < BO_NEAR_POPUP_HOLD_MS) return;
+    boNearActivePopupMarker.closePopup();
+    boNearActivePopupMarker=null;
+  };
+  boNearMap.on('click',boNearMapPopupCloseHandler);
 
   await locationReady;
 
