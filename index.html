@@ -1684,6 +1684,22 @@
     box-sizing:border-box;
   }
   #bopLandingOverlay.open{ display:flex; }
+
+  /* Landing spacing refinement: move the full Best Of lockup through the
+     search bar substantially higher as one group, while giving the Near Me
+     shortcut a separate lower position and a larger clean black gap. */
+  #bopLandingOverlay.open{
+    justify-content:flex-start;
+    padding-top:7vh;
+  }
+  #bopLandingOverlay > .bop-splash-hero{
+    margin-top:0 !important;
+    margin-bottom:1.65rem !important;
+  }
+  #bopLandingOverlay .bop-landing-near-wrap{
+    top:74vh;
+  }
+
   .bop-landing-results{
     display:none;
     width:100%;
@@ -1753,6 +1769,82 @@
     box-shadow:0 0 8px rgba(59,157,255,0.9);
     flex-shrink:0;
   }
+
+
+  /* Main landing-page Near Me shortcut. */
+  .bop-landing-near-wrap{
+    position:absolute;
+    top:68vh;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:13px;
+    z-index:3;
+  }
+  .bop-landing-near-btn{
+    position:relative;
+    width:68px;
+    height:68px;
+    border-radius:50%;
+    border:1.5px solid #F59E0B;
+    background:#070707;
+    color:#F59E0B;
+    padding:0;
+    overflow:hidden;
+    cursor:pointer;
+    font:900 11px/1.05 'Archivo Narrow',sans-serif;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    text-shadow:0 0 7px rgba(245,158,11,.9);
+    box-shadow:0 0 9px rgba(245,158,11,.48),inset 0 0 12px rgba(245,158,11,.08);
+    animation:bopLandingNearGlow 2s ease-in-out infinite;
+  }
+  .bop-landing-near-btn::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    opacity:.34;
+    background:
+      linear-gradient(28deg,transparent 43%,rgba(245,158,11,.44) 44% 46%,transparent 47%),
+      linear-gradient(152deg,transparent 44%,rgba(245,158,11,.34) 45% 47%,transparent 48%),
+      radial-gradient(circle at 27% 68%,rgba(245,158,11,.72) 0 2px,transparent 3px),
+      radial-gradient(circle at 69% 31%,rgba(245,158,11,.62) 0 2px,transparent 3px);
+  }
+  .bop-landing-near-btn::after{
+    content:'';
+    position:absolute;
+    left:50%;top:47%;
+    width:12px;height:12px;
+    border-radius:50% 50% 50% 0;
+    background:#F59E0B;
+    transform:translate(-50%,-50%) rotate(-45deg);
+    box-shadow:0 0 8px rgba(245,158,11,.9);
+    opacity:.42;
+  }
+  .bop-landing-near-label{position:relative;z-index:2;display:block;margin-top:20px;}
+  .bop-landing-near-arrow{
+    color:#F59E0B;
+    font:900 19px/1 'Archivo Black',sans-serif;
+    text-shadow:0 0 8px rgba(245,158,11,.95);
+    animation:bopLandingArrowIn 1.15s ease-in-out infinite;
+  }
+  .bop-landing-near-arrow.right{animation-name:bopLandingArrowInRight;}
+  @keyframes bopLandingNearGlow{
+    0%,100%{box-shadow:0 0 8px rgba(245,158,11,.4),inset 0 0 12px rgba(245,158,11,.08);}
+    50%{box-shadow:0 0 18px rgba(245,158,11,.88),0 0 30px rgba(245,158,11,.28),inset 0 0 14px rgba(245,158,11,.14);}
+  }
+  @keyframes bopLandingArrowIn{
+    0%,100%{transform:translateX(-2px);opacity:.35;}
+    50%{transform:translateX(5px);opacity:1;}
+  }
+  @keyframes bopLandingArrowInRight{
+    0%,100%{transform:translateX(2px);opacity:.35;}
+    50%{transform:translateX(-5px);opacity:1;}
+  }
+  @media (max-height:680px){.bop-landing-near-wrap{top:73vh;}.bop-landing-near-btn{width:60px;height:60px;}}
+  @media (prefers-reduced-motion:reduce){.bop-landing-near-btn,.bop-landing-near-arrow{animation:none;}}
 
   #siteFrame{
     position:fixed;
@@ -5981,6 +6073,9 @@
   .bo-near-map-page .leaflet-control-attribution a{color:#F59E0B;}
   .bo-orange-pin{width:22px;height:22px;border-radius:50% 50% 50% 0;background:#F59E0B;border:2px solid #000;transform:rotate(-45deg);box-shadow:0 0 10px rgba(245,158,11,.95),0 0 18px rgba(245,158,11,.5);position:relative;}
   .bo-orange-pin:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#000;left:5.5px;top:5.5px;}
+  .bo-cluster-pin{width:34px;height:34px;border-radius:50%;background:#F59E0B;border:2px solid #000;box-shadow:0 0 12px rgba(245,158,11,.98),0 0 24px rgba(245,158,11,.55);display:flex;align-items:center;justify-content:center;color:#000;font:900 12px 'Archivo Black',sans-serif;position:relative;}
+  .bo-cluster-pin::after{content:'';position:absolute;inset:4px;border:1px solid rgba(0,0,0,.42);border-radius:50%;}
+
   .bo-user-pin{width:20px;height:20px;border-radius:50%;background:#1687ff;border:3px solid #fff;box-shadow:0 0 0 6px rgba(22,135,255,.22),0 0 18px rgba(22,135,255,.95);position:relative;animation:boUserPinPulse 1.9s ease-in-out infinite;}
   .bo-user-pin:after{content:'';position:absolute;inset:4px;border-radius:50%;background:#fff;}
   @keyframes boUserPinPulse{0%,100%{box-shadow:0 0 0 5px rgba(22,135,255,.18),0 0 14px rgba(22,135,255,.75);}50%{box-shadow:0 0 0 11px rgba(22,135,255,0),0 0 24px rgba(22,135,255,1);}}
@@ -6034,6 +6129,21 @@
     box-shadow:0 12px 38px rgba(0,0,0,.88),0 0 20px rgba(245,158,11,.32);
   }
   .bo-near-info-card.is-open{display:grid;}
+  .bo-near-info-card.is-cluster{grid-template-columns:1fr;width:min(560px,86vw);max-height:46vh;overflow:hidden;}
+  .bo-near-info-card.is-cluster .bo-near-info-media{display:none;}
+  .bo-near-info-card.is-cluster .bo-near-info-copy{padding:16px 16px 14px;overflow:auto;}
+  .bo-near-cluster-title{margin:0 34px 2px 0;color:#fff;font:900 18px 'Archivo Black',sans-serif;line-height:1.05;}
+  .bo-near-cluster-sub{color:#F59E0B;font:800 11px 'Archivo Narrow',sans-serif;letter-spacing:.04em;margin-bottom:10px;}
+  .bo-near-cluster-list{display:grid;gap:7px;}
+  .bo-near-cluster-row{width:100%;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:9px;align-items:center;border:1px solid rgba(245,158,11,.34);border-radius:9px;background:#0b1017;color:#fff;padding:6px;text-align:left;cursor:pointer;}
+  .bo-near-cluster-row:hover,.bo-near-cluster-row:focus-visible{border-color:#F59E0B;background:#111821;outline:none;}
+  .bo-near-cluster-thumb{width:52px;height:44px;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 40% 30%,rgba(245,158,11,.3),transparent 55%),#151515;display:flex;align-items:center;justify-content:center;color:#F59E0B;font-size:18px;}
+  .bo-near-cluster-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .bo-near-cluster-name{display:block;color:#fff;font:900 13px 'Archivo Narrow',sans-serif;line-height:1.05;}
+  .bo-near-cluster-meta{display:block;margin-top:3px;color:#F59E0B;font:700 9px 'Archivo Narrow',sans-serif;}
+  .bo-near-cluster-arrow{color:#F59E0B;font:900 18px 'Archivo Narrow',sans-serif;padding-right:3px;}
+  .bo-near-cluster-back{align-self:flex-start;border:1px solid rgba(245,158,11,.7);border-radius:999px;background:#0b0f14;color:#F59E0B;padding:5px 9px;font:900 9px 'Archivo Narrow',sans-serif;cursor:pointer;margin-bottom:7px;}
+
   .bo-near-info-media{width:150px;min-height:154px;background:#111;overflow:hidden;}
   .bo-near-info-media img{width:100%;height:100%;display:block;object-fit:cover;}
   .bo-near-info-placeholder{position:relative;width:100%;height:100%;min-height:154px;overflow:hidden;background:radial-gradient(ellipse at 30% 30%,hsl(36,85%,48%) 0%,hsl(36,58%,14%) 70%);}
@@ -6092,6 +6202,12 @@
     </div>
   </div>
   <div class="bop-landing-results" id="bopLandingResults"></div>
+
+  <div class="bop-landing-near-wrap" aria-label="Open restaurants near me">
+    <span class="bop-landing-near-arrow" aria-hidden="true">›</span>
+    <button type="button" id="bopLandingNearMeBtn" class="bop-landing-near-btn" aria-label="Near Me"><span class="bop-landing-near-label">Near Me</span></button>
+    <span class="bop-landing-near-arrow right" aria-hidden="true">‹</span>
+  </div>
 </div>
 <div id="siteFrame" aria-hidden="true"></div>
 <!-- Cover for the first paint: the Best Of overlay already starts open, this
@@ -9385,6 +9501,42 @@ function setupBopLanding(){
     }
 
     window.scrollTo(0, 0);
+  }
+
+
+
+  const landingNearBtn = document.getElementById('bopLandingNearMeBtn');
+  if(landingNearBtn){
+    landingNearBtn.addEventListener('click', function(){
+      landingNearBtn.blur();
+      const cityPoints = {
+        bestof:[36.1699,-115.1398],
+        miami:[25.7617,-80.1918],
+        london:[51.5072,-0.1276]
+      };
+      const openForCity = function(cityKey){
+        boCityContext = cityKey;
+        overlay.classList.remove('open');
+        results.classList.remove('open');
+        results.innerHTML = '';
+        if(typeof boOpenNearMap === 'function') boOpenNearMap();
+      };
+      const fallback = (typeof BO_CITY_CONFIG !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
+      if(!navigator.geolocation){ openForCity(fallback); return; }
+      navigator.geolocation.getCurrentPosition(function(pos){
+        const lat=pos.coords.latitude, lng=pos.coords.longitude;
+        let closest=fallback, best=Infinity;
+        Object.entries(cityPoints).forEach(function(entry){
+          const key=entry[0], point=entry[1];
+          const dLat=(lat-point[0])*Math.PI/180;
+          const dLng=(lng-point[1])*Math.PI/180;
+          const a=Math.sin(dLat/2)**2+Math.cos(lat*Math.PI/180)*Math.cos(point[0]*Math.PI/180)*Math.sin(dLng/2)**2;
+          const miles=3958.8*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+          if(miles<best){best=miles;closest=key;}
+        });
+        openForCity(closest);
+      },function(){openForCity(fallback);},{enableHighAccuracy:false,timeout:5000,maximumAge:300000});
+    });
   }
 
   input.addEventListener('input', function(){
@@ -17324,11 +17476,57 @@ function boNearEscape(value){
 
 function boHideNearRestaurantCard(){
   const card=document.getElementById('boNearInfoCard');
-  if(card) card.classList.remove('is-open');
+  if(card){ card.classList.remove('is-open','is-cluster'); }
   boNearSelectedRestaurantKey=null;
 }
 
-function boShowNearRestaurantCard(r,restaurantKey){
+
+function boNearCategoryLabel(r){
+  return String(r.cat||'Restaurant')
+    .replace(/^bjspicks/i,'BJS Picks ').replace(/highend/ig,' Fine')
+    .replace(/casual/ig,' Casual').replace(/dive/ig,' Dive')
+    .replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,m=>m.toUpperCase()).trim();
+}
+
+function boNearPropertyInfo(r){
+  const address=String(r.address||'');
+  const note=String(r.note||'');
+  if(/golden\s+nugget/i.test(note) || /129\s+e(?:ast)?\.?\s+fremont/i.test(address)){
+    return {key:'property:golden-nugget-las-vegas',name:'Golden Nugget',subtitle:'Restaurants inside the Golden Nugget'};
+  }
+  const normalized=address.toLowerCase()
+    .replace(/\b(?:suite|ste|unit|level|floor|fl)\s*[#a-z0-9-]+\b/g,'')
+    .replace(/[^a-z0-9]+/g,' ').trim();
+  return {key:'address:'+normalized,name:'This location',subtitle:'Restaurants at this location'};
+}
+
+function boShowNearRestaurantCluster(group){
+  const card=document.getElementById('boNearInfoCard');
+  const media=document.getElementById('boNearInfoMedia');
+  const copy=document.getElementById('boNearInfoCopy');
+  if(!card || !media || !copy || !group || !group.items || !group.items.length) return;
+  boNearSelectedRestaurantKey=group.key;
+  card.classList.add('is-cluster');
+  media.innerHTML='';
+  const esc=boNearEscape;
+  const rows=group.items.map((item,index)=>{
+    const r=item.restaurant;
+    const thumb=r.image ? '<img src="'+esc(r.image)+'" alt="">' : '<span>✦</span>';
+    const rating=r.rating ? '★ '+esc(r.ratingText||Number(r.rating).toFixed(1)) : 'Best Of selection';
+    return '<button class="bo-near-cluster-row" type="button" data-cluster-index="'+index+'">'+
+      '<span class="bo-near-cluster-thumb">'+thumb+'</span><span><span class="bo-near-cluster-name">'+esc(r.name)+'</span><span class="bo-near-cluster-meta">'+esc(boNearCategoryLabel(r))+' · '+rating+'</span></span><span class="bo-near-cluster-arrow">›</span></button>';
+  }).join('');
+  copy.innerHTML='<h3 class="bo-near-cluster-title">'+esc(group.name)+'</h3><div class="bo-near-cluster-sub">'+esc(group.subtitle)+' · '+group.items.length+' options</div><div class="bo-near-cluster-list">'+rows+'</div>';
+  copy.querySelectorAll('[data-cluster-index]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item=group.items[Number(btn.dataset.clusterIndex)];
+      if(item) boShowNearRestaurantCard(item.restaurant,item.restaurantKey,group);
+    });
+  });
+  card.classList.add('is-open');
+}
+
+function boShowNearRestaurantCard(r,restaurantKey,parentCluster){
   const card=document.getElementById('boNearInfoCard');
   const media=document.getElementById('boNearInfoMedia');
   const copy=document.getElementById('boNearInfoCopy');
@@ -17353,6 +17551,15 @@ function boShowNearRestaurantCard(r,restaurantKey){
     '<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a><button id="boNearOpenBestOf" type="button">OPEN RESTAURANT</button>'+website+'</div>';
   const openBtn=document.getElementById('boNearOpenBestOf');
   if(openBtn) openBtn.addEventListener('click',()=>boOpenRestaurantFromMap(r.cat,r.name),{once:true});
+  card.classList.remove('is-cluster');
+  if(parentCluster){
+    const back=document.createElement('button');
+    back.type='button';
+    back.className='bo-near-cluster-back';
+    back.textContent='← Restaurants in '+parentCluster.name;
+    back.addEventListener('click',()=>boShowNearRestaurantCluster(parentCluster));
+    copy.insertBefore(back,copy.firstChild);
+  }
   card.classList.add('is-open');
 }
 
@@ -17448,6 +17655,7 @@ async function boOpenNearMap(){
   });
 
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
+  const clusterIcon=count=>L.divIcon({className:'',html:'<div class="bo-cluster-pin" aria-label="'+count+' restaurants at this location">'+count+'</div>',iconSize:[34,34],iconAnchor:[17,17]});
 
   const milesBetween=(a,b)=>{
     const toRad=v=>v*Math.PI/180;
@@ -17470,19 +17678,34 @@ async function boOpenNearMap(){
       return bounds.contains(point);
     });
     const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    const grouped=new Map();
     visible.forEach(item=>{
-      const r=item.restaurant, geo=item.geo;
-      const restaurantKey=String(r.cat||'')+'||'+String(r.name||'')+'||'+String(r.address||'');
-      const marker=L.marker([geo.lat,geo.lon],{icon,keyboard:true,bubblingMouseEvents:false,riseOnHover:true}).addTo(boNearMapLayer);
-      // Desktop users can preview a restaurant by hovering. On touch devices
-      // we skip the temporary tooltip so a tap always opens the persistent popup.
-      if(!touchMode){
-        marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+      const property=boNearPropertyInfo(item.restaurant);
+      if(!grouped.has(property.key)) grouped.set(property.key,{...property,items:[],lat:0,lon:0});
+      const group=grouped.get(property.key);
+      const restaurantKey=String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||'');
+      group.items.push({...item,restaurantKey});
+      group.lat+=Number(item.geo.lat); group.lon+=Number(item.geo.lon);
+    });
+    grouped.forEach(group=>{
+      const count=group.items.length;
+      const lat=group.lat/count, lon=group.lon/count;
+      if(count>1){
+        const marker=L.marker([lat,lon],{icon:clusterIcon(count),keyboard:true,bubblingMouseEvents:false,riseOnHover:true}).addTo(boNearMapLayer);
+        if(!touchMode) marker.bindTooltip(group.name+' · '+count+' restaurants',{direction:'top',offset:[0,-24],opacity:.98});
+        marker.on('click',function(e){
+          if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+          boShowNearRestaurantCluster(group);
+        });
+      }else{
+        const item=group.items[0], r=item.restaurant, geo=item.geo;
+        const marker=L.marker([geo.lat,geo.lon],{icon,keyboard:true,bubblingMouseEvents:false,riseOnHover:true}).addTo(boNearMapLayer);
+        if(!touchMode) marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
+        marker.on('click',function(e){
+          if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+          boShowNearRestaurantCard(r,item.restaurantKey);
+        });
       }
-      marker.on('click',function(e){
-        if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-        boShowNearRestaurantCard(r,restaurantKey);
-      });
     });
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
     const loadingRemaining = Math.max(0, BO_NEAR_MIN_LOADING_MS - loadingElapsed);
