@@ -6023,6 +6023,41 @@
     .bo-near-popup-card{grid-template-columns:82px minmax(0,1fr);min-width:260px;max-width:292px;}
     .bo-near-popup-photo{width:82px;min-height:160px;}
   }
+
+  /* Persistent restaurant card: deliberately separate from Leaflet popups.
+     It cannot disappear when markers reload, the map moves, or a finger lifts. */
+  .bo-near-info-card{
+    position:absolute;z-index:10030;left:50%;bottom:calc(33.333vh + 16px);
+    transform:translateX(-50%);width:min(520px,82vw);min-height:154px;
+    display:none;grid-template-columns:150px minmax(0,1fr);overflow:hidden;
+    border:1px solid rgba(245,158,11,.9);border-radius:13px;background:#06090d;color:#fff;
+    box-shadow:0 12px 38px rgba(0,0,0,.88),0 0 20px rgba(245,158,11,.32);
+  }
+  .bo-near-info-card.is-open{display:grid;}
+  .bo-near-info-media{width:150px;min-height:154px;background:#111;overflow:hidden;}
+  .bo-near-info-media img{width:100%;height:100%;display:block;object-fit:cover;}
+  .bo-near-info-placeholder{position:relative;width:100%;height:100%;min-height:154px;overflow:hidden;background:radial-gradient(ellipse at 30% 30%,hsl(36,85%,48%) 0%,hsl(36,58%,14%) 70%);}
+  .bo-near-info-placeholder::after{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,rgba(0,0,0,.35) 0,rgba(0,0,0,.35) 3px,transparent 3px,transparent 16px),repeating-linear-gradient(25deg,rgba(0,0,0,.28) 0,rgba(0,0,0,.28) 3px,transparent 3px,transparent 18px);mix-blend-mode:multiply;}
+  .bo-near-info-placeholder-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;color:rgba(255,255,255,.25);font:900 3.4rem 'Fraunces',serif;}
+  .bo-near-info-copy{position:relative;min-width:0;padding:15px 42px 14px 16px;display:flex;flex-direction:column;gap:5px;}
+  .bo-near-info-name{margin:0;color:#fff;font:800 19px/1.08 'Archivo Narrow',sans-serif;}
+  .bo-near-info-category{color:#F59E0B;font:800 11px 'Archivo Narrow',sans-serif;text-transform:uppercase;letter-spacing:.04em;}
+  .bo-near-info-rating{color:#fff;font:700 12px 'Archivo Narrow',sans-serif;}
+  .bo-near-info-address{color:#e8e8e8;font:600 11px/1.35 'Archivo Narrow',sans-serif;}
+  .bo-near-info-phone{width:max-content;color:#55a9ff;font:800 12px 'Archivo Narrow',sans-serif;text-decoration:none;}
+  .bo-near-info-actions{margin-top:4px;display:flex;gap:7px;flex-wrap:wrap;}
+  .bo-near-info-actions a,.bo-near-info-actions button{border:0;border-radius:7px;background:#F59E0B;color:#000;padding:8px 10px;font:900 10px 'Archivo Narrow',sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap;}
+  .bo-near-info-actions .secondary{border:1px solid rgba(245,158,11,.68);background:#0b0f14;color:#F59E0B;}
+  .bo-near-info-close{position:absolute;right:8px;top:8px;z-index:2;width:28px;height:28px;border:1px solid rgba(245,158,11,.65);border-radius:50%;background:#000;color:#fff;font-size:20px;line-height:23px;cursor:pointer;}
+  @media(max-width:600px){
+    .bo-near-info-card{bottom:calc(33.333vh + 10px);width:86vw;grid-template-columns:104px minmax(0,1fr);min-height:142px;}
+    .bo-near-info-media{width:104px;min-height:142px;}
+    .bo-near-info-placeholder{min-height:142px;}
+    .bo-near-info-placeholder-mark{font-size:2.8rem;}
+    .bo-near-info-copy{padding:12px 36px 11px 12px;gap:4px;}
+    .bo-near-info-name{font-size:16px;}
+    .bo-near-info-actions a,.bo-near-info-actions button{padding:7px 8px;font-size:9px;}
+  }
 </style>
 
 </head>
@@ -17276,15 +17311,55 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div id="boNearInfoCard" class="bo-near-info-card" role="dialog" aria-live="polite" aria-label="Restaurant information"><button id="boNearInfoClose" class="bo-near-info-close" type="button" aria-label="Close restaurant information">×</button><div id="boNearInfoMedia" class="bo-near-info-media"></div><div id="boNearInfoCopy" class="bo-near-info-copy"></div></div><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
+  document.getElementById('boNearInfoClose').addEventListener('click',boHideNearRestaurantCard);
   return page;
+}
+
+function boNearEscape(value){
+  return String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function boHideNearRestaurantCard(){
+  const card=document.getElementById('boNearInfoCard');
+  if(card) card.classList.remove('is-open');
+  boNearSelectedRestaurantKey=null;
+}
+
+function boShowNearRestaurantCard(r,restaurantKey){
+  const card=document.getElementById('boNearInfoCard');
+  const media=document.getElementById('boNearInfoMedia');
+  const copy=document.getElementById('boNearInfoCopy');
+  if(!card || !media || !copy) return;
+  boNearSelectedRestaurantKey=restaurantKey;
+  const esc=boNearEscape;
+  const categoryLabel=String(r.cat||'Restaurant')
+    .replace(/^bjspicks/i,'BJS Picks ').replace(/highend/ig,' Fine')
+    .replace(/casual/ig,' Casual').replace(/dive/ig,' Dive')
+    .replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,m=>m.toUpperCase()).trim();
+  const ratingLabel=r.rating ? ('★ '+esc(r.ratingText||r.rating.toFixed(1))+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')) : 'Best Of Period selection';
+  media.innerHTML=r.image
+    ? '<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';">'
+    : '<div class="bo-near-info-placeholder" aria-label="Restaurant image coming soon"><span class="bo-near-info-placeholder-mark">✦</span></div>';
+  const phone=r.phone ? '<a class="bo-near-info-phone" href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'">'+esc(r.phone)+'</a>' : '';
+  const directions='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address);
+  const website=r.url ? '<a class="secondary" href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a>' : '';
+  copy.innerHTML='<h3 class="bo-near-info-name">'+esc(r.name)+'</h3>'+
+    '<div class="bo-near-info-category">'+esc(categoryLabel)+'</div>'+
+    '<div class="bo-near-info-rating">'+ratingLabel+'</div>'+
+    '<div class="bo-near-info-address">'+esc(r.address)+'</div>'+phone+
+    '<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a><button id="boNearOpenBestOf" type="button">OPEN RESTAURANT</button>'+website+'</div>';
+  const openBtn=document.getElementById('boNearOpenBestOf');
+  if(openBtn) openBtn.addEventListener('click',()=>boOpenRestaurantFromMap(r.cat,r.name),{once:true});
+  card.classList.add('is-open');
 }
 
 function boCloseNearMap(){
   boNearMapGeocodeRun++;
   const page=document.getElementById('boNearMapPage');
+  boHideNearRestaurantCard();
   if(page) page.classList.remove('open');
   document.body.style.overflow='';
 }
@@ -17345,7 +17420,7 @@ async function boOpenNearMap(){
   boNearInitialRadiusMode=true;
   boNearUserLatLng=null;
   boNearGeocodingComplete=false;
-  boNearSelectedRestaurantKey=null;
+  boHideNearRestaurantCard();
   if(boNearViewportHandler){
     boNearMap.off('moveend',boNearViewportHandler);
     boNearMap.off('zoomend',boNearViewportHandler);
@@ -17395,7 +17470,6 @@ async function boOpenNearMap(){
       return bounds.contains(point);
     });
     const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
-    let selectedMarkerToReopen=null;
     visible.forEach(item=>{
       const r=item.restaurant, geo=item.geo;
       const restaurantKey=String(r.cat||'')+'||'+String(r.name||'')+'||'+String(r.address||'');
@@ -17405,53 +17479,11 @@ async function boOpenNearMap(){
       if(!touchMode){
         marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
       }
-      const esc=(value)=>String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const categoryLabel=String(r.cat||'Restaurant')
-        .replace(/^bjspicks/i,'BJS Picks')
-        .replace(/highend/ig,' Fine')
-        .replace(/casual/ig,' Casual')
-        .replace(/dive/ig,' Dive')
-        .replace(/([a-z])([A-Z])/g,'$1 $2')
-        .replace(/\b\w/g,m=>m.toUpperCase());
-      const ratingLabel=r.rating ? ('★ '+esc(r.ratingText||r.rating.toFixed(1))+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')) : 'Best Of Period selection';
-      const imageMarkup=r.image
-        ? '<img class="bo-near-popup-photo" src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';">'
-        : '<div class="bo-near-popup-photo bo-near-popup-placeholder"><span>BEST OF</span><b>PERIOD.</b></div>';
-      const phoneMarkup=r.phone ? '<a class="bo-near-popup-phone" href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'">'+esc(r.phone)+'</a>' : '';
-      const directionsHref='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address);
-      const websiteMarkup=r.url ? '<a class="bo-near-popup-secondary" href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a>' : '';
-      const popupHtml='<div class="bo-near-popup-card">'+
-        imageMarkup+
-        '<div class="bo-near-popup-copy">'+
-          '<strong>'+esc(r.name)+'</strong>'+
-          '<span class="bo-near-popup-category">'+esc(categoryLabel)+'</span>'+
-          '<span class="bo-near-popup-rating">'+ratingLabel+'</span>'+
-          '<span class="bo-near-popup-address">'+esc(r.address)+'</span>'+
-          phoneMarkup+
-          '<div class="bo-near-popup-actions">'+
-            '<a class="bo-near-popup-directions" href="'+directionsHref+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a>'+
-            '<button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">OPEN IN BEST OF</button>'+
-            websiteMarkup+
-          '</div>'+
-        '</div>'+
-      '</div>';
-      marker.bindPopup(popupHtml,{autoClose:true,closeButton:true,closeOnEscapeKey:true,closeOnClick:false,autoPan:false,maxWidth:340,minWidth:270,className:'bo-near-dark-popup'});
-      marker.on('click',function(){
-        boNearSelectedRestaurantKey=restaurantKey;
-        marker.openPopup();
+      marker.on('click',function(e){
+        if(e && e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
+        boShowNearRestaurantCard(r,restaurantKey);
       });
-      marker.on('popupclose',function(){
-        if(boNearSelectedRestaurantKey===restaurantKey) boNearSelectedRestaurantKey=null;
-      });
-      if(boNearSelectedRestaurantKey===restaurantKey) selectedMarkerToReopen=marker;
     });
-    // New geocoded restaurants are added progressively. Rebuilding the visible
-    // layer must not dismiss the card the visitor just opened.
-    if(selectedMarkerToReopen){
-      window.setTimeout(()=>{
-        if(boNearSelectedRestaurantKey) selectedMarkerToReopen.openPopup();
-      },0);
-    }
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
     const loadingRemaining = Math.max(0, BO_NEAR_MIN_LOADING_MS - loadingElapsed);
     if((visible.length || boNearGeocodingComplete) && loading){
