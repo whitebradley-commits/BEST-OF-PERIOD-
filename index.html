@@ -5938,14 +5938,28 @@
 <style id="boNearMePageStyles">
   .bo-near-map-page{position:fixed;inset:0;z-index:10020;background:#000;display:none;overflow:hidden;}
   .bo-near-map-page.open{display:block;}
-  .bo-near-map-canvas{position:absolute;inset:0;background:#111;}
-  .bo-near-map-back{position:absolute;top:max(18px,env(safe-area-inset-top));left:16px;z-index:10025;border:2px solid #F59E0B;background:#F59E0B;color:#000;border-radius:999px;padding:10px 17px;font-family:'Archivo Narrow',sans-serif;font-size:14px;font-weight:900;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 12px rgba(245,158,11,.85),0 0 25px rgba(245,158,11,.45);}
-  .bo-near-map-status{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:10025;max-width:calc(100% - 32px);background:rgba(0,0,0,.86);border:1px solid rgba(245,158,11,.7);color:#fff;border-radius:999px;padding:8px 14px;font-family:'Archivo Narrow',sans-serif;font-size:12px;text-align:center;box-shadow:0 0 14px rgba(245,158,11,.25);}
+  .bo-near-map-canvas{position:absolute;top:33.333vh;left:4vw;right:4vw;height:33.334vh;background:#111;border:2px solid #F59E0B;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.18);}
+  .bo-near-map-back{position:absolute;top:max(36px,env(safe-area-inset-top));left:20px;z-index:10025;width:48px;height:48px;padding:0;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#F59E0B;cursor:pointer;}
+  .bo-near-map-meta{position:absolute;left:4vw;top:calc(66.667vh + 10px);z-index:10025;max-width:88vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#b8b8b8;text-align:left;text-shadow:0 0 5px rgba(255,255,255,.55),0 0 10px rgba(255,255,255,.22);}
+  .bo-near-map-legend{display:flex;align-items:center;gap:15px;white-space:nowrap;}
+  .bo-near-legend-item{display:inline-flex;align-items:center;gap:5px;}
+  .bo-near-legend-blue{width:11px;height:11px;border-radius:50%;background:#1687ff;border:2px solid #fff;box-shadow:0 0 7px rgba(22,135,255,.95);}
+  .bo-near-legend-orange{width:11px;height:11px;border-radius:50% 50% 50% 0;background:#F59E0B;border:1px solid #000;transform:rotate(-45deg);box-shadow:0 0 7px rgba(245,158,11,.9);}
+  .bo-near-legend-orange + span{margin-left:1px;}
+  .bo-near-map-status{background:transparent;border:0;color:#b8b8b8;padding:0;}
+  @media(max-width:600px){
+    .bo-near-map-canvas{left:3vw;right:3vw;}
+    .bo-near-map-meta{left:3vw;max-width:94vw;}
+  }
   .bo-near-map-page .leaflet-control-zoom a{background:#000;color:#F59E0B;border-color:#F59E0B;}
   .bo-near-map-page .leaflet-control-attribution{background:rgba(0,0,0,.72);color:#bbb;}
   .bo-near-map-page .leaflet-control-attribution a{color:#F59E0B;}
   .bo-orange-pin{width:22px;height:22px;border-radius:50% 50% 50% 0;background:#F59E0B;border:2px solid #000;transform:rotate(-45deg);box-shadow:0 0 10px rgba(245,158,11,.95),0 0 18px rgba(245,158,11,.5);position:relative;}
   .bo-orange-pin:after{content:'';position:absolute;width:7px;height:7px;border-radius:50%;background:#000;left:5.5px;top:5.5px;}
+  .bo-user-pin{width:20px;height:20px;border-radius:50%;background:#1687ff;border:3px solid #fff;box-shadow:0 0 0 6px rgba(22,135,255,.22),0 0 18px rgba(22,135,255,.95);position:relative;animation:boUserPinPulse 1.9s ease-in-out infinite;}
+  .bo-user-pin:after{content:'';position:absolute;inset:4px;border-radius:50%;background:#fff;}
+  @keyframes boUserPinPulse{0%,100%{box-shadow:0 0 0 5px rgba(22,135,255,.18),0 0 14px rgba(22,135,255,.75);}50%{box-shadow:0 0 0 11px rgba(22,135,255,0),0 0 24px rgba(22,135,255,1);}}
+  @media(prefers-reduced-motion:reduce){.bo-user-pin{animation:none;}}
   .bo-near-map-page .leaflet-tooltip{background:#050505;border:1px solid #F59E0B;color:#fff;border-radius:8px;box-shadow:0 0 12px rgba(245,158,11,.32);font-family:'Archivo Narrow',sans-serif;font-weight:700;}
   .bo-near-map-page .leaflet-tooltip:before{border-top-color:#F59E0B;}
   .bo-near-popup{min-width:190px;font-family:'Archivo Narrow',sans-serif;color:#111;}
@@ -17124,6 +17138,8 @@ const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" 
 // ===== Near Me map page =====
 let boNearMap = null;
 let boNearMapLayer = null;
+let boNearUserMarker = null;
+let boNearAccuracyCircle = null;
 let boNearMapGeocodeRun = 0;
 
 function boNearCityDefaults(cityKey){
@@ -17182,7 +17198,7 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><button id="boNearMapBack" class="bo-near-map-back" type="button">← Back</button><div id="boNearMapStatus" class="bo-near-map-status">Loading restaurants…</div>';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status">Loading restaurants…</div></div>';
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
   return page;
@@ -17238,7 +17254,28 @@ async function boOpenNearMap(){
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(boNearMap);
   }else boNearMap.setView(defaults.center,defaults.zoom);
   if(boNearMapLayer) boNearMapLayer.clearLayers(); else boNearMapLayer=L.layerGroup().addTo(boNearMap);
+  if(boNearUserMarker){ boNearMap.removeLayer(boNearUserMarker); boNearUserMarker=null; }
+  if(boNearAccuracyCircle){ boNearMap.removeLayer(boNearAccuracyCircle); boNearAccuracyCircle=null; }
   setTimeout(()=>boNearMap.invalidateSize(),50);
+
+  // Show the visitor's live position as a distinct blue marker. If location
+  // permission is denied or unavailable, the map simply stays centered on
+  // the selected city and the restaurant pins continue to load normally.
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition((position)=>{
+      if(run!==boNearMapGeocodeRun) return;
+      const lat=position.coords.latitude;
+      const lon=position.coords.longitude;
+      const userIcon=L.divIcon({className:'',html:'<div class="bo-user-pin"></div>',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-14]});
+      boNearUserMarker=L.marker([lat,lon],{icon:userIcon,zIndexOffset:1000}).addTo(boNearMap);
+      boNearUserMarker.bindTooltip('Your location',{direction:'top',offset:[0,-12],opacity:.98});
+      boNearAccuracyCircle=L.circle([lat,lon],{radius:Math.max(position.coords.accuracy||0,20),color:'#1687ff',weight:1,fillColor:'#1687ff',fillOpacity:.08,opacity:.45,interactive:false}).addTo(boNearMap);
+      boNearMap.setView([lat,lon],13);
+    },()=>{
+      // City-center fallback is intentional; no error message is needed.
+    },{enableHighAccuracy:true,timeout:9000,maximumAge:120000});
+  }
+
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
   let placed=0;
   for(let i=0;i<restaurants.length;i++){
@@ -17257,8 +17294,7 @@ async function boOpenNearMap(){
     // Respect the public geocoder; cached addresses appear immediately.
     if(i<restaurants.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
   }
-  status.textContent=placed?placed+' restaurants on the map':'No mapped restaurant addresses are available yet.';
-  setTimeout(()=>{ if(status) status.style.display='none'; },2600);
+  status.textContent=placed?'Hover over any pin for more information.':'No mapped restaurant addresses are available yet.';
 }
 window.boOpenNearMap=boOpenNearMap;
 
