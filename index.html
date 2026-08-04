@@ -1690,7 +1690,7 @@
      shortcut a separate lower position and a larger clean black gap. */
   #bopLandingOverlay.open{
     justify-content:flex-start;
-    padding-top:7vh;
+    padding-top:24vh;
   }
   #bopLandingOverlay > .bop-splash-hero{
     margin-top:0 !important;
@@ -9515,6 +9515,7 @@ function setupBopLanding(){
         london:[51.5072,-0.1276]
       };
       const openForCity = function(cityKey){
+        boNearMapReturnTarget = 'landing';
         boCityContext = cityKey;
         overlay.classList.remove('open');
         results.classList.remove('open');
@@ -17391,6 +17392,7 @@ let boNearUserLatLng = null;
 let boNearGeocodingComplete = false;
 let boNearLoadingStartedAt = 0;
 let boNearSelectedRestaurantKey = null;
+let boNearMapReturnTarget = 'city';
 const BO_NEAR_MIN_LOADING_MS = 6000;
 
 function boNearCityDefaults(cityKey){
@@ -17465,7 +17467,7 @@ function boEnsureNearMapPage(){
   page.id='boNearMapPage'; page.className='bo-near-map-page';
   page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div id="boNearInfoCard" class="bo-near-info-card" role="dialog" aria-live="polite" aria-label="Restaurant information"><button id="boNearInfoClose" class="bo-near-info-close" type="button" aria-label="Close restaurant information">×</button><div id="boNearInfoMedia" class="bo-near-info-media"></div><div id="boNearInfoCopy" class="bo-near-info-copy"></div></div><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
   document.body.appendChild(page);
-  document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
+  document.getElementById('boNearMapBack').addEventListener('click',()=>boCloseNearMap(true));
   document.getElementById('boNearInfoClose').addEventListener('click',boHideNearRestaurantCard);
   return page;
 }
@@ -17563,12 +17565,17 @@ function boShowNearRestaurantCard(r,restaurantKey,parentCluster){
   card.classList.add('is-open');
 }
 
-function boCloseNearMap(){
+function boCloseNearMap(returnToOrigin=false){
   boNearMapGeocodeRun++;
   const page=document.getElementById('boNearMapPage');
   boHideNearRestaurantCard();
   if(page) page.classList.remove('open');
   document.body.style.overflow='';
+  if(returnToOrigin && boNearMapReturnTarget === 'landing'){
+    const landing=document.getElementById('bopLandingOverlay');
+    if(landing) landing.classList.add('open');
+    window.scrollTo(0,0);
+  }
 }
 
 function boOpenRestaurantFromMap(cat,name){
@@ -18585,6 +18592,7 @@ function boRenderCategory(cat){
     if(nearMePreviewBtn){
       nearMePreviewBtn.addEventListener('click', () => {
         nearMePreviewBtn.blur();
+        boNearMapReturnTarget = 'city';
         boOpenNearMap();
       });
     }
