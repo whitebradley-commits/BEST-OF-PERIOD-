@@ -17472,14 +17472,13 @@ const boPickerConfig = {
     { label: '🏆 Best of Period', cat: 'asianbestofrest' }
   ],
   otheroptions: [
-    // Balanced rows: broad cuisines and signature categories are spread
-    // evenly instead of clustering similar tiles together.
+    // The first row is deliberately fixed by priority/search popularity.
+    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
+    { label: 'Michelin<br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
     { label: 'Asian', cat: 'asian' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
     { label: 'Mexican', cat: 'mexican' },
-    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: 'Michelin<br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
     { label: 'James Beard', cat: 'jamesbeard' },
     { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Pizza', cat: 'pizza' },
@@ -18302,7 +18301,7 @@ function boRenderCategory(cat){
   // earlier, and resurfaced here on London's BJS Picks page once it dropped
   // to a single entry (Fallow) after Dishoom moved to its own category.
   if(boSectionHeadEl) boSectionHeadEl.style.display = (isSingleEntry && !isMainCityPage && !isBjsPick) ? 'none' : '';
-  if(boScrollCueEl) boScrollCueEl.style.display = (!isSingleEntry && !isBjsPick) ? 'flex' : 'none';
+  if(boScrollCueEl) boScrollCueEl.style.display = isMainCityPage ? 'flex' : 'none';
   if(boHeroSubEl){
     const isDiveTier = cat.toLowerCase().includes('dive');
     boHeroSubEl.style.display = ((isSingleEntry && !isBjsPick && !isDiveTier)) || BO_CITY_CONFIG[cat] || cat === 'dessert' || cat === 'steakeggs' ? 'none' : '';
