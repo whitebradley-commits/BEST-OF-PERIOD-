@@ -5556,6 +5556,130 @@
 }
 </style>
 
+
+<style id="other-cities-layout-popup-refinement">
+/* Clear prior visual overrides with a precise final Other Cities layout. */
+#ocWorldOverlay .oc-world-inner{
+  justify-content:flex-start !important;
+  padding-top:76px !important;
+}
+
+/* Large orange title, matching the bold WTF-style display font — no glow. */
+#ocWorldOverlay .oc-world-title{
+  order:1 !important;
+  font-family:'Archivo Black',sans-serif !important;
+  font-size:clamp(2.35rem,10vw,4.8rem) !important;
+  font-weight:900 !important;
+  line-height:.95 !important;
+  letter-spacing:.025em !important;
+  text-transform:uppercase !important;
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+  text-shadow:none !important;
+  margin:4px 0 18px !important;
+}
+
+/* Legend remains above map. */
+#ocWorldOverlay .oc-legend{
+  order:2 !important;
+  margin:0 auto 14px !important;
+}
+#ocWorldOverlay .oc-legend-item{
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+}
+
+/* Remove the actual gold/gray square around the world map. */
+#ocWorldOverlay .oc-world-map{
+  order:3 !important;
+  border:none !important;
+  outline:none !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  background:#000 !important;
+  padding:0 !important;
+}
+#ocWorldOverlay .oc-world-map::before,
+#ocWorldOverlay .oc-world-map::after{
+  content:none !important;
+  display:none !important;
+}
+#ocWorldOverlay #ocPinLayer{
+  inset:0 !important;
+}
+
+/* Search moves directly underneath the world map. */
+#ocWorldOverlay .oc-search-wrap{
+  order:4 !important;
+  margin:22px auto 12px !important;
+  max-width:300px !important;
+}
+#ocWorldOverlay .oc-search-input{
+  border-color:#F59E0B !important;
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  background:#080808 !important;
+  box-shadow:0 0 12px rgba(245,158,11,.38) !important;
+  animation:none !important;
+}
+#ocWorldOverlay .oc-search-input::placeholder{
+  color:#F59E0B !important;
+  opacity:.72 !important;
+}
+#ocWorldOverlay .oc-search-powered-by{
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+}
+#ocWorldOverlay .oc-search-powered-by svg:first-child{
+  fill:#F59E0B !important;
+}
+#ocWorldOverlay .oc-search-powered-by svg circle{
+  stroke:#F59E0B !important;
+}
+#ocWorldOverlay .oc-search-powered-by svg text{
+  fill:#F59E0B !important;
+}
+
+/* Popup appears beneath search, fully orange except live action button. */
+#ocWorldOverlay #ocCityCard{
+  order:5 !important;
+  border:1.5px solid rgba(245,158,11,.72) !important;
+  background:#080808 !important;
+  box-shadow:0 0 18px rgba(245,158,11,.22) !important;
+}
+#ocWorldOverlay #ocCityName{
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+}
+#ocWorldOverlay #ocCityStatus{
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+}
+#ocWorldOverlay #ocCityGo{
+  background:#22C55E !important;
+  color:#06140A !important;
+  -webkit-text-fill-color:#06140A !important;
+  box-shadow:0 0 14px rgba(34,197,94,.55) !important;
+}
+
+/* Exact Back button — orange, overriding the old blue rule. */
+#ocWorldOverlay #ocWorldClose{
+  color:#F59E0B !important;
+  -webkit-text-fill-color:#F59E0B !important;
+  border-color:#F59E0B !important;
+  background:radial-gradient(circle at 50% 30%,rgba(245,158,11,.18),transparent 65%),#0c0c0c !important;
+  box-shadow:0 0 0 1px rgba(245,158,11,.16),0 0 18px rgba(245,158,11,.48) !important;
+  animation:none !important;
+}
+
+/* Prevent old broad rules from adding orange fill to the map itself. */
+#ocWorldOverlay .oc-world-map,
+#ocWorldOverlay #ocWorldSvg{
+  fill:none !important;
+  filter:none !important;
+}
+</style>
+
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -9314,14 +9438,18 @@ function ocShowCity(city){
   var goEl = document.getElementById('ocCityGo');
   if(nameEl) nameEl.textContent = city.n;
   if(statusEl) statusEl.textContent = OC_TIER_TEXT[city.t] || '';
-  // Every city pops up a card, not just the live ones — colored blue if it's
-  // live (Vegas, Miami, ...) or red if it's still coming.
+  // All city popups now use the shared orange page accent.
+  // Live-city action buttons remain green so they stand out clearly.
   var isLive = city.t === 'live';
-  if(card) card.style.borderColor = isLive ? 'rgba(59,157,255,0.55)' : 'rgba(255,77,77,0.55)';
-  if(nameEl) nameEl.style.color = isLive ? '#3b9dff' : '#ff4d4d';
+  if(card) card.style.borderColor = 'rgba(245,158,11,0.72)';
+  if(nameEl) nameEl.style.color = '#F59E0B';
+  if(statusEl) statusEl.style.color = '#F59E0B';
   if(goEl){
     if(city.t === 'live'){
       goEl.classList.add('open');
+      goEl.style.background = '#22C55E';
+      goEl.style.color = '#06140A';
+      goEl.style.boxShadow = '0 0 14px rgba(34,197,94,.55)';
       // Jump straight to that city's Main tile page instead of its former
       // city-specific Best Of list. Each live city carries its own `dest`
       // context — Vegas is 'bestof', Miami is 'miami', London is 'london'.
