@@ -8497,10 +8497,13 @@ function setupBopReturnToLandingBtn(){
     // On any city/category Best Of page, the gold Main button must return
     // to that selected city's Main tile grid — not the rotating landing page.
     if(typeof boRenderCategory === 'function' && boCurrentCat !== 'otheroptions'){
-      if(BO_CITY_CONFIG[boCurrentCat]){
-        boCityContext = boCurrentCat;
-      } else if(!(typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext])){
-        boCityContext = 'bestof';
+      // MAIN always returns to the selected city's tile-filled Main page.
+      if(typeof BO_CITY_CONFIG !== 'undefined'){
+        if(BO_CITY_CONFIG[boCurrentCat]){
+          boCityContext = boCurrentCat;
+        } else if(!(boCityContext && BO_CITY_CONFIG[boCityContext])){
+          boCityContext = 'bestof';
+        }
       }
       boRenderCategory('otheroptions');
       window.scrollTo(0, 0);
@@ -16677,7 +16680,7 @@ const boHeroCopy = {
     sub: ""
   },
   otheroptions: {
-    title: '<span class="bo-hero-24hr-glow">OTHER BESTS</span>',
+    title: '<span class="bo-hero-24hr-glow">MAIN</span>',
     sub: "Every genre in one place — dessert, 24-hour spots, and everything else worth exploring."
   },
   steakeggs: {
@@ -16939,7 +16942,16 @@ function renderBjsPickFooter(cat){
     otherBtn.style.overflow = 'hidden';
     otherBtn.innerHTML = '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.32;pointer-events:none;"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM7 4H3v2a4 4 0 0 0 4 4M17 4h4v2a4 4 0 0 1-4 4"/></svg></span><span style="position:relative;color:#F59E0B;font-size:0.82rem;">MAIN</span>';
     otherBtn.addEventListener('click', function(){
+      // MAIN always opens the selected city's tile-filled Main page.
+      if(typeof BO_CITY_CONFIG !== 'undefined'){
+        if(BO_CITY_CONFIG[boCurrentCat]){
+          boCityContext = boCurrentCat;
+        } else if(!(boCityContext && BO_CITY_CONFIG[boCityContext])){
+          boCityContext = 'bestof';
+        }
+      }
       boRenderCategory('otheroptions');
+      window.scrollTo(0,0);
     });
     row.appendChild(otherBtn);
   }
