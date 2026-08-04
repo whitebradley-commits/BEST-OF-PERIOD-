@@ -5053,6 +5053,81 @@
 }
 </style>
 
+
+<style id="bop-main-hub-blue-footer-tiles">
+/* Bottom feature row shown ONLY on each city's Main / Hub page. */
+.bo-main-hub-footer{
+  width:min(760px,100%);
+  margin:clamp(110px,16vh,190px) auto 20px;
+  padding-top:clamp(34px,5vh,58px);
+  border-top:1px solid rgba(159,226,255,.34);
+}
+.bo-main-hub-footer-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(10px,2.2vw,18px);
+  align-items:stretch;
+}
+.bo-main-hub-blue-tile{
+  min-width:0 !important;
+  width:100% !important;
+  min-height:104px !important;
+  padding:14px 8px !important;
+  border:2px solid #9FE2FF !important;
+  border-radius:18px !important;
+  background:#05090C !important;
+  color:#9FE2FF !important;
+  -webkit-text-fill-color:#9FE2FF !important;
+  font-family:'Bebas Neue',sans-serif !important;
+  font-size:clamp(1rem,3.4vw,1.35rem) !important;
+  line-height:1.08 !important;
+  letter-spacing:.035em !important;
+  text-align:center !important;
+  box-shadow:
+    0 0 10px rgba(159,226,255,.44),
+    0 0 24px rgba(159,226,255,.18),
+    inset 0 0 16px rgba(159,226,255,.045) !important;
+  cursor:pointer;
+}
+.bo-main-hub-blue-tile:hover,
+.bo-main-hub-blue-tile:focus-visible{
+  color:#D6F4FF !important;
+  -webkit-text-fill-color:#D6F4FF !important;
+  border-color:#D6F4FF !important;
+  box-shadow:
+    0 0 14px rgba(159,226,255,.68),
+    0 0 32px rgba(159,226,255,.28),
+    inset 0 0 18px rgba(159,226,255,.07) !important;
+}
+.bo-main-hub-blue-tile:active{
+  transform:translateY(1px);
+}
+.bo-main-hub-blue-tile[aria-disabled="true"]{
+  cursor:default;
+}
+.bo-main-hub-send-icon{
+  display:block;
+  width:20px;
+  height:20px;
+  margin:0 auto 7px;
+  stroke:#9FE2FF;
+}
+@media(max-width:560px){
+  .bo-main-hub-footer{
+    width:100%;
+    margin-top:112px;
+  }
+  .bo-main-hub-footer-grid{
+    gap:8px;
+  }
+  .bo-main-hub-blue-tile{
+    min-height:98px !important;
+    padding:12px 5px !important;
+    font-size:clamp(.92rem,4vw,1.12rem) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -16688,6 +16763,9 @@ function formatPickLabel(lbl, cityKey){
 function renderBjsPickFooter(cat){
   if(!boListEl) return;
 
+  // The city Main / Hub page has its own dedicated baby-blue footer tiles.
+  if(cat === 'otheroptions') return;
+
   const row = document.createElement('div');
   row.className = 'bo-bottom-tile-row';
 
@@ -16933,12 +17011,61 @@ function boRenderCategory(cat){
     const pickerOptions = (cat === 'otheroptions' && boCityContext === 'london')
       ? boPickerConfig[cat].filter(opt => opt.cat !== 'jamesbeard')
       : boPickerConfig[cat];
+    const mainHubFooterHTML = cat === 'otheroptions' ? `
+      <div class="bo-main-hub-footer">
+        <div class="bo-main-hub-footer-grid">
+          <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST POOL</button>
+          <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true">BEST GOLF<br>COURSE</button>
+          <button type="button" class="bo-main-hub-blue-tile" id="boMainHubSendPage">
+            <svg class="bo-main-hub-send-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line>
+              <line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line>
+            </svg>
+            SEND PAGE
+          </button>
+        </div>
+      </div>
+    ` : '';
+
     boListEl.innerHTML = specialCirclesHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
       <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
-    `).join('') + `</div>` + moneyLegendHTML;
-    boListEl.querySelectorAll('.bo-picker-btn').forEach(btn => {
+    `).join('') + `</div>` + moneyLegendHTML + mainHubFooterHTML;
+
+    boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
       btn.addEventListener('click', () => boRenderCategory(btn.dataset.pickerCat));
     });
+
+    const mainHubSendBtn = document.getElementById('boMainHubSendPage');
+    if(mainHubSendBtn){
+      mainHubSendBtn.addEventListener('click', async () => {
+        const cityKey = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
+        const cityHash = cityKey === 'bestof' ? '' : '#' + cityKey;
+        const shareUrl = window.location.origin + '/main/' + cityHash;
+        const cityLabel = (BO_CITY_CONFIG[cityKey] || BO_CITY_CONFIG.bestof).displayName;
+        const pageTitle = `Best Of ${cityLabel} Period — Main`;
+        if(navigator.share){
+          try {
+            await navigator.share({ title: pageTitle, text: `Check out ${pageTitle}`, url: shareUrl });
+          } catch(shareErr) {
+            // User cancelled the native share sheet.
+          }
+        } else if(navigator.clipboard && navigator.clipboard.writeText){
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            const original = mainHubSendBtn.innerHTML;
+            mainHubSendBtn.textContent = 'COPIED!';
+            setTimeout(() => { mainHubSendBtn.innerHTML = original; }, 2000);
+          } catch(copyErr) {
+            prompt('Copy this link to share:', shareUrl);
+          }
+        } else {
+          prompt('Copy this link to share:', shareUrl);
+        }
+      });
+    }
     // Run the same city-cycler used on the real Best Of / Vegas / Period
     // badge, so the BJS Pick button's mini badge spins through cities and
     // lands on Vegas too, rather than sitting static.
@@ -17190,17 +17317,17 @@ function boRenderCategory(cat){
   // history with every category visited — only an intentional share link
   // needs to be a real, loadable address.
   const boShareHash = '#' + cat + (boCityContext !== 'bestof' ? '/' + boCityContext : '');
-  if(window.location.hash !== boShareHash){
-    // Some browsers/webviews restrict the History API when a page is
-    // opened as a local file rather than served over http/https (which is
-    // how this gets tested outside the live site) — wrapped defensively so
-    // that restriction can never throw and break the rest of the page.
-    try {
+  try {
+    if(cat === 'otheroptions'){
+      // The city Main / Hub page receives a clean, shareable /main/ address.
+      // Vegas uses /main/ and other cities retain their context in the hash.
+      const mainCityHash = boCityContext !== 'bestof' ? '#' + boCityContext : '';
+      history.replaceState(null, '', '/main/' + mainCityHash);
+    } else if(window.location.hash !== boShareHash){
       history.replaceState(null, '', boShareHash);
-    } catch(hashErr) {
-      // No-op — deep-linking just won't update the visible URL in this
-      // context; every other feature on the page keeps working normally.
     }
+  } catch(hashErr) {
+    // Local-file previews may block History API updates; page behavior remains intact.
   }
 
   if(cat === 'bestof'){
@@ -17299,7 +17426,16 @@ boBackBtnEl.addEventListener('click', (e) => {
 // homepage for an empty, missing, or invalid hash so a normal visit (or a
 // stale/bad link) never breaks.
 (() => {
+  const pathIsMain = /\/main\/?$/i.test(window.location.pathname);
   const rawHash = window.location.hash.replace(/^#/, '');
+
+  if(pathIsMain){
+    if(rawHash && BO_CITY_CONFIG[rawHash]) boCityContext = rawHash;
+    else boCityContext = 'bestof';
+    boRenderCategory('otheroptions');
+    return;
+  }
+
   if(!rawHash){ boRenderCategory('bestof'); return; }
   const [linkedCat, linkedCity] = rawHash.split('/');
   const catIsReal = linkedCat && (Object.prototype.hasOwnProperty.call(boCategoryData, linkedCat) || Object.prototype.hasOwnProperty.call(boPickerConfig, linkedCat));
