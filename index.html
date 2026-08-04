@@ -5942,18 +5942,19 @@
   .bo-near-map-loading{position:absolute;top:33.333vh;left:9vw;right:9vw;height:33.334vh;z-index:10024;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.48);border-radius:10px;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}
   .bo-near-map-loading.is-hidden{opacity:0;visibility:hidden;}
   .bo-near-loading-main{font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 8px rgba(245,158,11,.85),0 0 18px rgba(245,158,11,.45);animation:boNearLoadingPulse 1.15s ease-in-out infinite;}
-  .bo-near-loading-sub{font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;color:#b8b8b8;text-shadow:0 0 6px rgba(255,255,255,.35);}
+  .bo-near-loading-sub{font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;color:#F59E0B;text-shadow:0 0 7px rgba(245,158,11,.65);}
   @keyframes boNearLoadingPulse{0%,100%{opacity:.52;transform:scale(.98);}50%{opacity:1;transform:scale(1.02);}}
   @media (prefers-reduced-motion:reduce){.bo-near-loading-main{animation:none;}}
 
   .bo-near-map-back{position:absolute;top:max(36px,env(safe-area-inset-top));left:20px;z-index:10025;width:48px;height:48px;padding:0;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#F59E0B;cursor:pointer;}
-  .bo-near-map-meta{position:absolute;left:9vw;top:calc(66.667vh + 10px);z-index:10025;max-width:82vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#b8b8b8;text-align:left;text-shadow:0 0 5px rgba(255,255,255,.55),0 0 10px rgba(255,255,255,.22);}
+  .bo-near-map-meta{position:absolute;left:9vw;top:calc(66.667vh + 10px);z-index:10025;max-width:82vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#F59E0B;text-align:left;text-shadow:0 0 6px rgba(245,158,11,.65),0 0 12px rgba(245,158,11,.28);}
   .bo-near-map-legend{display:flex;align-items:center;gap:15px;white-space:nowrap;}
   .bo-near-legend-item{display:inline-flex;align-items:center;gap:5px;}
   .bo-near-legend-blue{width:11px;height:11px;border-radius:50%;background:#1687ff;border:2px solid #fff;box-shadow:0 0 7px rgba(22,135,255,.95);}
   .bo-near-legend-orange{width:11px;height:11px;border-radius:50% 50% 50% 0;background:#F59E0B;border:1px solid #000;transform:rotate(-45deg);box-shadow:0 0 7px rgba(245,158,11,.9);}
   .bo-near-legend-orange + span{margin-left:1px;}
-  .bo-near-map-status{background:transparent;border:0;color:#b8b8b8;padding:0;}
+  .bo-near-map-status{background:transparent;border:0;color:#F59E0B;padding:0;text-shadow:0 0 6px rgba(245,158,11,.65),0 0 12px rgba(245,158,11,.28);}
+  .bo-near-map-status.is-loading{font-family:'Archivo Black',sans-serif;letter-spacing:.08em;text-transform:uppercase;animation:boNearLoadingPulse 1.15s ease-in-out infinite;}
   @media(max-width:600px){
     .bo-near-map-canvas{left:7vw;right:7vw;}
     .bo-near-map-loading{left:7vw;right:7vw;}
@@ -17211,7 +17212,7 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">Finding yummy spots near you…</div><div class="bo-near-loading-sub">This may take a moment the first time.</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status">Checking nearby restaurants…</div></div>';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
   return page;
@@ -17260,7 +17261,7 @@ async function boOpenNearMap(){
   const loading=document.getElementById('boNearMapLoading');
   page.classList.add('open'); document.body.style.overflow='hidden';
   if(loading) loading.classList.remove('is-hidden');
-  status.style.display='block'; status.textContent='Checking nearby restaurants…';
+  status.style.display='block'; status.classList.add('is-loading'); status.textContent='LOADING...';
   const run=++boNearMapGeocodeRun;
   try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
   if(run!==boNearMapGeocodeRun) return;
@@ -17331,13 +17332,15 @@ async function boOpenNearMap(){
       marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>');
     });
     if(visible.length && loading) loading.classList.add('is-hidden');
+    if(visible.length || boNearGeocodingComplete) status.classList.remove('is-loading');
     if(!boNearGeocodingComplete && !visible.length){
-      status.textContent='Checking nearby restaurants…';
+      status.classList.add('is-loading'); status.textContent='LOADING...';
     }else if(boNearInitialRadiusMode && boNearUserLatLng){
       status.textContent=visible.length
-        ? 'Showing yummy spots within 1 mile. Zoom out to see more.'
+        ? 'Showing yummy spots within a one-mile radius. Zoom out for more options.'
         : 'No yummy spots are mapped within 1 mile yet. Zoom out to see more.';
     }else{
+      status.classList.remove('is-loading');
       status.textContent=visible.length?'Showing yummy spots in this map area.':'No yummy spots are mapped in this view.';
     }
   };
