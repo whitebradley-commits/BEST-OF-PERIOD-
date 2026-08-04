@@ -5994,6 +5994,35 @@
   .bo-near-popup small{display:block;line-height:1.35;margin-bottom:9px;color:#F59E0B;opacity:.88;}
   .bo-near-popup-actions{display:flex;gap:7px;flex-wrap:wrap;}
   .bo-near-popup-actions button,.bo-near-popup-actions a{border:0;border-radius:999px;background:#F59E0B;color:#000;padding:7px 10px;font:800 11px 'Archivo Narrow',sans-serif;text-decoration:none;cursor:pointer;}
+
+  /* Dark-mode Near Me map, matching the selected concept. */
+  .bo-near-map-canvas{background:#07111d;}
+  .bo-near-map-canvas .leaflet-tile{filter:saturate(.82) contrast(1.08) brightness(.82);}
+  .bo-near-map-title{position:absolute;top:calc(33.333vh + 14px);left:calc(9vw + 15px);z-index:10025;display:flex;flex-direction:column;pointer-events:none;text-shadow:0 2px 8px #000;}
+  .bo-near-map-title strong{font-family:'Archivo Black',sans-serif;font-size:18px;line-height:1;color:#fff;letter-spacing:.03em;}
+  .bo-near-map-title span{margin-top:4px;font:800 9px 'Archivo Narrow',sans-serif;color:#F59E0B;letter-spacing:.06em;}
+  .bo-near-map-page .leaflet-popup-content-wrapper{padding:0;border-radius:12px;background:#06090d;color:#fff;border:1px solid rgba(245,158,11,.82);box-shadow:0 8px 30px rgba(0,0,0,.8),0 0 18px rgba(245,158,11,.28);overflow:hidden;}
+  .bo-near-map-page .leaflet-popup-content{margin:0;width:auto !important;}
+  .bo-near-map-page .leaflet-popup-tip{background:#06090d;border-color:#F59E0B;}
+  .bo-near-map-page .leaflet-popup-close-button{z-index:5;width:28px;height:28px;right:5px;top:4px;color:#fff !important;background:rgba(0,0,0,.72);border-radius:50%;font-size:22px;line-height:25px;text-shadow:none;}
+  .bo-near-popup-card{display:grid;grid-template-columns:96px minmax(0,1fr);min-width:285px;max-width:340px;background:#06090d;color:#fff;text-shadow:none;}
+  .bo-near-popup-photo{width:96px;height:100%;min-height:168px;display:block;object-fit:cover;background:#111;}
+  .bo-near-popup-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font:900 12px 'Archivo Black',sans-serif;letter-spacing:.03em;background:radial-gradient(circle at 50% 35%,rgba(245,158,11,.18),transparent 55%),#090909;}
+  .bo-near-popup-placeholder b{color:#F59E0B;font-size:13px;margin-top:3px;}
+  .bo-near-popup-copy{min-width:0;padding:13px 13px 12px;display:flex;flex-direction:column;gap:4px;}
+  .bo-near-popup-copy strong{color:#fff;font:800 16px 'Archivo Narrow',sans-serif;line-height:1.1;padding-right:20px;}
+  .bo-near-popup-category{color:#F59E0B;font:800 11px 'Archivo Narrow',sans-serif;}
+  .bo-near-popup-rating{color:#fff;font:700 11px 'Archivo Narrow',sans-serif;}
+  .bo-near-popup-address{color:#e8e8e8;font:600 10px/1.35 'Archivo Narrow',sans-serif;}
+  .bo-near-popup-phone{color:#55a9ff !important;font:800 11px 'Archivo Narrow',sans-serif;text-decoration:none;}
+  .bo-near-popup-actions{margin-top:5px;display:flex;gap:5px;flex-wrap:wrap;}
+  .bo-near-popup-actions .bo-near-popup-directions,.bo-near-popup-actions button{border:0;border-radius:7px;background:#F59E0B;color:#000;padding:7px 9px;font:900 9px 'Archivo Narrow',sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap;}
+  .bo-near-popup-actions .bo-near-popup-secondary{border:1px solid rgba(245,158,11,.65);border-radius:7px;background:#0b0f14;color:#F59E0B;padding:6px 8px;font:800 9px 'Archivo Narrow',sans-serif;text-decoration:none;}
+  @media(max-width:600px){
+    .bo-near-map-title{left:calc(7vw + 12px);}
+    .bo-near-popup-card{grid-template-columns:82px minmax(0,1fr);min-width:260px;max-width:292px;}
+    .bo-near-popup-photo{width:82px;min-height:160px;}
+  }
 </style>
 
 </head>
@@ -17174,11 +17203,7 @@ let boNearInitialRadiusMode = true;
 let boNearUserLatLng = null;
 let boNearGeocodingComplete = false;
 let boNearLoadingStartedAt = 0;
-let boNearActivePopupMarker = null;
-let boNearPopupOpenedAt = 0;
-let boNearMapPopupCloseHandler = null;
 const BO_NEAR_MIN_LOADING_MS = 6000;
-const BO_NEAR_POPUP_HOLD_MS = 10000;
 
 function boNearCityDefaults(cityKey){
   return {
@@ -17196,7 +17221,21 @@ function boGetMapRestaurants(cityKey){
     const rating = r.rating ? parseFloat(r.rating) : null;
     const current = seen.get(key);
     if(!current || (rating && (!current.rating || rating > current.rating))){
-      seen.set(key,{name:r.name,address:r.address,url:r.url||'',rating:rating,cat:cat||'bestof',downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson});
+      seen.set(key,{
+        name:r.name,
+        address:r.address,
+        url:r.url||'',
+        rating:rating,
+        ratingText:r.rating||'',
+        reviews:(typeof r.reviews==='number'?r.reviews:null),
+        cat:cat||'bestof',
+        phone:r.phone||'',
+        price:r.price||null,
+        image:r.image||'',
+        imagePosition:r.imagePosition||'center',
+        why:r.why||'',
+        downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson
+      });
     }
   };
   if(cityKey === 'bestof'){
@@ -17236,7 +17275,7 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
+  page.innerHTML='<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div>';
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',boCloseNearMap);
   return page;
@@ -17292,7 +17331,11 @@ async function boOpenNearMap(){
   if(run!==boNearMapGeocodeRun) return;
   if(!boNearMap){
     boNearMap=L.map('boNearMapCanvas',{zoomControl:true,closePopupOnClick:false}).setView(defaults.center,defaults.zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(boNearMap);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd',
+      maxZoom:20,
+      attribution:'© OpenStreetMap © CARTO'
+    }).addTo(boNearMap);
   }else boNearMap.setView(defaults.center,defaults.zoom);
   if(boNearMapLayer) boNearMapLayer.clearLayers(); else boNearMapLayer=L.layerGroup().addTo(boNearMap);
   if(boNearUserMarker){ boNearMap.removeLayer(boNearUserMarker); boNearUserMarker=null; }
@@ -17358,21 +17401,43 @@ async function boOpenNearMap(){
       if(!touchMode){
         marker.bindTooltip(r.name,{direction:'top',offset:[0,-27],opacity:.98});
       }
-      const siteLink=r.url?'<a href="'+r.url.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Website</a>':'';
-      marker.bindPopup('<div class="bo-near-popup"><strong>'+r.name.replace(/</g,'&lt;')+'</strong><small>'+r.address.replace(/</g,'&lt;')+'</small><div class="bo-near-popup-actions"><button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">Open in Best Of</button>'+siteLink+'</div></div>',{autoClose:true,closeButton:true,closeOnEscapeKey:true});
+      const esc=(value)=>String(value==null?'':value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const categoryLabel=String(r.cat||'Restaurant')
+        .replace(/^bjspicks/i,'BJS Picks')
+        .replace(/highend/ig,' Fine')
+        .replace(/casual/ig,' Casual')
+        .replace(/dive/ig,' Dive')
+        .replace(/([a-z])([A-Z])/g,'$1 $2')
+        .replace(/\b\w/g,m=>m.toUpperCase());
+      const ratingLabel=r.rating ? ('★ '+esc(r.ratingText||r.rating.toFixed(1))+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')) : 'Best Of Period selection';
+      const imageMarkup=r.image
+        ? '<img class="bo-near-popup-photo" src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';">'
+        : '<div class="bo-near-popup-photo bo-near-popup-placeholder"><span>BEST OF</span><b>PERIOD.</b></div>';
+      const phoneMarkup=r.phone ? '<a class="bo-near-popup-phone" href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'">'+esc(r.phone)+'</a>' : '';
+      const directionsHref='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address);
+      const websiteMarkup=r.url ? '<a class="bo-near-popup-secondary" href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a>' : '';
+      const popupHtml='<div class="bo-near-popup-card">'+
+        imageMarkup+
+        '<div class="bo-near-popup-copy">'+
+          '<strong>'+esc(r.name)+'</strong>'+
+          '<span class="bo-near-popup-category">'+esc(categoryLabel)+'</span>'+
+          '<span class="bo-near-popup-rating">'+ratingLabel+'</span>'+
+          '<span class="bo-near-popup-address">'+esc(r.address)+'</span>'+
+          phoneMarkup+
+          '<div class="bo-near-popup-actions">'+
+            '<a class="bo-near-popup-directions" href="'+directionsHref+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a>'+
+            '<button type="button" onclick="boOpenRestaurantFromMap(\''+String(r.cat).replace(/'/g,"\\'")+'\',\''+String(r.name).replace(/'/g,"\\'")+'\')">OPEN IN BEST OF</button>'+
+            websiteMarkup+
+          '</div>'+
+        '</div>'+
+      '</div>';
+      marker.bindPopup(popupHtml,{autoClose:true,closeButton:true,closeOnEscapeKey:true,closeOnClick:false,maxWidth:340,minWidth:270,className:'bo-near-dark-popup'});
       marker.on('click',function(e){
         if(e && e.originalEvent){
           L.DomEvent.stopPropagation(e.originalEvent);
-          if(e.originalEvent.preventDefault) e.originalEvent.preventDefault();
+          L.DomEvent.preventDefault(e.originalEvent);
         }
-        // A tap locks this popup open. Small finger movement or a map drag will
-        // not dismiss it. Another pin can replace it immediately.
-        boNearActivePopupMarker=this;
-        boNearPopupOpenedAt=Date.now();
         this.openPopup();
-      });
-      marker.on('popupclose',function(){
-        if(boNearActivePopupMarker===this) boNearActivePopupMarker=null;
       });
     });
     const loadingElapsed = Date.now() - boNearLoadingStartedAt;
@@ -17409,18 +17474,6 @@ async function boOpenNearMap(){
   };
   boNearMap.on('moveend',boNearViewportHandler);
   boNearMap.on('zoomend',boNearViewportHandler);
-
-  // Close a locked popup only after an intentional map tap and only after it
-  // has remained readable for at least ten seconds. Dragging or shifting a
-  // finger does not close it.
-  if(boNearMapPopupCloseHandler) boNearMap.off('click',boNearMapPopupCloseHandler);
-  boNearMapPopupCloseHandler=function(){
-    if(!boNearActivePopupMarker) return;
-    if(Date.now()-boNearPopupOpenedAt < BO_NEAR_POPUP_HOLD_MS) return;
-    boNearActivePopupMarker.closePopup();
-    boNearActivePopupMarker=null;
-  };
-  boNearMap.on('click',boNearMapPopupCloseHandler);
 
   await locationReady;
 
