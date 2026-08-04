@@ -5938,8 +5938,8 @@
 <style id="boNearMePageStyles">
   .bo-near-map-page{position:fixed;inset:0;z-index:10020;background:#000;display:none;overflow:hidden;}
   .bo-near-map-page.open{display:block;}
-  .bo-near-map-canvas{position:absolute;top:33.333vh;left:4vw;right:4vw;height:33.334vh;background:#111;border:2px solid #F59E0B;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.18);}
-  .bo-near-map-loading{position:absolute;top:33.333vh;left:4vw;right:4vw;height:33.334vh;z-index:10024;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.48);border-radius:10px;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}
+  .bo-near-map-canvas{position:absolute;top:33.333vh;left:9vw;right:9vw;height:33.334vh;background:#111;border:2px solid #F59E0B;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.18);}
+  .bo-near-map-loading{position:absolute;top:33.333vh;left:9vw;right:9vw;height:33.334vh;z-index:10024;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.48);border-radius:10px;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}
   .bo-near-map-loading.is-hidden{opacity:0;visibility:hidden;}
   .bo-near-loading-main{font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 8px rgba(245,158,11,.85),0 0 18px rgba(245,158,11,.45);animation:boNearLoadingPulse 1.15s ease-in-out infinite;}
   .bo-near-loading-sub{font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;color:#b8b8b8;text-shadow:0 0 6px rgba(255,255,255,.35);}
@@ -5947,7 +5947,7 @@
   @media (prefers-reduced-motion:reduce){.bo-near-loading-main{animation:none;}}
 
   .bo-near-map-back{position:absolute;top:max(36px,env(safe-area-inset-top));left:20px;z-index:10025;width:48px;height:48px;padding:0;font-family:inherit;font-weight:900;font-size:9px;line-height:1.15;color:#F59E0B;cursor:pointer;}
-  .bo-near-map-meta{position:absolute;left:4vw;top:calc(66.667vh + 10px);z-index:10025;max-width:88vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#b8b8b8;text-align:left;text-shadow:0 0 5px rgba(255,255,255,.55),0 0 10px rgba(255,255,255,.22);}
+  .bo-near-map-meta{position:absolute;left:9vw;top:calc(66.667vh + 10px);z-index:10025;max-width:82vw;display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Archivo Narrow',sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;color:#b8b8b8;text-align:left;text-shadow:0 0 5px rgba(255,255,255,.55),0 0 10px rgba(255,255,255,.22);}
   .bo-near-map-legend{display:flex;align-items:center;gap:15px;white-space:nowrap;}
   .bo-near-legend-item{display:inline-flex;align-items:center;gap:5px;}
   .bo-near-legend-blue{width:11px;height:11px;border-radius:50%;background:#1687ff;border:2px solid #fff;box-shadow:0 0 7px rgba(22,135,255,.95);}
@@ -5955,9 +5955,9 @@
   .bo-near-legend-orange + span{margin-left:1px;}
   .bo-near-map-status{background:transparent;border:0;color:#b8b8b8;padding:0;}
   @media(max-width:600px){
-    .bo-near-map-canvas{left:3vw;right:3vw;}
-    .bo-near-map-loading{left:3vw;right:3vw;}
-    .bo-near-map-meta{left:3vw;max-width:94vw;}
+    .bo-near-map-canvas{left:7vw;right:7vw;}
+    .bo-near-map-loading{left:7vw;right:7vw;}
+    .bo-near-map-meta{left:7vw;max-width:86vw;}
   }
   .bo-near-map-page .leaflet-control-zoom a{background:#000;color:#F59E0B;border-color:#F59E0B;}
   .bo-near-map-page .leaflet-control-attribution{background:rgba(0,0,0,.72);color:#bbb;}
@@ -17171,7 +17171,7 @@ function boGetMapRestaurants(cityKey){
     const rating = r.rating ? parseFloat(r.rating) : null;
     const current = seen.get(key);
     if(!current || (rating && (!current.rating || rating > current.rating))){
-      seen.set(key,{name:r.name,address:r.address,url:r.url||'',rating:rating,cat:cat||'bestof'});
+      seen.set(key,{name:r.name,address:r.address,url:r.url||'',rating:rating,cat:cat||'bestof',downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson});
     }
   };
   if(cityKey === 'bestof'){
@@ -17281,12 +17281,13 @@ async function boOpenNearMap(){
   }
   setTimeout(()=>boNearMap.invalidateSize(),50);
 
-  // Show the visitor's live position as a distinct blue marker. If location
-  // permission is denied or unavailable, the map simply stays centered on
-  // the selected city and the restaurant pins continue to load normally.
-  if(navigator.geolocation){
+  // Resolve the visitor's position before deciding which restaurant addresses
+  // to check first. This prevents a nearby restaurant from waiting behind
+  // hundreds of unrelated addresses in the geocoding queue.
+  const locationReady = new Promise(resolve=>{
+    if(!navigator.geolocation){ resolve(false); return; }
     navigator.geolocation.getCurrentPosition((position)=>{
-      if(run!==boNearMapGeocodeRun) return;
+      if(run!==boNearMapGeocodeRun){ resolve(false); return; }
       const lat=position.coords.latitude;
       const lon=position.coords.longitude;
       const userIcon=L.divIcon({className:'',html:'<div class="bo-user-pin"></div>',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-14]});
@@ -17296,10 +17297,9 @@ async function boOpenNearMap(){
       boNearUserLatLng=L.latLng(lat,lon);
       boNearMap.setView([lat,lon],14);
       if(typeof boNearViewportHandler==='function') boNearViewportHandler();
-    },()=>{
-      // City-center fallback is intentional; no error message is needed.
-    },{enableHighAccuracy:true,timeout:9000,maximumAge:120000});
-  }
+      resolve(true);
+    },()=>resolve(false),{enableHighAccuracy:true,timeout:9000,maximumAge:120000});
+  });
 
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
 
@@ -17358,10 +17358,34 @@ async function boOpenNearMap(){
   boNearMap.on('moveend',boNearViewportHandler);
   boNearMap.on('zoomend',boNearViewportHandler);
 
+  await locationReady;
+
+  // Prioritize the neighborhood closest to the visitor. Las Vegas records
+  // already carry Downtown/Strip/Summerlin/Henderson flags, and ZIP 89101 is
+  // used as an extra Downtown signal. Cached coordinates still load instantly.
+  let geocodeQueue = restaurants.slice();
+  if(cityKey==='bestof' && boNearUserLatLng){
+    const zones=[
+      {key:'downtown',center:L.latLng(36.1716,-115.1391)},
+      {key:'strip',center:L.latLng(36.1147,-115.1728)},
+      {key:'summerlin',center:L.latLng(36.1697,-115.2842)},
+      {key:'henderson',center:L.latLng(36.0395,-114.9817)}
+    ];
+    zones.sort((a,b)=>milesBetween(boNearUserLatLng,a.center)-milesBetween(boNearUserLatLng,b.center));
+    const nearest=zones[0].key;
+    const score=r=>{
+      if(nearest==='downtown' && (/89101/.test(r.address)||r.downtown)) return 0;
+      if(r[nearest]) return 0;
+      if(r.downtown||r.strip||r.summerlin||r.henderson) return 1;
+      return 2;
+    };
+    geocodeQueue.sort((a,b)=>score(a)-score(b));
+  }
+
   let placed=0;
-  for(let i=0;i<restaurants.length;i++){
+  for(let i=0;i<geocodeQueue.length;i++){
     if(run!==boNearMapGeocodeRun) return;
-    const r=restaurants[i];
+    const r=geocodeQueue[i];
     let geo=null;
     try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
     if(geo){
@@ -17370,7 +17394,7 @@ async function boOpenNearMap(){
       renderVisibleRestaurants();
     }
     // Respect the public geocoder; cached addresses appear immediately.
-    if(i<restaurants.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
+    if(i<geocodeQueue.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
   }
   boNearGeocodingComplete=true;
   renderVisibleRestaurants();
