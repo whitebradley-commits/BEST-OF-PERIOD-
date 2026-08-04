@@ -5878,6 +5878,41 @@
 }
 </style>
 
+
+<style id="bop-main-hub-blue-scroll-cue">
+/* Blue glowing scroll cue between Cheesesteak and the bottom feature buttons. */
+.bo-main-hub-blue-scroll-cue{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin:34px auto 4px;
+  min-height:92px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.12rem;
+  letter-spacing:.32em;
+  color:#9FE2FF;
+  text-align:center;
+  text-shadow:0 0 8px rgba(159,226,255,.75),0 0 20px rgba(159,226,255,.45);
+  animation:bopMainHubBlueScrollPulse 1.7s ease-in-out infinite;
+}
+.bo-main-hub-blue-scroll-cue .bo-main-hub-scroll-arrow{
+  display:block;
+  font-size:1.85rem;
+  line-height:1;
+  letter-spacing:0;
+  filter:drop-shadow(0 0 8px rgba(159,226,255,.9));
+}
+@keyframes bopMainHubBlueScrollPulse{
+  0%,100%{opacity:.58;transform:translateY(0) scale(1);}
+  50%{opacity:1;transform:translateY(7px) scale(1.04);}
+}
+@media(prefers-reduced-motion:reduce){
+  .bo-main-hub-blue-scroll-cue{animation:none;}
+}
+</style>
+
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -17822,9 +17857,16 @@ function boRenderCategory(cat){
 
     ` : '';
 
+    const blueScrollCueHTML = cat === 'otheroptions' ? `
+      <div class="bo-main-hub-blue-scroll-cue" aria-hidden="true">
+        <span>SCROLL</span>
+        <span class="bo-main-hub-scroll-arrow">↓</span>
+      </div>
+    ` : '';
+
     boListEl.innerHTML = specialCirclesHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
       <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
-    `).join('') + `</div>` + moneyLegendHTML + mainHubFooterHTML;
+    `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
       btn.addEventListener('click', () => boRenderCategory(btn.dataset.pickerCat));
