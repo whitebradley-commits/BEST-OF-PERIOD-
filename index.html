@@ -6382,6 +6382,25 @@
     font:inherit !important;
     white-space:normal !important;
   }
+
+  // Half-size, tightly-centered SEND button used on restaurant cards and
+  // Near Me popups (the bottom-row page tiles stay their original size —
+  // this only shrinks the per-restaurant "send just this one" button).
+  .bo-send-small{
+    width:48px !important;
+    min-width:48px !important;
+    max-width:48px !important;
+    height:26px !important;
+    padding:2px 4px !important;
+    animation:bo-send-pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes bo-send-pulse-glow{
+    0%,100%{ box-shadow:0 0 2px rgba(245,158,11,0.3); }
+    50%{ box-shadow:0 0 10px rgba(245,158,11,0.8); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bo-send-small{ animation:none; }
+  }
   .bo-near-info-actions .secondary{border:1px solid rgba(245,158,11,.68);background:#0b0f14;color:#F59E0B;}
   .bo-near-info-close{position:absolute;right:8px;top:8px;z-index:2;width:28px;height:28px;border:1px solid rgba(245,158,11,.65);border-radius:50%;background:#000;color:#fff;font-size:20px;line-height:23px;cursor:pointer;}
   @media(max-width:600px){
@@ -18394,7 +18413,7 @@ function boShowNearRestaurantCard(r,restaurantKey,parentCluster){
     '<div class="bo-near-info-rating">'+ratingLabel+'</div>'+
     '<div class="bo-near-info-address">'+esc(r.address)+'</div>'+phone+
     '<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS ↗</a><button id="boNearOpenBestOf" type="button">VIEW RESTAURANT</button></div>'+
-    '<div class="bo-near-info-actions" style="margin-top:6px;"><button type="button" class="bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed" style="padding:6px 4px;" title="Send this restaurant" data-send-restaurant="'+esc(r.name).replace(/"/g,'&quot;')+'"><span style="display:flex;align-items:center;justify-content:center;gap:3px;width:100%;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span class="bo-bottom-tile-send-label">SEND</span></span></button></div>';
+    '<div class="bo-near-info-actions" style="margin-top:6px;"><button type="button" class="bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed bo-send-small" title="Send this restaurant" data-send-restaurant="'+esc(r.name).replace(/"/g,'&quot;')+'"><span style="font-size:0.6rem;">SEND</span></button></div>';
   const openBtn=document.getElementById('boNearOpenBestOf');
   if(openBtn) openBtn.addEventListener('click',()=>boOpenRestaurantFromMap(r.cat,r.name),{once:true});
   card.classList.remove('is-cluster');
@@ -19747,8 +19766,8 @@ function boRenderCategory(cat){
         </span>`}
         ${emailButtonHTML(s.email)}
         ${picsButtonHTML(s.name)}
-        <button type="button" class="bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed" style="padding:6px 4px;" title="Send this restaurant" data-send-restaurant="${s.name.replace(/"/g, '&quot;')}">
-          <span style="display:flex;align-items:center;justify-content:center;gap:3px;width:100%;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span class="bo-bottom-tile-send-label">SEND</span></span>
+        <button type="button" class="bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed bo-send-small" title="Send this restaurant" data-send-restaurant="${s.name.replace(/"/g, '&quot;')}">
+          <span style="font-size:0.6rem;">SEND</span>
         </button>
       </div>
     `;
