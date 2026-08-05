@@ -17589,65 +17589,24 @@ const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" 
 
 // ===== Near Me map page =====
 
-/* ===== Priority restaurant photo pass: BJS Picks, Michelin, 24 Hours, Dessert =====
-   Existing restaurant photos always win. These are temporary, commercially usable
-   Unsplash images so every priority card has a visual while restaurant-specific
-   photography is collected and approved. */
-const BO_PRIORITY_PHOTO_POOLS = {
-  bjs: [
-    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1000&q=82"
-  ],
-  michelin: [
-    "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=82"
-  ],
-  hours24: [
-    "https://images.unsplash.com/photo-1516211697506-8360dbcfe9a4?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1000&q=82"
-  ],
-  dessert: [
-    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1000&q=82",
-    "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1000&q=82"
-  ]
-};
-
-function boPriorityPhotoIndex(name, length){
-  let hash = 0;
-  const value = String(name || "");
-  for(let i=0;i<value.length;i++) hash = ((hash << 5) - hash + value.charCodeAt(i)) | 0;
-  return Math.abs(hash) % length;
-}
-
-function boApplyPriorityPhoto(list, poolName){
-  if(!Array.isArray(list)) return;
-  const pool = BO_PRIORITY_PHOTO_POOLS[poolName] || BO_PRIORITY_PHOTO_POOLS.bjs;
-  list.forEach(restaurant => {
-    if(!restaurant || restaurant.image) return;
-    restaurant.image = pool[boPriorityPhotoIndex(restaurant.name, pool.length)];
-    restaurant.imagePosition = restaurant.imagePosition || "center";
-    restaurant.imageTemporary = true;
+/* Restaurant image policy:
+   Only authentic restaurant-specific images already stored on a listing are shown.
+   Listings without a verified image retain the existing branded placeholder. */
+function boRemoveTemporaryRestaurantPhotos(){
+  Object.values(boCategoryData).forEach(function(list){
+    if(!Array.isArray(list)) return;
+    list.forEach(function(restaurant){
+      if(!restaurant) return;
+      const image = String(restaurant.image || "");
+      if(restaurant.imageTemporary || /images\.unsplash\.com/i.test(image)){
+        restaurant.image = "";
+        restaurant.imagePosition = "center";
+        delete restaurant.imageTemporary;
+      }
+    });
   });
 }
-
-[
-  "bjspicks",
-  "bjspicksmiami",
-  "bjspickslondon"
-].forEach(category => boApplyPriorityPhoto(boCategoryData[category], "bjs"));
-
-boApplyPriorityPhoto(boCategoryData.michelin, "michelin");
-boApplyPriorityPhoto(boCategoryData["24hours"], "hours24");
-boApplyPriorityPhoto(boCategoryData.dessert, "dessert");
-
+boRemoveTemporaryRestaurantPhotos();
 
 let boNearMap = null;
 let boNearMapLayer = null;
@@ -20310,7 +20269,7 @@ const BUSINESS_PHOTOS = {};
 Object.values(boCategoryData).forEach(function(list){
   if(!Array.isArray(list)) return;
   list.forEach(function(restaurant){
-    if(!restaurant || !restaurant.name || !restaurant.image) return;
+    if(!restaurant || !restaurant.name || !restaurant.image || restaurant.imageTemporary) return;
     if(!BUSINESS_PHOTOS[restaurant.name]) BUSINESS_PHOTOS[restaurant.name] = [];
     if(BUSINESS_PHOTOS[restaurant.name].indexOf(restaurant.image) === -1){
       BUSINESS_PHOTOS[restaurant.name].push(restaurant.image);
