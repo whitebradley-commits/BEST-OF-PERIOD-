@@ -17568,6 +17568,8 @@ function boGetMapRestaurants(cityKey){
       image:r.image||'',
       imagePosition:r.imagePosition||'center',
       why:r.why||'',
+      note:r.note||'',
+      property:r.property||r.hotel||r.resort||r.venue||'',
       downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson
     };
     const current = seen.get(key);
@@ -17593,6 +17595,8 @@ function boGetMapRestaurants(cityKey){
       image:primary.image||secondary.image||'',
       imagePosition:(primary.image?primary.imagePosition:secondary.imagePosition)||'center',
       why:primary.why||secondary.why||'',
+      note:primary.note||secondary.note||'',
+      property:primary.property||secondary.property||'',
       downtown:!!(primary.downtown||secondary.downtown),
       strip:!!(primary.strip||secondary.strip),
       summerlin:!!(primary.summerlin||secondary.summerlin),
@@ -17687,16 +17691,59 @@ function boNearCategoryLabel(r){
     .replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,m=>m.toUpperCase()).trim();
 }
 
-function boNearPropertyInfo(r){
-  const address=String(r.address||'');
-  const note=String(r.note||'');
-  if(/golden\s+nugget/i.test(note) || /129\s+e(?:ast)?\.?\s+fremont/i.test(address)){
-    return {key:'property:golden-nugget-las-vegas',name:'Golden Nugget',subtitle:'Restaurants inside the Golden Nugget'};
-  }
-  const normalized=address.toLowerCase()
+const BO_NEAR_PROPERTY_RULES=[
+  /* Las Vegas */
+  {key:'property:golden-nugget-las-vegas',city:'bestof',name:'Golden Nugget',subtitle:'Restaurants inside the Golden Nugget',lat:36.17093,lon:-115.14401,match:/golden\s+nugget|129\s+e(?:ast)?\.?\s+fremont/i},
+  {key:'property:wynn-encore-las-vegas',city:'bestof',name:'Wynn & Encore',subtitle:'Restaurants inside Wynn and Encore',lat:36.12644,lon:-115.16525,match:/\b(?:wynn|encore)\b|31(?:21|31)\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:venetian-palazzo-las-vegas',city:'bestof',name:'The Venetian & Palazzo',subtitle:'Restaurants inside The Venetian and Palazzo',lat:36.12218,lon:-115.16963,match:/venetian|palazzo|33(?:25|55)\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:bellagio-las-vegas',city:'bestof',name:'Bellagio',subtitle:'Restaurants inside Bellagio',lat:36.11268,lon:-115.17611,match:/\bbellagio\b|3600\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:caesars-palace-las-vegas',city:'bestof',name:'Caesars Palace',subtitle:'Restaurants inside Caesars Palace',lat:36.11618,lon:-115.17455,match:/caesars?\s+palace|3570\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:fontainebleau-las-vegas',city:'bestof',name:'Fontainebleau Las Vegas',subtitle:'Restaurants inside Fontainebleau',lat:36.13772,lon:-115.15855,match:/fontainebleau(?:\s+las\s+vegas)?|2777\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:resorts-world-las-vegas',city:'bestof',name:'Resorts World',subtitle:'Restaurants inside Resorts World',lat:36.13530,lon:-115.16570,match:/resorts?\s+world|3000\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:cosmopolitan-las-vegas',city:'bestof',name:'The Cosmopolitan',subtitle:'Restaurants inside The Cosmopolitan',lat:36.10993,lon:-115.17543,match:/cosmopolitan|3708\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:aria-las-vegas',city:'bestof',name:'ARIA',subtitle:'Restaurants inside ARIA',lat:36.10739,lon:-115.17604,match:/\baria\b|3730\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:mgm-grand-las-vegas',city:'bestof',name:'MGM Grand',subtitle:'Restaurants inside MGM Grand',lat:36.10238,lon:-115.16972,match:/mgm\s+grand|3799\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+  {key:'property:mandalay-bay-las-vegas',city:'bestof',name:'Mandalay Bay',subtitle:'Restaurants inside Mandalay Bay',lat:36.09193,lon:-115.17558,match:/mandalay\s+bay|3950\s+(?:s(?:outh)?\.?\s+)?las\s+vegas\s+blvd/i},
+
+  /* Miami */
+  {key:'property:fontainebleau-miami',city:'miami',name:'Fontainebleau Miami Beach',subtitle:'Restaurants inside Fontainebleau Miami Beach',lat:25.81771,lon:-80.12243,match:/fontainebleau(?:\s+miami)?|4441\s+collins/i},
+  {key:'property:faena-miami',city:'miami',name:'Faena Miami Beach',subtitle:'Restaurants inside Faena Miami Beach',lat:25.80722,lon:-80.12313,match:/\bfaena\b|3201\s+collins/i},
+  {key:'property:setai-miami',city:'miami',name:'The Setai',subtitle:'Restaurants inside The Setai',lat:25.79546,lon:-80.12856,match:/\bsetai\b|2001\s+collins/i},
+  {key:'property:st-regis-bal-harbour',city:'miami',name:'The St. Regis Bal Harbour',subtitle:'Restaurants inside The St. Regis Bal Harbour',lat:25.88991,lon:-80.12356,match:/st\.?\s+regis.*bal\s+harbour|9703\s+collins/i},
+  {key:'property:surf-club-miami',city:'miami',name:'The Surf Club',subtitle:'Restaurants inside The Surf Club',lat:25.87876,lon:-80.12229,match:/\bsurf\s+club\b|9011\s+collins/i},
+
+  /* London */
+  {key:'property:savoy-london',city:'london',name:'The Savoy',subtitle:'Restaurants inside The Savoy',lat:51.51044,lon:-0.12077,match:/\bthe\s+savoy\b|\bsavoy\b.*strand|strand.*wc2r\s*0ez/i},
+  {key:'property:claridges-london',city:'london',name:"Claridge's",subtitle:"Restaurants inside Claridge's",lat:51.51254,lon:-0.14794,match:/claridge'?s|brook\s+street.*w1k/i},
+  {key:'property:connaught-london',city:'london',name:'The Connaught',subtitle:'Restaurants inside The Connaught',lat:51.51016,lon:-0.14941,match:/\bconnaught\b|carlos\s+place/i},
+  {key:'property:ritz-london',city:'london',name:'The Ritz London',subtitle:'Restaurants inside The Ritz',lat:51.50708,lon:-0.14162,match:/\britz\b|150\s+piccadilly/i},
+  {key:'property:harrods-london',city:'london',name:'Harrods',subtitle:'Restaurants inside Harrods',lat:51.49941,lon:-0.16324,match:/\bharrods\b|87\s*[-–]\s*135\s+brompton/i}
+];
+
+function boNearNormalizeAddress(address){
+  return String(address||'').toLowerCase()
     .replace(/\b(?:suite|ste|unit|level|floor|fl)\s*[#a-z0-9-]+\b/g,'')
     .replace(/[^a-z0-9]+/g,' ').trim();
-  return {key:'address:'+normalized,name:'This location',subtitle:'Restaurants at this location'};
+}
+
+function boNearPropertyInfo(r,cityKey){
+  const haystack=[
+    r && r.name,
+    r && r.address,
+    r && r.note,
+    r && r.why,
+    r && r.property
+  ].filter(Boolean).join(' · ');
+  const activeCity=cityKey || ((typeof boCityContext!=='undefined' && BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof');
+  const rule=BO_NEAR_PROPERTY_RULES.find(item=>item.city===activeCity && item.match.test(haystack));
+  if(rule) return {...rule,isProperty:true};
+  const normalized=boNearNormalizeAddress(r && r.address);
+  return {key:'address:'+normalized,name:'This location',subtitle:'Restaurants at this location',isProperty:false};
+}
+
+function boNearPropertyRuleForRestaurant(r,cityKey){
+  const info=boNearPropertyInfo(r,cityKey);
+  return info && info.isProperty ? info : null;
 }
 
 function boShowNearRestaurantCluster(group){
@@ -17715,7 +17762,8 @@ function boShowNearRestaurantCluster(group){
     return '<button class="bo-near-cluster-row" type="button" data-cluster-index="'+index+'">'+
       '<span class="bo-near-cluster-thumb">'+thumb+'</span><span><span class="bo-near-cluster-name">'+esc(r.name)+'</span><span class="bo-near-cluster-meta">'+esc(boNearCategoryLabel(r))+' · '+rating+'</span></span><span class="bo-near-cluster-arrow">›</span></button>';
   }).join('');
-  copy.innerHTML='<h3 class="bo-near-cluster-title">'+esc(group.name)+'</h3><div class="bo-near-cluster-sub">'+esc(group.subtitle)+' · '+group.items.length+' options</div><div class="bo-near-cluster-list">'+rows+'</div>';
+  const optionLabel=group.items.length===1?'1 restaurant':group.items.length+' restaurants';
+  copy.innerHTML='<h3 class="bo-near-cluster-title">'+esc(group.name)+'</h3><div class="bo-near-cluster-sub">'+esc(group.subtitle)+' · '+optionLabel+'</div><div class="bo-near-cluster-list">'+rows+'</div>';
   copy.querySelectorAll('[data-cluster-index]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const item=group.items[Number(btn.dataset.clusterIndex)];
@@ -17898,7 +17946,7 @@ async function boOpenNearMap(){
     const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
     const grouped=new Map();
     visible.forEach(item=>{
-      const property=boNearPropertyInfo(item.restaurant);
+      const property=boNearPropertyInfo(item.restaurant,cityKey);
       if(!grouped.has(property.key)) grouped.set(property.key,{...property,items:[],lat:0,lon:0});
       const group=grouped.get(property.key);
       const restaurantKey=String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||'');
@@ -17908,7 +17956,7 @@ async function boOpenNearMap(){
     grouped.forEach(group=>{
       const count=group.items.length;
       const lat=group.lat/count, lon=group.lon/count;
-      if(count>1){
+      if(count>1 || group.isProperty){
         const marker=L.marker([lat,lon],{icon:clusterIcon(count),keyboard:true,bubblingMouseEvents:false,riseOnHover:true}).addTo(boNearMapLayer);
         if(!touchMode) marker.bindTooltip(group.name+' · '+count+' restaurants',{direction:'top',offset:[0,-24],opacity:.98});
         marker.on('click',function(e){
@@ -17966,20 +18014,33 @@ async function boOpenNearMap(){
   // already carry Downtown/Strip/Summerlin/Henderson flags, and ZIP 89101 is
   // used as an extra Downtown signal. Cached coordinates still load instantly.
   let geocodeQueue = restaurants.slice();
-  if(cityKey==='bestof' && boNearUserLatLng){
-    const zones=[
-      {key:'downtown',center:L.latLng(36.1716,-115.1391)},
-      {key:'strip',center:L.latLng(36.1147,-115.1728)},
-      {key:'summerlin',center:L.latLng(36.1697,-115.2842)},
-      {key:'henderson',center:L.latLng(36.0395,-114.9817)}
-    ];
-    zones.sort((a,b)=>milesBetween(boNearUserLatLng,a.center)-milesBetween(boNearUserLatLng,b.center));
-    const nearest=zones[0].key;
+  if(boNearUserLatLng){
+    let nearestZone=null;
+    if(cityKey==='bestof'){
+      const zones=[
+        {key:'downtown',center:L.latLng(36.1716,-115.1391)},
+        {key:'strip',center:L.latLng(36.1147,-115.1728)},
+        {key:'summerlin',center:L.latLng(36.1697,-115.2842)},
+        {key:'henderson',center:L.latLng(36.0395,-114.9817)}
+      ];
+      zones.sort((a,b)=>milesBetween(boNearUserLatLng,a.center)-milesBetween(boNearUserLatLng,b.center));
+      nearestZone=zones[0].key;
+    }
     const score=r=>{
-      if(nearest==='downtown' && (/89101/.test(r.address)||r.downtown)) return 0;
-      if(r[nearest]) return 0;
-      if(r.downtown||r.strip||r.summerlin||r.henderson) return 1;
-      return 2;
+      const property=boNearPropertyRuleForRestaurant(r,cityKey);
+      if(property){
+        const propertyPoint=L.latLng(property.lat,property.lon);
+        const distance=milesBetween(boNearUserLatLng,propertyPoint);
+        if(distance<=0.35) return -1000+distance;
+        if(distance<=1) return -500+distance;
+        return distance;
+      }
+      if(cityKey==='bestof' && nearestZone){
+        if(nearestZone==='downtown' && (/89101/.test(r.address)||r.downtown)) return 50;
+        if(r[nearestZone]) return 50;
+        if(r.downtown||r.strip||r.summerlin||r.henderson) return 75;
+      }
+      return 100;
     };
     geocodeQueue.sort((a,b)=>score(a)-score(b));
   }
@@ -17989,15 +18050,22 @@ async function boOpenNearMap(){
     if(run!==boNearMapGeocodeRun) return;
     const r=geocodeQueue[i];
     let geo=null;
-    try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
+    const property=boNearPropertyRuleForRestaurant(r,cityKey);
+    const usedSavedPropertyLocation=!!property;
+    if(property){
+      geo={lat:Number(property.lat),lon:Number(property.lon)};
+    }else{
+      try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
+    }
     if(geo){
       r.__boNearGeo=geo;
       boNearMappedRestaurants.push({restaurant:r,geo});
       placed++;
       renderVisibleRestaurants();
     }
-    // Respect the public geocoder; cached addresses appear immediately.
-    if(i<geocodeQueue.length-1) await new Promise(resolve=>setTimeout(resolve,1050));
+    if(!usedSavedPropertyLocation && i<geocodeQueue.length-1){
+      await new Promise(resolve=>setTimeout(resolve,1050));
+    }
   }
   boNearGeocodingComplete=true;
   renderVisibleRestaurants();
