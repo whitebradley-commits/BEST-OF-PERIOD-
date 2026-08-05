@@ -6375,6 +6375,123 @@
   opacity:.75;
 }
 </style>
+
+<style id="bop-vic-menu-demo-style">
+.bop-menu-demo-panel{
+  position:relative;
+  width:min(94vw,460px);
+  max-height:92vh;
+  overflow-y:auto;
+  padding:26px 18px 18px;
+  border:1px solid rgba(245,158,11,.55);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(245,158,11,.10),transparent 36%),
+    linear-gradient(180deg,#111,#050505 58%,#000);
+  box-shadow:0 0 36px rgba(245,158,11,.25),0 24px 70px rgba(0,0,0,.72);
+  text-align:center;
+}
+.bop-menu-demo-kicker{
+  margin-top:4px;
+  font-family:'Archivo Narrow',sans-serif;
+  font-size:.66rem;
+  font-weight:700;
+  letter-spacing:.18em;
+  color:#F59E0B;
+}
+.bop-menu-demo-title{
+  margin:7px 34px 2px;
+  font-family:'Playfair Display',serif;
+  font-size:1.55rem;
+  font-weight:900;
+  color:#fff;
+}
+.bop-menu-demo-location{
+  margin-bottom:14px;
+  color:#999;
+  font-size:.76rem;
+  letter-spacing:.06em;
+}
+.bop-menu-demo-cover{
+  position:relative;
+  height:148px;
+  overflow:hidden;
+  border-radius:13px;
+  border:1px solid rgba(245,158,11,.35);
+}
+.bop-menu-demo-hero{width:100%;height:100%;object-fit:cover;display:block;}
+.bop-menu-demo-cover-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.82));}
+.bop-menu-demo-cover-copy{
+  position:absolute;left:0;right:0;bottom:14px;
+  display:flex;flex-direction:column;gap:3px;
+  font-family:'Playfair Display',serif;color:#fff;text-shadow:0 2px 8px #000;
+}
+.bop-menu-demo-cover-copy span{font-size:1.3rem;font-weight:900;letter-spacing:.04em;}
+.bop-menu-demo-cover-copy small{font-family:'Archivo Narrow',sans-serif;font-size:.65rem;letter-spacing:.18em;color:#F59E0B;}
+.bop-menu-demo-pages{margin-top:12px;}
+.bop-menu-demo-page{
+  display:none;
+  min-height:322px;
+  padding:17px 15px 15px;
+  border-radius:12px;
+  background:
+    linear-gradient(rgba(255,255,255,.96),rgba(244,238,224,.98)),
+    #f4eee0;
+  color:#1b160f;
+  box-shadow:inset 0 0 0 1px rgba(85,60,20,.20);
+  text-align:left;
+}
+.bop-menu-demo-page.is-active{display:block;animation:bopMenuPageIn .22s ease-out;}
+@keyframes bopMenuPageIn{from{opacity:.25;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.bop-menu-demo-page-number{text-align:center;font-size:.58rem;letter-spacing:.16em;color:#8d7145;}
+.bop-menu-demo-page h3{
+  margin:5px 0 7px;
+  text-align:center;
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;
+  letter-spacing:.05em;
+  color:#20170d;
+}
+.bop-menu-demo-rule{width:58px;height:1px;background:#b78b42;margin:0 auto 12px;}
+.bop-menu-demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 14px;}
+.bop-menu-demo-grid article{min-width:0;}
+.bop-menu-demo-grid strong{
+  display:block;
+  font-family:'Playfair Display',serif;
+  font-size:.81rem;
+  line-height:1.18;
+  color:#21170c;
+}
+.bop-menu-demo-grid span{
+  display:block;
+  margin-top:3px;
+  font-family:'Archivo Narrow',sans-serif;
+  font-size:.67rem;
+  line-height:1.25;
+  color:#6c5b46;
+}
+.bop-menu-demo-nav{
+  display:flex;align-items:center;justify-content:center;gap:18px;margin:13px 0 11px;
+  color:#F59E0B;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;
+}
+.bop-menu-demo-nav button{
+  width:38px;height:38px;border-radius:50%;border:1px solid #F59E0B;background:#0c0c0c;color:#F59E0B;
+  font-size:1rem;cursor:pointer;box-shadow:0 0 12px rgba(245,158,11,.20);
+}
+.bop-menu-demo-actions{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:7px;}
+.bop-menu-demo-actions a,.bop-menu-demo-fallback a{
+  display:flex;align-items:center;justify-content:center;min-height:38px;
+  border:1px solid #4b3a1f;border-radius:999px;background:#17120b;color:#F59E0B;
+  text-decoration:none;font-family:'Archivo Narrow',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.05em;
+}
+.bop-menu-demo-fallback{margin-top:12px;}
+@media(max-width:390px){
+  .bop-menu-demo-grid{gap:11px 10px}
+  .bop-menu-demo-page{padding:15px 12px;min-height:332px}
+  .bop-menu-demo-actions{grid-template-columns:1fr 1fr}
+  .bop-menu-demo-actions a:last-child{grid-column:1/-1}
+}
+</style>
 </head>
 <body>
 <!-- ===== New landing concept: black screen, city lockup, one search box =====
@@ -7780,12 +7897,70 @@
     </div>
   </div>
 
-  <div class="directory-overlay" id="menuPopupOverlay" style="padding:20px;align-items:center;">
-    <div class="directory-panel" role="dialog" aria-modal="true" style="max-width:340px;width:100%;text-align:center;padding:28px 22px 22px;">
+  <div class="directory-overlay" id="menuPopupOverlay" style="padding:14px;align-items:center;">
+    <div class="directory-panel bop-menu-demo-panel" role="dialog" aria-modal="true" aria-labelledby="menuPopupName">
       <button type="button" id="menuPopupCloseBtn" class="directory-close" aria-label="Close">&#10005;</button>
-      <div style="font-family:'Archivo Narrow',sans-serif;font-size:0.72rem;letter-spacing:0.14em;color:#888;margin-top:6px;">MENU</div>
-      <div id="menuPopupName" style="font-family:'Archivo Black',sans-serif;font-size:1.1rem;color:#F2F2F2;margin:6px 0 18px;"></div>
-      <a id="menuPopupOpen" href="#" target="_blank" rel="noopener noreferrer" style="display:block;padding:13px 18px;border-radius:999px;background:#3D8B4C;color:#fff;text-decoration:none;font-family:'Archivo Narrow',sans-serif;font-weight:700;letter-spacing:0.06em;font-size:0.9rem;">VIEW MENU &#8594;</a>
+
+      <div class="bop-menu-demo-kicker">BEST OF PERIOD MENU PREVIEW</div>
+      <div id="menuPopupName" class="bop-menu-demo-title"></div>
+      <div id="menuPopupLocation" class="bop-menu-demo-location">Golden Nugget · Las Vegas</div>
+
+      <div class="bop-menu-demo-cover">
+        <img src="https://www.goldennugget.com/globalassets/las-vegas/restaurants/vics-filet-995x525.jpg"
+             alt="Vic & Anthony's Steakhouse"
+             class="bop-menu-demo-hero">
+        <div class="bop-menu-demo-cover-shade"></div>
+        <div class="bop-menu-demo-cover-copy">
+          <span>VIC &amp; ANTHONY'S</span>
+          <small>STEAKHOUSE · LAS VEGAS</small>
+        </div>
+      </div>
+
+      <div class="bop-menu-demo-pages" id="bopMenuDemoPages">
+        <section class="bop-menu-demo-page is-active" data-menu-page="0">
+          <div class="bop-menu-demo-page-number">PAGE 1</div>
+          <h3>STARTERS &amp; SEAFOOD</h3>
+          <div class="bop-menu-demo-rule"></div>
+          <div class="bop-menu-demo-grid">
+            <article><strong>Fresh Oysters</strong><span>On the half shell</span></article>
+            <article><strong>Steak Tartare</strong><span>Tenderloin, Dijon mustard, capers, crostini</span></article>
+            <article><strong>Tuna Poke</strong><span>Soy vinaigrette, avocado, lotus root</span></article>
+            <article><strong>Colossal Shrimp</strong><span>Atomic cocktail and remoulade sauce</span></article>
+            <article><strong>Jumbo Lump Crab Cake</strong><span>Chive beurre blanc</span></article>
+            <article><strong>Calamari</strong><span>Shishito peppers and sambal aioli</span></article>
+          </div>
+        </section>
+
+        <section class="bop-menu-demo-page" data-menu-page="1">
+          <div class="bop-menu-demo-page-number">PAGE 2</div>
+          <h3>PRIME BEEF &amp; SIDES</h3>
+          <div class="bop-menu-demo-rule"></div>
+          <div class="bop-menu-demo-grid">
+            <article><strong>USDA Prime Filet Mignon</strong><span>Classic center cut</span></article>
+            <article><strong>USDA Prime New York Strip</strong><span>Rich, full-flavored prime beef</span></article>
+            <article><strong>USDA Prime Ribeye</strong><span>Marbled and deeply seasoned</span></article>
+            <article><strong>Japanese A5 Wagyu</strong><span>Premium preparation</span></article>
+            <article><strong>Lobster Mac &amp; Cheese</strong><span>House steakhouse side</span></article>
+            <article><strong>Potatoes Au Gratin</strong><span>Classic rich accompaniment</span></article>
+          </div>
+        </section>
+      </div>
+
+      <div class="bop-menu-demo-nav">
+        <button type="button" id="bopMenuPrev" aria-label="Previous menu page">&#8592;</button>
+        <span id="bopMenuPageCount">1 of 2</span>
+        <button type="button" id="bopMenuNext" aria-label="Next menu page">&#8594;</button>
+      </div>
+
+      <div class="bop-menu-demo-actions">
+        <a href="tel:7023868399">CALL</a>
+        <a href="https://www.vicandanthonys.com/las-vegas-menus/" target="_blank" rel="noopener noreferrer">OFFICIAL MENU</a>
+        <a href="https://maps.google.com/?q=Vic+%26+Anthony%27s+Las+Vegas" target="_blank" rel="noopener noreferrer">DIRECTIONS</a>
+      </div>
+
+      <div id="menuPopupFallback" class="bop-menu-demo-fallback" style="display:none;">
+        <a id="menuPopupOpen" href="#" target="_blank" rel="noopener noreferrer">VIEW OFFICIAL MENU &#8594;</a>
+      </div>
     </div>
   </div>
 
@@ -9459,13 +9634,20 @@ function callButtonHTML(phone){
 
 function menuButtonHTML(name, url, rank){
   if(!name) return '<span class="menu-text-btn menu-text-btn-pending" title="Menu coming soon">MENU</span>';
+  const esc = function(v){ return String(v || '').replace(/"/g, '&quot;'); };
+
+  // Prototype: Vic & Anthony's opens a two-page menu inside Best Of Period.
+  if(String(name).toLowerCase().indexOf("vic & anthony") !== -1){
+    return '<button type="button" class="menu-text-btn" data-menu-popup="bop-vic-demo" data-menu-name="' +
+      esc(name) + '" title="View menu inside Best Of Period">MENU</button>';
+  }
+
   if(rank && rank > 10) return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
   const cityLabel = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext])
     ? BO_CITY_CONFIG[boCityContext].displayName
     : 'Las Vegas';
   const q = encodeURIComponent(name + ' ' + cityLabel + ' menu');
   const yelpUrl = 'https://www.yelp.com/search?find_desc=' + q;
-  const esc = function(v){ return String(v || '').replace(/"/g, '&quot;'); };
   return '<a class="menu-text-btn" href="' + esc(yelpUrl) + '" target="_blank" rel="noopener noreferrer" title="View menu in a new tab">MENU</a>';
 }
 
@@ -10530,16 +10712,41 @@ function setupPhonePopup(){
 // in-page popup for MENU always hit a white box. Same fix as Facebook /
 // Instagram: our own small panel with the name, then a button that opens the
 // real page in a new tab, so leaving is a deliberate choice, not a dead end.
+var bopMenuDemoPage = 0;
+
+function setBopMenuDemoPage(index){
+  var pages = Array.from(document.querySelectorAll('#bopMenuDemoPages .bop-menu-demo-page'));
+  if(!pages.length) return;
+  bopMenuDemoPage = (index + pages.length) % pages.length;
+  pages.forEach(function(page, i){ page.classList.toggle('is-active', i === bopMenuDemoPage); });
+  var count = document.getElementById('bopMenuPageCount');
+  if(count) count.textContent = (bopMenuDemoPage + 1) + ' of ' + pages.length;
+}
+
 function openMenuPopup(url, name){
   var overlay = document.getElementById('menuPopupOverlay');
   if(!overlay || !url) return;
   var nameEl = document.getElementById('menuPopupName');
+  var demoPages = document.getElementById('bopMenuDemoPages');
+  var demoCover = overlay.querySelector('.bop-menu-demo-cover');
+  var demoNav = overlay.querySelector('.bop-menu-demo-nav');
+  var demoActions = overlay.querySelector('.bop-menu-demo-actions');
+  var fallback = document.getElementById('menuPopupFallback');
   var openEl = document.getElementById('menuPopupOpen');
+
   if(nameEl){
     nameEl.textContent = name || '';
     nameEl.style.display = name ? '' : 'none';
   }
-  if(openEl) openEl.setAttribute('href', url);
+
+  var isVicDemo = url === 'bop-vic-demo';
+  [demoPages,demoCover,demoNav,demoActions].forEach(function(el){
+    if(el) el.style.display = isVicDemo ? '' : 'none';
+  });
+  if(fallback) fallback.style.display = isVicDemo ? 'none' : '';
+  if(openEl && !isVicDemo) openEl.setAttribute('href', url);
+
+  if(isVicDemo) setBopMenuDemoPage(0);
   overlay.classList.add('open');
 }
 
@@ -10554,6 +10761,25 @@ function setupMenuPopup(){
   overlay.addEventListener('click', function(e){
     if(e.target === overlay) closeMenuPopup();
   });
+
+  var prevBtn = document.getElementById('bopMenuPrev');
+  var nextBtn = document.getElementById('bopMenuNext');
+  if(prevBtn) prevBtn.addEventListener('click', function(){ setBopMenuDemoPage(bopMenuDemoPage - 1); });
+  if(nextBtn) nextBtn.addEventListener('click', function(){ setBopMenuDemoPage(bopMenuDemoPage + 1); });
+
+  var swipeStartX = null;
+  var pagesWrap = document.getElementById('bopMenuDemoPages');
+  if(pagesWrap){
+    pagesWrap.addEventListener('touchstart', function(e){
+      swipeStartX = e.touches && e.touches[0] ? e.touches[0].clientX : null;
+    }, {passive:true});
+    pagesWrap.addEventListener('touchend', function(e){
+      if(swipeStartX === null || !e.changedTouches || !e.changedTouches[0]) return;
+      var dx = e.changedTouches[0].clientX - swipeStartX;
+      if(Math.abs(dx) > 45) setBopMenuDemoPage(bopMenuDemoPage + (dx < 0 ? 1 : -1));
+      swipeStartX = null;
+    }, {passive:true});
+  }
 
   // Cards render continuously, so wire new menu buttons as they appear.
   setInterval(function(){
