@@ -4688,6 +4688,36 @@
     height:16px;
   }
 
+  .bo-icon-btn-send{
+    background:#0a0a0a;
+    border-color:#c9a24b;
+    color:#c9a24b;
+    position:relative;
+    overflow:hidden;
+    animation:bo-send-pulse 2.4s ease-in-out infinite;
+  }
+  .bo-icon-btn-send:hover{
+    background:rgba(201,162,75,0.15);
+    border-color:#c9a24b;
+    color:#c9a24b;
+  }
+  .bo-icon-btn-send-bg{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0.3;
+    pointer-events:none;
+  }
+  @keyframes bo-send-pulse{
+    0%,100%{ box-shadow:0 0 3px rgba(201,162,75,0.3); }
+    50%{ box-shadow:0 0 12px rgba(201,162,75,0.85); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bo-icon-btn-send{ animation:none; }
+  }
+
   .bo-icon-btn:hover{
     background:rgba(168,85,247,0.15);
     border-color:#A855F7;
@@ -19142,7 +19172,11 @@ function renderBjsPickFooter(cat){
   shareBtn.style.padding = '6px 4px';
   shareBtn.innerHTML = `<span style="display:flex;align-items:center;justify-content:center;gap:3px;width:100%;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span class="bo-bottom-tile-send-label">SEND<br>PAGE</span></span>`;
   shareBtn.addEventListener('click', async () => {
-    const shareUrl = window.location.origin + window.location.pathname + window.location.hash;
+    const shareParams = new URLSearchParams();
+    shareParams.set('page', cat);
+    if(boCityContext !== 'bestof') shareParams.set('city', boCityContext);
+    const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
+    const shareUrl = window.location.origin + cleanPath + '?' + shareParams.toString();
     const cityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const rawTitle = (boHeroCopy[cat] && boHeroCopy[cat].title) ? boHeroCopy[cat].title.replace(/<[^>]+>/g, '').trim() : cat;
     const pageTitle = `${rawTitle} \u2014 Best Of ${cityLabel} Period`;
@@ -19168,6 +19202,35 @@ function renderBjsPickFooter(cat){
   row.appendChild(shareBtn);
 
   boListEl.appendChild(row);
+}
+
+// Shares a direct link to one specific restaurant — same query-param
+// approach as the page-level "Send to a Friend", with an extra
+// `restaurant` param so the page can scroll straight to that one card
+// after loading. Called from the small SEND icon on every restaurant card.
+async function boShareRestaurant(restaurantName){
+  const params = new URLSearchParams();
+  params.set('page', boCurrentCat);
+  if(typeof boCityContext !== 'undefined' && boCityContext !== 'bestof') params.set('city', boCityContext);
+  params.set('restaurant', restaurantName);
+  const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
+  const shareUrl = window.location.origin + cleanPath + '?' + params.toString();
+  const pageTitle = `${restaurantName} \u2014 Best Of Period`;
+  if(navigator.share){
+    try {
+      await navigator.share({ title: pageTitle, text: `Check out ${restaurantName}`, url: shareUrl });
+    } catch(shareErr) {
+      // User cancelled the share sheet — nothing to do.
+    }
+  } else if(navigator.clipboard && navigator.clipboard.writeText){
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch(copyErr) {
+      prompt('Copy this link to share:', shareUrl);
+    }
+  } else {
+    prompt('Copy this link to share:', shareUrl);
+  }
 }
 
 function boRenderCategory(cat){
@@ -19405,8 +19468,11 @@ function boRenderCategory(cat){
     if(mainHubSendBtn){
       mainHubSendBtn.addEventListener('click', async () => {
         const cityKey = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
-        const cityHash = cityKey === 'bestof' ? '' : '#' + cityKey;
-        const shareUrl = window.location.origin + '/main/' + cityHash;
+        const mainShareParams = new URLSearchParams();
+        mainShareParams.set('page', 'otheroptions');
+        if(cityKey !== 'bestof') mainShareParams.set('city', cityKey);
+        const mainCleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
+        const shareUrl = window.location.origin + mainCleanPath + '?' + mainShareParams.toString();
         const cityLabel = (BO_CITY_CONFIG[cityKey] || BO_CITY_CONFIG.bestof).displayName;
         const pageTitle = `Best Of ${cityLabel} Period — Main`;
         if(navigator.share){
@@ -19632,6 +19698,10 @@ function boRenderCategory(cat){
         </span>`}
         ${emailButtonHTML(s.email)}
         ${picsButtonHTML(s.name)}
+        <button type="button" class="bo-icon-btn bo-icon-btn-send" style="width:auto;padding:0 8px;gap:4px;" title="Send this restaurant" onclick="boShareRestaurant(${JSON.stringify(s.name)})">
+          <span class="bo-icon-btn-send-bg"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span style="position:relative;font-size:0.68rem;font-weight:800;letter-spacing:0.02em;">SEND</span>
+        </button>
       </div>
     `;
     // Cards 4 and beyond land inside the hidden wrapper, so they only appear
@@ -19679,21 +19749,35 @@ function boRenderCategory(cat){
 
   renderBjsPickFooter(cat);
 
-  // Deep-linking: reflect the current category (and city, if not Vegas) in
-  // the URL hash, so a shared link can jump straight back to this exact
-  // page instead of always landing on the homepage. replaceState (not
-  // pushState) so browsing around the site doesn't fill up the back-button
-  // history with every category visited — only an intentional share link
-  // needs to be a real, loadable address.
-  const boShareHash = '#' + cat + (boCityContext !== 'bestof' ? '/' + boCityContext : '');
+  // Deep-linking: reflect the current category (and city, if not Vegas) as
+  // a query parameter, so a shared link can jump straight back to this
+  // exact page instead of always landing on the homepage. Query params
+  // (not a #hash, and not a real path like /main/) on purpose:
+  // - Hash fragments are client-side only, and some messaging apps' link
+  //   preview cards strip or ignore them when the card gets tapped, which
+  //   is exactly what was sending shared links to the homepage.
+  // - A real path like /main/ needs the server to route every path back to
+  //   this same file — GitHub Pages doesn't do that by default, so that
+  //   link would 404 instead of opening the app at all.
+  // A query string on the one real HTML file avoids both problems.
+  // replaceState (not pushState) so browsing around the site doesn't fill
+  // up the back-button history with every category visited — only an
+  // intentional share link needs to be a real, loadable address.
+  const boShareParams = new URLSearchParams();
+  boShareParams.set('page', cat);
+  if(boCityContext !== 'bestof') boShareParams.set('city', boCityContext);
+  const boShareQuery = '?' + boShareParams.toString();
   try {
-    if(cat === 'otheroptions'){
-      // The city Main / Hub page receives a clean, shareable /main/ address.
-      // Vegas uses /main/ and other cities retain their context in the hash.
-      const mainCityHash = boCityContext !== 'bestof' ? '#' + boCityContext : '';
-      history.replaceState(null, '', '/main/' + mainCityHash);
-    } else if(window.location.hash !== boShareHash){
-      history.replaceState(null, '', boShareHash);
+    // Heal a leftover /main/ path from earlier testing: strip it back to
+    // the real file path before applying the query string, so the address
+    // bar can't get stuck on a path GitHub Pages would 404 on.
+    let boCleanPath = window.location.pathname;
+    if(/\/main\/?$/.test(boCleanPath)){
+      boCleanPath = boCleanPath.replace(/\/main\/?$/, '/') || '/';
+    }
+    const boFullShareUrl = boCleanPath + boShareQuery + window.location.hash;
+    if(window.location.pathname + window.location.search !== boCleanPath + boShareQuery){
+      history.replaceState(null, '', boFullShareUrl);
     }
   } catch(hashErr) {
     // Local-file previews may block History API updates; page behavior remains intact.
@@ -19789,30 +19873,80 @@ boBackBtnEl.addEventListener('click', (e) => {
   boRenderCategory(parent || fallback);
 });
 
-// A shared "Send to a Friend" link lands here as #category or
-// #category/city — if the hash points to something real, open straight to
-// it instead of always starting on the Vegas homepage. Falls back to the
-// homepage for an empty, missing, or invalid hash so a normal visit (or a
-// stale/bad link) never breaks.
+// A shared "Send to a Friend" link lands here as ?page=category&city=name.
+// Query params (not a #hash) so link-preview cards in messaging apps can't
+// strip the destination — some of them ignore hash fragments when the card
+// itself gets tapped, which is what was sending shared links to the
+// homepage instead of the actual page. Also handles two older link formats
+// gracefully, so anything already shared before this fix still works:
+// a bare /main/ path, and the original #category/city hash style.
 (() => {
+  const params = new URLSearchParams(window.location.search);
   const pathIsMain = /\/main\/?$/i.test(window.location.pathname);
   const rawHash = window.location.hash.replace(/^#/, '');
 
+  // Legacy /main/ path link — heal the address bar back to the real file
+  // path (GitHub Pages 404s on /main/ with a real reload) and open Other
+  // Bests, same as this link always meant to.
   if(pathIsMain){
     if(rawHash && BO_CITY_CONFIG[rawHash]) boCityContext = rawHash;
     else boCityContext = 'bestof';
+    try {
+      const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
+      const healParams = new URLSearchParams();
+      healParams.set('page', 'otheroptions');
+      if(boCityContext !== 'bestof') healParams.set('city', boCityContext);
+      history.replaceState(null, '', cleanPath + '?' + healParams.toString());
+    } catch(healErr) { /* no-op */ }
     boRenderCategory('otheroptions');
     return;
   }
 
-  if(!rawHash){ boRenderCategory('bestof'); return; }
-  const [linkedCat, linkedCity] = rawHash.split('/');
-  const catIsReal = linkedCat && (Object.prototype.hasOwnProperty.call(boCategoryData, linkedCat) || Object.prototype.hasOwnProperty.call(boPickerConfig, linkedCat));
-  if(!catIsReal){ boRenderCategory('bestof'); return; }
-  if(linkedCity && BO_CITY_CONFIG[linkedCity]){
-    boCityContext = linkedCity;
+  // Current, correct format: ?page=cat&city=name
+  const queryPage = params.get('page');
+  if(queryPage){
+    const queryCityIsReal = params.get('city') && BO_CITY_CONFIG[params.get('city')];
+    const catIsReal = Object.prototype.hasOwnProperty.call(boCategoryData, queryPage) || Object.prototype.hasOwnProperty.call(boPickerConfig, queryPage);
+    if(catIsReal){
+      if(queryCityIsReal) boCityContext = params.get('city');
+      boRenderCategory(queryPage);
+      const queryRestaurant = params.get('restaurant');
+      if(queryRestaurant){
+        // Cards render asynchronously in places, so give the page a moment
+        // before searching the DOM for the matching one.
+        setTimeout(() => {
+          const cards = boListEl ? boListEl.querySelectorAll('.bo-card h3') : [];
+          for(const heading of cards){
+            if(heading.textContent.trim().toLowerCase().startsWith(queryRestaurant.trim().toLowerCase())){
+              const card = heading.closest('.bo-card');
+              if(card){
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                card.style.transition = 'box-shadow 0.4s ease';
+                card.style.boxShadow = '0 0 0 3px #c9a24b, 0 0 24px rgba(201,162,75,0.6)';
+                setTimeout(() => { card.style.boxShadow = ''; }, 2600);
+              }
+              break;
+            }
+          }
+        }, 600);
+      }
+      return;
+    }
   }
-  boRenderCategory(linkedCat);
+
+  // Legacy #category/city hash link from before this fix — still honor it
+  // rather than let an already-shared link break.
+  if(rawHash){
+    const [linkedCat, linkedCity] = rawHash.split('/');
+    const catIsReal = linkedCat && (Object.prototype.hasOwnProperty.call(boCategoryData, linkedCat) || Object.prototype.hasOwnProperty.call(boPickerConfig, linkedCat));
+    if(catIsReal){
+      if(linkedCity && BO_CITY_CONFIG[linkedCity]) boCityContext = linkedCity;
+      boRenderCategory(linkedCat);
+      return;
+    }
+  }
+
+  boRenderCategory('bestof');
 })();
 
 const BOP_SPLASH_CITIES = [
