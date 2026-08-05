@@ -10118,19 +10118,48 @@ function ocShowCity(city){
       // Jump straight to that city's Main tile page instead of its former
       // city-specific Best Of list. Each live city carries its own `dest`
       // context — Vegas is 'bestof', Miami is 'miami', London is 'london'.
-      goEl.onclick = function(){
+      goEl.onclick = function(event){
+        if(event){
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        var destination = city.dest || 'bestof';
+
+        /* Other Cities can be opened from the Near Me page. Close every
+           Near Me layer first, otherwise the correct city page opens
+           underneath the still-visible map and appears to route back to
+           Near Me. */
+        var nearOverlay = document.getElementById('boNearMapOverlay');
+        if(nearOverlay) nearOverlay.classList.remove('open');
+
+        var nearCard = document.getElementById('boNearInfoCard');
+        if(nearCard){
+          nearCard.classList.remove('open');
+          nearCard.setAttribute('aria-hidden','true');
+        }
+
+        if(typeof boCloseNearInfoCard === 'function'){
+          try{ boCloseNearInfoCard(); }catch(closeErr){}
+        }
+
         var world = document.getElementById('ocWorldOverlay');
-        var card = document.getElementById('ocCityCard');
+        var cityCard = document.getElementById('ocCityCard');
         if(world) world.classList.remove('open');
-        if(card) card.classList.remove('open');
+        if(cityCard) cityCard.classList.remove('open');
+
         var landing = document.getElementById('tbotrLandingOverlay');
         if(landing) landing.classList.remove('open');
+
+        boCityContext = destination;
+
         var best = document.getElementById('bestOfOverlay');
         if(best) best.classList.add('open');
+
         if(typeof boRenderCategory === 'function'){
-          boCityContext = city.dest || 'bestof';
           boRenderCategory('otheroptions');
         }
+
         window.scrollTo(0, 0);
       };
     } else {
