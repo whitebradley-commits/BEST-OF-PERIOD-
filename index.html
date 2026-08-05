@@ -17555,24 +17555,49 @@ function boGetMapRestaurants(cityKey){
     if(!r || !r.name || !r.address) return;
     const key = (r.name+'|'+r.address).toLowerCase();
     const rating = r.rating ? parseFloat(r.rating) : null;
+    const incoming = {
+      name:r.name,
+      address:r.address,
+      url:r.url||'',
+      rating:rating,
+      ratingText:r.rating||'',
+      reviews:(typeof r.reviews==='number'?r.reviews:null),
+      cat:cat||'bestof',
+      phone:r.phone||'',
+      price:r.price||null,
+      image:r.image||'',
+      imagePosition:r.imagePosition||'center',
+      why:r.why||'',
+      downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson
+    };
     const current = seen.get(key);
-    if(!current || (rating && (!current.rating || rating > current.rating))){
-      seen.set(key,{
-        name:r.name,
-        address:r.address,
-        url:r.url||'',
-        rating:rating,
-        ratingText:r.rating||'',
-        reviews:(typeof r.reviews==='number'?r.reviews:null),
-        cat:cat||'bestof',
-        phone:r.phone||'',
-        price:r.price||null,
-        image:r.image||'',
-        imagePosition:r.imagePosition||'center',
-        why:r.why||'',
-        downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson
-      });
+    if(!current){
+      seen.set(key,incoming);
+      return;
     }
+
+    /* A restaurant may appear in several category lists. One copy can have
+       the photo while another copy has the strongest rating or details.
+       Merge both records so the Near Me card always keeps an available image. */
+    const incomingWins = rating && (!current.rating || rating > current.rating);
+    const primary = incomingWins ? incoming : current;
+    const secondary = incomingWins ? current : incoming;
+    seen.set(key,{
+      ...primary,
+      url:primary.url||secondary.url||'',
+      rating:primary.rating||secondary.rating||null,
+      ratingText:primary.ratingText||secondary.ratingText||'',
+      reviews:primary.reviews!=null?primary.reviews:secondary.reviews,
+      phone:primary.phone||secondary.phone||'',
+      price:primary.price||secondary.price||null,
+      image:primary.image||secondary.image||'',
+      imagePosition:(primary.image?primary.imagePosition:secondary.imagePosition)||'center',
+      why:primary.why||secondary.why||'',
+      downtown:!!(primary.downtown||secondary.downtown),
+      strip:!!(primary.strip||secondary.strip),
+      summerlin:!!(primary.summerlin||secondary.summerlin),
+      henderson:!!(primary.henderson||secondary.henderson)
+    });
   };
   if(cityKey === 'bestof'){
     const excluded = new Set(['bestof','miami','london','bjspicksmiami','bjspickslondon']);
@@ -17723,7 +17748,7 @@ function boShowNearRestaurantCard(r,restaurantKey,parentCluster){
     distanceLabel='<div class="bo-near-info-distance">'+shown+' MILES FROM YOU</div>';
   }
   media.innerHTML=r.image
-    ? '<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';">'
+    ? '<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="object-position:'+esc(r.imagePosition||'center')+';" onerror="this.parentElement.innerHTML=\'<div class=&quot;bo-near-info-placeholder&quot; aria-label=&quot;Restaurant image coming soon&quot;><span class=&quot;bo-near-info-placeholder-mark&quot;>✦</span></div>\';">'
     : '<div class="bo-near-info-placeholder" aria-label="Restaurant image coming soon"><span class="bo-near-info-placeholder-mark">✦</span></div>';
   const phone=r.phone ? '<a class="bo-near-info-phone" href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'">'+esc(r.phone)+'</a>' : '';
   const directions='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address);
