@@ -8550,7 +8550,7 @@
   <p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.9rem;margin:6px 0 0;">Real direction. No filler. Just the best.</p>
   <p class="bo-hero-sub" id="boHeroSub"></p>
   <div class="bo-search-wrap bo-search-wrap-big">
-    <input type="text" id="boSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search all restaurants..." autocomplete="off">
+    <input type="text" id="boSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search all restaurants....." autocomplete="off">
   <div class="bo-search-powered-by">
     <svg viewBox="0 0 24 24" width="11" height="11" fill="#F59E0B" style="vertical-align:-1px;margin-right:1px;"><path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"/></svg> Powered by
     <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg>
@@ -18816,13 +18816,18 @@ function boRenderCategory(cat){
       // whichever city you arrived from instead of always defaulting to
       // Vegas.
       const otherBestsCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const mainCyclerCities = [otherBestsCity].concat(
+        BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
+      );
+      const mainStartingName = mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2">
-          <span class="bop-splash-city-col"><span class="bop-splash-city is-active">${otherBestsCity}</span></span>
+          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopMainCityText">${mainStartingName}</span></span>
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
+      startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 30, 5000, 15, 15, 0, true);
     } else if(isBjsPicksCat(cat)){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
@@ -18968,7 +18973,16 @@ function boRenderCategory(cat){
     `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
-      btn.addEventListener('click', () => boRenderCategory(btn.dataset.pickerCat));
+      btn.addEventListener('click', () => {
+        const requestedCat = btn.dataset.pickerCat;
+        // On a city MAIN page, the "Best of Period" tile must open that
+        // city's own Best Of page—not fall back to Vegas.
+        if(requestedCat === 'bestof' && BO_CITY_CONFIG[boCityContext]){
+          boRenderCategory(boCityContext);
+          return;
+        }
+        boRenderCategory(requestedCat);
+      });
     });
     const nearMePreviewBtn = document.getElementById('boNearMePreviewBtn');
     if(nearMePreviewBtn){
