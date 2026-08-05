@@ -5438,6 +5438,74 @@
 }
 @media (prefers-reduced-motion:reduce){.bo-near-me-tile{animation:none;}}
 
+/* Featured 24 Hours tile — faint animated gold clock behind the label. */
+.bo-24-clock-tile{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.bo-24-clock-face{
+  position:absolute;
+  width:72px;
+  height:72px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:1.5px solid rgba(245,158,11,.34);
+  border-radius:50%;
+  opacity:.72;
+  z-index:0;
+  pointer-events:none;
+  box-shadow:0 0 10px rgba(245,158,11,.16), inset 0 0 10px rgba(245,158,11,.08);
+  background:
+    radial-gradient(circle at center, rgba(245,158,11,.13) 0 2px, transparent 2.5px),
+    repeating-conic-gradient(from -90deg, rgba(245,158,11,.34) 0deg 1.2deg, transparent 1.2deg 30deg);
+}
+.bo-24-clock-hour,
+.bo-24-clock-minute{
+  position:absolute;
+  left:50%;
+  bottom:50%;
+  transform-origin:50% 100%;
+  border-radius:999px;
+  background:#F59E0B;
+  box-shadow:0 0 5px rgba(245,158,11,.75);
+}
+.bo-24-clock-hour{
+  width:2px;
+  height:19px;
+  margin-left:-1px;
+  animation:boClockHourSpin 144s linear infinite;
+}
+.bo-24-clock-minute{
+  width:1.5px;
+  height:27px;
+  margin-left:-.75px;
+  animation:boClockMinuteSpin 12s linear infinite;
+}
+.bo-24-clock-center{
+  position:absolute;
+  width:5px;
+  height:5px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#F59E0B;
+  box-shadow:0 0 6px rgba(245,158,11,.9);
+}
+.bo-24-clock-label{
+  position:relative;
+  z-index:1;
+  text-shadow:0 0 6px #000,0 0 11px #000,0 0 6px rgba(245,158,11,.35);
+}
+@keyframes boClockMinuteSpin{to{transform:rotate(360deg);}}
+@keyframes boClockHourSpin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){
+  .bo-24-clock-hour{animation:none;transform:rotate(50deg);}
+  .bo-24-clock-minute{animation:none;transform:rotate(300deg);}
+}
+
 /* Hotel */
 .bo-icon-hotel{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cg fill='none' stroke='%239FE2FF' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 68V22h46v46M64 34h38v34M9 68h102'/%3E%3Cpath d='M28 32h8M45 32h8M28 44h8M45 44h8M28 56h8M45 56h8M75 44h8M90 44h8M75 56h8M90 56h8'/%3E%3C/g%3E%3C/svg%3E");
@@ -18566,7 +18634,7 @@ function boRenderCategory(cat){
       <div class="bo-main-picker-lead">
         <div class="bo-picker-grid" style="margin-bottom:0;flex-wrap:nowrap;gap:0.5rem;" id="boOtherTastesCircles">
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="24hours">24 Hours${BO_24HR_ISH_CITIES.includes(boCityContext) ? '<span class="bo-hero-dessert-word" style="font-size:0.85em;">ish</span>' : ''}</button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label">24 Hours${BO_24HR_ISH_CITIES.includes(boCityContext) ? '<span class="bo-hero-dessert-word" style="font-size:0.85em;">ish</span>' : ''}</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
         </div>
