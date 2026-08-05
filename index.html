@@ -19528,7 +19528,12 @@ function boRenderCategory(cat){
         ${s.image ? `<div class="bo-thumb-photo"><img src="${s.image}" alt="${s.name}" loading="lazy" referrerpolicy="no-referrer" style="object-position:${s.imagePosition || 'center'};" onerror="this.closest('.bo-thumb-photo').style.display='none';"></div>` : `<div class="bo-sear" style="background: radial-gradient(ellipse at 30% 30%, hsl(${s.hue}) 0%, hsl(${s.hue.split(',')[0]}, ${s.hue.split(',')[1]}, 14%) 70%);"><span class="bo-sear-number">${s.rank}</span></div>`}
       </div>
       <div class="bo-card-body">
-        ${(s.bjsPick && s.bjsSources && s.bjsSources.length) ? `<div class="bo-card-bjs-source"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICK</span> &middot; ${s.bjsSources.map(lbl => formatPickLabel(lbl, s.bjsPickCity)).join(' &middot; ')}</div>` : ''}
+        ${s.bjsPick ? (() => {
+          const labels = (s.bjsSources && s.bjsSources.length)
+            ? s.bjsSources
+            : [s.bjsPickLabel || BJS_PICK_SOURCE[cat] || 'Best Of Period'];
+          return `<div class="bo-card-bjs-source"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICK</span> &middot; ${labels.map(lbl => formatPickLabel(lbl, s.bjsPickCity)).join(' &middot; ')}</div>`;
+        })() : ''}
         <h3>${s.name}${openClosedBadgeHTML(s.hours, s.open24)}<span class="bo-verified" title="Verified listing"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.6L9.2 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${s.michelinStars ? `<span class="bo-michelin-badge" title="${s.michelinStars} Michelin Star${s.michelinStars > 1 ? 's' : ''}"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">${'\u2605'.repeat(s.michelinStars)}</span></span>` : ''}${s.offStrip ? '<span class="bo-ots-badge">*OTS</span>' : ''}${s.downtown ? '<span class="bo-dt-badge">*DT</span>' : ''}${isRecentlyOpened(s.openedDate) ? '<span class="bo-new-badge">NEW</span>' : ''}</h3>
         <div class="bo-rating-row">
           <div class="bo-rating">${s.rating ? '★ ' + s.rating : 'Not yet independently rated'}</div>
