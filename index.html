@@ -6114,6 +6114,22 @@
 <style id="boNearMePageStyles">
   .bo-near-map-page{position:fixed;inset:0;z-index:10020;background:#000;display:none;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .bo-near-map-page.open{display:block;}
+  /* Exact Other Cities globe from the main Best Of page, reused on Near Me. */
+  .bo-near-map-other-cities{
+    position:absolute;
+    top:74px;
+    right:4vw;
+    z-index:10040;
+  }
+  .bo-near-map-other-cities .oc-globe-wrap{
+    position:relative;
+    top:auto;
+    right:auto;
+    left:auto;
+  }
+  @media(max-width:600px){
+    .bo-near-map-other-cities{top:82px;right:5vw;}
+  }
   .bo-near-map-canvas{position:absolute;top:33.333vh;left:9vw;right:9vw;height:33.334vh;background:#111;border:2px solid #F59E0B;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.18);}
   .bo-near-map-loading{position:absolute;top:33.333vh;left:9vw;right:9vw;height:33.334vh;z-index:10024;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(0,0,0,.48);border-radius:10px;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}
   .bo-near-map-loading.is-hidden{opacity:0;visibility:hidden;}
@@ -6142,7 +6158,7 @@
     position:absolute;left:0;right:0;top:calc(66.667vh + 72px);
     min-height:430px;padding:28px 20px 46px;background:#000;text-align:center;
   }
-  .bo-near-map-search-wrap{position:relative;max-width:340px;margin:0 auto;z-index:2;}
+  .bo-near-map-search-wrap{position:relative;max-width:560px;margin:0 auto;z-index:2;}
   .bo-near-map-search-results{
     display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:10040;
     max-height:230px;overflow-y:auto;background:#070707;border:1px solid #F59E0B;
@@ -9624,14 +9640,6 @@ function setupBopLanding(){
   if(landingNearBtn){
     landingNearBtn.addEventListener('click', function(){
       landingNearBtn.blur();
-      boNearMapReturnTarget = 'landing';
-      overlay.classList.remove('open');
-      const pendingPage = (typeof boEnsureNearMapPage === 'function') ? boEnsureNearMapPage() : null;
-      if(pendingPage){
-        pendingPage.classList.add('open');
-        document.body.style.overflow='hidden';
-        pendingPage.scrollTop=0;
-      }
       const cityPoints = {
         bestof:[36.1699,-115.1398],
         miami:[25.7617,-80.1918],
@@ -17588,27 +17596,23 @@ function boEnsureNearMapPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boNearMapPage'; page.className='bo-near-map-page';
-  page.innerHTML=`<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="oc-globe-wrap"><button type="button" class="oc-globe-btn" id="boNearOcGlobeBtn" aria-label="Other cities"><span class="oc-arrow oc-arrow-l">&#9654;</span><span class="oc-arrow oc-arrow-r">&#9664;</span><span class="oc-arrow oc-arrow-t">&#9660;</span><span class="oc-arrow oc-arrow-b">&#9650;</span><span class="oc-globe" aria-hidden="true">🌐</span><span class="oc-label-arc">OTHER CITIES</span></button></div><div id="boNearInfoCard" class="bo-near-info-card" role="dialog" aria-live="polite" aria-label="Restaurant information"><button id="boNearInfoClose" class="bo-near-info-close" type="button" aria-label="Close restaurant information">×</button><div id="boNearInfoMedia" class="bo-near-info-media"></div><div id="boNearInfoCopy" class="bo-near-info-copy"></div></div><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div><div class="bo-near-map-lower"><div class="bo-near-map-search-wrap bo-search-wrap bo-search-wrap-big"><input type="text" id="boNearMapSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search restaurants..." autocomplete="off"><div class="bo-search-powered-by"><svg viewBox="0 0 24 24" width="11" height="11" fill="#F59E0B" style="vertical-align:-1px;margin-right:1px;"><path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"/></svg> Powered by <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg></div><div id="boNearMapSearchResults" class="bo-near-map-search-results"></div></div><footer class="bo-near-map-footer"><p class="fine-print"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span> <span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg viewBox="0 0 40 40" width="20" height="20"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="18" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="11" fill="#F59E0B">BJS</text><text x="20" y="28" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="8" fill="#F59E0B">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;">Become a Member</button><span style="color:#666;margin:0 8px;">&middot;</span><button type="button" class="footer-hotlink" data-dest="legend" style="color:#F59E0B;">Legend</button></p></footer></div>`;
+  page.innerHTML=`<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR ME</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-other-cities"><div class="oc-globe-wrap"><button type="button" class="oc-globe-btn" id="boNearOcGlobeBtn" aria-label="Other cities"><span class="oc-arrow oc-arrow-l">&#9654;</span><span class="oc-arrow oc-arrow-r">&#9664;</span><span class="oc-arrow oc-arrow-t">&#9660;</span><span class="oc-arrow oc-arrow-b">&#9650;</span><span class="oc-globe" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="#050505" stroke="#F59E0B" stroke-width="4"/><ellipse cx="32" cy="32" rx="12" ry="27" fill="none" stroke="#F59E0B" stroke-width="3"/><path d="M7 32h50M11 20h42M11 44h42" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg></span></button><svg class="oc-curve" viewBox="0 0 100 32" aria-hidden="true"><defs><path id="boNearOcCurvePath" d="M 8,4 A 46,46 0 0 0 92,4" fill="none"/></defs><text><textPath href="#boNearOcCurvePath" startOffset="50%" text-anchor="middle">OTHER CITIES</textPath></text></svg></div></div><div id="boNearInfoCard" class="bo-near-info-card" role="dialog" aria-live="polite" aria-label="Restaurant information"><button id="boNearInfoClose" class="bo-near-info-close" type="button" aria-label="Close restaurant information">×</button><div id="boNearInfoMedia" class="bo-near-info-media"></div><div id="boNearInfoCopy" class="bo-near-info-copy"></div></div><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div><div class="bo-near-map-lower"><div class="bo-near-map-search-wrap bo-search-wrap bo-search-wrap-big"><input type="text" id="boNearMapSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search restaurants..." autocomplete="off"><div class="bo-search-powered-by"><svg viewBox="0 0 24 24" width="11" height="11" fill="#F59E0B" style="vertical-align:-1px;margin-right:1px;"><path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"/></svg> Powered by <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg></div><div id="boNearMapSearchResults" class="bo-near-map-search-results"></div></div><footer class="bo-near-map-footer"><p class="fine-print"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span> <span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg viewBox="0 0 40 40" width="20" height="20"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="18" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="11" fill="#F59E0B">BJS</text><text x="20" y="28" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="8" fill="#F59E0B">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;">Become a Member</button><span style="color:#666;margin:0 8px;">&middot;</span><button type="button" class="footer-hotlink" data-dest="legend" style="color:#F59E0B;">Legend</button></p></footer></div>`;
   document.body.appendChild(page);
   document.getElementById('boNearMapBack').addEventListener('click',()=>boCloseNearMap(true));
-  document.getElementById('boNearInfoClose').addEventListener('click',boHideNearRestaurantCard);
-  const nearOtherCitiesBtn=document.getElementById('boNearOcGlobeBtn');
-  if(nearOtherCitiesBtn){
-    nearOtherCitiesBtn.addEventListener('click',()=>{
-      const mainOtherCitiesBtn=document.getElementById('ocGlobeBtn');
-      if(mainOtherCitiesBtn){
-        mainOtherCitiesBtn.click();
-      }else{
-        const world=document.getElementById('ocWorldOverlay');
-        if(world){
-          if(typeof ocBuildWorld==='function') ocBuildWorld();
-          if(typeof ocBuildPins==='function') ocBuildPins();
-          world.classList.add('open');
-          world.scrollTop=0;
-        }
-      }
+  const boNearOcGlobeBtn=document.getElementById('boNearOcGlobeBtn');
+  if(boNearOcGlobeBtn){
+    boNearOcGlobeBtn.addEventListener('click',()=>{
+      boNearOcGlobeBtn.classList.remove('oc-firing');
+      void boNearOcGlobeBtn.offsetWidth;
+      boNearOcGlobeBtn.classList.add('oc-firing');
+      setTimeout(()=>{
+        boNearOcGlobeBtn.classList.remove('oc-firing');
+        const mainGlobe=document.getElementById('ocGlobeBtn');
+        if(mainGlobe) mainGlobe.click();
+      },520);
     });
   }
+  document.getElementById('boNearInfoClose').addEventListener('click',boHideNearRestaurantCard);
   const nearSearch=document.getElementById('boNearMapSearchInput');
   const nearResults=document.getElementById('boNearMapSearchResults');
   if(nearSearch && nearResults){
