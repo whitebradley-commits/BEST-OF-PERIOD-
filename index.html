@@ -11664,6 +11664,8 @@ steakhighend: [
   {
     rank: 1,
     name: "Vic & Anthony's",
+    image: "https://www.goldennugget.com/globalassets/las-vegas/restaurants/vics-filet-995x525.jpg",
+    imagePosition: "center",
     rating: "4.6 / 5",
     why: "Top 1% of every restaurant in Las Vegas — one of the highest cross-checked ratings of any steakhouse in the city",
     note: "Inside the Golden Nugget. USDA Prime grain-fed beef, fresh seafood, and world-renowned Kobe beef in a classically luxurious, intimate setting. The original Houston location is consistently ranked among America's top steakhouses.",
@@ -11786,6 +11788,8 @@ steakhighend: [
   {
     rank: 9,
     name: "SW Steakhouse",
+    image: "https://cdn.wynnresorts.com/image/upload/w_auto%2Cf_auto%2Cq_auto/f_auto/q_auto/v1780079078/Wynn%20Las%20Vegas/Dining%20Redesign/Fine%20Dining/SW%20Steakhouse/sw-steakhouse-table-social-gathering-1920x1080",
+    imagePosition: "center",
     rating: "4.6 / 5",
     why: "Lakeside patio, Wynn's quiet luxury take",
     note: "Overlooks Lake of Dreams at the Wynn, with a patio seat during the nightly water show worth requesting in advance. Elegant, understated, and consistently one of the better wine pairings on the Strip.",
@@ -12399,6 +12403,8 @@ dessert: [
   {
     rank: 1,
     name: "Bouchon Bakery",
+    image: "https://thomaskeller.com/sites/default/files/styles/homepage_height_620px/public/media/tk.com_bblv_homepage10.30_1a.jpg",
+    imagePosition: "center",
     rating: "4.7 / 5",
     why: "Thomas Keller's precise, classically-trained pastry case",
     note: "At The Venetian. Macarons, croissants, and a raspberry-topped opera cake that reflect the same exacting standard Keller applies to his full restaurants. A quieter, more refined dessert stop than most on this list.",
@@ -12862,6 +12868,8 @@ coffee: [
   {
     rank: 10,
     name: "Grand Lux Cafe",
+    image: "https://www.venetianlasvegas.com/adobe/dynamicmedia/deliver/dm-aid--43d8e721-7dc6-4bd6-b198-7aaa99d399f7/hero-primary-2000x812.jpg?preferwebp=true&quality=64",
+    imagePosition: "center",
     rating: "4.3 / 5",
     why: "The easiest high-quality coffee stop right on the Strip, inside The Venetian — and genuinely open 24/7",
     note: "Not a specialty roaster, but a genuinely well-run casino cafe that scored among the top on Google, Tripadvisor, and Yelp aggregated ratings. Open around the clock, with the Food Network calling its beignets the best outside New Orleans.",
@@ -12927,6 +12935,8 @@ coffee: [
   {
     rank: 4,
     name: "Grand Lux Cafe",
+    image: "https://www.venetianlasvegas.com/adobe/dynamicmedia/deliver/dm-aid--43d8e721-7dc6-4bd6-b198-7aaa99d399f7/hero-primary-2000x812.jpg?preferwebp=true&quality=64",
+    imagePosition: "center",
     rating: "4.3 / 5",
     why: "The Venetian's genuinely 24/7 sister restaurant to The Cheesecake Factory",
     note: "Pizzas, seafood, steak, burgers, pasta, and a full breakfast menu, any hour. The Food Network has called its beignets the best outside New Orleans.",
@@ -17590,9 +17600,11 @@ const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" 
 // ===== Near Me map page =====
 
 /* Restaurant image policy:
-   Only authentic restaurant-specific images already stored on a listing are shown.
-   Listings without a verified image retain the existing branded placeholder. */
-function boRemoveTemporaryRestaurantPhotos(){
+   Only restaurant-specific images from the restaurant or its official
+   hotel/property page are displayed. All other listings keep the
+   existing Best Of Period holding graphic. */
+
+function boEnforceAuthenticRestaurantPhotos(){
   Object.values(boCategoryData).forEach(function(list){
     if(!Array.isArray(list)) return;
     list.forEach(function(restaurant){
@@ -17606,7 +17618,7 @@ function boRemoveTemporaryRestaurantPhotos(){
     });
   });
 }
-boRemoveTemporaryRestaurantPhotos();
+boEnforceAuthenticRestaurantPhotos();
 
 let boNearMap = null;
 let boNearMapLayer = null;
@@ -20269,7 +20281,7 @@ const BUSINESS_PHOTOS = {};
 Object.values(boCategoryData).forEach(function(list){
   if(!Array.isArray(list)) return;
   list.forEach(function(restaurant){
-    if(!restaurant || !restaurant.name || !restaurant.image || restaurant.imageTemporary) return;
+    if(!restaurant || !restaurant.name || !restaurant.image) return;
     if(!BUSINESS_PHOTOS[restaurant.name]) BUSINESS_PHOTOS[restaurant.name] = [];
     if(BUSINESS_PHOTOS[restaurant.name].indexOf(restaurant.image) === -1){
       BUSINESS_PHOTOS[restaurant.name].push(restaurant.image);
