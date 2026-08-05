@@ -9397,10 +9397,13 @@ function callButtonHTML(phone){
 function menuButtonHTML(name, url, rank){
   if(!name) return '<span class="menu-text-btn menu-text-btn-pending" title="Menu coming soon">MENU</span>';
   if(rank && rank > 10) return '<span class="menu-text-btn" style="cursor:default;">MENU</span>';
-  const q = encodeURIComponent(name + ' Las Vegas');
+  const cityLabel = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext])
+    ? BO_CITY_CONFIG[boCityContext].displayName
+    : 'Las Vegas';
+  const q = encodeURIComponent(name + ' ' + cityLabel + ' menu');
   const yelpUrl = 'https://www.yelp.com/search?find_desc=' + q;
   const esc = function(v){ return String(v || '').replace(/"/g, '&quot;'); };
-  return '<button type="button" class="menu-text-btn" data-menu-popup="' + esc(yelpUrl) + '" data-menu-name="' + esc(name) + '" title="Menu">MENU</button>';
+  return '<a class="menu-text-btn" href="' + esc(yelpUrl) + '" target="_blank" rel="noopener noreferrer" title="View menu in a new tab">MENU</a>';
 }
 
 function setupWebPopup(){
@@ -10534,7 +10537,7 @@ document.addEventListener('click', function(e){
 
 function siteButtonHTML(url){
   if(!url) return '<span class="site-btn site-btn-pending">WEB</span>';
-  return '<button type="button" class="site-btn" data-web-popup="' + url.replace(/"/g,'&quot;') + '" title="Website">WEB</button>';
+  return '<a class="site-btn" href="' + url.replace(/"/g,'&quot;') + '" target="_blank" rel="noopener noreferrer" title="Open website in a new tab">WEB</a>';
 }
 
 // hours format: { days: [0-6 where 0=Sun], open: "HH:MM", close: "HH:MM" } (24hr, close can cross midnight)
@@ -17585,6 +17588,67 @@ const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" 
 
 
 // ===== Near Me map page =====
+
+/* ===== Priority restaurant photo pass: BJS Picks, Michelin, 24 Hours, Dessert =====
+   Existing restaurant photos always win. These are temporary, commercially usable
+   Unsplash images so every priority card has a visual while restaurant-specific
+   photography is collected and approved. */
+const BO_PRIORITY_PHOTO_POOLS = {
+  bjs: [
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1000&q=82"
+  ],
+  michelin: [
+    "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=82"
+  ],
+  hours24: [
+    "https://images.unsplash.com/photo-1516211697506-8360dbcfe9a4?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1000&q=82"
+  ],
+  dessert: [
+    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1000&q=82",
+    "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1000&q=82"
+  ]
+};
+
+function boPriorityPhotoIndex(name, length){
+  let hash = 0;
+  const value = String(name || "");
+  for(let i=0;i<value.length;i++) hash = ((hash << 5) - hash + value.charCodeAt(i)) | 0;
+  return Math.abs(hash) % length;
+}
+
+function boApplyPriorityPhoto(list, poolName){
+  if(!Array.isArray(list)) return;
+  const pool = BO_PRIORITY_PHOTO_POOLS[poolName] || BO_PRIORITY_PHOTO_POOLS.bjs;
+  list.forEach(restaurant => {
+    if(!restaurant || restaurant.image) return;
+    restaurant.image = pool[boPriorityPhotoIndex(restaurant.name, pool.length)];
+    restaurant.imagePosition = restaurant.imagePosition || "center";
+    restaurant.imageTemporary = true;
+  });
+}
+
+[
+  "bjspicks",
+  "bjspicksmiami",
+  "bjspickslondon"
+].forEach(category => boApplyPriorityPhoto(boCategoryData[category], "bjs"));
+
+boApplyPriorityPhoto(boCategoryData.michelin, "michelin");
+boApplyPriorityPhoto(boCategoryData["24hours"], "hours24");
+boApplyPriorityPhoto(boCategoryData.dessert, "dessert");
+
+
 let boNearMap = null;
 let boNearMapLayer = null;
 let boNearUserMarker = null;
@@ -19094,7 +19158,7 @@ function boRenderCategory(cat){
     card.innerHTML = `
       <div class="bo-thumb-wrap">
         ${isBjsPicksCat(cat) ? '' : `<div class="bo-rank"><span class="bo-rank-ghost">${String(s.rank).padStart(2,'0')}</span><span class="bo-rank-label">NO. ${String(s.rank).padStart(2,'0')}</span></div>`}
-        ${s.image ? `<div class="bo-thumb-photo"><img src="${s.image}" alt="${s.name}" loading="lazy" style="object-position:${s.imagePosition || 'center'};"></div>` : `<div class="bo-sear" style="background: radial-gradient(ellipse at 30% 30%, hsl(${s.hue}) 0%, hsl(${s.hue.split(',')[0]}, ${s.hue.split(',')[1]}, 14%) 70%);"><span class="bo-sear-number">${s.rank}</span></div>`}
+        ${s.image ? `<div class="bo-thumb-photo"><img src="${s.image}" alt="${s.name}" loading="lazy" referrerpolicy="no-referrer" style="object-position:${s.imagePosition || 'center'};" onerror="this.closest('.bo-thumb-photo').style.display='none';"></div>` : `<div class="bo-sear" style="background: radial-gradient(ellipse at 30% 30%, hsl(${s.hue}) 0%, hsl(${s.hue.split(',')[0]}, ${s.hue.split(',')[1]}, 14%) 70%);"><span class="bo-sear-number">${s.rank}</span></div>`}
       </div>
       <div class="bo-card-body">
         ${(s.bjsPick && s.bjsSources && s.bjsSources.length) ? `<div class="bo-card-bjs-source"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICK</span> &middot; ${s.bjsSources.map(lbl => formatPickLabel(lbl, s.bjsPickCity)).join(' &middot; ')}</div>` : ''}
@@ -20243,6 +20307,16 @@ function setupNewsletterHotlink(){
 // Real photos get added here as businesses provide them (e.g. via Claim This Listing).
 // Format: "Exact Business Name": ["url1.jpg", "url2.jpg", ...]
 const BUSINESS_PHOTOS = {};
+Object.values(boCategoryData).forEach(function(list){
+  if(!Array.isArray(list)) return;
+  list.forEach(function(restaurant){
+    if(!restaurant || !restaurant.name || !restaurant.image) return;
+    if(!BUSINESS_PHOTOS[restaurant.name]) BUSINESS_PHOTOS[restaurant.name] = [];
+    if(BUSINESS_PHOTOS[restaurant.name].indexOf(restaurant.image) === -1){
+      BUSINESS_PHOTOS[restaurant.name].push(restaurant.image);
+    }
+  });
+});
 
 function picsButtonHTML(name){
   const safeName = String(name).replace(/"/g,'&quot;');
@@ -20279,6 +20353,21 @@ function setupPicsGallery(){
   }
 }
 
+
+function setupExternalRestaurantLinks(){
+  document.addEventListener("click", function(event){
+    const link = event.target.closest('a[href^="http://"], a[href^="https://"]');
+    if(!link) return;
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+  }, true);
+
+  document.querySelectorAll('a[href^="http://"], a[href^="https://"]').forEach(function(link){
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+  });
+}
+
 async function init(){
   // Defensive safety net: this file is bestofperiod.com, so neither the
   // WTF age-gate nor the shared company hub selector should ever be
@@ -20290,6 +20379,7 @@ async function init(){
   if(wtfGateOnLoad) wtfGateOnLoad.classList.remove('open');
   const hubOnLoad = document.getElementById('companyHubOverlay');
   if(hubOnLoad) hubOnLoad.classList.remove('open');
+  setupExternalRestaurantLinks();
   setupDirectory();
   setupAccordionToggle();
   setupShuttle();
