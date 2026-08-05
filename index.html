@@ -19698,7 +19698,7 @@ function boRenderCategory(cat){
         </span>`}
         ${emailButtonHTML(s.email)}
         ${picsButtonHTML(s.name)}
-        <button type="button" class="bo-icon-btn bo-icon-btn-send" style="width:auto;padding:0 8px;gap:4px;" title="Send this restaurant" onclick="boShareRestaurant(${JSON.stringify(s.name)})">
+        <button type="button" class="bo-icon-btn bo-icon-btn-send" style="width:auto;padding:0 8px;gap:4px;" title="Send this restaurant" data-send-restaurant="${s.name.replace(/"/g, '&quot;')}">
           <span class="bo-icon-btn-send-bg"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;position:relative;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span style="position:relative;font-size:0.68rem;font-weight:800;letter-spacing:0.02em;">SEND</span>
         </button>
@@ -20864,6 +20864,20 @@ function picsButtonHTML(name){
   return `<button type="button" class="pics-btn" data-pics-name="${safeName}" title="Photos">PICS</button>`;
 }
 
+// Restaurant-level "Send" button — uses event delegation on the document
+// (same pattern as the Pics gallery below) since restaurant cards get torn
+// down and rebuilt on every category render. A plain data attribute (not
+// inline onclick) avoids quote-escaping bugs with restaurant names that
+// contain an apostrophe or quote mark.
+function setupSendRestaurantButton(){
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-send-restaurant]');
+    if(!btn) return;
+    const name = btn.dataset.sendRestaurant;
+    if(name && typeof boShareRestaurant === 'function') boShareRestaurant(name);
+  });
+}
+
 function setupPicsGallery(){
   const overlay = document.getElementById('picsGalleryOverlay');
   const closeBtn = document.getElementById('picsGalleryClose');
@@ -20957,6 +20971,7 @@ async function init(){
   setupFooterHotlinks();
   setupNewsletterHotlink();
   setupPicsGallery();
+  setupSendRestaurantButton();
   setupCityButtons();
   setupFilters();
   setupLvSteam();
