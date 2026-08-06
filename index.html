@@ -1738,6 +1738,19 @@
   }
   .bop-landing-result:hover{ border-color:rgba(245,158,11,0.7); }
   .bop-landing-result:last-child{ margin-bottom:0; }
+  /* The Main page's own search dropdown gets the same floating-overlay
+     treatment Other Cities' search already had — drops down over the
+     content below instead of pushing it down in normal document flow,
+     and scrolls internally if the result list runs long. */
+  #bopLandingResults{
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;
+    right:0;
+    z-index:30;
+    max-height:280px;
+    overflow-y:auto;
+  }
   /* A city that's recognized but not live yet — visible so people can see
      it's coming, but deliberately not clickable, not styled like a real
      button (no hover, no pointer cursor). */
@@ -6698,6 +6711,7 @@
        (bo-search-wrap bo-search-wrap-big / bo-search-input bo-search-input-big)
        instead of a separate copy — guarantees identical size permanently,
        same fix as the Best Of/Period lockup earlier. -->
+  <div style="position:relative;">
   <div class="bo-search-wrap bo-search-wrap-big">
     <input type="text" id="bopLandingSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search any city..." autocomplete="off">
     <div class="bo-search-powered-by">
@@ -6706,6 +6720,7 @@
     </div>
   </div>
   <div class="bop-landing-results" id="bopLandingResults"></div>
+  </div>
 
   <div class="bop-landing-near-wrap" aria-label="Open restaurants near me">
     <span class="bop-landing-near-arrow" aria-hidden="true">›</span>
@@ -9988,12 +10003,11 @@ function setupBopLanding(){
     if(best) best.classList.add('open');
 
     if(typeof boRenderCategory === 'function'){
-      boRenderCategory('otheroptions');
+      boRenderCategory(dest);
     }
 
     window.scrollTo(0, 0);
   }
-
 
 
   const landingNearBtn = document.getElementById('bopLandingNearMeBtn');
@@ -10516,7 +10530,7 @@ function ocShowCity(city){
         if(best) best.classList.add('open');
 
         if(typeof boRenderCategory === 'function'){
-          boRenderCategory('otheroptions');
+          boRenderCategory(destination);
         }
 
         window.scrollTo(0, 0);
@@ -10608,7 +10622,7 @@ function setupOtherCities(){
       if(best) best.classList.add('open');
 
       if(typeof boRenderCategory === 'function'){
-        boRenderCategory('otheroptions');
+        boRenderCategory(dest);
       }
 
       window.scrollTo(0, 0);
