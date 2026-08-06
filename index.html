@@ -5129,7 +5129,7 @@
     animation:bopLandingSearchIconShimmer 8.5s ease-in-out infinite;
   }
   .bop-landing-search-prompt{
-    left:70px;
+    left:61px;
     right:20px;
     overflow:hidden;
     white-space:nowrap;
@@ -5144,7 +5144,7 @@
   }
   .bop-landing-search-prompt.is-hidden{ opacity:0; }
   #bopLandingSearchInput{
-    padding-left:70px !important;
+    padding-left:68px !important;
     caret-color:#F59E0B;
     animation:bopLandingSearchWhiteGlow 3.6s ease-in-out infinite;
     transition:border-color .22s ease,box-shadow .22s ease,background .22s ease;
@@ -5175,8 +5175,8 @@
   }
   @media(max-width:430px){
     .bop-landing-search-icon{left:34px;}
-    .bop-landing-search-prompt{left:67px;}
-    #bopLandingSearchInput{padding-left:67px !important;}
+    .bop-landing-search-prompt{left:51px;}
+    #bopLandingSearchInput{padding-left:59px !important;}
   }
   @media(prefers-reduced-motion:reduce){
     #bopLandingSearchInput,.bop-landing-search-icon,.bop-landing-search-prompt{animation:none;}
@@ -6866,6 +6866,100 @@
 @media (prefers-reduced-motion:reduce){
   .oc-search-input,#ocWorldClose{ animation:none !important; }
 }
+</style>
+
+
+<style id="bop-sitewide-search-treatment">
+  /* Shared animated search treatment for every text search field site-wide. */
+  .bop-search-shell{
+    position:relative;
+    display:block;
+    width:100%;
+  }
+  .bop-search-shell > input{
+    width:100%;
+    padding-left:58px !important;
+    caret-color:#F59E0B;
+    animation:bopUniversalSearchFieldGlow 3.6s ease-in-out infinite;
+    transition:border-color .22s ease,box-shadow .22s ease,background .22s ease;
+  }
+  .bop-search-shell > input::placeholder{
+    color:transparent !important;
+    opacity:0 !important;
+  }
+  .bop-universal-search-icon,
+  .bop-universal-search-prompt{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:4;
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .bop-universal-search-icon{
+    left:24px;
+    width:18px;
+    height:18px;
+    color:rgba(255,255,255,.78);
+    animation:bopUniversalSearchIconPulse 3.2s ease-in-out infinite;
+  }
+  .bop-universal-search-icon svg{
+    width:100%;
+    height:100%;
+    display:block;
+    stroke:currentColor;
+    filter:drop-shadow(0 0 3px rgba(255,255,255,.25));
+  }
+  .bop-universal-search-prompt{
+    left:53px;
+    right:16px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    color:#aaa;
+    font:inherit;
+    line-height:1;
+    text-align:left;
+    animation:bopUniversalSearchTextPulse 3.2s ease-in-out infinite;
+    transition:opacity .16s ease;
+  }
+  .bop-search-shell.is-active .bop-universal-search-prompt,
+  .bop-search-shell.has-value .bop-universal-search-prompt{
+    opacity:0;
+  }
+  .bop-search-shell:focus-within > input{
+    border-color:#F59E0B !important;
+    box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.24) !important;
+    animation:none;
+  }
+  .bop-search-shell:focus-within .bop-universal-search-icon{
+    color:#F59E0B;
+    animation:none;
+    filter:drop-shadow(0 0 5px rgba(245,158,11,.65));
+  }
+  @keyframes bopUniversalSearchFieldGlow{
+    0%,100%{box-shadow:0 0 4px rgba(255,255,255,.12),0 0 10px rgba(255,255,255,.04);}
+    50%{box-shadow:0 0 8px rgba(255,255,255,.27),0 0 18px rgba(255,255,255,.10);}
+  }
+  @keyframes bopUniversalSearchTextPulse{
+    0%,100%{color:#9d9d9d;text-shadow:0 0 2px rgba(255,255,255,.08),0 0 5px rgba(255,255,255,.03);}
+    50%{color:#d1d1d1;text-shadow:0 0 6px rgba(255,255,255,.78),0 0 14px rgba(255,255,255,.38),0 0 22px rgba(255,255,255,.14);}
+  }
+  @keyframes bopUniversalSearchIconPulse{
+    0%,100%{opacity:.70;transform:translateY(-50%) scale(1);filter:none;}
+    50%{opacity:1;transform:translateY(-50%) scale(1.08);filter:drop-shadow(0 0 5px rgba(255,255,255,.65));}
+  }
+  @media(max-width:430px){
+    .bop-search-shell > input{padding-left:54px !important;}
+    .bop-universal-search-icon{left:20px;}
+    .bop-universal-search-prompt{left:49px;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .bop-search-shell > input,
+    .bop-universal-search-icon,
+    .bop-universal-search-prompt{animation:none !important;}
+  }
 </style>
 
 </head>
@@ -21586,6 +21680,78 @@ init();
   coming.addEventListener('click',function(e){if(e.target===coming) coming.classList.remove('open');});
   overlay.addEventListener('click',function(e){if(e.target===overlay) closePreview();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(coming.classList.contains('open')) coming.classList.remove('open'); else if(overlay.classList.contains('open')) closePreview();}});
+})();
+</script>
+
+
+<script id="bop-sitewide-search-treatment-script">
+(function(){
+  const iconSVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke-width="2.2"></circle><path d="M15.5 15.5L21 21" fill="none" stroke-width="2.2" stroke-linecap="round"></path></svg>';
+
+  function isRealSearchInput(input){
+    if(!input || input.tagName !== 'INPUT') return false;
+    if(input.id === 'bopLandingSearchInput') return false; // already has its custom landing treatment
+    if((input.type || 'text').toLowerCase() !== 'text' && (input.type || '').toLowerCase() !== 'search') return false;
+    const haystack = [input.id, input.className, input.getAttribute('placeholder'), input.getAttribute('aria-label')]
+      .filter(Boolean).join(' ').toLowerCase();
+    return haystack.includes('search');
+  }
+
+  function decorate(input){
+    if(!isRealSearchInput(input) || input.dataset.bopSearchDecorated === '1') return;
+    input.dataset.bopSearchDecorated = '1';
+
+    const promptText = input.getAttribute('placeholder') || input.getAttribute('aria-label') || 'Search...';
+    if(!input.getAttribute('aria-label')) input.setAttribute('aria-label', promptText.replace(/\.+$/, ''));
+
+    const shell = document.createElement('span');
+    shell.className = 'bop-search-shell';
+    input.parentNode.insertBefore(shell, input);
+    shell.appendChild(input);
+
+    const icon = document.createElement('span');
+    icon.className = 'bop-universal-search-icon';
+    icon.setAttribute('aria-hidden','true');
+    icon.innerHTML = iconSVG;
+
+    const prompt = document.createElement('span');
+    prompt.className = 'bop-universal-search-prompt';
+    prompt.setAttribute('aria-hidden','true');
+    prompt.textContent = promptText;
+
+    shell.appendChild(icon);
+    shell.appendChild(prompt);
+    input.setAttribute('placeholder','');
+
+    const sync = function(){
+      shell.classList.toggle('has-value', input.value.trim().length > 0);
+    };
+    input.addEventListener('input', sync);
+    input.addEventListener('focus', function(){ shell.classList.add('is-active'); });
+    input.addEventListener('blur', function(){ shell.classList.remove('is-active'); sync(); });
+    sync();
+  }
+
+  function scan(root){
+    if(root && root.nodeType === 1 && root.matches && root.matches('input')) decorate(root);
+    const scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll('input').forEach(decorate);
+  }
+
+  function start(){
+    scan(document);
+    const observer = new MutationObserver(function(records){
+      records.forEach(function(record){
+        record.addedNodes.forEach(function(node){
+          if(node.nodeType === 1) scan(node);
+        });
+      });
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();
 </script>
 
