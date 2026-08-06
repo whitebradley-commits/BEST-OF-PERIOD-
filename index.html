@@ -5102,6 +5102,66 @@
     .steam-row{ font-size:0.62rem; }
   }
 
+
+
+  /* Landing-page city search: gentle white breathing glow with an occasional
+     magnifying-glass shimmer. Focus switches to the shared BOP orange-gold. */
+  #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput)::before{
+    content:"⌕";
+    position:absolute;
+    left:calc(5vw + 14px);
+    top:50%;
+    transform:translateY(-50%);
+    z-index:2;
+    color:rgba(255,255,255,0.78);
+    font-family:Arial,sans-serif;
+    font-size:1.15rem;
+    line-height:1;
+    pointer-events:none;
+    text-shadow:0 0 4px rgba(255,255,255,0.38);
+    animation:bopLandingSearchIconShimmer 9s ease-in-out infinite;
+  }
+  #bopLandingSearchInput{
+    padding-left:2.65rem;
+    animation:bopLandingSearchWhiteGlow 3.6s ease-in-out infinite;
+    transition:border-color .22s ease, box-shadow .22s ease, background .22s ease;
+  }
+  #bopLandingSearchInput::placeholder{
+    color:#8a8a8a;
+    opacity:1;
+    text-shadow:0 0 3px rgba(255,255,255,0.10);
+  }
+  #bopLandingSearchInput:focus{
+    border-color:#F59E0B;
+    box-shadow:0 0 8px rgba(245,158,11,0.45), 0 0 20px rgba(245,158,11,0.24);
+    animation:none;
+  }
+  #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput:focus)::before{
+    color:#F59E0B;
+    text-shadow:0 0 6px rgba(245,158,11,0.7);
+    animation:none;
+  }
+  @keyframes bopLandingSearchWhiteGlow{
+    0%,100%{
+      box-shadow:0 0 5px rgba(255,255,255,0.16), 0 0 12px rgba(255,255,255,0.06);
+      border-color:rgba(255,255,255,0.28);
+    }
+    50%{
+      box-shadow:0 0 9px rgba(255,255,255,0.32), 0 0 20px rgba(255,255,255,0.12);
+      border-color:rgba(255,255,255,0.46);
+    }
+  }
+  @keyframes bopLandingSearchIconShimmer{
+    0%,82%,100%{opacity:.74;filter:none;transform:translateY(-50%) scale(1);}
+    88%{opacity:1;filter:drop-shadow(0 0 5px rgba(255,255,255,.75));transform:translateY(-50%) scale(1.08);}
+    94%{opacity:.8;filter:none;transform:translateY(-50%) scale(1);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #bopLandingSearchInput,
+    #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput)::before{
+      animation:none;
+    }
+  }
 </style>
 
 <style id="bestofperiod-wtf-orange-mockup">
