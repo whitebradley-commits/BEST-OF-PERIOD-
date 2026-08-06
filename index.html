@@ -10003,7 +10003,7 @@ function setupBopLanding(){
     if(best) best.classList.add('open');
 
     if(typeof boRenderCategory === 'function'){
-      boRenderCategory(dest);
+      boRenderCategory('otheroptions');
     }
 
     window.scrollTo(0, 0);
@@ -10530,7 +10530,7 @@ function ocShowCity(city){
         if(best) best.classList.add('open');
 
         if(typeof boRenderCategory === 'function'){
-          boRenderCategory(destination);
+          boRenderCategory('otheroptions');
         }
 
         window.scrollTo(0, 0);
@@ -10608,6 +10608,23 @@ function setupOtherCities(){
     function openOtherCityDestination(dest){
       if(typeof BO_CITY_CONFIG === 'undefined' || !BO_CITY_CONFIG[dest]) return;
 
+      /* Other Cities can be opened from the Near Me page. Close every
+         Near Me layer first, otherwise the correct city page opens
+         underneath the still-visible map and appears to route back to
+         Near Me. Same fix already used by the map pin handler above. */
+      var nearPage = document.getElementById('boNearMapPage');
+      if(nearPage) nearPage.classList.remove('open');
+
+      var nearCard = document.getElementById('boNearInfoCard');
+      if(nearCard){
+        nearCard.classList.remove('open');
+        nearCard.setAttribute('aria-hidden','true');
+      }
+
+      if(typeof boCloseNearInfoCard === 'function'){
+        try{ boCloseNearInfoCard(); }catch(closeErr){}
+      }
+
       boCityContext = dest;
       overlay.classList.remove('open');
 
@@ -10622,7 +10639,7 @@ function setupOtherCities(){
       if(best) best.classList.add('open');
 
       if(typeof boRenderCategory === 'function'){
-        boRenderCategory(dest);
+        boRenderCategory('otheroptions');
       }
 
       window.scrollTo(0, 0);
