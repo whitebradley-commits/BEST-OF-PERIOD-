@@ -5104,63 +5104,82 @@
 
 
 
-  /* Landing-page city search: gentle white breathing glow with an occasional
-     magnifying-glass shimmer. Focus switches to the shared BOP orange-gold. */
-  #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput)::before{
-    content:"⌕";
+  /* Landing-page city search — separate visual prompt layer for reliable
+     animation in iPhone Safari. The real input has no native placeholder. */
+  #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput){
+    position:relative;
+  }
+  .bop-landing-search-icon,
+  .bop-landing-search-prompt{
     position:absolute;
-    left:calc(5vw + 14px);
     top:50%;
     transform:translateY(-50%);
-    z-index:2;
-    color:rgba(255,255,255,0.78);
-    font-family:Arial,sans-serif;
-    font-size:1.15rem;
-    line-height:1;
+    z-index:3;
     pointer-events:none;
-    text-shadow:0 0 4px rgba(255,255,255,0.38);
-    animation:bopLandingSearchIconShimmer 9s ease-in-out infinite;
+    user-select:none;
+    -webkit-user-select:none;
   }
-  #bopLandingSearchInput{
-    padding-left:2.65rem;
-    animation:bopLandingSearchWhiteGlow 3.6s ease-in-out infinite;
-    transition:border-color .22s ease, box-shadow .22s ease, background .22s ease;
+  .bop-landing-search-icon{
+    left:36px;
+    color:rgba(255,255,255,.76);
+    font-family:Arial,sans-serif;
+    font-size:1.2rem;
+    line-height:1;
+    text-shadow:0 0 4px rgba(255,255,255,.34);
+    animation:bopLandingSearchIconShimmer 8.5s ease-in-out infinite;
   }
-  #bopLandingSearchInput::placeholder{
-    color:#8a8a8a;
+  .bop-landing-search-prompt{
+    left:70px;
+    right:20px;
+    overflow:hidden;
+    white-space:nowrap;
+    color:#b7b7b7;
+    font:inherit;
+    font-size:inherit;
+    line-height:1;
     opacity:1;
-    text-shadow:0 0 3px rgba(255,255,255,0.10);
+    text-align:left;
+    animation:bopLandingPromptBreathe 3.2s ease-in-out infinite;
+    transition:opacity .18s ease;
   }
+  .bop-landing-search-prompt.is-hidden{ opacity:0; }
+  #bopLandingSearchInput{
+    padding-left:70px !important;
+    caret-color:#F59E0B;
+    animation:bopLandingSearchWhiteGlow 3.6s ease-in-out infinite;
+    transition:border-color .22s ease,box-shadow .22s ease,background .22s ease;
+  }
+  #bopLandingSearchInput::placeholder{ color:transparent !important; opacity:0 !important; }
   #bopLandingSearchInput:focus{
     border-color:#F59E0B;
-    box-shadow:0 0 8px rgba(245,158,11,0.45), 0 0 20px rgba(245,158,11,0.24);
+    box-shadow:0 0 8px rgba(245,158,11,.45),0 0 20px rgba(245,158,11,.24);
     animation:none;
   }
-  #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput:focus)::before{
+  #bopLandingOverlay .bo-search-wrap:focus-within .bop-landing-search-icon{
     color:#F59E0B;
-    text-shadow:0 0 6px rgba(245,158,11,0.7);
+    text-shadow:0 0 6px rgba(245,158,11,.72);
     animation:none;
   }
   @keyframes bopLandingSearchWhiteGlow{
-    0%,100%{
-      box-shadow:0 0 5px rgba(255,255,255,0.16), 0 0 12px rgba(255,255,255,0.06);
-      border-color:rgba(255,255,255,0.28);
-    }
-    50%{
-      box-shadow:0 0 9px rgba(255,255,255,0.32), 0 0 20px rgba(255,255,255,0.12);
-      border-color:rgba(255,255,255,0.46);
-    }
+    0%,100%{box-shadow:0 0 5px rgba(255,255,255,.16),0 0 12px rgba(255,255,255,.06);border-color:rgba(255,255,255,.28);}
+    50%{box-shadow:0 0 9px rgba(255,255,255,.32),0 0 20px rgba(255,255,255,.12);border-color:rgba(255,255,255,.46);}
+  }
+  @keyframes bopLandingPromptBreathe{
+    0%,100%{color:#9f9f9f;text-shadow:0 0 2px rgba(255,255,255,.08),0 0 5px rgba(255,255,255,.03);}
+    50%{color:#d0d0d0;text-shadow:0 0 6px rgba(255,255,255,.82),0 0 15px rgba(255,255,255,.42),0 0 25px rgba(255,255,255,.18);}
   }
   @keyframes bopLandingSearchIconShimmer{
     0%,82%,100%{opacity:.74;filter:none;transform:translateY(-50%) scale(1);}
     88%{opacity:1;filter:drop-shadow(0 0 5px rgba(255,255,255,.75));transform:translateY(-50%) scale(1.08);}
     94%{opacity:.8;filter:none;transform:translateY(-50%) scale(1);}
   }
-  @media (prefers-reduced-motion:reduce){
-    #bopLandingSearchInput,
-    #bopLandingOverlay .bo-search-wrap:has(#bopLandingSearchInput)::before{
-      animation:none;
-    }
+  @media(max-width:430px){
+    .bop-landing-search-icon{left:34px;}
+    .bop-landing-search-prompt{left:67px;}
+    #bopLandingSearchInput{padding-left:67px !important;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    #bopLandingSearchInput,.bop-landing-search-icon,.bop-landing-search-prompt{animation:none;}
   }
 </style>
 
@@ -6875,7 +6894,9 @@
        same fix as the Best Of/Period lockup earlier. -->
   <div style="position:relative;">
   <div class="bo-search-wrap bo-search-wrap-big">
-    <input type="text" id="bopLandingSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search any city..." autocomplete="off">
+    <input type="text" id="bopLandingSearchInput" class="bo-search-input bo-search-input-big" placeholder="" autocomplete="off" aria-label="Search any city">
+    <span class="bop-landing-search-icon" aria-hidden="true">⌕</span>
+    <span class="bop-landing-search-prompt" id="bopLandingSearchPrompt" aria-hidden="true">Search any city...</span>
     <div class="bo-search-powered-by">
       <svg viewBox="0 0 24 24" width="11" height="11" fill="#F59E0B" style="vertical-align:-1px;margin-right:1px;"><path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"/></svg> Powered by
       <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg>
@@ -10126,6 +10147,22 @@ function setupBopLanding(){
   const input = document.getElementById('bopLandingSearchInput');
   const results = document.getElementById('bopLandingResults');
   if(!overlay || !input || !results) return;
+
+  const landingPrompt = document.getElementById('bopLandingSearchPrompt');
+  const syncLandingPrompt = () => {
+    if(!landingPrompt) return;
+    landingPrompt.classList.toggle('is-hidden', document.activeElement === input || input.value.length > 0);
+  };
+  input.addEventListener('focus', syncLandingPrompt);
+  input.addEventListener('blur', syncLandingPrompt);
+  input.addEventListener('input', syncLandingPrompt);
+  const landingSearchWrap = input.closest('.bo-search-wrap');
+  if(landingSearchWrap){
+    landingSearchWrap.addEventListener('click', (event) => {
+      if(event.target !== input) input.focus();
+    });
+  }
+  syncLandingPrompt();
 
   // Genuinely infinite — never lands on or stops at any particular city,
   // Vegas included, unlike the old cycler which always rested on whichever
