@@ -21472,12 +21472,10 @@ function conceptComingSoon(){
 }
 
 function openPromotions(){
-  // Close every other full-screen overlay first (not just a hand-picked
-  // list) so a stray back button from whatever page we came from can
-  // never bleed through behind the Promotions page's own back button.
-  document.querySelectorAll('.thank-you-overlay.open').forEach(function(el){
-    el.classList.remove('open');
-  });
+  // Uses the same close-everything helper as every other destination so it
+  // can never drift out of sync with it again (that drift is exactly what
+  // caused the BJS CO. button bug above).
+  closeAllPageOverlays();
   const overlay = document.getElementById('promotionsOverlay');
   if(overlay){ overlay.classList.add('open'); overlay.scrollTop = 0; }
 }
@@ -21490,10 +21488,12 @@ function closeAllPageOverlays(){
     el.classList.remove('open');
   });
   // TPA and LV Steam use their own overlay systems (not .thank-you-overlay)
-  // but are still "popup" pages that must be closed here too — unlike
-  // bestOfOverlay/bopLandingOverlay, which are the always-on base layer
-  // and must never be force-closed.
-  ['tpaOverlay','tpaCoachingOverlay','tpaStakingOverlay','lvSteamOverlay'].forEach(function(id){
+  // but are still "popup" pages that must be closed here too. bopLandingOverlay
+  // is the splash/city-picker gate that sits at z-index 900 (above every other
+  // page) — it must also be force-closed here, or it silently blocks whatever
+  // page we just tried to open. Only bestOfOverlay is the true always-on base
+  // layer and is deliberately left alone.
+  ['tpaOverlay','tpaCoachingOverlay','tpaStakingOverlay','lvSteamOverlay','bopLandingOverlay'].forEach(function(id){
     const el = document.getElementById(id);
     if(el) el.classList.remove('open');
   });
