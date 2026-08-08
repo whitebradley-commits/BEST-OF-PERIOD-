@@ -22416,9 +22416,10 @@ function closeTapDefPopup(){
 <div id="tagGameOverlay" aria-hidden="true"><div class="tg-live-counter" aria-live="polite"><span>CURRENT TAG COUNT</span><strong id="tgCurrentCount">101</strong><small>ON THE ROAD TO ONE BILLION</small></div><button class="tg-more" onclick="tgMoreGames()">🎮 MORE GAMES</button><button class="tg-back" onclick="closeTagGame()" aria-label="Close">×</button><div class="tg-stage"><div class="tg-runner tg-r1">🏃‍♂️<span class="tg-hand">🫱</span></div><div class="tg-runner tg-r2">🏃‍♂️<span class="tg-shock">😲</span></div><button id="tgMainButton" class="tg-main-button tg-ready" onclick="tgStart()"><span class="tg-logo"><b>TAG!</b><small>THE WORLD</small></span><span class="tg-go">GO TAG<br>SOMEONE →</span></button><div class="tg-help">ONE TAG. ONE PERSON. THAT'S IT.</div><div class="tg-count">YOU ARE THE<strong id="tgOrdinal">101st</strong><b>PERSON TO BE TAGGED!</b><small>* On the road to tagging the world.</small></div></div><div class="tg-bjs">BJS CO.</div><div id="tgPanelWrap" class="tg-panel-wrap"><section class="tg-panel"><button class="tg-panel-close" onclick="tgClosePanel()">×</button><div id="tgPanelBody"></div></section></div><input id="tgCamera" hidden type="file" accept="image/*" capture="user"><input id="tgUpload" hidden type="file" accept="image/*"></div>
 <script id="tagGameIntegratedScript">
 (function(){
+const tgEntryHash=location.hash;
 const icons=['🌎','👻','⚡','🛸','🦁','🦋','🔥','🎱','🍀','🖐️'];let tgIdentity='🌎',tgNumber=101,tgPhoto='';
 function ordinal(n){let m=n%100,s=m>=11&&m<=13?'th':n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th';return n.toLocaleString()+s}
-function tagParams(){const h=location.hash.replace(/^#\/?/,'');if(h.startsWith('tag')){const q=h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');const p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
+function tagParams(){const h=tgEntryHash.replace(/^#\/?/,'');if(h.startsWith('tag')){const q=h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');const p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
 function showCurrentCount(n){const v=Math.max(101,Math.min(Number(n)||101,1000000000));document.getElementById('tgCurrentCount').textContent=v.toLocaleString();return v}
 function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}}
 window.openTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.add('tg-open');o.setAttribute('aria-hidden','false')};window.closeTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-open');o.setAttribute('aria-hidden','true')};
@@ -22433,6 +22434,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 <script id="conceptsSeparateWindowsScript">
 (function(){
+  const conceptsEntryHash=location.hash;
   const routes={
     'TPA':()=>openConceptsTpa(),
     'LV Steam':()=>openConceptsLvSteam(),
@@ -22462,7 +22464,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       if(!tile||!gallery.contains(tile))return;
       e.preventDefault();e.stopImmediatePropagation();launch(tile.getAttribute('aria-label'));
     },true);
-    const hash=location.hash.replace(/^#/,'');
+    const hash=conceptsEntryHash.replace(/^#/,'');
     if(hash.startsWith('concept=')){
       const label=decodeURIComponent(hash.slice(8));
       if(routes[label])setTimeout(routes[label],80);
