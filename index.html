@@ -22646,7 +22646,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return location.pathname+'?'+p.toString();
   }
   function syncAddress(replace){
-    if(restoring||location.hash.startsWith('#/concepts'))return;
+    if(restoring||isShown(document.getElementById('conceptsOverlay')))return;
     const id=currentMajorPage();
     if(id==='bestOfOverlay'){
       const category=categoryAddress();
@@ -22698,7 +22698,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return true;
   }
   function restoreFromAddress(){
-    if(location.hash.startsWith('#/concepts'))return;
+    if(/^#\/concepts\/.+/.test(location.hash))return;
     let saved=null;try{saved=JSON.parse(sessionStorage.getItem(STORE)||'null');}catch(e){}
     const hashMatch=location.hash.match(/^#\/page\/([^/?#]+)/);
     if(hashMatch){
@@ -22713,7 +22713,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       return;
     }
     if(location.search.includes('page='))return;
-    if(saved&&saved.href===location.href)restoreSnapshot(saved);
+    if(saved)restoreSnapshot(saved);
   }
   function installCategoryRouting(){
     if(typeof window.boRenderCategory!=='function'||window.boRenderCategory.__refreshSafe)return;
