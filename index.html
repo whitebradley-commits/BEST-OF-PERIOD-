@@ -2553,7 +2553,9 @@
      closed — so without this, opening LV Steam on top of it was a tie at
      the same z-index, and since bestOfOverlay sits later in the page's
      markup, it was winning the tie and covering LV Steam completely. */
-  #lvSteamOverlay.open{ z-index:165; }
+  /* LV Steam is a concept-page popup. Keep it decisively above the permanent
+     Best Of Period base page and the Concepts gallery whenever it is open. */
+  #lvSteamOverlay.open{ z-index:60000; }
   .lvsteam-topbar{
     display:flex;
     justify-content:space-between;
@@ -22434,7 +22436,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 <script id="conceptsSeparateWindowsScript">
 (function(){
-  const conceptsEntryHash=location.hash;
   const routes={
     'TPA':()=>openConceptsTpa(),
     'LV Steam':()=>openConceptsLvSteam(),
@@ -22448,30 +22449,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     'FNT':()=>openFnt(),
     "Tag — You're It":()=>openTagGame(),
     'Murake':()=>openConceptImg('murake'),
-    'White Haus Auto':()=>openConceptImg('whitehausauto')
+    'White Haus Auto':()=>openConceptImg('whitehausauto'),
+    'Nerds Collectibles':()=>window.open('https://www.facebook.com/NERDsCOLLECTIBLEs/','_blank','noopener')
   };
-  function launchFntDirectly(){
-    const source=document.getElementById('fntEmbeddedSource');
-    if(!source)return;
-    const popup=window.open('about:blank','_blank');
-    if(!popup)return openFnt();
-    try{
-      const html=decodeURIComponent(escape(atob(source.textContent.trim())));
-      popup.document.open();
-      popup.document.write(html);
-      popup.document.close();
-    }catch(err){
-      popup.close();
-      openFnt();
-    }
-  }
   function launch(label){
     if(label==='Best Of Period')return window.open('https://bestofperiod.com','_blank','noopener');
     if(label==='WTF')return window.open('https://wtfdd.com','_blank','noopener');
-    if(label==='FNT')return launchFntDirectly();
-    if(!routes[label])return;
-    const u=new URL(location.href);u.search='';u.searchParams.set('conceptWindow','1');u.hash='concept='+encodeURIComponent(label);
-    window.open(u.toString(),'_blank','noopener');
+    if(routes[label])routes[label]();
   }
   function install(){
     const gallery=document.getElementById('conceptsOverlay');
@@ -22480,15 +22464,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       if(!tile||!gallery.contains(tile))return;
       e.preventDefault();e.stopImmediatePropagation();launch(tile.getAttribute('aria-label'));
     },true);
-    const hash=conceptsEntryHash.replace(/^#/,'');
-    const isConceptWindow=new URLSearchParams(location.search).get('conceptWindow')==='1';
-    if(isConceptWindow&&hash.startsWith('concept=')){
-      const label=decodeURIComponent(hash.slice(8));
-      history.replaceState(null,'',location.pathname);
-      if(routes[label])setTimeout(routes[label],80);
-    }else if(hash.startsWith('concept=')){
-      history.replaceState(null,'',location.pathname+location.search);
-    }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
