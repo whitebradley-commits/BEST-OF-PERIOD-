@@ -19652,7 +19652,64 @@ function openFnt(){
   const source = document.getElementById('fntEmbeddedSource');
   if(!overlay || !frame || !source) return;
   try{
-    const html = decodeURIComponent(escape(atob(source.textContent.trim())));
+    let html = decodeURIComponent(escape(atob(source.textContent.trim())));
+    html = html.replace('<p class="eyebrow">YOUR TEAM. YOUR DROP.</p>', '<p class="eyebrow fnt-shop-rep"><span class="rep-hard">REP</span> <span class="your-people">YOUR PEOPLE</span><br><span class="rep-hard">HARD.</span></p>');
+    const fntLiveShare = String.raw`
+(function(){
+  function params(){
+    try{return new URLSearchParams((parent.location.hash.split('?')[1]||''))}catch(e){return new URLSearchParams()}
+  }
+  function itemUrl(card){
+    const url=new URL(parent.location.href),query=new URLSearchParams();
+    query.set('team',chosen||'');
+    query.set('model',modelGender||'female');
+    if(card.classList.contains('reserve-card')){
+      query.set('kind','reserve');query.set('item',card.dataset.rid||'');query.set('mode',card.dataset.currentMode||'front');
+    }else{
+      query.set('kind','product');query.set('item',String(Array.from(document.querySelectorAll('#products .product-card')).indexOf(card)));
+      const swatch=card.querySelector('.swatch.active'),view=card.querySelector('.view-toggle button.active');
+      if(swatch)query.set('color',swatch.dataset.name||'');
+      if(view)query.set('view',(view.textContent||'').trim().toLowerCase());
+    }
+    url.hash='/concepts/fnt?'+query.toString();return url.toString();
+  }
+  window.shareExactItem=async function(button,card,title){
+    const original=button.textContent;button.disabled=true;button.textContent='OPENING…';
+    const url=itemUrl(card),data={title:title||'FNT',text:'Check this out!',url:url};
+    try{
+      if(navigator.share)await navigator.share(data);
+      else if(navigator.clipboard){await navigator.clipboard.writeText('Check this out!\n'+url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1000)})}
+      else prompt('Copy this item link:',url);
+    }catch(error){if(error&&error.name!=='AbortError')prompt('Copy this item link:',url)}
+    finally{button.disabled=false;button.textContent=original}
+  };
+  window.getFntShareQuery=function(){
+    const current=params();
+    if(current.get('team')===(chosen||'')&&current.get('item')!==null)return current.toString();
+    const basic=new URLSearchParams();if(chosen)basic.set('team',chosen);return basic.toString();
+  };
+  function restoreExactItem(){
+    const query=params(),kind=query.get('kind'),item=query.get('item');if(!kind||item===null)return;
+    const requestedModel=query.get('model');
+    if(requestedModel&&requestedModel!==modelGender){modelGender=requestedModel;showShop()}
+    setTimeout(function(){
+      let card;
+      if(kind==='reserve')card=document.querySelector('.reserve-card[data-rid="'+CSS.escape(item)+'"]');
+      else card=document.querySelectorAll('#products .product-card')[Number(item)];
+      if(!card)return;
+      if(kind==='reserve'){
+        const mode=query.get('mode'),button=mode&&card.querySelector('.jp-option[data-mode="'+CSS.escape(mode)+'"]');if(button)button.click();
+      }else{
+        const color=query.get('color'),swatch=color&&Array.from(card.querySelectorAll('.swatch')).find(function(node){return node.dataset.name===color});if(swatch)swatch.click();
+        const view=query.get('view'),viewButton=view&&Array.from(card.querySelectorAll('.view-toggle button')).find(function(node){return node.textContent.trim().toLowerCase()===view});if(viewButton)viewButton.click();
+      }
+      card.scrollIntoView({behavior:'auto',block:'start'});
+    },180);
+  }
+  restoreExactItem();
+})();`;
+    html = html.replace('</head>', '<style>.shophead .fnt-shop-rep{margin:0 0 14px}.shophead .fnt-shop-rep+.shopTeam{margin-top:0}@media(max-width:600px){.shophead .fnt-shop-rep{font-size:24px}}</style></head>');
+    html = html.replace('</body>', '<scr'+'ipt>'+fntLiveShare+'</scr'+'ipt></body>');
     if(frame.dataset.loaded !== '1'){
       frame.srcdoc = html;
       frame.dataset.loaded = '1';
@@ -20824,12 +20881,12 @@ function closeTapDefPopup(){
 <script id="tagGameIntegratedScript">
 (function(){
 const tgEntryHash=location.hash;
-const TG_SUPABASE_URL='https://eacfumjbpnflgnoeuoxb.supabase.co';
-const TG_SUPABASE_KEY='sb_publishable_P_L6h98NeKntvDPEUYI_sQ_TR1_0eKM';
+const TG_SUPABASE_URL='https://rrcfcudeqniuzlchnuzh.supabase.co';
+const TG_SUPABASE_KEY='sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN';
 const icons=['🌎','👻','⚡','🛸','🦁','🦋','🔥','🎱','🍀','🖐️'];let tgIdentity='🌎',tgNumber=101,tgPhoto='',tgLiveCount=101,tgClaimPromise=null,tgCountryPromise=null;
 function ordinal(n){let m=n%100,s=m>=11&&m<=13?'th':n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th';return n.toLocaleString()+s}
 function tagParams(){const h=tgEntryHash.replace(/^#\/?/,'');if(h.startsWith('tag')){const q=h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');const p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
-function sbHeaders(json){const h={apikey:TG_SUPABASE_KEY,Authorization:'Bearer '+TG_SUPABASE_KEY};if(json)h['Content-Type']='application/json';return h}
+function sbHeaders(json){const h={apikey:TG_SUPABASE_KEY};if(json)h['Content-Type']='application/json';return h}
 function showCurrentCount(n){const v=Math.max(101,Math.min(Number(n)||101,1000000000));tgLiveCount=Math.max(tgLiveCount,v);document.getElementById('tgCurrentCount').textContent=tgLiveCount.toLocaleString();return tgLiveCount}
 async function loadLiveCount(){try{const r=await fetch(TG_SUPABASE_URL+'/rest/v1/tag_world_counter?id=eq.1&select=current_count',{headers:sbHeaders(false),cache:'no-store'});if(!r.ok)return;const rows=await r.json();if(rows&&rows[0])showCurrentCount(rows[0].current_count)}catch(e){}}
 function countryFallback(){const lang=(navigator.language||'en-US').split('-');return (lang[1]&&/^[A-Za-z]{2}$/.test(lang[1])?lang[1]:'US').toUpperCase()}
@@ -20840,15 +20897,45 @@ function flagEmoji(code){const c=(code||'UN').toUpperCase();if(!/^[A-Z]{2}$/.tes
 async function loadTagMap(){const box=document.getElementById('tgMapGrid');if(!box)return;try{const r=await fetch(TG_SUPABASE_URL+'/rest/v1/tag_world_entries?select=tag_number,country_code&order=tag_number.asc&limit=1000',{headers:sbHeaders(false),cache:'no-store'});if(!r.ok)throw new Error();const rows=await r.json();box.className='tg-map-grid';box.innerHTML=rows.map(x=>'<div class="tg-map-cell"><b>#'+Number(x.tag_number).toLocaleString()+'</b><span title="'+x.country_code+'">'+flagEmoji(x.country_code)+'</span></div>').join('')||'<div class="tg-map-loading">THE FIRST FLAGS ARE ARRIVING…</div>'}catch(e){box.innerHTML='<div class="tg-map-loading">WORLD MAP CONNECTING…</div>'}}
 window.tgShowMap=function(){showPanel('<h2 class="tg-map-title">TAGGED WORLD MAP</h2><p class="tg-map-sub">Every number. Every flag. One world.</p><div id="tgMapGrid" class="tg-map-loading">LOADING FLAGS…</div>');loadTagMap()};
 function replay(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-animate');void o.offsetWidth;o.classList.add('tg-animate')}
-function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));loadLiveCount();setInterval(loadLiveCount,8000);if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}}
-window.openTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.add('tg-open');o.setAttribute('aria-hidden','false');replay();if(tagParams().has('tag'))requestCountry()};window.closeTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-open','tg-animate');o.setAttribute('aria-hidden','true')};
+function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));loadLiveCount();setInterval(loadLiveCount,8000);if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent-v2')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}}
+window.openTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.add('tg-open');o.setAttribute('aria-hidden','false');loadLiveCount();replay();if(tagParams().has('tag'))requestCountry()};window.closeTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-open','tg-animate');o.setAttribute('aria-hidden','true')};
 window.tgMoreGames=function(){showPanel('<div class="tg-soon"><span>🎮</span><h2>COMING SOON</h2><p>One game first. One worldwide chain. Let’s see how far Tag the World can go.</p></div>')};window.tgClosePanel=function(){document.getElementById('tgPanelWrap').classList.remove('tg-show')};function showPanel(x){document.getElementById('tgPanelBody').innerHTML=x;document.getElementById('tgPanelWrap').classList.add('tg-show')}
-window.tgStart=function(){if(localStorage.getItem('tag-world-sent')==='yes')return;if(!tgClaimPromise)tgClaimPromise=claimNextTag();showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><div class="tg-photo-actions"><button onclick="document.getElementById(&quot;tgCamera&quot;).click()">TAKE A PICTURE</button><button onclick="document.getElementById(&quot;tgUpload&quot;).click()">UPLOAD PICTURE</button></div><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
+window.tgStart=function(){if(localStorage.getItem('tag-world-sent-v2')==='yes')return;showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><div class="tg-photo-actions"><button onclick="document.getElementById(&quot;tgCamera&quot;).click()">TAKE A PICTURE</button><button onclick="document.getElementById(&quot;tgUpload&quot;).click()">UPLOAD PICTURE</button></div><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
 window.tgPickIcon=function(i){tgIdentity=icons[i];tgPhoto='';document.getElementById('tgPreview').innerHTML=tgIdentity};
 async function photo(e){const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=96;const x=c.getContext('2d'),z=Math.min(im.naturalWidth,im.naturalHeight);x.drawImage(im,(im.naturalWidth-z)/2,(im.naturalHeight-z)/2,z,z,0,0,96,96);tgPhoto=c.toDataURL('image/jpeg',.5);document.getElementById('tgPreview').innerHTML='<img src="'+tgPhoto+'">'}
 document.getElementById('tgCamera').addEventListener('change',photo);document.getElementById('tgUpload').addEventListener('change',photo);
-window.tgShare=async function(){const next=await(tgClaimPromise||claimNextTag()),u=new URL(location.href);u.search='';const p=new URLSearchParams();p.set('n',next);if(tgPhoto)p.set('p',tgPhoto);else p.set('i',tgIdentity);u.hash='tag?'+p.toString();const text='TAG, YOU’RE IT! You’re the '+ordinal(next)+' person to be tagged in Tag the World. Open this and tag one person only.';try{if(navigator.share)await navigator.share({title:'Tag the World — Tag, You’re It!',text,url:u.toString()});else{await navigator.clipboard.writeText(text+'\n'+u.toString());alert('Tag copied. Paste it into any message.')}localStorage.setItem('tag-world-sent','yes');localStorage.setItem('tag-world-last-count',String(next));tgNumber=next;showCurrentCount(next);tgClosePanel();const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}catch(e){}}
+window.tgShare=async function(){const next=await(tgClaimPromise||claimNextTag()),u=new URL(location.href);u.search='';const p=new URLSearchParams();p.set('n',next);if(tgPhoto)p.set('p',tgPhoto);else p.set('i',tgIdentity);u.hash='tag?'+p.toString();const text='TAG, YOU’RE IT! You’re the '+ordinal(next)+' person to be tagged in Tag the World. Open this and tag one person only.';try{if(navigator.share)await navigator.share({title:'Tag the World — Tag, You’re It!',text,url:u.toString()});else{await navigator.clipboard.writeText(text+'\n'+u.toString());alert('Tag copied. Paste it into any message.')}localStorage.setItem('tag-world-sent-v2','yes');localStorage.setItem('tag-world-last-count',String(next));tgNumber=next;showCurrentCount(next);tgClosePanel();const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="tag-game-cartoon-artwork-style">
+#conceptsOverlay .tg-logo-circle{gap:1px;padding-top:5px;box-sizing:border-box}
+#conceptsOverlay .tg-logo-circle .tg-logo-globe{width:29px;height:29px;filter:drop-shadow(0 2px 0 rgba(80,14,54,.35))}
+#conceptsOverlay .tg-logo-circle b{font-size:29px!important;line-height:.9!important}
+#conceptsOverlay .tg-logo-circle small{font-size:10px!important;letter-spacing:.12em!important;margin-top:5px!important;white-space:nowrap}
+#tagGameOverlay .tg-runner>.tg-character-svg{display:block;width:82px;height:100px;overflow:visible;filter:drop-shadow(0 7px 1px rgba(22,50,55,.22))}
+#tagGameOverlay .tg-hand svg,#tagGameOverlay .tg-point svg{display:block;width:42px;height:42px;filter:drop-shadow(0 3px 1px rgba(22,50,55,.24))}
+#tagGameOverlay .tg-shock{font:1000 11px/1 Impact,'Arial Black',sans-serif!important;color:#17274c;background:#ffe34f;border:3px solid #17274c;border-radius:50%;width:50px;height:50px;display:grid;place-items:center;transform:rotate(-9deg);box-shadow:0 4px 0 rgba(23,39,76,.25)}
+</style>
+<script id="tag-game-cartoon-artwork-script">
+(function(){
+  var globe='<svg class="tg-logo-globe" aria-hidden="true" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="#42c9ff" stroke="#fff" stroke-width="4"/><path d="M8 31h48M13 20h38M13 43h38M32 5c-10 9-14 18-14 27s4 18 14 27M32 5c10 9 14 18 14 27s-4 18-14 27" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>';
+  var runnerOne='<svg class="tg-character-svg" aria-label="Cartoon runner tagging forward" viewBox="0 0 90 110"><circle cx="47" cy="25" r="19" fill="#ffd0a8" stroke="#17274c" stroke-width="4"/><path d="M29 24c2-18 31-25 39-5-9-5-17-4-25 1-5 3-9 5-14 4z" fill="#7b3b16" stroke="#17274c" stroke-width="3"/><circle cx="41" cy="25" r="2.5" fill="#17274c"/><circle cx="54" cy="25" r="2.5" fill="#17274c"/><path d="M42 34q7 6 13 0" fill="none" stroke="#17274c" stroke-width="3" stroke-linecap="round"/><path d="M34 45q14-7 28 1l6 31-36 1z" fill="#ff4f88" stroke="#17274c" stroke-width="4"/><path d="M35 51L15 68M61 52l19 10" fill="none" stroke="#ffd0a8" stroke-width="10" stroke-linecap="round"/><path d="M36 77L18 101M61 77l17 22" fill="none" stroke="#17274c" stroke-width="12" stroke-linecap="round"/><path d="M9 102h19M70 101h17" stroke="#fff" stroke-width="8" stroke-linecap="round"/></svg>';
+  var runnerTwo='<svg class="tg-character-svg" aria-label="Cartoon runner being tagged" viewBox="0 0 90 110"><circle cx="45" cy="25" r="19" fill="#8f5a38" stroke="#17274c" stroke-width="4"/><path d="M26 21q8-25 38-10l5 16q-9-9-18-11-13 10-25 5z" fill="#17274c" stroke="#17274c" stroke-width="3"/><circle cx="39" cy="26" r="2.5" fill="#fff"/><circle cx="52" cy="26" r="2.5" fill="#fff"/><path d="M40 35q6-4 12 0" fill="none" stroke="#17274c" stroke-width="3" stroke-linecap="round"/><path d="M31 46q14-8 29 0l8 31-39 1z" fill="#3fc7ff" stroke="#17274c" stroke-width="4"/><path d="M33 52L13 61M61 51l20 17" fill="none" stroke="#8f5a38" stroke-width="10" stroke-linecap="round"/><path d="M35 77L17 101M61 77l17 22" fill="none" stroke="#17274c" stroke-width="12" stroke-linecap="round"/><path d="M8 102h20M69 101h18" stroke="#ffe34f" stroke-width="8" stroke-linecap="round"/></svg>';
+  var hand='<svg aria-hidden="true" viewBox="0 0 48 48"><path d="M7 27c4-5 8-4 12-1V9c0-5 7-5 7 0v12-9c0-5 7-5 7 0v10-7c0-5 7-5 7 0v13c0 11-7 17-17 17-8 0-13-6-16-11-2-3-2-5 0-7z" fill="#ffd0a8" stroke="#17274c" stroke-width="3" stroke-linejoin="round"/><path d="M4 23l-3-4M8 18l-1-6M13 17l2-5" stroke="#ffe34f" stroke-width="3" stroke-linecap="round"/></svg>';
+  var point='<svg aria-hidden="true" viewBox="0 0 48 48"><path d="M5 24h23l-7-7c-3-3 2-8 5-5l16 12-16 13c-4 3-8-3-5-6l7-6H5z" fill="#ffd0a8" stroke="#17274c" stroke-width="3" stroke-linejoin="round"/></svg>';
+  function install(){
+    var tile=document.querySelector('#conceptsOverlay .tg-logo-circle');
+    if(tile)tile.innerHTML=globe+'<b>TAG</b><small>THE WORLD</small>';
+    document.querySelectorAll('#tagGameOverlay .tg-runner').forEach(function(el,i){
+      Array.from(el.childNodes).forEach(function(n){if(n.nodeType===3&&n.textContent.trim())n.remove()});
+      if(!el.querySelector('.tg-character-svg'))el.insertAdjacentHTML('afterbegin',i?runnerTwo:runnerOne);
+    });
+    var h=document.querySelector('#tagGameOverlay .tg-hand');if(h)h.innerHTML=hand;
+    var s=document.querySelector('#tagGameOverlay .tg-shock');if(s)s.textContent='YIKES!';
+    var p=document.querySelector('#tagGameOverlay .tg-point');if(p)p.innerHTML=point;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 <style id="concept-popup-guard-style">
@@ -20970,7 +21057,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     'Best Of Period':'best-of-period','WTF':'wtf','TPA':'tpa','LV Steam':'lv-steam',
     'NO BAXSYZ':'no-baxsyz','Reverse Apparel':'reverse-apparel','Tapic':'tapic',
     'Refresheets':'refresheets','SOS':'sos','Cool Can':'cool-can',
-    'Lozingering':'lozingering','FNT':'fnt',"Tag — You're It":'tag',
+    'Lozingering':'lozingering','FNT':'fnt',"Tag the World":'tag',
     'Murake':'murake','White Haus Auto':'white-haus-auto',
     'Nerds Collectibles':'nerds-collectibles'
   };
@@ -21157,9 +21244,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   function exactShareUrl(){
     const url=new URL(location.href),overlay=document.getElementById('fntOverlay'),frame=document.getElementById('fntFrame');
-    if(overlay&&overlay.style.display!=='none'&&frame&&frame.contentWindow&&typeof frame.contentWindow.getFntShareTeam==='function'){
-      const team=frame.contentWindow.getFntShareTeam();
-      url.hash=team?'/concepts/fnt?team='+encodeURIComponent(team):'/concepts/fnt';
+    if(overlay&&overlay.style.display!=='none'&&frame&&frame.contentWindow){
+      if(typeof frame.contentWindow.getFntShareQuery==='function'){
+        const query=frame.contentWindow.getFntShareQuery();url.hash='/concepts/fnt'+(query?'?'+query:'');
+      }else if(typeof frame.contentWindow.getFntShareTeam==='function'){
+        const team=frame.contentWindow.getFntShareTeam();url.hash=team?'/concepts/fnt?team='+encodeURIComponent(team):'/concepts/fnt';
+      }
     }
     return url.toString();
   }
@@ -21170,7 +21260,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
     try{
       await new Promise(function(resolve){setTimeout(resolve,120)});
-    const url=exactShareUrl(),data={title:document.title||'Best of Period',text:"Check this out! The world's best dining directory...",url:url};
+    const url=exactShareUrl(),data={title:document.title||'Best of Period',text:'Check this out!',url:url};
       if(navigator.share)await navigator.share(data);
       else if(navigator.clipboard){await navigator.clipboard.writeText(url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1200)})}
       else prompt('Copy this exact-page link:',url);
@@ -21206,6 +21296,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #bjsWhyOverlay .bjs-why-orb-text{transform:translateY(-10px)}
 #bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="white-space"]{white-space:normal!important}
 #bjsWhyOverlay .bjs-why-direction-line{font-size:.68rem!important;margin-bottom:8px!important;transform:translateY(-3px)}
+#bjsWhyOverlay .bjs-why-direction-line{display:none!important}
+#bjsWhyOverlay .bjs-why-final-line{display:block;margin-top:1px;font-size:.68rem;line-height:1.2;letter-spacing:.01em}
+#bjsWhyOverlay .bjs-why-final-line strong{font-family:'Archivo Black',sans-serif;font-weight:900}
+#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="inline-flex"]{white-space:nowrap!important}
 </style>
 <style id="sitewide-close-back-style">
 #picsGalleryClose,#directoryClose,#shuttleClose,#menuPopupCloseBtn,#socialPopupCloseBtn,#bjsWhyCloseBtn,#directionsPopupCloseBtn,#phonePopupCloseBtn,#webPopupCloseBtn,#restaurantMenuCloseBtn,#thc24Back,#hhClose,#boNearInfoClose,#bestHotelsPreviewClose{
@@ -21232,6 +21326,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     },400);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<script id="bjs-why-final-copy-script">
+(function(){
+  function setCopy(){
+    var p=document.querySelector('#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)');
+    if(!p)return;
+    p.innerHTML='Bringing competitors together in one place by pulling aggregate review data from top platforms and <span style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:-4px;"><svg aria-label="BJS" height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg><strong style="font-family:Archivo Black,sans-serif;font-size:.78em;letter-spacing:.01em;">RATINGS</strong></span>, combining information, dissecting speech and trends, creating refined search,<span class="bjs-why-final-line"><strong>REAL DIRECTION</strong> AND <strong>NO FILLER</strong>.</span>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setCopy);else setCopy();
 })();
 </script>
 </body></html>
