@@ -215,7 +215,7 @@
     grid-template-columns:minmax(0, 5.3em) 4.6em;
   }
   .bop-splash-hero-san-diego .bop-splash-city{
-    font-size:calc(1.38em - 4pt) !important;
+    font-size:calc(1.38em - 2pt) !important;
   }
   .bop-splash-hero-san-diego .bop-splash-period{
     transform:none;
@@ -18122,7 +18122,8 @@ function boRenderCategory(cat){
       // BOP_SPLASH_CITIES list, which starts with "Vegas", so Miami's cycler
       // would spin through city names and land back on Vegas. Building a
       // fresh list here with the CURRENT city first fixes that for any city.
-      const cyclerCities = [cityCfg.displayName].concat(
+      const heroDisplayName = cat === 'sandiego' ? 'S.D.' : cityCfg.displayName;
+      const cyclerCities = [heroDisplayName].concat(
         BOP_SPLASH_CITIES.filter(c => c !== cityCfg.displayName)
       );
       const startingName = cityCfg.useNameCycler
