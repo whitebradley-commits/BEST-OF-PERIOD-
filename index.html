@@ -4708,6 +4708,12 @@
     color:#ffb257;
     margin:0.15rem 0 0.4rem;
   }
+  .bo-oos-badge{
+    display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid #ef4444;
+    border-radius:999px;color:#ef4444;background:#090909;font-family:'Bebas Neue',sans-serif;
+    font-size:.68rem;line-height:1;letter-spacing:.08em;vertical-align:2px;
+    box-shadow:0 0 7px rgba(239,68,68,.24);
+  }
   .bo-other-location-actions{
     display:flex;
     gap:0.5rem;
@@ -16513,6 +16519,297 @@ boCategoryData.steakeggs = [
   }
 })();
 
+// Current San Diego County MICHELIN stars (2026 Guide). Tijuana is excluded.
+// These are deliberately cross-listed into the San Diego flagship page; the
+// existing Michelin aggregate below automatically builds the Michelin page
+// from the michelinStars flag without duplicating the source records.
+(function buildSanDiegoMichelinStars2026(){
+  const stars = [
+    {
+      name: "Addison", city: "sandiego", michelinStars: 3,
+      image: "https://images.squarespace-cdn.com/content/v1/5eb76cc5c46deb69f54be80c/1632887591330-7OJPFONIRZRCDXISYNJ0/GDM_479117_Addison-Exterior-04.jpg", imagePosition: "center",
+      rating: null, ratingNote: "Three Michelin Stars in the 2026 California Guide.",
+      why: "San Diego County's three-star destination for Chef William Bradley's precise, deeply Californian tasting menu",
+      note: "Michelin's highest distinction: exceptional cuisine worth a special journey. Addison pairs global inspiration with Southern California ingredients in an elegant Carmel Valley setting.",
+      url: "https://www.addisondelmar.com/", address: "5200 Grand Del Mar Way, San Diego, CA 92130",
+      phone: "(858) 314-1900", hours: [{ days: [2,3,4,5,6], open: '17:00', close: '23:00' }], hue: "42, 48%, 27%", price: 4
+    },
+    {
+      name: "Lilo", city: "sandiego", michelinStars: 1,
+      image: "https://prod-pics.guide.michelin.com/api/public/content/b48c7340ca2f4647b98bc7ea29d1fd0a.png?format=webp&h=500&w=500", imagePosition: "center",
+      rating: null, ratingNote: "One Michelin Star in the 2026 California Guide.",
+      why: "An intimate Carlsbad chef's-counter experience rooted in the California coast and the world's shorelines",
+      note: "A 24-seat, multi-course tasting experience led by Chef Eric Bost, with every detail shaped around seasonality, nature, and close interaction between the kitchen and its guests.",
+      url: "https://www.restaurantlilo.com/", address: "2571 Roosevelt St, Carlsbad, CA 92008",
+      phone: "(442) 303-8245", hours: [{ days: [2,3,4,5,6], open: '17:00', close: '22:00' }], hue: "155, 28%, 24%", price: 4
+    },
+    {
+      name: "Lucien", city: "sandiego", michelinStars: 1,
+      image: "https://platform.sandiego.eater.com/wp-content/uploads/sites/25/2025/10/JS_Tecture_Lucien_0005_0732bc.jpg?crop=0%2C0%2C100%2C100&quality=90&strip=all&w=2048", imagePosition: "center",
+      rating: null, ratingNote: "Newly awarded One Michelin Star in the 2026 California Guide.",
+      why: "La Jolla's newly starred, hyper-seasonal tasting room blending California ingredients with French and Japanese technique",
+      note: "Chef Elijah Arizmendi's intimate 30-seat restaurant celebrates local farms and fishermen through a frequently changing tasting menu and live-fire cooking.",
+      url: "https://luciensd.com/", address: "7863 Girard Ave, Ste 308, La Jolla, CA 92037",
+      phone: "(619) 786-3082", hours: [{ days: [2,3,4,5,6], open: '17:00', close: '22:00' }], hue: "24, 35%, 23%", price: 4, openedDate: "2025-07-01"
+    },
+    {
+      name: "Jeune et Jolie", city: "sandiego", michelinStars: 1,
+      image: "https://cdn.vox-cdn.com/uploads/chorus_image/image/73231564/1NmqQOYE.0.jpg", imagePosition: "center",
+      rating: null, ratingNote: "One Michelin Star in the 2026 California Guide.",
+      why: "A luminous Carlsbad dining room reimagining French cuisine through the landscape and ingredients of Southern California",
+      note: "Chef Eric Bost's polished four-course experience combines precise modern French cooking, warm hospitality, a serious cocktail program, and a garden patio.",
+      url: "https://www.jeune-jolie.com/", address: "2659 State St, Carlsbad, CA 92008",
+      phone: "(760) 637-5266", hours: [{ days: [3,4], open: '17:00', close: '21:00' }, { days: [5,6], open: '16:45', close: '21:30' }, { days: [0], open: '16:30', close: '21:00' }], hue: "350, 30%, 28%", price: 4
+    },
+    {
+      name: "Soichi", city: "sandiego", michelinStars: 1,
+      image: "https://images.squarespace-cdn.com/content/v1/5eb76cc5c46deb69f54be80c/1632887863888-0KAWFCX37ZP9270I750J/Screen%2BShot%2B2021-09-28%2Bat%2B8.57.27%2BPM.png", imagePosition: "center",
+      rating: "4.7", reviews: 435, ratingSource: "Google", ratingNote: "Google 4.7 from more than 430 reviews; One Michelin Star in the 2026 California Guide.",
+      why: "Chef Soichi Kadoya's intimate University Heights counter, defined by focused omakase and exceptionally skilled sushi",
+      note: "A warm, personal Japanese dining experience where straightforward preparations showcase excellent fish, careful aging, clean seasoning, and exacting technique.",
+      url: "https://www.soichisushi.com/", address: "2121 Adams Ave, San Diego, CA 92116",
+      phone: "(619) 677-2220", hours: [{ days: [0,3,4,5,6], open: '16:30', close: '21:30' }], hue: "212, 38%, 24%", price: 4
+    }
+  ];
+
+  const main = boCategoryData.sandiego || (boCategoryData.sandiego = []);
+  const existingNames = new Set(main.map(r => r && r.name));
+  const additions = stars.filter(r => !existingNames.has(r.name));
+  boCategoryData.sandiego = additions.concat(main);
+  boCategoryData.sandiego.forEach((r, i) => { r.rank = i + 1; });
+
+  // Soichi also belongs in San Diego's sushi list; Jeune et Jolie in French.
+  const addUnique = (cat, restaurant) => {
+    if(!Array.isArray(boCategoryData[cat]) || !restaurant) return;
+    if(!boCategoryData[cat].some(r => r && r.name === restaurant.name && r.city === 'sandiego')){
+      boCategoryData[cat].push(Object.assign({}, restaurant));
+    }
+  };
+  addUnique('sushi', stars.find(r => r.name === 'Soichi'));
+  addUnique('french', stars.find(r => r.name === 'Jeune et Jolie'));
+})();
+
+// San Diego County's complete 2026 MICHELIN Bib Gourmand roster. Existing
+// flagship records are enriched in place; the other six are added with clean
+// restaurant/interior photography rather than food or people shots.
+(function buildSanDiegoMichelinBib2026(){
+  const main = boCategoryData.sandiego || (boCategoryData.sandiego = []);
+  ['Callie', 'Cesarina', 'Ciccia Osteria'].forEach(name => {
+    const r = main.find(item => item && item.name === name);
+    if(r){
+      r.michelinBibGourmand = true;
+      r.ratingNote = (r.ratingNote ? r.ratingNote.replace(/\.?$/, '. ') : '') + '2026 Michelin Bib Gourmand.';
+    }
+  });
+
+  const bibs = [
+    {
+      name: "Atelier Manna", city: "sandiego", michelinBibGourmand: true,
+      image: "https://thevendry.com/cdn-cgi/image/width%3D3840%2Cquality%3D75%2Cfit%3Dcontain%2Cmetadata%3Dnone%2Cformat%3Dauto/https%3A%2F%2Fs3.us-east-1.amazonaws.com%2Fuploads.thevendry.co%2F23050%2F1704294580528_2023-04-21.jpg", imagePosition: "center",
+      rating: "4.8", reviews: 184, ratingSource: "Google", ratingNote: "Google 4.8 from more than 180 reviews; 2026 Michelin Bib Gourmand.",
+      why: "A highly seasonal Encinitas breakfast-and-lunch workshop built around local farms, fishermen, and thoughtful zero-proof drinks",
+      note: "Andrew and Larah Bachelier pair polished technique with a relaxed recycled-and-upcycled patio setting, producing shareable plates that feel both creative and distinctly coastal.",
+      url: "https://www.atelier-manna.com/", address: "1076 N Coast Hwy 101, Ste 101, Encinitas, CA 92024",
+      phone: "(760) 230-1237", hours: [{ days: [3,4,5,6,0], open: '09:00', close: '14:00' }], hue: "148, 28%, 25%", price: 2
+    },
+    {
+      name: "Morning Glory", city: "sandiego", michelinBibGourmand: true,
+      image: "https://resizer.otstatic.com/v2/photos/xlarge/1/92274384.jpg", imagePosition: "center",
+      rating: null, ratingNote: "2026 Michelin Bib Gourmand.",
+      why: "Little Italy's spectacular, design-forward breakfast room, pairing playful presentation with serious technique",
+      note: "The dramatic pink dining room and kinetic central light fixture frame a creative all-day breakfast menu that made Morning Glory one of San Diego's defining brunch destinations.",
+      url: "https://morningglorybreakfast.com/", address: "550 W Date St, San Diego, CA 92101",
+      phone: "(619) 629-0302", hours: [{ days: [1,2,3,4,5], open: '08:00', close: '15:00' }, { days: [0,6], open: '08:00', close: '16:00' }], hue: "340, 38%, 29%", price: 2
+    },
+    {
+      name: "Lola 55", city: "sandiego", michelinBibGourmand: true,
+      image: "https://axwwgrkdco.cloudimg.io/v7/__gmpics__/f6941b01f01b49179cd77b5107938290?width=1000", imagePosition: "center",
+      rating: null, ratingNote: "2026 Michelin Bib Gourmand.",
+      why: "An East Village taqueria applying fine-dining research, wood fire, and exacting technique to the humble taco",
+      note: "Lola 55's modern room and open bar support a deeply researched Mexican menu known for house-made tortillas, regional inspiration, and unusual precision at an approachable price.",
+      url: "https://lola55.com/", address: "1290 F St, San Diego, CA 92101",
+      phone: "(619) 542-9155", hours: [{ days: [0,2,3,4], open: '11:00', close: '21:00' }, { days: [5,6], open: '11:00', close: '22:00' }], hue: "176, 38%, 25%", price: 2
+    },
+    {
+      name: "CUCINA urbana", city: "sandiego", michelinBibGourmand: true,
+      image: "https://resizer.otstatic.com/v4/photos/46693035-2?height=1280&width=1280", imagePosition: "center",
+      rating: "4.6", reviews: 2026, ratingSource: "Google", ratingNote: "Google 4.6 from more than 2,000 reviews; 2026 Michelin Bib Gourmand.",
+      why: "A Bankers Hill original merging rustic Italian cooking, California energy, and a retail-minded wine program",
+      note: "The reclaimed-wood dining room feels polished without becoming formal, while handmade pasta, pizza, shareable plates, and well-priced wine keep the restaurant genuinely neighborhood-friendly.",
+      url: "https://www.cucinaurbana.com/", address: "505 Laurel St, San Diego, CA 92101",
+      phone: "(619) 239-2222", hours: [{ days: [0,1,2,3,4], open: '16:00', close: '20:30' }, { days: [5,6], open: '16:00', close: '21:30' }], hue: "20, 32%, 25%", price: 2
+    },
+    {
+      name: "Dija Mara", city: "sandiego", michelinBibGourmand: true,
+      image: "https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/ff7ab8f6e0ba43bd9c4384bbcdc16be0.jpeg", imagePosition: "center",
+      rating: null, ratingNote: "2026 Michelin Bib Gourmand.",
+      why: "Oceanside's singular Balinese-inspired restaurant, layering Southeast Asian flavors with Western flair and Japanese technique",
+      note: "An industrial, art-filled room sets the stage for bold sambals, charred vegetables, nasi goreng, natural wines, and house-fermented low-ABV cocktails.",
+      url: "https://dijamara.com/", address: "232 S Coast Hwy, Oceanside, CA 92054",
+      phone: "(760) 231-5376", hours: [{ days: [0,2,3,4,5,6], open: '17:00', close: '21:00' }], hue: "28, 38%, 25%", price: 2
+    },
+    {
+      name: "Mabel's Gone Fishing", city: "sandiego", michelinBibGourmand: true,
+      image: "https://platform.sandiego.eater.com/wp-content/uploads/sites/25/chorus/uploads/chorus_asset/file/24058706/MabelsGoneFishing_EaterSD_KimberlyMotos_6_websize__1_.jpg?crop=16.65625%2C0%2C66.6875%2C100&quality=90&strip=all&w=1440", imagePosition: "center",
+      rating: null, ratingNote: "2026 Michelin Bib Gourmand.",
+      why: "A North Park seafood bar connecting San Diego's local catch with Iberian flavors, natural wine, and gin",
+      note: "The curved green bar and skylit room create an intimate setting for simply prepared seafood, Spanish-influenced small plates, sherry, vermouth, and an unusually thoughtful gin program.",
+      url: "https://www.mabelsgonefishing.com/", address: "3770 30th St, San Diego, CA 92104",
+      phone: "(619) 228-9851", hours: [{ days: [1,2,3,4,5,6], open: '16:00', close: '23:00' }], hue: "160, 32%, 24%", price: 2
+    }
+  ];
+
+  const existing = new Set(main.map(r => r && r.name));
+  bibs.forEach(r => { if(!existing.has(r.name)){ main.push(r); existing.add(r.name); } });
+  main.forEach((r, i) => { r.rank = i + 1; });
+
+  const addUnique = (cat, restaurant) => {
+    if(!Array.isArray(boCategoryData[cat]) || !restaurant) return;
+    if(!boCategoryData[cat].some(r => r && r.name === restaurant.name && r.city === 'sandiego')) boCategoryData[cat].push(Object.assign({}, restaurant));
+  };
+  addUnique('breakfastcasual', bibs.find(r => r.name === 'Atelier Manna'));
+  addUnique('breakfastcasual', bibs.find(r => r.name === 'Morning Glory'));
+  addUnique('mexicancasual', bibs.find(r => r.name === 'Lola 55'));
+  addUnique('italiancasual', bibs.find(r => r.name === 'CUCINA urbana'));
+  addUnique('asianfusion', bibs.find(r => r.name === 'Dija Mara'));
+  addUnique('seafood', bibs.find(r => r.name === "Mabel's Gone Fishing"));
+})();
+
+// Del Mar's Steak 48 earns the San Diego BJS Best Steak pick on the strength
+// of its current 4.9 OpenTable score and substantial verified-diner volume.
+// Its polished national locations use the standard dropdown, with an OOS
+// marker that immediately distinguishes out-of-state rooms.
+(function addSanDiegoSteak48(){
+  const steak48 = {
+    name: "Steak 48", city: "sandiego",
+    image: "https://resizer.otstatic.com/v3/photos/67711787-2", imagePosition: "center",
+    rating: "4.9", reviews: 3174, ratingSource: "OpenTable",
+    ratingNote: "OpenTable 4.9 from more than 3,170 verified diners.",
+    why: "The BJS Pick for Best Steak in San Diego — an exceptionally consistent luxury steakhouse with serious review volume",
+    note: "The Del Mar dining room combines USDA Prime beef, domestic and Australian Wagyu, Japanese A5, fresh seafood, an award-winning wine program, and highly polished service in a collection of intimate spaces.",
+    url: "https://www.steak48.com/steakhouses/del-mar-california/",
+    address: "12995 El Camino Real, Del Mar Heights Town Center, CA 92130",
+    phone: "(619) 901-0048",
+    hours: [{ days: [1,2,3,4], open: '16:30', close: '21:15' }, { days: [5,6], open: '16:00', close: '21:45' }, { days: [0], open: '16:00', close: '21:15' }],
+    hue: "18, 34%, 24%", price: 4,
+    bjsPick: true, bjsPickCity: "sandiego", bjsPickLabel: "Best Steak",
+    otherLocations: [
+      { name: "Steak 48 Beverly Hills", address: "9680 Wilshire Blvd, Beverly Hills, CA 90212", phone: "(310) 388-0048", rating: null, url: "https://www.steak48.com/steakhouses/beverly-hills/" },
+      { name: "Steak 48 Charlotte", address: "4425 Sharon Rd, Charlotte, NC 28211", phone: "(980) 580-4848", rating: null, url: "https://www.steak48.com/steakhouses/charlotte/", outOfState: true },
+      { name: "Steak 48 Chicago", address: "615 N Wabash Ave, Chicago, IL 60611", phone: "(312) 266-4848", rating: null, url: "https://www.steak48.com/steakhouses/chicago/", outOfState: true },
+      { name: "Steak 48 Houston", address: "4444 Westheimer Rd, Houston, TX 77027", phone: "(713) 322-7448", rating: null, url: "https://www.steak48.com/steakhouses/houston/", outOfState: true },
+      { name: "Steak 48 Philadelphia", address: "260 S Broad St, Philadelphia, PA 19102", phone: "(215) 552-4848", rating: null, url: "https://www.steak48.com/steakhouses/philadelphia/", outOfState: true }
+    ]
+  };
+  const addUnique = cat => {
+    if(!Array.isArray(boCategoryData[cat])) return;
+    if(!boCategoryData[cat].some(r => r && r.name === steak48.name && r.city === 'sandiego')) boCategoryData[cat].push(Object.assign({}, steak48));
+  };
+  addUnique('steakhighend');
+  addUnique('steakbjspick');
+  const main = boCategoryData.sandiego || (boCategoryData.sandiego = []);
+  if(!main.some(r => r && r.name === steak48.name)) main.unshift(Object.assign({}, steak48));
+  main.forEach((r, i) => { r.rank = i + 1; });
+})();
+
+// Priority San Diego expansion: true late-night/24-hour institutions,
+// destination desserts, and additional high-volume steakhouses. Only 4.7+
+// records from this batch cross into the flagship Best Of San Diego list.
+(function buildSanDiegoPriorityCategories(){
+  const records = {
+    rudfords: {
+      name: "Rudford's Restaurant", city: "sandiego",
+      image: "https://www.roadarch.com/14/3/rudfords.jpg", imagePosition: "center",
+      rating: "4.4", reviews: 4724, ratingSource: "Google", ratingNote: "Google 4.4 from more than 4,700 reviews; independently confirmed open 24/7/365.",
+      why: "San Diego's essential around-the-clock diner — a North Park landmark serving every shift since 1949",
+      note: "The neon, booths, all-day breakfast, burgers, shakes, and truly continuous hours make Rudford's a genuine local institution rather than simply another late-night chain.",
+      url: "http://www.rudfords.com/", address: "2900 El Cajon Blvd, San Diego, CA 92104", phone: "(619) 282-8423",
+      hours: [], open24: [{ days: [0,1,2,3,4,5,6], open: '00:00', close: '23:59' }], hue: "210, 42%, 28%", price: 1
+    },
+    studio: {
+      name: "Studio Diner", city: "sandiego",
+      image: "https://img-us.didaudo.net/us-locations/US/000/006/6700/3studio-diner.jpg?fit=cover&h=600&output=webp&w=800", imagePosition: "center",
+      rating: null, ratingNote: "Open around the clock Friday through Sunday; weekday service runs from early morning to midnight.",
+      why: "A gleaming Kearny Mesa movie-set diner with true weekend 24-hour service and breakfast served all day",
+      note: "Studio Diner turns a polished stainless-steel roadside landmark into a dependable late-night stop for classic diner plates and East Coast comfort food.",
+      url: "https://studiodiner.com/", address: "4701 Ruffin Rd, San Diego, CA 92123", phone: "(858) 715-6400",
+      hours: [{ days: [1,2,3,4], open: '05:30', close: '23:59' }], open24: [{ days: [0,5,6], open: '00:00', close: '23:59' }], hue: "205, 35%, 28%", price: 1
+    },
+    ans: {
+      name: "An's Dry Cleaning", city: "sandiego",
+      image: "https://sandiegomagazine.com/wp-content/uploads/2023/08/79a098adfa45655d0836999161855b08-768x789.jpg", imagePosition: "center",
+      rating: "4.6", reviews: 515, ratingSource: "Restaurantji", ratingNote: "Restaurantji 4.6 from more than 500 ratings; twice named USA Today's Best Ice Cream Shop in America.",
+      why: "A nationally acclaimed North Park gelato shop hidden inside a preserved 1930s dry-cleaning storefront",
+      note: "Small-batch gelato and sorbet rotate every two weeks, but the real identity is the building: original tile, transom windows, signage, and textile-themed names preserved as part of the experience.",
+      url: "https://www.ansgelato.com/", address: "3017 Adams Ave, San Diego, CA 92116", phone: "(619) 450-6166",
+      hours: [{ days: [0,1,2,4,5,6], open: '11:00', close: '23:00' }, { days: [3], open: '11:00', close: '15:00' }], hue: "160, 30%, 25%", price: 2,
+      otherLocations: [
+        { name: "An's Hatmakers — Del Mar", address: "1555 Camino Del Mar, Del Mar, CA 92014", phone: null, rating: null },
+        { name: "An's Electronics Repair — Ocean Beach", address: "San Diego, CA 92107", phone: null, rating: null }
+      ]
+    },
+    stella: {
+      name: "Stella Jean's Ice Cream", city: "sandiego",
+      image: "https://images.squarespace-cdn.com/content/v1/656a343243f402167d9fe4c5/fa6f4328-ae3d-4813-bea4-fd9a106192e4/Kensington", imagePosition: "center",
+      rating: "4.9", reviews: 100, ratingSource: "DoorDash", ratingNote: "DoorDash 4.9 from more than 100 ratings; review count is near the site's minimum reliability threshold.",
+      why: "San Diego-born small-batch ice cream with inventive global flavors and beautifully designed neighborhood shops",
+      note: "Stella Jean's pairs super-premium locally made ice cream with playful storefronts, thoughtful coffee, and flavors inspired by Filipino, Southeast Asian, and classic American desserts.",
+      url: "https://www.stellajeans.com/", address: "4404 Park Blvd, Ste B, San Diego, CA 92116", phone: null,
+      hours: [{ days: [1,2,3,4], open: '12:00', close: '22:00' }, { days: [5], open: '12:00', close: '23:00' }, { days: [6], open: '11:00', close: '23:00' }, { days: [0], open: '11:00', close: '22:00' }], hue: "345, 42%, 30%", price: 2,
+      otherLocations: [
+        { name: "Stella Jean's Point Loma", address: "4195 Voltaire St, San Diego, CA 92107", phone: null, rating: null },
+        { name: "Stella Jean's Kensington", address: "4073 Adams Ave, San Diego, CA 92116", phone: null, rating: null },
+        { name: "Stella Jean's South Park", address: "1517 30th St, San Diego, CA 92102", phone: null, rating: null },
+        { name: "Stella Jean's Carlsbad", address: "2956 Roosevelt St, Carlsbad, CA 92008", phone: null, rating: null },
+        { name: "Stella Jean's Costa Mesa", address: "270 E 17th St, Ste 16, Costa Mesa, CA 92627", phone: null, rating: null }
+      ]
+    },
+    ruths: {
+      name: "Ruth's Chris Steak House — Del Mar", city: "sandiego",
+      image: "https://media.ruthschris.com/images/site/ext/images/dining-room/gallery/ruths-chris-dining-room-del-mar-main-dining-room-2.jpg", imagePosition: "center",
+      rating: "4.8", reviews: 3879, ratingSource: "OpenTable", ratingNote: "OpenTable 4.8 from more than 3,870 verified diners.",
+      why: "A deeply proven Del Mar steakhouse whose 4.8 rating is supported by nearly 3,900 verified diners",
+      note: "USDA Prime beef arrives on signature 500-degree plates, supported by New Orleans-influenced starters, seafood, polished service, and a large private-dining program.",
+      url: "https://ruthschris.com/del-mar", address: "11582 El Camino Real, San Diego, CA 92130", phone: "(858) 755-1454",
+      hours: [{ days: [1,2,3,4], open: '16:00', close: '22:00' }, { days: [5,6], open: '16:00', close: '22:30' }, { days: [0], open: '16:00', close: '21:00' }], hue: "4, 42%, 24%", price: 4
+    },
+    rare: {
+      name: "Rare Society — Solana Beach", city: "sandiego",
+      image: "https://sandiegomagazine.com/wp-content/uploads/2023/08/54a1efb0c0b9243bc4ab0642f476f4b9-1024x683.jpg", imagePosition: "center",
+      rating: "4.7", reviews: 278, ratingSource: "OpenTable", ratingNote: "OpenTable 4.7 from more than 275 verified diners.",
+      why: "A wood-fired Solana Beach homage to the golden age of American steakhouses, updated with a bold modern edge",
+      note: "Chef Brad Wise combines red-oak grilling, in-house dry aging, sustainably sourced seafood, vintage glamour, and the signature shareable steak boards.",
+      url: "https://raresociety.com/solana-beach", address: "330 S Cedros Ave, Ste 104, Solana Beach, CA 92075", phone: "(858) 771-0181",
+      hours: [{ days: [0,1,3,4], open: '17:00', close: '21:00' }, { days: [5,6], open: '17:00', close: '22:00' }], hue: "42, 38%, 23%", price: 4
+    }
+  };
+
+  const addUnique = (cat, r) => {
+    if(!Array.isArray(boCategoryData[cat]) || !r) return;
+    if(!boCategoryData[cat].some(x => x && x.name === r.name && x.city === 'sandiego')) boCategoryData[cat].push(Object.assign({}, r));
+  };
+  addUnique('24hours', records.rudfords);
+  addUnique('24hours', records.studio);
+  addUnique('dessert', records.ans);
+  addUnique('dessert', records.stella);
+  addUnique('steakhighend', records.ruths);
+  addUnique('steakhighend', records.rare);
+
+  // Correct and enrich the existing Born & Raised record from current
+  // verified-diner data, then cross-list the qualifying priority additions.
+  const born = (boCategoryData.steakhighend || []).find(r => r && r.name === 'Born & Raised' && r.city === 'sandiego');
+  if(born){
+    born.rating = '4.7'; born.reviews = 7840; born.ratingSource = 'OpenTable';
+    born.ratingNote = 'OpenTable 4.7 from more than 7,840 verified diners; a 2026 OpenTable Icon.';
+    born.image = born.image || "https://platform.sandiego.eater.com/wp-content/uploads/sites/25/chorus/uploads/chorus_asset/file/9239603/DSCF6433.jpg?crop=7.8%2C0%2C84.4%2C100&quality=90&strip=all";
+  }
+  const main = boCategoryData.sandiego || (boCategoryData.sandiego = []);
+  [records.stella, records.ruths, records.rare, born].forEach(r => {
+    if(r && !main.some(x => x && x.name === r.name)) main.push(Object.assign({}, r));
+  });
+  main.forEach((r, i) => { r.rank = i + 1; });
+})();
+
 boCategoryData.asianbestofrest = [].concat(
   boCategoryData.sushi || [],
   boCategoryData.korean || [],
@@ -18545,10 +18842,10 @@ function boRenderCategory(cat){
           <div class="bo-other-locations-panel">
             ${s.otherLocations.map(loc => `
               <div class="bo-other-location-item">
-                <div class="bo-other-location-name">${loc.name}${loc.offStrip ? '<span class="bo-ots-badge">*OTS</span>' : ''}${loc.downtown ? '<span class="bo-dt-badge">*DT</span>' : ''}</div>
+                <div class="bo-other-location-name">${loc.name}${loc.outOfState ? '<span class="bo-oos-badge" title="Out-of-state location">&#8599; OOS</span>' : ''}${loc.offStrip ? '<span class="bo-ots-badge">*OTS</span>' : ''}${loc.downtown ? '<span class="bo-dt-badge">*DT</span>' : ''}</div>
                 <div class="bo-other-location-meta">${loc.rating ? '★ ' + loc.rating : 'Not yet independently rated'} &middot; ${loc.address}</div>
                 <div class="bo-other-location-actions">
-                  ${menuButtonHTML(s.name, s.url, s.rank)}
+                  ${menuButtonHTML(loc.name || s.name, loc.url || s.url, s.rank)}
                   ${callButtonHTML(loc.phone)}
                   ${directionsButtonHTML(loc.address, loc.name || s.name)}
                 </div>
