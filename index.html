@@ -262,11 +262,55 @@
   .bop-splash-city.animating-in{ animation:bopSplashCityIn 0.18s ease-out forwards; }
   .bop-splash-city.animating-out{ animation:bopSplashCityOut 0.14s ease-in forwards; }
   .bop-splash-tagline{
-    margin-top:2.6rem; font-family:'Oswald', sans-serif; font-weight:400;
-    font-size:clamp(0.72rem, 2.1vmin, 1rem);
+    margin-top:3.2rem; font-family:'Oswald', sans-serif; font-weight:600;
+    font-size:clamp(0.8rem, 2.3vmin, 1.1rem);
     letter-spacing:0.1em; text-transform:uppercase;
     white-space:nowrap;
     color:#f2f1ed; text-align:center; margin-left:auto; margin-right:auto;
+  }
+  @keyframes bjsWhyPulse{
+    0%,100%{ text-shadow:0 0 4px rgba(245,158,11,0.55), 0 0 10px rgba(245,158,11,0.28); opacity:0.82; }
+    50%{ text-shadow:0 0 11px rgba(245,158,11,0.95), 0 0 24px rgba(245,158,11,0.55); opacity:1; }
+  }
+  .bjs-why-trigger{
+    display:inline-block; margin-left:7px; transform:rotate(-7deg);
+    color:#F59E0B; font-family:'Oswald', sans-serif; font-weight:600;
+    font-size:inherit; letter-spacing:0.08em; text-transform:uppercase;
+    background:none; border:none; padding:0; cursor:pointer;
+    vertical-align:baseline; animation:bjsWhyPulse 2.2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bjs-why-trigger{ animation:none; }
+  }
+  /* The WHY popup itself — a glowing orb instead of a normal rectangular
+     card, sitting on the same translucent-black backdrop every other
+     popup on the site already uses (.directory-overlay). */
+  #bjsWhyOverlay .bjs-why-orb{
+    width:min(80vw, 340px); height:min(80vw, 340px);
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 38%, rgba(245,158,11,0.16), rgba(6,6,6,0.97) 72%);
+    border:2px solid rgba(245,158,11,0.55);
+    display:flex; align-items:center; justify-content:center;
+    padding:15%; position:relative; margin:auto;
+    animation:bjsOrbPulse 3.4s ease-in-out infinite;
+  }
+  @keyframes bjsOrbPulse{
+    0%,100%{ box-shadow:0 0 36px rgba(245,158,11,0.3), 0 0 84px rgba(245,158,11,0.14), inset 0 0 36px rgba(245,158,11,0.06); }
+    50%{ box-shadow:0 0 52px rgba(245,158,11,0.5), 0 0 116px rgba(245,158,11,0.26), inset 0 0 52px rgba(245,158,11,0.12); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #bjsWhyOverlay .bjs-why-orb{ animation:none; }
+  }
+  .bjs-why-orb-text{
+    text-align:center; color:#f2f2f2;
+    font-family:'Archivo Narrow',sans-serif; font-size:0.76rem; line-height:1.5;
+  }
+  .bjs-why-close{
+    position:absolute; top:-8px; right:10%;
+    width:32px; height:32px; border-radius:50%;
+    background:var(--red); color:#fff; border:none;
+    font-size:16px; font-weight:700; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
   }
   @media (prefers-reduced-motion: reduce){
     .bop-splash-city.animating-in, .bop-splash-city.animating-out{ animation:none !important; }
@@ -1313,7 +1357,7 @@
     font-size:1.7rem;
     line-height:1.1;
     letter-spacing:0.01em;
-    margin:8vh 0 0;
+    margin:10vh 0 0;
   }
   @media (max-width:380px){
     .hub-tagline{ font-size:1.4rem; }
@@ -7188,6 +7232,7 @@
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopLandingCityText">Vegas</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">©</span></span>
 </div>
+<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:20px 0 0;">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></p>
 </div>
 <!-- Exact same classes and structure as the real Best Of Period search bar
        (bo-search-wrap bo-search-wrap-big / bo-search-input bo-search-input-big)
@@ -7288,9 +7333,8 @@
 </button>
 </div>
 <div class="hub-tagline">
-<span>Real direction.</span>
-<span>No filler.</span>
-<span>Just the best.</span>
+<span>We did the work.</span>
+<span>You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></span>
 </div>
 <!-- Brand buttons: compact row sitting just above the footer. -->
 <div class="hub-logo-row hub-logo-row-bottom">
@@ -8351,6 +8395,16 @@
 <button id="socialPopupCopy" style="margin-top:12px;background:none;border:1px solid #444;border-radius:999px;padding:9px 16px;color:#bbb;font-family:'Archivo Narrow',sans-serif;font-size:0.78rem;cursor:pointer;width:100%;" type="button">COPY HANDLE</button>
 </div>
 </div>
+<div class="directory-overlay" id="bjsWhyOverlay" style="padding:20px;align-items:center;background:rgba(0,0,0,0.88);">
+<div class="bjs-why-orb" role="dialog" aria-modal="true" aria-label="Why BJS">
+<button aria-label="Close" class="bjs-why-close" id="bjsWhyCloseBtn" type="button">✕</button>
+<div class="bjs-why-orb-text">
+<p style="margin:0 0 10px;font-family:'Archivo Black',sans-serif;font-size:0.92rem;color:#F59E0B;text-transform:uppercase;letter-spacing:0.03em;">BJS is the world's most thorough directory, period — bringing competitors together in one place.</p>
+<p style="margin:0 0 10px;">We pull aggregate review data from the top five restaurant review platforms — Google, Menu, Tripadvisor, OpenTable, and Uber Eats — so you're never relying on just one opinion.</p>
+<p style="margin:0;">We're here to give real direction, no filler, just the best... the best you can trust.</p>
+</div>
+</div>
+</div>
 <div class="directory-overlay" id="directionsPopupOverlay" style="padding:20px;align-items:center;">
 <div aria-modal="true" class="directory-panel" role="dialog" style="max-width:380px;width:100%;text-align:center;padding:28px 20px 20px;">
 <button aria-label="Close" class="directory-close" id="directionsPopupCloseBtn" type="button">✕</button>
@@ -8952,7 +9006,7 @@
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopSplashCityText">Vegas</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">©</span></span>
 </div>
-<div class="bop-splash-tagline">Real direction. No filler. Just the best.</div>
+<div class="bop-splash-tagline">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></div>
 </div>
 </div>
 <p style="text-align:center;color:#f2f2f2;font-size:0.82rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Menu</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg height="16" style="vertical-align:-2px;margin:0 2px;" viewbox="0 0 40 40" width="16"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></p>
@@ -9034,7 +9088,7 @@
     BEST STEAK.<br/>
 <span class="bo-line2">Vegas</span> <span class="bo-period">Period<span class="period-mark">©</span></span>
 </h1>
-<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.9rem;margin:6px 0 0;">Real direction. No filler. Just the best.</p>
+<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:6px 0 0;">Real direction. No filler. Trust us.</p>
 <p class="bo-hero-sub" id="boHeroSub"></p>
 <div class="bo-search-wrap bo-search-wrap-big">
 <input autocomplete="off" class="bo-search-input bo-search-input-big" id="boSearchInput" placeholder="Search all restaurants....." type="text"/>
@@ -10285,6 +10339,7 @@ var OC_LAND = {
 var OC_CITIES = [
   {n:"Las Vegas",la:36.17,lo:-115.14,t:"live",dest:"bestof"},
   {n:"Los Angeles",la:34.05,lo:-118.24,t:"2027"},
+  {n:"San Diego",la:32.72,lo:-117.16,t:"live",dest:"sandiego"},
   {n:"San Francisco",la:37.77,lo:-122.42,t:"2027"},
   {n:"Phoenix",la:33.45,lo:-112.07,t:"2027"},
   {n:"Denver",la:39.74,lo:-104.99,t:"2027"},
@@ -10743,7 +10798,7 @@ function setupOtherCities(){
       }
 
       var liveCities = OC_CITIES.filter(function(city){
-        return city.t === 'live' && city.dest;
+        return city.t === 'live' && city.dest && city.n.toLowerCase().indexOf(q) !== -1;
       });
 
       var liveNames = new Set(liveCities.map(function(city){ return city.n; }));
@@ -10813,6 +10868,36 @@ function openDirectionsPopup(address, name){
 
   overlay.dataset.address = address;
   overlay.classList.add('open');
+}
+
+// ---- BJS "WHY" orb popup ----
+// One shared explainer popup, reused by every "WHY" trigger next to the
+// site's tagline (main landing page, city splash, Best Of hero, company
+// hub) — same wiring pattern as the other popups on this page.
+function setupBjsWhyPopup(){
+  var overlay = document.getElementById('bjsWhyOverlay');
+  if(!overlay) return;
+  var closeBtn = document.getElementById('bjsWhyCloseBtn');
+
+  function openBjsWhy(){ overlay.classList.add('open'); }
+  function closeBjsWhy(){ overlay.classList.remove('open'); }
+
+  if(closeBtn) closeBtn.addEventListener('click', closeBjsWhy);
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeBjsWhy();
+  });
+
+  setInterval(function(){
+    document.querySelectorAll('.bjs-why-trigger').forEach(function(btn){
+      if(btn.dataset.whyWired) return;
+      btn.dataset.whyWired = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openBjsWhy();
+      });
+    });
+  }, 300);
 }
 
 function setupDirectionsPopup(){
@@ -12067,6 +12152,19 @@ const BO_CITY_CONFIG = {
     tickerMessages: ['COMING SOON!', 'LONDON LONDON'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickslondon'   // London's own, separate BJS Picks page
+  },
+  sandiego: {
+    displayName: 'San Diego',
+    // San Diego's "county" isn't one dense city core like Vegas/Miami/London —
+    // it's a long coastal-to-inland stretch, so the area list spells that out
+    // instead of naming a couple of neighborhoods.
+    areaList: ['Oceanside to Tijuana', 'Inland'],
+    // Shown right under the intro sentence via boMainCityIntroHTML's footnote
+    // support (see below) — San Diego needs this note, the other cities don't.
+    footnote: '*San Diego is a very large territory — for closer restaurants, tap the Near Me icon.',
+    tickerMessages: ['COMING SOON!', 'SAN DIEGO SAN DIEGO'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspickssandiego'   // San Diego's own, separate BJS Picks page
   }
 };
 const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
@@ -12096,7 +12194,11 @@ function boMainCityIntroHTML(cfg){
     + "<span style='display:block;height:12px;'></span><span class='bo-inline-kicker'>Hot List</span> "
     + `<span style='font-weight:400;'>includes all genres across</span> ${areasHTML}. `
     + "Ranked by aggregate review data from <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and "
-    + "<svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg>";
+    + "<svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg>"
+    // Optional per-city asterisk note (currently only San Diego uses this —
+    // its territory is too large for one dense area list, so this points
+    // people to the Near Me icon for anything closer than "the whole county").
+    + (cfg.footnote ? `<span style='display:block;margin-top:10px;font-size:0.8em;font-weight:400;opacity:0.75;'>${cfg.footnote}</span>` : "");
 }
 // Tracks which city's context the visitor is currently in, so pages shared
 // across cities (Other Bests, the globe, the ticker) reflect the right one
@@ -12189,6 +12291,12 @@ const boCategoryData_MIAMI_PLACEHOLDER = [
    Blacklock Soho (4.8 / 6,900+ OpenTable), Endo, Gymkhana and A. Wong. */
 const boCategoryData = {
   miami: boCategoryData_MIAMI_PLACEHOLDER,
+  // San Diego shell — intentionally empty. No restaurants added yet since
+  // none have been researched with real, verified data (same standard as
+  // every other city: no invented ratings, addresses, or placeholder
+  // entries dressed up as real ones). Add real restaurant objects here,
+  // one per genre, following the same shape as boCategoryData.miami.
+  sandiego: [],
   // One real restaurant for now — Fallow, London. Address and phone verified
   // via Menu/Michelin Guide/Hot Dinners; the rating is left blank since no
   // clean, specific star figure turned up in that search. No photo yet.
@@ -18294,6 +18402,20 @@ boCategoryData.bjspickslondon = (() => {
   return picks;
 })();
 
+// San Diego's own BJS Picks, kept completely separate from every other
+// city — starts empty since boCategoryData.sandiego starts empty. Any
+// restaurant added there later with bjsPick:true (or tagged
+// bjsPickCity:'sandiego') will show up here automatically.
+boCategoryData.bjspickssandiego = (() => {
+  const source = boCategoryData.sandiego || [];
+  const picks = source.filter(r => r && Number(r.price || 0) >= 3 && (r.bjsPick || r.bjsPickCity === 'sandiego'));
+  picks.forEach((r, i) => {
+    r.bjsSources = r.bjsSources || (r.bjsPickLabel ? [r.bjsPickLabel] : []);
+    r.rank = i + 1;
+  });
+  return picks;
+})();
+
 // Michelin category — scans every restaurant category, so starred Italian,
 // Chinese, Japanese, Indian and city-main entries cannot slip through.
 // Duplicates are merged by restaurant name, keeping the richest record and
@@ -21536,6 +21658,7 @@ async function init(){
   setupWebPopup();
   setupPhonePopup();
   setupDirectionsPopup();
+  setupBjsWhyPopup();
   setupSocialPopup();
   setupMenuPopup();
   setupOtherCities();
