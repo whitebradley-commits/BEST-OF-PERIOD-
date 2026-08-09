@@ -21730,7 +21730,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function restaurantHost(){
     var concept=document.querySelector('#tagGameOverlay.tg-open,#conceptWebPopup.is-open,#wtfLandingOverlay.open,#wtfLandingOverlay.active,#fntOverlay.open,#fntOverlay.active,#noBaxsyzOverlay.open,#noBaxsyzOverlay.active,#tapCardOverlay.open,#tapCardOverlay.active,#lvSteamOverlay.open,#lvSteamOverlay.active,#tpaOverlay.open,#tpaOverlay.active');
     if(concept){var cs=getComputedStyle(concept);if(cs.display!=='none'&&cs.visibility!=='hidden')return null}
-    var h=document.getElementById('bestOfOverlay');return h&&(h.classList.contains('open')||h.classList.contains('active'))?h:null
+    var h=document.getElementById('bestOfOverlay');if(h&&(h.classList.contains('open')||h.classList.contains('active')))return h;
+    var landing=document.getElementById('bopLandingOverlay');return landing&&landing.classList.contains('open')?landing:null
   }
   function pageKey(){
     var h=restaurantHost();if(!h)return'';
@@ -21741,9 +21742,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function play(){if(plays>=5||isMuted()||!restaurantHost())return;var a=new Audio(source);a.volume=1;plays++;a.play().catch(function(){plays--})}
   function schedule(force){var k=pageKey();if(!k||(!force&&k===lastKey)||plays>=5)return;lastKey=k;clearTimeout(pending);pending=setTimeout(play,700)}
   function start(){
-    var h=document.getElementById('bestOfOverlay');if(!h)return;
-    new MutationObserver(function(){schedule(false)}).observe(h,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
-    h.addEventListener('click',function(e){if(e.target.closest('.site-sound-toggle,input,textarea,select'))return;var n=e.target.closest('a[href],button,[data-city],[data-category],.category-card,.restaurant-card,.tile');if(n)setTimeout(function(){schedule(true)},180)},{capture:true});
+    var h=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');if(!h&&!landing)return;
+    [h,landing].filter(Boolean).forEach(function(host){new MutationObserver(function(){schedule(false)}).observe(host,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-hidden']});host.addEventListener('click',function(e){if(e.target.closest('.site-sound-toggle,input,textarea,select'))return;var n=e.target.closest('a[href],button,[data-city],[data-category],.category-card,.restaurant-card,.tile');if(n)setTimeout(function(){schedule(true)},180)},{capture:true})});
+    var unlocked=false,unlock=function(e){if(unlocked||e.target&&e.target.closest&&e.target.closest('.site-sound-toggle'))return;var k=pageKey();if(!k)return;unlocked=true;clearTimeout(pending);lastKey=k;play()};document.addEventListener('pointerdown',unlock,{capture:true,once:true});document.addEventListener('touchstart',unlock,{capture:true,once:true,passive:true});
     schedule(false);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
@@ -21768,7 +21769,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function params(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});return p}
   function val(k){return params().get(k)||''}
   function uuid(x){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)}
-  function authorized(){return uuid(val('t'))||uuid(val('retry'))||uuid(val('rescue'))||!!val('founder')}
+  function ownerPass(){var live=val('founder');if(live){try{localStorage.setItem('tag-world-founder-pass',live);history.replaceState(null,'',location.pathname)}catch(_e){}return live}try{return localStorage.getItem('tag-world-founder-pass')||''}catch(_e){return''}}
+  function authorized(){return uuid(val('t'))||uuid(val('retry'))||uuid(val('rescue'))||!!ownerPass()}
   async function call(body){try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),j=await r.json();return j}catch(e){return{ok:false,code:'connection'}}}
   function install(){
     var host=document.getElementById('tagGameOverlay');if(!host||host.querySelector('.tg-view-only'))return;
@@ -21790,7 +21792,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!authorized()){window.tgOpenViewOnly();return}
     var saved=sessionStorage.getItem('tag-world-pending-url');if(saved){try{await shareUrl(saved)}catch(e){}waiting(saved);return}
     var button=document.querySelector('#tgPanelBody .tg-send'),email=document.getElementById('tgPlayerEmail');if(!button)return;if(!val('retry')&&!val('rescue')&&(!email||!email.value.trim())){var st=document.getElementById('tgEmailStatus');if(st)st.textContent='Enter your email so the tag can return if needed.';return}
-    button.disabled=true;button.textContent='GETTING YOUR TAG READY…';var pick=identity(),opt=document.getElementById('tgMarketingOptIn');var prepared=await call({action:'prepare',incoming_token:val('t')||null,retry_token:val('retry')||null,rescue_token:val('rescue')||null,founder_token:val('founder')||null,email:val('retry')||val('rescue')?'':email.value.trim(),country:country(),marketing_opt_in:!!(opt&&opt.checked),display_mode:pick.display_mode,avatar_value:pick.avatar_value});
+    button.disabled=true;button.textContent='GETTING YOUR TAG READY…';var pick=identity(),opt=document.getElementById('tgMarketingOptIn');var prepared=await call({action:'prepare',incoming_token:val('t')||null,retry_token:val('retry')||null,rescue_token:val('rescue')||null,founder_token:ownerPass()||null,email:val('retry')||val('rescue')?'':email.value.trim(),country:country(),marketing_opt_in:!!(opt&&opt.checked),display_mode:pick.display_mode,avatar_value:pick.avatar_value});
     if(!prepared.ok){var status=document.getElementById('tgEmailStatus');if(status)status.textContent=prepared.code==='tag_required'?'You must receive a real tag link to play.':'The connection paused. Please try again.';button.disabled=false;button.textContent='SEND THE TAG →';return}
     var u=new URL(location.origin+location.pathname),q=new URLSearchParams();q.set('tag','1');q.set('t',prepared.token);q.set('n',prepared.next_number||1);u.search=q.toString();u.hash='tag?'+q.toString();var url=u.toString();sessionStorage.setItem('tag-world-pending-url',url);sessionStorage.setItem('tag-world-pending-token',prepared.token);
     try{await shareUrl(url)}catch(e){}waiting(url)
