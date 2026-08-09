@@ -282,6 +282,15 @@
   @media (prefers-reduced-motion: reduce){
     .bjs-why-trigger{ animation:none; }
   }
+  .bjs-why-arrow{
+    display:inline-block; color:#F59E0B; font-size:0.7em;
+    animation:bjsWhyPulse 2.2s ease-in-out infinite;
+  }
+  .bjs-why-arrow-left{ margin-right:3px; }
+  .bjs-why-arrow-right{ margin-left:3px; }
+  @media (prefers-reduced-motion: reduce){
+    .bjs-why-arrow{ animation:none; }
+  }
   /* The WHY popup itself — a glowing orb instead of a normal rectangular
      card, sitting on the same translucent-black backdrop every other
      popup on the site already uses (.directory-overlay). */
@@ -1650,6 +1659,10 @@
   #webPopupOverlay{ z-index:400; }
   #phonePopupOverlay{ z-index:420; }
   #directionsPopupOverlay{ z-index:420; }
+  /* bopLandingOverlay sits at z-index:900 (the highest of any page overlay
+     on the site) — this has to clear that or the orb opens invisibly
+     behind the landing page whenever WHY is tapped from there. */
+  #bjsWhyOverlay{ z-index:950; }
   #socialPopupOverlay{ z-index:420; }
 
   /* ===== Split-flap board (Best of Period header) =====
@@ -7232,7 +7245,7 @@
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopLandingCityText">Vegas</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">©</span></span>
 </div>
-<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:20px 0 0;">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></p>
+<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:20px 0 0;">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">→</span>WHY<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">←</span></button></p>
 </div>
 <!-- Exact same classes and structure as the real Best Of Period search bar
        (bo-search-wrap bo-search-wrap-big / bo-search-input bo-search-input-big)
@@ -7334,7 +7347,7 @@
 </div>
 <div class="hub-tagline">
 <span>We did the work.</span>
-<span>You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></span>
+<span>You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">→</span>WHY<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">←</span></button></span>
 </div>
 <!-- Brand buttons: compact row sitting just above the footer. -->
 <div class="hub-logo-row hub-logo-row-bottom">
@@ -9006,7 +9019,7 @@
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopSplashCityText">Vegas</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">©</span></span>
 </div>
-<div class="bop-splash-tagline">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button">WHY</button></div>
+<div class="bop-splash-tagline">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">→</span>WHY<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">←</span></button></div>
 </div>
 </div>
 <p style="text-align:center;color:#f2f2f2;font-size:0.82rem;font-weight:400;margin:56px 0 0;font-family:'IBM Plex Sans Condensed',sans-serif;">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Menu</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg height="16" style="vertical-align:-2px;margin:0 2px;" viewbox="0 0 40 40" width="16"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></p>
@@ -9088,7 +9101,7 @@
     BEST STEAK.<br/>
 <span class="bo-line2">Vegas</span> <span class="bo-period">Period<span class="period-mark">©</span></span>
 </h1>
-<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:6px 0 0;">Real direction. No filler. Trust us.</p>
+<p style="text-align:center;color:#F59E0B;font-weight:700;text-transform:uppercase;font-size:0.95rem;letter-spacing:0.04em;margin:20px 0 0;">We did the work. You do the dining. <button aria-label="Why BJS" class="bjs-why-trigger" type="button"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">→</span>WHY<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">←</span></button></p>
 <p class="bo-hero-sub" id="boHeroSub"></p>
 <div class="bo-search-wrap bo-search-wrap-big">
 <input autocomplete="off" class="bo-search-input bo-search-input-big" id="boSearchInput" placeholder="Search all restaurants....." type="text"/>
