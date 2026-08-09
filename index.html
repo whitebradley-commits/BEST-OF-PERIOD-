@@ -226,6 +226,12 @@
   .bop-splash-hero-nocircle .bop-splash-period{
     font-size:1.38em !important;
   }
+  .bop-splash-hero-san-diego #bopResultsCityText{
+    font-size:calc(1.38em - 2pt) !important;
+  }
+  .bop-splash-hero-san-diego .bop-splash-period{
+    transform:translateX(0.16em);
+  }
   .bop-splash-line1{
     font-weight:900; text-transform:uppercase;
     font-size:clamp(1.4rem, 6.2vmin, 2.6rem);
@@ -319,9 +325,10 @@
   .bjs-why-close{
     position:absolute; top:-8px; right:10%;
     width:32px; height:32px; border-radius:50%;
-    background:var(--red); color:#fff; border:none;
+    background:transparent; color:#e21f2b; border:none;
     font-size:16px; font-weight:700; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
+    text-shadow:0 0 8px rgba(226,31,43,0.65);
   }
   @media (prefers-reduced-motion: reduce){
     .bop-splash-city.animating-in, .bop-splash-city.animating-out{ animation:none !important; }
@@ -10229,20 +10236,26 @@ function setupBopLanding(){
       return;
     }
 
-    // Always show the live cities once someone starts typing, regardless of
-    // whether what they typed actually matches "Vegas" or "Miami" — with
-    // only one or two cities live right now, someone typing "London" would
-    // otherwise never see that anything real exists yet.
     const liveNames = new Set(LIVE_CITIES.map(c => c.name));
+    // Keep the dropdown compact: after two useful letters identify a live
+    // city, show only the live match. Until then (or when there is no live
+    // match), fall back to the first three active cities.
+    const matchingLiveCities = q.length >= 2
+      ? LIVE_CITIES.filter(c => c.name.toLowerCase().includes(q))
+      : [];
+    const displayedLiveCities = matchingLiveCities.length
+      ? matchingLiveCities
+      : LIVE_CITIES.slice(0, 3);
     // Recognized, but not live yet — visible so people can see it's coming,
     // but not clickable. Capped at 2 so a broad query like "g" doesn't
     // flood the box and push everything off screen.
-    const previewMatches = (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
-      .filter(name => name.toLowerCase().includes(q) && !liveNames.has(name))
-      .slice(0, 2);
+    const previewMatches = matchingLiveCities.length ? []
+      : (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
+        .filter(name => name.toLowerCase().includes(q) && !liveNames.has(name))
+        .slice(0, 2);
 
     let html = '<div class="bop-landing-results-label">Live Cities</div>';
-    html += LIVE_CITIES.map(c => `
+    html += displayedLiveCities.map(c => `
       <button type="button" class="bop-landing-result" data-dest="${c.dest}">
         <span class="bop-landing-result-dot"></span> ${c.name}, ${c.region}
       </button>
@@ -19942,6 +19955,7 @@ function boRenderCategory(cat){
       // instead of a separate hardcoded block per city.
       const cityCfg = BO_CITY_CONFIG[cat];
       const cityElId = cityCfg.useNameCycler ? ' id="bopResultsCityText"' : '';
+      const sanDiegoHeroClass = cat === 'sandiego' ? ' bop-splash-hero-san-diego' : '';
       // startBopVegasSlotCycler always lands on whichever name sits at index 0
       // of the array it's given — it was always being handed the raw
       // BOP_SPLASH_CITIES list, which starts with "Vegas", so Miami's cycler
@@ -19953,7 +19967,7 @@ function boRenderCategory(cat){
       const startingName = cityCfg.useNameCycler
         ? cyclerCities[1 + Math.floor(Math.random() * (cyclerCities.length - 1))]
         : cityCfg.displayName;
-      boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
+      boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2">
           <span class="bop-splash-city-col"><span class="bop-splash-city is-active"${cityElId}>${startingName}</span></span>
