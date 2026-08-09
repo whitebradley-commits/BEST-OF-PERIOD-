@@ -21089,13 +21089,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       el.className=s.classes;
       el.style.display=s.display;
       if(s.hidden===null)el.removeAttribute('aria-hidden');else el.setAttribute('aria-hidden',s.hidden);
-      requestAnimationFrame(function(){el.scrollTop=s.scroll||0;});
+      requestAnimationFrame(function(){el.scrollTop=0;});
     });
     Object.entries(state.fields||{}).forEach(function(entry){
       const el=document.getElementById(entry[0]);if(!el)return;
       el.value=entry[1].value;el.checked=entry[1].checked;
     });
-    requestAnimationFrame(function(){scrollTo(state.x||0,state.y||0);restoring=false;});
+    requestAnimationFrame(function(){scrollTo(0,0);restoring=false;});
     return true;
   }
   function restoreFromAddress(){
@@ -21108,7 +21108,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       if(wanted){
         restoring=true;
         Object.keys(pageRoutes).forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open','is-open','active','tg-open');});
-        const page=document.getElementById(wanted);if(page){page.classList.add('open');if(page.style.display==='none')page.style.display='block';}
+        const page=document.getElementById(wanted);if(page){page.classList.add('open');if(page.style.display==='none')page.style.display='block';page.scrollTop=0;}
+        scrollTo(0,0);
         restoring=false;
       }
       return;
@@ -21132,6 +21133,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.addEventListener('scroll',function(){save(true);},{passive:true});
   window.addEventListener('beforeunload',function(){try{sessionStorage.setItem(STORE,JSON.stringify(snapshot()));}catch(e){}});
   window.addEventListener('popstate',function(){setTimeout(restoreFromAddress,0);});
+  if('scrollRestoration' in history)history.scrollRestoration='manual';
+  var viewportMeta=document.querySelector('meta[name="viewport"]');
+  if(viewportMeta)viewportMeta.setAttribute('content','width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+  window.addEventListener('pageshow',function(){
+    const page=document.getElementById(currentMajorPage());
+    if(page)page.scrollTop=0;
+    scrollTo(0,0);
+  });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){installCategoryRouting();setTimeout(restoreFromAddress,180);});
   else{installCategoryRouting();setTimeout(restoreFromAddress,180);}
 })();
