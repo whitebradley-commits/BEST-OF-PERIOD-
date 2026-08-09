@@ -21664,7 +21664,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function muted(){return localStorage.getItem('bop-sound-muted-v1')==='yes'}
   function speak(){
     return;
-    if(muted()||plays>=5||!('speechSynthesis' in window))return;
+    if(muted()||plays>=3||!('speechSynthesis' in window))return;
     plays++;
     var u=new SpeechSynthesisUtterance('Best of. Period.');
     u.rate=.78;u.pitch=.72;u.volume=.9;
@@ -21677,7 +21677,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return location.pathname+location.search+location.hash+'|'+open;
   }
   function announce(){
-    var key=pageKey();if(key===lastKey||plays>=5)return;lastKey=key;
+    var key=pageKey();if(key===lastKey||plays>=3)return;lastKey=key;
     clearTimeout(timer);timer=setTimeout(speak,3100);
   }
   function start(){
@@ -21702,11 +21702,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function play(){
     return;
-    if(plays>=5||isMuted()||!restaurantHost())return;
+    if(plays>=3||isMuted()||!restaurantHost())return;
     plays++;var a=new Audio(source);a.volume=.92;a.play().catch(function(){plays--});
   }
   function schedule(force){
-    var k=key();if(!k||(!force&&k===lastKey)||plays>=5)return;lastKey=k;
+    var k=key();if(!k||(!force&&k===lastKey)||plays>=3)return;lastKey=k;
     clearTimeout(pending);pending=setTimeout(play,900);
   }
   function start(){
@@ -21730,8 +21730,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     h.querySelectorAll('h1,h2,.city-name,.category-title,.page-title').forEach(function(x){var s=getComputedStyle(x);if(s.display!=='none'&&s.visibility!=='hidden'&&x.offsetParent!==null&&x.textContent.trim())bits.push(x.textContent.trim().slice(0,80))});
     return bits.join('|');
   }
-  function play(){if(plays>=5||isMuted()||!restaurantHost())return;var a=new Audio(source);a.volume=1;plays++;a.play().catch(function(){plays--})}
-  function schedule(force){var k=pageKey();if(!k||(!force&&k===lastKey)||plays>=5)return;lastKey=k;clearTimeout(pending);pending=setTimeout(play,700)}
+  function play(){if(plays>=3||isMuted()||!restaurantHost())return;var a=new Audio(source);a.volume=1;plays++;a.play().catch(function(){plays--})}
+  function schedule(force){var k=pageKey();if(!k||(!force&&k===lastKey)||plays>=3)return;lastKey=k;clearTimeout(pending);pending=setTimeout(play,700)}
   function start(){
     var h=document.getElementById('bestOfOverlay');if(!h)return;
     new MutationObserver(function(){schedule(false)}).observe(h,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
@@ -21801,6 +21801,46 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     fetch('https://rrcfcudeqniuzlchnuzh.supabase.co/rest/v1/tag_world_counter?select=current_count&id=eq.1',{headers:{apikey:'sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN'},cache:'no-store'}).then(function(r){return r.json()}).then(function(rows){var n=Number(rows&&rows[0]&&rows[0].current_count)||0,c=document.getElementById('tgCurrentCount'),o=document.getElementById('tgOrdinal');if(c)c.textContent=n.toLocaleString();if(o)o.textContent=ordinal(Math.max(1,n+1))}).catch(function(){})
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){sync();setInterval(sync,2500)});else{sync();setInterval(sync,2500)}
+})();
+</script>
+<style id="tag-world-clean-main-and-legend-style">
+#tagGameOverlay .tg-rules-launch,
+#tagGameOverlay .tg-more,
+#tagGameOverlay>.tg-bjs,
+#tagGameOverlay .tg-newsletter-link,
+#tagGameOverlay .tg-footer-credit>span{display:none!important}
+#tagGameOverlay::after{content:none!important}
+#tagGameOverlay .tg-footer-credit{right:12px!important;bottom:10px!important}
+#tagGameOverlay .tg-footer-bestof{display:inline-flex!important}
+#tagGameOverlay .tg-legend-link{position:absolute;left:16px;bottom:14px;z-index:18;padding:0;border:0;background:none;color:#173453;font:900 10px/1 Arial,sans-serif;letter-spacing:.09em;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#tagGameOverlay .tg-legend-info{margin:20px -8px -8px;padding:17px 8px 2px;border-top:1px solid rgba(210,154,33,.72);text-align:center;color:#102b60;font:750 10.5px/1.5 Arial,sans-serif}
+#tagGameOverlay .tg-legend-info strong{display:block;margin-bottom:4px;font-size:11px;letter-spacing:.05em}
+#tagGameOverlay .tg-legend-info a,#tagGameOverlay .tg-legend-newsletter{color:#e51e36;font:900 inherit;text-decoration:underline;text-underline-offset:2px}
+#tagGameOverlay .tg-legend-newsletter{display:block;margin:8px auto 0;padding:0;border:0;background:none;cursor:pointer}
+#tagGameOverlay .tg-legend-tags{display:block;margin-top:7px;color:#102b60;font-weight:900;letter-spacing:.035em}
+#tagGameOverlay .site-sound-toggle{top:212px!important}
+@media(max-width:420px){#tagGameOverlay .tg-legend-link{left:12px;bottom:11px;font-size:9px}#tagGameOverlay .tg-footer-credit{right:8px!important;bottom:7px!important}#tagGameOverlay .tg-legend-info{font-size:9.8px}}
+</style>
+<script id="tag-world-clean-main-and-legend-script">
+(function(){
+  function install(){
+    var host=document.getElementById('tagGameOverlay');
+    if(!host)return;
+    var launch=host.querySelector('.tg-rules-launch');if(launch)launch.remove();
+    var more=host.querySelector('.tg-more');if(more)more.remove();
+    if(!host.querySelector('.tg-legend-link')){
+      var legend=document.createElement('button');legend.type='button';legend.className='tg-legend-link';legend.textContent='LEGEND';legend.onclick=function(){if(window.tgOpenRules)window.tgOpenRules()};host.appendChild(legend);
+    }
+    var oval=host.querySelector('.tg-rules-oval');
+    if(oval&&!oval.querySelector('.tg-legend-info')){
+      var info=document.createElement('div');info.className='tg-legend-info';
+      info.innerHTML='<strong>DESIGNED AND DEVELOPED BY BJS CO.</strong><a href="mailto:info@bestofperiod.com">info@bestofperiod.com</a><br><a href="https://bestofperiod.com/">BESTOFPERIOD.COM</a><button type="button" class="tg-legend-newsletter">MORE GAMES TO COME</button><span class="tg-legend-tags">#TAGTHEWORLD &nbsp; #TAGFORPEACE</span>';
+      oval.appendChild(info);
+      info.querySelector('.tg-legend-newsletter').onclick=function(){var page=host.querySelector('.tg-newsletter-page');if(page){if(window.tgCloseRules)window.tgCloseRules();page.classList.add('is-open')}};
+    }
+  }
+  var oldOpen=window.openTagGame;window.openTagGame=function(){var r=oldOpen&&oldOpen.apply(this,arguments);setTimeout(install,0);return r};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html> 
