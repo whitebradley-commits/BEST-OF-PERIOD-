@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Best of Period - Las Vegas</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <style>
   :root{
     --bg:#000000;
@@ -18344,15 +18344,16 @@ function renderBjsPickFooter(cat){
     const cityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const rawTitle = (boHeroCopy[cat] && boHeroCopy[cat].title) ? boHeroCopy[cat].title.replace(/<[^>]+>/g, '').trim() : cat;
     const pageTitle = `${rawTitle} \u2014 Best Of ${cityLabel} Period`;
+    const shareText = `Check out Best of ${cityLabel}!`;
     if(navigator.share){
       try {
-        await navigator.share({ title: pageTitle, text: 'Check this out!', url: shareUrl });
+        await navigator.share({ title: pageTitle, text: shareText, url: shareUrl });
       } catch(shareErr) {
         // User cancelled the share sheet — nothing to do.
       }
     } else if(navigator.clipboard && navigator.clipboard.writeText){
       try {
-        await navigator.clipboard.writeText('Check this out!\n' + shareUrl);
+        await navigator.clipboard.writeText(shareText + '\n' + shareUrl);
         const original = shareBtn.innerHTML;
         shareBtn.textContent = 'COPIED!';
         setTimeout(() => { shareBtn.innerHTML = original; }, 2000);
@@ -18379,16 +18380,18 @@ async function boShareRestaurant(restaurantName){
   params.set('restaurant', restaurantName);
   const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
   const shareUrl = window.location.origin + cleanPath + '?' + params.toString();
-  const pageTitle = `${restaurantName} \u2014 Best Of Period`;
+  const restaurantCityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+  const pageTitle = `${restaurantName} \u2014 Best Of ${restaurantCityLabel} Period`;
+  const shareText = `Check out ${restaurantName} on Best of ${restaurantCityLabel}!`;
   if(navigator.share){
     try {
-      await navigator.share({ title: pageTitle, text: 'Check this out!', url: shareUrl });
+      await navigator.share({ title: pageTitle, text: shareText, url: shareUrl });
     } catch(shareErr) {
       // User cancelled the share sheet — nothing to do.
     }
   } else if(navigator.clipboard && navigator.clipboard.writeText){
     try {
-      await navigator.clipboard.writeText('Check this out!\n' + shareUrl);
+      await navigator.clipboard.writeText(shareText + '\n' + shareUrl);
     } catch(copyErr) {
       prompt('Copy this link to share:', shareUrl);
     }
@@ -18412,6 +18415,9 @@ function boRenderCategory(cat){
   const bestOfOverlayEl = document.getElementById('bestOfOverlay');
   if(bestOfOverlayEl) bestOfOverlayEl.scrollTop = 0;
   boCurrentCat = cat;
+  const titleCityKey = BO_CITY_CONFIG[cat] ? cat : boCityContext;
+  const titleCityLabel = (BO_CITY_CONFIG[titleCityKey] || BO_CITY_CONFIG.bestof).displayName;
+  document.title = `Best of ${titleCityLabel} | Best of Period`;
   boHeroTitleEl.style.opacity = 0;
   boHeroSubEl.style.opacity = 0;
 
@@ -18664,15 +18670,16 @@ function boRenderCategory(cat){
         const shareUrl = window.location.origin + mainCleanPath + '?' + mainShareParams.toString();
         const cityLabel = (BO_CITY_CONFIG[cityKey] || BO_CITY_CONFIG.bestof).displayName;
         const pageTitle = `Best Of ${cityLabel} Period — Main`;
+        const shareText = `Check out Best of ${cityLabel}!`;
         if(navigator.share){
           try {
-            await navigator.share({ title: pageTitle, text: 'Check this out!', url: shareUrl });
+            await navigator.share({ title: pageTitle, text: shareText, url: shareUrl });
           } catch(shareErr) {
             // User cancelled the native share sheet.
           }
         } else if(navigator.clipboard && navigator.clipboard.writeText){
           try {
-            await navigator.clipboard.writeText('Check this out!\n' + shareUrl);
+            await navigator.clipboard.writeText(shareText + '\n' + shareUrl);
             const original = mainHubSendBtn.innerHTML;
             mainHubSendBtn.textContent = 'COPIED!';
             setTimeout(() => { mainHubSendBtn.innerHTML = original; }, 2000);
@@ -21219,15 +21226,45 @@ function flagEmoji(code){const c=(code||'UN').toUpperCase();if(!/^[A-Z]{2}$/.tes
 async function loadTagMap(){const box=document.getElementById('tgMapGrid');if(!box)return;try{const r=await fetch(TG_SUPABASE_URL+'/rest/v1/tag_world_entries?select=tag_number,country_code&order=tag_number.asc&limit=1000',{headers:sbHeaders(false),cache:'no-store'});if(!r.ok)throw new Error();const rows=await r.json();box.className='tg-map-grid';box.innerHTML=rows.map(x=>'<div class="tg-map-cell"><b>#'+Number(x.tag_number).toLocaleString()+'</b><span title="'+x.country_code+'">'+flagEmoji(x.country_code)+'</span></div>').join('')||'<div class="tg-map-loading">THE FIRST FLAGS ARE ARRIVING…</div>'}catch(e){box.innerHTML='<div class="tg-map-loading">WORLD MAP CONNECTING…</div>'}}
 window.tgShowMap=function(){showPanel('<h2 class="tg-map-title">TAGGED WORLD MAP</h2><p class="tg-map-sub">Every number. Every flag. One world.</p><div id="tgMapGrid" class="tg-map-loading">LOADING FLAGS…</div>');loadTagMap()};
 function replay(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-animate');void o.offsetWidth;o.classList.add('tg-animate')}
-function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));loadLiveCount();setInterval(loadLiveCount,8000);if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent-v2')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}}
+function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));loadLiveCount();setInterval(loadLiveCount,8000);if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent-v3')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}}
 window.openTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.add('tg-open');o.setAttribute('aria-hidden','false');loadLiveCount();replay();if(tagParams().has('tag'))requestCountry()};window.closeTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-open','tg-animate');o.setAttribute('aria-hidden','true')};
 window.tgMoreGames=function(){showPanel('<div class="tg-soon"><span>🎮</span><h2>COMING SOON</h2><p>One game first. One worldwide chain. Let’s see how far Tag the World can go.</p></div>')};window.tgClosePanel=function(){document.getElementById('tgPanelWrap').classList.remove('tg-show')};function showPanel(x){document.getElementById('tgPanelBody').innerHTML=x;document.getElementById('tgPanelWrap').classList.add('tg-show')}
-window.tgStart=function(){if(localStorage.getItem('tag-world-sent-v2')==='yes')return;showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><div class="tg-photo-actions"><button onclick="document.getElementById(&quot;tgCamera&quot;).click()">TAKE A PICTURE</button><button onclick="document.getElementById(&quot;tgUpload&quot;).click()">UPLOAD PICTURE</button></div><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
+window.tgStart=function(){if(localStorage.getItem('tag-world-sent-v3')==='yes')return;showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><div class="tg-photo-actions"><button onclick="document.getElementById(&quot;tgCamera&quot;).click()">TAKE A PICTURE</button><button onclick="document.getElementById(&quot;tgUpload&quot;).click()">UPLOAD PICTURE</button></div><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
 window.tgPickIcon=function(i){tgIdentity=icons[i];tgPhoto='';document.getElementById('tgPreview').innerHTML=tgIdentity};
 async function photo(e){const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=96;const x=c.getContext('2d'),z=Math.min(im.naturalWidth,im.naturalHeight);x.drawImage(im,(im.naturalWidth-z)/2,(im.naturalHeight-z)/2,z,z,0,0,96,96);tgPhoto=c.toDataURL('image/jpeg',.5);document.getElementById('tgPreview').innerHTML='<img src="'+tgPhoto+'">'}
 document.getElementById('tgCamera').addEventListener('change',photo);document.getElementById('tgUpload').addEventListener('change',photo);
-window.tgShare=async function(){const next=await(tgClaimPromise||claimNextTag()),u=new URL(location.href);u.search='';const p=new URLSearchParams();p.set('n',next);if(tgPhoto)p.set('p',tgPhoto);else p.set('i',tgIdentity);const route=p.toString();p.set('tag','1');u.search=p.toString();u.hash='tag?'+route;const text='Check this out!';try{if(navigator.share)await navigator.share({title:'Tag the World — Tag, You’re It!',text,url:u.toString()});else{await navigator.clipboard.writeText(text+'\n'+u.toString());alert('Tag copied. Paste it into any message.')}localStorage.setItem('tag-world-sent-v2','yes');localStorage.setItem('tag-world-last-count',String(next));tgNumber=next;showCurrentCount(next);tgClosePanel();const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}catch(e){}}
+window.tgShare=async function(){const next=await(tgClaimPromise||claimNextTag()),u=new URL(location.href);u.search='';const p=new URLSearchParams();p.set('n',next);if(tgPhoto)p.set('p',tgPhoto);else p.set('i',tgIdentity);const route=p.toString();p.set('tag','1');u.search=p.toString();u.hash='tag?'+route;const text='Tag, you’re it! Don’t forget to tag someone and keep the game running. Help us tag the world!';try{if(navigator.share)await navigator.share({title:'Tag the World — Tag, You’re It!',text,url:u.toString()});else{await navigator.clipboard.writeText(text+'\n'+u.toString());alert('Tag copied. Paste it into any message.')}localStorage.setItem('tag-world-sent-v3','yes');localStorage.setItem('tag-world-last-count',String(next));tgNumber=next;showCurrentCount(next);tgClosePanel();const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE OUT!</small>'}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<style id="tag-world-bestof-credit-style">
+#tagGameOverlay>.tg-bjs{display:none!important}
+#tagGameOverlay .tg-footer-credit{position:absolute;right:14px;bottom:10px;z-index:7;display:flex;align-items:center;gap:8px;color:#173453;font:900 9px/1 Arial,sans-serif;letter-spacing:.1em}
+#tagGameOverlay .tg-footer-bestof{display:inline-flex;align-items:baseline;gap:2px;min-width:91px;padding:4px 7px;border:1px solid rgba(23,52,83,.48);border-radius:999px;background:rgba(0,0,0,.9);text-decoration:none;box-shadow:0 0 8px rgba(245,158,11,.28);white-space:nowrap}
+#tagGameOverlay .tg-footer-bestof .tg-bestof-words{color:#fff;font-family:'Playfair Display',Georgia,serif;font-weight:900;letter-spacing:0;font-size:8px}
+#tagGameOverlay .tg-footer-bestof .tg-bestof-city{display:inline-block;min-width:25px;color:#ef3038;font-family:'Playfair Display',Georgia,serif;font-size:8px;font-style:italic;font-weight:900;letter-spacing:0;text-align:center;transition:opacity .14s ease,transform .14s ease}
+#tagGameOverlay .tg-footer-bestof .tg-bestof-period{color:#F59E0B;font-family:'Playfair Display',Georgia,serif;font-size:8px;font-weight:900;letter-spacing:0}
+#tagGameOverlay .tg-footer-bestof .tg-bestof-copy{color:#F59E0B;font-size:4px;letter-spacing:0;position:relative;top:-3px}
+@media(max-width:380px){#tagGameOverlay .tg-footer-credit{right:8px;bottom:8px;gap:5px;font-size:8px}#tagGameOverlay .tg-footer-bestof{min-width:84px;padding:4px 5px}}
+</style>
+<script id="tag-world-bestof-credit-script">
+(function(){
+  function installTagBestOfCredit(){
+    var overlay=document.getElementById('tagGameOverlay');
+    if(!overlay||overlay.querySelector('.tg-footer-credit'))return;
+    var footer=document.createElement('div');
+    footer.className='tg-footer-credit';
+    footer.innerHTML='<span>BJS CO.</span><a class="tg-footer-bestof" href="https://bestofperiod.com/" aria-label="Open Best of Period"><span class="tg-bestof-words">BEST OF</span><span class="tg-bestof-city">Vegas</span><span class="tg-bestof-period">Period</span><span class="tg-bestof-copy">©</span></a>';
+    overlay.appendChild(footer);
+    var city=footer.querySelector('.tg-bestof-city');
+    var cities=['Vegas','Miami','London','S.D.','Paris','Tokyo'];
+    var index=0;
+    window.setInterval(function(){
+      city.style.opacity='0';city.style.transform='translateY(-2px)';
+      window.setTimeout(function(){index=(index+1)%cities.length;city.textContent=cities[index];city.style.opacity='1';city.style.transform='translateY(0)'},140);
+    },900);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installTagBestOfCredit);else installTagBestOfCredit();
 })();
 </script>
 <style id="tag-game-cartoon-artwork-style">
