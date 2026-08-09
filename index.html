@@ -230,7 +230,7 @@
     font-size:calc(1.38em - 2pt) !important;
   }
   .bop-splash-hero-san-diego .bop-splash-period{
-    transform:translateX(0.16em);
+    transform:translateX(0.6em);
   }
   .bop-splash-line1{
     font-weight:900; text-transform:uppercase;
@@ -10156,7 +10156,9 @@ function setupBopLanding(){
   // city sat first in its list.
   if(typeof startInfiniteCityCycler === 'function'){
     // Match the readable 0.4-second cadence used by the BJS Why orb.
-    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 400);
+    // Midpoint between the original near-instant spin and the later 400ms
+    // readable pace. The popup/orb remains at its existing 400ms speed.
+    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 200);
   }
 
   // The cities that actually go somewhere when picked — reads straight from
@@ -12340,12 +12342,47 @@ const boCategoryData_MIAMI_PLACEHOLDER = [
    Blacklock Soho (4.8 / 6,900+ OpenTable), Endo, Gymkhana and A. Wong. */
 const boCategoryData = {
   miami: boCategoryData_MIAMI_PLACEHOLDER,
-  // San Diego shell — intentionally empty. No restaurants added yet since
-  // none have been researched with real, verified data (same standard as
-  // every other city: no invented ratings, addresses, or placeholder
-  // entries dressed up as real ones). Add real restaurant objects here,
-  // one per genre, following the same shape as boCategoryData.miami.
-  sandiego: [],
+  // Best of San Diego launch set — researched August 2026. Ratings below are
+  // current OpenTable scores with meaningful verified-diner volume; Michelin
+  // recognition and operating details were checked against official sources.
+  sandiego: [
+    {
+      rank: 1, name: "Cesarina", city: "sandiego",
+      image: "https://s3-media0.fl.yelpcdn.com/bphoto/sMCTDeafCgUwWYQNb7FaPA/l.jpg", imagePosition: "center",
+      rating: "4.8", ratingNote: "OpenTable 4.8 from more than 6,880 diners; a 2026 Michelin Bib Gourmand.",
+      why: "A joyful Point Loma trattoria centered on handmade pasta and deeply personal Italian hospitality",
+      note: "Opened by three Italian natives, Cesarina pairs a working pastificio with a playful dining room, build-your-own pasta combinations, tableside tiramisu, and a serious vegan menu.",
+      url: "https://cesarinarestaurant.com/", address: "4161 Voltaire St, San Diego, CA 92107",
+      phone: "(619) 226-6222", hours: [], hue: "145, 35%, 24%", price: 3, instagram: null, facebook: null
+    },
+    {
+      rank: 2, name: "Kettner Exchange", city: "sandiego",
+      image: "https://www.finedininglovers.com/sites/default/files/places/kettner-exchange-chijs7n7gbru2yarkspbqpagtum-0.png", imagePosition: "center",
+      rating: "4.8", ratingNote: "OpenTable 4.8 from more than 1,750 diners; Michelin-recognized and an OpenTable Icon for 2024–2026.",
+      why: "A two-level Little Italy landmark combining progressive American cooking with one of the city's best-designed rooftops",
+      note: "Chef Brian Redzikowski's rotating menu blends Californian, French, and Asian influences in a dramatic indoor-outdoor space inspired by San Diego's bay and nautical history.",
+      url: "https://www.kettnerexchange.com/", address: "2001 Kettner Blvd, San Diego, CA 92101",
+      phone: "(619) 255-2001", hours: [{ days: [1,2,3,4,5,6], open: '17:00', close: '22:00' }, { days: [0], open: '11:00', close: '22:00' }], hue: "198, 42%, 25%", price: 3, instagram: null, facebook: null
+    },
+    {
+      rank: 3, name: "Ciccia Osteria", city: "sandiego",
+      image: "https://sandiegomagazine.com/wp-content/uploads/2023/08/4dfec02571b9ef911d1bb5f6c4d268dd.jpg", imagePosition: "center",
+      rating: "4.8", ratingNote: "OpenTable 4.8 from about 650 diners; a 2026 Michelin Bib Gourmand.",
+      why: "A husband-and-wife Italian osteria serving regional cooking from a converted Barrio Logan home",
+      note: "Chefs Mario and Francesca Cassineri built Ciccia around handmade pasta, a wood-burning oven, Italian wine, and the intimate feeling of eating in a family home.",
+      url: "https://cicciasandiego.com/", address: "2233 Logan Ave, San Diego, CA 92113",
+      phone: "(619) 674-4069", hours: [{ days: [0,1,3,4,5,6], open: '16:30', close: '21:15' }], hue: "24, 40%, 25%", price: 3, instagram: null, facebook: null
+    },
+    {
+      rank: 4, name: "Callie", city: "sandiego",
+      image: "https://rddmag.com/images/igallery/resized/1301-1400/callie-tlpgpga8-1379-800-600-100-c.jpg", imagePosition: "center",
+      rating: "4.8", ratingNote: "OpenTable 4.8 from more than 1,240 diners; currently recognized by Michelin.",
+      why: "Chef Travis Swikard's East Village celebration of Mediterranean cooking through Southern California ingredients",
+      note: "A polished but warm dining room anchors shareable Mediterranean plates shaped by local farms and fishermen, backed by a serious wine program and generous hospitality.",
+      url: "https://www.calliesd.com/", address: "1195 Island Ave, San Diego, CA 92101",
+      phone: "(619) 255-9696", hours: [{ days: [0,2,3,4,5,6], open: '17:00', close: '22:00' }], hue: "28, 46%, 28%", price: 4, instagram: null, facebook: null
+    }
+  ],
   // One real restaurant for now — Fallow, London. Address and phone verified
   // via Menu/Michelin Guide/Hot Dinners; the rating is left blank since no
   // clean, specific star figure turned up in that search. No photo yet.
@@ -12650,6 +12687,7 @@ steakhighend: [
   },
   {
     rank: 30, name: "Born & Raised", city: "sandiego",
+    image: "https://archinect.gumlet.io/uploads/5f/5ff232668935752870295f81a3a5b4b7.jpeg?auto=compress%2Cformat", imagePosition: "center",
     rating: "4.7", ratingNote: "OpenTable 4.7 (7,490 diners); Restaurant Guru 4.6 (19,536 reviews). A Michelin Guide selection.",
     why: "An opulent Little Italy steakhouse — dry-aged Creekstone Farms beef, tableside service, and an open-air rooftop bar",
     note: "An art deco, three-story steakhouse with a glassed-in butcher shop and tuxedoed servers pushing tableside carts for Caesar salad and Steak Diane. Beef is dry-aged over 25 days in a glass-enclosed meat locker. A 4% surcharge is added to all checks.",
@@ -12658,6 +12696,7 @@ steakhighend: [
   },
   {
     rank: 31, name: "Cowboy Star", city: "sandiego",
+    image: "https://images.squarespace-cdn.com/content/v1/5d360d827d3e940001b37a50/1699937444979-KCP7MZ181FOUYT5U9YPQ/Diningroom.jpg?format=2500w", imagePosition: "center",
     rating: "4.6", ratingNote: "Aggregate across Google (4.6, ~655 reviews) and OpenTable (4.8, 5,296 diners); Tripadvisor sits lower at 4.5 (510 reviews).",
     why: "An East Village steakhouse-and-butcher-shop with an Old West dining room and an in-house display kitchen",
     note: "Certified Humane Angus beef and Monterey Bay-approved seafood, with an attached butcher shop for cuts to go. Signature dishes include dry-aged duck breast, French onion soup, and banana pudding. Indoor fireplace and a well-liked weekday happy hour.",
@@ -12666,6 +12705,7 @@ steakhighend: [
   },
   {
     rank: 32, name: "Greystone Prime Steakhouse & Seafood", city: "sandiego",
+    image: "https://thevendry.com/cdn-cgi/image/width%3D3840%2Cquality%3D75%2Cfit%3Dcontain%2Cmetadata%3Dnone%2Cformat%3Dauto/https%3A%2F%2Fs3.us-east-1.amazonaws.com%2Fuploads.thevendry.co%2F23052%2F1668632499158_272792908_4689488141086884_5643804354176788176_n.jpg", imagePosition: "center",
     rating: "4.3", ratingNote: "Reviews run genuinely mixed across platforms: Google 4.3, Restaurant Guru 4.9 (11,745 reviews), but OpenTable and Tripadvisor both sit around 4.1 — worth knowing going in.",
     why: "A Gaslamp Quarter landmark inside a restored 1874 building, with a high-energy, Vegas-style dining room",
     note: "Dry-aged USDA Prime, Wagyu from Japan, Australia and the U.S., and wild game like elk and bison, alongside a daily happy hour. Housed in one of the Gaslamp's oldest standing buildings.",
@@ -12799,6 +12839,7 @@ italiancasual: [
   },
   {
     rank: 37, name: "Buona Forchetta - South Park", city: "sandiego",
+    image: "https://assets.benable.com/rec_object_photos/37967667/full_size/a58f1928888f8134bede.jpeg", imagePosition: "center",
     rating: "4.6", ratingNote: "Google 4.6 (3,183 reviews); Restaurant Guru 4.8 (11,744 reviews); Tripadvisor 4.5 (511 reviews) — one of the most consistently praised Italian spots in the city.",
     why: "A Neapolitan wood-fired pizzeria and pasta spot in South Park, started by a Naples native in 2011",
     note: "Wood-fired pizza, handmade pasta, and Italian seafood specialties from a hand-built oven imported from Naples. Won San Diego Magazine's Best Pizza — Critics Choice in 2023 and holds Gambero Rosso Pizza Accreditation.",
@@ -12807,6 +12848,7 @@ italiancasual: [
   },
   {
     rank: 38, name: "RoVino Restaurant + Bar", city: "sandiego",
+    image: "https://img.ctykit.com/cdn/ca-little-italy/images/rovino1.jpg", imagePosition: "center",
     rating: "4.6", ratingNote: "Google 4.6; OpenTable 4.6 (1,057 diners); Restaurant Guru 4.8 (3,748 reviews).",
     why: "A family-owned Little Italy spot known for handmade pasta and rotisserie chicken",
     note: "Husband-and-wife-run rotisserie and wine bar blending Sicilian and Northern Italian cooking — wood-fired rotisserie, house-made pasta, and a seasonal menu built around what local farmers bring in.",
@@ -12815,6 +12857,7 @@ italiancasual: [
   },
   {
     rank: 39, name: "Bencotto Italian Kitchen", city: "sandiego",
+    image: "https://images.squarespace-cdn.com/content/v1/55763bdfe4b0f7854be75a1c/1478581909408-TN1YMP1O4CH1UAR39EJB/T67A0506.JPG", imagePosition: "center",
     rating: "4.4", ratingNote: "Tripadvisor 4.4 (712 reviews). Reviews run genuinely mixed on service and portion size, though the fresh pasta is consistently praised.",
     why: "A Little Italy spot known for its large selection of fresh, hand-made pastas",
     note: "Offers roughly 75 fresh pasta recipes made in-house daily, from a sister concept to Monello next door. Try the cheese-wheel pasta prepared tableside.",
@@ -13470,6 +13513,7 @@ breakfastcasual: [
   },
   {
     rank: 100, name: "Rudford's Restaurant", city: "sandiego",
+    image: "https://gbsan.com/wp-content/uploads/2022/04/Rudfords-Restaurant.jpg", imagePosition: "center",
     rating: "4.9", ratingNote: "Restaurant Guru 4.9 (8,559 reviews). Genuinely open 24 hours a day, 7 days a week, 365 days a year — not an exaggeration.",
     why: "A North Park diner open 24/7/365 since 1949 — real old-school Vegas-style counter service, minus the Vegas part",
     note: "A circa-1949 diner with old-timey decor, booth seating, and a wall photo of JFK's 1963 visit. Classic American plates around the clock: chicken fried steak, Belgian waffles, biscuits and gravy, steak and eggs.",
@@ -21899,6 +21943,22 @@ init();
   .best-hotels-preview-overlay.open{display:block;}
   .best-hotels-preview-close{position:fixed;top:max(12px,env(safe-area-inset-top));left:14px;z-index:10052;width:44px;height:44px;border-radius:50%;border:2px solid #F59E0B;background:#070707;color:#F59E0B;font-size:25px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(245,158,11,.45);cursor:pointer;}
   .best-hotels-preview-sheet{display:block;width:min(100%,1024px);height:auto;margin:0 auto;border-radius:12px;box-shadow:0 0 28px rgba(245,158,11,.22);cursor:pointer;}
+  .best-hotels-city-sheet{position:relative;width:min(100%,1024px);min-height:min(1320px,calc(100vh - 90px));margin:0 auto;overflow:hidden;border:1px solid rgba(245,158,11,.62);border-radius:12px;background:radial-gradient(circle at 50% 18%,rgba(26,86,115,.52),transparent 32%),linear-gradient(155deg,#07131d 0%,#030609 55%,#0b1116 100%);color:#fff;box-shadow:0 0 34px rgba(245,158,11,.24);cursor:pointer;font-family:'Archivo Narrow',sans-serif;text-align:center;}
+  .best-hotels-city-sheet[hidden]{display:none!important;}
+  .best-hotels-city-sheet::before{content:"";position:absolute;inset:15px;border:1px solid rgba(245,158,11,.28);border-radius:7px;pointer-events:none;}
+  .best-hotels-city-topline{height:8px;background:linear-gradient(90deg,#124d73,#39a8d1,#f59e0b,#39a8d1,#124d73);box-shadow:0 0 22px rgba(57,168,209,.45);}
+  .best-hotels-city-inner{position:relative;z-index:1;padding:clamp(54px,8vw,92px) clamp(24px,7vw,76px) 58px;}
+  .best-hotels-city-kicker{color:#f59e0b;font-size:clamp(18px,3vw,29px);font-weight:800;letter-spacing:.24em;}
+  .best-hotels-city-name{margin:12px 0 0;font-size:clamp(58px,13vw,142px);font-weight:900;line-height:.82;letter-spacing:-.045em;text-transform:uppercase;text-shadow:0 4px 0 #081019,0 0 30px rgba(57,168,209,.28);}
+  .best-hotels-city-period{margin-top:15px;color:#f59e0b;font-size:clamp(22px,4vw,40px);font-weight:900;letter-spacing:.28em;}
+  .best-hotels-city-rule{width:min(330px,72%);height:1px;margin:35px auto;background:#f59e0b;box-shadow:0 0 10px #f59e0b;}
+  .best-hotels-city-intro{max-width:650px;margin:0 auto;color:#d9e5eb;font-size:clamp(19px,3vw,28px);line-height:1.35;}
+  .best-hotels-city-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:46px auto 0;max-width:760px;}
+  .best-hotels-city-option{min-height:104px;padding:18px 10px;border:1px solid rgba(57,168,209,.62);border-radius:12px;background:linear-gradient(145deg,rgba(15,63,88,.82),rgba(4,15,22,.92));display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 20px rgba(57,168,209,.08);}
+  .best-hotels-city-option b{color:#fff;font-size:clamp(18px,3vw,26px);letter-spacing:.06em;text-transform:uppercase;}
+  .best-hotels-city-option small{margin-top:5px;color:#f59e0b;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
+  .best-hotels-city-footer{margin-top:46px;color:#b9c8d0;font-size:15px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;}
+  @media(max-width:520px){.best-hotels-city-sheet{min-height:calc(100vh - 88px)}.best-hotels-city-inner{padding-left:22px;padding-right:22px}.best-hotels-city-grid{gap:10px}.best-hotels-city-option{min-height:88px}}
   .best-hotels-coming-soon{position:fixed;inset:0;z-index:10060;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:24px;}
   .best-hotels-coming-soon.open{display:flex;}
   .best-hotels-coming-card{width:min(88vw,360px);padding:30px 22px;border:2px solid #F59E0B;border-radius:22px;background:#050505;color:#fff;text-align:center;box-shadow:0 0 30px rgba(245,158,11,.5);font-family:'Archivo Narrow',sans-serif;}
@@ -21925,7 +21985,33 @@ init();
   const sheet=document.getElementById('bestHotelsPreviewSheet');
   const coming=document.getElementById('bestHotelsComingSoon');
   const dismiss=document.getElementById('bestHotelsComingDismiss');
-  function openPreview(){overlay.classList.add('open');document.body.classList.add('best-hotels-preview-open');overlay.scrollTop=0;}
+  const comingText=coming.querySelector('.best-hotels-coming-card span');
+  const citySheet=document.createElement('section');
+  citySheet.className='best-hotels-city-sheet';
+  citySheet.id='bestHotelsCitySheet';
+  citySheet.hidden=true;
+  citySheet.innerHTML='<div class="best-hotels-city-topline"></div><div class="best-hotels-city-inner"><div class="best-hotels-city-kicker">BEST HOTELS</div><h2 class="best-hotels-city-name"></h2><div class="best-hotels-city-period">PERIOD©</div><div class="best-hotels-city-rule"></div><p class="best-hotels-city-intro"></p><div class="best-hotels-city-grid"><div class="best-hotels-city-option"><b>Iconic Stays</b><small>Explore</small></div><div class="best-hotels-city-option"><b>Luxury Hotels</b><small>Explore</small></div><div class="best-hotels-city-option"><b>Boutique Hotels</b><small>Explore</small></div><div class="best-hotels-city-option"><b>Best Value</b><small>Explore</small></div><div class="best-hotels-city-option"><b>Neighborhoods</b><small>Explore</small></div><div class="best-hotels-city-option"><b>Near Me</b><small>Explore</small></div></div><div class="best-hotels-city-footer">Real Direction, No Filler.</div></div>';
+  overlay.appendChild(citySheet);
+  const hotelCities={
+    miami:{name:'Miami',region:'Miami, Florida'},
+    london:{name:'London',region:'London, England'},
+    sandiego:{name:'San Diego',region:'San Diego, California'}
+  };
+  function openPreview(){
+    const key=(typeof boCityContext!=='undefined'&&boCityContext)?boCityContext:'bestof';
+    const city=hotelCities[key];
+    sheet.hidden=!!city;
+    citySheet.hidden=!city;
+    if(city){
+      citySheet.querySelector('.best-hotels-city-name').textContent=city.name;
+      citySheet.querySelector('.best-hotels-city-intro').textContent='A carefully curated guide to the best places to stay in '+city.region+' is on the way.';
+      citySheet.setAttribute('aria-label','Best of '+city.name+' Hotels coming soon');
+      comingText.textContent='The full Best of '+city.name+' Hotels experience is being built.';
+    }else{
+      comingText.textContent='The full Best of Vegas Hotels experience is being built.';
+    }
+    overlay.classList.add('open');document.body.classList.add('best-hotels-preview-open');overlay.scrollTop=0;
+  }
   function closePreview(){coming.classList.remove('open');overlay.classList.remove('open');document.body.classList.remove('best-hotels-preview-open');}
   function showComingSoon(){coming.classList.add('open');}
   document.addEventListener('click',function(e){
@@ -21934,6 +22020,7 @@ init();
   },true);
   closeBtn.addEventListener('click',closePreview);
   sheet.addEventListener('click',showComingSoon);
+  citySheet.addEventListener('click',showComingSoon);
   dismiss.addEventListener('click',function(){coming.classList.remove('open');});
   coming.addEventListener('click',function(e){if(e.target===coming) coming.classList.remove('open');});
   overlay.addEventListener('click',function(e){if(e.target===overlay) closePreview();});
