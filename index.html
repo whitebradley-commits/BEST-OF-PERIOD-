@@ -21664,7 +21664,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function muted(){return localStorage.getItem('bop-sound-muted-v1')==='yes'}
   function speak(){
     return;
-    if(muted()||plays>=3||!('speechSynthesis' in window))return;
+    if(muted()||plays>=5||!('speechSynthesis' in window))return;
     plays++;
     var u=new SpeechSynthesisUtterance('Best of. Period.');
     u.rate=.78;u.pitch=.72;u.volume=.9;
@@ -21677,7 +21677,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return location.pathname+location.search+location.hash+'|'+open;
   }
   function announce(){
-    var key=pageKey();if(key===lastKey||plays>=3)return;lastKey=key;
+    var key=pageKey();if(key===lastKey||plays>=5)return;lastKey=key;
     clearTimeout(timer);timer=setTimeout(speak,3100);
   }
   function start(){
@@ -21702,11 +21702,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function play(){
     return;
-    if(plays>=3||isMuted()||!restaurantHost())return;
+    if(plays>=5||isMuted()||!restaurantHost())return;
     plays++;var a=new Audio(source);a.volume=.92;a.play().catch(function(){plays--});
   }
   function schedule(force){
-    var k=key();if(!k||(!force&&k===lastKey)||plays>=3)return;lastKey=k;
+    var k=key();if(!k||(!force&&k===lastKey)||plays>=5)return;lastKey=k;
     clearTimeout(pending);pending=setTimeout(play,900);
   }
   function start(){
@@ -21730,8 +21730,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     h.querySelectorAll('h1,h2,.city-name,.category-title,.page-title').forEach(function(x){var s=getComputedStyle(x);if(s.display!=='none'&&s.visibility!=='hidden'&&x.offsetParent!==null&&x.textContent.trim())bits.push(x.textContent.trim().slice(0,80))});
     return bits.join('|');
   }
-  function play(){if(plays>=3||isMuted()||!restaurantHost())return;var a=new Audio(source);a.volume=1;plays++;a.play().catch(function(){plays--})}
-  function schedule(force){var k=pageKey();if(!k||(!force&&k===lastKey)||plays>=3)return;lastKey=k;clearTimeout(pending);pending=setTimeout(play,700)}
+  function play(){if(plays>=5||isMuted()||!restaurantHost())return;var a=new Audio(source);a.volume=1;plays++;a.play().catch(function(){plays--})}
+  function schedule(force){var k=pageKey();if(!k||(!force&&k===lastKey)||plays>=5)return;lastKey=k;clearTimeout(pending);pending=setTimeout(play,700)}
   function start(){
     var h=document.getElementById('bestOfOverlay');if(!h)return;
     new MutationObserver(function(){schedule(false)}).observe(h,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
@@ -21801,6 +21801,40 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     fetch('https://rrcfcudeqniuzlchnuzh.supabase.co/rest/v1/tag_world_counter?select=current_count&id=eq.1',{headers:{apikey:'sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN'},cache:'no-store'}).then(function(r){return r.json()}).then(function(rows){var n=Number(rows&&rows[0]&&rows[0].current_count)||0,c=document.getElementById('tgCurrentCount'),o=document.getElementById('tgOrdinal');if(c)c.textContent=n.toLocaleString();if(o)o.textContent=ordinal(Math.max(1,n+1))}).catch(function(){})
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){sync();setInterval(sync,2500)});else{sync();setInterval(sync,2500)}
+})();
+</script>
+<script id="individualized-five-page-voice-signatures">
+(function(){
+  var plays=0,last='',timer=0,Ctx=window.AudioContext||window.webkitAudioContext,ctx=null;
+  function muted(){return localStorage.getItem('bop-sound-muted-v1')==='yes'}
+  function visible(id){var e=document.getElementById(id);if(!e)return false;var s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&(e.classList.contains('open')||e.classList.contains('active')||e.classList.contains('tg-open'))}
+  function current(){
+    if(visible('tagGameOverlay'))return{key:'tag-world',words:'Tag the World',delay:2850,chime:false};
+    if(visible('wtfLandingOverlay'))return{key:'wtf',words:'W. T. F.',delay:1550,chime:true};
+    if(visible('fntOverlay'))return{key:'fnt',words:'F. N. Team.',delay:1550,chime:true};
+    if(visible('noBaxsyzOverlay'))return{key:'no-baxsyz',words:'No Backsies',delay:1550,chime:true};
+    if(visible('tapCardOverlay'))return{key:'tapic',words:'Tapic',delay:1550,chime:true};
+    if(visible('lvSteamOverlay'))return{key:'lv-steam',words:'L. V. Steam',delay:1550,chime:true};
+    if(visible('tpaOverlay'))return{key:'tpa',words:'T. P. A.',delay:1550,chime:true};
+    return null;
+  }
+  function chimes(){
+    if(!Ctx||muted())return;
+    try{if(!ctx)ctx=new Ctx();if(ctx.state==='suspended')ctx.resume();var n=ctx.currentTime+.03;[[880,0],[1174.66,.36],[1567.98,.72]].forEach(function(v){var o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(v[0],n+v[1]);g.gain.setValueAtTime(.0001,n+v[1]);g.gain.exponentialRampToValueAtTime(.16,n+v[1]+.02);g.gain.exponentialRampToValueAtTime(.0001,n+v[1]+.65);o.connect(g);g.connect(ctx.destination);o.start(n+v[1]);o.stop(n+v[1]+.7)})}catch(e){}
+  }
+  function speak(item){
+    if(muted()||plays>=5||!('speechSynthesis' in window))return;
+    var u=new SpeechSynthesisUtterance(item.words),voices=speechSynthesis.getVoices();
+    var v=voices.find(function(x){return /Samantha|Ava|Karen|Moira|Serena|Tessa/i.test(x.name)})||voices.find(function(x){return /^en/i.test(x.lang)&&/female/i.test(x.name)})||voices.find(function(x){return /^en/i.test(x.lang)});
+    if(v)u.voice=v;u.rate=.78;u.pitch=.96;u.volume=1;plays++;speechSynthesis.speak(u);
+  }
+  function sync(){
+    var item=current(),key=item&&item.key||'';
+    if(!item){last='';clearTimeout(timer);return}
+    if(key===last||plays>=5||muted())return;last=key;clearTimeout(timer);if(item.chime)chimes();timer=setTimeout(function(){speak(item)},item.delay);
+  }
+  function start(){new MutationObserver(sync).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','style','aria-hidden']});addEventListener('hashchange',sync);addEventListener('popstate',sync);document.addEventListener('pointerdown',function(){setTimeout(sync,0)},{capture:true,passive:true});sync()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 <style id="tag-world-clean-main-and-legend-style">
