@@ -18137,7 +18137,26 @@ function boRenderCategory(cat){
         </div>
       </div>`;
       if(cityCfg.useNameCycler){
-        startBopVegasSlotCycler('bopResultsCityText', cyclerCities, 2, 5000, 1, 1, 0, true);
+        // San Diego uses the same readable cadence as the main rotating-city
+        // treatment, then stops permanently on the short landed-page label.
+        const resultSpinHold = cat === 'sandiego' ? 310 : 2;
+        const resultOutMs = cat === 'sandiego' ? 45 : 1;
+        const resultInMs = cat === 'sandiego' ? 45 : 1;
+        const resultSpinCount = cat === 'sandiego' ? 6 : 0;
+        startBopVegasSlotCycler('bopResultsCityText', cyclerCities, resultSpinHold, 5000, resultOutMs, resultInMs, resultSpinCount, true);
+        if(cat === 'sandiego'){
+          const sdHeroText = document.getElementById('bopResultsCityText');
+          if(sdHeroText){
+            // A final deterministic landing state prevents any stale city
+            // write from leaving the title blank or restoring the long name.
+            setTimeout(() => {
+              if(!sdHeroText.isConnected) return;
+              sdHeroText.textContent = 'S.D.';
+              sdHeroText.classList.remove('animating-out', 'animating-in');
+              sdHeroText.classList.add('is-active');
+            }, 3200);
+          }
+        }
       }
       boCityContext = cat;
     } else if(cat === 'otheroptions'){
