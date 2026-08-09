@@ -21741,6 +21741,57 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<style id="tag-world-view-only-and-newsletter-style">
+#tagGameOverlay .tg-view-only,#tagGameOverlay .tg-newsletter-page{position:absolute;inset:0;z-index:75;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.38);backdrop-filter:blur(4px)}
+#tagGameOverlay .tg-view-only.is-open,#tagGameOverlay .tg-newsletter-page.is-open{display:flex}
+#tagGameOverlay .tg-view-card,#tagGameOverlay .tg-newsletter-card{position:relative;width:min(88vw,410px);padding:42px 28px 32px;border:2px solid #e2a624;border-radius:34px;background:rgba(0,0,0,.82);color:#fff;text-align:center;box-shadow:0 0 24px rgba(226,166,36,.42);backdrop-filter:blur(11px)}
+#tagGameOverlay .tg-view-card h3,#tagGameOverlay .tg-newsletter-card h3{margin:0 0 14px;color:#f5a000;font:1000 21px/1.1 Arial,sans-serif}
+#tagGameOverlay .tg-view-card p,#tagGameOverlay .tg-newsletter-card p{margin:0;color:#fff;font:700 14px/1.5 Arial,sans-serif}
+#tagGameOverlay .tg-view-close,#tagGameOverlay .tg-newsletter-close{position:absolute;right:13px;top:13px;width:42px;height:42px;border:2px solid #e2a624;border-radius:50%;background:#4acaff;color:#e51e36;font:1000 25px/1 Arial,sans-serif}
+#tagGameOverlay .tg-newsletter-link{position:absolute;left:50%;bottom:13px;z-index:18;transform:translateX(-50%);border:0;background:none;color:#fff;font:800 10px/1 Arial,sans-serif;text-decoration:underline;letter-spacing:.12em;white-space:nowrap}
+#tagGameOverlay .tg-newsletter-input{width:100%;margin:20px 0 12px;padding:14px 16px;border:2px solid #e2a624;border-radius:999px;background:#fff;color:#111;font:700 16px Arial,sans-serif}
+#tagGameOverlay .tg-newsletter-submit,#tagGameOverlay .tg-await-button{display:block;width:100%;margin-top:10px;padding:13px 16px;border:2px solid #e2a624;border-radius:999px;background:#0a0a0a;color:#f5a000;font:900 13px Arial,sans-serif}
+#tagGameOverlay .tg-newsletter-status{min-height:20px;margin-top:12px!important;color:#f5a000!important;font-size:12px!important}
+#tagGameOverlay .tg-view-locked{filter:grayscale(.25);opacity:.72}
+</style>
+<script id="tag-world-secure-handoff-and-view-only">
+(function(){
+  var API='https://rrcfcudeqniuzlchnuzh.supabase.co/functions/v1/tag-world-api';
+  function params(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});return p}
+  function val(k){return params().get(k)||''}
+  function uuid(x){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)}
+  function authorized(){return uuid(val('t'))||uuid(val('retry'))||uuid(val('rescue'))||!!val('founder')}
+  async function call(body){try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),j=await r.json();return j}catch(e){return{ok:false,code:'connection'}}}
+  function install(){
+    var host=document.getElementById('tagGameOverlay');if(!host||host.querySelector('.tg-view-only'))return;
+    host.insertAdjacentHTML('beforeend','<div class="tg-view-only" role="dialog" aria-modal="true"><div class="tg-view-card"><button class="tg-view-close" type="button">×</button><h3>VIEWING ONLY</h3><p>This is for viewing only.<br>You must be tagged for any of these game buttons to work.</p></div></div><button type="button" class="tg-newsletter-link">NEWSLETTER</button><div class="tg-newsletter-page" role="dialog" aria-modal="true"><div class="tg-newsletter-card"><button class="tg-newsletter-close" type="button">×</button><h3>MORE GAMES TO COME.</h3><p>Enter your email.</p><input class="tg-newsletter-input" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"><button class="tg-newsletter-submit" type="button">SIGN UP →</button><p class="tg-newsletter-status"></p></div></div>');
+    host.querySelector('.tg-view-close').onclick=function(){host.querySelector('.tg-view-only').classList.remove('is-open')};
+    host.querySelector('.tg-newsletter-link').onclick=function(){host.querySelector('.tg-newsletter-page').classList.add('is-open')};
+    host.querySelector('.tg-newsletter-close').onclick=function(){host.querySelector('.tg-newsletter-page').classList.remove('is-open')};
+    host.querySelector('.tg-newsletter-submit').onclick=async function(){var input=host.querySelector('.tg-newsletter-input'),status=host.querySelector('.tg-newsletter-status'),email=input.value.trim();status.textContent='SIGNING UP…';var r=await call({action:'newsletter',email:email});status.textContent=r.ok?'YOU’RE IN. MORE GAMES ARE COMING.':'ENTER A VALID EMAIL AND TRY AGAIN.'};
+    if(!authorized()){var main=document.getElementById('tgMainButton');if(main){main.classList.add('tg-view-locked');var go=main.querySelector('.tg-go');if(go)go.innerHTML='VIEW ONLY<br><small>YOU MUST BE TAGGED</small>'}host.addEventListener('click',function(e){if(e.target.closest('#tgMainButton,.tg-send,.tg-camera,.tg-upload')){e.preventDefault();e.stopImmediatePropagation();window.tgOpenViewOnly()}},{capture:true})}else{localStorage.removeItem('tag-world-played-v6');localStorage.removeItem('tag-world-sent-v4')}
+    var closeRules=window.tgCloseRules;window.tgCloseRules=function(){if(closeRules)closeRules();if(!authorized())setTimeout(window.tgOpenViewOnly,180)};
+  }
+  window.tgOpenViewOnly=function(){var p=document.querySelector('#tagGameOverlay .tg-view-only');if(p)p.classList.add('is-open')};
+  function identity(){var b=document.querySelector('.tg-visibility-option.is-selected'),mode=b&&b.dataset.mode||'flag_only',avatar='';if(mode==='photo_flag'&&typeof tgPhoto!=='undefined')avatar=tgPhoto||'';if(mode==='emoji_flag'&&typeof tgIdentity!=='undefined')avatar=tgIdentity||'🌎';return{display_mode:mode,avatar_value:avatar}}
+  function country(){var m=(navigator.language||'en-US').match(/-([A-Z]{2})$/i);return m?m[1].toUpperCase():'US'}
+  function shareText(){return'Tag, you’re it! Don’t forget to tag someone and keep the game running. Help us tag the world for peace! 🌎 👉 🙌 ✌️ 🫶 #TagTheWorld #TagForPeace'}
+  async function shareUrl(url){if(navigator.share)return navigator.share({title:'Tag the World — Tag, You’re It!',text:shareText(),url:url});await navigator.clipboard.writeText(shareText()+'\n'+url);alert('Tag copied. Paste it into any message.')}
+  function waiting(url){var body=document.getElementById('tgPanelBody'),wrap=document.getElementById('tgPanelWrap');if(!body||!wrap)return;body.innerHTML='<h2>TAG READY—NOT YET COMPLETE</h2><p>Your turn finishes only when the person you tagged opens this link. Opening Messenger alone does not count.</p><button type="button" class="tg-await-button" id="tgSendAgain">SEND AGAIN →</button><button type="button" class="tg-await-button" onclick="tgClosePanel()">CLOSE FOR NOW</button>';wrap.classList.add('tg-show');document.getElementById('tgSendAgain').onclick=async function(){try{await shareUrl(url)}catch(e){}waiting(url)}}
+  window.tgShare=async function(){
+    if(!authorized()){window.tgOpenViewOnly();return}
+    var saved=sessionStorage.getItem('tag-world-pending-url');if(saved){try{await shareUrl(saved)}catch(e){}waiting(saved);return}
+    var button=document.querySelector('#tgPanelBody .tg-send'),email=document.getElementById('tgPlayerEmail');if(!button)return;if(!val('retry')&&!val('rescue')&&(!email||!email.value.trim())){var st=document.getElementById('tgEmailStatus');if(st)st.textContent='Enter your email so the tag can return if needed.';return}
+    button.disabled=true;button.textContent='GETTING YOUR TAG READY…';var pick=identity(),opt=document.getElementById('tgMarketingOptIn');var prepared=await call({action:'prepare',incoming_token:val('t')||null,retry_token:val('retry')||null,rescue_token:val('rescue')||null,founder_token:val('founder')||null,email:val('retry')||val('rescue')?'':email.value.trim(),country:country(),marketing_opt_in:!!(opt&&opt.checked),display_mode:pick.display_mode,avatar_value:pick.avatar_value});
+    if(!prepared.ok){var status=document.getElementById('tgEmailStatus');if(status)status.textContent=prepared.code==='tag_required'?'You must receive a real tag link to play.':'The connection paused. Please try again.';button.disabled=false;button.textContent='SEND THE TAG →';return}
+    var u=new URL(location.origin+location.pathname),q=new URLSearchParams();q.set('tag','1');q.set('t',prepared.token);q.set('n',prepared.next_number||1);u.search=q.toString();u.hash='tag?'+q.toString();var url=u.toString();sessionStorage.setItem('tag-world-pending-url',url);sessionStorage.setItem('tag-world-pending-token',prepared.token);
+    try{await shareUrl(url)}catch(e){}waiting(url)
+  };
+  async function activateIncoming(){var t=val('t');if(!uuid(t)||sessionStorage.getItem('tag-world-activated-'+t)==='yes')return;var r=await call({action:'activate',prepared_token:t});if(r.ok){sessionStorage.setItem('tag-world-activated-'+t,'yes');sessionStorage.removeItem('tag-world-pending-url');sessionStorage.removeItem('tag-world-pending-token')}}
+  function start(){install();activateIncoming()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 <script id="tag-world-official-chain-display-reset">
 (function(){
   localStorage.removeItem('tag-world-played-v6');
