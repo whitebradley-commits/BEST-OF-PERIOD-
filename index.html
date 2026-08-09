@@ -18773,6 +18773,15 @@ boBackBtnEl.addEventListener('click', (e) => {
   const params = new URLSearchParams(window.location.search);
   const pathIsMain = /\/main\/?$/i.test(window.location.pathname);
   const rawHash = window.location.hash.replace(/^#/, '');
+  function revealSharedBestOfPage(){
+    const landing = document.getElementById('bopLandingOverlay');
+    const best = document.getElementById('bestOfOverlay');
+    const otherCities = document.getElementById('otherCitiesOverlay');
+    if(landing) landing.classList.remove('open');
+    if(otherCities) otherCities.classList.remove('open');
+    if(best){ best.classList.add('open'); best.scrollTop = 0; }
+    window.scrollTo(0,0);
+  }
 
   // Legacy /main/ path link — heal the address bar back to the real file
   // path (GitHub Pages 404s on /main/ with a real reload) and open Other
@@ -18787,6 +18796,7 @@ boBackBtnEl.addEventListener('click', (e) => {
       if(boCityContext !== 'bestof') healParams.set('city', boCityContext);
       history.replaceState(null, '', cleanPath + '?' + healParams.toString());
     } catch(healErr) { /* no-op */ }
+    revealSharedBestOfPage();
     boRenderCategory('otheroptions');
     return;
   }
@@ -18798,6 +18808,7 @@ boBackBtnEl.addEventListener('click', (e) => {
     const catIsReal = Object.prototype.hasOwnProperty.call(boCategoryData, queryPage) || Object.prototype.hasOwnProperty.call(boPickerConfig, queryPage);
     if(catIsReal){
       if(queryCityIsReal) boCityContext = params.get('city');
+      revealSharedBestOfPage();
       boRenderCategory(queryPage);
       const queryRestaurant = params.get('restaurant');
       if(queryRestaurant){
@@ -18830,6 +18841,7 @@ boBackBtnEl.addEventListener('click', (e) => {
     const catIsReal = linkedCat && (Object.prototype.hasOwnProperty.call(boCategoryData, linkedCat) || Object.prototype.hasOwnProperty.call(boPickerConfig, linkedCat));
     if(catIsReal){
       if(linkedCity && BO_CITY_CONFIG[linkedCity]) boCityContext = linkedCity;
+      revealSharedBestOfPage();
       boRenderCategory(linkedCat);
       return;
     }
