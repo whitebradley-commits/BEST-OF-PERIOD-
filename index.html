@@ -18125,7 +18125,7 @@ function boRenderCategory(cat){
       // instead of a separate hardcoded block per city.
       const cityCfg = BO_CITY_CONFIG[cat];
       const cityElId = cityCfg.useNameCycler ? ' id="bopResultsCityText"' : '';
-      const sanDiegoHeroClass = cat === 'sandiego' ? ' bop-splash-hero-san-diego' : '';
+      const sanDiegoHeroClass = '';
       // startBopVegasSlotCycler always lands on whichever name sits at index 0
       // of the array it's given — it was always being handed the raw
       // BOP_SPLASH_CITIES list, which starts with "Vegas", so Miami's cycler
@@ -18133,7 +18133,7 @@ function boRenderCategory(cat){
       // fresh list here with the CURRENT city first fixes that for any city.
       const heroDisplayName = cat === 'sandiego' ? 'S.D.' : cityCfg.displayName;
       const cyclerCities = [heroDisplayName].concat(
-        BOP_SPLASH_CITIES.filter(c => c !== cityCfg.displayName)
+        BOP_SPLASH_CITIES.filter(c => c !== cityCfg.displayName && c !== heroDisplayName)
       );
       const startingName = cityCfg.useNameCycler
         ? cyclerCities[1 + Math.floor(Math.random() * (cyclerCities.length - 1))]
@@ -18145,6 +18145,10 @@ function boRenderCategory(cat){
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
+      // Make the lockup visible before animation begins. If a mobile browser
+      // interrupts a timer, the Best Of / city / Period logo still remains.
+      boHeroTitleEl.style.opacity = 1;
+      boHeroSubEl.style.opacity = 1;
       if(cityCfg.useNameCycler){
         // San Diego uses the same readable cadence as the main rotating-city
         // treatment, then stops permanently on the short landed-page label.
@@ -18174,7 +18178,7 @@ function boRenderCategory(cat){
       // soon" when a city has nothing there yet), and the title reflects
       // whichever city you arrived from instead of always defaulting to
       // Vegas.
-      const otherBestsCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const otherBestsCity = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       const mainCyclerCities = [otherBestsCity].concat(
         BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
       );
@@ -18191,7 +18195,7 @@ function boRenderCategory(cat){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
       // that city, not always say Vegas.
-      const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const bjsPicksCity = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     } else {
       // Same idea as Other Bests and BJS Picks above — every generic genre
@@ -18201,7 +18205,7 @@ function boRenderCategory(cat){
       // current city (or "coming soon" when empty), but the title sitting
       // right above it kept saying Vegas regardless — which is exactly
       // what made it look like the whole page had jumped to Vegas.
-      const genericCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const genericCityName = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
       const ishSuffix = (cat === '24hours' && BO_24HR_ISH_CITIES.includes(boCityContext))
         ? ' <span class="bo-hero-dessert-word" style="font-size:0.65em;">ish</span>'
@@ -18842,7 +18846,7 @@ const BOP_SPLASH_CITIES = [
   "Beijing", "Athens", "Lisbon",
   "Cape Town",
   "Rome", "Madrid", "Dublin",
-  "Vancouver", "Boston",
+  "Vancouver", "Boston", "S.D.",
   "Shanghai", "Tel Aviv", "Abu Dhabi"
 ];
 const BOP_MINI_CITIES = [
@@ -19678,6 +19682,7 @@ function openFnt(){
       if(swatch)query.set('color',swatch.dataset.name||'');
       if(view)query.set('view',(view.textContent||'').trim().toLowerCase());
     }
+    url.searchParams.set('fnt','1');url.searchParams.set('fntState',query.toString());
     url.hash='/concepts/fnt?'+query.toString();return url.toString();
   }
   window.shareExactItem=async function(button,card,title){
@@ -21253,9 +21258,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const url=new URL(location.href),overlay=document.getElementById('fntOverlay'),frame=document.getElementById('fntFrame');
     if(overlay&&overlay.style.display!=='none'&&frame&&frame.contentWindow){
       if(typeof frame.contentWindow.getFntShareQuery==='function'){
-        const query=frame.contentWindow.getFntShareQuery();url.hash='/concepts/fnt'+(query?'?'+query:'');
+        const query=frame.contentWindow.getFntShareQuery();url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash='/concepts/fnt'+(query?'?'+query:'');
       }else if(typeof frame.contentWindow.getFntShareTeam==='function'){
-        const team=frame.contentWindow.getFntShareTeam();url.hash=team?'/concepts/fnt?team='+encodeURIComponent(team):'/concepts/fnt';
+        const team=frame.contentWindow.getFntShareTeam(),query=team?'team='+encodeURIComponent(team):'';url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash=team?'/concepts/fnt?'+query:'/concepts/fnt';
       }
     }
     return url.toString();
@@ -21290,6 +21295,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @keyframes fntShareBluePulse{0%,100%{box-shadow:0 0 0 2px rgba(7,27,69,.95),0 0 10px rgba(7,27,69,.72),0 0 5px rgba(255,255,255,.42)}50%{box-shadow:0 0 0 2px rgba(7,27,69,1),0 0 22px rgba(7,27,69,1),0 0 11px rgba(255,255,255,.72)}}
 @media(prefers-reduced-motion:reduce){#globalSharePage{animation:none!important}}
 </style>
+<script id="fnt-shared-link-fallback">
+(function(){
+  function restore(){
+    var outer=new URLSearchParams(location.search);if(outer.get('fnt')!=='1')return;
+    var state=outer.get('fntState')||'',target='/concepts/fnt'+(state?'?'+state:'');
+    if(location.hash.slice(1)!==target)history.replaceState(null,'',location.pathname+location.search+'#'+target);
+    window.setTimeout(function(){if(typeof openFnt==='function')openFnt()},180);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
+})();
+</script>
 <style id="bjs-why-rotating-city-style">
 #bjsWhyOverlay .bjs-why-city-period-lockup{display:grid;grid-template-columns:max-content 62px max-content;align-items:baseline;justify-content:center;column-gap:3px;white-space:nowrap;font-size:1rem;line-height:1.15;position:relative;margin:1px auto 8px}
 #bjsWhyOverlay .bjs-why-best-of{color:#fff;font-family:'Fraunces',serif;font-weight:900;text-transform:uppercase;position:relative;z-index:1;text-shadow:0 0 10px rgba(255,255,255,.22)}
