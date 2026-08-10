@@ -7988,7 +7988,7 @@ function sfPad(text){
 // world. This is deliberately separate from BOP_SPLASH_CITIES (the shorter
 // list used elsewhere), since this page needs real breadth, not just flavor.
 const BOP_LANDING_CITIES = [
-  "Las Vegas", "Miami", "Los Angeles", "New York", "Chicago", "Austin",
+  "Las Vegas", "Miami", "S.V.", "Los Angeles", "New York", "Chicago", "Austin",
   "Nashville", "New Orleans", "San Francisco", "S.D.", "Dallas",
   "Houston", "Atlanta", "Orlando", "Tampa", "Scottsdale", "Phoenix",
   "Denver", "Seattle", "Boston", "Washington DC", "Charlotte", "Honolulu",
@@ -8126,7 +8126,8 @@ function setupBopLanding(){
     { name: 'Las Vegas', region: 'Nevada', dest: 'bestof' },
     { name: 'Miami', region: 'Florida', dest: 'miami' },
     { name: 'London', region: 'England', dest: 'london' },
-    { name: 'San Diego', region: 'California', dest: 'sandiego' }
+    { name: 'San Diego', region: 'California', dest: 'sandiego' },
+    { name: 'Silicon Valley', region: 'California', dest: 'siliconvalley', aliases: ['S.V.', 'SV', 'S V'] }
   ];
 
   function goToCity(dest){
@@ -8164,6 +8165,7 @@ function setupBopLanding(){
         miami:[25.7617,-80.1918],
         london:[51.5072,-0.1276],
         sandiego:[32.7157,-117.1611]
+        ,siliconvalley:[37.3875,-122.0575]
       };
       const openForCity = function(cityKey){
         boNearMapReturnTarget = 'landing';
@@ -8194,21 +8196,29 @@ function setupBopLanding(){
   input.addEventListener('input', function(){
     const q = input.value.trim().toLowerCase();
     if(!q){
-      results.classList.remove('open');
-      results.innerHTML = '';
+      results.innerHTML = '<div class="bop-landing-results-label">Live Cities</div>' + LIVE_CITIES.map(c => `
+        <button type="button" class="bop-landing-result" data-dest="${c.dest}">
+          <span class="bop-landing-result-dot"></span> ${c.name}, ${c.region}
+        </button>
+      `).join('');
+      results.classList.add('open');
+      results.querySelectorAll('.bop-landing-result').forEach(btn => {
+        btn.addEventListener('click', () => goToCity(btn.dataset.dest));
+      });
       return;
     }
 
     const liveNames = new Set(LIVE_CITIES.map(c => c.name));
+    liveNames.add('S.V.');
     // Keep the dropdown compact: after two useful letters identify a live
     // city, show only the live match. Until then (or when there is no live
     // match), fall back to the first three active cities.
     const matchingLiveCities = q.length >= 2
-      ? LIVE_CITIES.filter(c => c.name.toLowerCase().includes(q))
+      ? LIVE_CITIES.filter(c => [c.name].concat(c.aliases || []).some(name => name.toLowerCase().replace(/[^a-z0-9]/g,'').includes(q.replace(/[^a-z0-9]/g,''))))
       : [];
     const displayedLiveCities = matchingLiveCities.length
       ? matchingLiveCities
-      : LIVE_CITIES.slice(0, 3);
+      : LIVE_CITIES;
     // Recognized, but not live yet — visible so people can see it's coming,
     // but not clickable. Capped at 2 so a broad query like "g" doesn't
     // flood the box and push everything off screen.
@@ -8236,6 +8246,9 @@ function setupBopLanding(){
     results.querySelectorAll('.bop-landing-result').forEach(btn => {
       btn.addEventListener('click', () => goToCity(btn.dataset.dest));
     });
+  });
+  input.addEventListener('focus', function(){
+    if(!input.value.trim()) input.dispatchEvent(new Event('input'));
   });
 }
 
@@ -8351,6 +8364,7 @@ var OC_CITIES = [
   {n:"Los Angeles",la:34.05,lo:-118.24,t:"2027"},
   {n:"San Diego",la:32.72,lo:-117.16,t:"live",dest:"sandiego"},
   {n:"San Francisco",la:37.77,lo:-122.42,t:"2027"},
+  {n:"Silicon Valley",la:37.39,lo:-122.06,t:"live",dest:"siliconvalley"},
   {n:"Phoenix",la:33.45,lo:-112.07,t:"2027"},
   {n:"Denver",la:39.74,lo:-104.99,t:"2027"},
   {n:"Salt Lake City",la:40.76,lo:-111.89,t:"2027"},
@@ -10177,6 +10191,15 @@ const BO_CITY_CONFIG = {
     tickerMessages: ['COMING SOON!', 'SAN DIEGO!'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickssandiego'   // San Diego's own, separate BJS Picks page
+  },
+  siliconvalley: {
+    displayName: 'S.V.',
+    searchName: 'Silicon Valley',
+    areaList: ['The Peninsula', 'South Bay', 'Woodside to San Jose'],
+    footnote: '*Silicon Valley covers a wide dining territory — tap Near Me for the closest recommendations.',
+    tickerMessages: ['SILICON VALLEY IS LIVE!', 'S.V. S.V.'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspickssiliconvalley'
   }
 };
 const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
@@ -10186,7 +10209,7 @@ const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
 // Moshi, Big Pink) all close for at least a few hours, unlike Vegas's true
 // 24-hour spots. Add a city's key here if the same situation applies there;
 // remove it if that city later gets a genuinely round-the-clock pick.
-const BO_24HR_ISH_CITIES = ['miami', 'london'];
+const BO_24HR_ISH_CITIES = ['miami', 'london', 'siliconvalley'];
 // True for ANY city's BJS Picks page (bjspicks, bjspicksmiami, ...) — use this
 // instead of `cat === 'bjspicks'` everywhere, so adding a new city's picks
 // page doesn't mean re-finding every hardcoded check.
@@ -16987,6 +17010,41 @@ boCategoryData.bjspickslondon = (() => {
   return picks;
 })();
 
+// Silicon Valley launch shell. The full name remains searchable while the
+// compact hero lands on S.V. These starter records intentionally overlap
+// categories so the first review build has real depth instead of empty tiles.
+(function buildSiliconValley(){
+  const sv = [
+    {name:"The Village Pub",city:"siliconvalley",rating:"4.8",reviews:1800,price:4,michelinStars:1,why:"A Woodside power table pairing polished California cooking with a landmark wine cellar",note:"A long-running Peninsula destination for business lunches, celebrations and refined seasonal cooking.",url:"https://www.thevillagepub.net/",address:"2967 Woodside Rd, Woodside, CA 94062",phone:"(650) 851-9888",hue:"28, 38%, 24%",redCalloutLabel:"S.V. INTEL",redCallout:"Long known locally as a Silicon Valley second office — the fries are part of the ritual."},
+    {name:"The Plumed Horse",city:"siliconvalley",rating:"4.7",reviews:1200,price:4,michelinStars:1,why:"A Saratoga fine-dining institution built around modern California luxury",note:"An ambitious tasting-menu room with a deep cellar and a long Michelin history.",url:"https://www.plumedhorse.com/",address:"14555 Big Basin Way, Saratoga, CA 95070",phone:"(408) 867-4711",hue:"220, 25%, 22%",redCalloutLabel:"S.V. INTEL",redCallout:"One of the Valley's longest-running Michelin-starred dining rooms."},
+    {name:"Protégé",city:"siliconvalley",rating:"4.8",reviews:900,price:4,michelinStars:1,why:"A refined Palo Alto tasting room from French Laundry alumni",note:"Precise contemporary cooking, calm service and a serious wine program in an intimate room.",url:"https://www.protegepaloalto.com/",address:"250 California Ave, Palo Alto, CA 94306",phone:"(650) 494-4181",hue:"32, 30%, 24%",redCalloutLabel:"S.V. INTEL",redCallout:"The French Laundry pedigree is real; the room is distinctly Palo Alto."},
+    {name:"Selby's",city:"siliconvalley",rating:"4.7",reviews:800,price:4,michelinStars:1,why:"Old-Hollywood glamour and modern American cooking on the Atherton edge",note:"A dramatic special-occasion room with tableside service, martinis and a serious cellar.",url:"https://www.selbysrestaurant.com/",address:"3001 El Camino Real, Redwood City, CA 94061",phone:"(650) 546-7700",hue:"350, 28%, 22%",redCalloutLabel:"S.V. INTEL",redCallout:"Atherton power-dinner energy: polished, discreet and built for the long table."},
+    {name:"Buck's of Woodside",city:"siliconvalley",rating:"4.6",reviews:1500,price:2,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Silicon Valley history",why:"The memorabilia-filled breakfast room where famous tech deals began",note:"A playful Woodside institution whose booths have hosted founders, investors and generations of locals.",url:"https://buckswoodside.com/",address:"3062 Woodside Rd, Woodside, CA 94062",phone:"(650) 851-8010",hue:"42, 45%, 28%",redCalloutLabel:"S.V. INTEL",redCallout:"Netscape, Hotmail and PayPal lore lives here. Order breakfast — and don't ignore the onion rings."},
+    {name:"Chef Chu's",city:"siliconvalley",rating:"4.7",reviews:2400,price:3,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Local institution",why:"A Los Altos Chinese institution with five decades of Silicon Valley history",note:"Chef Lawrence Chu's dining room mixes polished hospitality, classic Chinese cooking and a remarkable guest book.",url:"https://www.chefchu.com/",address:"1067 N San Antonio Rd, Los Altos, CA 94022",phone:"(650) 948-2696",hue:"8, 45%, 24%",redCalloutLabel:"S.V. INTEL",redCallout:"Tech leaders, heads of state and celebrities have all passed through this Los Altos landmark."},
+    {name:"Evvia Estiatorio",city:"siliconvalley",rating:"4.8",reviews:4200,price:4,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Palo Alto power table",why:"Palo Alto's enduring Greek dining room, centered on the wood fire",note:"Warm hospitality, pristine seafood and charcoal-grilled meats make Evvia one of University Avenue's defining restaurants.",url:"https://www.evvia.net/",address:"420 Emerson St, Palo Alto, CA 94301",phone:"(650) 326-0983",hue:"24, 40%, 25%",redCalloutLabel:"S.V. INTEL",redCallout:"Michelin calls out its pull for tech billionaires; the wood-fired lamb remains the move."},
+    {name:"Ettan",city:"siliconvalley",rating:"4.7",reviews:1900,price:3,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Modern Indian standout",why:"A striking Palo Alto courtyard for contemporary Indian cooking",note:"Shareable plates, bold spice and one of the area's most distinctive indoor-outdoor rooms.",url:"https://ettanrestaurant.com/",address:"518 Bryant St, Palo Alto, CA 94301",phone:"(650) 752-6281",hue:"198, 35%, 25%",dogFriendly:true,redCalloutLabel:"S.V. INTEL",redCallout:"Bring a group, share widely, and ask for the outdoor courtyard when the weather cooperates."},
+    {name:"Zareen's",city:"siliconvalley",rating:"4.8",reviews:5200,price:2,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Local essential",why:"Beloved Pakistani and Indian comfort food with deep Silicon Valley roots",note:"Casual, fast-moving and consistently packed for kebabs, curries, rolls and chai.",url:"https://www.zareens.com/",address:"365 S California Ave, Palo Alto, CA 94306",phone:"(650) 521-8300",hue:"105, 35%, 24%",redCalloutLabel:"S.V. INTEL",redCallout:"A favorite caterer for major tech companies and venture firms — proof that casual can still be essential."},
+    {name:"Sundance The Steakhouse",city:"siliconvalley",rating:"4.7",reviews:5100,price:4,bjsPick:true,bjsPickCity:"siliconvalley",bjsPickLabel:"Classic Valley steakhouse",why:"Palo Alto's old-school prime-rib and steak institution",note:"Dark wood, generous cuts and veteran service make this a durable business-dinner choice.",url:"https://www.sundancethesteakhouse.com/",address:"1921 El Camino Real, Palo Alto, CA 94306",phone:"(650) 321-6798",hue:"18, 38%, 20%",redCalloutLabel:"S.V. INTEL",redCallout:"The Valley classic: prime rib, martinis and a room that has seen decades of deals."},
+    {name:"Alexander's Steakhouse",city:"siliconvalley",rating:"4.7",reviews:3300,price:4,why:"A Cupertino steakhouse blending American luxury with Japanese influence",note:"Wagyu, dry-aged beef, polished service and a large-format dining room near Apple's home turf.",url:"https://www.alexanderssteakhouse.com/",address:"19379 Stevens Creek Blvd, Cupertino, CA 95014",phone:"(408) 446-2222",hue:"350, 28%, 20%",redCalloutLabel:"S.V. INTEL",redCallout:"Apple-country expense-account energy, with wagyu as the headline."},
+    {name:"Vina Enoteca",city:"siliconvalley",rating:"4.7",reviews:1100,price:3,why:"A Stanford-adjacent Italian dining room in a restored historic barn",note:"Handmade pasta, Italian wine and a striking brick-and-timber room at the Stanford Barn.",url:"https://www.vinaenoteca.com/",address:"700 Welch Rd, Palo Alto, CA 94304",phone:"(650) 646-3474",hue:"20, 35%, 24%"},
+    {name:"Pausa Bar & Cookery",city:"siliconvalley",rating:"4.8",reviews:1400,price:3,why:"A San Mateo Italian favorite built around house-cured meats and handmade pasta",note:"Regional Italian cooking, an energetic bar and a serious salumi program.",url:"https://www.pausasanmateo.com/",address:"223 E 4th Ave, San Mateo, CA 94401",phone:"(650) 375-0818",hue:"12, 38%, 24%"},
+    {name:"ROOH Palo Alto",city:"siliconvalley",rating:"4.6",reviews:1200,price:3,why:"Progressive Indian cooking and cocktails in downtown Palo Alto",note:"A colorful modern room translating regional Indian flavors through contemporary technique.",url:"https://www.roohrestaurants.com/",address:"473 University Ave, Palo Alto, CA 94301",phone:"(650) 800-7090",hue:"332, 38%, 25%"},
+    {name:"Alexander's Patisserie",city:"siliconvalley",rating:"4.7",reviews:1700,price:2,why:"A polished Mountain View pastry case for French cakes, croissants and chocolates",note:"A destination bakery from the Alexander's group with meticulous presentation and a broad dessert range.",url:"https://www.alexanderspatisserie.com/",address:"209 Castro St, Mountain View, CA 94041",phone:"(650) 864-9999",hue:"330, 30%, 30%"}
+  ];
+  sv.forEach((r,i)=>{r.rank=i+1;r.image=r.image||'';r.hours=r.hours||[];});
+  boCategoryData.siliconvalley=sv;
+  const pick=n=>sv.find(r=>r.name===n);
+  const install=(cat,names)=>{boCategoryData[cat]=boCategoryData[cat]||[];names.map(pick).filter(Boolean).forEach(r=>{if(!boCategoryData[cat].some(x=>x&&x.name===r.name&&x.city==='siliconvalley'))boCategoryData[cat].push(Object.assign({},r));});};
+  install('michelin',["The Village Pub","The Plumed Horse","Protégé","Selby's"]);
+  install('steakhighend',["Sundance The Steakhouse","Alexander's Steakhouse","The Village Pub"]);
+  install('italianhighend',["Vina Enoteca","Pausa Bar & Cookery","Evvia Estiatorio"]);
+  install('indian',["Ettan","Zareen's","ROOH Palo Alto"]);
+  install('breakfast',["Buck's of Woodside","Zareen's","Alexander's Patisserie"]);
+  install('dessert',["Alexander's Patisserie","Pausa Bar & Cookery","The Village Pub"]);
+  install('asianbestofrest',["Chef Chu's","Ettan","Zareen's"]);
+  boCategoryData.bjspickssiliconvalley=sv.filter(r=>r.bjsPick).map((r,i)=>Object.assign({},r,{rank:i+1,bjsSources:[r.bjsPickLabel]}));
+})();
+
 // August 2026 expansion: Fine Italian is city-aware. These records are kept in
 // the shared genre list and filtered by the active city at render time.
 (function expandFineItalian(){
@@ -17184,7 +17242,7 @@ boCategoryData.cheesesteak = [
 ];
 
 const boFullTop100 = (() => {
-  const excluded = new Set(['bestof', 'miami', 'london', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'michelin', 'jamesbeard']);
+  const excluded = new Set(['bestof', 'miami', 'london', 'sandiego', 'siliconvalley', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'bjspickssandiego', 'bjspickssiliconvalley', 'michelin', 'jamesbeard']);
   const seen = new Map();
   Object.entries(boCategoryData).forEach(([cat, list]) => {
     if(excluded.has(cat) || !Array.isArray(list)) return;
@@ -17212,7 +17270,7 @@ const boFullTop100 = (() => {
 })();
 
 const boAllRestaurantsFlat = (() => {
-  const excluded = new Set(['bestof', 'miami', 'london', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'michelin', 'jamesbeard']);
+  const excluded = new Set(['bestof', 'miami', 'london', 'sandiego', 'siliconvalley', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'bjspickssandiego', 'bjspickssiliconvalley', 'michelin', 'jamesbeard']);
   const seen = new Map();
   Object.entries(boCategoryData).forEach(([cat, list]) => {
     if(excluded.has(cat) || !Array.isArray(list)) return;
@@ -17316,6 +17374,7 @@ function boNearCityDefaults(cityKey){
     miami:  { center:[25.7617,-80.1918], zoom:10, label:'Miami' },
     london: { center:[51.5072,-0.1276], zoom:10, label:'London' },
     sandiego:{ center:[32.7157,-117.1611], zoom:10, label:'San Diego' }
+    ,siliconvalley:{ center:[37.3875,-122.0575], zoom:9, label:'Silicon Valley' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
 }
 
@@ -17374,7 +17433,7 @@ function boGetMapRestaurants(cityKey){
     });
   };
   if(cityKey === 'bestof'){
-    const excluded = new Set(['bestof','miami','london','sandiego','bjspicksmiami','bjspickslondon','bjspickssandiego']);
+    const excluded = new Set(['bestof','miami','london','sandiego','siliconvalley','bjspicksmiami','bjspickslondon','bjspickssandiego','bjspickssiliconvalley']);
     Object.entries(boCategoryData).forEach(([cat,list])=>{
       if(excluded.has(cat) || !Array.isArray(list)) return;
       list.forEach(r=>add(r,cat));
@@ -17997,6 +18056,10 @@ const boPickerParent = {
 };
 
 const boHeroCopy = {
+  siliconvalley: {
+    title: 'BEST OF',
+    sub: ''
+  },
   miami: {
     title: 'BEST OF',
     sub: ""
@@ -18018,6 +18081,10 @@ const boHeroCopy = {
   bjspickslondon: {
     title: '<svg viewBox="0 0 40 40" width="52" height="52" style="vertical-align:-11px;margin-right:9px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICKS</span>',
     sub: "\u2b50 Possible underrated gems \u2014 huge reputations, passionate regulars, and ratings that don't always tell the whole story."
+  },
+  bjspickssiliconvalley: {
+    title: '<svg viewBox="0 0 40 40" width="52" height="52" style="vertical-align:-11px;margin-right:9px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICKS</span>',
+    sub: '⭐ Silicon Valley power tables, local institutions and tech-history rooms worth knowing.'
   },
   steak: {
     title: 'BEST STEAK',
@@ -18451,7 +18518,8 @@ function renderBjsPickFooter(cat){
     if(boCityContext !== 'bestof') shareParams.set('city', boCityContext);
     const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
     const shareUrl = window.location.origin + cleanPath + '?' + shareParams.toString();
-    const cityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+    const shareCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
+    const cityLabel = shareCfg.searchName || shareCfg.displayName;
     const rawTitle = (boHeroCopy[cat] && boHeroCopy[cat].title) ? boHeroCopy[cat].title.replace(/<[^>]+>/g, '').trim() : cat;
     const pageTitle = `${rawTitle} \u2014 Best Of ${cityLabel} Period`;
     const shareText = `Check out Best of ${cityLabel}!`;
@@ -18490,7 +18558,8 @@ async function boShareRestaurant(restaurantName){
   params.set('restaurant', restaurantName);
   const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
   const shareUrl = window.location.origin + cleanPath + '?' + params.toString();
-  const restaurantCityLabel = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+  const restaurantShareCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
+  const restaurantCityLabel = restaurantShareCfg.searchName || restaurantShareCfg.displayName;
   const pageTitle = `${restaurantName} \u2014 Best Of ${restaurantCityLabel} Period`;
   const shareText = `Check out ${restaurantName} on Best of ${restaurantCityLabel}!`;
   if(navigator.share){
@@ -18957,7 +19026,7 @@ function boRenderCategory(cat){
         <button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button>
         <div class="bo-note bo-note-collapsed">${s.note}</div>
         ${s.bjsTip ? `<div class="bo-bjs-tip"><span class="bo-bjs-tip-label"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#ff9a3c" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#ff9a3c">BJS</text></svg>TIP</span> ${s.bjsTip}</div>` : ''}
-        ${s.redCallout ? `<div class="bo-red-callout"><span class="bo-red-callout-label">FEATURED</span>${s.redCallout}</div>` : ''}
+        ${s.redCallout ? `<div class="bo-red-callout"><span class="bo-red-callout-label">${s.redCalloutLabel || 'FEATURED'}</span>${s.redCallout}</div>` : ''}
         ${hoursTextHTML(s.hours, s.open24)}
         ${s.otherLocations && s.otherLocations.length ? `
         <div class="bo-other-locations">
@@ -22316,6 +22385,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var originalShowCity=window.ocShowCity;
   var groups=[
     {id:'west',la:34.45,lo:-116.15,dests:['bestof','sandiego']},
+    {id:'bay',la:37.39,lo:-122.06,dests:['siliconvalley']},
     {id:'miami',la:25.76,lo:-80.19,dests:['miami']},
     {id:'london',la:51.51,lo:-0.13,dests:['london']}
   ];
@@ -22347,6 +22417,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.groupIndex!=null)window.ocShowDestinationChoices(groupCities(groups[Number(pin.dataset.groupIndex)]));else window.ocShowCity(OC_CITIES[Number(pin.dataset.cityIndex)])};
   };
   window.ocLandOnCity=function(dest){var group=groups.find(function(item){return item.dests.indexOf(dest)!==-1});if(!group)return;var layer=document.getElementById('ocPinLayer');if(!layer)return;restoreCard();var pin=layer.querySelector('[data-group-index="'+groups.indexOf(group)+'"]');if(pin){pin.scrollIntoView({behavior:'smooth',block:'center'});pin.classList.add('oc-pin-land');setTimeout(function(){pin.classList.remove('oc-pin-land')},2200)}};
+  document.addEventListener('click',function(event){
+    if(event.target.closest&&event.target.closest('#ocGlobeBtn,.oc-globe-btn'))setTimeout(function(){window.ocBuildPins()},0);
+  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){window.ocBuildPins()});else window.ocBuildPins();
 })();
 </script>
 <style id="final-spacing-map-hint-and-footer">
@@ -22559,7 +22633,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="city-specific-member-page-v94">
 (function(){
-  var cityNames={bestof:'Vegas',vegas:'Vegas',lasvegas:'Vegas',miami:'Miami',london:'London',sandiego:'San Diego','san-diego':'San Diego'};
+  var cityNames={bestof:'Vegas',vegas:'Vegas',lasvegas:'Vegas',miami:'Miami',london:'London',sandiego:'San Diego','san-diego':'San Diego',siliconvalley:'Silicon Valley','silicon-valley':'Silicon Valley'};
   function activeCity(){
     var key='bestof';
     try{if(typeof boCityContext!=='undefined'&&boCityContext)key=String(boCityContext).toLowerCase()}catch(e){}
@@ -22581,5 +22655,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.addEventListener('DOMContentLoaded',updateMemberPage);
 })();
 </script>
-<!-- Fresh delivery build v95: 2026-08-10 -->
+<!-- Fresh delivery build v98: 2026-08-10 — Silicon Valley dropdown and pin visibility -->
 </body></html> 
