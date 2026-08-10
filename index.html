@@ -21759,7 +21759,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     animation:boNearTitleSpin .8s linear infinite;
   }
   .bo-near-map-title span::after{
-    content:'LOADING YUMMY SPOTS NEAR YOU';
+    content:'LOADING YUMMY SPOTS';
     font:800 11px/1 'Archivo Narrow',sans-serif;
     color:#F59E0B;
     letter-spacing:.06em;
@@ -22337,7 +22337,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     var layer=document.getElementById('ocPinLayer');if(!layer)return;
     restoreCard();
     var map=layer.closest('.oc-world-map');
-    if(map&&!map.nextElementSibling?.classList.contains('oc-map-tap-note')){var note=document.createElement('div');note.className='oc-map-tap-note';note.textContent='tap a pin for Yummy near you';map.insertAdjacentElement('afterend',note)}
+    if(map&&!map.nextElementSibling?.classList.contains('oc-map-tap-note')){var note=document.createElement('div');note.className='oc-map-tap-note';note.textContent='tap a pin for Yummy spots near you';map.insertAdjacentElement('afterend',note)}
     var close=document.getElementById('ocWorldClose');if(close){close.innerHTML='&larr;<br>Back';close.setAttribute('aria-label','Back')}
     layer.innerHTML='';layer.dataset.built='clusters';
     var frag=document.createDocumentFragment();
@@ -22356,6 +22356,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 /* Other Cities: the hint belongs immediately below the map, aligned left. */
 #ocWorldOverlay .oc-world-map + .oc-map-tap-note{
+  order:4!important;
   position:relative!important;
   display:block!important;
   width:100%!important;
@@ -22369,6 +22370,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   line-height:1.2!important;
   text-align:left!important;
 }
+#ocWorldOverlay .oc-search-wrap{order:5!important}
+#ocWorldOverlay #ocCityCard{order:6!important}
 
 /* Promotion & Reach now uses the same clean footer treatment as the live pages. */
 #promotionsOverlay .promotions-standard-footer{
@@ -22392,6 +22395,59 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     footer.innerHTML='<p class="fine-print"><span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of</span><span style="color:#F59E0B;font-weight:700;font-family:Fraunces,serif;">Period<span class="period-mark">©</span></span> is an independent listing service developed by <span style="color:#F59E0B;font-weight:900;">BJS Co.</span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print"><button class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;" type="button">Become a Member</button><span style="color:#666;margin:0 8px;">·</span><button class="footer-hotlink" data-dest="legend" style="color:#F59E0B;" type="button">Legend</button></p>';
     old.replaceWith(footer);
   }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="founders-footer-and-global-divider-v88">
+.bop-pre-footer-divider{
+  width:min(82%,340px);height:1px;margin:28px auto 18px;
+  background:#F59E0B;
+  box-shadow:0 0 4px rgba(245,158,11,.78),0 0 10px rgba(245,158,11,.38);
+}
+#aboutUsOverlay .founders-partners-title{
+  font-size:1rem!important;line-height:1.2!important;letter-spacing:.02em!important;
+}
+#aboutUsOverlay .founders-standard-footer{
+  margin:0 auto!important;padding:0 18px 40px!important;max-width:390px!important;text-align:center!important;
+}
+#aboutUsOverlay .founders-standard-footer .fine-print{margin:0!important}
+#aboutUsOverlay .founders-standard-footer .fine-print + .fine-print{margin-top:14px!important}
+#aboutUsOverlay .founders-special-links{margin-top:18px!important}
+</style>
+<script id="normalize-founders-footer-and-dividers-v88">
+(function(){
+  function divider(){var d=document.createElement('div');d.className='bop-pre-footer-divider';d.setAttribute('aria-hidden','true');return d}
+  function standardizeFounders(){
+    var overlay=document.getElementById('aboutUsOverlay');if(!overlay)return;
+    var title=Array.from(overlay.querySelectorAll('p')).find(function(p){return (p.textContent||'').trim()==='Founders & Partners'});
+    if(title){
+      title.classList.add('founders-partners-title');
+      var wrap=title.parentElement;
+      var email=wrap&&wrap.querySelector('a[href^="mailto:info@bestofperiod.com"]');
+      if(email&&email.closest('p'))email.closest('p').remove();
+    }
+    if(overlay.querySelector('.founders-standard-footer'))return;
+    var oldDisclaimer=Array.from(overlay.querySelectorAll('p.fine-print')).find(function(p){return /independent listing service/i.test(p.textContent||'')});
+    if(!oldDisclaimer)return;
+    var oldLinks=Array.from(overlay.querySelectorAll('p.fine-print')).find(function(p){return p.querySelector('[data-dest="promotions"]')});
+    var previous=oldDisclaimer.previousElementSibling;
+    if(previous&&previous.tagName==='DIV'&&/min-height\s*:\s*30px/i.test(previous.getAttribute('style')||''))previous.remove();
+    var rule=divider();
+    var footer=document.createElement('footer');
+    footer.className='founders-standard-footer';
+    footer.innerHTML='<p class="fine-print"><span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of</span><span style="color:#F59E0B;font-weight:700;font-family:Fraunces,serif;">Period<span class="period-mark">©</span></span> is an independent listing service developed by <span style="color:#F59E0B;font-weight:900;">BJS Co.</span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print"><button class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;" type="button">Become a Member</button><span style="color:#666;margin:0 8px;">·</span><button class="footer-hotlink" data-dest="legend" style="color:#F59E0B;" type="button">Legend</button></p><p class="fine-print founders-special-links"><button class="footer-hotlink" data-dest="promotions" style="color:#F59E0B;" type="button">Promotions &amp; Reach</button><span style="color:#666;margin:0 8px;">·</span><button class="footer-hotlink" data-dest="concepts" style="color:#F59E0B;" type="button">Concepts</button></p>';
+    oldDisclaimer.parentNode.insertBefore(rule,oldDisclaimer);
+    oldDisclaimer.replaceWith(footer);
+    if(oldLinks)oldLinks.remove();
+  }
+  function addGlobalDividers(){
+    document.querySelectorAll('footer').forEach(function(footer){
+      if(footer.classList.contains('founders-standard-footer'))return;
+      var prev=footer.previousElementSibling;
+      if(!prev||!prev.classList.contains('bop-pre-footer-divider'))footer.parentNode.insertBefore(divider(),footer);
+    });
+  }
+  function install(){standardizeFounders();addGlobalDividers()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
