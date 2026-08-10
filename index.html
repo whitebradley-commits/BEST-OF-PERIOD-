@@ -5530,9 +5530,11 @@
    footprint as every other category tile. */
 .bo-picker-btn-nations{
   position:relative;
-  width:180px;
-  min-height:72px;
-  padding:7px 8px 22px !important;
+  width:100px;
+  min-width:100px !important;
+  max-width:100px !important;
+  min-height:50px;
+  padding:5px !important;
   overflow:hidden;
   background:#050505 !important;
   border-color:#F59E0B !important;
@@ -5540,28 +5542,15 @@
 .bo-nation-flag-mosaic{
   display:grid;
   grid-template-columns:repeat(10,minmax(0,1fr));
-  gap:1px 2px;
+  gap:0;
   width:100%;
   font-family:system-ui,-apple-system,"Segoe UI Emoji","Apple Color Emoji",sans-serif;
-  font-size:10px;
-  line-height:1.05;
+  font-size:8px;
+  line-height:1;
   letter-spacing:0;
   filter:saturate(1.12);
 }
 .bo-nation-flag-mosaic i{font-style:normal;display:block;text-align:center;}
-.bo-nation-tile-label{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:3px 4px 4px;
-  color:#fff;
-  background:rgba(0,0,0,.88);
-  font-size:.72rem;
-  font-weight:900;
-  letter-spacing:.13em;
-  text-align:center;
-}
 </style> <style id="bop-main-hub-blue-footer-tiles"> /* Bottom feature row shown ONLY on each city's Main / Hub page. */
 .bo-main-hub-footer{
   width:min(760px,100%);
@@ -10408,6 +10397,7 @@ const BO_CITY_CONFIG = {
   },
   losangeles: {
     displayName: 'Los Angeles',
+    landingName: 'L.A.',
     areaList: ['Los Angeles County'], tickerMessages: ['LOS ANGELES', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickslosangeles'
   },
@@ -10433,6 +10423,7 @@ const BO_CITY_CONFIG = {
   },
   washingtondc: {
     displayName: 'Washington, D.C.',
+    landingName: 'D.C.',
     areaList: ['Washington, D.C. Metro'], tickerMessages: ['WASHINGTON D.C.', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickswashingtondc'
   },
@@ -18799,11 +18790,12 @@ const boPickerConfig = {
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
     { label: '<span style="font-size:calc(1em + 2px);">Michelin</span><br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
-    { label: 'Asian', cat: 'asian' },
+    { label: 'James Beard', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
+    { label: 'Asian', cat: 'asian' },
     { label: 'Mexican', cat: 'mexican' },
-    { label: 'James Beard', cat: 'jamesbeard' },
+    { label: '✡️ Kosher', cat: 'nationkosher' },
     { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Pizza', cat: 'pizza' },
     { label: 'Burgers', cat: 'burgers' },
@@ -18838,7 +18830,7 @@ const boPickerConfig = {
     { label: 'Dog Friendly', cat: 'dogfriendly' },
     { label: '<span class="bo-special-tile-word">NEW</span>', cat: 'newrestaurants' },
     { label: '<span class="bo-special-tile-word">OTS</span>', cat: 'offstrip' },
-    { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span><span class="bo-nation-tile-label">BY NATION</span>', cat: 'nations' }
+    { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span>', cat: 'nations' }
   ],
   nations: [
     { label: '🇨🇦 Canada', cat: 'nationcanadian' },
@@ -18922,7 +18914,7 @@ const boPickerParent = {
 };
 
 const boHeroCopy = {
-  nations: { title: 'RESTAURANTS BY NATION', sub: 'Country-themed restaurants, cultural institutions, pubs, beer halls and dining rooms—all in one directory.' },
+  nations: { title: 'RESTAURANTS BY NATION', sub: 'Country-themed restaurants, cultural institutions, pubs, beer halls and dining rooms—all in one directory.\n* Predominantly themed restaurants.' },
   nationcanadian: { title: 'BEST CANADIAN', sub: 'Canadian restaurants, bars and unmistakably Canadian-themed spots.' },
   nationgerman: { title: 'BEST GERMAN', sub: 'German restaurants, beer halls and German-themed gathering places.' },
   nationirish: { title: 'BEST IRISH', sub: 'Irish restaurants, pubs and Irish-themed gathering places.' },
@@ -19595,6 +19587,7 @@ function boRenderCategory(cat){
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass}">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     }
     boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
+    boHeroSubEl.style.whiteSpace = cat === 'nations' ? 'pre-line' : '';
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
@@ -19679,12 +19672,8 @@ function boRenderCategory(cat){
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
       </div>
     ` : '';
-    // James Beard is a US-only award — it can never apply to London, so
-    // that tile is filtered out of Other Bests specifically when browsing
-    // from London's context. Every other city keeps it.
     const pickerOptions = boPickerConfig[cat].filter(opt => {
       if(cat !== 'otheroptions') return true;
-      if(boCityContext === 'london' && opt.cat === 'jamesbeard') return false;
       // OTS is a Las Vegas-specific designation; every other city ends with
       // DOG FRIENDLY and NEW without showing a meaningless empty OTS tile.
       if(boCityContext !== 'bestof' && opt.cat === 'offstrip') return false;
