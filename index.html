@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
+<!DOCTYPE html><html lang="en"><head><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
     --bg:#000000;
     --surface:#000000;
     --field:#000000;
@@ -20492,6 +20492,8 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
 #tapCardOverlay *{box-sizing:border-box}
 #tapCardOverlay{margin:0;min-height:100vh;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;display:flex;justify-content:center;position:fixed;inset:0;z-index:2000;overflow-y:auto;display:none;}
 #tapCardOverlay.open{display:flex;}
+#tapCardOverlay .tapikExit{position:fixed;top:max(14px,env(safe-area-inset-top));right:14px;z-index:90;width:46px;height:46px;border-radius:50%;border:2px solid transparent;background:linear-gradient(#080808,#080808) padding-box,linear-gradient(135deg,#4f8cff 0 49%,#F59E0B 51% 100%) border-box;color:#fff;font:900 25px/1 Arial,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(79,140,255,.35),0 0 15px rgba(245,158,11,.24);cursor:pointer;-webkit-tap-highlight-color:transparent}
+#tapCardOverlay .tapikExit:active{transform:scale(.94)}
 #tapCardOverlay button,#tapCardOverlay input{font:inherit}
 #tapCardOverlay button{cursor:pointer}
 #tapCardOverlay .app{
@@ -20867,6 +20869,11 @@ loadState();syncHome();resetUploadView();renderCards();updateCountdown();setInte
   window.openTapCard = function(){
     const overlay = document.getElementById('tapCardOverlay');
     if(!overlay) return;
+    if(!overlay.querySelector('.tapikExit')){
+      const exit=document.createElement('button');
+      exit.type='button';exit.className='tapikExit';exit.setAttribute('aria-label','Back to Concepts');exit.textContent='×';
+      exit.addEventListener('click',function(){window.closeTapCard()});overlay.appendChild(exit);
+    }
     initTapCard();
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -21773,7 +21780,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function val(k){return params().get(k)||''}
   function uuid(x){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)}
   function ownerPass(){
-    var live=val('founder')||founderSession;
+    var live=val('founder')||window.__TAG_WORLD_FOUNDER||founderSession;
     if(live){
       founderSession=live;
       try{localStorage.setItem('tag-world-founder-pass',live)}catch(_e){}
