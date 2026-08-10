@@ -21719,7 +21719,80 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   background:#050505!important;color:#e21f2b!important;border:2px solid #F59E0B!important;border-radius:999px!important;
   box-shadow:0 0 9px rgba(245,158,11,.72),inset 0 0 5px rgba(245,158,11,.12)!important;
 }
-.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#e21f2b!important} </style> <script id="bjs-why-rotating-city-script"> (function(){
+.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#e21f2b!important} </style>
+<style id="bo-near-title-and-back-final">
+  /* The Near You back control uses one gold ring only. */
+  .bo-near-map-back::before{content:none !important;display:none !important;}
+  .bo-near-map-back{box-shadow:0 0 9px rgba(245,158,11,.72) !important;}
+  /* Founders page: retain the gold ring but use red for the arrow and Back label. */
+  #aboutUsBack{color:#e21f2b !important;border-color:#F59E0B !important;background:#050505 !important;}
+  #aboutUsBack::before{content:none !important;display:none !important;}
+
+  /* Lift the title away from the map box and keep both lines left-aligned. */
+  .bo-near-map-title{
+    top:calc(33.333vh - 94px) !important;
+    left:9vw !important;
+    right:auto !important;
+    align-items:flex-start !important;
+    text-align:left !important;
+  }
+  .bo-near-map-title strong{
+    font-size:clamp(2.55rem,10.7vw,5rem) !important;
+  }
+  .bo-near-map-title span{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:6px !important;
+    margin-top:8px !important;
+    font-size:0 !important;
+    text-align:left !important;
+  }
+  .bo-near-map-title span::before{
+    content:'';
+    width:9px;
+    height:9px;
+    flex:0 0 9px;
+    border:1.5px solid rgba(245,158,11,.3);
+    border-top-color:#F59E0B;
+    border-radius:50%;
+    animation:boNearTitleSpin .8s linear infinite;
+  }
+  .bo-near-map-title span::after{
+    content:'LOADING YUMMY SPOTS NEAR YOU';
+    font:800 11px/1 'Archivo Narrow',sans-serif;
+    color:#F59E0B;
+    letter-spacing:.06em;
+    white-space:nowrap;
+  }
+  @keyframes boNearTitleSpin{to{transform:rotate(360deg)}}
+  @media(max-width:600px){.bo-near-map-title{top:calc(33.333vh - 90px) !important;left:8vw !important;}}
+  @media(prefers-reduced-motion:reduce){.bo-near-map-title span::before{animation-duration:1.8s;}}
+</style>
+<style id="promotions-reach-refinement-final">
+  /* Promotions & Reach: slightly larger heading box, set lower, with a quieter glow. */
+  #promotionsOverlay .ty-content > div:first-child{
+    padding:19px 28px !important;
+    margin:88px auto 32px !important;
+    box-shadow:0 0 7px rgba(245,158,11,.28),0 0 13px rgba(245,158,11,.1) !important;
+  }
+  #promotionsOverlay .ty-content > div:first-child h2{
+    font-size:1.42rem !important;
+    text-shadow:0 0 5px rgba(245,158,11,.42) !important;
+  }
+  /* Gold ring remains; arrow and Back lettering are red. */
+  #promotionsBack{
+    color:#e21f2b !important;
+    border-color:#F59E0B !important;
+    background:#050505 !important;
+  }
+  #promotionsBack::before{content:none !important;display:none !important;}
+  /* Remove the redundant reach-out sentence and close the gap above Event & Party Branding. */
+  #promotionsOverlay .ty-content > div:nth-child(2){margin-bottom:22px !important;}
+  #promotionsOverlay .ty-content > div:nth-child(2) > p:first-child{margin-bottom:0 !important;}
+  #promotionsOverlay .ty-content > div:nth-child(2) > p:nth-child(2){display:none !important;}
+</style>
+<script id="bjs-why-rotating-city-script"> (function(){
   function start(){
     var el=document.getElementById('bjsWhyRotatingCity');
     if(!el||el.dataset.running==='1')return;
@@ -22274,6 +22347,52 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.groupIndex!=null)window.ocShowDestinationChoices(groupCities(groups[Number(pin.dataset.groupIndex)]));else window.ocShowCity(OC_CITIES[Number(pin.dataset.cityIndex)])};
   };
   window.ocLandOnCity=function(dest){var group=groups.find(function(item){return item.dests.indexOf(dest)!==-1});if(!group)return;var layer=document.getElementById('ocPinLayer');if(!layer)return;restoreCard();var pin=layer.querySelector('[data-group-index="'+groups.indexOf(group)+'"]');if(pin){pin.scrollIntoView({behavior:'smooth',block:'center'});pin.classList.add('oc-pin-land');setTimeout(function(){pin.classList.remove('oc-pin-land')},2200)}};
+})();
+</script>
+<style id="final-spacing-map-hint-and-footer">
+/* Food directory: match the tighter Weed/Tobacco business-name rhythm. */
+#hhOverlay .listing-header{padding:8px 0!important}
+#hhOverlay .listing-card{margin:0!important}
+
+/* Other Cities: the hint belongs immediately below the map, aligned left. */
+#ocWorldOverlay .oc-world-map + .oc-map-tap-note{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  margin:4px 0 0!important;
+  padding:0!important;
+  align-self:flex-start!important;
+  justify-self:start!important;
+  grid-column:1/-1!important;
+  color:#3b9dff!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  text-align:left!important;
+}
+
+/* Promotion & Reach now uses the same clean footer treatment as the live pages. */
+#promotionsOverlay .promotions-standard-footer{
+  margin:30px auto 0!important;
+  padding:20px 18px 40px!important;
+  max-width:390px!important;
+  text-align:center!important;
+}
+#promotionsOverlay .promotions-standard-footer .fine-print{margin:0!important}
+#promotionsOverlay .promotions-standard-footer .fine-print + .fine-print{margin-top:14px!important}
+</style>
+<script id="normalize-promotions-footer-final">
+(function(){
+  function install(){
+    var overlay=document.getElementById('promotionsOverlay');
+    if(!overlay||overlay.querySelector('.promotions-standard-footer'))return;
+    var old=Array.from(overlay.querySelectorAll('p.fine-print')).find(function(p){return /independent listing service/i.test(p.textContent||'')});
+    if(!old)return;
+    var footer=document.createElement('footer');
+    footer.className='promotions-standard-footer';
+    footer.innerHTML='<p class="fine-print"><span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of</span><span style="color:#F59E0B;font-weight:700;font-family:Fraunces,serif;">Period<span class="period-mark">©</span></span> is an independent listing service developed by <span style="color:#F59E0B;font-weight:900;">BJS Co.</span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print"><button class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;" type="button">Become a Member</button><span style="color:#666;margin:0 8px;">·</span><button class="footer-hotlink" data-dest="legend" style="color:#F59E0B;" type="button">Legend</button></p>';
+    old.replaceWith(footer);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html> 
