@@ -4207,6 +4207,27 @@
     animation-duration:2.4s;
   }
 
+  .bo-pizza-scorecard{
+    width:132px;
+    margin:0 0 10px;
+    padding:8px 7px 7px;
+    display:grid;
+    grid-template-columns:1fr 18px 1fr;
+    align-items:center;
+    background:linear-gradient(180deg,rgba(15,15,15,.98),rgba(3,3,3,.98));
+    border:1px solid rgba(245,158,11,.62);
+    border-radius:9px;
+    box-shadow:0 0 14px rgba(245,158,11,.14);
+  }
+  .bo-pizza-score-side{display:flex;flex-direction:column;align-items:center;min-width:0}
+  .bo-pizza-score-logo{height:28px;display:flex;align-items:center;justify-content:center}
+  .bo-pizza-score-vs{color:#777;font:400 .56rem 'Archivo Black',sans-serif;text-align:center}
+  .bo-pizza-score-value{margin-top:3px;color:#fff;font:800 1.05rem 'Archivo Black',sans-serif;line-height:1}
+  .bo-pizza-score-value small{font:400 .48rem Arial,sans-serif;color:#999}
+  .bo-onebite-mark{position:relative;width:34px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#e1262f;color:#fff;font:800 .45rem 'Archivo Black',sans-serif;line-height:.85;text-align:center;letter-spacing:-.02em;box-shadow:0 0 8px rgba(225,38,47,.35)}
+  .bo-onebite-mark:after{content:'';position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#080808;box-shadow:-5px 8px 0 -2px #080808}
+  .bo-pizza-dave{grid-column:1/-1;margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);color:#999;font:400 .48rem Arial,sans-serif;text-align:center}
+
   .bo-thumb-photo{
     width:110px;
     height:110px;
@@ -5592,10 +5613,8 @@
   50%{opacity:.42;transform:scale(1.08);text-shadow:0 0 8px rgba(255,255,255,.92);}
 }
 @media(prefers-reduced-motion:reduce){.bo-special-tile-word,.bo-special-tile-badge,.bo-ownership-tile-copy{animation:none}}
-.bo-cannabis-tile{display:flex;align-items:center;justify-content:center;gap:5px;color:#39ff88!important;-webkit-text-fill-color:#39ff88!important;font-size:.78em;line-height:1.05;font-weight:900;text-transform:uppercase;text-shadow:0 0 6px rgba(57,255,136,.85),0 0 13px rgba(57,255,136,.4);animation:boCannabisGlow 1.6s ease-in-out infinite}
-.bo-cannabis-tile svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-@keyframes boCannabisGlow{50%{opacity:.68;text-shadow:0 0 3px rgba(57,255,136,.65)}}
-@media(prefers-reduced-motion:reduce){.bo-cannabis-tile{animation:none}}
+.bo-cannabis-tile{display:inline-flex;align-items:center;justify-content:center;gap:6px;color:#35c96f!important;-webkit-text-fill-color:#35c96f!important;font:inherit;line-height:1;font-weight:800;text-transform:none;text-shadow:none;animation:none}
+.bo-cannabis-tile svg{width:20px;height:20px;flex:0 0 20px;stroke:#35c96f;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 /* Restaurants by nation: a compact world-flag mosaic that occupies the same
    footprint as every other category tile. */
 .bo-picker-btn-nations{
@@ -10646,7 +10665,7 @@ function boMainCityIntroHTML(cfg){
     + "<span style='display:block;height:12px;'></span><span class='bo-inline-kicker'>Hot List</span> "
     + `<span style='font-weight:400;'>includes all genres across</span> ${areasHTML}. `
     + "Ranked by aggregate review data from <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and "
-    + "<svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg>"
+    + "<svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> <span class='bo-plus-more'>+ more</span>"
     // Optional per-city asterisk note (currently only San Diego uses this —
     // its territory is too large for one dense area list, so this points
     // people to the Near Me icon for anything closer than "the whole county").
@@ -15271,6 +15290,32 @@ boCategoryData.pizza = [
     facebook: null
   }
 ];
+(function attachPizzaComparisonScores(){
+  const oneBite = {
+    "Grimaldi's Pizzeria": {community:null, reviews:null, dave:null},
+    "Metro Pizza": {community:7.3, reviews:16, dave:null},
+    "Dom DeMarco's Pizzeria & Wine Bar": {community:7.8, reviews:61, dave:7.9},
+    "Evel Pie": {community:6.8, reviews:145, dave:5.9},
+    "Cugino's Italian Deli & Pizzeria": {community:7.8, reviews:136, dave:null},
+    "Settebello Pizzeria Napoletana": {community:7.3, reviews:12, dave:null},
+    "Pizza Rock": {community:7.4, reviews:195, dave:7.3},
+    "Rocco's NY Pizzeria & Pasta": {community:7.3, reviews:12, dave:null},
+    "Good Pie": {community:7.8, reviews:104, dave:7.2},
+    "Double Zero Pie & Pub": {community:8.3, reviews:1, dave:null},
+    "Secret Pizza": {community:6.5, reviews:178, dave:3.4}
+  };
+  boCategoryData.pizza.forEach(r => {
+    const current = parseFloat(r.rating);
+    const ob = oneBite[r.name] || {community:null,reviews:null,dave:null};
+    r.oneBiteScore = ob.community;
+    r.oneBiteReviews = ob.reviews;
+    r.oneBiteDaveScore = ob.dave;
+    const baseTen = Number.isFinite(current) ? current * 2 : null;
+    r.bjsPizzaScore = baseTen != null
+      ? (ob.community != null ? ((baseTen + ob.community) / 2) : baseTen).toFixed(1)
+      : (ob.community != null ? Number(ob.community).toFixed(1) : null);
+  });
+})();
 boCategoryData.vegan = [
   {
     rank: 1,
@@ -18111,7 +18156,7 @@ function boBuildExpandedLegend(){
   if(!document.getElementById('boExpandedLegendStyles')){
     const style = document.createElement('style');
     style.id = 'boExpandedLegendStyles';
-    style.textContent = `.bo-legend-title{text-align:center;font-family:'Archivo Black',sans-serif;color:#F59E0B;font-size:1.45rem;letter-spacing:.06em;margin:115px 0 24px;text-shadow:0 0 12px rgba(245,158,11,.7)}.bo-legend-section{border-top:1px solid rgba(245,158,11,.58);padding:20px 4px 6px}.bo-legend-section h3{margin:0 0 15px;color:#fff;font:800 .82rem 'Archivo Black',sans-serif;letter-spacing:.11em}.bo-legend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bo-legend-grid>div,.bo-legend-list>div{background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.2);border-radius:10px}.bo-legend-grid>div{display:flex;align-items:center;gap:11px;padding:12px}.bo-legend-grid b{color:#F59E0B;min-width:42px}.bo-legend-grid span{color:#eee;font-size:.78rem}.bo-legend-list{display:grid;gap:9px}.bo-legend-list>div{display:flex;align-items:center;gap:13px;padding:11px 12px}.bo-legend-list p{margin:0;color:#fff;line-height:1.25}.bo-legend-list p b{display:block;font-size:.78rem}.bo-legend-list p small{display:block;margin-top:3px;color:#bbb;font-size:.68rem;line-height:1.35}.bo-legend-badge{position:static!important;display:inline-flex!important;flex:0 0 auto;margin:0!important;transform:none!important}.bo-legend-strip-badge{min-width:48px;height:23px;padding:0 7px;border:1px solid #F59E0B;border-radius:5px;color:#F59E0B;background:#090909;font:800 .61rem 'Archivo Black',sans-serif;align-items:center;justify-content:center}.bo-legend-michelin{position:static!important;display:inline-flex!important;flex:0 0 auto;transform:none!important;margin:0!important}.bo-legend-jb,.bo-legend-check,.bo-legend-bjs{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:43px;height:25px;border-radius:6px;font:800 .64rem 'Archivo Black',sans-serif}.bo-legend-jb{background:#8b1e22;color:#fff;border:1px solid #d75b60}.bo-legend-check{min-width:25px;border-radius:50%;background:#1678d3;color:#fff}.bo-legend-bjs{padding:0 6px;background:#090909;color:#F59E0B;border:1px solid #F59E0B}@media(max-width:520px){#legendOverlay .ty-content{padding-left:18px!important;padding-right:18px!important}.bo-legend-title{margin-top:105px}.bo-legend-section{padding-top:16px}}`;
+    style.textContent = `.bo-legend-title{text-align:center;font-family:'Archivo Black',sans-serif;color:#F59E0B;font-size:1.45rem;letter-spacing:.06em;margin:115px 0 24px;text-shadow:0 0 12px rgba(245,158,11,.7)}.bo-legend-section{border-top:1px solid rgba(245,158,11,.58);padding:20px 4px 6px}.bo-legend-section h3{margin:0 0 15px;color:#fff;font:800 .82rem 'Archivo Black',sans-serif;letter-spacing:.11em}.bo-legend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bo-legend-grid>div,.bo-legend-list>div{background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.2);border-radius:10px}.bo-legend-grid>div{display:flex;align-items:center;gap:11px;padding:12px}.bo-legend-grid b{color:#F59E0B;min-width:42px}.bo-legend-grid span{color:#eee;font-size:.78rem}.bo-legend-list{display:grid;gap:9px}.bo-legend-list>div{display:flex;align-items:center;gap:13px;padding:11px 12px}.bo-legend-list p{margin:0;color:#fff;line-height:1.25}.bo-legend-list p b{display:block;font-size:.78rem}.bo-legend-list p small{display:block;margin-top:3px;color:#bbb;font-size:.68rem;line-height:1.35}.bo-legend-badge{position:static!important;display:inline-flex!important;flex:0 0 auto;margin:0!important;transform:none!important}.bo-legend-strip-badge{min-width:48px;height:23px;padding:0 7px;border:1px solid #F59E0B;border-radius:5px;color:#F59E0B;background:#090909;font:800 .61rem 'Archivo Black',sans-serif;align-items:center;justify-content:center}.bo-legend-michelin{position:static!important;display:inline-flex!important;flex:0 0 auto;transform:none!important;margin:0!important}.bo-legend-jb,.bo-legend-check,.bo-legend-bjs{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:43px;height:25px;border-radius:6px;font:800 .64rem 'Archivo Black',sans-serif}.bo-legend-jb{background:#8b1e22;color:#fff;border:1px solid #d75b60}.bo-legend-check{min-width:25px;border-radius:50%;background:#1678d3;color:#fff}.bo-legend-bjs{padding:0 6px;background:#090909;color:#F59E0B;border:1px solid #F59E0B}.bo-source-ack{text-align:center;padding-bottom:28px}.bo-source-ack-title{margin:0 0 14px;color:#fff;font-size:.8rem;line-height:1.5}.bo-source-leaders{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:5px 8px;color:#ddd;font-size:.72rem;line-height:1.5}.bo-source-diamond{color:#F59E0B;font-size:.62rem}.bo-plus-more{font-size:.72em;font-weight:400!important;letter-spacing:.02em;color:#bbb;white-space:nowrap}.bo-source-leaders .bo-plus-more{font-size:.68rem}.bo-source-ack-copy{margin:17px auto 0;max-width:430px;color:#aaa;font-size:.7rem;line-height:1.55}@media(max-width:520px){#legendOverlay .ty-content{padding-left:18px!important;padding-right:18px!important}.bo-legend-title{margin-top:105px}.bo-legend-section{padding-top:16px}}`;
     document.head.appendChild(style);
   }
   legend.style.maxWidth = '520px';
@@ -18143,6 +18188,11 @@ function boBuildExpandedLegend(){
         <div><span class="bo-legend-check">&#10003;</span><p><b>Verified Listing</b><small>Core listing details have been checked.</small></p></div>
         <div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>An editorial selection from Best of Period.</small></p></div>
       </div>
+    </section>
+    <section class="bo-legend-section bo-source-ack">
+      <p class="bo-source-ack-title">Once again, we'd like to acknowledge the following industry leaders.</p>
+      <div class="bo-source-leaders"><span>Google</span><span class="bo-source-diamond">◆</span><span>Menu</span><span class="bo-source-diamond">◆</span><span>Tripadvisor</span><span class="bo-source-diamond">◆</span><span>OpenTable</span><span class="bo-source-diamond">◆</span><span>Yelp</span><span class="bo-source-diamond">◆</span><span>Sirved</span><span class="bo-source-diamond">◆</span><span>Resy</span><span class="bo-source-diamond">◆</span><span>One Bite</span><span class="bo-source-diamond">◆</span><span>Uber Eats</span><span class="bo-source-diamond">◆</span><span>DoorDash</span><span class="bo-source-diamond">◆</span><span>Grubhub</span><span class="bo-source-diamond">◆</span><span>Slice</span><span class="bo-source-diamond">◆</span><span>Restaurant Guru</span><span class="bo-source-diamond">◆</span><span>Facebook</span> <span class="bo-plus-more">+ MORE</span></div>
+      <p class="bo-source-ack-copy"><span aria-label="BJS" style="display:inline-block;vertical-align:-5px;margin-right:3px;"><svg height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></span> relies on other independent organizations like these to provide the best possible results for our customers.</p>
     </section>`;
 }
 boBuildExpandedLegend();
@@ -18873,6 +18923,19 @@ boCategoryData.undernewownership = boBuildDerivedRestaurantList(r =>
   r.underNewOwnership === true || r.underNewManagement === true || !!r.ownershipStoryId ||
   /under new (ownership|management)|new ownership|new management/i.test([r.note,r.why,r.ratingNote].filter(Boolean).join(' '))
 );
+/* Claims-based cannabis dining roster. A venue qualifies when its own current
+   materials publicly list at least one THC/cannabis-infused edible, drink,
+   coffee or prepared menu item for legal onsite consumption. Ordinary
+   dispensaries, "420-friendly" restaurants and unlicensed underground
+   dinners are deliberately excluded. */
+boCategoryData.cannabisinfusedverified = [
+  {name:"Smoke and Mirrors",city:"bestof",cannabisInfused:true,rating:null,reviews:null,price:2,image:'',hue:'132, 42%, 22%',why:"Licensed Las Vegas consumption lounge listing drinks available with THC infusion",note:"The venue's current lounge materials publicly describe drinks that can be ordered with or without THC infusion, alongside snacks. Adults 21+ only; menu and availability may change.",url:"https://smokeandmirrorslv.com/",address:"",phone:"",hours:[]},
+  {name:"DAZED! Consumption Lounge",city:"bestof",cannabisInfused:true,rating:null,reviews:null,price:2,image:'',hue:'132, 42%, 22%',why:"Planet 13 lounge with rotating THC-infused canna-cocktails",note:"DAZED! publicly lists rotating THC-infused canna-cocktails on its tasting menu. Adults 21+ only; menu and availability may change.",url:"https://www.dazedlounge.com/",address:"2548 W Desert Inn Rd, Las Vegas, NV 89109",phone:"",hours:[]},
+  {name:"NuWu Cannabis Marketplace",city:"bestof",cannabisInfused:true,rating:null,reviews:null,price:2,image:'',hue:'132, 42%, 22%',why:"Tribal cannabis marketplace and lounge with legal edibles and infused culinary events",note:"NuWu publicly lists edibles among its cannabis products and has hosted advertised cannabis-infused dining experiences. Confirm the current onsite food and event menu before visiting. Adults 21+ only.",url:"https://www.nuwumain.com/",address:"1235 Paiute Cir, Las Vegas, NV 89106",phone:"",hours:[]},
+  {name:"Original Cannabis Cafe",city:"losangeles",cannabisInfused:true,rating:null,reviews:null,price:3,image:'',hue:'132, 42%, 22%',why:"West Hollywood cannabis cafe with separate food, drink and cannabis menus, including edibles and infused beverages",note:"The cafe publicly lists food, drinks and cannabis for legal onsite service. Its conventional kitchen food is not automatically THC-infused; qualifying menu items are the separately identified cannabis edibles and infused beverages. Adults 21+ only.",url:"https://cannabis.cafe/",address:"1201 N La Brea Ave, West Hollywood, CA 90038",phone:"(323) 452-9029",hours:[]},
+  {name:"The Artist Tree Studio Lounge — West Hollywood",city:"losangeles",cannabisInfused:true,rating:null,reviews:null,price:3,image:'',hue:'132, 42%, 22%',why:"Licensed lounge publicly serving cannabis-infused craft cocktails and coffee alongside a dining menu",note:"The Artist Tree publicly lists cannabis-infused nonalcoholic cocktails and coffee for onsite consumption. Adults 21+ only; individual food dishes are not represented as infused unless the current menu specifically says so.",url:"https://www.theartisttree.com/cannabis-lounges/",address:"8625 Santa Monica Blvd, West Hollywood, CA 90069",phone:"(310) 362-1004",hours:[]},
+  {name:"The Artist Tree Lounge — Hawthorne",city:"losangeles",cannabisInfused:true,rating:null,reviews:null,price:3,image:'',hue:'132, 42%, 22%',why:"Licensed Los Angeles-area lounge listing cannabis cocktails, infused coffee and legal onsite edibles",note:"The Hawthorne lounge publicly lists cannabis-infused nonalcoholic cocktails or coffee and onsite cannabis products. Adults 21+ only; menu and availability may change.",url:"https://www.theartisttree.com/cannabis-lounges/",address:"4756 W Imperial Hwy, Hawthorne, CA 90304",phone:"(310) 626-1999",hours:[]}
+];
 boCategoryData.cannabisinfused = boBuildDerivedRestaurantList(r =>
   r.cannabisInfused === true || (Array.isArray(r.tags) && r.tags.some(tag => /cannabis.?infused/i.test(String(tag)))) ||
   /cannabis.?infused/i.test([r.name,r.note,r.why].filter(Boolean).join(' '))
@@ -19028,7 +19091,7 @@ const boPickerConfig = {
     { label: 'Chocolatier', cat: 'chocolatier' },
     { label: 'Dog Friendly', cat: 'dogfriendly' },
     { label: 'Bagels', cat: 'bagels' },
-    { label: '<span class="bo-cannabis-tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V8M12 14 7 9M12 12l5-5M12 17l-6-2M12 16l6-2M12 10 9 5M12 8l3-4"/></svg><span>Cannabis<br>Infused</span></span>', cat: 'cannabisinfused' },
+    { label: '<span class="bo-cannabis-tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22V9M12 16 6 12M12 14l6-5M12 18l-7-2M12 17l7-2M12 12 9 5M12 10l3-6"/></svg><span>Cannabis Infused</span></span>', cat: 'cannabisinfused' },
     { label: '<span class="bo-special-tile-badge bo-special-tile-badge-new">NEW</span>', cat: 'newrestaurants' },
     { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span>', cat: 'nations' }
   ],
@@ -19796,7 +19859,13 @@ function boRenderCategory(cat){
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
         : isBjsPicksCat(cat)
         ? "⭐ Ranked by <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> only"
-        : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg>";
+        : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> <span class='bo-plus-more'>+ more</span>";
+      if(cat === 'pizza'){
+        boSectionHeadParaEl.innerHTML = boSectionHeadParaEl.innerHTML.replace(
+          "Uber Eats</strong>",
+          "Uber Eats</strong> <strong style=\"font-weight:700;\">One Bite</strong>"
+        );
+      }
       if(cat === 'bestof' && boCityContext === 'sandiego'){
         boSectionHeadParaEl.innerHTML += "<span style='display:block;margin-top:8px;'>San Diego is an extremely large territory with many highly rated restaurants. We expanded the number of recommendations in this category. Hopefully, one is close to you!</span>";
       }
@@ -20146,6 +20215,18 @@ function boRenderCategory(cat){
         </div>` : ''}
       </div>
       <div class="bo-icon-row">
+        ${cat === 'pizza' ? `<div class="bo-pizza-scorecard" aria-label="BJS versus One Bite pizza scores">
+          <div class="bo-pizza-score-side">
+            <div class="bo-pizza-score-logo"><svg aria-label="BJS" height="28" viewBox="0 0 40 40" width="28"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></div>
+            <div class="bo-pizza-score-value">${s.bjsPizzaScore || '—'}${s.bjsPizzaScore ? '<small>/10</small>' : ''}</div>
+          </div>
+          <div class="bo-pizza-score-vs">VS</div>
+          <div class="bo-pizza-score-side">
+            <div class="bo-pizza-score-logo"><span class="bo-onebite-mark" aria-label="One Bite">ONE<br>BITE</span></div>
+            <div class="bo-pizza-score-value">${s.oneBiteScore != null ? Number(s.oneBiteScore).toFixed(1) : '—'}${s.oneBiteScore != null ? '<small>/10</small>' : ''}</div>
+          </div>
+          <div class="bo-pizza-dave">${s.oneBiteScore != null ? `One Bite community${s.oneBiteReviews ? ` · ${s.oneBiteReviews} reviews` : ''}` : 'One Bite score pending'}${s.oneBiteDaveScore != null ? ` · Dave ${Number(s.oneBiteDaveScore).toFixed(1)}` : ''}</div>
+        </div>` : ''}
         ${menuButtonHTML(s.name, s.url, s.rank)}
         ${callButtonHTML(s.phone)}
         ${directionsButtonHTML(s.address, s.name)}
@@ -20324,7 +20405,7 @@ function boRenderCategory(cat){
       wrap.id = 'boExtendedListWrap';
       wrap.innerHTML = `
         <div class="bo-extended-heading">The Rest of the Top 100, Las Vegas County</div>
-        <div class="bo-extended-disclaimer">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Menu</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="16" height="16" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg></div>
+        <div class="bo-extended-disclaimer">⭐ Ranked by aggregate review data across <strong style="font-weight:700;">Google</strong> <strong style="font-weight:700;">Menu</strong> <strong style="font-weight:700;">Tripadvisor</strong> <strong style="font-weight:700;">OpenTable</strong> <strong style="font-weight:700;">Uber Eats</strong> and <svg viewBox="0 0 40 40" width="16" height="16" style="vertical-align:-2px;margin:0 2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg> <span class="bo-plus-more">+ more</span></div>
         <div class="bo-extended-tap-hint">Tap a restaurant for more information &#9662;</div>
         ${extended.map((r, i) => `<div class="bo-extended-row"><span class="bo-extended-rank">${sortedEntries.length + i + 1}.</span> <span class="bo-extended-name bo-extended-name-link" data-cat="${r.cat}" data-jump-name="${r.name.replace(/"/g, '&quot;')}">${r.shortName || r.name}</span>${r.phone ? `<a class="bo-extended-phone" href="tel:${r.phone.replace(/[^0-9+]/g, '')}"><span class="bo-extended-phone-dot">\u2022</span>${r.phone}</a>` : ''}</div>`).join('')}
       `;
@@ -22997,7 +23078,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function setCopy(){
     var p=document.querySelector('#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)');
     if(!p)return;
-    p.innerHTML='Bringing competitors together in one place by pulling aggregate review data from top platforms and <span style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:-4px;"><svg aria-label="BJS" height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg><strong style="font-family:Archivo Black,sans-serif;font-size:.78em;letter-spacing:.01em;">RATINGS</strong></span>. Combining information, dissecting speech and trends, creating refined search,<span class="bjs-why-final-line"><strong>REAL DIRECTION</strong> AND <strong>NO FILLER</strong>.</span>';
+    p.innerHTML='Bringing competitors together in one place by pulling aggregate review data from top platforms and <span style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap;vertical-align:-4px;"><svg aria-label="BJS" height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg><strong style="font-family:Archivo Black,sans-serif;font-size:.78em;letter-spacing:.01em;">RATINGS</strong></span> <span class="bo-plus-more">+ more</span>. Combining information, dissecting speech and trends, creating refined search,<span class="bjs-why-final-line"><strong>REAL DIRECTION</strong> AND <strong>NO FILLER</strong>.</span>';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setCopy);else setCopy();
 })(); </script> <style id="embedded-site-sound-style"> .site-sound-toggle{position:absolute;z-index:1200002;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1.5px solid currentColor;background:rgba(0,0,0,.82);font-size:15px;line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 0 10px currentColor}
@@ -23986,5 +24067,74 @@ body.oc-world-active>#ocWorldOverlay{visibility:visible!important;display:block!
 #bjsWhyOverlay .bjs-why-orb-text{transform:translateY(-4px)!important}
 #bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(2)>span{font-size:calc(1em + 1pt)!important}
 </style>
-<!-- Fresh delivery build v127: 2026-08-10 — subtle BJS orb mobile-fit correction -->
+<style id="sitewide-compact-footer-v128">
+/* One compact footer rhythm everywhere: a thin glowing gold rule, then tight
+   centered copy. This final override also neutralizes older page-specific
+   spacing rules and inline paragraph margins. */
+.bop-pre-footer-divider{
+  display:block!important;
+  width:min(90%,520px)!important;
+  height:1px!important;
+  margin:14px auto 6px!important;
+  background:#F59E0B!important;
+  box-shadow:0 0 4px rgba(245,158,11,.9),0 0 11px rgba(245,158,11,.5)!important;
+}
+body footer,
+#promotionsOverlay footer.promotions-standard-footer,
+#aboutUsOverlay footer.founders-standard-footer{
+  margin-top:0!important;
+  padding:7px 12px 16px!important;
+  border-top:0!important;
+  text-align:center!important;
+}
+body footer .fine-print,
+#promotionsOverlay footer.promotions-standard-footer .fine-print,
+#aboutUsOverlay footer.founders-standard-footer .fine-print{
+  max-width:430px!important;
+  margin:0 auto!important;
+  padding:0 8px!important;
+  font-size:9.5px!important;
+  line-height:1.28!important;
+  letter-spacing:0!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+body footer .fine-print + .fine-print,
+#promotionsOverlay footer.promotions-standard-footer .fine-print + .fine-print,
+#aboutUsOverlay footer.founders-standard-footer .fine-print + .fine-print,
+#aboutUsOverlay .founders-special-links,
+#aboutUsOverlay .founders-hidden-concepts{
+  margin-top:4px!important;
+}
+.footer-vendor-separator{margin:0 5px!important}
+@media(max-width:520px){
+  .bop-pre-footer-divider{width:88%!important;margin-top:11px!important}
+  body footer{padding-bottom:13px!important}
+}
+</style>
+<script id="sitewide-footer-divider-v128">
+(function(){
+  function addRule(footer){
+    if(!footer||!footer.parentNode)return;
+    var prev=footer.previousElementSibling;
+    if(prev&&prev.classList.contains('bop-pre-footer-divider'))return;
+    var rule=document.createElement('div');
+    rule.className='bop-pre-footer-divider';
+    rule.setAttribute('aria-hidden','true');
+    footer.parentNode.insertBefore(rule,footer);
+  }
+  function scan(root){
+    if(root&&root.matches&&root.matches('footer'))addRule(root);
+    if(root&&root.querySelectorAll)root.querySelectorAll('footer').forEach(addRule);
+  }
+  function install(){
+    scan(document);
+    new MutationObserver(function(records){
+      records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})});
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v128: 2026-08-10 — compact sitewide footers with glowing gold divider -->
 </body></html> 
