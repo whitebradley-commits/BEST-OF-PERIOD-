@@ -4227,6 +4227,12 @@
   .bo-onebite-mark{position:relative;width:34px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#e1262f;color:#fff;font:800 .45rem 'Archivo Black',sans-serif;line-height:.85;text-align:center;letter-spacing:-.02em;box-shadow:0 0 8px rgba(225,38,47,.35)}
   .bo-onebite-mark:after{content:'';position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#080808;box-shadow:-5px 8px 0 -2px #080808}
   .bo-pizza-dave{grid-column:1/-1;margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);color:#999;font:400 .48rem Arial,sans-serif;text-align:center}
+  .bo-pizza-tile{position:relative;display:inline-flex;align-items:center;justify-content:center;width:100%;height:100%;padding-right:31px;box-sizing:border-box}
+  .bo-pizza-tile-duel{position:absolute;right:1px;top:1px;width:34px;height:27px;display:grid;grid-template-columns:1fr 8px 1fr;align-items:center;padding:2px;border:1px solid rgba(245,158,11,.72);border-radius:5px;background:#080808;box-shadow:0 0 8px rgba(245,158,11,.18)}
+  .bo-pizza-tile-bjs{display:flex;align-items:center;justify-content:center;width:13px;height:13px;border:1px solid #F59E0B;border-radius:50%;color:#F59E0B;font:700 .27rem Arial,sans-serif}
+  .bo-pizza-tile-vs{color:#777;font:400 .25rem Arial,sans-serif;text-align:center}
+  .bo-pizza-tile-ob{display:flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:#e1262f;color:#fff;font:800 .25rem Arial,sans-serif;line-height:.85;text-align:center}
+  .bo-pizza-tile-caption{position:absolute;left:2px;right:2px;bottom:1px;color:#aaa;font:400 .23rem Arial,sans-serif;letter-spacing:0;text-align:center;white-space:nowrap}
 
   .bo-thumb-photo{
     width:110px;
@@ -8392,7 +8398,7 @@ function setupBopLanding(){
     { name: 'Philadelphia', region: 'Pennsylvania', dest: 'philadelphia', aliases: ['Philly'] },
     { name: 'Atlanta', region: 'Georgia', dest: 'atlanta' },
     { name: 'New Orleans', region: 'Louisiana', dest: 'neworleans', aliases: ['NOLA'] },
-    { name: 'Idaho', region: 'Idaho', dest: 'idaho', aliases: ['Boise', 'Sun Valley', 'Ketchum', 'Coeur d\'Alene'] }
+    { name: 'Sun Valley', region: 'Idaho', dest: 'idaho', aliases: ['Idaho', 'Boise', 'Ketchum', 'Coeur d\'Alene', 'McCall'] }
   ];
 
   function goToCity(dest){
@@ -15316,6 +15322,45 @@ boCategoryData.pizza = [
       : (ob.community != null ? Number(ob.community).toFixed(1) : null);
   });
 })();
+(function expandPizzaAcrossDestinations(){
+  const entries = [
+    {city:'losangeles',name:'Flour Pizzeria & Cafe',bjs:8.8,ob:8.4,reviews:22,dave:8.1,address:'11684 San Vicente Blvd, Los Angeles, CA 90049',phone:'(424) 330-0220',price:3,why:'A leading Los Angeles aggregate performer with crisp, carefully balanced pies',note:'Brentwood pizzeria combining strong current review signals with an 8.4 One Bite community score.'},
+    {city:'losangeles',name:"Apollonia's Pizzeria",bjs:8.7,ob:8.3,reviews:133,dave:8.2,address:'5176 Wilshire Blvd, Los Angeles, CA 90036',phone:'(323) 937-2823',price:2,why:'One of LA’s strongest cross-platform pizza names with deep One Bite support',note:'Known for crisp round pies and acclaimed square slices; One Bite lists an 8.3 community score from 133 reviews and an 8.2 Dave score.'},
+    {city:'losangeles',name:'Pizzeria Mozza',bjs:8.6,ob:8.3,reviews:18,dave:null,address:'641 N Highland Ave, Los Angeles, CA 90036',phone:'(323) 297-0101',price:4,why:'Nancy Silverton’s nationally recognized pizzeria remains an LA standard-bearer',note:'Ingredient-driven pizzas with a distinctive crust and consistently strong dining-platform recognition.'},
+    {city:'losangeles',name:'Pizzana',bjs:8.5,ob:7.6,reviews:25,dave:null,address:'11712 San Vicente Blvd, Los Angeles, CA 90049',phone:'(310) 481-7108',price:3,why:'Neo-Neapolitan pizza with broad critical recognition and strong local demand',note:'A polished Brentwood original known for fermented dough, Italian technique and California ingredients.'},
+    {city:'losangeles',name:'Sei Pizza Bar',bjs:8.5,ob:7.9,reviews:5,dave:null,address:'8781 W Pico Blvd, Los Angeles, CA 90035',phone:'(424) 279-9800',price:3,why:'Precision Tokyo-Neapolitan technique makes Sei one of LA’s most distinctive pizza counters',note:'A small Pico Boulevard operation with carefully blistered crusts and a developing One Bite sample.'},
+    {city:'losangeles',name:'Prime Pizza',bjs:8.4,ob:7.7,reviews:127,dave:8.1,address:'446 N Fairfax Ave, Los Angeles, CA 90036',phone:'(323) 852-1188',price:2,why:'A dependable New York-style slice shop with one of LA’s deeper One Bite samples',note:'Thin, crisp slices and square pies; the comparison uses One Bite’s established Los Angeles listing.'},
+    {city:'losangeles',name:"Sonny's",bjs:8.4,ob:8.9,reviews:14,dave:null,address:'7501 Sunset Blvd, Los Angeles, CA 90046',phone:'',price:2,why:'A high-scoring Sunset Boulevard newcomer with an early but exceptional One Bite response',note:'One Bite’s community score is extremely strong, though its current sample remains smaller than LA’s established institutions.'},
+    {city:'losangeles',name:'Hail Mary Pizza',bjs:8.3,ob:7.9,reviews:13,dave:null,address:'3219 Glendale Blvd, Los Angeles, CA 90039',phone:'(323) 284-8879',price:2,why:'A neighborhood Atwater Village favorite built around naturally leavened dough',note:'Creative seasonal pies, strong local sentiment and a solid One Bite community result.'},
+    {city:'losangeles',name:'DeSano Pizzeria Napoletana',bjs:8.2,ob:7.7,reviews:28,dave:null,address:'4959 Santa Monica Blvd, Los Angeles, CA 90029',phone:'(323) 913-7000',price:3,why:'A large-format Neapolitan pizzeria using traditional ovens and imported ingredients',note:'The Hollywood dining room pairs classic Neapolitan technique with a meaningful One Bite review sample.'},
+    {city:'losangeles',name:"Vito's Pizza",bjs:8.4,ob:null,reviews:null,dave:null,address:'846 N La Cienega Blvd, Los Angeles, CA 90069',phone:'(310) 652-6859',price:2,bjsPick:true,bjsPickCity:'losangeles',bjsPickLabel:'BJS Pizza Pick',redCalloutLabel:'FAN FAVORITE',redCallout:"A fan favorite of true New Yorkers — including Entourage's Kevin Connolly.",why:'BJS Pick — a genuine East Coast-style neighborhood slice institution in West Hollywood',note:'The original Vito’s serves oversized New York and New Jersey-style slices from its longtime La Cienega shop. Individual One Bite reviews exist, but its official aggregate score remains pending verification.'},
+    {city:'miami',name:'Miami Slice',bjs:9.0,ob:8.7,reviews:79,dave:8.6,address:'1335 NE Miami Ct, Miami, FL 33132',phone:'(305) 217-5423',price:3,why:'Miami’s strongest current pizza convergence across major review signals and One Bite',note:'One Bite lists an 8.7 community score and an 8.6 Dave score for the downtown slice destination.'},
+    {city:'london',name:'50 Kalò',bjs:8.5,ob:8.3,reviews:9,dave:null,address:'7 Northumberland Ave, London WC2N 5BY, United Kingdom',phone:'+44 20 7930 9955',price:3,why:'A London branch of the celebrated Naples pizzeria with strong international recognition',note:'Light Neapolitan pies and a strong One Bite community score anchor London’s initial Pizza listing.'},
+    {city:'sandiego',name:'Bronx Pizza',bjs:8.6,ob:8.0,reviews:348,dave:8.1,address:'111 Washington St, San Diego, CA 92103',phone:'(619) 291-3341',price:2,why:'San Diego’s most proven One Bite-backed New York-style slice institution',note:'A deep 348-review One Bite sample supports the 8.0 community score; Dave scored it 8.1.'},
+    {city:'siliconvalley',name:'A Slice of New York — Sunnyvale',bjs:8.4,ob:7.9,reviews:18,dave:null,address:'1253 W El Camino Real, Sunnyvale, CA 94087',phone:'(650) 938-6969',price:2,why:'A worker-owned New York-style pizzeria with a loyal South Bay following',note:'The Sunnyvale shop leads the initial Silicon Valley Pizza page with a 7.9 One Bite community score.'},
+    {city:'santabarbara',name:'Saint Bibiana',bjs:8.6,ob:8.7,reviews:6,dave:null,address:'17 W Ortega St, Santa Barbara, CA 93101',phone:'',price:3,why:'A high-scoring downtown Santa Barbara pizza destination with excellent early response',note:'One Bite’s 8.7 is based on a small early sample, so BOF balances it with broader aggregate signals.'},
+    {city:'sanfrancisco',name:'Outta Sight Pizza',bjs:8.7,ob:8.4,reviews:14,dave:7.6,address:'422 Larkin St, San Francisco, CA 94102',phone:'(415) 829-3108',price:2,why:'A modern San Francisco slice shop with the city’s strongest current One Bite community signal',note:'One Bite lists an 8.4 community score; Dave’s separate personal score is 7.6.'},
+    {city:'newyork',name:"John's of Bleecker Street",bjs:9.3,ob:8.9,reviews:null,dave:9.3,address:'278 Bleecker St, New York, NY 10014',phone:'(212) 243-1680',price:2,why:'A historic coal-oven New York benchmark with elite pizza-review recognition',note:'Whole pies only; Dave’s 9.3 score and One Bite’s top-tier community standing make it the NYC starter.'},
+    {city:'chicago',name:'Pizza Dada',bjs:8.5,ob:8.2,reviews:15,dave:8.2,address:'125 S Clark St, Chicago, IL 60603',phone:'(914) 629-6944',price:2,why:'A standout thin New York-style counter inside Chicago’s Sterling Food Hall',note:'One Bite shows matching 8.2 Dave and community scores.'},
+    {city:'washingtondc',name:'il Canale',bjs:8.3,ob:7.7,reviews:57,dave:null,address:'1065 31st St NW, Washington, DC 20007',phone:'(202) 337-4444',price:3,why:'A Georgetown Neapolitan destination with the deepest strong One Bite signal among current DC candidates',note:'Wood-fired pizza and a 7.7 One Bite community score from 57 reviews.'},
+    {city:'boston',name:'Regina Pizzeria',bjs:9.1,ob:8.6,reviews:1254,dave:9.1,address:'11 1/2 Thacher St, Boston, MA 02113',phone:'(617) 227-0765',price:2,why:'Boston’s historic pizza benchmark with exceptional One Bite depth',note:'One Bite lists an 8.6 community score from more than 1,250 reviews and a 9.1 Dave score.'},
+    {city:'philadelphia',name:"Angelo's Pizzeria",bjs:9.2,ob:8.7,reviews:829,dave:9.1,address:'736 S 9th St, Philadelphia, PA 19147',phone:'(215) 922-0000',price:2,why:'Philadelphia’s elite current pizza performer across both aggregate and One Bite signals',note:'One Bite lists an 8.7 community score from 829 reviews and a 9.1 Dave score.'},
+    {city:'atlanta',name:'Antico Pizza Napoletana',bjs:8.8,ob:8.3,reviews:379,dave:8.3,address:'1093 Hemphill Ave NW, Atlanta, GA 30318',phone:'(404) 724-2333',price:3,why:'Atlanta’s landmark Neapolitan pizzeria with unusually deep One Bite support',note:'Both Dave and the One Bite community score Antico 8.3, backed by hundreds of community reviews.'},
+    {city:'neworleans',name:"Zee's Pizzeria",bjs:8.6,ob:8.2,reviews:56,dave:7.8,address:'3914 Baronne St, New Orleans, LA 70115',phone:'(504) 766-6056',price:2,why:'A leading New Orleans slice shop with the city’s strongest combined current pizza signals',note:'One Bite lists an 8.2 community score and a separate 7.8 Dave score.'},
+    {city:'idaho',name:"Tony's Pizzeria Teatro",bjs:8.5,ob:8.1,reviews:25,dave:null,address:'105 N Capitol Blvd, Boise, ID 83702',phone:'(208) 343-1052',price:3,why:'A downtown Boise artisan pizzeria with Idaho’s strongest substantial One Bite score',note:'One Bite lists an 8.1 community score from 25 reviews, a stronger supported sample than nearby alternatives.'}
+  ];
+  entries.forEach((r,index) => {
+    const record = {
+      rank:index+1,name:r.name,city:r.city,image:'',imagePosition:'center',
+      rating:(r.bjs/2).toFixed(2)+' / 5',reviews:null,price:r.price,hue:'18, 42%, 27%',
+      why:r.why,note:r.note,url:'',address:r.address,phone:r.phone,hours:[],
+      bjsPizzaScore:r.bjs.toFixed(1),oneBiteScore:r.ob,oneBiteReviews:r.reviews,oneBiteDaveScore:r.dave,
+      bjsPick:!!r.bjsPick,bjsPickCity:r.bjsPickCity||null,bjsPickLabel:r.bjsPickLabel||null,
+      bjsSources:r.bjsPickLabel?[r.bjsPickLabel]:[],redCalloutLabel:r.redCalloutLabel||null,redCallout:r.redCallout||null
+    };
+    if(!boCategoryData.pizza.some(existing => existing && existing.name === record.name && (existing.city || 'bestof') === record.city)) boCategoryData.pizza.push(record);
+  });
+})();
 boCategoryData.vegan = [
   {
     rank: 1,
@@ -19056,10 +19101,10 @@ const boPickerConfig = {
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
     { label: 'Asian', cat: 'asian' },
+    { label: '<span class="bo-pizza-tile"><span>Pizza</span><span class="bo-pizza-tile-duel" aria-label="BJS versus One Bite"><span class="bo-pizza-tile-bjs">BJS</span><span class="bo-pizza-tile-vs">VS</span><span class="bo-pizza-tile-ob">ONE<br>BITE</span><span class="bo-pizza-tile-caption">BJS VS ONE BITE</span></span></span>', cat: 'pizza' },
     { label: 'Mexican', cat: 'mexican' },
     { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
     { label: 'Breakfast', cat: 'breakfast' },
-    { label: 'Pizza', cat: 'pizza' },
     { label: 'Burgers', cat: 'burgers' },
     { label: 'Seafood', cat: 'seafood' },
     { label: 'BBQ', cat: 'bbq' },
