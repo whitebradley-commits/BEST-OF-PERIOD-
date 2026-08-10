@@ -5386,7 +5386,29 @@
 }
 @media(prefers-reduced-motion:reduce){
   .bo-main-picker-scroll-cue{animation:none}
-} </style> <style id="bop-main-hub-blue-footer-tiles"> /* Bottom feature row shown ONLY on each city's Main / Hub page. */
+}
+/* Final specialty tiles on every city MAIN page. NEW appears everywhere;
+   OFF THE STRIP is injected only for Las Vegas. */
+.bo-picker-btn-special-gold{
+  border-color:#F59E0B !important;
+  background:#F59E0B !important;
+  color:#050505 !important;
+  -webkit-text-fill-color:#050505 !important;
+  box-shadow:0 0 13px rgba(245,158,11,.82),0 0 30px rgba(245,158,11,.35),inset 0 0 12px rgba(255,255,255,.18) !important;
+}
+.bo-special-tile-word{
+  display:inline-block;
+  color:#050505 !important;
+  -webkit-text-fill-color:#050505 !important;
+  font-weight:900;
+  animation:boSpecialTileFlash 1.15s ease-in-out infinite;
+}
+@keyframes boSpecialTileFlash{
+  0%,100%{opacity:1;transform:scale(1);text-shadow:none;}
+  50%{opacity:.42;transform:scale(1.08);text-shadow:0 0 8px rgba(255,255,255,.92);}
+}
+@media(prefers-reduced-motion:reduce){.bo-special-tile-word{animation:none}}
+</style> <style id="bop-main-hub-blue-footer-tiles"> /* Bottom feature row shown ONLY on each city's Main / Hub page. */
 .bo-main-hub-footer{
   width:min(760px,100%);
   margin:clamp(110px,16vh,190px) auto 20px;
@@ -10648,9 +10670,9 @@ steakhighend: [
     image: "https://images.squarespace-cdn.com/content/v1/5d360d827d3e940001b37a50/1699937444979-KCP7MZ181FOUYT5U9YPQ/Diningroom.jpg?format=2500w", imagePosition: "center",
     rating: "4.6", ratingNote: "Aggregate across Google (4.6, ~655 reviews) and OpenTable (4.8, 5,296 diners); Tripadvisor sits lower at 4.5 (510 reviews).",
     why: "An East Village steakhouse-and-butcher-shop with an Old West dining room and an in-house display kitchen",
-    note: "Certified Humane Angus beef and Monterey Bay-approved seafood, with an attached butcher shop for cuts to go. Signature dishes include dry-aged duck breast, French onion soup, and banana pudding. Indoor fireplace and a well-liked weekday happy hour.",
+    note: "Certified Humane Angus beef and Monterey Bay-approved seafood, with an attached butcher shop for cuts to go. Signature dishes include dry-aged duck breast, French onion soup, and banana pudding. The front patio tables explicitly welcome dogs.",
     url: "https://www.cowboystarsd.com/", address: "640 10th Ave, San Diego, CA 92101",
-    phone: "(619) 450-5880", hours: [{ days: [1,2,3,4,5], open: '15:00', close: '22:30' }, { days: [6], open: '16:00', close: '22:30' }, { days: [0], open: '16:00', close: '21:30' }], hue: "25, 40%, 24%", price: 3, instagram: null, facebook: null
+    phone: "(619) 450-5880", hours: [{ days: [1,2,3,4,5], open: '15:00', close: '22:30' }, { days: [6], open: '16:00', close: '22:30' }, { days: [0], open: '16:00', close: '21:30' }], hue: "25, 40%, 24%", price: 3, dogFriendly: true, instagram: null, facebook: null
   },
   {
     rank: 32, name: "Greystone Prime Steakhouse & Seafood", city: "sandiego",
@@ -16685,6 +16707,76 @@ boCategoryData.steakeggs = [
   main.forEach((r, i) => { r.rank = i + 1; });
 })();
 
+// San Diego County expansion — North County standouts and a genuine 24/7
+// local coffeehouse. Ratings are current OpenTable verified-diner scores.
+(function buildSanDiegoCountyExpansion(){
+  const records = {
+    suns24: {
+      name: "24 Suns", city: "sandiego",
+      openedDate: "2025-01-31",
+      image: "https://static.prod.r53.tablethotels.com/media/hotels/slideshow_images_staged/large/1429800.jpg", imagePosition: "center",
+      rating: "4.9", reviews: 229, ratingSource: "OpenTable", ratingNote: "OpenTable 4.9 from more than 225 verified diners.",
+      why: "An Oceanside destination translating Chinese culinary traditions through Southern California's micro-seasons",
+      note: "Chefs Nic Webber and Jacob Jordan pair contemporary Chinese technique with local farms, thoughtful cocktails, natural wine, and an ambitious seasonal tasting menu in a polished neighborhood room.",
+      url: "https://24sunsdining.com/", address: "3375 Mission Ave, Oceanside, CA 92058", phone: "(760) 433-5086",
+      hours: [{ days: [0,3,4,5,6], open: '16:00', close: '21:00' }], hue: "34, 42%, 26%", price: 4
+    },
+    wrench: {
+      name: "Wrench & Rodent Seabasstropub", city: "sandiego",
+      image: "https://www.livelikeitstheweekend.com/wp-content/uploads/2024/09/best-restaurants-in-Oceanside-ca_-2-700x467.jpg", imagePosition: "center",
+      rating: "4.8", reviews: 1607, ratingSource: "OpenTable", ratingNote: "OpenTable 4.8 from more than 1,600 verified diners; a 2024–2025 OpenTable Icon.",
+      why: "Oceanside's inventive, punk-rock sushi destination built around responsible sourcing and near-zero-waste cooking",
+      note: "Chef Davin Waite's daily-changing menu, dry-aged fish program, omakase, underused local species, and plant-forward options turn a relaxed Coast Highway room into one of North County's most original restaurants.",
+      url: "https://www.seabasstropub.com/", address: "1815 S Coast Hwy, Oceanside, CA 92054", phone: "(760) 453-2738",
+      hours: [{ days: [0,3,4,5,6], open: '16:00', close: '21:00' }], hue: "146, 34%, 24%", price: 3
+    },
+    fortoak: {
+      name: "Fort Oak", city: "sandiego",
+      image: "https://sandiegomagazine.com/wp-content/uploads/2023/08/bf12508095edc7daabbafff79249acbb.jpg", imagePosition: "center",
+      rating: "4.8", reviews: 662, ratingSource: "OpenTable", ratingNote: "OpenTable 4.8 from more than 660 verified diners; currently recognized by Michelin.",
+      why: "A glamorous Mission Hills landmark centered on a 7,000-pound hearth, live-fire cooking, and a serious raw bar",
+      note: "The former Ford dealership combines a circular mid-century bar, exhibition kitchen, two patios, seafood, and Chef Brad Wise's confident wood-fired cooking.",
+      url: "https://www.fortoaksd.com/", address: "1011 Fort Stockton Dr, San Diego, CA 92103", phone: "(619) 722-3398",
+      hours: [{ days: [0,1,3,4], open: '16:00', close: '21:00' }, { days: [5,6], open: '16:00', close: '22:00' }], hue: "203, 38%, 25%", price: 4
+    },
+    plot: {
+      name: "The Plot — Oceanside", city: "sandiego",
+      image: "https://images.squarespace-cdn.com/content/v1/5ff3130566132f51dedef146/23eb7c66-52fc-4efd-b5b5-b4aff2f5d257/FirstLook_PlotRestaurant_KimberlyMotos-15%2B%281%29.jpg?format=1500w", imagePosition: "center",
+      rating: "4.8", reviews: 997, ratingSource: "OpenTable", ratingNote: "OpenTable 4.8 from nearly 1,000 verified diners.",
+      why: "A zero-waste Oceanside dining room where a garden-backed kitchen makes plant-based cooking feel abundant rather than restrictive",
+      note: "The Plot grows ingredients around its patio, rescues usable byproducts, and serves an ambitious vegan menu inside a warm modern room designed around wood, greenery, and community.",
+      url: "https://theplotrestaurant.com/oceanside", address: "1733 S Coast Hwy, Oceanside, CA 92054", phone: "(442) 266-8200",
+      hours: [], hue: "112, 30%, 24%", price: 3
+    },
+    lestats: {
+      name: "Lestat's on Park", city: "sandiego",
+      image: "https://pub-ba1a74be17d7442a9f2541946eb9510e.r2.dev/shops/c68e6d55-13ab-4e42-84eb-38a504c831e7/2.jpg", imagePosition: "center",
+      rating: "4.4", reviews: 1321, ratingSource: "Google", ratingNote: "Google 4.4 from more than 1,300 reviews; the official site confirms 24-hour service every day.",
+      why: "University Heights' always-open creative refuge for coffee, studying, conversation, and a late-night reset",
+      note: "A true 24/7 independent coffeehouse with couches, a quiet back room, patio seating, Wi-Fi, light food, and the lived-in personality of a neighborhood institution.",
+      url: "https://www.lestats.com/lestats-on-park", address: "4496 Park Blvd, San Diego, CA 92116", phone: "(619) 501-6638",
+      hours: [], open24: [{ days: [0,1,2,3,4,5,6], open: '00:00', close: '23:59' }], hue: "344, 30%, 24%", price: 1
+    }
+  };
+  const addUnique = (cat, r) => {
+    if(!Array.isArray(boCategoryData[cat]) || !r) return;
+    if(!boCategoryData[cat].some(x => x && x.name === r.name && x.city === 'sandiego')) boCategoryData[cat].push(Object.assign({}, r));
+  };
+  addUnique('24hours', records.lestats);
+  addUnique('chinese', records.suns24);
+  addUnique('sushi', records.wrench);
+  addUnique('steakhighend', records.fortoak);
+  addUnique('michelin', records.fortoak);
+  addUnique('vegan', records.plot);
+
+  const main = boCategoryData.sandiego || (boCategoryData.sandiego = []);
+  [records.suns24, records.wrench, records.fortoak, records.plot].forEach(r => {
+    if(!main.some(x => x && x.name === r.name)) main.push(Object.assign({}, r));
+  });
+  main.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0) || (b.reviews || 0) - (a.reviews || 0));
+  main.forEach((r, i) => { r.rank = i + 1; });
+})();
+
 boCategoryData.asianbestofrest = [].concat(
   boCategoryData.sushi || [],
   boCategoryData.korean || [],
@@ -17123,7 +17215,8 @@ function boNearCityDefaults(cityKey){
   return {
     bestof: { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' },
     miami:  { center:[25.7617,-80.1918], zoom:10, label:'Miami' },
-    london: { center:[51.5072,-0.1276], zoom:10, label:'London' }
+    london: { center:[51.5072,-0.1276], zoom:10, label:'London' },
+    sandiego:{ center:[32.7157,-117.1611], zoom:10, label:'San Diego' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
 }
 
@@ -17182,7 +17275,7 @@ function boGetMapRestaurants(cityKey){
     });
   };
   if(cityKey === 'bestof'){
-    const excluded = new Set(['bestof','miami','london','bjspicksmiami','bjspickslondon']);
+    const excluded = new Set(['bestof','miami','london','sandiego','bjspicksmiami','bjspickslondon','bjspickssandiego']);
     Object.entries(boCategoryData).forEach(([cat,list])=>{
       if(excluded.has(cat) || !Array.isArray(list)) return;
       list.forEach(r=>add(r,cat));
@@ -17566,7 +17659,9 @@ async function boOpenNearMap(){
       window.setTimeout(()=>{
         if(run!==boNearMapGeocodeRun) return;
         status.classList.remove('is-loading');
-        status.textContent='Tap any pin for more information.';
+        status.textContent=(!visible.length && boNearInitialRadiusMode && boNearUserLatLng)
+          ? 'No listed spots within one mile. Zoom out for more options.'
+          : 'Tap any pin for more information.';
       }, loadingRemaining);
     }
   };
@@ -17653,6 +17748,31 @@ async function boOpenNearMap(){
 }
 window.boOpenNearMap=boOpenNearMap;
 
+// City-scoped specialty pages generated from the master restaurant records.
+// Keeping these as derived lists prevents the NEW / DOG FRIENDLY / OTS pages
+// from drifting out of sync when a restaurant is later edited or added to a
+// cuisine page. The normal city filter in boRenderCategory applies afterward.
+function boBuildDerivedRestaurantList(predicate){
+  const seen = new Set();
+  const results = [];
+  Object.keys(boCategoryData).forEach(key => {
+    const list = boCategoryData[key];
+    if(!Array.isArray(list)) return;
+    list.forEach(r => {
+      if(!r || !r.name || !predicate(r)) return;
+      const city = r.city || 'bestof';
+      const identity = city + '|' + r.name.trim().toLowerCase();
+      if(seen.has(identity)) return;
+      seen.add(identity);
+      results.push(Object.assign({}, r, { city }));
+    });
+  });
+  return results;
+}
+boCategoryData.newrestaurants = boBuildDerivedRestaurantList(r => isRecentlyOpened(r.openedDate));
+boCategoryData.dogfriendly = boBuildDerivedRestaurantList(r => r.dogFriendly === true);
+boCategoryData.offstrip = boBuildDerivedRestaurantList(r => (r.city || 'bestof') === 'bestof' && r.offStrip === true);
+
 const boPickerConfig = {
   sushi: [
     { label: 'Casual', cat: 'sushicasual' },
@@ -17731,7 +17851,10 @@ const boPickerConfig = {
     { label: 'Cheesesteak', cat: 'cheesesteak' },
     { label: 'Steak & Eggs', cat: 'steakeggs' },
     { label: 'Crepes', cat: 'crepes' },
-    { label: 'Chocolatier', cat: 'chocolatier' }
+    { label: 'Chocolatier', cat: 'chocolatier' },
+    { label: 'Dog Friendly', cat: 'dogfriendly' },
+    { label: '<span class="bo-special-tile-word">NEW</span>', cat: 'newrestaurants' },
+    { label: '<span class="bo-special-tile-word">OTS</span>', cat: 'offstrip' }
   ],
   mexican: [
     { label: 'Dive', cat: 'mexicandive' },
@@ -17770,7 +17893,8 @@ const boPickerParent = {
   steak: 'otheroptions', sushi: 'otheroptions', italian: 'otheroptions',
   breakfast: 'otheroptions', asian: 'otheroptions', burgersbjspick: 'otheroptions',
   dessert: 'otheroptions', '24hours': 'otheroptions',
-  michelin: 'otheroptions', jamesbeard: 'otheroptions', cheesesteak: 'otheroptions'
+  michelin: 'otheroptions', jamesbeard: 'otheroptions', cheesesteak: 'otheroptions',
+  dogfriendly: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions'
 };
 
 const boHeroCopy = {
@@ -17899,6 +18023,18 @@ const boHeroCopy = {
   '24hours': {
     title: '<span class="bo-hero-24hr-glow">BEST 24 HOURS</span>',
     sub: ""
+  },
+  dogfriendly: {
+    title: 'BEST DOG FRIENDLY',
+    sub: 'The highest-rated restaurants that explicitly welcome dogs.'
+  },
+  newrestaurants: {
+    title: '<span class="bo-hero-24hr-glow">BEST NEW</span>',
+    sub: 'The strongest recently opened restaurants in the city, ranked by rating.'
+  },
+  offstrip: {
+    title: '<span class="bo-hero-24hr-glow">BEST OFF THE STRIP</span>',
+    sub: 'The highest-rated Las Vegas restaurants beyond the Strip.'
   },
   michelin: {
     title: 'MICHELIN RATED',
@@ -18475,9 +18611,14 @@ function boRenderCategory(cat){
     // James Beard is a US-only award — it can never apply to London, so
     // that tile is filtered out of Other Bests specifically when browsing
     // from London's context. Every other city keeps it.
-    const pickerOptions = (cat === 'otheroptions' && boCityContext === 'london')
-      ? boPickerConfig[cat].filter(opt => opt.cat !== 'jamesbeard')
-      : boPickerConfig[cat];
+    const pickerOptions = boPickerConfig[cat].filter(opt => {
+      if(cat !== 'otheroptions') return true;
+      if(boCityContext === 'london' && opt.cat === 'jamesbeard') return false;
+      // OTS is a Las Vegas-specific designation; every other city ends with
+      // DOG FRIENDLY and NEW without showing a meaningless empty OTS tile.
+      if(boCityContext !== 'bestof' && opt.cat === 'offstrip') return false;
+      return true;
+    });
     const mainHubCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const mainHubFooterHTML = cat === 'otheroptions' ? `
       <div class="bo-main-hub-footer">
@@ -18510,7 +18651,7 @@ function boRenderCategory(cat){
     ` : '';
 
     boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
-      <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
+      <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${opt.cat === 'newrestaurants' || opt.cat === 'offstrip' ? ' bo-picker-btn-special-gold' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
     `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
@@ -21951,12 +22092,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #ocWorldOverlay .oc-pin-destination-group::before{width:25px!important;height:25px!important;background:#3b9dff!important;border:2px solid #fff!important;box-shadow:0 0 16px rgba(59,157,255,1),0 0 5px #fff!important}
 #ocWorldOverlay .oc-pin-destination-group::after{width:25px!important;height:25px!important;border-color:rgba(59,157,255,.92)!important}
 #ocWorldOverlay .oc-pin-destination-group span{position:relative;z-index:2;pointer-events:none}
-#ocWorldOverlay #ocCityCard.oc-city-choice-card{position:fixed!important;left:50%!important;top:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%)!important;z-index:12000!important;display:block!important;width:min(84vw,330px)!important;margin:0!important;padding:24px 20px 20px!important;border:2px solid #F59E0B!important;border-radius:18px!important;background:rgba(4,4,4,.96)!important;box-shadow:0 0 0 9999px rgba(0,0,0,.52),0 0 28px rgba(245,158,11,.58)!important;text-align:center!important}
-#ocWorldOverlay .oc-choice-title{margin:0 34px 18px;color:#F59E0B;font:900 18px/1.1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em}
-#ocWorldOverlay .oc-choice-close{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:2px solid #F59E0B;background:#050505;color:#ef3340;font:900 20px/1 Arial,sans-serif}
-#ocWorldOverlay .oc-choice-list{display:grid;gap:10px}
-#ocWorldOverlay .oc-choice-city{width:100%;padding:13px 15px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:900 14px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.07em;box-shadow:0 0 10px rgba(245,158,11,.2)}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card{position:fixed!important;left:50%!important;top:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%)!important;z-index:12000!important;display:block!important;width:min(84vw,231px)!important;margin:0!important;padding:17px 14px 14px!important;border:1.5px solid #F59E0B!important;border-radius:13px!important;background:rgba(4,4,4,.96)!important;box-shadow:0 0 0 9999px rgba(0,0,0,.52)!important;text-align:center!important}
+#ocWorldOverlay .oc-choice-title{margin:0 27px 13px;color:#F59E0B;font:800 13px/1.08 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-shadow:none!important}
+#ocWorldOverlay .oc-choice-close{position:absolute;right:7px;top:7px;width:24px;height:24px;border-radius:50%;border:1.5px solid #F59E0B;background:#050505;color:#ef3340;font:900 14px/1 Arial,sans-serif;box-shadow:none!important}
+#ocWorldOverlay .oc-choice-list{display:grid;gap:7px}
+#ocWorldOverlay .oc-choice-city{width:100%;padding:9px 11px;border:1px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:900 10px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.07em;box-shadow:none!important;text-shadow:none!important}
 #ocWorldOverlay .oc-choice-city:active{transform:scale(.98);background:#F59E0B;color:#000}
+#ocWorldOverlay .oc-map-tap-note{width:100%;margin:5px 0 0;padding-left:3px;box-sizing:border-box;color:#3b9dff;font:700 8px/1.2 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-align:left;text-shadow:none}
+#ocWorldOverlay .oc-map-tap-note::before{content:'*';display:inline-block;margin-right:3px;color:#3b9dff;font-weight:900}
 </style>
 <script id="other-cities-numbered-destination-clusters">
 (function(){
@@ -21968,7 +22111,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   ];
   function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
   function groupCities(group){return group.dests.map(liveCity).filter(Boolean)}
-  function restoreCard(){var card=document.getElementById('ocCityCard');if(!card)return null;card.classList.remove('oc-city-choice-card');card.innerHTML='<div id="ocCityName"></div><div id="ocCityStatus"></div><button id="ocCityGo" type="button">OPEN</button>';return card}
+  function restoreCard(){var card=document.getElementById('ocCityCard');if(!card)return null;card.classList.remove('open','oc-city-choice-card');card.innerHTML='<div id="ocCityName"></div><div id="ocCityStatus"></div><button id="ocCityGo" type="button">OPEN</button>';return card}
   function openDestination(city){restoreCard();originalShowCity(city);var go=document.getElementById('ocCityGo');if(go&&typeof go.onclick==='function')go.click()}
   window.ocShowDestinationChoices=function(cities){
     if(!cities||!cities.length)return;
@@ -21982,6 +22125,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.ocShowCity=function(city){if(city&&city.t==='live'){window.ocShowDestinationChoices([city]);return}restoreCard();originalShowCity(city)};
   window.ocBuildPins=function(){
     var layer=document.getElementById('ocPinLayer');if(!layer)return;
+    restoreCard();
+    var map=layer.closest('.oc-world-map');
+    if(map&&!map.nextElementSibling?.classList.contains('oc-map-tap-note')){var note=document.createElement('div');note.className='oc-map-tap-note';note.textContent='tap a pin for yummy near you';map.insertAdjacentElement('afterend',note)}
     layer.innerHTML='';layer.dataset.built='clusters';
     var frag=document.createDocumentFragment();
     OC_CITIES.forEach(function(city,idx){if(city.t==='live')return;var p=ocProject(city.la,city.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-'+city.t;pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.setAttribute('aria-label',city.n);pin.dataset.cityIndex=idx;frag.appendChild(pin)});
@@ -21989,7 +22135,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     layer.appendChild(frag);
     layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.groupIndex!=null)window.ocShowDestinationChoices(groupCities(groups[Number(pin.dataset.groupIndex)]));else window.ocShowCity(OC_CITIES[Number(pin.dataset.cityIndex)])};
   };
-  window.ocLandOnCity=function(dest){var group=groups.find(function(item){return item.dests.indexOf(dest)!==-1});if(!group)return;var layer=document.getElementById('ocPinLayer');if(!layer)return;var pin=layer.querySelector('[data-group-index="'+groups.indexOf(group)+'"]');if(pin){pin.scrollIntoView({behavior:'smooth',block:'center'});pin.classList.add('oc-pin-land');setTimeout(function(){pin.classList.remove('oc-pin-land')},2200)}window.ocShowDestinationChoices(groupCities(group))};
+  window.ocLandOnCity=function(dest){var group=groups.find(function(item){return item.dests.indexOf(dest)!==-1});if(!group)return;var layer=document.getElementById('ocPinLayer');if(!layer)return;restoreCard();var pin=layer.querySelector('[data-group-index="'+groups.indexOf(group)+'"]');if(pin){pin.scrollIntoView({behavior:'smooth',block:'center'});pin.classList.add('oc-pin-land');setTimeout(function(){pin.classList.remove('oc-pin-land')},2200)}};
 })();
 </script>
 </body></html> 
