@@ -4394,6 +4394,42 @@
     letter-spacing:-1px;
   }
 
+  .bo-jb-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:25px;
+    height:18px;
+    margin-left:5px;
+    padding:0 4px;
+    vertical-align:middle;
+    border:1px solid #d75b60;
+    border-radius:5px;
+    background:#8b1e22;
+    color:#fff;
+    font:800 9px/1 'Archivo Black',sans-serif;
+    letter-spacing:.02em;
+    cursor:pointer;
+    touch-action:manipulation;
+    box-shadow:0 0 8px rgba(215,91,96,.28);
+  }
+  .bo-jb-badge:focus-visible{
+    outline:2px solid #F59E0B;
+    outline-offset:3px;
+  }
+  .bo-jb-tile-label{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#d75b60;
+  }
+  .bo-jb-tile-label .bo-jb-badge{
+    margin:0;
+    color:#fff;
+    pointer-events:none;
+  }
+
   .bo-michelin-cloud-wrap{
     animation: bo-cloud-float 4.5s ease-in-out infinite;
   }
@@ -8336,7 +8372,8 @@ function setupBopLanding(){
     { name: 'Boston', region: 'Massachusetts', dest: 'boston' },
     { name: 'Philadelphia', region: 'Pennsylvania', dest: 'philadelphia', aliases: ['Philly'] },
     { name: 'Atlanta', region: 'Georgia', dest: 'atlanta' },
-    { name: 'New Orleans', region: 'Louisiana', dest: 'neworleans', aliases: ['NOLA'] }
+    { name: 'New Orleans', region: 'Louisiana', dest: 'neworleans', aliases: ['NOLA'] },
+    { name: 'Idaho', region: 'Idaho', dest: 'idaho', aliases: ['Boise', 'Sun Valley', 'Ketchum', 'Coeur d\'Alene'] }
   ];
 
   function goToCity(dest){
@@ -8609,6 +8646,7 @@ var OC_CITIES = [
   {n:"San Diego",la:32.72,lo:-117.16,t:"live",dest:"sandiego"},
   {n:"San Francisco",la:37.77,lo:-122.42,t:"live",dest:"sanfrancisco"},
   {n:"Silicon Valley",la:37.39,lo:-122.06,t:"live",dest:"siliconvalley"},
+  {n:"Idaho",la:43.62,lo:-116.2,t:"live",dest:"idaho"},
   {n:"Phoenix",la:33.45,lo:-112.07,t:"2027"},
   {n:"Denver",la:39.74,lo:-104.99,t:"2027"},
   {n:"Salt Lake City",la:40.76,lo:-111.89,t:"2027"},
@@ -8723,7 +8761,6 @@ var OC_CITIES = [
   {n:"Suva",la:-18.14,lo:178.44,t:"2028"},
   {n:"Reno",la:39.53,lo:-119.81,t:"2026"},
   {n:"Tucson",la:32.22,lo:-110.97,t:"2026"},
-  {n:"Boise",la:43.62,lo:-116.2,t:"2026"},
   {n:"Omaha",la:41.26,lo:-95.93,t:"2026"},
   {n:"Memphis",la:35.15,lo:-90.05,t:"2026"},
   {n:"Louisville",la:38.25,lo:-85.76,t:"2026"},
@@ -10501,6 +10538,13 @@ const BO_CITY_CONFIG = {
     displayName: 'New Orleans',
     areaList: ['Greater New Orleans'], tickerMessages: ['NEW ORLEANS', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksneworleans'
+  },
+  idaho: {
+    displayName: 'Idaho',
+    areaList: ['Boise', 'Sun Valley', 'Ketchum', 'Coeur d\'Alene', 'McCall'],
+    footnote: '*Idaho covers a wide statewide dining territory — tap Near Me for the closest recommendations.',
+    tickerMessages: ['IDAHO', 'YUMMY SOON!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksidaho'
   }
 };
 
@@ -17665,6 +17709,94 @@ boCategoryData.bjspickslondon = (() => {
   });
 })();
 
+/* James Beard expansion — official Foundation recognition, not winners only.
+   Winners, nominees, finalists, semifinalists, America's Classics honorees,
+   and establishment-linked program/professional recognition all qualify.
+   Every card states the exact level and year so recognition is never inflated.
+   Images are intentionally optional here; Best Of Period and Michelin remain
+   the two categories that require an immediate photo pass. */
+(function expandJamesBeardRecognition2026(){
+  const official2026 = [
+    {name:"Honeysalt",city:"bestof",genre:"breakfastcasual",honor:"2026 Outstanding Restaurateur semifinalist — Elizabeth Blau, Blau + Associates"},
+    {name:"Buddy V's Ristorante",city:"bestof",genre:"italianhighend",honor:"2026 Outstanding Restaurateur semifinalist — Elizabeth Blau, Blau + Associates"},
+    {name:"Main Street Provisions",city:"bestof",genre:"southern",honor:"2026 Emerging Chef semifinalist — Ellie Parker"},
+    {name:"Tamba",city:"bestof",genre:"indian",honor:"2026 Best New Restaurant semifinalist"},
+    {name:"Ada's Food + Wine",city:"bestof",genre:"mediterranean",honor:"2026 Outstanding Wine and Other Beverages Program semifinalist"},
+    {name:"Jipata",city:"bestof",genre:"thai",honor:"2026 Outstanding Professional in Beverage Service semifinalist — Bank Atcharawan"},
+    {name:"Amara at Paraiso",city:"miami",genre:"seafood",honor:"2026 Outstanding Wine and Other Beverages Program semifinalist"},
+    {name:"Bar Bucce",city:"miami",genre:"italianhighend",honor:"2026 Best New Bar semifinalist"},
+    {name:"Animae",city:"sandiego",genre:"asianfusion",honor:"2026 Best Chef: California semifinalist — Tara Monsod"},
+    {name:"Lilo",city:"sandiego",genre:"seafood",honor:"2026 Best Chef: California semifinalist — Eric Bost"},
+    {name:"Kismet",city:"losangeles",genre:"mediterranean",honor:"2026 Best Chef: California semifinalist — Sarah Hymanson and Sara Kramer"},
+    {name:"Dunsmoor",city:"losangeles",genre:"southern",honor:"2026 Best Chef: California semifinalist — Brian Dunsmoor"},
+    {name:"Moo's Craft Barbecue",city:"losangeles",genre:"bbq",honor:"2026 Best Chef: California semifinalist — Andrew Muñoz and Michelle Muñoz"},
+    {name:"Camélia",city:"losangeles",genre:"french",honor:"2026 Best Chef: California semifinalist — Charles Namba"},
+    {name:"Providence",city:"losangeles",genre:"seafood",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Kato",city:"losangeles",genre:"asianfusion",honor:"2026 Outstanding Wine and Other Beverages Program semifinalist"},
+    {name:"Nightbird",city:"sanfrancisco",genre:"newrestaurants",honor:"2026 Best Chef: California semifinalist — Kim Alter"},
+    {name:"Sons & Daughters",city:"sanfrancisco",genre:"newrestaurants",honor:"2026 Best Chef: California semifinalist — Harrison Cheney"},
+    {name:"Ernest",city:"sanfrancisco",genre:"newrestaurants",honor:"2026 Best Chef: California semifinalist — Brandon Rice"},
+    {name:"Mijoté",city:"sanfrancisco",genre:"french",honor:"2026 Best Chef: California semifinalist — Kosuke Tada"},
+    {name:"Foreign Cinema",city:"sanfrancisco",genre:"newrestaurants",honor:"2026 Outstanding Restaurant semifinalist"},
+    {name:"House of Prime Rib",city:"sanfrancisco",genre:"steakhighend",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Zareen's",city:"siliconvalley",genre:"indian",honor:"2026 Best Chef: California semifinalist — Zareen Khan"},
+    {name:"Caruso's",city:"santabarbara",genre:"italianhighend",honor:"2026 Outstanding Wine and Other Beverages Program semifinalist"},
+    {name:"Kasama",city:"chicago",genre:"filipino",honor:"2026 Outstanding Restaurant semifinalist"},
+    {name:"EL Ideas",city:"chicago",genre:"newrestaurants",honor:"2026 Outstanding Restaurant semifinalist"},
+    {name:"Daisies",city:"chicago",genre:"italianhighend",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Monteverde Restaurant & Pastificio",city:"chicago",genre:"italianhighend",honor:"2026 Emerging Chef semifinalist — Bailey Sullivan"},
+    {name:"Cosme",city:"newyork",genre:"mexicanhighend",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Kabawa",city:"newyork",genre:"nationcaribbean",honor:"2026 Best New Restaurant semifinalist"},
+    {name:"Bong",city:"newyork",genre:"korean",honor:"2026 Best New Restaurant semifinalist"},
+    {name:"Ramen by Ra",city:"newyork",genre:"ramen",honor:"2026 Emerging Chef semifinalist — Rasheeda Purdie"},
+    {name:"Centrolina",city:"washingtondc",genre:"italianhighend",honor:"2026 Outstanding Restaurant semifinalist"},
+    {name:"Bresca",city:"washingtondc",genre:"french",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Marcus DC",city:"washingtondc",genre:"newrestaurants",honor:"2026 Emerging Chef semifinalist — Anthony Jones"},
+    {name:"Ostra",city:"boston",genre:"seafood",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Gaaeng Supper Club",city:"boston",genre:"thai",honor:"2026 Emerging Chef semifinalist — Pao Thampitak"},
+    {name:"Kalaya",city:"philadelphia",genre:"thai",honor:"2026 Outstanding Restaurant semifinalist"},
+    {name:"Royal Sushi & Izakaya",city:"philadelphia",genre:"sushihighend",honor:"2026 Best Chef: Mid-Atlantic semifinalist — Jesse Ito"},
+    {name:"Her Place Supper Club",city:"philadelphia",genre:"newrestaurants",honor:"2026 Best Chef: Mid-Atlantic semifinalist — Amanda Shulman"},
+    {name:"Aria",city:"atlanta",genre:"newrestaurants",honor:"2026 Outstanding Hospitality semifinalist"},
+    {name:"Kimball House",city:"atlanta",genre:"seafood",honor:"2026 Outstanding Professional in Cocktail Service semifinalist — Miles Macquarrie"},
+    {name:"Emeril's",city:"neworleans",genre:"southern",honor:"2026 Emerging Chef semifinalist — E.J. Lagasse"},
+    {name:"Bywater Bakery",city:"neworleans",genre:"breakfastcasual",honor:"2026 Outstanding Bakery semifinalist"},
+    {name:"Saint Claire",city:"neworleans",genre:"newrestaurants",honor:"2026 Best New Restaurant semifinalist"}
+    ,{name:"Ansots Basque Chorizos & Catering",city:"idaho",genre:"deli",honor:"2026 Outstanding Hospitality semifinalist"}
+    ,{name:"Susina",city:"idaho",genre:"newrestaurants",honor:"2026 Best Chef: Mountain semifinalist — Alex Cardoza"}
+    ,{name:"The Avery",city:"idaho",genre:"newrestaurants",honor:"2026 Best Chef: Mountain semifinalist — Cal Elliott"}
+    ,{name:"Terroir",city:"idaho",genre:"newrestaurants",honor:"2026 Best Chef: Mountain semifinalist — Nathan Whitley"}
+    ,{name:"Bar, Please!",city:"idaho",genre:"newrestaurants",honor:"2026 Best New Bar semifinalist"}
+  ];
+  const source = "James Beard Foundation 2026 Restaurant and Chef Award semifinalists";
+  const allLists = () => Object.values(boCategoryData).filter(Array.isArray);
+  boCategoryData.jamesbeardverified = boCategoryData.jamesbeardverified || [];
+  boCategoryData.idaho = boCategoryData.idaho || [];
+  boCategoryData.bjspicksidaho = boCategoryData.bjspicksidaho || [];
+  official2026.forEach((item,index) => {
+    let record = null;
+    allLists().some(list => {
+      record = list.find(r => r && r.name === item.name && (r.city || 'bestof') === item.city) || null;
+      return !!record;
+    });
+    if(!record){
+      record = {
+        rank:index + 1, name:item.name, city:item.city, image:'', imagePosition:'center',
+        rating:null, reviews:null, price:3, hue:'4, 48%, 25%',
+        why:item.honor, note:`${item.honor}. Source: ${source}.`,
+        url:'', address:'', phone:'', hours:[]
+      };
+      boCategoryData.jamesbeardverified.push(record);
+    }
+    record.jamesBeard = true;
+    record.jamesBeardHonor = item.honor;
+    record.jamesBeardSource = source;
+    const genreList = boCategoryData[item.genre] || (boCategoryData[item.genre] = []);
+    if(!genreList.some(r => r && r.name === item.name && (r.city || 'bestof') === item.city)) genreList.push(record);
+    if(item.city === 'idaho' && !boCategoryData.idaho.some(r => r && r.name === item.name)) boCategoryData.idaho.push(record);
+  });
+})();
+
 // San Diego's own BJS Picks, kept completely separate from every other city.
 // Scan shared genre lists too, because an editorial pick such as Pho Hoa can
 // belong in Best Pho without meeting the $$$ threshold of the city main list.
@@ -18857,7 +18989,7 @@ const boPickerConfig = {
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
     { label: '<span style="font-size:calc(1em + 2px);">Michelin</span><br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
-    { label: 'James Beard', cat: 'jamesbeard' },
+    { label: '<span class="bo-jb-tile-label"><span class="bo-jb-badge" aria-hidden="true">JB</span><span>James Beard</span></span>', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
     { label: 'Asian', cat: 'asian' },
@@ -19979,11 +20111,12 @@ function boRenderCategory(cat){
             : [s.bjsPickLabel || BJS_PICK_SOURCE[cat] || 'Best Of Period'];
           return `<div class="bo-card-bjs-source"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICK</span> &middot; ${labels.map(lbl => formatPickLabel(lbl, s.bjsPickCity)).join(' &middot; ')}</div>`;
         })() : ''}
-        <h3>${s.name}${openClosedBadgeHTML(s.hours, s.open24)}<span class="bo-verified" title="Verified listing"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.6L9.2 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${boOwnershipStoryId(s, boCityContext) ? `<button type="button" class="bo-uno-badge" data-info-badge="UNO" data-ownership-story="${boOwnershipStoryId(s, boCityContext)}" aria-label="Under new ownership information specific to ${s.name}" title="Under new ownership — tap for this business's details">UNO</button>` : ''}${s.michelinStars ? `<span class="bo-michelin-badge" data-michelin-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's Michelin list" title="${s.michelinStars} Michelin Star${s.michelinStars > 1 ? 's' : ''} — tap for the Michelin list"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">${'\u2605'.repeat(s.michelinStars)}</span></span>` : ''}${s.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${s.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}${isRecentlyOpened(s.openedDate) ? '<span class="bo-new-badge">NEW</span>' : ''}</h3>
+        <h3>${s.name}${openClosedBadgeHTML(s.hours, s.open24)}<span class="bo-verified" title="Verified listing"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.6L9.2 18L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${boOwnershipStoryId(s, boCityContext) ? `<button type="button" class="bo-uno-badge" data-info-badge="UNO" data-ownership-story="${boOwnershipStoryId(s, boCityContext)}" aria-label="Under new ownership information specific to ${s.name}" title="Under new ownership — tap for this business's details">UNO</button>` : ''}${s.michelinStars ? `<span class="bo-michelin-badge" data-michelin-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's Michelin list" title="${s.michelinStars} Michelin Star${s.michelinStars > 1 ? 's' : ''} — tap for the Michelin list"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">${'\u2605'.repeat(s.michelinStars)}</span></span>` : ''}${s.jamesBeard ? `<span class="bo-jb-badge" data-jb-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's James Beard list" title="${String(s.jamesBeardHonor || 'James Beard Foundation recognition').replace(/&/g,'&amp;').replace(/"/g,'&quot;')} — tap for the James Beard list">JB</span>` : ''}${s.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${s.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}${isRecentlyOpened(s.openedDate) ? '<span class="bo-new-badge">NEW</span>' : ''}</h3>
         <div class="bo-rating-row">
           <div class="bo-rating">${s.rating ? '★ ' + s.rating : 'Not yet independently rated'}</div>
           <div class="bo-price-tag">${'$'.repeat(s.price)}<span style="opacity:0.25">${'$'.repeat(4 - s.price)}</span></div>
         </div>
+        ${cat === 'jamesbeard' && s.jamesBeardHonor ? `<div class="bo-why" style="color:#f0a2a5;"><span class="bo-jb-badge" style="margin:0 6px 0 0;cursor:default;">JB</span>${s.jamesBeardHonor}</div>` : ''}
         <div class="bo-why">${s.why}</div>
         <button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button>
         <div class="bo-note bo-note-collapsed">${s.note}</div>
@@ -20049,6 +20182,7 @@ function boRenderCategory(cat){
       </div>
     `;
     const michelinBadge = card.querySelector('.bo-michelin-badge[data-michelin-city]');
+    const jamesBeardBadge = card.querySelector('.bo-jb-badge[data-jb-city]');
     card.querySelectorAll('[data-info-badge]').forEach(infoBadge => {
       infoBadge.addEventListener('click',event => {
         event.preventDefault();
@@ -20067,6 +20201,19 @@ function boRenderCategory(cat){
       michelinBadge.addEventListener('click', openCityMichelin);
       michelinBadge.addEventListener('keydown', (event) => {
         if(event.key === 'Enter' || event.key === ' ') openCityMichelin(event);
+      });
+    }
+    if(jamesBeardBadge){
+      const openCityJamesBeard = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const cityKey = jamesBeardBadge.dataset.jbCity || boCityContext;
+        if(BO_CITY_CONFIG[cityKey]) boCityContext = cityKey;
+        boRenderCategory('jamesbeard');
+      };
+      jamesBeardBadge.addEventListener('click', openCityJamesBeard);
+      jamesBeardBadge.addEventListener('keydown', (event) => {
+        if(event.key === 'Enter' || event.key === ' ') openCityJamesBeard(event);
       });
     }
     // Cards 4 and beyond land inside the hidden wrapper, so they only appear
