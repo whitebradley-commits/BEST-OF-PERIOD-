@@ -21038,7 +21038,7 @@ function closeTapDefPopup(){
 const tgEntryHash=location.hash;
 const TG_SUPABASE_URL='https://rrcfcudeqniuzlchnuzh.supabase.co';
 const TG_SUPABASE_KEY='sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN';
-const icons=['🌎','👻','⚡','🛸','🦁','🦋','🔥','🎱','🍀','🖐️'];let tgIdentity='🌎',tgNumber=101,tgPhoto='',tgLiveCount=101,tgClaimPromise=null,tgCountryPromise=null;
+const icons=['🫠','🥸','👹','🧌','🦤','🪬','🗿','🪩','🦑','🧿'];let tgIdentity='🫠',tgNumber=101,tgPhoto='',tgLiveCount=101,tgClaimPromise=null,tgCountryPromise=null;
 function ordinal(n){let m=n%100,s=m>=11&&m<=13?'th':n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th';return n.toLocaleString()+s}
 function tagParams(){const h=tgEntryHash.replace(/^#\/?/,'');if(h.startsWith('tag')){const q=h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');const p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
 function sbHeaders(json){const h={apikey:TG_SUPABASE_KEY};if(json)h['Content-Type']='application/json';return h}
@@ -21055,7 +21055,7 @@ function replay(){const o=document.getElementById('tagGameOverlay');o.classList.
 function init(){const p=tagParams();const n=Number(p.get('n'));if(n>=101&&n<=1000000000)tgNumber=n;tgIdentity=p.get('i')||'🌎';tgPhoto=p.get('p')||'';document.getElementById('tgOrdinal').textContent=ordinal(tgNumber);const remembered=Number(localStorage.getItem('tag-world-last-count'))||101;showCurrentCount(Math.max(tgNumber,remembered));loadLiveCount();setInterval(loadLiveCount,8000);if(p.has('tag'))openTagGame();if(localStorage.getItem('tag-world-sent-v4')==='yes'){const b=document.getElementById('tgMainButton');b.classList.add('tg-locked');b.querySelector('.tg-go').innerHTML='TAG SENT<br><small>YOU’RE SAFE!</small>'}}
 window.openTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.add('tg-open');o.setAttribute('aria-hidden','false');loadLiveCount();replay();if(tagParams().has('tag'))requestCountry()};window.closeTagGame=function(){const o=document.getElementById('tagGameOverlay');o.classList.remove('tg-open','tg-animate');o.setAttribute('aria-hidden','true')};
 window.tgMoreGames=function(){showPanel('<div class="tg-soon"><span>🎮</span><h2>COMING SOON</h2><p>One game first. One worldwide chain. Let’s see how far Tag the World can go.</p></div>')};window.tgClosePanel=function(){document.getElementById('tgPanelWrap').classList.remove('tg-show')};function showPanel(x){document.getElementById('tgPanelBody').innerHTML=x;document.getElementById('tgPanelWrap').classList.add('tg-show')}
-window.tgStart=function(){if(localStorage.getItem('tag-world-sent-v4')==='yes')return;showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><div class="tg-photo-actions"><button onclick="document.getElementById(&quot;tgCamera&quot;).click()">TAKE A PICTURE</button></div><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
+window.tgStart=function(){if(localStorage.getItem('tag-world-sent-v4')==='yes')return;showPanel('<div class="tg-preview" id="tgPreview">'+(tgPhoto?'<img src="'+tgPhoto+'">':tgIdentity)+'</div><h2>TAG, YOU’RE IT!</h2><p class="tg-note">Choose what the next person will see.</p><p class="tg-emoji-prompt"><span>↑ TAKE A PIC</span><small>OR</small><span>ADD AN EMOJI ↓</span></p><div class="tg-icons">'+icons.map((x,i)=>'<button onclick="tgPickIcon('+i+')">'+x+'</button>').join('')+'</div><input id="tgPerson" class="tg-person" placeholder="Name or cell phone (optional)"><p class="tg-note">LIMITED TO TAGGING ONE PERSON ONLY.</p><button class="tg-send" onclick="tgShare()">SEND THE TAG →</button>')};
 window.tgPickIcon=function(i){tgIdentity=icons[i];tgPhoto='';document.getElementById('tgPreview').innerHTML=tgIdentity};
 async function photo(e){const f=e.target.files&&e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.src=u;await im.decode();const c=document.createElement('canvas');c.width=c.height=96;const x=c.getContext('2d'),z=Math.min(im.naturalWidth,im.naturalHeight);x.drawImage(im,(im.naturalWidth-z)/2,(im.naturalHeight-z)/2,z,z,0,0,96,96);tgPhoto=c.toDataURL('image/jpeg',.5);document.getElementById('tgPreview').innerHTML='<img src="'+tgPhoto+'">'}
 document.getElementById('tgCamera').addEventListener('change',photo);document.getElementById('tgUpload').addEventListener('change',photo);
@@ -21822,6 +21822,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function identity(){var b=document.querySelector('.tg-visibility-option.is-selected'),mode=b&&b.dataset.mode||'flag_only',avatar='';if(mode==='photo_flag'&&typeof tgPhoto!=='undefined')avatar=tgPhoto||'';if(mode==='emoji_flag'&&typeof tgIdentity!=='undefined')avatar=tgIdentity||'🌎';return{display_mode:mode,avatar_value:avatar}}
   function country(){var m=(navigator.language||'en-US').match(/-([A-Z]{2})$/i);return m?m[1].toUpperCase():'US'}
   function shareText(){return'Tag, you’re it! Don’t forget to tag someone and keep the game running. Help us tag the world for peace! 🌎 👉 🙌 ✌️ 🫶 #TagTheWorld #TagForPeace'}
+  function prepareError(code){var messages={tag_required:'You must receive a real tag link to play.',email_required:'Enter a working email address.',already_played:'This email has already used its one tag.',chain_started:'The first tag has already started. Open the tag link you received.',expired:'That tag expired. Use the newest tag link or reminder email.',incoming_expired:'That tag expired. Use the newest tag link or reminder email.',not_found:'That tag link is no longer active.',server_error:'The tag server paused. Please try again.',connection:'The connection paused. Please try again.'};return messages[code]||'The tag could not be prepared. Close this panel and try again.'}
   async function shareUrl(url){if(navigator.share)return navigator.share({title:'Tag the World — Tag, You’re It!',text:shareText(),url:url});await navigator.clipboard.writeText(shareText()+'\n'+url);alert('Tag copied. Paste it into any message.')}
   function markPending(){var main=document.getElementById('tgMainButton'),go=main&&main.querySelector('.tg-go');if(main){main.classList.remove('tg-view-locked');main.classList.add('tg-locked')}if(go)go.innerHTML='TAG PENDING<br><small>WAITING FOR RECIPIENT</small>'}
   function waiting(url){markPending();var body=document.getElementById('tgPanelBody'),wrap=document.getElementById('tgPanelWrap');if(!body||!wrap)return;body.innerHTML='<h2>TAG PENDING</h2><p>One live tag is already waiting for your recipient. You cannot start another tag. Use Send Again only to resend this exact same link.</p><button type="button" class="tg-await-button" id="tgSendAgain">SEND THE SAME TAG AGAIN →</button><button type="button" class="tg-await-button" onclick="tgClosePanel()">CLOSE FOR NOW</button>';wrap.classList.add('tg-show');document.getElementById('tgSendAgain').onclick=async function(){try{await shareUrl(url)}catch(e){}waiting(url)}}
@@ -21830,7 +21831,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     var saved=sessionStorage.getItem('tag-world-pending-url')||localStorage.getItem('tag-world-pending-url');if(saved){waiting(saved);return}
     var button=document.querySelector('#tgPanelBody .tg-send'),email=document.getElementById('tgPlayerEmail');if(!button)return;if(!val('retry')&&!val('rescue')&&(!email||!email.value.trim())){var st=document.getElementById('tgEmailStatus');if(st)st.textContent='Enter your email so the tag can return if needed.';return}
     button.disabled=true;button.textContent='GETTING YOUR TAG READY…';var pick=identity(),opt=document.getElementById('tgMarketingOptIn');var prepared=await call({action:'prepare',incoming_token:val('t')||null,retry_token:val('retry')||null,rescue_token:val('rescue')||null,founder_token:ownerPass()||null,email:val('retry')||val('rescue')?'':email.value.trim(),country:country(),marketing_opt_in:!!(opt&&opt.checked),display_mode:pick.display_mode,avatar_value:pick.avatar_value});
-    if(!prepared.ok){var status=document.getElementById('tgEmailStatus');if(status)status.textContent=prepared.code==='tag_required'?'You must receive a real tag link to play.':'The connection paused. Please try again.';button.disabled=false;button.textContent='SEND THE TAG →';return}
+    if(!prepared.ok){var status=document.getElementById('tgEmailStatus');if(status)status.textContent=prepareError(prepared.code);button.disabled=false;button.textContent='SEND THE TAG →';return}
     var u=new URL(location.origin+location.pathname),q=new URLSearchParams();q.set('tag','1');q.set('t',prepared.token);q.set('n',prepared.next_number||1);u.search=q.toString();u.hash='tag?'+q.toString();var url=u.toString();sessionStorage.setItem('tag-world-pending-url',url);sessionStorage.setItem('tag-world-pending-token',prepared.token);localStorage.setItem('tag-world-pending-url',url);localStorage.setItem('tag-world-pending-token',prepared.token);localStorage.setItem('tag-world-pending-number',String(prepared.next_number||1));
     try{await shareUrl(url)}catch(e){}waiting(url)
   };
@@ -21944,5 +21945,51 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
-<style id="tag-world-single-photo-action">#tagGameOverlay .tg-photo-actions{grid-template-columns:1fr!important}</style>
+<style id="tag-world-emoji-prompt">#tagGameOverlay .tg-emoji-prompt{display:flex;flex-direction:column;align-items:center;gap:3px;margin:18px 0 5px;text-align:center;color:#e3265e;font:1000 14px/1 Arial,sans-serif;letter-spacing:.08em;animation:tg-choice-pulse 1.45s ease-in-out infinite}#tagGameOverlay .tg-emoji-prompt small{color:#17274c;font-size:8px;letter-spacing:.16em}@keyframes tg-choice-pulse{0%,100%{opacity:.76;text-shadow:0 0 3px rgba(227,38,94,.28);transform:scale(.985)}50%{opacity:1;text-shadow:0 0 7px rgba(227,38,94,.8),0 0 14px rgba(227,38,94,.38);transform:scale(1.025)}}@media(prefers-reduced-motion:reduce){#tagGameOverlay .tg-emoji-prompt{animation:none}}</style>
+<style id="other-cities-numbered-destination-clusters">
+#ocWorldOverlay .oc-pin-destination-group{z-index:12!important;width:34px!important;height:34px!important;margin:-17px 0 0 -17px!important;color:#fff!important;font:900 12px/1 'Archivo Black',Arial,sans-serif!important;text-shadow:0 1px 2px #000!important}
+#ocWorldOverlay .oc-pin-destination-group::before{width:25px!important;height:25px!important;background:#3b9dff!important;border:2px solid #fff!important;box-shadow:0 0 16px rgba(59,157,255,1),0 0 5px #fff!important}
+#ocWorldOverlay .oc-pin-destination-group::after{width:25px!important;height:25px!important;border-color:rgba(59,157,255,.92)!important}
+#ocWorldOverlay .oc-pin-destination-group span{position:relative;z-index:2;pointer-events:none}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card{position:fixed!important;left:50%!important;top:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%)!important;z-index:12000!important;display:block!important;width:min(84vw,330px)!important;margin:0!important;padding:24px 20px 20px!important;border:2px solid #F59E0B!important;border-radius:18px!important;background:rgba(4,4,4,.96)!important;box-shadow:0 0 0 9999px rgba(0,0,0,.52),0 0 28px rgba(245,158,11,.58)!important;text-align:center!important}
+#ocWorldOverlay .oc-choice-title{margin:0 34px 18px;color:#F59E0B;font:900 18px/1.1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em}
+#ocWorldOverlay .oc-choice-close{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:2px solid #F59E0B;background:#050505;color:#ef3340;font:900 20px/1 Arial,sans-serif}
+#ocWorldOverlay .oc-choice-list{display:grid;gap:10px}
+#ocWorldOverlay .oc-choice-city{width:100%;padding:13px 15px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:900 14px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.07em;box-shadow:0 0 10px rgba(245,158,11,.2)}
+#ocWorldOverlay .oc-choice-city:active{transform:scale(.98);background:#F59E0B;color:#000}
+</style>
+<script id="other-cities-numbered-destination-clusters">
+(function(){
+  var originalShowCity=window.ocShowCity;
+  var groups=[
+    {id:'west',la:34.45,lo:-116.15,dests:['bestof','sandiego']},
+    {id:'miami',la:25.76,lo:-80.19,dests:['miami']},
+    {id:'london',la:51.51,lo:-0.13,dests:['london']}
+  ];
+  function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
+  function groupCities(group){return group.dests.map(liveCity).filter(Boolean)}
+  function restoreCard(){var card=document.getElementById('ocCityCard');if(!card)return null;card.classList.remove('oc-city-choice-card');card.innerHTML='<div id="ocCityName"></div><div id="ocCityStatus"></div><button id="ocCityGo" type="button">OPEN</button>';return card}
+  function openDestination(city){restoreCard();originalShowCity(city);var go=document.getElementById('ocCityGo');if(go&&typeof go.onclick==='function')go.click()}
+  window.ocShowDestinationChoices=function(cities){
+    if(!cities||!cities.length)return;
+    var card=document.getElementById('ocCityCard');if(!card)return;
+    card.className='open oc-city-choice-card';
+    card.innerHTML='<button class="oc-choice-close" type="button" aria-label="Close">×</button><h3 class="oc-choice-title">CHOOSE YOUR CITY</h3><div class="oc-choice-list"></div>';
+    var list=card.querySelector('.oc-choice-list');
+    cities.forEach(function(city){var button=document.createElement('button');button.type='button';button.className='oc-choice-city';button.textContent=city.n;button.onclick=function(){openDestination(city)};list.appendChild(button)});
+    card.querySelector('.oc-choice-close').onclick=function(){card.classList.remove('open','oc-city-choice-card')};
+  };
+  window.ocShowCity=function(city){if(city&&city.t==='live'){window.ocShowDestinationChoices([city]);return}restoreCard();originalShowCity(city)};
+  window.ocBuildPins=function(){
+    var layer=document.getElementById('ocPinLayer');if(!layer)return;
+    layer.innerHTML='';layer.dataset.built='clusters';
+    var frag=document.createDocumentFragment();
+    OC_CITIES.forEach(function(city,idx){if(city.t==='live')return;var p=ocProject(city.la,city.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-'+city.t;pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.setAttribute('aria-label',city.n);pin.dataset.cityIndex=idx;frag.appendChild(pin)});
+    groups.forEach(function(group,idx){var cities=groupCities(group),p=ocProject(group.la,group.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-live oc-pin-destination-group';pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.setAttribute('aria-label',cities.length+' available '+(cities.length===1?'destination':'destinations'));pin.dataset.groupIndex=idx;pin.innerHTML='<span>'+cities.length+'</span>';frag.appendChild(pin)});
+    layer.appendChild(frag);
+    layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.groupIndex!=null)window.ocShowDestinationChoices(groupCities(groups[Number(pin.dataset.groupIndex)]));else window.ocShowCity(OC_CITIES[Number(pin.dataset.cityIndex)])};
+  };
+  window.ocLandOnCity=function(dest){var group=groups.find(function(item){return item.dests.indexOf(dest)!==-1});if(!group)return;var layer=document.getElementById('ocPinLayer');if(!layer)return;var pin=layer.querySelector('[data-group-index="'+groups.indexOf(group)+'"]');if(pin){pin.scrollIntoView({behavior:'smooth',block:'center'});pin.classList.add('oc-pin-land');setTimeout(function(){pin.classList.remove('oc-pin-land')},2200)}window.ocShowDestinationChoices(groupCities(group))};
+})();
+</script>
 </body></html> 
