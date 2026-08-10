@@ -7988,7 +7988,7 @@ function sfPad(text){
 // world. This is deliberately separate from BOP_SPLASH_CITIES (the shorter
 // list used elsewhere), since this page needs real breadth, not just flavor.
 const BOP_LANDING_CITIES = [
-  "Las Vegas", "Miami", "S.V.", "Los Angeles", "New York", "Chicago", "Austin",
+  "Las Vegas", "Miami", "S.V.", "Los Angeles", "Santa Barbara", "New York", "Chicago", "Austin",
   "Nashville", "New Orleans", "San Francisco", "S.D.", "Dallas",
   "Houston", "Atlanta", "Orlando", "Tampa", "Scottsdale", "Phoenix",
   "Denver", "Seattle", "Boston", "Washington DC", "Charlotte", "Honolulu",
@@ -8127,7 +8127,17 @@ function setupBopLanding(){
     { name: 'Miami', region: 'Florida', dest: 'miami' },
     { name: 'London', region: 'England', dest: 'london' },
     { name: 'San Diego', region: 'California', dest: 'sandiego' },
-    { name: 'Silicon Valley', region: 'California', dest: 'siliconvalley', aliases: ['S.V.', 'SV', 'S V'] }
+    { name: 'Silicon Valley', region: 'California', dest: 'siliconvalley', aliases: ['S.V.', 'SV', 'S V'] },
+    { name: 'Los Angeles', region: 'California', dest: 'losangeles', aliases: ['L.A.', 'LA', 'L A'] },
+    { name: 'Santa Barbara', region: 'California', dest: 'santabarbara' },
+    { name: 'San Francisco', region: 'California', dest: 'sanfrancisco', aliases: ['S.F.', 'SF', 'S F'] },
+    { name: 'New York City', region: 'New York', dest: 'newyork', aliases: ['New York', 'NYC', 'N.Y.C.'] },
+    { name: 'Chicago', region: 'Illinois', dest: 'chicago' },
+    { name: 'Washington, D.C.', region: 'District of Columbia', dest: 'washingtondc', aliases: ['Washington DC', 'Washington D.C.', 'D.C.', 'DC'] },
+    { name: 'Boston', region: 'Massachusetts', dest: 'boston' },
+    { name: 'Philadelphia', region: 'Pennsylvania', dest: 'philadelphia', aliases: ['Philly'] },
+    { name: 'Atlanta', region: 'Georgia', dest: 'atlanta' },
+    { name: 'New Orleans', region: 'Louisiana', dest: 'neworleans', aliases: ['NOLA'] }
   ];
 
   function goToCity(dest){
@@ -8166,6 +8176,16 @@ function setupBopLanding(){
         london:[51.5072,-0.1276],
         sandiego:[32.7157,-117.1611]
         ,siliconvalley:[37.3875,-122.0575]
+        ,losangeles:[34.0522,-118.2437]
+        ,santabarbara:[34.4208,-119.6982]
+        ,sanfrancisco:[37.7749,-122.4194]
+        ,newyork:[40.7128,-74.0060]
+        ,chicago:[41.8781,-87.6298]
+        ,washingtondc:[38.9072,-77.0369]
+        ,boston:[42.3601,-71.0589]
+        ,philadelphia:[39.9526,-75.1652]
+        ,atlanta:[33.7490,-84.3880]
+        ,neworleans:[29.9511,-90.0715]
       };
       const openForCity = function(cityKey){
         boNearMapReturnTarget = 'landing';
@@ -8367,25 +8387,27 @@ var OC_LAND = {
 // when a pin is tapped. Add entries here as new cities go live.
 var OC_CITIES = [
   {n:"Las Vegas",la:36.17,lo:-115.14,t:"live",dest:"bestof"},
-  {n:"Los Angeles",la:34.05,lo:-118.24,t:"2027"},
+  {n:"Los Angeles",la:34.05,lo:-118.24,t:"live",dest:"losangeles"},
+  {n:"Santa Barbara",la:34.42,lo:-119.70,t:"live",dest:"santabarbara"},
   {n:"San Diego",la:32.72,lo:-117.16,t:"live",dest:"sandiego"},
-  {n:"San Francisco",la:37.77,lo:-122.42,t:"2027"},
+  {n:"San Francisco",la:37.77,lo:-122.42,t:"live",dest:"sanfrancisco"},
   {n:"Silicon Valley",la:37.39,lo:-122.06,t:"live",dest:"siliconvalley"},
   {n:"Phoenix",la:33.45,lo:-112.07,t:"2027"},
   {n:"Denver",la:39.74,lo:-104.99,t:"2027"},
   {n:"Salt Lake City",la:40.76,lo:-111.89,t:"2027"},
   {n:"Dallas",la:32.78,lo:-96.8,t:"2027"},
   {n:"Houston",la:29.76,lo:-95.37,t:"2027"},
-  {n:"Chicago",la:41.88,lo:-87.63,t:"2027"},
+  {n:"Chicago",la:41.88,lo:-87.63,t:"live",dest:"chicago"},
   {n:"Miami",la:25.76,lo:-80.19,t:"live",dest:"miami"},
   {n:"London",la:51.51,lo:-0.13,t:"live",dest:"london"},
   {n:"Orlando",la:28.54,lo:-81.38,t:"2027"},
-  {n:"Atlanta",la:33.75,lo:-84.39,t:"2027"},
+  {n:"Atlanta",la:33.75,lo:-84.39,t:"live",dest:"atlanta"},
   {n:"Nashville",la:36.16,lo:-86.78,t:"2027"},
-  {n:"New Orleans",la:29.95,lo:-90.07,t:"2027"},
-  {n:"New York",la:40.71,lo:-74.01,t:"2027"},
-  {n:"Boston",la:42.36,lo:-71.06,t:"2027"},
-  {n:"Washington DC",la:38.91,lo:-77.04,t:"2027"},
+  {n:"New Orleans",la:29.95,lo:-90.07,t:"live",dest:"neworleans"},
+  {n:"New York City",la:40.71,lo:-74.01,t:"live",dest:"newyork"},
+  {n:"Boston",la:42.36,lo:-71.06,t:"live",dest:"boston"},
+  {n:"Philadelphia",la:39.95,lo:-75.17,t:"live",dest:"philadelphia"},
+  {n:"Washington, D.C.",la:38.91,lo:-77.04,t:"live",dest:"washingtondc"},
   {n:"Seattle",la:47.61,lo:-122.33,t:"2027"},
   {n:"Portland",la:45.52,lo:-122.68,t:"2027"},
   {n:"Minneapolis",la:44.98,lo:-93.27,t:"2027"},
@@ -10165,7 +10187,8 @@ function setupBestOf(){
 // this object automatically. Nothing else needs touching.
 const BO_CITY_CONFIG = {
   bestof: {
-    displayName: 'Vegas',
+    displayName: 'Las Vegas',
+    landingName: 'Vegas',
     areaList: ['Las Vegas County', 'Downtown', 'Summerlin', 'Henderson'],
     tickerMessages: ['VEGAS IS LIVE!', 'COMING TO A', 'CITY NEAR YOU!'],
     useNameCycler: true,   // Vegas's hero cycles through random city names for flavor
@@ -10187,6 +10210,7 @@ const BO_CITY_CONFIG = {
   },
   sandiego: {
     displayName: 'San Diego',
+    landingName: 'S.D.',
     // San Diego's "county" isn't one dense city core like Vegas/Miami/London —
     // it's a long coastal-to-inland stretch, so the area list spells that out
     // instead of naming a couple of neighborhoods.
@@ -10199,15 +10223,137 @@ const BO_CITY_CONFIG = {
     bjsPicksCat: 'bjspickssandiego'   // San Diego's own, separate BJS Picks page
   },
   siliconvalley: {
-    displayName: 'S.V.',
-    searchName: 'Silicon Valley',
+    displayName: 'Silicon Valley',
+    landingName: 'S.V.',
     areaList: ['The Peninsula', 'South Bay', 'Woodside to San Jose'],
     footnote: '*Silicon Valley covers a wide dining territory — tap Near Me for the closest recommendations.',
-    tickerMessages: ['SILICON VALLEY IS LIVE!', 'S.V. S.V.'],
+    tickerMessages: ['SILICON VALLEY', 'IS LIVE!'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickssiliconvalley'
+  },
+  losangeles: {
+    displayName: 'Los Angeles',
+    areaList: ['Los Angeles County'], tickerMessages: ['LOS ANGELES', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspickslosangeles'
+  },
+  santabarbara: {
+    displayName: 'Santa Barbara',
+    areaList: ['Santa Barbara County'], tickerMessages: ['SANTA BARBARA', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspickssantabarbara'
+  },
+  sanfrancisco: {
+    displayName: 'San Francisco',
+    areaList: ['San Francisco Bay Area'], tickerMessages: ['SAN FRANCISCO', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspickssanfrancisco'
+  },
+  newyork: {
+    displayName: 'New York City',
+    areaList: ['New York City'], tickerMessages: ['NEW YORK CITY', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksnewyork'
+  },
+  chicago: {
+    displayName: 'Chicago', areaList: ['Chicago'],
+    tickerMessages: ['CHICAGO IS LIVE!', 'MORE COMING!'],
+    useNameCycler: true, bjsPicksCat: 'bjspickschicago'
+  },
+  washingtondc: {
+    displayName: 'Washington, D.C.',
+    areaList: ['Washington, D.C. Metro'], tickerMessages: ['WASHINGTON D.C.', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspickswashingtondc'
+  },
+  boston: {
+    displayName: 'Boston', areaList: ['Greater Boston'],
+    tickerMessages: ['BOSTON IS LIVE!', 'MORE COMING!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksboston'
+  },
+  philadelphia: {
+    displayName: 'Philadelphia',
+    areaList: ['Greater Philadelphia'], tickerMessages: ['PHILADELPHIA', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksphiladelphia'
+  },
+  atlanta: {
+    displayName: 'Atlanta', areaList: ['Metro Atlanta'],
+    tickerMessages: ['ATLANTA IS LIVE!', 'MORE COMING!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksatlanta'
+  },
+  neworleans: {
+    displayName: 'New Orleans',
+    areaList: ['Greater New Orleans'], tickerMessages: ['NEW ORLEANS', 'IS LIVE!'],
+    useNameCycler: true, bjsPicksCat: 'bjspicksneworleans'
   }
 };
+
+/* Michelin-first launch roster — August 2026. Every city below is live;
+   these verified starters keep a new page useful while its wider dining
+   coverage, imagery and direct links continue to grow. */
+const BO_CITY_LAUNCH_PIPELINE = {
+  losangeles: {
+    displayName: 'Los Angeles', region: 'California', status: 'live',
+    restaurants: [{name:'Somni', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide California 2025'}]
+  },
+  santabarbara: {
+    displayName: 'Santa Barbara', region: 'California', status: 'live',
+    restaurants: [{name:"Caruso's", distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide California 2025'}]
+  },
+  sanfrancisco: {
+    displayName: 'San Francisco', region: 'California', status: 'live',
+    restaurants: [{name:'Atelier Crenn', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide California 2025'}]
+  },
+  newyork: {
+    displayName: 'New York City', region: 'New York', status: 'live',
+    restaurants: [{name:'Eleven Madison Park', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide New York 2025'}]
+  },
+  chicago: {
+    displayName: 'Chicago', region: 'Illinois', status: 'live',
+    restaurants: [{name:'Smyth', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide Chicago 2025'}]
+  },
+  washingtondc: {
+    displayName: 'Washington, D.C.', region: 'District of Columbia', status: 'live',
+    restaurants: [{name:'The Inn at Little Washington', distinction:'MICHELIN Starred', source:'MICHELIN Guide Washington, D.C. 2025'}]
+  },
+  boston: {
+    displayName: 'Boston', region: 'Massachusetts', status: 'live',
+    restaurants: [{name:'311 Omakase', distinction:'One MICHELIN Star', stars:1, source:'Inaugural MICHELIN Guide Boston 2025'}]
+  },
+  philadelphia: {
+    displayName: 'Philadelphia', region: 'Pennsylvania', status: 'live',
+    restaurants: [{name:'Friday Saturday Sunday', distinction:'One MICHELIN Star', stars:1, source:'Inaugural MICHELIN Guide Philadelphia 2025'}]
+  },
+  atlanta: {
+    displayName: 'Atlanta', region: 'Georgia', status: 'live',
+    restaurants: [{name:'Atlas', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide American South 2025'}]
+  },
+  neworleans: {
+    displayName: 'New Orleans', region: 'Louisiana', status: 'live',
+    restaurants: [{name:"Emeril's", distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide American South 2025'}]
+  }
+};
+
+// One source of truth for the ongoing 1–15 count ledger. Existing live-city
+// totals are read after all records are installed; launch totals come only
+// from the verified staging arrays above.
+function boRollingCityLedger(){
+  const seenCount = key => {
+    const seen = new Set();
+    if(typeof boCategoryData === 'undefined') return 0;
+    Object.values(boCategoryData).forEach(list => {
+      if(!Array.isArray(list)) return;
+      list.forEach(r => {
+        if(!r || !r.name) return;
+        let restaurantCity = String(r.city || 'bestof').toLowerCase();
+        if(restaurantCity === 'vegas' || restaurantCity === 'lasvegas') restaurantCity = 'bestof';
+        if(restaurantCity === key) seen.add(String(r.name).trim().toLowerCase());
+      });
+    });
+    return seen.size;
+  };
+  return Object.keys(BO_CITY_CONFIG).map(key => ({
+    key,
+    name: BO_CITY_CONFIG[key].displayName,
+    count: seenCount(key),
+    live:true
+  }));
+}
 const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
 // Cities whose "24 Hours" picks aren't literally open around the clock (just
 // very late night) get an "ish" appended to the title, in the same rainbow
@@ -16854,6 +17000,98 @@ boCategoryData.steakeggs = [
   main.forEach((r, i) => { r.rank = i + 1; });
 })();
 
+// Miami 2026 MICHELIN build. Every currently starred restaurant and every
+// Bib Gourmand is mandatory, even when a public rating is unavailable or
+// below the site's normal 4.7 flagship threshold. Venue-specific room,
+// counter or exterior photographs are used throughout (never food shots).
+(function buildMiamiMichelin2026(){
+  const main = boCategoryData.miami || (boCategoryData.miami = []);
+  const existing = new Map(main.filter(Boolean).map(r => [r.name, r]));
+  const records = [
+    {name:"Ariete",michelinStars:1,image:"https://static.prod.r53.tablethotels.com/media/hotels/slideshow_images_staged/large/1094712.jpg",address:"3540 Main Hwy, Miami, FL 33133",url:"https://arietecoconutgrove.com/",price:4,why:"Chef Michael Beltran's deeply personal Coconut Grove tasting room, joining Cuban-American memory with exacting modern technique"},
+    {name:"Boia De",michelinStars:1,address:"5205 NE 2nd Ave, Miami, FL 33137",price:4},
+    {name:"Cote Miami",michelinStars:1,address:"3900 NE 2nd Ave, Miami, FL 33137",price:4},
+    {name:"Elcielo Miami",michelinStars:1,address:"31 SE 5th St, Miami, FL 33131",price:4},
+    {name:"Hiden",michelinStars:1,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/3ef6fbce7ebd4b49b3cee045712bcd9d.jpeg",address:"313 NW 25th St, Miami, FL 33127",url:"https://hidenmiami.com/",price:4,why:"A concealed eight-seat Wynwood counter delivering a precise Japanese tasting progression"},
+    {name:"L'Atelier de Joel Robuchon",michelinStars:2,address:"151 NE 41st St, Miami, FL 33137",price:4},
+    {name:"Le Jardinier Miami",michelinStars:1,image:"https://res.cloudinary.com/the-infatuation/image/upload/q_auto,f_auto/cms/beta/LeJardinier_081019_1043",address:"151 NE 41st St, Ste 135, Miami, FL 33137",url:"https://www.lejardinier-miami.com/",price:4,why:"A luminous Design District dining room placing vegetables and seasonal Florida produce at the center of modern French cooking"},
+    {name:"Los Félix",michelinStars:1,image:"https://res.cloudinary.com/the-infatuation/image/upload/v1746546260/images/LosFelix_Interior_Cleveland_Miami-4_1_ijyviw.jpg",address:"3413 Main Hwy, Miami, FL 33133",url:"https://losfelixmiami.com/",price:3,why:"An intimate Coconut Grove restaurant exploring heirloom corn, indigenous technique and contemporary Mexican cooking"},
+    {name:"Mutra",michelinStars:1,image:"https://mutramiami.com/cdn/shop/files/9.jpg?v=1779015519&width=1920",address:"2188 NE 123rd St, North Miami, FL 33181",url:"https://mutramiami.com/",price:4,openedDate:"2025-01-01",why:"North Miami's newly starred, Jerusalem-inspired counter where live fire and Florida produce shape a highly personal menu"},
+    {name:"Ogawa",michelinStars:1,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics__/ec9d0bb4370d4dc7984c5cbbfa2b4aa7",address:"7223 NW 2nd Ave, Miami, FL 33150",url:"https://www.ogawamiami.com/",price:4,why:"A serene Little River omakase counter balancing exceptional Japanese seafood with inventive cooked courses"},
+    {name:"Shingo",michelinStars:1,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/552c29762fb54513b34286413ac64ba3.jpeg",address:"112 Alhambra Cir, Coral Gables, FL 33134",url:"https://shingomiami.com/",price:4,why:"Chef Shingo Akikuni's intimate Coral Gables omakase counter, built on impeccable sourcing and disciplined Edomae craft"},
+    {name:"Stubborn Seed",michelinStars:1,image:"https://www.miamiexplore.com/_next/image?q=75&url=https%3A%2F%2Fyzkifdizqumezoielbrc.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fplaces%2Fvenues%2Fstubborn-seed-miami-beach%2Fimages%2Fstubborn-seed-miami-beach-miami-beach-interior-2.jpg&w=1200",address:"101 Washington Ave, Miami Beach, FL 33139",url:"https://stubbornseed.com/",price:4,why:"Jeremy Ford's South of Fifth tasting room, combining bold seasonal ideas with polished modern technique"},
+    {name:"Tambourine Room by Tristan Brandt",michelinStars:1,image:"https://platform.miami.eater.com/wp-content/uploads/sites/12/chorus/uploads/chorus_asset/file/24231901/Tambourine_Room_by_Tristan_Brandt_Dining_Room_1_Photo_Credit_Michael_Pisarri.jpg?quality=90&strip=all",address:"6801 Collins Ave, Miami Beach, FL 33141",url:"https://www.carillonhotel.com/dining/tambourine-room",price:4,why:"An intimate 18-seat Miami Beach room marrying modern French structure with precise Asian accents"},
+    {name:"The Surf Club Restaurant",michelinStars:1,image:"https://prestigeluxuryrentals.com/wp-content/uploads/2024/04/surf-club-restaurant.jpeg",address:"9011 Collins Ave, Surfside, FL 33154",url:"https://www.surfclubrestaurant.com/",price:4,why:"Thomas Keller's timeless Surfside dining room, where classic continental luxury meets polished American cooking"},
+
+    {name:"Bachour",michelinBibGourmand:true,image:"https://greatlocations.com/wp-content/uploads/2023/09/bachourmiami_353343967_804882150955205_4835284725737664176_n-e1696604486127.jpg",url:"https://antoniobachour.com/",price:2,why:"Antonio Bachour's airy Coral Gables bakery and bistro, equally serious about pastry, breakfast and contemporary cooking"},
+    {name:"Barra Callao",michelinBibGourmand:true,image:"https://res.cloudinary.com/the-infatuation/image/upload/v1732283544/BarraCallao_Interior_Cleveland_Miami-3_enlzco.jpg",price:2,why:"A bright Peruvian seafood counter translating Lima's market and street-food energy into an exceptionally focused menu"},
+    {name:"Chug's Diner",michelinBibGourmand:true,image:"https://cityconstructiongroup.com/wp-content/uploads/2023/09/chugs_04.jpg",url:"https://chugsdiner.com/",price:2,why:"Michael Beltran's modern Cuban-American diner in Coconut Grove, open from breakfast through dinner"},
+    {name:"Cotoa",michelinBibGourmand:true,image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_3840,ar_4:3,g_center,f_auto/images/The_B100M-2_1_t6wyw2",price:2,openedDate:"2025-01-01",why:"A vibrant Ecuadorian dining room making a persuasive case for the country's regional cooking"},
+    {name:"Double Luck",michelinBibGourmand:true,image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_3840,ar_4:3,g_center,f_auto/images/MIMI_Chinese_Interior_Photo_Credit_-_Daniel_Neuhaus_4_mw7es7",price:2,openedDate:"2025-01-01",why:"A playful, red-lit Chinese dining room balancing Cantonese foundations with Miami nightlife energy"},
+    {name:"El Turco",michelinBibGourmand:true,image:"https://elturcoturkishfood.com/pluto-images/funnel/images/8d492fbe-390a-4404-9a96-a0421250651b?fit=cover&w=810",url:"https://elturcoturkishfood.com/",price:2,why:"A relaxed Buena Vista Turkish courtyard serving breakfast, pide and soulful regional standards"},
+    {name:"Ghee Indian Kitchen",michelinBibGourmand:true,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/845626f72ed34e1089cc2186ea044974.jpeg?width=1000",url:"https://gheemiami.com/",price:2,why:"Niven Patel's ingredient-driven Indian kitchen, grounded in Florida farms and layered regional spice"},
+    {name:"Hometown Barbecue Miami",michelinBibGourmand:true,image:"https://thevendry.com/cdn-cgi/image/height=1920,width=1920,fit=contain,metadata=none/https%3A/s3.us-east-1.amazonaws.com/uploads.thevendry.co/36209/1712679393490_241369899_839760653405083_6546842879721581128_n.jpg",url:"https://hometownbbqmiami.com/",price:2,why:"Allapattah's cavernous live-fire hall, bringing serious pit barbecue to a distinctly Miami setting"},
+    {name:"La Natural",michelinBibGourmand:true,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/9855767e5eed4bb78316252e2d9f2757.jpeg",url:"https://lanaturalmiami.com/",price:2,why:"A minimalist Little River pizzeria pairing naturally leavened wood-fired pies with a sharp natural-wine list"},
+    {name:"Lucali",michelinBibGourmand:true,image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_3840,ar_4:3,g_center,f_auto/cms/reviews/lucali-miami/EmilyS_LucaliMiami_001",url:"https://www.lucali.com/",price:2,why:"Miami Beach's candlelit neighborhood outpost for lovingly made, thin-crust pies and calzones"},
+    {name:"Mandolin Aegean Bistro",michelinBibGourmand:true,image:"https://cdn1.vox-cdn.com/uploads/chorus_asset/file/1327068/mandolin4.0.jpg",url:"https://mandolinmiami.com/",price:2,why:"A whitewashed Buena Vista house and garden channeling the easy warmth of a Greek and Turkish taverna"},
+    {name:"Michael's Genuine",michelinBibGourmand:true,image:"https://thevendry.com/cdn-cgi/image/width=3840,quality=75,fit=contain,metadata=none,format=auto/https%3A%2F%2Fs3.amazonaws.com%2Fuploads.thevendry.co%2F23049%2F1662019210887_main-dining.jpg",url:"https://michaelsgenuine.com/",price:3,why:"The Design District original that helped define ingredient-driven, chef-led modern Miami dining"},
+    {name:"Phuc Yea",michelinBibGourmand:true,image:"https://static.urbandaddy.com/uploads/assets/image/slideshows/standard/0f9f4e86530e56eb1c38b75e6dadfa14.jpg",url:"https://www.phucyea.com/",price:2,why:"A warm, art-filled Upper Eastside room serving bold Vietnamese-Cajun cooking and exuberant cocktails"},
+    {name:"Sanguich De Miami",michelinBibGourmand:true,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics__/5dc06f6f3ba7461e8092e5fe99f573fb",url:"https://sanguich.com/",price:1,why:"A jewel-box Little Havana sandwich shop refining Cuban classics through exacting house-made components"},
+    {name:"Tam Tam",michelinBibGourmand:true,image:"https://axwwgrkdco.cloudimg.io/v7/__gmpics3__/efea7d731cba43d099d6884ba8479c65.jpeg",url:"https://www.tamtammiami.com/",price:2,why:"A joyful downtown Vietnamese room with retro Saigon character and highly personal family-style cooking"},
+    {name:"Zitz Sum",michelinBibGourmand:true,image:"https://thevendry.com/cdn-cgi/image/width=3840,quality=75,fit=contain,metadata=none,format=auto/https%3A%2F%2Fs3.us-east-1.amazonaws.com%2Fuploads.thevendry.co%2F24984%2F1675359147763_220241681_188306579944093_526295852787568454_n.jpg",url:"https://www.zitzsum.com/",price:3,why:"A relaxed Coral Gables room where dumplings and Asian technique meet Miami ingredients and irreverent creativity"},
+    {name:"Tinta y Cafe",michelinBibGourmand:true,image:"https://static.goto-where.com/25998-albums-1.jpg",url:"https://tintaycafe.com/",price:1,why:"A book-lined Cuban cafe pairing thoughtful sandwiches and coffee with a genuinely neighborhood atmosphere"},
+    {name:"To Be Determined",michelinBibGourmand:true,image:"https://res.cloudinary.com/the-infatuation/image/upload/f_auto/q_auto/v1745437154/images/ToBeDetermined_Interior_Miami_Cleveland-7_dioruy.jpg",price:3,openedDate:"2025-01-01",why:"A quietly confident Miami dining room built around seasonal, technique-forward cooking and natural wine"}
+  ];
+
+  records.forEach((fresh, i) => {
+    const old = existing.get(fresh.name);
+    if(old) Object.assign(old, fresh, {city:'miami',image:fresh.image || old.image,imagePosition:'center'});
+    else main.push(Object.assign({city:'miami',imagePosition:'center',rating:null,reviews:null,note:(fresh.michelinStars ? `${fresh.michelinStars} Michelin Star${fresh.michelinStars > 1 ? 's' : ''} in the 2026 Guide.` : '2026 Michelin Bib Gourmand.'),hue:'28, 34%, 24%'}, fresh));
+  });
+  main.sort((a,b)=>(Number(b.michelinStars)||0)-(Number(a.michelinStars)||0)||(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0));
+  main.forEach((r,i)=>{r.rank=i+1;});
+
+  const byName = new Map(main.filter(r=>r&&r.city==='miami').map(r=>[r.name,r]));
+  const install = (cat,names) => {
+    boCategoryData[cat]=boCategoryData[cat]||[];
+    names.map(n=>byName.get(n)).filter(Boolean).forEach(r=>{
+      if(!boCategoryData[cat].some(x=>x&&x.name===r.name&&x.city==='miami')) boCategoryData[cat].push(Object.assign({},r));
+    });
+  };
+  install('french',["L'Atelier de Joel Robuchon","Le Jardinier Miami","Tambourine Room by Tristan Brandt","The Surf Club Restaurant"]);
+  install('italianhighend',["Boia De"]);
+  install('steakhighend',["Cote Miami","The Surf Club Restaurant"]);
+  install('korean',["Cote Miami"]);
+  install('sushihighend',["Hiden","Ogawa","Shingo"]);
+  install('sushi',["Hiden","Ogawa","Shingo"]);
+  install('mexicanhighend',["Los Félix"]);
+  install('mediterranean',["Mutra","El Turco","Mandolin Aegean Bistro"]);
+  install('breakfast',["Bachour","Chug's Diner","El Turco","Tinta y Cafe"]);
+  install('dessert',["Bachour"]);
+  install('peruvian',["Barra Callao"]);
+  install('chinese',["Double Luck"]);
+  install('indian',["Ghee Indian Kitchen"]);
+  install('bbq',["Hometown Barbecue Miami"]);
+  install('pizza',["La Natural","Lucali"]);
+  install('italiancasual',["La Natural","Lucali"]);
+  install('cuban',["Chug's Diner","Sanguich De Miami","Tinta y Cafe"]);
+  install('vietnamese',["Phuc Yea","Tam Tam"]);
+  install('asianfusion',["Zitz Sum","Phuc Yea"]);
+
+  // Miami's flagship list also inherits every independently researched 4.7+
+  // Miami record already living in a genre page. This keeps a qualifying
+  // late-night, steak, Italian, dessert, etc. card from being stranded in a
+  // subcategory when it belongs on Best Of Miami as well.
+  Object.values(boCategoryData).forEach(list => {
+    if(!Array.isArray(list)) return;
+    list.forEach(r => {
+      if(!r || r.city !== 'miami' || (parseFloat(r.rating) || 0) < 4.7) return;
+      if(!main.some(x => x && x.name === r.name)) main.push(Object.assign({},r));
+    });
+  });
+  main.forEach((r,i)=>{r.rank=i+1;});
+})();
+
 boCategoryData.asianbestofrest = [].concat(
   boCategoryData.sushi || [],
   boCategoryData.korean || [],
@@ -17174,6 +17412,31 @@ boCategoryData.bjspickssandiego = (() => {
   return picks;
 })();
 
+// Put each newly-live city's verified Michelin starter on its own main page
+// before the shared Michelin index is generated. Full city names remain in
+// all navigation and dropdowns; landingName is used only by the rotating logo.
+(function boActivateMichelinLaunchCities(){
+  Object.entries(BO_CITY_LAUNCH_PIPELINE).forEach(([cityKey, launch]) => {
+    const records = launch.restaurants.map((item, index) => ({
+      rank:index + 1,
+      name:item.name,
+      city:cityKey,
+      rating:null,
+      reviews:null,
+      image:'',
+      imagePosition:'center',
+      michelinGuide:true,
+      michelinStars:item.stars || undefined,
+      why:item.distinction,
+      note:`${item.source}. Full restaurant details and category coverage are being expanded.`,
+      url:'', address:'', phone:'', hours:[], price:4,
+      hue:'28, 34%, 24%'
+    }));
+    boCategoryData[cityKey] = records;
+    boCategoryData[BO_CITY_CONFIG[cityKey].bjsPicksCat] = [];
+  });
+})();
+
 // Michelin category — scans every restaurant category, so starred Italian,
 // Chinese, Japanese, Indian and city-main entries cannot slip through.
 // Duplicates are merged by restaurant name, keeping the richest record and
@@ -17312,7 +17575,7 @@ boCategoryData.cheesesteak = [
 ];
 
 const boFullTop100 = (() => {
-  const excluded = new Set(['bestof', 'miami', 'london', 'sandiego', 'siliconvalley', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'bjspickssandiego', 'bjspickssiliconvalley', 'michelin', 'jamesbeard']);
+  const excluded = new Set(BO_MAIN_CITY_CATS.concat(Object.values(BO_CITY_CONFIG).map(c=>c.bjsPicksCat), ['asianbestofrest', 'michelin', 'jamesbeard']));
   const seen = new Map();
   Object.entries(boCategoryData).forEach(([cat, list]) => {
     if(excluded.has(cat) || !Array.isArray(list)) return;
@@ -17340,7 +17603,7 @@ const boFullTop100 = (() => {
 })();
 
 const boAllRestaurantsFlat = (() => {
-  const excluded = new Set(['bestof', 'miami', 'london', 'sandiego', 'siliconvalley', 'asianbestofrest', 'bjspicks', 'bjspicksmiami', 'bjspickslondon', 'bjspickssandiego', 'bjspickssiliconvalley', 'michelin', 'jamesbeard']);
+  const excluded = new Set(BO_MAIN_CITY_CATS.concat(Object.values(BO_CITY_CONFIG).map(c=>c.bjsPicksCat), ['asianbestofrest', 'michelin', 'jamesbeard']));
   const seen = new Map();
   Object.entries(boCategoryData).forEach(([cat, list]) => {
     if(excluded.has(cat) || !Array.isArray(list)) return;
@@ -17445,6 +17708,16 @@ function boNearCityDefaults(cityKey){
     london: { center:[51.5072,-0.1276], zoom:10, label:'London' },
     sandiego:{ center:[32.7157,-117.1611], zoom:10, label:'San Diego' }
     ,siliconvalley:{ center:[37.3875,-122.0575], zoom:9, label:'Silicon Valley' }
+    ,losangeles:{ center:[34.0522,-118.2437], zoom:10, label:'Los Angeles' }
+    ,santabarbara:{ center:[34.4208,-119.6982], zoom:10, label:'Santa Barbara' }
+    ,sanfrancisco:{ center:[37.7749,-122.4194], zoom:10, label:'San Francisco' }
+    ,newyork:{ center:[40.7128,-74.0060], zoom:10, label:'New York City' }
+    ,chicago:{ center:[41.8781,-87.6298], zoom:10, label:'Chicago' }
+    ,washingtondc:{ center:[38.9072,-77.0369], zoom:10, label:'Washington, D.C.' }
+    ,boston:{ center:[42.3601,-71.0589], zoom:10, label:'Boston' }
+    ,philadelphia:{ center:[39.9526,-75.1652], zoom:10, label:'Philadelphia' }
+    ,atlanta:{ center:[33.7490,-84.3880], zoom:10, label:'Atlanta' }
+    ,neworleans:{ center:[29.9511,-90.0715], zoom:10, label:'New Orleans' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
 }
 
@@ -17503,7 +17776,7 @@ function boGetMapRestaurants(cityKey){
     });
   };
   if(cityKey === 'bestof'){
-    const excluded = new Set(['bestof','miami','london','sandiego','siliconvalley','bjspicksmiami','bjspickslondon','bjspickssandiego','bjspickssiliconvalley']);
+    const excluded = new Set(BO_MAIN_CITY_CATS.concat(Object.values(BO_CITY_CONFIG).map(c=>c.bjsPicksCat)));
     Object.entries(boCategoryData).forEach(([cat,list])=>{
       if(excluded.has(cat) || !Array.isArray(list)) return;
       list.forEach(r=>add(r,cat));
@@ -18683,13 +18956,15 @@ function boRenderCategory(cat){
       // BOP_SPLASH_CITIES list, which starts with "Vegas", so Miami's cycler
       // would spin through city names and land back on Vegas. Building a
       // fresh list here with the CURRENT city first fixes that for any city.
-      const heroDisplayName = cat === 'sandiego' ? 'S.D.' : cityCfg.displayName;
+      // Short labels belong only in the rotating landing lockup. Everywhere
+      // else continues to use the full displayName/search name.
+      const heroDisplayName = cityCfg.landingName || cityCfg.displayName;
       const cyclerCities = [heroDisplayName].concat(
         BOP_SPLASH_CITIES.filter(c => c !== cityCfg.displayName && c !== heroDisplayName)
       );
       const startingName = cityCfg.useNameCycler
         ? cyclerCities[1 + Math.floor(Math.random() * (cyclerCities.length - 1))]
-        : cityCfg.displayName;
+        : heroDisplayName;
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2">
@@ -18730,7 +19005,8 @@ function boRenderCategory(cat){
       // soon" when a city has nothing there yet), and the title reflects
       // whichever city you arrived from instead of always defaulting to
       // Vegas.
-      const otherBestsCity = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const otherBestsCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
+      const otherBestsCity = otherBestsCfg.landingName || otherBestsCfg.displayName;
       const mainCyclerCities = [otherBestsCity].concat(
         BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
       );
@@ -18747,7 +19023,7 @@ function boRenderCategory(cat){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
       // that city, not always say Vegas.
-      const bjsPicksCity = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     } else {
       // Same idea as Other Bests and BJS Picks above — every generic genre
@@ -18757,14 +19033,14 @@ function boRenderCategory(cat){
       // current city (or "coming soon" when empty), but the title sitting
       // right above it kept saying Vegas regardless — which is exactly
       // what made it look like the whole page had jumped to Vegas.
-      const genericCityName = boCityContext === 'sandiego' ? 'S.D.' : (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const genericCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
       const ishSuffix = (cat === '24hours' && BO_24HR_ISH_CITIES.includes(boCityContext))
         ? ' <span class="bo-hero-dessert-word" style="font-size:0.65em;">ish</span>'
         : '';
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass}">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     }
-    boHeroSubEl.textContent = boHeroCopy[cat].sub;
+    boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
@@ -22454,9 +22730,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   var originalShowCity=window.ocShowCity;
   var groups=[
-    {id:'west',la:34.45,lo:-116.15,dests:['bestof','sandiego']},
-    {id:'bay',la:37.39,lo:-122.06,dests:['siliconvalley']},
-    {id:'miami',la:25.76,lo:-80.19,dests:['miami']},
+    {id:'west',la:34.45,lo:-117.35,dests:['bestof','sandiego','losangeles','santabarbara']},
+    {id:'bay',la:37.58,lo:-122.24,dests:['siliconvalley','sanfrancisco']},
+    {id:'northeast',la:40.55,lo:-74.35,dests:['newyork','philadelphia','boston','washingtondc']},
+    {id:'chicago',la:41.88,lo:-87.63,dests:['chicago']},
+    {id:'southeast',la:30.15,lo:-84.10,dests:['miami','atlanta','neworleans']},
     {id:'london',la:51.51,lo:-0.13,dests:['london']}
   ];
   function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
@@ -22703,7 +22981,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="city-specific-member-page-v94">
 (function(){
-  var cityNames={bestof:'Vegas',vegas:'Vegas',lasvegas:'Vegas',miami:'Miami',london:'London',sandiego:'San Diego','san-diego':'San Diego',siliconvalley:'Silicon Valley','silicon-valley':'Silicon Valley'};
+  var cityNames={
+    bestof:'Las Vegas',vegas:'Las Vegas',lasvegas:'Las Vegas',miami:'Miami',london:'London',
+    sandiego:'San Diego','san-diego':'San Diego',siliconvalley:'Silicon Valley','silicon-valley':'Silicon Valley',
+    losangeles:'Los Angeles',santabarbara:'Santa Barbara',sanfrancisco:'San Francisco',
+    newyork:'New York City',chicago:'Chicago',washingtondc:'Washington, D.C.',boston:'Boston',
+    philadelphia:'Philadelphia',atlanta:'Atlanta',neworleans:'New Orleans'
+  };
   function activeCity(){
     var key='bestof';
     try{if(typeof boCityContext!=='undefined'&&boCityContext)key=String(boCityContext).toLowerCase()}catch(e){}
@@ -22725,5 +23009,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.addEventListener('DOMContentLoaded',updateMemberPage);
 })();
 </script>
-<!-- Fresh delivery build v102: 2026-08-10 — intelligent three-result landing search + Silicon Valley MICHELIN audit -->
+<!-- Fresh delivery build v105: 2026-08-10 — all 15 cities live; abbreviations confined to rotating landing logos -->
 </body></html> 
