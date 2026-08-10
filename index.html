@@ -16987,6 +16987,46 @@ boCategoryData.bjspickslondon = (() => {
   return picks;
 })();
 
+// August 2026 expansion: Fine Italian is city-aware. These records are kept in
+// the shared genre list and filtered by the active city at render time.
+(function expandFineItalian(){
+  const additions = [
+    { name:"Cardellino", city:"sandiego", image:"https://www.eatdrinkbesd.com/wp-content/uploads/DSCF0699-1024x683.jpg", imagePosition:"center", rating:"4.8", reviews:258, ratingSource:"OpenTable", ratingNote:"OpenTable 4.8 from more than 250 verified diners.", why:"A live-fire Italian chophouse where Northern Italian pasta and an American steakhouse meet", note:"Chef Brad Wise anchors the Mission Hills dining room around a Tuscan stone hearth, housemade pasta, prime cuts, red sauce, parmesan, and truffles.", url:"https://www.cardellinosd.com/", address:"4033 Goldfinch St, San Diego, CA 92103", phone:"(619) 600-5311", hours:[{days:[0,2,3,4],open:"17:00",close:"21:00"},{days:[5,6],open:"17:00",close:"22:00"}], hue:"18, 38%, 25%", price:4 },
+    { name:"La Dolce Vita Ristorante", city:"sandiego", image:"https://resizer.otstatic.com/v2/photos/xlarge/1/25524706.jpg", imagePosition:"center", rating:"4.8", reviews:1505, ratingSource:"OpenTable", ratingNote:"OpenTable 4.8 from more than 1,500 verified diners.", why:"A romantic La Jolla courtyard restaurant serving genuine Italian cooking with unusually deep review support", note:"The European courtyard, intimate dining room, Italian music, broad wine list, and classic pasta and seafood make this a proven special-occasion option.", url:"http://ladolcevitalajolla.com/", address:"1237 Prospect St, La Jolla, CA 92037", phone:"(858) 454-2524", hours:[{days:[0,1,2,3,4,5,6],open:"11:00",close:"21:30"}], hue:"348, 34%, 27%", price:3 },
+    { name:"Candor by Giuseppe", city:"sandiego", image:"https://resizer.otstatic.com/v4/photos/77121988-2?height=1280&width=1280", imagePosition:"center", rating:"4.8", reviews:903, ratingSource:"OpenTable", ratingNote:"OpenTable 4.8 from more than 900 verified diners.", why:"A polished La Jolla neighborhood dining room built around seasonal contemporary Italian cooking", note:"Giuseppe Ciuffa's approachable restaurant balances refined service, a modern wine-bar atmosphere, and familiar flavors with global accents.", url:"https://www.candorbygiuseppe.com/", address:"1030 Torrey Pines Rd, La Jolla, CA 92037", phone:"(858) 246-7818", hours:[], hue:"152, 28%, 25%", price:3 },
+    { name:"Manhattan of La Jolla", city:"sandiego", image:"https://resizer.otstatic.com/v3/photos/80197534-1", imagePosition:"center", rating:"4.7", reviews:1944, ratingSource:"OpenTable", ratingNote:"OpenTable 4.7 from more than 1,940 verified diners.", why:"Old-school Italian fine dining with white tablecloths, live music, and nearly two thousand verified reviews", note:"Inside the Empress Hotel, Manhattan channels classic New York glamour through an intimate room, polished service, traditional cocktails, and Italian favorites.", url:"https://manhattanoflajolla.com/", address:"7766 Fay Ave, La Jolla, CA 92037", phone:"(858) 459-0700", hours:[], hue:"355, 30%, 23%", price:4 },
+    { name:"Bricco e Bacco", city:"london", image:"https://resizer.otstatic.com/v2/photos/large/1/74210607.jpg", imagePosition:"center", rating:"4.8", reviews:325, ratingSource:"OpenTable", ratingNote:"OpenTable 4.8 from more than 320 verified diners.", why:"A Fitzrovia Italian steakhouse combining serious dry-aged beef with modern Sicilian cooking", note:"The family behind Bricco e Bacco comes from generations of Sicilian butchers, bringing salt-stone steaks, regional flavors, and a warm Charlotte Street dining room together.", url:"https://www.briccoebacco.com/", address:"11-13 Charlotte St, London W1T 1RH, United Kingdom", phone:null, hours:[], hue:"8, 34%, 24%", price:4 }
+  ];
+  boCategoryData.italianhighend = boCategoryData.italianhighend || [];
+  additions.forEach(r => { if(!boCategoryData.italianhighend.some(x => x && x.name === r.name && x.city === r.city)) boCategoryData.italianhighend.push(r); });
+})();
+
+// Verified James Beard recognition. Each match carries the actual level/year
+// so a mention is never presented as a win.
+(function applyJamesBeardRecognition(){
+  const honors = {
+    "Bob Taylor's Ranch House":"2026 America's Classics Award winner",
+    "Casa Playa":"2025 Best Chef: Southwest nominee — Sarah Thompson",
+    "Joël Robuchon":"2025 Best Chef: Southwest nominee — Eleazar Villanueva",
+    "Restaurant de Joël Robuchon":"2025 Best Chef: Southwest nominee — Eleazar Villanueva",
+    "La Strega":"2022 and 2023 Best Chef semifinalist — Gina Marinelli",
+    "The Black Sheep":"2022 Best Chef nominee — Jamie Tran",
+    "Esther's Kitchen":"James Beard Award nominee — James Trees",
+    "ANIMAE":"2025 Best Chef: California nominee — Tara Monsod",
+    "Animae":"2025 Best Chef: California nominee — Tara Monsod",
+    "Valle":"2025 Best Chef: California semifinalist — Roberto Alcocer",
+    "Ember & Rye":"James Beard Award semifinalist — Jonathan Bautista",
+    "Michael's Genuine Food & Drink":"2010 Best Chef winner — Michael Schwartz",
+    "Stubborn Seed":"2022 Best Chef semifinalist — Jeremy Ford",
+    "Ariete":"2023 Outstanding Restaurant semifinalist",
+    "Itamae AO":"2025 Best Chef: South nominee — Nando Chang"
+  };
+  Object.values(boCategoryData).forEach(list => {
+    if(!Array.isArray(list)) return;
+    list.forEach(r => { if(r && honors[r.name]){ r.jamesBeard=true; r.jamesBeardHonor=honors[r.name]; } });
+  });
+})();
+
 // San Diego's own BJS Picks, kept completely separate from every other city.
 // Scan shared genre lists too, because an editorial pick such as Pho Hoa can
 // belong in Best Pho without meeting the $$$ threshold of the city main list.
@@ -17041,11 +17081,21 @@ boCategoryData.michelin = (() => {
 // for now: none of the restaurants researched and added so far have a
 // confirmed James Beard Award or nomination on record, and this shouldn't
 // be populated with a guess.
-boCategoryData.jamesbeard = [].concat(
-  boCategoryData.miami || [],
-  boCategoryData.indian || [],
-  boCategoryData.mexicanhighend || []
-).filter(r => r && r.jamesBeard);
+boCategoryData.jamesbeard = (() => {
+  const seen = new Map();
+  Object.entries(boCategoryData).forEach(([cat,list]) => {
+    if(cat === 'jamesbeard' || !Array.isArray(list)) return;
+    list.forEach(r => {
+      if(!r || !r.jamesBeard) return;
+      const key = `${r.city || 'bestof'}|${r.name}`;
+      if(!seen.has(key)) seen.set(key, Object.assign({}, r));
+    });
+  });
+  return Array.from(seen.values()).sort((a,b) =>
+    String(a.city || '').localeCompare(String(b.city || '')) ||
+    (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0)
+  );
+})();
 
 boCategoryData.cheesesteak = [
   {
@@ -18582,6 +18632,9 @@ function boRenderCategory(cat){
         : isBjsPicksCat(cat)
         ? "⭐ Ranked by <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> only"
         : "⭐ Ranked by aggregate review data across <strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> and <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg>";
+      if(cat === 'bestof' && boCityContext === 'sandiego'){
+        boSectionHeadParaEl.innerHTML += "<span style='display:block;margin-top:8px;'>San Diego is an extremely large territory with many highly rated restaurants. We expanded the number of recommendations in this category. Hopefully, one is close to you!</span>";
+      }
     }
     boHeroTitleEl.style.opacity = 1;
     boHeroSubEl.style.opacity = 1;
