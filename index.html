@@ -22451,4 +22451,27 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+<script id="standardize-member-only-footer-v89">
+(function(){
+  function cleanFooter(footer){
+    if(!footer)return;
+    footer.querySelectorAll('[data-dest="bopmember"]').forEach(function(link){link.textContent='Member'});
+    footer.querySelectorAll('[data-dest="legend"]').forEach(function(link){
+      var previous=link.previousElementSibling;
+      if(previous&&previous.tagName==='SPAN'&&/[·•]/.test(previous.textContent||''))previous.remove();
+      link.remove();
+    });
+  }
+  function cleanAll(root){
+    if(root&&root.matches&&root.matches('footer'))cleanFooter(root);
+    (root||document).querySelectorAll('footer').forEach(cleanFooter);
+  }
+  function install(){
+    cleanAll(document);
+    new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)cleanAll(node)})})}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build: 2026-08-10 -->
 </body></html> 
