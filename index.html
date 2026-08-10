@@ -22473,5 +22473,113 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
-<!-- Fresh delivery build: 2026-08-10 -->
+<style id="founders-special-link-layout-v92">
+#aboutUsOverlay .founders-special-links{margin-top:14px!important}
+#aboutUsOverlay .founders-hidden-concepts{margin-top:6px!important}
+#aboutUsOverlay .founders-hidden-concepts .footer-hotlink{
+  color:#000!important;text-shadow:0 0 3px rgba(245,158,11,.22)!important;
+}
+</style>
+<script id="founders-special-link-layout-v92">
+(function(){
+  function install(){
+    var footer=document.querySelector('#aboutUsOverlay .founders-standard-footer');if(!footer)return;
+    var member=document.createElement('button');member.type='button';member.className='footer-hotlink';member.dataset.dest='bopmember';member.style.color='#F59E0B';member.textContent='Member';
+    var memberLine=Array.from(footer.querySelectorAll('p')).find(function(p){return p.querySelector('[data-dest="bopmember"]')&&!p.querySelector('[data-dest="promotions"]')});
+    if(memberLine)memberLine.remove();
+    var special=footer.querySelector('.founders-special-links');
+    if(!special){special=document.createElement('p');special.className='fine-print founders-special-links';footer.appendChild(special)}
+    special.innerHTML='<button class="footer-hotlink" data-dest="promotions" style="color:#F59E0B;" type="button">Promotions &amp; Reach</button><span style="color:#F59E0B;margin:0 9px;">◆</span>';
+    special.appendChild(member);
+    var hidden=footer.querySelector('.founders-hidden-concepts');
+    if(!hidden){hidden=document.createElement('p');hidden.className='fine-print founders-hidden-concepts';footer.appendChild(hidden)}
+    hidden.innerHTML='<button class="footer-hotlink" data-dest="concepts" type="button">Concepts</button>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="footer-notice-wrap-v92">
+.footer-notice-keep{white-space:nowrap}
+.footer-notice-dash{display:inline-block;font-size:.76em;margin:0 2px;vertical-align:.05em}
+</style>
+<script id="footer-notice-wrap-v92">
+(function(){
+  function tighten(root){
+    var footers=[];
+    if(root&&root.matches&&root.matches('footer'))footers.push(root);
+    if(root&&root.querySelectorAll)footers=footers.concat(Array.from(root.querySelectorAll('footer')));
+    footers.forEach(function(footer){
+      if(footer.querySelector('.footer-notice-keep'))return;
+      var walker=document.createTreeWalker(footer,NodeFilter.SHOW_TEXT),node;
+      while(node=walker.nextNode()){
+        var match=(node.nodeValue||'').match(/notice\s*[—–-]\s*always confirm directly\./i);
+        if(!match)continue;
+        var before=node.nodeValue.slice(0,match.index),after=node.nodeValue.slice(match.index+match[0].length),frag=document.createDocumentFragment();
+        frag.appendChild(document.createTextNode(before));
+        var keep=document.createElement('span');keep.className='footer-notice-keep';keep.innerHTML='notice<span class="footer-notice-dash">—</span>always confirm directly.';frag.appendChild(keep);
+        frag.appendChild(document.createTextNode(after));node.parentNode.replaceChild(frag,node);break;
+      }
+    });
+  }
+  function install(){tighten(document);new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)tighten(node)})})}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="remove-near-map-footer-v93">
+#boNearMapPage footer{display:none!important}
+#boNearMapPage .bop-pre-footer-divider{display:block!important;margin:28px auto 18px!important}
+</style>
+<script id="remove-near-map-footer-v93">
+(function(){
+  function removeFooterKeepLine(footer){
+    if(!footer||!footer.parentNode)return;
+    var previous=footer.previousElementSibling;
+    if(!previous||!previous.classList.contains('bop-pre-footer-divider')){
+      var line=document.createElement('div');line.className='bop-pre-footer-divider';line.setAttribute('aria-hidden','true');
+      footer.parentNode.insertBefore(line,footer);
+    }
+    footer.remove();
+  }
+  function removeNearFooter(root){
+    if(root&&root.matches&&root.matches('#boNearMapPage footer'))removeFooterKeepLine(root);
+    if(root&&root.querySelectorAll)root.querySelectorAll('#boNearMapPage footer').forEach(removeFooterKeepLine);
+  }
+  function install(){
+    removeNearFooter(document);
+    new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)removeNearFooter(node)})})}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="city-specific-member-page-v94">
+#bopMemberOverlay .member-city-name{
+  color:#ff2d3f!important;font-weight:900!important;
+  text-shadow:0 0 7px rgba(255,45,63,.42)!important;
+}
+</style>
+<script id="city-specific-member-page-v94">
+(function(){
+  var cityNames={bestof:'Vegas',vegas:'Vegas',lasvegas:'Vegas',miami:'Miami',london:'London',sandiego:'San Diego','san-diego':'San Diego'};
+  function activeCity(){
+    var key='bestof';
+    try{if(typeof boCityContext!=='undefined'&&boCityContext)key=String(boCityContext).toLowerCase()}catch(e){}
+    return cityNames[key]||'Vegas';
+  }
+  function updateMemberPage(){
+    var overlay=document.getElementById('bopMemberOverlay');if(!overlay)return;
+    var city=activeCity();
+    var copy=Array.from(overlay.querySelectorAll('p')).find(function(p){return /Be the first to know/i.test(p.textContent||'')});
+    if(copy){
+      copy.innerHTML='⭐ Be the first to know about the <strong>best specials</strong>, <strong>hot openings</strong>, <strong>private events</strong>, relocations, and closures across every restaurant in <span class="member-city-name"></span>.';
+      copy.querySelector('.member-city-name').textContent=city;
+    }
+    overlay.dataset.memberCity=city;
+  }
+  document.addEventListener('click',function(event){
+    if(event.target.closest&&event.target.closest('[data-dest="bopmember"]'))updateMemberPage();
+  },true);
+  document.addEventListener('DOMContentLoaded',updateMemberPage);
+})();
+</script>
+<!-- Fresh delivery build v95: 2026-08-10 -->
 </body></html> 
