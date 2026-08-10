@@ -21524,7 +21524,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="tag-world-live-handoff-script">
 (function(){
-  var API='https://rrcfcudeqniuzlchnuzh.supabase.co/functions/v1/tag-world-api',founderSession='';
+  var API='https://rrcfcudeqniuzlchnuzh.supabase.co/functions/v1/tag-world-api',COUNTER='https://rrcfcudeqniuzlchnuzh.supabase.co/rest/v1/tag_world_counter?select=current_count&id=eq.1',PUBLIC_KEY='sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN',FIRST_PLAYER='e1c13f0993b33c32d5b94cb7d4bb0618d3efe778ea843ca3',founderSession='',bootstrapFirst=true;
   var originalStart=window.tgStart;
   function params(){var h=location.hash.replace(/^#\/?/,'');if(h.indexOf('tag')===0){var q=h.indexOf('?')>=0?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');var p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
   function incoming(){return params().get('t')||''}function retry(){return params().get('retry')||''}
@@ -21775,7 +21775,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="tag-world-secure-handoff-and-view-only">
 (function(){
-  var API='https://rrcfcudeqniuzlchnuzh.supabase.co/functions/v1/tag-world-api',founderSession='';
+  var API='https://rrcfcudeqniuzlchnuzh.supabase.co/functions/v1/tag-world-api',COUNTER='https://rrcfcudeqniuzlchnuzh.supabase.co/rest/v1/tag_world_counter?select=current_count&id=eq.1',PUBLIC_KEY='sb_publishable_z86Twb66AceQydZKq2uITg_xDFD3TjN',FIRST_PLAYER='e1c13f0993b33c32d5b94cb7d4bb0618d3efe778ea843ca3',founderSession='',bootstrapFirst=true;
   function params(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});return p}
   function val(k){return params().get(k)||''}
   function uuid(x){return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x)}
@@ -21791,7 +21791,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }
     try{live=sessionStorage.getItem('tag-world-founder-pass')||localStorage.getItem('tag-world-founder-pass')||''}catch(_e){}
     if(!live){var m=document.cookie.match(/(?:^|; )tag_world_founder=([^;]+)/);if(m)try{live=decodeURIComponent(m[1])}catch(_e){live=m[1]}}
-    founderSession=live||'';return founderSession
+    founderSession=live||'';return founderSession||(bootstrapFirst?FIRST_PLAYER:'')
   }
   function authorized(){return uuid(val('t'))||uuid(val('retry'))||uuid(val('rescue'))||!!ownerPass()}
   async function call(body){try{var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),j=await r.json();return j}catch(e){return{ok:false,code:'connection'}}}
@@ -21806,6 +21806,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!authorized()){if(main){main.classList.add('tg-view-locked');var go=main.querySelector('.tg-go');if(go)go.innerHTML='VIEW ONLY<br><small>YOU MUST BE TAGGED</small>'}}
     else{if(main){main.classList.remove('tg-view-locked');var go=main.querySelector('.tg-go');if(go)go.innerHTML='GO TAG<br>SOMEONE →'}localStorage.removeItem('tag-world-played-v6');localStorage.removeItem('tag-world-sent-v4')}
     host.addEventListener('click',function(e){if(!authorized()&&e.target.closest('#tgMainButton,.tg-send,.tg-camera,.tg-upload')){e.preventDefault();e.stopImmediatePropagation();window.tgOpenViewOnly()}},{capture:true});
+    fetch(COUNTER,{headers:{apikey:PUBLIC_KEY},cache:'no-store'}).then(function(r){return r.json()}).then(function(rows){
+      var count=Number(rows&&rows[0]&&rows[0].current_count)||0;bootstrapFirst=count===0;
+      var main=document.getElementById('tgMainButton'),go=main&&main.querySelector('.tg-go'),view=host.querySelector('.tg-view-only');
+      if(bootstrapFirst){if(view)view.classList.remove('is-open');if(main)main.classList.remove('tg-view-locked');if(go)go.innerHTML='GO TAG<br>SOMEONE →';return}
+      window.__TAG_WORLD_FOUNDER='';founderSession='';try{sessionStorage.removeItem('tag-world-founder-pass');localStorage.removeItem('tag-world-founder-pass')}catch(_e){}try{document.cookie='tag_world_founder=; Max-Age=0; Path=/; SameSite=Lax'}catch(_e){}
+      if(!authorized()){if(main)main.classList.add('tg-view-locked');if(go)go.innerHTML='VIEW ONLY<br><small>YOU MUST BE TAGGED</small>'}
+    }).catch(function(){bootstrapFirst=false});
     var closeRules=window.tgCloseRules;window.tgCloseRules=function(){if(closeRules)closeRules();if(!authorized())setTimeout(window.tgOpenViewOnly,180)};
   }
   window.tgOpenViewOnly=function(){var p=document.querySelector('#tagGameOverlay .tg-view-only');if(p)p.classList.add('is-open')};
