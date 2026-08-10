@@ -5505,19 +5505,19 @@
 @media(prefers-reduced-motion:reduce){
   .bo-main-picker-scroll-cue{animation:none}
 }
-/* Final specialty tiles. NEW appears everywhere; OTS is Vegas-only and UNO
-   occupies the same slot in every other city. */
+/* Final specialty tiles on every city MAIN page. NEW appears everywhere;
+   OFF THE STRIP is injected only for Las Vegas. */
 .bo-picker-btn-special-gold{
   border-color:#F59E0B !important;
-  background:#050505 !important;
-  color:#F59E0B !important;
-  -webkit-text-fill-color:#F59E0B !important;
-  box-shadow:0 0 9px rgba(245,158,11,.46),inset 0 0 12px rgba(245,158,11,.08) !important;
+  background:#F59E0B !important;
+  color:#050505 !important;
+  -webkit-text-fill-color:#050505 !important;
+  box-shadow:0 0 13px rgba(245,158,11,.82),0 0 30px rgba(245,158,11,.35),inset 0 0 12px rgba(255,255,255,.18) !important;
 }
 .bo-special-tile-word{
   display:inline-block;
-  color:#F59E0B !important;
-  -webkit-text-fill-color:#F59E0B !important;
+  color:#050505 !important;
+  -webkit-text-fill-color:#050505 !important;
   font-weight:900;
   animation:boSpecialTileFlash 1.15s ease-in-out infinite;
 }
@@ -5526,19 +5526,13 @@
   50%{opacity:.42;transform:scale(1.08);text-shadow:0 0 8px rgba(255,255,255,.92);}
 }
 @media(prefers-reduced-motion:reduce){.bo-special-tile-word{animation:none}}
-.bo-cannabis-tile{display:flex;align-items:center;justify-content:center;gap:5px;color:#39ff88!important;-webkit-text-fill-color:#39ff88!important;font-size:.78em;line-height:1.05;font-weight:900;text-transform:uppercase;text-shadow:0 0 6px rgba(57,255,136,.85),0 0 13px rgba(57,255,136,.4);animation:boCannabisGlow 1.6s ease-in-out infinite}
-.bo-cannabis-tile svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-@keyframes boCannabisGlow{50%{opacity:.68;text-shadow:0 0 3px rgba(57,255,136,.65)}}
-@media(prefers-reduced-motion:reduce){.bo-cannabis-tile{animation:none}}
 /* Restaurants by nation: a compact world-flag mosaic that occupies the same
    footprint as every other category tile. */
 .bo-picker-btn-nations{
   position:relative;
-  width:100px;
-  min-width:100px !important;
-  max-width:100px !important;
-  min-height:50px;
-  padding:5px !important;
+  width:180px;
+  min-height:72px;
+  padding:7px 8px 22px !important;
   overflow:hidden;
   background:#050505 !important;
   border-color:#F59E0B !important;
@@ -5546,35 +5540,27 @@
 .bo-nation-flag-mosaic{
   display:grid;
   grid-template-columns:repeat(10,minmax(0,1fr));
-  gap:0;
+  gap:1px 2px;
   width:100%;
   font-family:system-ui,-apple-system,"Segoe UI Emoji","Apple Color Emoji",sans-serif;
-  font-size:8px;
-  line-height:1;
+  font-size:10px;
+  line-height:1.05;
   letter-spacing:0;
   filter:saturate(1.12);
 }
 .bo-nation-flag-mosaic i{font-style:normal;display:block;text-align:center;}
-.bo-kosher-star{
-  display:inline-flex;
-  width:1.05em;
-  height:1.05em;
-  margin-right:.28em;
-  color:#F59E0B;
-  vertical-align:-.14em;
-}
-.bo-kosher-star svg{display:block;width:100%;height:100%;overflow:visible;}
-.bo-picker-row-break{flex:0 0 100%;height:0;margin:0;padding:0;}
-.bo-nation-directory-note{
-  margin:16px auto 2px;
-  padding:0 14px;
-  color:#F59E0B;
-  font-family:'Archivo Narrow',sans-serif;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.045em;
+.bo-nation-tile-label{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:3px 4px 4px;
+  color:#fff;
+  background:rgba(0,0,0,.88);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.13em;
   text-align:center;
-  text-shadow:0 0 7px rgba(245,158,11,.42);
 }
 </style> <style id="bop-main-hub-blue-footer-tiles"> /* Bottom feature row shown ONLY on each city's Main / Hub page. */
 .bo-main-hub-footer{
@@ -10422,7 +10408,6 @@ const BO_CITY_CONFIG = {
   },
   losangeles: {
     displayName: 'Los Angeles',
-    landingName: 'L.A.',
     areaList: ['Los Angeles County'], tickerMessages: ['LOS ANGELES', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickslosangeles'
   },
@@ -10448,7 +10433,6 @@ const BO_CITY_CONFIG = {
   },
   washingtondc: {
     displayName: 'Washington, D.C.',
-    landingName: 'D.C.',
     areaList: ['Washington, D.C. Metro'], tickerMessages: ['WASHINGTON D.C.', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickswashingtondc'
   },
@@ -18707,18 +18691,6 @@ function boBuildDerivedRestaurantList(predicate){
 boCategoryData.newrestaurants = boBuildDerivedRestaurantList(r => isRecentlyOpened(r.openedDate));
 boCategoryData.dogfriendly = boBuildDerivedRestaurantList(r => r.dogFriendly === true);
 boCategoryData.offstrip = boBuildDerivedRestaurantList(r => (r.city || 'bestof') === 'bestof' && r.offStrip === true);
-boCategoryData.undernewownership = boBuildDerivedRestaurantList(r =>
-  r.underNewOwnership === true || r.underNewManagement === true || !!r.ownershipStoryId ||
-  /under new (ownership|management)|new ownership|new management/i.test([r.note,r.why,r.ratingNote].filter(Boolean).join(' '))
-);
-boCategoryData.cannabisinfused = boBuildDerivedRestaurantList(r =>
-  r.cannabisInfused === true || (Array.isArray(r.tags) && r.tags.some(tag => /cannabis.?infused/i.test(String(tag)))) ||
-  /cannabis.?infused/i.test([r.name,r.note,r.why].filter(Boolean).join(' '))
-);
-boCategoryData.bagels = boBuildDerivedRestaurantList(r =>
-  r.bagels === true || (Array.isArray(r.tags) && r.tags.some(tag => /bagels?/i.test(String(tag)))) ||
-  /\bbagels?\b/i.test([r.name,r.note,r.why].filter(Boolean).join(' '))
-);
 
 // The nation directory is deliberately separate from the cuisine hierarchy.
 // It can include a themed pub, beer hall or cultural restaurant even when the
@@ -18827,12 +18799,11 @@ const boPickerConfig = {
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
     { label: '<span style="font-size:calc(1em + 2px);">Michelin</span><br><span style="font-size:0.68em;color:#F59E0B;">M&#9733;&#9733;&#9733;</span>', cat: 'michelin' },
-    { label: 'James Beard', cat: 'jamesbeard' },
+    { label: 'Asian', cat: 'asian' },
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
-    { label: 'Asian', cat: 'asian' },
     { label: 'Mexican', cat: 'mexican' },
-    { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
+    { label: 'James Beard', cat: 'jamesbeard' },
     { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Pizza', cat: 'pizza' },
     { label: 'Burgers', cat: 'burgers' },
@@ -18865,12 +18836,9 @@ const boPickerConfig = {
     { label: 'Crepes', cat: 'crepes' },
     { label: 'Chocolatier', cat: 'chocolatier' },
     { label: 'Dog Friendly', cat: 'dogfriendly' },
-    { label: 'Bagels', cat: 'bagels' },
-    { label: '<span class="bo-cannabis-tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V8M12 14 7 9M12 12l5-5M12 17l-6-2M12 16l6-2M12 10 9 5M12 8l3-4"/></svg><span>Cannabis<br>Infused</span></span>', cat: 'cannabisinfused' },
     { label: '<span class="bo-special-tile-word">NEW</span>', cat: 'newrestaurants' },
     { label: '<span class="bo-special-tile-word">OTS</span>', cat: 'offstrip' },
-    { label: '<span class="bo-special-tile-word">UNO</span>', cat: 'undernewownership' },
-    { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span>', cat: 'nations' }
+    { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span><span class="bo-nation-tile-label">BY NATION</span>', cat: 'nations' }
   ],
   nations: [
     { label: '🇨🇦 Canada', cat: 'nationcanadian' },
@@ -18885,7 +18853,7 @@ const boPickerConfig = {
     { label: '🇹🇷 Turkey', cat: 'nationturkish' },
     { label: '🇱🇧 Lebanon', cat: 'nationlebanese' },
     { label: '🇮🇱 Israel', cat: 'nationisraeli' },
-    { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
+    { label: '✡️ Kosher', cat: 'nationkosher' },
     { label: '🇲🇽 Mexico', cat: 'nationmexican' },
     { label: '🇨🇺 Cuba', cat: 'nationcuban' },
     { label: '🇵🇪 Peru', cat: 'nationperuvian' },
@@ -18943,7 +18911,7 @@ const boPickerParent = {
   breakfast: 'otheroptions', asian: 'otheroptions', burgersbjspick: 'otheroptions',
   dessert: 'otheroptions', '24hours': 'otheroptions',
   michelin: 'otheroptions', jamesbeard: 'otheroptions', cheesesteak: 'otheroptions',
-  dogfriendly: 'otheroptions', bagels: 'otheroptions', cannabisinfused: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions', undernewownership: 'otheroptions', nations: 'otheroptions',
+  dogfriendly: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions', nations: 'otheroptions',
   nationcanadian: 'nations', nationgerman: 'nations', nationirish: 'nations', nationbritish: 'nations',
   nationfrench: 'nations', nationitalian: 'nations', nationspanish: 'nations', nationportuguese: 'nations',
   nationgreek: 'nations', nationturkish: 'nations', nationlebanese: 'nations', nationisraeli: 'nations', nationkosher: 'nations',
@@ -18954,9 +18922,6 @@ const boPickerParent = {
 };
 
 const boHeroCopy = {
-  bagels: { title: 'BEST BAGELS', sub: 'The highest-rated bagel shops in this city.' },
-  cannabisinfused: { title: 'BEST CANNABIS-INFUSED', sub: 'Top-rated cannabis-infused dining where it is legally available.' },
-  undernewownership: { title: 'UNDER NEW OWNERSHIP', sub: 'Restaurants and properties now operating under new ownership or management.' },
   nations: { title: 'RESTAURANTS BY NATION', sub: 'Country-themed restaurants, cultural institutions, pubs, beer halls and dining rooms—all in one directory.' },
   nationcanadian: { title: 'BEST CANADIAN', sub: 'Canadian restaurants, bars and unmistakably Canadian-themed spots.' },
   nationgerman: { title: 'BEST GERMAN', sub: 'German restaurants, beer halls and German-themed gathering places.' },
@@ -19630,7 +19595,6 @@ function boRenderCategory(cat){
       boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass}">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     }
     boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
-    boHeroSubEl.style.whiteSpace = cat === 'nations' ? 'pre-line' : '';
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
@@ -19715,11 +19679,15 @@ function boRenderCategory(cat){
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
       </div>
     ` : '';
+    // James Beard is a US-only award — it can never apply to London, so
+    // that tile is filtered out of Other Bests specifically when browsing
+    // from London's context. Every other city keeps it.
     const pickerOptions = boPickerConfig[cat].filter(opt => {
       if(cat !== 'otheroptions') return true;
-      if(opt.cat === 'offstrip') return boCityContext === 'bestof';
-      if(opt.cat === 'undernewownership') return boCityContext !== 'bestof';
-      if(opt.cat === 'cannabisinfused') return (boCategoryData.cannabisinfused || []).some(r => (r.city || 'bestof') === boCityContext);
+      if(boCityContext === 'london' && opt.cat === 'jamesbeard') return false;
+      // OTS is a Las Vegas-specific designation; every other city ends with
+      // DOG FRIENDLY and NEW without showing a meaningless empty OTS tile.
+      if(boCityContext !== 'bestof' && opt.cat === 'offstrip') return false;
       return true;
     });
     const mainHubCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
@@ -19753,12 +19721,8 @@ function boRenderCategory(cat){
       <div class="bo-search-popularity-note"><span aria-hidden="true">✦</span> In order of search popularity</div>
     ` : '';
 
-    const nationDirectoryNoteHTML = cat === 'nations' ? `
-      <div class="bo-nation-directory-note">* Predominantly religious and nationally themed restaurants.</div>
-    ` : '';
-
-    boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + nationDirectoryNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
-      ${cat === 'otheroptions' && opt.cat === 'newrestaurants' ? '<span class="bo-picker-row-break" aria-hidden="true"></span>' : ''}<button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${['newrestaurants','offstrip','undernewownership'].includes(opt.cat) ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
+    boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
+      <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${opt.cat === 'newrestaurants' || opt.cat === 'offstrip' ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
     `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
