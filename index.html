@@ -5526,6 +5526,42 @@
   50%{opacity:.42;transform:scale(1.08);text-shadow:0 0 8px rgba(255,255,255,.92);}
 }
 @media(prefers-reduced-motion:reduce){.bo-special-tile-word{animation:none}}
+/* Restaurants by nation: a compact world-flag mosaic that occupies the same
+   footprint as every other category tile. */
+.bo-picker-btn-nations{
+  position:relative;
+  width:180px;
+  min-height:72px;
+  padding:7px 8px 22px !important;
+  overflow:hidden;
+  background:#050505 !important;
+  border-color:#F59E0B !important;
+}
+.bo-nation-flag-mosaic{
+  display:grid;
+  grid-template-columns:repeat(10,minmax(0,1fr));
+  gap:1px 2px;
+  width:100%;
+  font-family:system-ui,-apple-system,"Segoe UI Emoji","Apple Color Emoji",sans-serif;
+  font-size:10px;
+  line-height:1.05;
+  letter-spacing:0;
+  filter:saturate(1.12);
+}
+.bo-nation-flag-mosaic i{font-style:normal;display:block;text-align:center;}
+.bo-nation-tile-label{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:3px 4px 4px;
+  color:#fff;
+  background:rgba(0,0,0,.88);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.13em;
+  text-align:center;
+}
 </style> <style id="bop-main-hub-blue-footer-tiles"> /* Bottom feature row shown ONLY on each city's Main / Hub page. */
 .bo-main-hub-footer{
   width:min(760px,100%);
@@ -8362,11 +8398,21 @@ function setupBopLanding(){
 
     let displayedLiveCities = matchingLiveCities;
     let previewMatches = matchingPreviews;
-    if(!displayedLiveCities.length && !previewMatches.length){
-      // An unmatched first letter (for example Z) gets only three useful
-      // active fallbacks—never the old five-item wall of suggestions.
-      displayedLiveCities = LIVE_CITIES.slice(0, 3);
-      previewMatches = [];
+    if(!displayedLiveCities.length){
+      // Never leave a typed search looking broken. If the requested city is
+      // not live yet (Rio de Janeiro, for example), show the two live cities
+      // immediately beside it alphabetically instead of an unrelated fixed
+      // list. A matching coming-soon preview can still appear beneath them.
+      const sorted = LIVE_CITIES.slice().sort((a,b)=>normalize(a.name).localeCompare(normalize(b.name)));
+      let insertion = sorted.findIndex(c=>normalize(c.name).localeCompare(normalizedQuery)>=0);
+      if(insertion<0) insertion=sorted.length;
+      const nearby=[];
+      if(insertion>0) nearby.push(sorted[insertion-1]);
+      if(insertion<sorted.length) nearby.push(sorted[insertion]);
+      if(nearby.length<2 && insertion>1) nearby.unshift(sorted[insertion-2]);
+      if(nearby.length<2 && insertion+1<sorted.length) nearby.push(sorted[insertion+1]);
+      displayedLiveCities=nearby.slice(0,2);
+      previewMatches=previewMatches.slice(0,1);
     } else {
       displayedLiveCities = displayedLiveCities.slice(0, 3);
       previewMatches = previewMatches.slice(0, Math.max(0, 3 - displayedLiveCities.length));
@@ -8448,7 +8494,12 @@ function setupSplitFlap(){
   var lastContext = (typeof boCityContext !== 'undefined') ? boCityContext : 'bestof';
   function activeMessages(){
     var cfg = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? BO_CITY_CONFIG[boCityContext] : BO_CITY_CONFIG.bestof;
-    return cfg.tickerMessages;
+    // Las Vegas is the only city presented as fully live. Every other city
+    // alternates its own full name with COMING SOON so visitors always know
+    // both where they landed and that the page is still being built.
+    return boCityContext === 'bestof'
+      ? cfg.tickerMessages
+      : [String(cfg.displayName || '').toUpperCase(), 'YUMMY SOON!'];
   }
 
   flipTo(activeMessages()[0]);
@@ -10321,14 +10372,14 @@ const BO_CITY_CONFIG = {
   miami: {
     displayName: 'Miami',
     areaList: ['Miami Beach', 'Brickell', 'Design District'],
-    tickerMessages: ['COMING SOON!', 'MIAMI MIAMI'],
+    tickerMessages: ['MIAMI', 'YUMMY SOON!'],
     useNameCycler: true,   // now cycles through city names and lands on Miami, same as Vegas
     bjsPicksCat: 'bjspicksmiami'   // Miami's own, separate BJS Picks page — not shared with Vegas
   },
   london: {
     displayName: 'London',
     areaList: ["St James's", 'Mayfair', 'Soho', 'Shoreditch'],
-    tickerMessages: ['COMING SOON!', 'LONDON LONDON'],
+    tickerMessages: ['LONDON', 'YUMMY SOON!'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickslondon'   // London's own, separate BJS Picks page
   },
@@ -10342,7 +10393,7 @@ const BO_CITY_CONFIG = {
     // Shown right under the intro sentence via boMainCityIntroHTML's footnote
     // support (see below) — San Diego needs this note, the other cities don't.
     footnote: '*San Diego is a very large territory — for closer restaurants, tap the Near Me icon.',
-    tickerMessages: ['COMING SOON!', 'SAN DIEGO!'],
+    tickerMessages: ['SAN DIEGO', 'YUMMY SOON!'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickssandiego'   // San Diego's own, separate BJS Picks page
   },
@@ -10351,58 +10402,58 @@ const BO_CITY_CONFIG = {
     landingName: 'S.V.',
     areaList: ['The Peninsula', 'South Bay', 'Woodside to San Jose'],
     footnote: '*Silicon Valley covers a wide dining territory — tap Near Me for the closest recommendations.',
-    tickerMessages: ['SILICON VALLEY', 'IS LIVE!'],
+    tickerMessages: ['SILICON VALLEY', 'YUMMY SOON!'],
     useNameCycler: true,
     bjsPicksCat: 'bjspickssiliconvalley'
   },
   losangeles: {
     displayName: 'Los Angeles',
-    areaList: ['Los Angeles County'], tickerMessages: ['LOS ANGELES', 'IS LIVE!'],
+    areaList: ['Los Angeles County'], tickerMessages: ['LOS ANGELES', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickslosangeles'
   },
   santabarbara: {
     displayName: 'Santa Barbara',
-    areaList: ['Santa Barbara County'], tickerMessages: ['SANTA BARBARA', 'IS LIVE!'],
+    areaList: ['Santa Barbara County'], tickerMessages: ['SANTA BARBARA', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickssantabarbara'
   },
   sanfrancisco: {
     displayName: 'San Francisco',
-    areaList: ['San Francisco Bay Area'], tickerMessages: ['SAN FRANCISCO', 'IS LIVE!'],
+    areaList: ['San Francisco Bay Area'], tickerMessages: ['SAN FRANCISCO', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickssanfrancisco'
   },
   newyork: {
     displayName: 'New York City',
-    areaList: ['New York City'], tickerMessages: ['NEW YORK CITY', 'IS LIVE!'],
+    areaList: ['New York City'], tickerMessages: ['NEW YORK CITY', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksnewyork'
   },
   chicago: {
     displayName: 'Chicago', areaList: ['Chicago'],
-    tickerMessages: ['CHICAGO IS LIVE!', 'MORE COMING!'],
+    tickerMessages: ['CHICAGO', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickschicago'
   },
   washingtondc: {
     displayName: 'Washington, D.C.',
-    areaList: ['Washington, D.C. Metro'], tickerMessages: ['WASHINGTON D.C.', 'IS LIVE!'],
+    areaList: ['Washington, D.C. Metro'], tickerMessages: ['WASHINGTON D.C.', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspickswashingtondc'
   },
   boston: {
     displayName: 'Boston', areaList: ['Greater Boston'],
-    tickerMessages: ['BOSTON IS LIVE!', 'MORE COMING!'],
+    tickerMessages: ['BOSTON', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksboston'
   },
   philadelphia: {
     displayName: 'Philadelphia',
-    areaList: ['Greater Philadelphia'], tickerMessages: ['PHILADELPHIA', 'IS LIVE!'],
+    areaList: ['Greater Philadelphia'], tickerMessages: ['PHILADELPHIA', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksphiladelphia'
   },
   atlanta: {
     displayName: 'Atlanta', areaList: ['Metro Atlanta'],
-    tickerMessages: ['ATLANTA IS LIVE!', 'MORE COMING!'],
+    tickerMessages: ['ATLANTA', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksatlanta'
   },
   neworleans: {
     displayName: 'New Orleans',
-    areaList: ['Greater New Orleans'], tickerMessages: ['NEW ORLEANS', 'IS LIVE!'],
+    areaList: ['Greater New Orleans'], tickerMessages: ['NEW ORLEANS', 'YUMMY SOON!'],
     useNameCycler: true, bjsPicksCat: 'bjspicksneworleans'
   }
 };
@@ -17477,6 +17528,57 @@ boCategoryData.bjspickslondon = (() => {
   install('michelinsvsource',["Ethel's Fancy","Flea St. Cafe","Vicinity"]);
 })();
 
+// Silicon Valley category baseline.  Photo acquisition is intentionally
+// reserved for the city Best Of and Michelin lists; genre pages reuse those
+// photos when available and otherwise stay lightweight while the directory
+// grows.  Every category installed here has at least three current choices.
+(function buildSiliconValleyCategoryBaseline(){
+  const records = [
+    {name:"Sushi Yoshizumi",city:"siliconvalley",rating:"4.6",reviews:355,price:4,michelinStars:1,image:"https://prod-pics.guide.michelin.com/api/public/content/0b3548fbae714243a07a79bbe04e5946.jpeg?format=webp&h=900&w=1200",why:"An eight-seat San Mateo counter devoted to disciplined Edomae omakase",note:"Michelin Guide selection. Chef Akira Yoshizumi's reservation-only progression is built around traditional technique and exacting seasonality.",url:"https://www.exploretock.com/sushiyoshizumi/",address:"325 E 4th Ave, San Mateo, CA 94401",phone:"(650) 437-2282",hue:"205, 22%, 20%"},
+    {name:"10 Butchers Korean BBQ",city:"siliconvalley",rating:"4.5",reviews:2100,price:4,why:"A polished Sunnyvale Korean steakhouse centered on premium beef and tableside grilling",note:"A strong special-occasion Korean barbecue room with private tables, reservations and a broad traditional menu.",url:"https://www.10butchers.net/",address:"595 E El Camino Real, Sunnyvale, CA 94087",phone:"(408) 720-8889",hue:"8, 32%, 22%"},
+    {name:"Chungdam Korean BBQ",city:"siliconvalley",rating:"4.5",reviews:1600,price:3,why:"Traditional Korean barbecue, hot pots and private rooms in a sleek Santa Clara dining room",note:"Open daily for lunch and dinner, with grill-it-yourself meats and private rooms for groups and business meals.",url:"https://chungdamsv.com/",address:"3180 El Camino Real, Santa Clara, CA 95051",phone:"(408) 246-1208",hue:"12, 35%, 23%"},
+    {name:"Din Tai Fung",city:"siliconvalley",rating:"4.4",reviews:4700,price:3,why:"The globally known Taiwanese dumpling house at Valley Fair",note:"Hand-folded xiao long bao, noodles and polished high-volume service make this one of the South Bay's most dependable crowd choices.",url:"https://dtf.com/us/locations/santa-clara",address:"2855 Stevens Creek Blvd, Santa Clara, CA 95050",phone:"(408) 248-1688",hue:"350, 42%, 24%"},
+    {name:"Koi Palace",city:"siliconvalley",rating:"4.4",reviews:3300,price:3,jamesBeard:true,jamesBeardHonor:"James Beard Outstanding Restaurant semifinalist recognition for the Koi Palace group",why:"A large-format Milpitas Cantonese dining room for dim sum, seafood and banquets",note:"The South Bay branch of the James Beard-recognized Koi Palace group remains built for family-style ordering and special-occasion Cantonese dining.",url:"https://koipalace.com/milpitas-ca",address:"768 Barber Ln, Milpitas, CA 95035",phone:"(408) 432-8833",hue:"45, 38%, 24%"},
+    {name:"Tamarine",city:"siliconvalley",rating:"4.5",reviews:1660,price:3,michelinGuide:true,image:"https://s.hdnux.com/photos/01/20/30/53/21080169/4/1200x0.jpg",why:"A longstanding Palo Alto power-dining room for refined contemporary Vietnamese cooking",note:"Michelin Selected. The art-filled University Avenue restaurant pairs family-style Vietnamese dishes with polished service and a sophisticated dining room.",url:"https://www.tamarinerestaurant.com/",address:"546 University Ave, Palo Alto, CA 94301",phone:"(650) 325-8500",hue:"24, 28%, 22%"},
+    {name:"Pho Ha Noi",city:"siliconvalley",rating:"4.6",reviews:1000,price:2,why:"A fast-growing Bay Area pho specialist known for its long-simmered bone-marrow broth",note:"The Palo Alto location serves the group's deeply flavored beef pho, including short rib and combination bowls, at lunch and dinner.",url:"https://phohanoi.com/",address:"185 University Ave, Palo Alto, CA 94301",phone:"(650) 561-3240",hue:"18, 42%, 26%"},
+    {name:"Pho Dang",city:"siliconvalley",rating:"4.6",reviews:620,price:2,why:"A San Jose specialist in clear, deeply flavored Hanoi-style pho",note:"Its broth is simmered for more than 12 hours, with traditional Northern Vietnamese preparations and a broad selection of beef cuts.",url:"https://www.phodang.com/",address:"779 Story Rd #10, San Jose, CA 95122",phone:"(408) 564-0072",hue:"36, 38%, 25%"},
+    {name:"Lotus Thai Bistro",city:"siliconvalley",rating:"4.6",reviews:7000,price:2,why:"A family-run California Avenue favorite repeatedly voted Palo Alto's best Thai restaurant",note:"Known for fresh curries, noodles and a broad vegetarian-friendly menu, with indoor and outdoor dining.",url:"https://www.lotusthaibistro.com/",address:"425 California Ave, Palo Alto, CA 94306",phone:"(650) 289-0907",hue:"95, 35%, 24%"},
+    {name:"Thaiphoon",city:"siliconvalley",rating:"4.5",reviews:1100,price:2,why:"Downtown Palo Alto Thai cooking with a full bar and outdoor dining",note:"A long-running Emerson Street restaurant serving lunch, dinner and late-evening weekend meals.",url:"https://www.thaiphoononline.net/",address:"543 Emerson St, Palo Alto, CA 94301",phone:"(650) 323-7700",hue:"275, 28%, 24%"},
+    {name:"Indochine Thai",city:"siliconvalley",rating:"4.5",reviews:850,price:2,why:"A neighborhood Middlefield Road kitchen for Thai staples and weeknight takeout",note:"A practical Palo Alto favorite with split lunch-and-dinner service and a broad traditional menu.",url:"https://www.indochinethaipaloalto.com/",address:"2710 Middlefield Rd, Palo Alto, CA 94306",phone:"(650) 853-1238",hue:"120, 30%, 24%"},
+    {name:"Zona Rosa",city:"siliconvalley",rating:"4.6",reviews:1300,price:2,why:"A San Jose neighborhood favorite for modern Mexican plates and cocktails",note:"A compact Rose Garden dining room balancing familiar regional flavors with a contemporary, shareable menu.",url:"https://zonarosadining.com/",address:"1411 The Alameda, San Jose, CA 95126",phone:"(408) 275-1411",hue:"348, 42%, 26%"},
+    {name:"Sushi Edomata",city:"siliconvalley",rating:"4.6",reviews:700,price:3,newRestaurant:true,why:"A 2025 San Mateo rebirth of the beloved Sushi Sam's Edomata tradition",note:"Classic nigiri, sashimi and rolls continue under new ownership in a nearby new space.",url:"https://sushiedomata.com/",address:"38 E 25th Ave, San Mateo, CA 94403",phone:null,hue:"210, 30%, 23%"},
+    {name:"The Sea by Alexander's Steakhouse",city:"siliconvalley",rating:"4.6",reviews:1700,price:4,why:"A Palo Alto seafood house from the Alexander's group",note:"A polished special-occasion room combining raw-bar selections, premium seafood and the group's steakhouse-level service.",url:"https://www.theseausa.com/",address:"4269 El Camino Real, Palo Alto, CA 94306",phone:"(650) 213-1111",hue:"198, 40%, 23%"}
+    ,{name:"Taverna",city:"siliconvalley",rating:"4.4",reviews:1010,price:4,why:"A Palo Alto power-lunch room grounded in polished Hellenic cooking",note:"Traditional Greek grills, small plates and an Aegean-inspired dining room make it a dependable business-lunch and dinner choice.",url:"https://tavernarestaurant.net/",address:"800 Emerson St, Palo Alto, CA 94301",phone:"(650) 304-3840",hue:"205, 42%, 26%"}
+  ];
+  const existing = new Map();
+  Object.values(boCategoryData).forEach(list => {
+    if(!Array.isArray(list)) return;
+    list.forEach(r => { if(r && r.city === 'siliconvalley' && !existing.has(r.name)) existing.set(r.name, r); });
+  });
+  records.forEach(r => { if(!existing.has(r.name)) existing.set(r.name, r); });
+  const put = (cat, names) => {
+    boCategoryData[cat] = boCategoryData[cat] || [];
+    names.map(name => existing.get(name)).filter(Boolean).forEach(r => {
+      if(!boCategoryData[cat].some(x => x && x.city === 'siliconvalley' && x.name === r.name)) boCategoryData[cat].push(Object.assign({}, r));
+    });
+  };
+
+  // High-priority broad genres and their drill-down pages.
+  put('sushihighend',["Sushi Yoshizumi","Sushi Shin","Wakuriya","Sushi Edomata"]);
+  put('korean',["Yeobo, Darling","10 Butchers Korean BBQ","Chungdam Korean BBQ"]);
+  put('chinese',["Chef Chu's","Din Tai Fung","Koi Palace"]);
+  put('thai',["Lotus Thai Bistro","Thaiphoon","Indochine Thai"]);
+  put('vietnamese',["Tamarine","Pho Ha Noi","Pho Dang"]);
+  put('pho',["Pho Ha Noi","Pho Dang","Tamarine"]);
+  put('mexicancasual',["Luna Mexican Kitchen","Los Carnalitos","Zona Rosa"]);
+  put('french',["Protégé","The Plumed Horse","Zola"]);
+  put('mediterranean',["Evvia Estiatorio","Dio Deka","Petiscos"]);
+  put('greek',["Evvia Estiatorio","Dio Deka","Taverna"]);
+  put('seafood',["The Sea by Alexander's Steakhouse","Evvia Estiatorio","Madera"]);
+  put('asianbestofrest',["Sushi Yoshizumi","Tamarine","Din Tai Fung","Koi Palace","10 Butchers Korean BBQ"]);
+  put('michelinsvsource',["Sushi Yoshizumi","Tamarine"]);
+})();
+
 // August 2026 expansion: Fine Italian is city-aware. These records are kept in
 // the shared genre list and filtered by the active city at render time.
 (function expandFineItalian(){
@@ -18398,7 +18500,15 @@ async function boOpenNearMap(){
       boNearMap.setView([lat,lon],14);
       if(typeof boNearViewportHandler==='function') boNearViewportHandler();
       resolve(true);
-    },()=>resolve(false),{enableHighAccuracy:true,timeout:9000,maximumAge:120000});
+    },(error)=>{
+      if(run===boNearMapGeocodeRun && status){
+        status.classList.remove('is-loading');
+        status.textContent=(error&&error.code===1)
+          ? 'Location access is needed. Allow location in your browser settings, then tap Near Me again.'
+          : 'We could not locate you. Tap Near Me again to retry.';
+      }
+      resolve(false);
+    },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
   });
 
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
@@ -18582,6 +18692,70 @@ boCategoryData.newrestaurants = boBuildDerivedRestaurantList(r => isRecentlyOpen
 boCategoryData.dogfriendly = boBuildDerivedRestaurantList(r => r.dogFriendly === true);
 boCategoryData.offstrip = boBuildDerivedRestaurantList(r => (r.city || 'bestof') === 'bestof' && r.offStrip === true);
 
+// The nation directory is deliberately separate from the cuisine hierarchy.
+// It can include a themed pub, beer hall or cultural restaurant even when the
+// menu crosses categories. Editors may add nationTags:["german", ...] to any
+// restaurant; exact existing cuisine lists are also reused where appropriate.
+function boMergeNationLists(keys, tags){
+  const seen = new Set();
+  const results = [];
+  const wanted = (tags || []).map(tag => String(tag).toLowerCase());
+  function add(r){
+    if(!r || !r.name) return;
+    const city = r.city || 'bestof';
+    const identity = city + '|' + r.name.trim().toLowerCase();
+    if(seen.has(identity)) return;
+    seen.add(identity);
+    results.push(Object.assign({}, r, { city }));
+  }
+  (keys || []).forEach(key => (boCategoryData[key] || []).forEach(add));
+  if(wanted.length){
+    Object.keys(boCategoryData).forEach(key => {
+      const list = boCategoryData[key];
+      if(!Array.isArray(list)) return;
+      list.forEach(r => {
+        const recordTags = Array.isArray(r && r.nationTags) ? r.nationTags.map(tag => String(tag).toLowerCase()) : [];
+        if(wanted.some(tag => recordTags.includes(tag))) add(r);
+      });
+    });
+  }
+  return results;
+}
+boCategoryData.nationcanadian = boMergeNationLists([], ['canadian','canada']);
+boCategoryData.nationgerman = boMergeNationLists([], ['german','germany']);
+boCategoryData.nationirish = boMergeNationLists([], ['irish','ireland']);
+boCategoryData.nationbritish = boMergeNationLists([], ['british','english','united kingdom','uk']);
+boCategoryData.nationfrench = boMergeNationLists(['french'], ['french','france']);
+boCategoryData.nationitalian = boMergeNationLists(['italianhighend','italiancasual','italiandive'], ['italian','italy']);
+boCategoryData.nationspanish = boMergeNationLists(['spanish'], ['spanish','spain']);
+boCategoryData.nationportuguese = boMergeNationLists([], ['portuguese','portugal']);
+boCategoryData.nationgreek = boMergeNationLists(['greek'], ['greek','greece']);
+boCategoryData.nationturkish = boMergeNationLists([], ['turkish','turkey']);
+boCategoryData.nationlebanese = boMergeNationLists([], ['lebanese','lebanon']);
+boCategoryData.nationisraeli = boMergeNationLists([], ['israeli','israel']);
+boCategoryData.nationkosher = boBuildDerivedRestaurantList(r => {
+  const tags = Array.isArray(r && r.nationTags) ? r.nationTags.map(tag => String(tag).toLowerCase()) : [];
+  const words = [r && r.name,r && r.why,r && r.note].filter(Boolean).join(' ').toLowerCase();
+  return r && (r.kosher === true || tags.includes('kosher') || /\bkosher\b/.test(words));
+});
+boCategoryData.nationmexican = boMergeNationLists(['mexicanhighend','mexicancasual','mexicandive','tacos'], ['mexican','mexico']);
+boCategoryData.nationcuban = boMergeNationLists(['cuban'], ['cuban','cuba']);
+boCategoryData.nationperuvian = boMergeNationLists(['peruvian'], ['peruvian','peru']);
+boCategoryData.nationbrazilian = boMergeNationLists([], ['brazilian','brazil']);
+boCategoryData.nationargentinian = boMergeNationLists([], ['argentinian','argentine','argentina']);
+boCategoryData.nationjamaican = boMergeNationLists([], ['jamaican','jamaica']);
+boCategoryData.nationcaribbean = boMergeNationLists([], ['caribbean']);
+boCategoryData.nationethiopian = boMergeNationLists(['ethiopian'], ['ethiopian','ethiopia']);
+boCategoryData.nationsouthafrican = boMergeNationLists([], ['south african','south africa']);
+boCategoryData.nationindian = boMergeNationLists(['indian'], ['indian','india']);
+boCategoryData.nationfilipino = boMergeNationLists(['filipino'], ['filipino','philippines']);
+boCategoryData.nationvietnamese = boMergeNationLists(['vietnamese','pho'], ['vietnamese','vietnam']);
+boCategoryData.nationthai = boMergeNationLists(['thai'], ['thai','thailand']);
+boCategoryData.nationkorean = boMergeNationLists(['korean'], ['korean','korea']);
+boCategoryData.nationjapanese = boMergeNationLists(['sushihighend','sushicasual','ramen'], ['japanese','japan']);
+boCategoryData.nationchinese = boMergeNationLists(['chinese'], ['chinese','china']);
+boCategoryData.nationpolish = boMergeNationLists([], ['polish','poland']);
+
 const boPickerConfig = {
   sushi: [
     { label: 'Casual', cat: 'sushicasual' },
@@ -18663,7 +18837,40 @@ const boPickerConfig = {
     { label: 'Chocolatier', cat: 'chocolatier' },
     { label: 'Dog Friendly', cat: 'dogfriendly' },
     { label: '<span class="bo-special-tile-word">NEW</span>', cat: 'newrestaurants' },
-    { label: '<span class="bo-special-tile-word">OTS</span>', cat: 'offstrip' }
+    { label: '<span class="bo-special-tile-word">OTS</span>', cat: 'offstrip' },
+    { label: '<span class="bo-nation-flag-mosaic" aria-hidden="true"><i>🇨🇦</i><i>🇩🇪</i><i>🇮🇪</i><i>🇬🇧</i><i>🇫🇷</i><i>🇮🇹</i><i>🇪🇸</i><i>🇵🇹</i><i>🇬🇷</i><i>🇹🇷</i><i>🇱🇧</i><i>🇮🇱</i><i>🇲🇽</i><i>🇨🇺</i><i>🇵🇪</i><i>🇧🇷</i><i>🇦🇷</i><i>🇯🇲</i><i>🇪🇹</i><i>🇿🇦</i><i>🇮🇳</i><i>🇵🇭</i><i>🇻🇳</i><i>🇹🇭</i><i>🇰🇷</i><i>🇯🇵</i><i>🇨🇳</i><i>🇵🇱</i><i>🇦🇹</i><i>🇨🇭</i><i>🇧🇪</i><i>🇳🇱</i><i>🇩🇰</i><i>🇸🇪</i><i>🇳🇴</i><i>🇫🇮</i><i>🇮🇸</i><i>🇨🇿</i><i>🇭🇺</i><i>🇷🇴</i><i>🇺🇦</i><i>🇬🇪</i><i>🇲🇦</i><i>🇪🇬</i><i>🇳🇬</i><i>🇬🇭</i><i>🇦🇺</i><i>🇳🇿</i><i>🇸🇬</i><i>🇲🇾</i></span><span class="bo-nation-tile-label">BY NATION</span>', cat: 'nations' }
+  ],
+  nations: [
+    { label: '🇨🇦 Canada', cat: 'nationcanadian' },
+    { label: '🇩🇪 Germany', cat: 'nationgerman' },
+    { label: '🇮🇪 Ireland', cat: 'nationirish' },
+    { label: '🇬🇧 United Kingdom', cat: 'nationbritish' },
+    { label: '🇫🇷 France', cat: 'nationfrench' },
+    { label: '🇮🇹 Italy', cat: 'nationitalian' },
+    { label: '🇪🇸 Spain', cat: 'nationspanish' },
+    { label: '🇵🇹 Portugal', cat: 'nationportuguese' },
+    { label: '🇬🇷 Greece', cat: 'nationgreek' },
+    { label: '🇹🇷 Turkey', cat: 'nationturkish' },
+    { label: '🇱🇧 Lebanon', cat: 'nationlebanese' },
+    { label: '🇮🇱 Israel', cat: 'nationisraeli' },
+    { label: '✡️ Kosher', cat: 'nationkosher' },
+    { label: '🇲🇽 Mexico', cat: 'nationmexican' },
+    { label: '🇨🇺 Cuba', cat: 'nationcuban' },
+    { label: '🇵🇪 Peru', cat: 'nationperuvian' },
+    { label: '🇧🇷 Brazil', cat: 'nationbrazilian' },
+    { label: '🇦🇷 Argentina', cat: 'nationargentinian' },
+    { label: '🇯🇲 Jamaica', cat: 'nationjamaican' },
+    { label: '🏝️ Caribbean', cat: 'nationcaribbean' },
+    { label: '🇪🇹 Ethiopia', cat: 'nationethiopian' },
+    { label: '🇿🇦 South Africa', cat: 'nationsouthafrican' },
+    { label: '🇮🇳 India', cat: 'nationindian' },
+    { label: '🇵🇭 Philippines', cat: 'nationfilipino' },
+    { label: '🇻🇳 Vietnam', cat: 'nationvietnamese' },
+    { label: '🇹🇭 Thailand', cat: 'nationthai' },
+    { label: '🇰🇷 Korea', cat: 'nationkorean' },
+    { label: '🇯🇵 Japan', cat: 'nationjapanese' },
+    { label: '🇨🇳 China', cat: 'nationchinese' },
+    { label: '🇵🇱 Poland', cat: 'nationpolish' }
   ],
   mexican: [
     { label: 'Dive', cat: 'mexicandive' },
@@ -18677,6 +18884,7 @@ const boPickerConfig = {
 const boPickerTitles = {
   asian: 'Asian Cuisine',
   otheroptions: 'Best Of',
+  nations: 'Restaurants by Nation',
   mexican: 'Mexican'
 };
 
@@ -18703,10 +18911,48 @@ const boPickerParent = {
   breakfast: 'otheroptions', asian: 'otheroptions', burgersbjspick: 'otheroptions',
   dessert: 'otheroptions', '24hours': 'otheroptions',
   michelin: 'otheroptions', jamesbeard: 'otheroptions', cheesesteak: 'otheroptions',
-  dogfriendly: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions'
+  dogfriendly: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions', nations: 'otheroptions',
+  nationcanadian: 'nations', nationgerman: 'nations', nationirish: 'nations', nationbritish: 'nations',
+  nationfrench: 'nations', nationitalian: 'nations', nationspanish: 'nations', nationportuguese: 'nations',
+  nationgreek: 'nations', nationturkish: 'nations', nationlebanese: 'nations', nationisraeli: 'nations', nationkosher: 'nations',
+  nationmexican: 'nations', nationcuban: 'nations', nationperuvian: 'nations', nationbrazilian: 'nations',
+  nationargentinian: 'nations', nationjamaican: 'nations', nationcaribbean: 'nations', nationethiopian: 'nations',
+  nationsouthafrican: 'nations', nationindian: 'nations', nationfilipino: 'nations', nationvietnamese: 'nations',
+  nationthai: 'nations', nationkorean: 'nations', nationjapanese: 'nations', nationchinese: 'nations', nationpolish: 'nations'
 };
 
 const boHeroCopy = {
+  nations: { title: 'RESTAURANTS BY NATION', sub: 'Country-themed restaurants, cultural institutions, pubs, beer halls and dining rooms—all in one directory.' },
+  nationcanadian: { title: 'BEST CANADIAN', sub: 'Canadian restaurants, bars and unmistakably Canadian-themed spots.' },
+  nationgerman: { title: 'BEST GERMAN', sub: 'German restaurants, beer halls and German-themed gathering places.' },
+  nationirish: { title: 'BEST IRISH', sub: 'Irish restaurants, pubs and Irish-themed gathering places.' },
+  nationbritish: { title: 'BEST BRITISH', sub: 'British restaurants, pubs and United Kingdom-themed spots.' },
+  nationfrench: { title: 'BEST FRENCH', sub: '' },
+  nationitalian: { title: 'BEST ITALIAN', sub: '' },
+  nationspanish: { title: 'BEST SPANISH', sub: '' },
+  nationportuguese: { title: 'BEST PORTUGUESE', sub: '' },
+  nationgreek: { title: 'BEST GREEK', sub: '' },
+  nationturkish: { title: 'BEST TURKISH', sub: '' },
+  nationlebanese: { title: 'BEST LEBANESE', sub: '' },
+  nationisraeli: { title: 'BEST ISRAELI', sub: 'Israeli restaurants and distinctly Israeli-themed dining.' },
+  nationkosher: { title: 'BEST KOSHER', sub: 'Restaurants explicitly identified as kosher.' },
+  nationmexican: { title: 'BEST MEXICAN', sub: '' },
+  nationcuban: { title: 'BEST CUBAN', sub: '' },
+  nationperuvian: { title: 'BEST PERUVIAN', sub: '' },
+  nationbrazilian: { title: 'BEST BRAZILIAN', sub: '' },
+  nationargentinian: { title: 'BEST ARGENTINIAN', sub: '' },
+  nationjamaican: { title: 'BEST JAMAICAN', sub: '' },
+  nationcaribbean: { title: 'BEST CARIBBEAN', sub: '' },
+  nationethiopian: { title: 'BEST ETHIOPIAN', sub: '' },
+  nationsouthafrican: { title: 'BEST SOUTH AFRICAN', sub: '' },
+  nationindian: { title: 'BEST INDIAN', sub: '' },
+  nationfilipino: { title: 'BEST FILIPINO', sub: '' },
+  nationvietnamese: { title: 'BEST VIETNAMESE', sub: '' },
+  nationthai: { title: 'BEST THAI', sub: '' },
+  nationkorean: { title: 'BEST KOREAN', sub: '' },
+  nationjapanese: { title: 'BEST JAPANESE', sub: '' },
+  nationchinese: { title: 'BEST CHINESE', sub: '' },
+  nationpolish: { title: 'BEST POLISH', sub: '' },
   siliconvalley: {
     title: 'BEST OF',
     sub: ''
@@ -19476,7 +19722,7 @@ function boRenderCategory(cat){
     ` : '';
 
     boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
-      <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${opt.cat === 'newrestaurants' || opt.cat === 'offstrip' ? ' bo-picker-btn-special-gold' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
+      <button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${opt.cat === 'newrestaurants' || opt.cat === 'offstrip' ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}</button>
     `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
@@ -23039,7 +23285,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #ocWorldOverlay .oc-choice-city:active{transform:scale(.98);background:#F59E0B;color:#000}
 #ocWorldOverlay .oc-map-tap-note{position:relative;z-index:4;display:block;width:100%;margin:7px 0 0;padding:0 0 0 3px;box-sizing:border-box;color:#3b9dff;font:700 8px/1.2 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-align:left;text-shadow:0 0 4px rgba(59,157,255,.32);animation:ocMapTapHintPulse 2s ease-in-out infinite}
 #ocWorldOverlay .oc-map-tap-note::before{content:'*';display:inline-block;margin-right:3px;color:#3b9dff;font-weight:900}
+#ocWorldOverlay button.oc-map-tap-note{border:0!important;background:transparent!important;box-shadow:none!important;cursor:pointer!important;-webkit-appearance:none!important}
+#ocWorldOverlay .oc-map-tap-note strong{color:#3b9dff;text-decoration:underline;text-underline-offset:2px;font-weight:900}
+#ocWorldOverlay .oc-map-tap-note span{display:inline-block;margin-left:3px;font-size:11px;animation:ocNearArrow 1s ease-in-out infinite}
 @keyframes ocMapTapHintPulse{0%,100%{opacity:.62;text-shadow:0 0 2px rgba(59,157,255,.18)}50%{opacity:1;text-shadow:0 0 5px rgba(59,157,255,.48)}}
+@keyframes ocNearArrow{0%,100%{transform:translateX(3px)}50%{transform:translateX(-2px);text-shadow:0 0 6px #3b9dff}}
 #ocWorldOverlay #ocWorldClose{border:2px solid #F59E0B!important;background:#050505!important;color:#ef3340!important;-webkit-text-fill-color:#ef3340!important;box-shadow:0 0 10px rgba(245,158,11,.48),inset 0 0 12px rgba(245,158,11,.05)!important;text-shadow:none!important;animation:none!important}
 #ocWorldOverlay #ocWorldClose:hover,#ocWorldOverlay #ocWorldClose:focus-visible{border-color:#FFC04A!important;color:#ff4050!important;-webkit-text-fill-color:#ff4050!important;box-shadow:0 0 14px rgba(245,158,11,.68),inset 0 0 14px rgba(245,158,11,.07)!important}
 @media(prefers-reduced-motion:reduce){#ocWorldOverlay .oc-map-tap-note{animation:none}}
@@ -23048,11 +23298,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   var originalShowCity=window.ocShowCity;
   var groups=[
-    {id:'west',la:34.45,lo:-117.35,dests:['bestof','sandiego','losangeles','santabarbara']},
-    {id:'bay',la:37.58,lo:-122.24,dests:['siliconvalley','sanfrancisco']},
-    {id:'northeast',la:40.55,lo:-74.35,dests:['newyork','philadelphia','boston','washingtondc']},
-    {id:'chicago',la:41.88,lo:-87.63,dests:['chicago']},
-    {id:'southeast',la:30.15,lo:-84.10,dests:['miami','atlanta','neworleans']},
+    {id:'unitedstates',la:38.25,lo:-97.10,dests:['bestof','sandiego','losangeles','santabarbara','siliconvalley','sanfrancisco','newyork','philadelphia','boston','washingtondc','chicago','miami','atlanta','neworleans']},
     {id:'london',la:51.51,lo:-0.13,dests:['london']}
   ];
   function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
@@ -23073,7 +23319,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     var layer=document.getElementById('ocPinLayer');if(!layer)return;
     restoreCard();
     var map=layer.closest('.oc-world-map');
-    if(map&&!map.nextElementSibling?.classList.contains('oc-map-tap-note')){var note=document.createElement('div');note.className='oc-map-tap-note';note.textContent='tap a pin for Yummy spots near you';map.insertAdjacentElement('afterend',note)}
+    if(map&&!map.nextElementSibling?.classList.contains('oc-map-tap-note')){var note=document.createElement('button');note.type='button';note.className='oc-map-tap-note';note.innerHTML='For a closer look at restaurants <strong>NEAR YOU</strong>, click here <span aria-hidden="true">&larr;</span>';note.onclick=function(){var world=document.getElementById('ocWorldOverlay');if(world)world.classList.remove('open');document.body.classList.remove('oc-world-active');if(typeof boOpenNearMap==='function')boOpenNearMap()};map.insertAdjacentElement('afterend',note)}
     var close=document.getElementById('ocWorldClose');if(close){close.innerHTML='&larr;<br>Back';close.setAttribute('aria-label','Back')}
     layer.innerHTML='';layer.dataset.built='clusters';
     var frag=document.createDocumentFragment();
@@ -23327,5 +23573,135 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.addEventListener('DOMContentLoaded',updateMemberPage);
 })();
 </script>
-<!-- Fresh delivery build v105: 2026-08-10 — all 15 cities live; abbreviations confined to rotating landing logos -->
+<style id="other-cities-isolated-pinch-zoom-v109">
+/* Keep iOS from scaling/compositing the enormous page behind Other Cities. */
+body.oc-world-active{overflow:hidden!important;overscroll-behavior:none!important;background:#000!important}
+body.oc-world-active>:not(#ocWorldOverlay):not(script):not(style):not(link){visibility:hidden!important;pointer-events:none!important}
+body.oc-world-active>#ocWorldOverlay{visibility:visible!important;display:block!important;opacity:1!important;isolation:isolate!important;contain:strict!important;transform:translateZ(0)!important}
+#ocWorldOverlay{overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch;background:#000!important}
+#ocWorldOverlay .oc-world-map{
+  position:relative!important;overflow:hidden!important;touch-action:none!important;
+  aspect-ratio:2/1!important;contain:layout paint!important;transform:translateZ(0)!important;
+  -webkit-user-select:none!important;user-select:none!important;
+}
+#ocWorldOverlay .oc-map-zoom-stage{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  transform-origin:0 0!important;will-change:transform!important;touch-action:none!important;
+}
+#ocWorldOverlay .oc-map-zoom-stage>#ocWorldSvg{width:100%!important;height:100%!important;display:block!important}
+#ocWorldOverlay .oc-map-zoom-stage>#ocPinLayer{position:absolute!important;inset:0!important}
+#ocWorldOverlay .oc-map-zoom-stage>#ocWorldSvg{filter:brightness(1.22) saturate(1.08)!important}
+#ocWorldOverlay .oc-map-divider{position:absolute;z-index:65;top:5%;bottom:5%;left:50%;width:1px;pointer-events:none;background:linear-gradient(transparent,rgba(245,158,11,.92) 18%,rgba(245,158,11,.92) 82%,transparent);box-shadow:0 0 7px rgba(245,158,11,.75)}
+#ocWorldOverlay .oc-map-zoom-controls{
+  position:absolute;bottom:7px;z-index:80;display:flex;gap:6px;align-items:center;
+  padding:5px;border:2px solid #F59E0B;border-radius:20px;background:rgba(0,0,0,.9);
+  box-shadow:0 0 8px rgba(245,158,11,.7),0 0 16px rgba(245,158,11,.32);
+}
+#ocWorldOverlay .oc-map-zoom-controls.oc-left{left:8px}
+#ocWorldOverlay .oc-map-zoom-controls.oc-right{right:8px}
+#ocWorldOverlay .oc-map-zoom-controls button{
+  width:32px;height:32px;border:1px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;
+  font:900 21px/30px Arial,sans-serif;padding:0;box-shadow:inset 0 0 6px rgba(245,158,11,.25);cursor:pointer;
+}
+#ocWorldOverlay .oc-map-zoom-label{position:absolute;bottom:48px;z-index:79;color:#F59E0B;font:800 8px/1.1 'Arial Narrow',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;animation:ocZoomHint 1.35s ease-in-out infinite}
+#ocWorldOverlay .oc-map-zoom-label.oc-left{left:10px}.oc-map-zoom-label.oc-right{right:10px}
+@keyframes ocZoomHint{0%,100%{opacity:.55;transform:translateY(-1px)}50%{opacity:1;transform:translateY(2px);text-shadow:0 0 7px #F59E0B}}
+</style>
+<script id="other-cities-isolated-pinch-zoom-v109" type="application/json">
+(function(){
+  function install(){
+    var overlay=document.getElementById('ocWorldOverlay');
+    var map=document.getElementById('ocWorldMap');
+    var svg=document.getElementById('ocWorldSvg');
+    var pins=document.getElementById('ocPinLayer');
+    if(!overlay||!map||!svg||!pins||map.querySelector('.oc-map-zoom-stage'))return;
+
+    var stage=document.createElement('div');stage.className='oc-map-zoom-stage';
+    map.insertBefore(stage,svg);stage.appendChild(svg);stage.appendChild(pins);
+    var divider=document.createElement('div');divider.className='oc-map-divider';map.appendChild(divider);
+    function addControls(side,label){
+      var hint=document.createElement('div');hint.className='oc-map-zoom-label oc-'+side;hint.textContent='↓ USE − / +';map.appendChild(hint);
+      var c=document.createElement('div');c.className='oc-map-zoom-controls oc-'+side;c.dataset.region=side;c.setAttribute('aria-label',label+' map zoom controls');
+      c.innerHTML='<button type="button" data-oc-out aria-label="Zoom out">−</button><button type="button" data-oc-in aria-label="Zoom in">+</button>';map.appendChild(c);return c;
+    }
+    var leftControls=addControls('left','Americas');var rightControls=addControls('right','Europe and world');
+
+    var state={scale:1,x:0,y:0,pointers:new Map(),gesture:null,moved:false};
+    function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+    function bounds(){var r=map.getBoundingClientRect();return {w:r.width,h:r.height}}
+    function constrain(){var b=bounds();state.x=clamp(state.x,b.w-b.w*state.scale,0);state.y=clamp(state.y,b.h-b.h*state.scale,0)}
+    function paint(animate){
+      constrain();stage.style.transition=animate?'transform .2s ease':'none';
+      stage.style.transform='translate3d('+state.x+'px,'+state.y+'px,0) scale('+state.scale+')';
+      if(animate)setTimeout(function(){stage.style.transition='none'},220);
+    }
+    function reset(){state.scale=1;state.x=0;state.y=0;state.pointers.clear();state.gesture=null;paint(true)}
+    function zoomTo(next,cx,cy){
+      var r=map.getBoundingClientRect();cx=cx==null?r.width/2:cx;cy=cy==null?r.height/2:cy;
+      var old=state.scale;next=clamp(next,1,4);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;paint(true);
+    }
+    window.ocResetMapZoom=reset;
+
+    function wireControls(controls,focusX){
+      controls.addEventListener('pointerdown',function(e){e.stopPropagation()});
+      controls.addEventListener('click',function(e){e.stopPropagation();var b=bounds();if(e.target.closest('[data-oc-in]'))zoomTo(state.scale+.65,b.w*focusX,b.h*.48);else if(e.target.closest('[data-oc-out]'))zoomTo(state.scale-.65,b.w*focusX,b.h*.48)});
+    }
+    wireControls(leftControls,.25);wireControls(rightControls,.75);
+
+    map.addEventListener('pointerdown',function(e){
+      if(e.target.closest('.oc-map-zoom-controls'))return;
+      state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});state.moved=false;
+      try{map.setPointerCapture(e.pointerId)}catch(_e){}
+      if(state.pointers.size===1)state.gesture={kind:'pan',x:e.clientX,y:e.clientY,sx:state.x,sy:state.y};
+      if(state.pointers.size>1){state.gesture=null;state.moved=true}
+    },{passive:false});
+    map.addEventListener('pointermove',function(e){
+      if(!state.pointers.has(e.pointerId))return;e.preventDefault();
+      var old=state.pointers.get(e.pointerId);if(Math.abs(e.clientX-old.x)+Math.abs(e.clientY-old.y)>3)state.moved=true;
+      state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      var g=state.gesture;
+      if(state.pointers.size>1){state.moved=true;return}
+      if(state.pointers.size===1&&g&&g.kind==='pan'&&state.scale>1){state.x=g.sx+(e.clientX-g.x);state.y=g.sy+(e.clientY-g.y);paint(false)}
+    },{passive:false});
+    function end(e){
+      state.pointers.delete(e.pointerId);
+      if(state.pointers.size===1){var p=Array.from(state.pointers.values())[0];state.gesture={kind:'pan',x:p.x,y:p.y,sx:state.x,sy:state.y}}
+      else if(!state.pointers.size)state.gesture=null;
+      if(state.scale<1.03)reset();
+    }
+    map.addEventListener('pointerup',end);map.addEventListener('pointercancel',end);
+    map.addEventListener('click',function(e){if(state.moved){e.preventDefault();e.stopPropagation();state.moved=false}},true);
+    map.addEventListener('dblclick',function(e){e.preventDefault();var r=map.getBoundingClientRect();if(state.scale>1)reset();else zoomTo(2,e.clientX-r.left,e.clientY-r.top)});
+    window.addEventListener('resize',function(){paint(false)});
+
+    var observer=new MutationObserver(function(){
+      var open=overlay.classList.contains('open');document.body.classList.toggle('oc-world-active',open);if(open)reset();
+    });
+    observer.observe(overlay,{attributes:true,attributeFilter:['class']});
+    document.getElementById('ocWorldClose').addEventListener('click',function(){document.body.classList.remove('oc-world-active');reset()},true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="other-cities-fast-destination-map-v110">
+#ocWorldOverlay #ocWorldSvg{filter:brightness(1.22) saturate(1.08)!important}
+#ocWorldOverlay .oc-world-map{touch-action:none!important}
+</style>
+<script id="other-cities-fast-destination-map-v110">
+(function(){
+  function install(){
+    var overlay=document.getElementById('ocWorldOverlay'),map=document.getElementById('ocWorldMap'),close=document.getElementById('ocWorldClose');
+    if(!overlay||!map)return;
+    var multiTouch=false;
+    map.addEventListener('touchstart',function(e){if(e.touches&&e.touches.length>1)multiTouch=true},{passive:true});
+    map.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1){multiTouch=true;e.preventDefault()}},{passive:false});
+    map.addEventListener('touchend',function(e){if(multiTouch){e.preventDefault();setTimeout(function(){multiTouch=false},350)}},{passive:false});
+    map.addEventListener('click',function(e){if(multiTouch){e.preventDefault();e.stopImmediatePropagation()}},true);
+    new MutationObserver(function(){var open=overlay.classList.contains('open');document.body.classList.toggle('oc-world-active',open)}).observe(overlay,{attributes:true,attributeFilter:['class']});
+    if(close)close.addEventListener('click',function(){document.body.classList.remove('oc-world-active')},true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v110: 2026-08-10 — fast regional destination clusters; no map pinch navigation -->
 </body></html> 
