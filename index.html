@@ -18791,7 +18791,7 @@ function boMovieCardHTML(movie,index,current){
   // this flag data-driven so its logo only appears on titles confirmed for
   // the current catalog/market; rent-and-buy search providers remain stable.
   const hasNetflix=movie.netflix===true;
-  const ticket=current?`<div class="bo-ticket-cta">IN THEATERS<span>↓</span></div><div class="bo-ticket-row">
+  const ticket=current?`<div class="bo-ticket-cta">WATCH NOW</div><div class="bo-ticket-row">
     <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets on Fandango" href="https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}"><span class="bo-brand-logo bo-brand-fandango"><b>F</b>FANDANGO</span></a>
     <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at AMC Theatres" href="https://www.amctheatres.com/search?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://cdn.freebiesupply.com/logos/large/2x/amc-theatres-logo-png-transparent.png" alt="AMC Theatres"></a>
     <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Regal" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}"><span class="bo-brand-logo bo-brand-regal"><b>◇</b>REGAL</span></a>
@@ -27043,5 +27043,325 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
-<!-- Fresh delivery build v138: custom world icons, matched WHY, and OTHER LEADERS popup -->
+<style id="bop-movie-watch-now-logos-v139">
+/* Movie cards: one strong invitation, then clean oversized wordmarks on black. */
+#boMoviesPage .bo-ticket-cta{
+  position:relative;
+  width:max-content;
+  margin:15px auto 7px;
+  padding:0 38px;
+  color:#F59E0B;
+  font:400 1.05rem/1 'Bebas Neue','Arial Narrow',sans-serif;
+  letter-spacing:.14em;
+  text-align:center;
+  text-shadow:0 0 6px rgba(245,158,11,.86),0 0 15px rgba(245,158,11,.54);
+  animation:boMovieWatchHeadingGlow 1.45s ease-in-out infinite;
+}
+#boMoviesPage .bo-ticket-cta::before,
+#boMoviesPage .bo-ticket-cta::after{
+  position:absolute;
+  top:-2px;
+  color:#F59E0B;
+  font:400 1.5rem/.7 'Bebas Neue',sans-serif;
+  text-shadow:0 0 7px rgba(245,158,11,.9);
+  animation:boMovieWatchArrow 1.25s ease-in-out infinite;
+}
+#boMoviesPage .bo-ticket-cta::before{content:'↘';left:7px;transform:rotate(7deg)}
+#boMoviesPage .bo-ticket-cta::after{content:'↙';right:7px;transform:rotate(-7deg)}
+@keyframes boMovieWatchHeadingGlow{
+  0%,100%{opacity:.72;filter:brightness(.9)}
+  50%{opacity:1;filter:brightness(1.28)}
+}
+@keyframes boMovieWatchArrow{
+  0%,100%{opacity:.58;margin-top:-2px}
+  50%{opacity:1;margin-top:3px}
+}
+
+#boMoviesPage .bo-ticket-row{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px 10px;
+  margin-top:9px;
+}
+#boMoviesPage .bo-ticket-row .bo-ticket-btn{
+  min-height:42px;
+  padding:3px 2px;
+  border:0!important;
+  border-radius:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+  overflow:visible;
+}
+#boMoviesPage .bo-ticket-row .bo-ticket-btn:hover,
+#boMoviesPage .bo-ticket-row .bo-ticket-btn:focus-visible{
+  outline:none;
+  background:#000!important;
+  filter:brightness(1.2) drop-shadow(0 0 5px rgba(245,158,11,.35));
+  transform:scale(1.055);
+}
+#boMoviesPage .bo-brand-logo{
+  font-size:15px;
+  line-height:1;
+  letter-spacing:.015em;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-brand-fandango{color:#22a4e8;font-size:14px}
+#boMoviesPage .bo-brand-fandango b{
+  width:auto;
+  height:auto;
+  margin-right:1px;
+  background:transparent!important;
+  color:#f58220;
+  font-size:21px;
+  transform:none;
+}
+#boMoviesPage .bo-brand-regal{color:#f5a623;font-size:17px;letter-spacing:.045em}
+#boMoviesPage .bo-brand-regal b{font-size:22px}
+
+/* Replace inconsistent downloaded artwork with clean, readable wordmarks. */
+#boMoviesPage .bo-ticket-row .bo-ticket-logo{display:none!important}
+#boMoviesPage .bo-ticket-row .bo-ticket-btn:nth-child(2)::after{
+  content:'amc';
+  color:#e51b23;
+  font:900 24px/1 Arial,sans-serif;
+  letter-spacing:-.06em;
+}
+#boMoviesPage .bo-ticket-row .bo-ticket-btn:nth-child(4)::after{
+  content:'CINEMARK';
+  color:#e32934;
+  font:900 15px/1 Arial,sans-serif;
+  letter-spacing:-.025em;
+  text-shadow:1px 0 0 #fff;
+}
+
+#boMoviesPage .bo-home-viewing-label{display:none!important}
+#boMoviesPage .bo-home-viewing-row{
+  gap:10px;
+  margin-top:11px;
+  padding-top:9px;
+  border-top:1px solid rgba(245,158,11,.18);
+}
+#boMoviesPage .bo-home-viewing-link{
+  min-height:38px;
+  padding:3px;
+  background:#000!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-home-viewing-logo{
+  max-width:82px;
+  height:31px;
+  background:transparent!important;
+  border:0!important;
+  filter:drop-shadow(0 0 3px rgba(255,255,255,.18));
+}
+#boMoviesPage .bo-home-viewing-note{margin-top:8px;font-size:.58rem}
+@media(max-width:380px){
+  #boMoviesPage .bo-ticket-cta{font-size:.96rem;padding:0 34px}
+  #boMoviesPage .bo-brand-logo{font-size:13px}
+  #boMoviesPage .bo-brand-regal{font-size:15px}
+  #boMoviesPage .bo-ticket-row .bo-ticket-btn:nth-child(2)::after{font-size:22px}
+  #boMoviesPage .bo-ticket-row .bo-ticket-btn:nth-child(4)::after{font-size:13px}
+  #boMoviesPage .bo-home-viewing-logo{max-width:70px;height:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  #boMoviesPage .bo-ticket-cta,
+  #boMoviesPage .bo-ticket-cta::before,
+  #boMoviesPage .bo-ticket-cta::after{animation:none!important}
+}
+</style>
+<style id="bop-movie-copy-beefed-gold-v140">
+/* Movie information now carries the same strong gold hierarchy as city pages. */
+#boMoviesPage .bo-movie-info{padding:14px 11px 12px}
+#boMoviesPage .bo-movie-info h3{
+  margin-bottom:8px;
+  color:#F59E0B!important;
+  font-family:'Archivo Black','Fraunces',serif;
+  font-size:clamp(1.03rem,2.45vw,1.34rem);
+  font-weight:900;
+  line-height:1.08;
+  letter-spacing:.005em;
+  text-shadow:0 0 6px rgba(245,158,11,.28);
+}
+#boMoviesPage .bo-movie-metric{
+  color:#F59E0B!important;
+  font:900 clamp(1.02rem,2.5vw,1.34rem)/1.05 'Archivo Black','Archivo Narrow',sans-serif;
+  text-shadow:0 0 5px rgba(245,158,11,.24);
+}
+#boMoviesPage .bo-movie-date{
+  margin-top:7px;
+  color:#F59E0B!important;
+  font:900 clamp(.8rem,1.9vw,.98rem)/1.28 'Archivo Narrow',sans-serif;
+}
+#boMoviesPage .bo-movie-award{
+  margin-top:8px;
+  color:#F59E0B!important;
+  font:800 clamp(.76rem,1.75vw,.91rem)/1.35 'Archivo Narrow',sans-serif;
+}
+#boMoviesPage .bo-movie-accolades{gap:5px;margin-top:9px}
+#boMoviesPage .bo-movie-accolade{
+  min-height:24px;
+  padding:5px 7px;
+  border-color:#F59E0B;
+  background:rgba(245,158,11,.07);
+  color:#F59E0B!important;
+  font:900 clamp(.58rem,1.4vw,.7rem)/1.05 'Archivo Black',sans-serif;
+  box-shadow:0 0 7px rgba(245,158,11,.2);
+}
+#boMoviesPage .bo-movie-awards-more{
+  min-height:24px;
+  padding:5px 7px;
+  color:#F59E0B;
+  font-size:.66rem;
+}
+#boMoviesPage .bo-movie-source,
+#boMoviesPage .bo-movie-source strong,
+#boMoviesPage .bo-current-source,
+#boMoviesPage .bo-home-viewing-note{
+  color:#F59E0B!important;
+  font-weight:900!important;
+}
+#boMoviesPage .bo-movie-source{
+  font-size:clamp(.84rem,2vw,1.05rem);
+  line-height:1.48;
+}
+#boMoviesPage .bo-current-source{
+  font-size:clamp(.88rem,2.15vw,1.08rem);
+  line-height:1.48;
+}
+#boMoviesPage .bo-home-viewing-note{
+  font-size:.68rem;
+  line-height:1.3;
+  opacity:.9;
+}
+@media(max-width:620px){
+  #boMoviesPage .bo-movie-info{padding:11px 8px 10px}
+  #boMoviesPage .bo-movie-info h3{font-size:1rem;line-height:1.08}
+  #boMoviesPage .bo-movie-metric{font-size:.94rem;line-height:1.08}
+  #boMoviesPage .bo-movie-date{font-size:.78rem}
+  #boMoviesPage .bo-movie-award{font-size:.73rem}
+  #boMoviesPage .bo-movie-accolade{font-size:.56rem;padding:5px 6px}
+}
+</style>
+<style id="bop-real-movie-posters-v141">
+#boMoviesPage .bo-movie-poster{
+  object-fit:cover!important;
+  object-position:center!important;
+  background:#050505!important;
+  filter:saturate(1.04) contrast(1.03);
+}
+#boMoviesPage .bo-movie-poster.bo-real-poster{
+  box-shadow:inset -1px 0 0 rgba(245,158,11,.32);
+}
+</style>
+<script id="bop-real-movie-posters-v141">
+(function(){
+  const posterCacheKey='bop-real-movie-posters-v141';
+  let posterCache={};
+  try{posterCache=JSON.parse(localStorage.getItem(posterCacheKey)||'{}')||{};}catch(error){posterCache={};}
+
+  function movieTitleForCard(card){
+    const heading=card.querySelector('.bo-movie-info h3');
+    return heading?heading.textContent.trim():'';
+  }
+  function savePosterCache(){
+    try{localStorage.setItem(posterCacheKey,JSON.stringify(posterCache));}catch(error){}
+  }
+  function applyPoster(image,url,title){
+    if(!url||!image||image.dataset.posterResolved==='1')return;
+    const probe=new Image();
+    probe.onload=function(){
+      if(probe.naturalWidth<90||probe.naturalHeight<120)return;
+      image.src=url;
+      image.alt=title+' official movie artwork';
+      image.classList.add('bo-real-poster');
+      image.dataset.posterResolved='1';
+    };
+    probe.src=url;
+  }
+  async function findPoster(title){
+    if(Object.prototype.hasOwnProperty.call(posterCache,title))return posterCache[title]||'';
+    const query='intitle:"'+title+'" film';
+    const endpoint='https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(query)+'&gsrnamespace=0&gsrlimit=5&prop=pageimages&piprop=thumbnail&pithumbsize=520&format=json&origin=*';
+    try{
+      const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});
+      if(!response.ok)throw new Error('Poster lookup failed');
+      const data=await response.json();
+      const pages=Object.values((data&&data.query&&data.query.pages)||{}).sort(function(a,b){return (a.index||99)-(b.index||99);});
+      const exact=pages.find(function(page){return page.thumbnail&&String(page.title||'').toLowerCase().startsWith(title.toLowerCase());});
+      const selected=exact||pages.find(function(page){return page.thumbnail;});
+      const url=selected&&selected.thumbnail&&selected.thumbnail.source?selected.thumbnail.source:'';
+      posterCache[title]=url;savePosterCache();return url;
+    }catch(error){
+      return '';
+    }
+  }
+  async function hydrateCard(card){
+    if(!card||card.dataset.posterLookup==='1')return;
+    const image=card.querySelector('.bo-movie-poster');
+    const title=movieTitleForCard(card);
+    if(!image||!title)return;
+    card.dataset.posterLookup='1';
+    const cached=posterCache[title];
+    if(cached){applyPoster(image,cached,title);return;}
+    const url=await findPoster(title);
+    if(url)applyPoster(image,url,title);
+  }
+  async function hydrateMoviePosters(){
+    const cards=Array.from(document.querySelectorAll('#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card'));
+    const queue=cards.filter(function(card){return card.dataset.posterLookup!=='1';});
+    for(let index=0;index<queue.length;index+=4){
+      await Promise.all(queue.slice(index,index+4).map(hydrateCard));
+    }
+  }
+  function install(){
+    hydrateMoviePosters();
+    document.addEventListener('click',function(event){
+      if(event.target.closest('[data-worldwide-key="movies"]'))setTimeout(hydrateMoviePosters,180);
+    },true);
+    new MutationObserver(function(records){
+      if(records.some(function(record){return Array.from(record.addedNodes).some(function(node){return node.nodeType===1&&(node.id==='boMoviesPage'||node.querySelector&&node.querySelector('#boMoviesPage'));});})){
+        setTimeout(hydrateMoviePosters,0);
+      }
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="bop-movie-picks-logo-button-v142">
+#boMoviesPage #boMoviePicksLaunch{
+  flex-direction:column;
+  gap:4px;
+  padding:11px;
+}
+#boMoviesPage .bo-movie-picks-bjs-logo{
+  display:block;
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  filter:drop-shadow(0 0 5px rgba(245,158,11,.55));
+}
+#boMoviesPage #boMoviePicksLaunch>span{
+  display:block;
+  color:#ef3340;
+  font:900 .78rem/1.02 'Archivo Black',sans-serif;
+  letter-spacing:.02em;
+}
+</style>
+<script id="bop-movie-picks-logo-button-v142">
+(function(){
+  function installMoviePicksLogo(){
+    const button=document.getElementById('boMoviePicksLaunch');
+    if(!button||button.dataset.logoInstalled==='1')return;
+    button.dataset.logoInstalled='1';
+    button.innerHTML='<svg class="bo-movie-picks-bjs-logo" aria-label="BJS" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#050505" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="24" text-anchor="middle" fill="#F59E0B" font-family="Archivo Black,Arial,sans-serif" font-size="12" font-weight="900">BJS</text></svg><span>MOVIE<br>PICKS</span>';
+  }
+  function install(){
+    installMoviePicksLogo();
+    document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="movies"]'))setTimeout(installMoviePicksLogo,160);},true);
+    new MutationObserver(installMoviePicksLogo).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v142: real movie posters and BJS-logo Movie Picks button -->
 </body></html>
