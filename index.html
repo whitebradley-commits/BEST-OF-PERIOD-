@@ -4225,26 +4225,34 @@
     clip-path:none;
     filter:drop-shadow(0 4px 7px rgba(0,0,0,.86)) drop-shadow(0 0 7px rgba(245,158,11,.55));
   }
+  .bo-badge-tabs{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .bo-badge-tabs i{position:absolute;left:50%;top:50%;width:27px;height:10px;margin:-5px 0 0 -13.5px;border:2px solid #F59E0B;border-radius:3px;background:#050505;box-sizing:border-box;transform:rotate(var(--a)) translateX(54px)}
+  .bo-badge-tabs i:nth-child(1){--a:0deg}.bo-badge-tabs i:nth-child(2){--a:45deg}.bo-badge-tabs i:nth-child(3){--a:90deg}.bo-badge-tabs i:nth-child(4){--a:135deg}.bo-badge-tabs i:nth-child(5){--a:180deg}.bo-badge-tabs i:nth-child(6){--a:225deg}.bo-badge-tabs i:nth-child(7){--a:270deg}.bo-badge-tabs i:nth-child(8){--a:315deg}
   .bo-pizza-scorecard::before{
     content:'';
     position:absolute;
     inset:6px;
-    z-index:-1;
+    z-index:1;
     border-radius:50%;
     border:1px solid rgba(245,158,11,.62);
     background:#050505;
     box-shadow:inset 0 0 10px rgba(245,158,11,.16);
   }
-  .bo-pizza-score-side{display:flex;flex-direction:column;align-items:center;min-width:0}
+  .bo-pizza-score-side{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;min-width:0}
   .bo-pizza-score-logo{height:23px;display:flex;align-items:center;justify-content:center}
-  .bo-pizza-score-vs{color:#e1262f;font:900 .48rem 'Archivo Black',sans-serif;text-align:center}
+  .bo-pizza-score-vs{position:relative;z-index:2;color:#e1262f;font:900 .48rem 'Archivo Black',sans-serif;text-align:center}
   .bo-pizza-score-value{margin-top:2px;color:#fff;font:800 .66rem 'Archivo Black',sans-serif;line-height:1}
   .bo-pizza-score-value small{font:400 .31rem Arial,sans-serif;color:#F59E0B}
-  .bo-onebite-mark{position:relative;width:27px;height:19px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#e1262f;color:#fff;font:800 .36rem 'Archivo Black',sans-serif;line-height:.82;text-align:center;letter-spacing:-.02em;box-shadow:0 0 7px rgba(225,38,47,.35)}
-  .bo-onebite-mark:after{content:'';position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#080808;box-shadow:-5px 8px 0 -2px #080808}
+  .bo-pizza-bjs-mark,.bo-onebite-mark{display:flex;align-items:center;justify-content:center;color:#e1262f;font:900 .42rem 'Archivo Black',sans-serif;line-height:.86;text-align:center;letter-spacing:-.02em;text-shadow:none}
+  .bo-onebite-mark:after{content:none}
   .bo-pizza-score-logo svg text{fill:#e1262f}
-  .bo-pizza-dave{position:absolute;left:5px;top:99px;width:90px;min-height:29px;padding:5px 15px 4px;display:flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;border:1.5px solid #F59E0B;border-radius:4px;background:radial-gradient(circle at 5px 5px,#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 5px) 5px,#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at 5px calc(100% - 5px),#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#F59E0B 0 2px,transparent 2.5px),#050505;color:#F59E0B;font:900 .46rem 'Archivo Black',sans-serif;text-align:center;white-space:nowrap;letter-spacing:.03em;box-shadow:0 3px 8px rgba(0,0,0,.8)}
+  .bo-pizza-dave{position:absolute;left:5px;top:99px;width:90px;min-height:29px;padding:5px 15px 4px;display:flex;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;border:1.5px solid #F59E0B;border-radius:4px;background:radial-gradient(circle at 5px 5px,#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 5px) 5px,#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at 5px calc(100% - 5px),#F59E0B 0 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#F59E0B 0 2px,transparent 2.5px),#050505;color:#F59E0B;font:900 .46rem 'Archivo Black',sans-serif;text-align:center;white-space:nowrap;letter-spacing:.03em;box-shadow:0 3px 8px rgba(0,0,0,.8);animation:bo-dave-score-pulse 2.4s ease-in-out infinite}
   .bo-pizza-dave strong{font-size:.65rem}
+  @keyframes bo-dave-score-pulse{
+    0%,100%{border-color:#C98E18;box-shadow:0 3px 8px rgba(0,0,0,.8),0 0 2px rgba(245,158,11,.18);filter:brightness(1)}
+    50%{border-color:#FFD166;box-shadow:0 3px 8px rgba(0,0,0,.8),0 0 9px rgba(245,158,11,.62),inset 0 0 7px rgba(245,158,11,.12);filter:brightness(1.12)}
+  }
+  @media (prefers-reduced-motion:reduce){.bo-pizza-dave{animation:none}}
   .bo-source-name{display:inline-block;white-space:nowrap}
   .bo-plus-more{color:#e1262f!important}
   .bo-pizza-vote{
@@ -4273,11 +4281,12 @@
   .bo-pizza-vote-status{min-height:8px;margin-top:3px;color:#999;font:600 .43rem Arial,sans-serif;line-height:1}
   .bo-pizza-tile{display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;box-sizing:border-box;white-space:nowrap}
   .bo-pizza-tile-duel{position:relative;width:50px;height:50px;flex:0 0 50px;display:grid;grid-template-columns:1fr 8px 1fr;align-items:center;justify-items:center;padding:10px 5px;background:#050505;border:2px solid #F59E0B;border-radius:50%;clip-path:none;filter:drop-shadow(0 0 5px rgba(245,158,11,.45))}
-  .bo-pizza-tile-duel::before{content:'';position:absolute;inset:4px;z-index:-1;border-radius:50%;border:1px solid rgba(245,158,11,.5);background:#050505}
-  .bo-pizza-tile-bjs{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid #F59E0B;border-radius:50%;background:#070707;color:#e1262f;font:900 .42rem 'Archivo Black',sans-serif;text-shadow:0 0 4px rgba(225,38,47,.6)}
-  .bo-pizza-tile-vs{color:#e1262f;font:900 .35rem 'Archivo Black',sans-serif;text-align:center;text-shadow:0 0 4px rgba(225,38,47,.4)}
-  .bo-pizza-tile-ob{display:flex;align-items:center;justify-content:center;width:20px;height:17px;border-radius:50%;background:#e1262f;color:#fff;font:800 .28rem Arial,sans-serif;line-height:.82;text-align:center}
-  .bo-pizza-tile-name{color:#e1262f;font:900 1.08em 'Archivo Black',sans-serif;line-height:1;letter-spacing:.015em;text-shadow:0 0 5px rgba(225,38,47,.28)}
+  .bo-pizza-tile-duel::before{content:'';position:absolute;inset:4px;z-index:1;border-radius:50%;border:1px solid rgba(245,158,11,.5);background:#050505}
+  .bo-pizza-tile-duel .bo-badge-tabs i{width:16px;height:6px;margin:-3px 0 0 -8px;border-width:1px;border-radius:2px;transform:rotate(var(--a)) translateX(25px)}
+  .bo-pizza-tile-bjs{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;color:#e1262f;font:900 .42rem 'Archivo Black',sans-serif;text-shadow:none}
+  .bo-pizza-tile-vs{position:relative;z-index:2;color:#e1262f;font:900 .35rem 'Archivo Black',sans-serif;text-align:center;text-shadow:none}
+  .bo-pizza-tile-ob{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;color:#e1262f;font:900 .28rem 'Archivo Black',sans-serif;line-height:.82;text-align:center}
+  .bo-pizza-tile-name{color:#e1262f;font:900 1.08em 'Archivo Black',sans-serif;line-height:1;letter-spacing:.015em;text-shadow:0 0 2px rgba(225,38,47,.14)}
 
   .bo-thumb-photo{
     width:110px;
@@ -19168,7 +19177,7 @@ const boPickerConfig = {
     { label: 'Steak', cat: 'steak' },
     { label: 'Italian', cat: 'italian' },
     { label: 'Asian', cat: 'asian' },
-{ label: '<span class="bo-pizza-tile"><span class="bo-pizza-tile-name">PIZZA</span><span class="bo-pizza-tile-duel" aria-label="BJS versus One Bite"><span class="bo-pizza-tile-bjs">BJS</span><span class="bo-pizza-tile-vs">VS</span><span class="bo-pizza-tile-ob">ONE<br>BITE</span></span></span>', cat: 'pizza' },
+{ label: '<span class="bo-pizza-tile"><span class="bo-pizza-tile-name">PIZZA</span><span class="bo-pizza-tile-duel" aria-label="BJS versus One Bite"><span class="bo-badge-tabs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="bo-pizza-tile-bjs">BJS</span><span class="bo-pizza-tile-vs">VS</span><span class="bo-pizza-tile-ob">ONE<br>BITE</span></span></span>', cat: 'pizza' },
     { label: 'Mexican', cat: 'mexican' },
     { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
     { label: 'Breakfast', cat: 'breakfast' },
@@ -20333,8 +20342,9 @@ function boRenderCategory(cat){
         ${isBjsPicksCat(cat) ? '' : `<div class="bo-rank"><span class="bo-rank-ghost">${String(s.rank).padStart(2,'0')}</span><span class="bo-rank-label">NO. ${String(s.rank).padStart(2,'0')}</span></div>`}
         ${s.image ? `<div class="bo-thumb-photo"><img src="${s.image}" alt="${s.name}" loading="lazy" referrerpolicy="no-referrer" style="object-position:${s.imagePosition || 'center'};" onerror="this.closest('.bo-thumb-photo').style.display='none';"></div>` : `<div class="bo-sear" style="background: radial-gradient(ellipse at 30% 30%, hsl(${s.hue}) 0%, hsl(${s.hue.split(',')[0]}, ${s.hue.split(',')[1]}, 14%) 70%);"><span class="bo-sear-number">${s.rank}</span></div>`}
         ${cat === 'pizza' ? `<div class="bo-pizza-scorecard" aria-label="BJS versus One Bite pizza scores">
+          <span class="bo-badge-tabs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
           <div class="bo-pizza-score-side">
-            <div class="bo-pizza-score-logo"><svg aria-label="BJS" height="20" viewBox="0 0 40 40" width="20"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></div>
+            <div class="bo-pizza-score-logo"><span class="bo-pizza-bjs-mark" aria-label="BJS">BJS</span></div>
             <div class="bo-pizza-score-value">${s.bjsPizzaScore || '—'}${s.bjsPizzaScore ? '<small>/10</small>' : ''}</div>
           </div>
           <div class="bo-pizza-score-vs">VS</div>
@@ -24321,21 +24331,23 @@ body footer .fine-print + .fine-print,
   font-family:'Archivo Black',Arial,sans-serif!important;
   font-size:14px!important;
   font-weight:900!important;
-  text-shadow:0 0 5px rgba(255,45,63,.72);
+  text-shadow:0 0 1px rgba(255,45,63,.2);
 }
 .bjs-standard-mark text[data-bjs-company="true"]{display:none!important}
 .bjs-home-circle{border-color:#F59E0B!important;background:#0a0a0a!important}
+.bjs-home-circle::before{content:none!important}
 .bjs-home-text{
   color:#ff2d3f!important;
   font-family:'Archivo Black',Arial,sans-serif!important;
   font-size:1.14rem!important;
   line-height:1!important;
-  text-shadow:0 0 6px rgba(255,45,63,.8)!important;
+  text-shadow:0 0 1px rgba(255,45,63,.2)!important;
 }
 @keyframes bjsSitewideLogoPulse{
-  0%,100%{opacity:.72;filter:drop-shadow(0 0 2px rgba(245,158,11,.52)) drop-shadow(0 0 1px rgba(255,45,63,.28))}
-  50%{opacity:1;filter:drop-shadow(0 0 8px rgba(245,158,11,.98)) drop-shadow(0 0 5px rgba(255,45,63,.62))}
+  0%,100%{opacity:.84;filter:drop-shadow(0 0 1px rgba(245,158,11,.26))}
+  50%{opacity:1;filter:drop-shadow(0 0 3px rgba(245,158,11,.48))}
 }
+.bjs-home-circle.bjs-standard-mark-wrap{animation:goldtonePulse 2.2s ease-in-out infinite!important}
 @media(prefers-reduced-motion:reduce){.bjs-standard-mark,.bjs-standard-mark-wrap{animation:none!important}}
 </style>
 <script id="sitewide-bjs-mark-v129">
