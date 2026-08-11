@@ -26794,5 +26794,207 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
-<!-- Fresh delivery build v137: landing readability, worldwide sharing, and map zoom guidance -->
+<style id="bop-world-icons-and-other-leaders-v138">
+/* Best of the World: custom gold line drawings replace text/emoji symbols. */
+.bop-world-tile .bop-world-line-icon{
+  display:block;
+  width:46px;
+  height:38px;
+  margin:0 auto 10px;
+  fill:none;
+  stroke:#F59E0B;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 5px rgba(245,158,11,.52));
+}
+.bop-world-why{
+  display:table;
+  padding:7px 10px;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.bop-world-why:focus-visible{outline:1px solid #F59E0B;outline-offset:3px;border-radius:10px}
+
+/* Every red + MORE becomes one consistent source-list hot link. */
+.bo-plus-more{
+  display:inline-block;
+  border:0;
+  background:transparent;
+  color:#e1262f!important;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+  cursor:pointer;
+  pointer-events:auto!important;
+  -webkit-tap-highlight-color:transparent;
+}
+.bo-plus-more:focus-visible{outline:1px solid #e1262f;outline-offset:3px;border-radius:3px}
+
+#boOtherLeadersOverlay{
+  position:fixed;
+  inset:0;
+  z-index:2147483646;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.91);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+#boOtherLeadersOverlay.open{display:flex}
+.bo-other-leaders-circle{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:min(88vw,390px);
+  height:min(88vw,390px);
+  box-sizing:border-box;
+  padding:48px 35px 42px;
+  overflow:hidden;
+  border:3px solid #F59E0B;
+  border-radius:50%;
+  background:#030303;
+  color:#F59E0B;
+  text-align:center;
+  box-shadow:0 0 14px rgba(245,158,11,.82),0 0 34px rgba(245,158,11,.31),inset 0 0 22px rgba(245,158,11,.07);
+}
+.bo-other-leaders-circle h2{
+  flex:0 0 auto;
+  margin:0 0 16px;
+  color:#F59E0B;
+  font:900 clamp(1.1rem,5vw,1.5rem)/1 'Archivo Black',Arial,sans-serif;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-shadow:0 0 8px rgba(245,158,11,.55);
+}
+.bo-other-leaders-list{
+  max-width:305px;
+  color:#F59E0B;
+  font:800 clamp(.57rem,2.45vw,.72rem)/1.65 'Archivo Narrow',Arial,sans-serif;
+  letter-spacing:.015em;
+}
+.bo-other-leaders-list .sep{padding:0 .35em;color:#e1262f;font-size:.78em}
+.bo-other-leaders-close{
+  position:absolute;
+  top:24px;
+  right:50px;
+  width:29px;
+  height:29px;
+  padding:0;
+  border:1.5px solid #F59E0B;
+  border-radius:50%;
+  background:#050505;
+  color:#e1262f;
+  font:900 18px/25px Arial,sans-serif;
+  cursor:pointer;
+}
+@media(max-width:370px){
+  .bo-other-leaders-circle{padding:42px 27px 36px}
+  .bo-other-leaders-list{font-size:.55rem;line-height:1.58}
+  .bo-other-leaders-close{top:20px;right:43px}
+}
+</style>
+<script id="bop-world-icons-and-other-leaders-v138">
+(function(){
+  const worldIcons={
+    movies:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="7" y="15" width="25" height="18" rx="3"/><path d="M32 20l9-5v18l-9-5M12 15l5-8 6 8M24 15l5-8 6 8"/><circle cx="14" cy="11" r="4"/><circle cx="29" cy="11" r="4"/></svg>',
+    airlines:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M4 23l17-5 7-12 4 1-3 13 12 5c2 1 2 4-1 4l-13-2-6 8-3-1 2-9-9-1-4 4-2-1 2-6"/></svg>',
+    songs:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 28V9l22-4v19M18 13l22-4"/><ellipse cx="12" cy="31" rx="6" ry="4"/><ellipse cx="34" cy="27" rx="6" ry="4"/></svg>',
+    automotive:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M7 28v-8l5-9h24l5 9v8M9 20h30M14 28h20"/><circle cx="13" cy="29" r="4"/><circle cx="35" cy="29" r="4"/><path d="M15 14h18"/></svg>',
+    watches:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 9l2-6h8l2 6M18 31l2 6h8l2-6"/><circle cx="24" cy="20" r="12"/><path d="M24 13v8l6 3"/></svg>',
+    cellphones:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="14" y="3" width="20" height="34" rx="4"/><path d="M20 7h8M21 32h6"/><circle cx="24" cy="27" r="1"/></svg>'
+  };
+
+  const leaderNames=[
+    'Michelin Guide','James Beard Foundation','The World’s 50 Best','La Liste','Forbes Travel Guide','AAA Diamond',
+    'Skytrax','APEX','Condé Nast Traveler','Travel + Leisure','Rotten Tomatoes','Metacritic','IMDb',
+    'Google','Google Menu','Tripadvisor','OpenTable','Resy','Yelp','Sirved','Uber Eats','Grubhub','Slice',
+    'Restaurant Guru','Facebook','One Bite'
+  ];
+
+  function replaceWorldIcons(root){
+    const scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('#bopWorldwideLanding .bop-world-tile[data-worldwide-key]').forEach(function(tile){
+      const key=tile.dataset.worldwideKey;
+      const old=tile.querySelector('span');
+      if(old&&worldIcons[key])old.outerHTML=worldIcons[key];
+    });
+  }
+
+  function ensureOtherLeaders(){
+    let overlay=document.getElementById('boOtherLeadersOverlay');
+    if(overlay)return overlay;
+    overlay=document.createElement('section');
+    overlay.id='boOtherLeadersOverlay';
+    overlay.setAttribute('role','dialog');
+    overlay.setAttribute('aria-modal','true');
+    overlay.setAttribute('aria-labelledby','boOtherLeadersTitle');
+    overlay.innerHTML='<div class="bo-other-leaders-circle"><button class="bo-other-leaders-close" type="button" aria-label="Close">×</button><h2 id="boOtherLeadersTitle">OTHER LEADERS</h2><div class="bo-other-leaders-list">'+leaderNames.map(function(name){return '<span>'+name+'</span>';}).join('<span class="sep" aria-hidden="true">◆</span>')+'</div></div>';
+    document.body.appendChild(overlay);
+    overlay.querySelector('.bo-other-leaders-close').addEventListener('click',closeOtherLeaders);
+    overlay.addEventListener('click',function(event){if(event.target===overlay)closeOtherLeaders();});
+    return overlay;
+  }
+  function openOtherLeaders(){
+    const overlay=ensureOtherLeaders();
+    overlay.classList.add('open');
+    document.body.style.overflow='hidden';
+    overlay.querySelector('.bo-other-leaders-close').focus();
+  }
+  function closeOtherLeaders(){
+    const overlay=document.getElementById('boOtherLeadersOverlay');
+    if(overlay)overlay.classList.remove('open');
+    document.body.style.overflow='';
+  }
+
+  function enrichLegend(root){
+    const scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('#legendOverlay .bo-source-leaders').forEach(function(list){
+      if(list.dataset.worldSourcesAdded==='1')return;
+      const more=list.querySelector('.bo-plus-more');
+      ['Michelin Guide','James Beard Foundation','Skytrax','Rotten Tomatoes','Metacritic'].forEach(function(name){
+        if(list.textContent.indexOf(name)!==-1)return;
+        const diamond=document.createElement('span');diamond.className='bo-source-diamond';diamond.textContent='◆';
+        const label=document.createElement('span');label.textContent=name;
+        list.insertBefore(diamond,more||null);list.insertBefore(label,more||null);
+      });
+      list.dataset.worldSourcesAdded='1';
+    });
+  }
+
+  function bindWorldWhy(root){
+    const scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('#bopWorldwideLanding .bop-world-why').forEach(function(why){
+      if(why.dataset.bound==='1')return;
+      why.dataset.bound='1';why.setAttribute('role','button');why.setAttribute('tabindex','0');why.setAttribute('aria-label','Why Best of Period');
+      function openWhy(){
+        const original=document.querySelector('.bjs-why-trigger');
+        if(original)original.click();
+      }
+      why.addEventListener('click',openWhy);
+      why.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();openWhy();}});
+    });
+  }
+
+  function refresh(root){replaceWorldIcons(root);enrichLegend(root);bindWorldWhy(root);}
+  function install(){
+    ensureOtherLeaders();refresh(document);
+    document.addEventListener('click',function(event){
+      const more=event.target.closest('.bo-plus-more');
+      if(!more)return;
+      event.preventDefault();event.stopPropagation();openOtherLeaders();
+    },true);
+    document.addEventListener('keydown',function(event){if(event.key==='Escape'&&document.getElementById('boOtherLeadersOverlay')?.classList.contains('open'))closeOtherLeaders();});
+    new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)refresh(node);});});}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v138: custom world icons, matched WHY, and OTHER LEADERS popup -->
 </body></html>
