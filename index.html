@@ -5967,6 +5967,11 @@
 .bo-movie-metric{color:#ef3340;font:900 clamp(.92rem,2.2vw,1.2rem)/1 'Archivo Narrow',sans-serif;}
 .bo-movie-date{margin-top:6px;color:#f5a623;font:700 clamp(.68rem,1.6vw,.84rem)/1.2 'Archivo Narrow',sans-serif;}
 .bo-movie-award{margin-top:7px;color:#ddd;font:700 clamp(.64rem,1.45vw,.78rem)/1.25 'Archivo Narrow',sans-serif;}
+.bo-movie-accolades{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.bo-movie-accolade{display:inline-flex;align-items:center;min-height:20px;padding:4px 6px;border:1px solid #ef3340;border-radius:4px;background:rgba(125,10,17,.28);color:#fff;font:900 clamp(.5rem,1.2vw,.62rem)/1 'Archivo Black',sans-serif;letter-spacing:.035em;text-transform:uppercase;box-shadow:0 0 6px rgba(239,51,64,.24);}
+.bo-movie-accolade.is-extra{display:none;}
+.bo-movie-accolades.is-expanded .bo-movie-accolade.is-extra{display:inline-flex;}
+.bo-movie-awards-more{min-height:20px;padding:3px 6px;border:1px solid #f59e0b;border-radius:4px;background:#050505;color:#f59e0b;font:900 .55rem/1 'Archivo Black',sans-serif;cursor:pointer;}
 .bo-current-movies{margin-top:42px;padding-top:34px;border-top:3px solid #f59e0b;box-shadow:0 -8px 20px -18px #f59e0b;}
 .bo-movie-picks-launch-wrap{display:flex;justify-content:center;margin:40px auto 10px;}
 .bo-movie-picks-launch{display:flex;align-items:center;justify-content:center;width:112px;height:112px;padding:15px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#ef3340;font:900 1rem/1.05 'Archivo Black',sans-serif;text-align:center;box-shadow:0 0 13px rgba(245,158,11,.52);cursor:pointer;animation:boMoviePicksPulse 2s ease-in-out infinite;}
@@ -5997,6 +6002,8 @@
 .bo-brand-logo{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;font:900 10px/1 Arial,sans-serif;}
 .bo-brand-fandango{color:#1883c7}.bo-brand-fandango b{display:inline-grid;place-items:center;width:19px;height:19px;background:#f58220;color:#fff;font-size:13px;transform:rotate(-5deg)}
 .bo-brand-regal{color:#f5a623;font-size:12px;letter-spacing:.04em}.bo-brand-regal b{font-size:17px;font-weight:400;}
+.bo-send-movie-btn{position:absolute;left:7px;bottom:8px;z-index:3;width:72px;min-height:29px;padding:4px 5px;border:1.5px solid #f59e0b;border-radius:999px;background:#050505;color:#ef3340;font:900 8px/1 'Archivo Black',sans-serif;letter-spacing:.045em;box-shadow:0 0 8px rgba(245,158,11,.55);cursor:pointer;animation:boSendMoviePulse 1.7s ease-in-out infinite;}
+@keyframes boSendMoviePulse{0%,100%{transform:scale(1);box-shadow:0 0 6px rgba(245,158,11,.42)}50%{transform:scale(1.035);box-shadow:0 0 15px rgba(245,158,11,.88)}}
 @media(max-width:620px){.bo-movies-shell{padding-left:8px;padding-right:8px}.bo-movies-hero{padding-left:62px;padding-right:34px}.bo-movies-columns{gap:9px}.bo-movie-column-head{min-height:205px;padding:28px 5px 18px}.bo-movie-column-head h2{width:104px;height:104px;font-size:.96rem}.bo-movie-list{margin-top:22px}.bo-movie-card{grid-template-columns:58px minmax(0,1fr);min-height:116px}.bo-movie-poster{width:58px;min-height:116px}.bo-movie-info{padding:9px 6px 7px}.bo-current-grid{grid-template-columns:1fr}.bo-current-card{grid-template-columns:98px minmax(0,1fr)}.bo-current-card .bo-movie-poster{width:98px}}
 </style> <style id="bop-final-hub-grid-globe-city-colors"> .bo-main-hub-title-wrap{
   display:flex;
@@ -18620,11 +18627,37 @@ const BO_MOVIES_CURRENT=[
   {title:'Toy Story 5',metric:'Still in theaters',date:'Now playing'},
   {title:'Minions & Monsters',metric:'Still in theaters',date:'Now playing'}
 ];
+const BO_MOVIE_ACCOLADES={
+  'Avatar':['3 OSCARS','BEST CINEMATOGRAPHY','BEST VISUAL EFFECTS','BEST ART DIRECTION'],
+  'Avengers: Endgame':['OSCAR NOMINEE','BEST VISUAL EFFECTS NOMINEE'],
+  'Avatar: The Way of Water':['OSCAR WINNER','BEST VISUAL EFFECTS'],
+  'Titanic':['BEST PICTURE','BEST DIRECTOR','11 OSCARS','BEST CINEMATOGRAPHY','BEST ORIGINAL SONG'],
+  'Star Wars: The Force Awakens':['5 OSCAR NOMINATIONS','BEST VISUAL EFFECTS NOMINEE'],
+  'Avengers: Infinity War':['OSCAR NOMINEE','BEST VISUAL EFFECTS NOMINEE'],
+  'Spider-Man: No Way Home':['OSCAR NOMINEE','BEST VISUAL EFFECTS NOMINEE'],
+  'Inside Out 2':['OSCAR NOMINEE','BEST ANIMATED FEATURE NOMINEE'],
+  'The Godfather':['BEST PICTURE','BEST ACTOR','BEST ADAPTED SCREENPLAY','3 OSCARS'],
+  'Seven Samurai':['VENICE SILVER LION','OSCAR NOMINEE'],
+  'Casablanca':['BEST PICTURE','BEST DIRECTOR','BEST SCREENPLAY','3 OSCARS'],
+  'Rear Window':['4 OSCAR NOMINATIONS','BEST DIRECTOR NOMINEE'],
+  'L.A. Confidential':['BEST SUPPORTING ACTRESS','BEST ADAPTED SCREENPLAY','2 OSCARS'],
+  'On the Waterfront':['BEST PICTURE','BEST ACTOR','BEST SUPPORTING ACTRESS','BEST DIRECTOR','8 OSCARS'],
+  'Chinatown':['BEST ORIGINAL SCREENPLAY','11 OSCAR NOMINATIONS'],
+  'Modern Times':['NATIONAL FILM REGISTRY','AFI HONOREE'],
+  'The Battle of Algiers':['3 OSCAR NOMINATIONS','VENICE GOLDEN LION'],
+  "Schindler's List":['BEST PICTURE','BEST DIRECTOR','7 OSCARS','BEST ADAPTED SCREENPLAY','BEST CINEMATOGRAPHY']
+};
+function boMovieAccoladesHTML(title){
+  const badges=BO_MOVIE_ACCOLADES[title]||[];if(!badges.length)return '';
+  return `<div class="bo-movie-accolades">${badges.map((badge,index)=>`<span class="bo-movie-accolade${index>2?' is-extra':''}">${badge}</span>`).join('')}${badges.length>3?'<button type="button" class="bo-movie-awards-more">MORE</button>':''}</div>`;
+}
+const BO_BJS_MOVIE_PICKS=Array.from({length:10},()=>null);
+function boBjsMoviePickRowHTML(title){return `<li><div><span class="bo-movie-picks-question">${title||'???'}</span>${title?boMovieAccoladesHTML(title):''}</div></li>`;}
 function boMoviePoster(title,index){
   const safe=String(title).replace(/[&<>"']/g,'').toUpperCase();
   const hues=['#641018','#142a52','#4d2700','#163e36','#3d174f'];
   const color=hues[index%hues.length];
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="540" viewBox="0 0 360 540"><defs><radialGradient id="g"><stop stop-color="${color}"/><stop offset="1" stop-color="#020202"/></radialGradient></defs><rect width="360" height="540" fill="url(#g)"/><circle cx="180" cy="220" r="118" fill="none" stroke="#f59e0b" stroke-width="3" opacity=".65"/><path d="M40 54h280M40 486h280" stroke="#ef3340" stroke-width="8"/><text x="180" y="245" fill="white" font-family="Arial" font-size="27" font-weight="900" text-anchor="middle">${safe.slice(0,20)}</text><text x="180" y="279" fill="#f59e0b" font-family="Arial" font-size="20" font-weight="800" text-anchor="middle">${safe.slice(20,40)}</text><text x="180" y="445" fill="#ef3340" font-family="Arial" font-size="18" font-weight="900" text-anchor="middle">BEST OF PERIOD.</text></svg>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="540" viewBox="0 0 360 540"><defs><radialGradient id="g"><stop stop-color="${color}"/><stop offset="1" stop-color="#020202"/></radialGradient></defs><rect width="360" height="540" fill="url(#g)"/><circle cx="180" cy="220" r="118" fill="none" stroke="#f59e0b" stroke-width="3" opacity=".65"/><path d="M40 54h280M40 486h280" stroke="#ef3340" stroke-width="8"/><text x="180" y="245" fill="white" font-family="Arial" font-size="27" font-weight="900" text-anchor="middle">${safe.slice(0,20)}</text><text x="180" y="279" fill="#f59e0b" font-family="Arial" font-size="20" font-weight="800" text-anchor="middle">${safe.slice(20,40)}</text></svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 function boMovieCardHTML(movie,index,current){
@@ -18635,7 +18668,7 @@ function boMovieCardHTML(movie,index,current){
     <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Regal" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}"><span class="bo-brand-logo bo-brand-regal"><b>◇</b>REGAL</span></a>
     <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Cinemark" href="https://www.cinemark.com/search/?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://www.liblogo.com/img-logo/ci7324c70d-cinemark-logo-cinemark.png" alt="Cinemark"></a>
   </div>`:'';
-  return `<article class="${current?'bo-current-card':'bo-movie-card'}"><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art"><div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${movie.award?`<div class="bo-movie-award">${movie.award}</div>`:''}${ticket}</div></article>`;
+  return `<article class="${current?'bo-current-card':'bo-movie-card'}"${current?` data-movie-title="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"`:''}><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art">${current?`<button type="button" class="bo-send-movie-btn" data-send-movie="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">SEND MOVIE</button>`:''}<div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${boMovieAccoladesHTML(movie.title)}${ticket}</div></article>`;
 }
 let boMoviesRotatorTimer=null;
 function boEnsureMoviesPage(){
@@ -18643,20 +18676,36 @@ function boEnsureMoviesPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boMoviesPage';page.className='bo-movies-page';page.setAttribute('aria-label','Best Of Movies');
-  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>BOX OFFICE</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${Array.from({length:10},()=>'<li><span class="bo-movie-picks-question">???</span></li>').join('')}</ol></div></div>`;
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>BOX OFFICE</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
   document.body.appendChild(page);
   document.getElementById('boMoviesBack').addEventListener('click',boCloseMoviesPage);
   document.getElementById('boMoviePicksLaunch').addEventListener('click',()=>document.getElementById('boMoviePicksModal').classList.add('open'));
   document.getElementById('boMoviePicksClose').addEventListener('click',()=>document.getElementById('boMoviePicksModal').classList.remove('open'));
   document.getElementById('boMoviePicksModal').addEventListener('click',event=>{if(event.target.id==='boMoviePicksModal')event.currentTarget.classList.remove('open');});
+  page.addEventListener('click',event=>{
+    const sendMovie=event.target.closest('.bo-send-movie-btn');
+    if(sendMovie){
+      const movieTitle=sendMovie.dataset.sendMovie||'this movie';
+      const shareUrl=new URL(window.location.href);shareUrl.search='';shareUrl.searchParams.set('page','movies');shareUrl.searchParams.set('movie',movieTitle);shareUrl.hash='';
+      const shareText=`Best of Movies Period.\nCheck this out!\n${movieTitle}`;
+      if(navigator.share){navigator.share({title:'Best of Movies Period.',text:shareText,url:shareUrl.toString()}).catch(()=>{});}
+      else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(shareText+'\n'+shareUrl.toString()).then(()=>{const old=sendMovie.textContent;sendMovie.textContent='COPIED!';setTimeout(()=>sendMovie.textContent=old,1300);}).catch(()=>prompt('Copy this movie:',shareText+'\n'+shareUrl.toString()));}
+      else prompt('Copy this movie:',shareText+'\n'+shareUrl.toString());
+      return;
+    }
+    const more=event.target.closest('.bo-movie-awards-more');if(!more)return;
+    const wrap=more.closest('.bo-movie-accolades');const expanded=wrap.classList.toggle('is-expanded');more.textContent=expanded?'LESS':'MORE';
+  });
   return page;
 }
 function boOpenMoviesPage(){
   const page=boEnsureMoviesPage();page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;
-  try{const p=new URLSearchParams();p.set('page','movies');history.replaceState(null,'',window.location.pathname+'?'+p.toString());}catch(e){}
+  const requestedMovie=new URLSearchParams(window.location.search).get('movie');
+  try{const p=new URLSearchParams();p.set('page','movies');if(requestedMovie)p.set('movie',requestedMovie);history.replaceState(null,'',window.location.pathname+'?'+p.toString());}catch(e){}
   const rot=document.getElementById('boMoviesRotator'),words=['RESTAURANTS','HOTELS','BARS','NIGHTCLUBS','POOLS','SPAS','MOVIES'];let i=0;
   clearInterval(boMoviesRotatorTimer);rot.textContent=words[0];
   boMoviesRotatorTimer=setInterval(()=>{i++;rot.textContent=words[Math.min(i,words.length-1)];if(i>=words.length-1)clearInterval(boMoviesRotatorTimer);},240);
+  if(requestedMovie)setTimeout(()=>{const card=[...page.querySelectorAll('.bo-current-card[data-movie-title]')].find(item=>item.dataset.movieTitle===requestedMovie);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow='0 0 28px rgba(239,51,64,.85),0 0 18px rgba(245,158,11,.72)';setTimeout(()=>card.style.boxShadow='',2400);}},500);
 }
 function boCloseMoviesPage(){
   const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);
