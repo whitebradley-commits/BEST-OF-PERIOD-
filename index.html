@@ -4301,6 +4301,8 @@
   .bo-tell-dave-social{display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#080808;color:#e1262f;cursor:pointer;box-shadow:0 0 7px rgba(245,158,11,.32);transition:transform .18s ease,box-shadow .18s ease,color .18s ease}
   .bo-tell-dave-social:hover,.bo-tell-dave-social:focus-visible{color:#fff;transform:scale(1.08);box-shadow:0 0 9px rgba(255,255,255,.55),0 0 14px rgba(245,158,11,.65);outline:none}
   .bo-tell-dave-social svg{width:23px;height:23px}
+  .bo-tell-dave-note{max-width:245px;margin:14px auto 0;color:#aaa;font:600 .61rem/1.32 Arial,sans-serif;letter-spacing:.01em}
+  .bo-tell-dave-note::first-letter{color:#e1262f}
   .bo-tell-dave-close{position:absolute;top:12px;right:18px;width:27px;height:27px;padding:0;border:1px solid #F59E0B;border-radius:50%;background:#000;color:#e1262f;font:900 1rem/1 Arial,sans-serif;cursor:pointer}
   @keyframes bo-tell-dave-pulse{0%,100%{transform:scale(1);box-shadow:0 0 3px rgba(245,158,11,.28)}50%{transform:scale(1.045);box-shadow:0 0 7px rgba(255,255,255,.60),0 0 11px rgba(245,158,11,.76)}}
   @keyframes bo-tell-dave-arrow{0%,100%{opacity:.48;transform:scale(1)}50%{opacity:1;transform:scale(1.20)}}
@@ -15467,6 +15469,72 @@ boCategoryData.pizza = [
     if(!boCategoryData.pizza.some(existing => existing && existing.name === record.name && (existing.city || 'bestof') === record.city)) boCategoryData.pizza.push(record);
   });
 })();
+(function rapidlyExpandPizzaCities(){
+  const additions = [
+    ['miami','Lucali Miami Beach',8.8,null,null,'1930 Bay Rd, Miami Beach, FL 33139','Brooklyn-born whole-pie destination with a major Miami following'],
+    ['miami','Eleventh Street Pizza',8.7,null,null,'1035 N Miami Ave, Miami, FL 33136','Downtown slice shop known for crisp New York-style pies'],
+    ['miami','La Leggenda Pizzeria',8.6,null,null,'224 Española Way, Miami Beach, FL 33139','Neapolitan pizza from a respected Miami Beach specialist'],
+    ['miami','Mister O1 Extraordinary Pizza',8.5,null,null,'1680 Michigan Ave, Miami Beach, FL 33139','Thin creative pies with broad local and national recognition'],
+    ['london','Crisp Pizza W6',8.9,null,null,'25 Crisp Rd, London W6 9RL, United Kingdom','Destination thin-crust pizza with exceptional current demand'],
+    ['london','Napoli on the Road',8.8,null,null,'9A Devonshire Rd, London W4 2EU, United Kingdom','Award-winning contemporary Neapolitan pizza'],
+    ['london','Santa Maria Pizzeria',8.6,null,null,'15 St Mary’s Rd, London W5 5RA, United Kingdom','A London standard-bearer for traditional Neapolitan pies'],
+    ['london','Zia Lucia',8.5,null,null,'157 Holloway Rd, London N7 8LX, United Kingdom','Neighborhood pizzeria known for distinctive fermented doughs'],
+    ['sandiego','Tribute Pizza',8.7,null,null,'3077 N Park Way, San Diego, CA 92104','North Park destination combining serious dough work with inventive tributes'],
+    ['sandiego','Buona Forchetta',8.6,null,null,'3001 Beech St, San Diego, CA 92102','South Park institution for wood-fired Neapolitan pizza'],
+    ['sandiego','Regents Pizzeria',8.5,null,null,'4150 Regents Park Row, La Jolla, CA 92037','Deep bench of New York and Chicago-style pizzas'],
+    ['sandiego',"Luigi's at the Beach",8.3,null,null,'3210 Mission Blvd, San Diego, CA 92109','Long-running Mission Beach shop for oversized New York-style slices'],
+    ['siliconvalley','State of Mind Slice House',8.7,null,null,'3850 El Camino Real, Palo Alto, CA 94306','California-driven slice house with championship-level recognition'],
+    ['siliconvalley','Slice House by Tony Gemignani',8.6,null,null,'1000 El Paseo de Saratoga, San Jose, CA 95130','Multiple pizza styles from a world-champion pizzaiolo'],
+    ['siliconvalley','Terún',8.5,null,null,'448 California Ave, Palo Alto, CA 94306','Polished wood-fired Neapolitan pizza on California Avenue'],
+    ['siliconvalley','Doppio Zero',8.4,null,null,'160 Castro St, Mountain View, CA 94041','Southern Italian restaurant centered on blistered Neapolitan pies'],
+    ['santabarbara','Bettina',8.9,null,null,'1014 Coast Village Rd, Santa Barbara, CA 93108','Montecito destination for naturally leavened wood-fired pizza'],
+    ['santabarbara','Revolver',8.7,null,null,'973 W Embarcadero del Mar, Isla Vista, CA 93117','Small-batch pizzeria with an intensely loyal following'],
+    ['santabarbara','Olio Pizzeria',8.5,null,null,'11 W Victoria St, Santa Barbara, CA 93101','Roman-influenced pizza in the downtown arts district'],
+    ['santabarbara','Lucky Penny',8.3,null,null,'127 Anacapa St, Santa Barbara, CA 93101','Funk Zone favorite for wood-fired California pizza'],
+    ['sanfrancisco',"Tony's Pizza Napoletana",9.0,null,null,'1570 Stockton St, San Francisco, CA 94133','North Beach landmark serving elite examples across multiple pizza styles'],
+    ['sanfrancisco','Golden Boy Pizza',8.7,null,null,'542 Green St, San Francisco, CA 94133','Iconic North Beach counter for focaccia-style square slices'],
+    ['sanfrancisco','Cellarmaker House of Pizza',8.6,null,null,'3193 Mission St, San Francisco, CA 94110','Detroit-style pizza paired with highly regarded house beer'],
+    ['sanfrancisco','Gioia Pizzeria',8.5,null,null,'2240 Polk St, San Francisco, CA 94109','East Coast-inspired pies with California ingredient precision'],
+    ['newyork','Lucali',9.2,9.1,9.3,'575 Henry St, Brooklyn, NY 11231','A globally known Brooklyn destination for thin whole pies'],
+    ['newyork','Di Fara Pizza',9.3,null,9.4,'1424 Avenue J, Brooklyn, NY 11230','Historic Midwood institution with one of Dave’s highest scores'],
+    ['newyork',"Luigi's Pizza",9.2,null,9.3,'686 5th Ave, Brooklyn, NY 11215','Classic Brooklyn slice shop with an elite Dave score'],
+    ['newyork',"Scarr's Pizza",8.5,8.2,7.7,'35 Orchard St, New York, NY 10002','Downtown favorite milling its own flour for classic New York slices'],
+    ['chicago',"Vito & Nick's Pizzeria",8.8,null,null,'8433 S Pulaski Rd, Chicago, IL 60652','Essential old-school Chicago tavern-style pizza'],
+    ['chicago',"Pequod's Pizza",8.7,null,null,'2207 N Clybourn Ave, Chicago, IL 60614','Caramelized-edge pan pizza with national recognition'],
+    ['chicago',"Milly's Pizza in the Pan",8.7,null,null,'925 N Ashland Ave, Chicago, IL 60622','Small-production pan pizzas with fiercely loyal demand'],
+    ['chicago',"Jimmy's Pizza Cafe",8.6,null,null,'2434 W Montrose Ave, Chicago, IL 60618','One of Chicago’s strongest New York-style slice counters'],
+    ['washingtondc','2Amys',8.7,null,null,'3715 Macomb St NW, Washington, DC 20016','Longstanding D.C. benchmark for Neapolitan pizza'],
+    ['washingtondc',"Andy's Pizza",8.6,null,null,'51 M St NE, Washington, DC 20002','Award-winning New York-style slices with multiple city locations'],
+    ['washingtondc','Menomale',8.5,null,null,'2711 12th St NE, Washington, DC 20018','Brookland neighborhood destination for wood-fired Neapolitan pies'],
+    ['washingtondc','Timber Pizza Company',8.4,null,null,'809 Upshur St NW, Washington, DC 20011','Creative wood-fired pizza with a strong local following'],
+    ['boston',"Santarpio's Pizza",9.0,null,null,'111 Chelsea St, Boston, MA 02128','East Boston institution for charred, no-frills pizza'],
+    ['boston',"Monte's Restaurant",9.4,null,10.0,'141 Eastern Ave, Lynn, MA 01902','Massachusetts bar pizza awarded Dave’s rare perfect score'],
+    ['boston','Halftime Pizza',9.1,null,9.2,'115 Causeway St, Boston, MA 02114','Old-school arena-area slices with an elite Dave score'],
+    ['boston',"Ernesto's Pizza",8.7,null,null,'69 Salem St, Boston, MA 02113','North End counter known for oversized, foldable slices'],
+    ['philadelphia','Pizzeria Beddia',8.9,null,null,'1313 N Lee St, Philadelphia, PA 19125','Nationally celebrated Fishtown pizza destination'],
+    ['philadelphia','Circles + Squares',8.7,null,null,'1265 E Cheltenham Ave, Philadelphia, PA 19124','Highly demanded round and square pies from a focused operation'],
+    ['philadelphia','Shackamaxon',8.6,null,null,'115 E Girard Ave, Philadelphia, PA 19125','Fishtown slice shop built around naturally leavened dough'],
+    ['philadelphia',"Tacconelli's Pizzeria",8.8,null,null,'2604 E Somerset St, Philadelphia, PA 19134','Reservation-driven brick-oven institution dating to 1946'],
+    ['atlanta','Varuni Napoli',8.7,null,null,'1540 Monroe Dr NE, Atlanta, GA 30324','Neapolitan pizza from a Naples-trained pizzaiolo'],
+    ['atlanta','Glide Pizza',8.6,null,null,'659 Auburn Ave NE, Atlanta, GA 30312','Popular walk-up window for large New York-style slices'],
+    ['atlanta',"Junior's Pizza",8.5,null,null,'77 Georgia Ave SE, Atlanta, GA 30315','Summerhill neighborhood favorite for creative pies'],
+    ['atlanta','Nina & Rafi',8.4,null,null,'661 Auburn Ave NE, Atlanta, GA 30312','Italian-American BeltLine destination known for Detroit-style pizza'],
+    ['neworleans','Pizza Delicious',8.7,null,null,'617 Piety St, New Orleans, LA 70117','Bywater benchmark for classic New York-style slices'],
+    ['neworleans','NOLA Mia Gelato Cafe',8.5,null,null,'2232 St Claude Ave, New Orleans, LA 70117','Neighborhood shop combining strong pizza with house gelato'],
+    ['neworleans','Paladar 511',8.6,null,null,'511 Marigny St, New Orleans, LA 70117','Ingredient-driven restaurant with standout wood-fired pizza'],
+    ['neworleans','Domenica',8.5,null,null,'123 Baronne St, New Orleans, LA 70112','Downtown Italian destination with carefully blistered pies'],
+    ['idaho','The Wylder',8.8,null,null,'501 W Broad St, Boise, ID 83702','Downtown Boise leader for naturally leavened pizza'],
+    ['idaho','Casanova Pizzeria',8.7,null,null,'1204 S Vista Ave, Boise, ID 83705','Cult Boise favorite for thin artisan pies'],
+    ['idaho','Americana Pizza',8.5,null,null,'304 S Americana Blvd, Boise, ID 83702','Community-minded shop for creative New York-style pizza'],
+    ['idaho',"Guido's Original New York Style Pizza",8.4,null,null,'235 N 5th St, Boise, ID 83702','Long-running downtown counter for straightforward New York slices']
+  ];
+  additions.forEach((r,index)=>{
+    const city=r[0],name=r[1];
+    if(boCategoryData.pizza.some(x=>x&&x.name===name&&(x.city||'bestof')===city)) return;
+    const existingCount=boCategoryData.pizza.filter(x=>(x.city||'bestof')===city).length;
+    boCategoryData.pizza.push({rank:existingCount+1,name,city,image:'',rating:(r[2]/2).toFixed(2)+' / 5',reviews:null,price:2,hue:'18, 42%, 27%',why:r[6],note:'Rapid pizza expansion listing. Broader details and restaurant media are coming later.',url:'',address:r[5],phone:'',hours:[],bjsPizzaScore:r[2].toFixed(1),oneBiteScore:r[3],oneBiteReviews:null,oneBiteDaveScore:r[4]});
+  });
+})();
 boCategoryData.vegan = [
   {
     rank: 1,
@@ -19696,6 +19764,38 @@ const botrToLandingBtnEl = document.getElementById('botrToLandingBtn');
 const boExpandBtnTopEl = document.getElementById('boExpandBtnTopWrap');
 let boCurrentCat = 'bestof';
 
+// One canonical builder for every page-level share control. The interface is
+// a single-page app, so location.origin by itself is only the homepage; the
+// current category and city must always be encoded into the shared URL.
+function boBuildExactPageShare(categoryKey, cityKey){
+  const category = categoryKey || boCurrentCat || 'bestof';
+  const city = (cityKey && BO_CITY_CONFIG[cityKey]) ? cityKey
+    : ((boCityContext && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof');
+  const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
+  const url = new URL(window.location.origin + cleanPath);
+  url.searchParams.set('page', category);
+  if(city !== 'bestof') url.searchParams.set('city', city);
+
+  const cityCfg = BO_CITY_CONFIG[city] || BO_CITY_CONFIG.bestof;
+  const cityLabel = cityCfg.displayName || cityCfg.searchName || 'Vegas';
+  let categoryLabel = '';
+  if(boHeroCopy[category] && boHeroCopy[category].title){
+    categoryLabel = boHeroCopy[category].title.replace(/<[^>]+>/g, ' ');
+  } else if(boPickerConfig[category] && boPickerConfig[category].label){
+    categoryLabel = boPickerConfig[category].label;
+  } else {
+    categoryLabel = String(category).replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
+  categoryLabel = categoryLabel.replace(/&amp;/gi, '&').replace(/\bBEST\s+(?:OF\s+)?/i, '').replace(/\s+/g, ' ').trim();
+  if(!categoryLabel || category === 'otheroptions') categoryLabel = 'The Best';
+  else if(categoryLabel === categoryLabel.toUpperCase()){
+    categoryLabel = categoryLabel.toLowerCase().replace(/\b\w/g, function(letter){ return letter.toUpperCase(); }).replace(/\bBbq\b/g, 'BBQ').replace(/\bNyc\b/g, 'NYC');
+  }
+  const title = `Best of ${categoryLabel} Period. ${cityLabel}`;
+  return { url:url.toString(), title:title, text:`Check out ${title}.` };
+}
+window.boBuildExactPageShare = boBuildExactPageShare;
+
 function spawnFlyingCupcake(){
   // Used to launch from a nav circle button that no longer exists on the
   // page (.bo-nav-circle[data-cat="dessert"]) — silently doing nothing ever
@@ -19819,16 +19919,10 @@ function renderBjsPickFooter(cat){
   shareBtn.style.padding = '6px 4px';
   shareBtn.innerHTML = `<span style="display:flex;align-items:center;justify-content:center;gap:3px;width:100%;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg><span class="bo-bottom-tile-send-label">SEND<br>PAGE</span></span>`;
   shareBtn.addEventListener('click', async () => {
-    const shareParams = new URLSearchParams();
-    shareParams.set('page', cat);
-    if(boCityContext !== 'bestof') shareParams.set('city', boCityContext);
-    const cleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
-    const shareUrl = window.location.origin + cleanPath + '?' + shareParams.toString();
-    const shareCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
-    const cityLabel = shareCfg.searchName || shareCfg.displayName;
-    const rawTitle = (boHeroCopy[cat] && boHeroCopy[cat].title) ? boHeroCopy[cat].title.replace(/<[^>]+>/g, '').trim() : cat;
-    const pageTitle = `${rawTitle} \u2014 Best Of ${cityLabel} Period`;
-    const shareText = `Check out Best of ${cityLabel}!`;
+    const exactShare = boBuildExactPageShare(cat, boCityContext);
+    const shareUrl = exactShare.url;
+    const pageTitle = exactShare.title;
+    const shareText = exactShare.text;
     if(navigator.share){
       try {
         await navigator.share({ title: pageTitle, text: shareText, url: shareUrl });
@@ -19926,6 +20020,7 @@ function boOpenTellDaveModal(restaurantName, message){
         <button type="button" class="bo-tell-dave-social" data-dave-channel="x" aria-label="Message Dave on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.8 7.8L23.2 22H17l-4.9-6.4L6.5 22H3.3l7.3-8.4L2.9 2h6.4l4.4 5.8L18.9 2zm-1.1 17.9h1.7L8.4 4H6.6l11.2 15.9z"/></svg></button>
         <button type="button" class="bo-tell-dave-social" data-dave-channel="facebook" aria-label="Message Dave on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.3c0-.87.24-1.46 1.5-1.46H16.5V4.14C16.2 4.1 15.2 4 14 4c-2.4 0-4 1.47-4 4.16V10.5H7.5v3H10V21h3.5z"/></svg></button>
       </div>
+      <div class="bo-tell-dave-note" aria-live="polite"></div>
     </div>`;
     document.body.appendChild(modal);
     const close=()=>{modal.classList.remove('open');document.body.style.overflow='';};
@@ -19941,6 +20036,15 @@ function boOpenTellDaveModal(restaurantName, message){
   }
   modal.dataset.message=message;
   modal.querySelector('.bo-tell-dave-title').textContent='Message Dave to score '+restaurantName+'!';
+  const note=modal.querySelector('.bo-tell-dave-note');
+  note.textContent='*For privacy FB IG X require you to paste the message about '+restaurantName+"... it's already copied and ready!";
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(message).catch(()=>{
+      note.textContent='*Press and hold to copy: '+message;
+    });
+  }else{
+    note.textContent='*Press and hold to copy: '+message;
+  }
   modal.classList.add('open');
   document.body.style.overflow='hidden';
   modal.querySelector('.bo-tell-dave-close').focus();
@@ -20257,14 +20361,10 @@ function boRenderCategory(cat){
     if(mainHubSendBtn){
       mainHubSendBtn.addEventListener('click', async () => {
         const cityKey = (typeof boCityContext !== 'undefined' && BO_CITY_CONFIG[boCityContext]) ? boCityContext : 'bestof';
-        const mainShareParams = new URLSearchParams();
-        mainShareParams.set('page', 'otheroptions');
-        if(cityKey !== 'bestof') mainShareParams.set('city', cityKey);
-        const mainCleanPath = window.location.pathname.replace(/\/main\/?$/, '/') || '/';
-        const shareUrl = window.location.origin + mainCleanPath + '?' + mainShareParams.toString();
-        const cityLabel = (BO_CITY_CONFIG[cityKey] || BO_CITY_CONFIG.bestof).displayName;
-        const pageTitle = `Best Of ${cityLabel} Period — Main`;
-        const shareText = `Check out Best of ${cityLabel}!`;
+        const exactShare = boBuildExactPageShare('otheroptions', cityKey);
+        const shareUrl = exactShare.url;
+        const pageTitle = exactShare.title;
+        const shareText = exactShare.text;
         if(navigator.share){
           try {
             await navigator.share({ title: pageTitle, text: shareText, url: shareUrl });
@@ -20429,7 +20529,7 @@ function boRenderCategory(cat){
           </div>
           ${s.oneBiteDaveScore != null ? `<div class="bo-pizza-dave" aria-label="Dave score ${Number(s.oneBiteDaveScore).toFixed(1)}"><svg class="bo-pizza-dave-face" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#f0b184" stroke="#F59E0B" stroke-width="2"/><path d="M8 18c0-9 5-14 12-14 8 0 13 5 13 14-4-4-8-6-13-6-5 0-9 2-12 6z" fill="#211610"/><path d="M8 14c1-7 5-11 12-11s11 4 12 11H8z" fill="#00274C"/><path d="M7 14h27c-2 3-7 4-14 3-6 0-10-1-13-3z" fill="#00274C" stroke="#FFCB05" stroke-width=".8"/><path d="M15 6h3l2 3 2-3h3v7h-2V9l-3 4-3-4v4h-2V6z" fill="#FFCB05"/><path d="M10 24c2 8 6 12 10 12s9-4 11-12c-3 3-6 4-11 4s-8-1-10-4z" fill="#3a2418"/><path d="M14 21h4M23 21h4" stroke="#211610" stroke-width="2" stroke-linecap="round"/><path d="M17 28c2 1 4 1 6 0" fill="none" stroke="#f4d0b2" stroke-width="1.5" stroke-linecap="round"/><path d="M18.5 23.5l1.5 2 1.5-2" fill="none" stroke="#9a5e3c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bo-pizza-dave-label">DAVE <strong>${Number(s.oneBiteDaveScore).toFixed(1)}</strong></span></div>` : ''}
         </div>` : ''}
-        ${cat === 'pizza' && s.oneBiteScore == null ? `<div class="bo-pizza-vote" aria-label="Vote on whether Dave should score ${s.name.replace(/"/g, '&quot;')}">
+        ${cat === 'pizza' && s.oneBiteScore == null && s.oneBiteDaveScore == null ? `<div class="bo-pizza-vote" aria-label="Vote on whether Dave should score ${s.name.replace(/"/g, '&quot;')}">
           <div class="bo-pizza-vote-question">SHOULD DAVE SCORE<br>${s.name.toUpperCase()}?</div>
           <div class="bo-pizza-vote-buttons">
             <button type="button" class="bo-pizza-vote-btn bo-pizza-vote-up" data-vote-choice="up" aria-label="Thumbs up" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L14.2.9 7.6 7.6C7.2 8 7 8.5 7 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c.1-.2.2-.5.2-.8v-2z"/></svg><span class="bo-pizza-vote-count">0</span></button>
@@ -20484,8 +20584,8 @@ function boRenderCategory(cat){
         ${menuButtonHTML(s.name, s.url, s.rank)}
         ${callButtonHTML(s.phone)}
         ${directionsButtonHTML(s.address, s.name)}
-        ${siteButtonHTML(s.url)}
-        ${s.facebook ? `
+        ${cat === 'pizza' ? '' : siteButtonHTML(s.url)}
+        ${cat === 'pizza' ? '' : (s.facebook ? `
         <a class="bo-icon-btn bo-fb-btn" href="https://facebook.com/${s.facebook}" target="_blank" rel="noopener" title="Facebook">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M13.5 21v-7.5h2.5l.5-3h-3V8.3c0-.87.24-1.46 1.5-1.46H16.5V4.14C16.2 4.1 15.2 4 14 4c-2.4 0-4 1.47-4 4.16V10.5H7.5v3H10V21h3.5z"/>
@@ -20495,8 +20595,8 @@ function boRenderCategory(cat){
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M13.5 21v-7.5h2.5l.5-3h-3V8.3c0-.87.24-1.46 1.5-1.46H16.5V4.14C16.2 4.1 15.2 4 14 4c-2.4 0-4 1.47-4 4.16V10.5H7.5v3H10V21h3.5z"/>
           </svg>
-        </span>`}
-        ${s.instagram ? `
+        </span>`)}
+        ${cat === 'pizza' ? '' : (s.instagram ? `
         <a class="bo-icon-btn bo-ig-btn" href="https://instagram.com/${s.instagram}" target="_blank" rel="noopener" title="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="5"/>
@@ -20510,7 +20610,7 @@ function boRenderCategory(cat){
             <circle cx="12" cy="12" r="4"/>
             <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
           </svg>
-        </span>`}
+        </span>`)}
         ${emailButtonHTML(s.email)}
         ${picsButtonHTML(s.name)}
         <button type="button" style="all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:3px;width:55px;height:31px;background:#0a0a0a;border:1.5px solid #F59E0B;border-radius:6px;color:#F59E0B;font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:0.02em;cursor:pointer;animation:bo-send-pulse-glow 2s ease-in-out infinite;" title="Send this restaurant" data-send-restaurant="${s.name.replace(/"/g, '&quot;')}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>SEND</button>
@@ -23205,6 +23305,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       }else if(typeof frame.contentWindow.getFntShareTeam==='function'){
         const team=frame.contentWindow.getFntShareTeam(),query=team?'team='+encodeURIComponent(team):'';url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash=team?'/concepts/fnt?'+query:'/concepts/fnt';
       }
+    }else if(isVisible(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function'){
+      return window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext).url;
     }
     return url.toString();
   }
@@ -23215,7 +23317,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
     try{
       await new Promise(function(resolve){setTimeout(resolve,120)});
-    const url=exactShareUrl(),data={title:document.title||'Best of Period',text:'Check this out!',url:url};
+    const bestOfIsOpen=isVisible(document.getElementById('bestOfOverlay'));
+    const exactData=bestOfIsOpen&&typeof window.boBuildExactPageShare==='function'?window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext):null;
+    const url=exactData?exactData.url:exactShareUrl(),data={title:exactData?exactData.title:(document.title||'Best of Period'),text:exactData?exactData.text:'Check this out!',url:url};
       if(navigator.share)await navigator.share(data);
       else if(navigator.clipboard){await navigator.clipboard.writeText(url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1200)})}
       else prompt('Copy this exact-page link:',url);
