@@ -26846,6 +26846,11 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   -webkit-backdrop-filter:blur(3px);
 }
 #boOtherLeadersOverlay.open{display:flex}
+#bjsWhyOverlay{
+  /* The World page sits far above the original site overlays. Keep the shared
+     WHY orb above it so the same popup is actually visible from either page. */
+  z-index:2147483645!important;
+}
 .bo-other-leaders-circle{
   position:relative;
   display:flex;
@@ -26974,8 +26979,12 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
       if(why.dataset.bound==='1')return;
       why.dataset.bound='1';why.setAttribute('role','button');why.setAttribute('tabindex','0');why.setAttribute('aria-label','Why Best of Period');
       function openWhy(){
-        const original=document.querySelector('.bjs-why-trigger');
-        if(original)original.click();
+        const overlay=document.getElementById('bjsWhyOverlay');
+        if(overlay){
+          overlay.classList.add('open');
+          const close=overlay.querySelector('#bjsWhyCloseBtn');
+          if(close)setTimeout(function(){close.focus();},0);
+        }
       }
       why.addEventListener('click',openWhy);
       why.addEventListener('keydown',function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();openWhy();}});
