@@ -3112,8 +3112,8 @@
     pointer-events:none;
     -webkit-text-fill-color:#e21f2b;
   }
-  .bo-badges-page-link-wrap{display:flex;justify-content:center;margin:4px auto 13px;}
-  .bo-badges-page-link{border:1.5px solid #F59E0B;border-radius:999px;background:#050505;color:#e21f2b;padding:7px 20px;font:800 .82rem/1 'Archivo Black',sans-serif;letter-spacing:.14em;box-shadow:0 0 9px rgba(245,158,11,.42);cursor:pointer;}
+  .bo-badges-page-link-wrap{display:flex;justify-content:center;margin:42px auto 8px;}
+  .bo-badges-page-link{display:flex;align-items:center;justify-content:center;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#e21f2b;padding:0;font:800 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.07em;box-shadow:0 0 11px rgba(245,158,11,.55);cursor:pointer;}
   .bo-badges-overlay{position:fixed;inset:0;z-index:100000;background:#020202;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;color:#fff;}
   .bo-badges-overlay.is-open{display:block;}
   .bo-badges-shell{width:min(92vw,680px);margin:0 auto;padding:30px 18px 90px;text-align:center;}
@@ -5932,6 +5932,14 @@
 }
 .bo-main-hub-movies-tile{animation:bo-movies-tile-pulse 1.75s ease-in-out infinite;}
 .bo-main-hub-footer .bo-main-tile-label{font-size:1.18em;letter-spacing:.045em;}
+.bo-worldwide-hub{width:min(760px,100%);margin:70px auto 0;padding:34px 0 52px;border-top:2px solid #efe2bf;border-bottom:1px solid rgba(239,226,191,.45);}
+.bo-worldwide-hub-title{margin:0 auto 24px;color:#efe2bf;font-family:'Fraunces','Playfair Display',serif;font-size:clamp(1.28rem,4.6vw,1.85rem);font-weight:900;letter-spacing:.045em;text-align:center;text-shadow:0 0 11px rgba(239,226,191,.42);}
+.bo-worldwide-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.bo-worldwide-grid+.bo-worldwide-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:380px;margin:12px auto 0;}
+.bo-worldwide-tile{min-height:72px;padding:8px 5px;border:2px solid #efe2bf;border-radius:13px;background:#080705;color:#efe2bf;font:900 clamp(.72rem,2.2vw,.96rem)/1.04 'Bebas Neue',sans-serif;letter-spacing:.035em;text-align:center;box-shadow:0 0 10px rgba(239,226,191,.28),inset 0 0 13px rgba(239,226,191,.035);cursor:pointer;}
+.bo-worldwide-tile:hover,.bo-worldwide-tile:focus-visible{outline:none;box-shadow:0 0 17px rgba(239,226,191,.65),inset 0 0 16px rgba(239,226,191,.07);}
+.bo-worldwide-icon{display:block;margin-bottom:5px;font-size:1.25rem;}
+@media(max-width:560px){.bo-worldwide-hub{margin-top:60px;padding-left:2px;padding-right:2px}.bo-worldwide-grid{gap:7px}.bo-worldwide-tile{min-height:64px;font-size:clamp(.63rem,3vw,.77rem);padding:6px 2px}.bo-worldwide-grid+.bo-worldwide-grid{max-width:52%;gap:7px}}
 
 /* Universal Movies destination — deliberately reuses BOF card, border and typography language. */
 .bo-movies-page{position:fixed;inset:0;z-index:100020;display:none;overflow-y:auto;background:#000;color:#fff;-webkit-overflow-scrolling:touch;}
@@ -5966,7 +5974,8 @@
 .bo-current-card{position:relative;display:grid;grid-template-columns:112px minmax(0,1fr);min-height:174px;overflow:hidden;border:2px solid #f59e0b;border-radius:16px;background:#080808;box-shadow:0 0 15px rgba(245,158,11,.2);}
 .bo-current-card .bo-movie-poster{width:112px;min-height:174px;}
 .bo-ticket-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px;}
-.bo-ticket-btn{display:flex;align-items:center;justify-content:center;min-height:30px;padding:4px;border:1px solid #f59e0b;border-radius:8px;background:#000;color:#fff;text-decoration:none;font:900 9px/1 Arial;text-align:center;}.bo-ticket-btn:hover{color:#ef3340;box-shadow:0 0 8px rgba(245,158,11,.5);}
+.bo-ticket-btn{display:flex;align-items:center;justify-content:center;min-height:38px;padding:5px 6px;border:1px solid #f59e0b;border-radius:8px;background:#fff;color:#111;text-decoration:none;font:900 9px/1 Arial;text-align:center;overflow:hidden;}.bo-ticket-btn:hover{box-shadow:0 0 10px rgba(245,158,11,.7);transform:translateY(-1px);}
+.bo-ticket-logo{display:block;width:100%;max-width:76px;height:25px;object-fit:contain;}
 @media(max-width:620px){.bo-movies-shell{padding-left:8px;padding-right:8px}.bo-movies-hero{padding-left:62px;padding-right:34px}.bo-movies-columns{gap:9px}.bo-movie-column-head{min-height:205px;padding:28px 5px 18px}.bo-movie-column-head h2{width:104px;height:104px;font-size:.96rem}.bo-movie-list{margin-top:22px}.bo-movie-card{grid-template-columns:58px minmax(0,1fr);min-height:116px}.bo-movie-poster{width:58px;min-height:116px}.bo-movie-info{padding:9px 6px 7px}.bo-current-grid{grid-template-columns:1fr}.bo-current-card{grid-template-columns:98px minmax(0,1fr)}.bo-current-card .bo-movie-poster{width:98px}}
 </style> <style id="bop-final-hub-grid-globe-city-colors"> .bo-main-hub-title-wrap{
   display:flex;
@@ -18600,10 +18609,10 @@ function boMoviePoster(title,index){
 function boMovieCardHTML(movie,index,current){
   const rank=index+1;
   const ticket=current?`<div class="bo-ticket-row">
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}">FANDANGO</a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.amctheatres.com/search?q=${encodeURIComponent(movie.title)}">AMC</a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}">REGAL</a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.cinemark.com/search/?q=${encodeURIComponent(movie.title)}">CINEMARK</a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets on Fandango" href="https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://pics.paypal.com/00/c/gifts/us/fandangologo.jpg" alt="Fandango"></a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at AMC Theatres" href="https://www.amctheatres.com/search?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://cdn.freebiesupply.com/logos/large/2x/amc-theatres-logo-png-transparent.png" alt="AMC Theatres"></a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Regal" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://www.pikpng.com/pngl/b/414-4140378_regal-cinemas-regal-cinemas-white-logo-clipart.png" alt="Regal Cinemas"></a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Cinemark" href="https://www.cinemark.com/search/?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://api.screendollars.com/wp-content/uploads/2021/02/cinemark-vector-logo.png" alt="Cinemark"></a>
   </div>`:'';
   return `<article class="${current?'bo-current-card':'bo-movie-card'}"><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art"><div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${movie.award?`<div class="bo-movie-award">${movie.award}</div>`:''}${ticket}</div></article>`;
 }
@@ -18629,6 +18638,24 @@ function boCloseMoviesPage(){
   const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);
   boRenderCategory('otheroptions');
 }
+
+const BO_WORLDWIDE_DATA={
+  airlines:{title:'AIRLINES',left:'COMMERCIAL',leftSource:'Global passenger scale · revenue · network reach',right:'TOP RATED',rightSource:'Skytrax · APEX · passenger awards · service reputation',action:'BOOK NOW',commercial:[['Delta Air Lines','Global revenue leader'],['American Airlines','Major global passenger network'],['United Airlines','Major global passenger network'],['Emirates','Leading international long-haul carrier'],['Lufthansa Group','Major European airline group'],['IAG','British Airways · Iberia group'],['Air France-KLM','Major European airline group'],['Southwest Airlines','Major domestic passenger carrier'],['Qatar Airways','Global long-haul leader'],['Turkish Airlines','World-leading country network']],rated:[['Qatar Airways','World-class service reputation'],['Singapore Airlines','World-class service reputation'],['Emirates','Premium long-haul leader'],['ANA All Nippon Airways','Top Japanese service'],['Cathay Pacific','Top international service'],['Japan Airlines','Top passenger experience'],['Turkish Airlines','Global service leader'],['EVA Air','Highly rated international service'],['Air France','Top European service'],['SWISS','Premium European service']],links:[['Delta','https://www.delta.com/'],['American','https://www.aa.com/'],['United','https://www.united.com/'],['Emirates','https://www.emirates.com/'],['Lufthansa','https://www.lufthansa.com/'],['British Airways','https://www.britishairways.com/'],['Air France','https://www.airfrance.com/'],['Southwest','https://www.southwest.com/'],['Qatar Airways','https://www.qatarairways.com/'],['Turkish Airlines','https://www.turkishairlines.com/']]},
+  songs:{title:'SONGS',left:'MOST PLAYED',leftSource:'Global streams · sales · chart longevity',right:'TOP RATED',rightSource:'Critic polls · all-time lists · cultural impact',action:'LISTEN',commercial:[['Blinding Lights','Global streaming and chart phenomenon'],['Shape of You','Multi-billion-stream hit'],['Someone You Loved','Global streaming favorite'],['Starboy','Long-running global hit'],['As It Was','Worldwide chart leader'],['Sunflower','Multi-billion-stream hit'],['One Dance','Global streaming landmark'],['STAY','Worldwide streaming hit'],['Believer','Long-running global favorite'],['Perfect','Global sales and streaming hit']],rated:[['Respect','Critics’ all-time standard'],['Fight the Power','Landmark critical favorite'],['A Change Is Gonna Come','Enduring cultural landmark'],['Like a Rolling Stone','All-time critics’ favorite'],['Smells Like Teen Spirit','Generation-defining recording'],["What's Going On",'Enduring critical landmark'],['Strawberry Fields Forever','Canonical studio achievement'],['Get Ur Freak On','Modern critics’ favorite'],['Dreams','Enduring songwriting classic'],['Hey Ya!','Modern pop landmark']],links:[['Spotify','https://open.spotify.com/'],['Apple Music','https://music.apple.com/'],['YouTube Music','https://music.youtube.com/'],['Amazon Music','https://music.amazon.com/'],['TIDAL','https://tidal.com/']]},
+  automotive:{title:'AUTOMOTIVE BRANDS',left:'GLOBAL SALES',leftSource:'Worldwide registrations · deliveries · market share',right:'TOP RATED',rightSource:'Road tests · reliability · owner satisfaction · safety',action:'SHOP BRANDS',commercial:[['Toyota','World sales leader'],['Volkswagen','Global sales #2'],['Hyundai','Global sales leader'],['Ford','Global top-five brand'],['Honda','Global top-five brand'],['Kia','Fast-growing global brand'],['Nissan','Major worldwide brand'],['Chevrolet','Major worldwide brand'],['BYD','Global EV sales leader'],['Suzuki','Major worldwide volume brand']],rated:[['Subaru','Top overall brand reputation'],['BMW','Road-test and owner favorite'],['Lexus','Luxury reliability leader'],['Porsche','Performance and owner favorite'],['Honda','Quality and value leader'],['Toyota','Reliability leader'],['Mini','Highly rated driving experience'],['Acura','Highly rated premium brand'],['Mazda','Design and driving favorite'],['Audi','Premium road-test favorite']],links:[['Toyota','https://www.toyota.com/'],['Volkswagen','https://www.vw.com/'],['Hyundai','https://www.hyundai.com/'],['Ford','https://www.ford.com/'],['Honda','https://www.honda.com/'],['Kia','https://www.kia.com/'],['Nissan','https://www.nissanusa.com/'],['Chevrolet','https://www.chevrolet.com/'],['BYD','https://www.byd.com/'],['Suzuki','https://www.globalsuzuki.com/']]},
+  watches:{title:'WATCHES',left:'GLOBAL SALES',leftSource:'Estimated wholesale revenue · market share · units',right:'TOP RATED',rightSource:'Collector reputation · craft · heritage · long-term esteem',action:'VISIT BRAND',commercial:[['Rolex','CHF 11.0B estimated sales'],['Cartier','CHF 3.5B estimated sales'],['Audemars Piguet','CHF 2.6B estimated sales'],['Patek Philippe','CHF 2.5B estimated sales'],['Omega','CHF 2.2B estimated sales'],['Richard Mille','CHF 1.75B estimated sales'],['Longines','CHF 920M estimated sales'],['Vacheron Constantin','CHF 914M estimated sales'],['Breitling','CHF 820M estimated sales'],['Tissot','CHF 720M estimated sales']],rated:[['Patek Philippe','Collector benchmark'],['Vacheron Constantin','Historic haute horlogerie leader'],['Audemars Piguet','Independent craft icon'],['A. Lange & Söhne','Finishing and movement benchmark'],['Rolex','Durability and cultural icon'],['Jaeger-LeCoultre','Watchmaker’s watchmaker'],['Breguet','Historic innovation benchmark'],['Cartier','Design and heritage icon'],['Omega','Technical and cultural landmark'],['Grand Seiko','Finishing and precision leader']],links:[['Rolex','https://www.rolex.com/'],['Cartier','https://www.cartier.com/'],['Audemars Piguet','https://www.audemarspiguet.com/'],['Patek Philippe','https://www.patek.com/'],['Omega','https://www.omegawatches.com/'],['Richard Mille','https://www.richardmille.com/'],['Longines','https://www.longines.com/'],['Vacheron Constantin','https://www.vacheron-constantin.com/'],['Breitling','https://www.breitling.com/'],['Tissot','https://www.tissotwatches.com/']]},
+  cellphones:{title:'CELL PHONE PROVIDERS',left:'SUBSCRIBERS',leftSource:'Subscriber scale · revenue · network reach',right:'TOP RATED',rightSource:'Customer satisfaction · coverage · value · support',action:'VIEW PLANS',commercial:[['China Mobile','World subscriber leader'],['Reliance Jio','Massive national subscriber base'],['China Telecom','Global subscriber leader'],['China Unicom','Global subscriber leader'],['AT&T','Major U.S. subscriber network'],['Verizon','Major U.S. subscriber network'],['T-Mobile','Major U.S. subscriber network'],['Vodafone','Major international network'],['Bharti Airtel','Major international network'],['Orange','Major international network']],rated:[['Consumer Cellular','Customer-service favorite'],['Google Fi Wireless','Flexible international favorite'],['US Mobile','Value and flexibility favorite'],['T-Mobile','Strong value and 5G reputation'],['Verizon','Coverage reputation leader'],['AT&T','Broad network and plan range'],['Mint Mobile','Budget favorite'],['Visible','Unlimited-value favorite'],['Cricket Wireless','Prepaid value favorite'],['Xfinity Mobile','Bundle-value favorite']],links:[['T-Mobile','https://www.t-mobile.com/'],['Verizon','https://www.verizon.com/'],['AT&T','https://www.att.com/wireless/'],['Google Fi','https://fi.google.com/'],['Consumer Cellular','https://www.consumercellular.com/'],['US Mobile','https://www.usmobile.com/'],['Mint Mobile','https://www.mintmobile.com/'],['Visible','https://www.visible.com/'],['Cricket','https://www.cricketwireless.com/'],['Xfinity Mobile','https://www.xfinity.com/mobile/']]}
+};
+function boWorldwideRankHTML(item,index){return `<article class="bo-movie-card"><span class="bo-movie-rank">${index+1}</span><img class="bo-movie-poster" src="${boMoviePoster(item[0],index)}" alt="${item[0]} artwork"><div class="bo-movie-info"><h3>${item[0]}</h3><div class="bo-movie-metric">${item[1]}</div></div></article>`;}
+function boWorldwideActionHTML(item,index,action){return `<article class="bo-current-card"><span class="bo-movie-rank">${index+1}</span><img class="bo-movie-poster" src="${boMoviePoster(item[0],index)}" alt="${item[0]} artwork"><div class="bo-movie-info"><h3>${item[0]}</h3><a class="bo-ticket-btn" target="_blank" rel="noopener" href="${item[1]}">${action}</a></div></article>`;}
+function boOpenWorldwidePage(key){
+  const data=BO_WORLDWIDE_DATA[key];if(!data)return;
+  let page=document.getElementById('boWorldwidePage');if(!page){page=document.createElement('section');page.id='boWorldwidePage';page.className='bo-movies-page';document.body.appendChild(page);}
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating">${data.title}</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map(boWorldwideRankHTML).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map(boWorldwideRankHTML).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>DIRECT ACCESS</span></h2><div class="bo-current-source">Go directly to the companies and providers.</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action)).join('')}</div></section></div>`;
+  page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;document.getElementById('boWorldwideBack').addEventListener('click',boCloseWorldwidePage);
+  try{history.replaceState(null,'',window.location.pathname+'?page=worldwide-'+key);}catch(e){}
+}
+function boCloseWorldwidePage(){const page=document.getElementById('boWorldwidePage');if(page)page.classList.remove('open');document.body.style.overflow='';boRenderCategory('otheroptions');}
 
 // ===== Near Me map page =====
 
@@ -21684,6 +21711,19 @@ function boRenderCategory(cat){
     });
     const mainHubCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     const mainHubFooterHTML = cat === 'otheroptions' ? `
+      <div class="bo-worldwide-hub">
+        <div class="bo-worldwide-hub-title">OTHER WORLDWIDE BESTS</div>
+        <div class="bo-worldwide-grid">
+          <button type="button" class="bo-worldwide-tile bo-main-hub-movies-tile" data-worldwide-key="movies"><span class="bo-worldwide-icon">🎬</span>MOVIES</button>
+          <button type="button" class="bo-worldwide-tile" data-worldwide-key="airlines"><span class="bo-worldwide-icon">✈</span>AIRLINES</button>
+          <button type="button" class="bo-worldwide-tile" data-worldwide-key="songs"><span class="bo-worldwide-icon">♫</span>SONGS</button>
+          <button type="button" class="bo-worldwide-tile" data-worldwide-key="automotive"><span class="bo-worldwide-icon">◆</span>AUTOMOTIVE<br>BRANDS</button>
+        </div>
+        <div class="bo-worldwide-grid">
+          <button type="button" class="bo-worldwide-tile" data-worldwide-key="watches"><span class="bo-worldwide-icon">◷</span>WATCHES</button>
+          <button type="button" class="bo-worldwide-tile" data-worldwide-key="cellphones"><span class="bo-worldwide-icon">▯</span>CELL PHONE<br>PROVIDERS</button>
+        </div>
+      </div>
       <div class="bo-main-hub-footer">
         
 <div class="bo-main-hub-title-wrap">
@@ -21691,31 +21731,24 @@ function boRenderCategory(cat){
         </div>
 
 <div class="bo-main-hub-footer-grid">
-  <button type="button" class="bo-main-hub-blue-tile bo-main-hub-movies-tile" id="boMoviesPreviewBtn" aria-label="Open Best Of Movies"><span class="bo-movies-clapper" aria-hidden="true">🎬</span><span class="bo-main-tile-label">MOVIES</span></button>
   <button type="button" class="bo-main-hub-blue-tile" id="boBestHotelsPreviewBtn" aria-label="Preview Hotels"><span class="bo-main-tile-icon bo-icon-hotel" aria-hidden="true"></span><span class="bo-main-tile-label">HOTELS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-bar" aria-hidden="true"></span><span class="bo-main-tile-label">BARS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-club" aria-hidden="true"></span><span class="bo-main-tile-label">NIGHTCLUBS</span></button>
-</div>
-<div class="bo-main-hub-footer-grid" style="margin-top:18px;">
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-massage" aria-hidden="true"></span><span class="bo-main-tile-label">MASSAGES</span></button>
+</div>
+<div class="bo-main-hub-footer-grid" style="margin-top:18px;grid-template-columns:repeat(3,minmax(0,1fr))!important;max-width:75%;margin-left:auto;margin-right:auto;">
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-pool" aria-hidden="true"></span><span class="bo-main-tile-label">POOLS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-spa" aria-hidden="true"></span><span class="bo-main-tile-label">SPAS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-nails" aria-hidden="true"></span><span class="bo-main-tile-label">MANI-PEDI</span></button>
 </div>
-<div class="bo-main-hub-footer-grid" style="margin-top:18px;grid-template-columns:1fr !important;max-width:260px;margin-left:auto;margin-right:auto;">
-  <button type="button" class="bo-main-hub-blue-tile bo-main-hub-send-tile" id="boMainHubSendPage" aria-label="Send this exact page"><span class="bo-main-tile-icon bo-icon-send" aria-hidden="true"></span><span class="bo-main-tile-label">SEND PAGE</span></button>
-</div>
-
     ` : '';
 
     const blueScrollCueHTML = cat === 'otheroptions' ? `
       <div class="bo-main-hub-blue-scroll-cue" aria-hidden="true">SCROLL ↓</div>
     ` : '';
 
-    const searchPopularityNoteHTML = cat === 'otheroptions' ? `
-      <div class="bo-badges-page-link-wrap"><button type="button" class="bo-badges-page-link" id="boBadgesPageBtn">BADGES</button></div>
-      <div class="bo-search-popularity-note"><span aria-hidden="true">✦</span> In order of search popularity</div>
-    ` : '';
+    const searchPopularityNoteHTML = cat === 'otheroptions' ? `<div class="bo-search-popularity-note"><span aria-hidden="true">✦</span> In order of search popularity</div>` : '';
+    const badgesBottomHTML = cat === 'otheroptions' ? `<div class="bo-badges-page-link-wrap"><button type="button" class="bo-badges-page-link" id="boBadgesPageBtn">BADGES</button></div>` : '';
 
     const nationDirectoryNoteHTML = cat === 'nations' ? `
       <div class="bo-nation-directory-note">* This is the only Best Of category where food service is not required. Culturally authentic bars and gathering places may qualify; most serve food, but not all.</div>
@@ -21723,7 +21756,7 @@ function boRenderCategory(cat){
 
     boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + nationDirectoryNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
       ${cat === 'otheroptions' && opt.cat === 'newrestaurants' ? '<span class="bo-picker-row-break" aria-hidden="true"></span>' : ''}<button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${['newrestaurants','offstrip','undernewownership'].includes(opt.cat) ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}${boTileCountBadgeHTML(opt.cat,boCityContext)}</button>
-    `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML;
+    `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML + badgesBottomHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -21739,8 +21772,13 @@ function boRenderCategory(cat){
     });
     const boBadgesPageBtn=document.getElementById('boBadgesPageBtn');
     if(boBadgesPageBtn) boBadgesPageBtn.addEventListener('click',boOpenBadgesPage);
-    const boMoviesPreviewBtn=document.getElementById('boMoviesPreviewBtn');
-    if(boMoviesPreviewBtn) boMoviesPreviewBtn.addEventListener('click',boOpenMoviesPage);
+    boListEl.querySelectorAll('[data-worldwide-key]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const key=btn.dataset.worldwideKey;
+        if(key==='movies') boOpenMoviesPage();
+        else boOpenWorldwidePage(key);
+      });
+    });
     if(document.getElementById('boLeadBestCity') && typeof startBopVegasSlotCycler === 'function'){
       const leadTargetCity=(BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
       const leadCityPool=(typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : BOP_SPLASH_CITIES);
@@ -22245,6 +22283,15 @@ boBackBtnEl.addEventListener('click', (e) => {
 
   // Current, correct format: ?page=cat&city=name
   const queryPage = params.get('page');
+  if(queryPage && queryPage.indexOf('worldwide-')===0){
+    const worldwideKey=queryPage.replace('worldwide-','');
+    if(BO_WORLDWIDE_DATA[worldwideKey]){
+      revealSharedBestOfPage();
+      boRenderCategory('otheroptions');
+      setTimeout(()=>boOpenWorldwidePage(worldwideKey),350);
+      return;
+    }
+  }
   if(queryPage==='movies'){
     revealSharedBestOfPage();
     boRenderCategory('otheroptions');
@@ -24694,7 +24741,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   #bopLandingOverlay > button[aria-label="BJS CO."] svg circle{display:none !important;}
   #bopLandingOverlay > button[aria-label="BJS CO."] svg text{fill:#ff2d3f !important;}
   @keyframes landingBjsOrangePulse{0%,100%{border-color:#F59E0B;filter:drop-shadow(0 0 2px rgba(245,158,11,.28))}50%{border-color:#FFB52E;filter:drop-shadow(0 0 7px rgba(245,158,11,.90)) drop-shadow(0 0 2px rgba(255,255,255,.38))}}
-  #landingSharePage{border-color:#F59E0B !important;background:#0a0a0a !important;color:#ff2d3f !important;text-shadow:0 0 6px rgba(255,45,63,.72);}
+  #landingSharePage{width:60px!important;height:60px!important;border:2px solid #F59E0B !important;background:#0a0a0a !important;color:#ff2d3f !important;font-size:8.5px!important;text-shadow:0 0 4px rgba(255,45,63,.55);}
   /* Keep the Near Me ring gold; color only its label and map-pin artwork red. */
   .bop-landing-near-btn{border-color:#F59E0B !important;background:#070707 !important;color:#ff2d3f !important;text-shadow:0 0 7px rgba(255,45,63,.9) !important;}
   .bop-landing-near-btn::before{background:linear-gradient(28deg,transparent 43%,rgba(255,45,63,.62) 44% 46%,transparent 47%),linear-gradient(152deg,transparent 44%,rgba(255,45,63,.52) 45% 47%,transparent 48%),radial-gradient(circle at 27% 68%,rgba(255,45,63,.9) 0 2px,transparent 3px),radial-gradient(circle at 69% 31%,rgba(255,45,63,.82) 0 2px,transparent 3px) !important;}
@@ -24762,13 +24809,15 @@ body footer .fine-print>span:first-child+span,
       }else if(typeof frame.contentWindow.getFntShareTeam==='function'){
         const team=frame.contentWindow.getFntShareTeam(),query=team?'team='+encodeURIComponent(team):'';url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash=team?'/concepts/fnt?'+query:'/concepts/fnt';
       }
+    }else if((document.getElementById('boMoviesPage')&&document.getElementById('boMoviesPage').classList.contains('open'))||(document.getElementById('boWorldwidePage')&&document.getElementById('boWorldwidePage').classList.contains('open'))){
+      return url.toString();
     }else if(isVisible(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function'){
       return window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext).url;
     }
     return url.toString();
   }
   function isVisible(element){if(!element)return false;const style=getComputedStyle(element);return style.display!=='none'&&style.visibility!=='hidden'}
-  function shouldShow(){return isVisible(document.getElementById('fntOverlay'))}
+  function shouldShow(){return !isVisible(document.getElementById('bopLandingOverlay'))}
   function updateVisibility(){const button=document.getElementById('globalSharePage');if(button)button.style.display=shouldShow()?'flex':'none'}
   async function shareCurrentPage(button){
     const original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
@@ -24792,8 +24841,8 @@ body footer .fine-print>span:first-child+span,
     window.addEventListener('hashchange',function(){setTimeout(updateVisibility,20)});document.addEventListener('click',function(){setTimeout(updateVisibility,30)},true);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-})(); </script> <style id="fnt-share-page-blue-style"> #globalSharePage{width:54px!important;height:54px!important;border:2px solid #fff!important;background:#071b45!important;color:#fff!important;font-size:8px!important;letter-spacing:.5px!important;box-shadow:0 0 0 2px rgba(7,27,69,.95),0 0 14px rgba(7,27,69,.9),0 0 7px rgba(255,255,255,.55)!important;animation:fntShareBluePulse 2.5s ease-in-out infinite!important}
-@keyframes fntShareBluePulse{0%,100%{box-shadow:0 0 0 2px rgba(7,27,69,.95),0 0 10px rgba(7,27,69,.72),0 0 5px rgba(255,255,255,.42)}50%{box-shadow:0 0 0 2px rgba(7,27,69,1),0 0 22px rgba(7,27,69,1),0 0 11px rgba(255,255,255,.72)}}
+})(); </script> <style id="fnt-share-page-blue-style"> #globalSharePage{z-index:100100!important;width:54px!important;height:54px!important;border:2px solid #F59E0B!important;background:#080808!important;color:#ff2d3f!important;font-size:8px!important;letter-spacing:.5px!important;text-shadow:0 0 4px rgba(255,45,63,.55)!important;box-shadow:0 0 0 1px rgba(0,0,0,.88),0 0 9px rgba(245,158,11,.56)!important;animation:fntShareBluePulse 2.5s ease-in-out infinite!important}
+@keyframes fntShareBluePulse{0%,100%{transform:scale(1);box-shadow:0 0 0 1px rgba(0,0,0,.88),0 0 7px rgba(245,158,11,.48)}50%{transform:scale(1.035);box-shadow:0 0 0 1px rgba(0,0,0,.88),0 0 17px rgba(245,158,11,.9),0 0 25px rgba(245,158,11,.16)}}
 @media(prefers-reduced-motion:reduce){#globalSharePage{animation:none!important}} </style> <script id="fnt-shared-link-fallback"> (function(){
   function restore(){
     var outer=new URLSearchParams(location.search);if(outer.get('fnt')!=='1')return;
