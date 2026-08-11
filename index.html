@@ -28369,6 +28369,69 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+<style id="bop-industry-leaders-v159">
+/* The BJS mark reads directly into “created,” one line lower, with the orb's
+   vertical copy spacing reduced by 25 percent. */
+#bjsWhyOverlay .bjs-created-lockup{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:0!important;padding:0 6px!important;margin-top:1em!important}
+#bjsWhyOverlay .bjs-created-lockup svg{width:30px!important;height:30px!important;min-width:30px!important;margin:0 1px 0 0!important}
+#bjsWhyOverlay .bjs-created-copy{margin-left:0!important}
+#bjsWhyOverlay .bjs-why-orb-text>p{margin-bottom:calc(var(--bjs-original-bottom,8px) * .75)!important}
+#bjsWhyOverlay .bjs-primary-leaders{line-height:1.25!important;font-size:.61rem!important}
+#bjsWhyOverlay .bjs-primary-leaders .bo-plus-more{margin-left:4px;font-size:.9em!important;vertical-align:baseline}
+
+/* Both ways out of Other Leaders stay visible, clear the same overlay, and
+   respect the phone safe areas. */
+#boOtherLeadersOverlay .bo-other-leaders-back,
+#boOtherLeadersOverlay .bo-other-leaders-close{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2147483647!important}
+#boOtherLeadersOverlay .bo-other-leaders-back{position:fixed!important;top:max(18px,env(safe-area-inset-top))!important;left:16px!important}
+#boOtherLeadersOverlay .bo-other-leaders-close{position:fixed!important;top:max(22px,calc(env(safe-area-inset-top) + 4px))!important;right:18px!important;width:42px!important;height:42px!important;font-size:24px!important;line-height:38px!important}
+#boOtherLeadersOverlay .bo-other-leaders-circle{padding-top:54px!important}
+</style>
+<script id="bop-industry-leaders-v159">
+(function(){
+  const primary=['Google Menu','Tripadvisor','OpenTable','Sirved','Uber Eats','Time Out','Restaurant Guru','One Bite','Yelp','Michelin Guide','James Beard Foundation'];
+  const additional=['The World’s 50 Best','La Liste','Forbes Travel Guide','AAA Diamond','APEX','Condé Nast Traveler','Travel + Leisure','IMDb','Box Office Mojo','The Numbers','Letterboxd','TMDB','Billboard','Recording Academy','Spotify Charts','J.D. Power','Cirium','Consumer Reports','Kelley Blue Book','Edmunds','Ookla Speedtest','PCMag'];
+  function diamond(){return '<span aria-hidden="true" style="font-size:.48em;vertical-align:.18em;margin:0 .38em;color:#e1262f">◆</span>';}
+  function upgradeWhy(){
+    const orb=document.querySelector('#bjsWhyOverlay .bjs-why-orb-text');if(!orb)return;
+    const opening=orb.querySelector(':scope>p:nth-of-type(2)');
+    if(opening&&opening.dataset.bjsCreatedV159!=='1'){
+      opening.dataset.bjsCreatedV159='1';
+      opening.innerHTML='<span class="bjs-created-lockup"><svg aria-label="BJS" viewBox="0 0 40 40"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#e1262f" font-family="Archivo Black, sans-serif" font-size="13" text-anchor="middle" x="20" y="24">BJS</text></svg><span class="bjs-created-copy">created the world\'s most direct directory, <span style="color:#F59E0B;font-family:Fraunces,serif;font-weight:700;text-transform:none;text-shadow:0 0 12px rgba(245,158,11,.45);">Period<span class="period-mark" style="font-size:.28em;">©</span></span></span></span>';
+    }
+    Array.from(orb.querySelectorAll(':scope>p')).forEach(function(p){if(p.dataset.spacingV159==='1')return;p.dataset.spacingV159='1';const bottom=parseFloat(getComputedStyle(p).marginBottom)||0;p.style.setProperty('--bjs-original-bottom',bottom+'px');});
+    const heading=Array.from(orb.querySelectorAll('p')).find(function(p){return p.textContent.indexOf('WE ACKNOWLEDGE THESE INDUSTRY LEADERS')!==-1;});
+    const list=heading&&heading.nextElementSibling;if(!list)return;
+    list.classList.add('bjs-primary-leaders');
+    if(list.dataset.primaryV159!=='1'){
+      const rows=[primary.slice(0,3),primary.slice(3,6),primary.slice(6,9),primary.slice(9)];
+      list.innerHTML=rows.map(function(row,index){const names=row.map(function(name){return '<span style="white-space:nowrap">'+name+'</span>';}).join(diamond());return '<span style="display:block;white-space:nowrap">'+names+(index===rows.length-1?' <button type="button" class="bo-plus-more" aria-label="Open other industry leaders">+ MORE</button>':'')+'</span>';}).join('');
+      list.dataset.primaryV159='1';
+    }
+  }
+  function upgradeOtherLeaders(){
+    const overlay=document.getElementById('boOtherLeadersOverlay');if(!overlay||overlay.dataset.leadersV159==='1')return;
+    const list=overlay.querySelector('.bo-other-leaders-list');const secondary=overlay.querySelector('.bo-other-leaders-secondary');
+    if(list){list.innerHTML=additional.map(function(name){return '<span>'+name+'</span>';}).join('<span class="sep" aria-hidden="true">◆</span>');list.dataset.dedupedV159='1';}
+    if(secondary)secondary.remove();
+    const back=overlay.querySelector('.bo-other-leaders-back');const close=overlay.querySelector('.bo-other-leaders-close');
+    function exit(event){if(event){event.preventDefault();event.stopImmediatePropagation();}overlay.classList.remove('open');document.body.style.overflow='';const why=document.getElementById('bjsWhyOverlay');if(why&&why.classList.contains('open')){const more=why.querySelector('.bo-plus-more');if(more)setTimeout(function(){more.focus();},0);}}
+    if(back&&back.dataset.fixedV159!=='1'){back.dataset.fixedV159='1';back.addEventListener('click',exit,true);}
+    if(close&&close.dataset.fixedV159!=='1'){close.dataset.fixedV159='1';close.addEventListener('click',exit,true);}
+    overlay.dataset.leadersV159='1';
+  }
+  function upgradeLegendList(){
+    document.querySelectorAll('#legendOverlay .bo-source-leaders').forEach(function(list){
+      if(list.dataset.dedupedV159==='1')return;list.dataset.dedupedV159='1';
+      list.innerHTML=primary.map(function(name){return '<span class="bo-source-name">'+name+'</span>';}).join('<span class="bo-source-diamond">◆</span>')+' <button type="button" class="bo-plus-more">+ MORE</button>';
+    });
+  }
+  function refresh(){upgradeWhy();upgradeOtherLeaders();upgradeLegendList();}
+  function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 <!-- Fresh delivery build v157: exact movie posters, 40 live airline logos, clean page endings -->
 <!-- Fresh delivery build v158: BJS verification seals and dedicated vendor confirmation -->
+<!-- Fresh delivery build v159: deduplicated industry leaders and tightened BJS WHY copy -->
 </body></html>
