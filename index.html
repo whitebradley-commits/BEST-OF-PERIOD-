@@ -18486,7 +18486,7 @@ function boBuildExpandedLegend(){
     <section class="bo-legend-section bo-source-ack">
       <p class="bo-source-ack-title">Once again, we'd like to acknowledge the following industry leaders.</p>
       <div class="bo-source-leaders"><span class="bo-source-name">Google Menu</span><span class="bo-source-diamond">◆</span><span>Tripadvisor</span><span class="bo-source-diamond">◆</span><span>OpenTable</span><span class="bo-source-diamond">◆</span><span>Yelp</span><span class="bo-source-diamond">◆</span><span>Sirved</span><span class="bo-source-diamond">◆</span><span>Resy</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">One Bite</span><span class="bo-source-diamond">◆</span><span>Uber Eats</span><span class="bo-source-diamond">◆</span><span>DoorDash</span><span class="bo-source-diamond">◆</span><span>Grubhub</span><span class="bo-source-diamond">◆</span><span>Slice</span><span class="bo-source-diamond">◆</span><span>Restaurant Guru</span><span class="bo-source-diamond">◆</span><span>Facebook</span> <span class="bo-plus-more">+ MORE</span></div>
-      <p class="bo-source-ack-copy"><span aria-label="BJS" style="display:inline-block;vertical-align:-5px;margin-right:3px;"><svg height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></span> relies on other independent organizations like these to provide the best possible results for our customers.</p>
+      <p class="bo-source-ack-copy"><span aria-label="BJS" style="display:inline-block;vertical-align:-5px;margin-right:3px;"><svg height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></span> relies on organizations like these to provide the best possible results for our customers. We all thank you!</p>
     </section>`;
 }
 boBuildExpandedLegend();
@@ -20016,6 +20016,43 @@ const boPickerTitles = {
     {name:"El Ranchito — Logan Square",city:"chicago",rating:"4.3",reviews:3100,ratingSource:"Google",why:"Authentic Mexican cooking available 24 hours every day",note:"The restaurant's official site confirms seven-day, round-the-clock service at its Milwaukee Avenue location.",address:"2829 N Milwaukee Ave, Chicago, IL 60618",phone:"(773) 227-1688",open24:true,price:1},
     {name:"Chicago Brewing Company",city:"bestof",rating:"4.4",reviews:2300,ratingSource:"Google",why:"An award-winning local brewpub serving breakfast around the clock",note:"The official site confirms the Fort Apache restaurant is open 24 hours, seven days a week.",address:"2201 S Fort Apache Rd, Las Vegas, NV 89117",phone:"(702) 254-3333",open24:true,price:2},
     {name:"Apache Joe's Bar & Grill",city:"bestof",rating:"4.6",reviews:650,ratingSource:"Google",why:"A true all-night neighborhood bar with a kitchen running until 1 a.m.",note:"The venue is open 24/7; food service currently runs from 9 a.m. to 1 a.m., so the card states that distinction clearly.",address:"5040 S Broadbent Blvd, Las Vegas, NV 89122",phone:"(702) 780-4549",hours:[{days:[0,1,2,3,4,5,6],open:'09:00',close:'01:00'}],price:1}
+  ];
+  function install(cat, records){
+    const list=boCategoryData[cat] || (boCategoryData[cat]=[]);
+    records.forEach(r=>{ if(!list.some(x=>x&&x.name===r.name&&String(x.city||'bestof')===String(r.city||'bestof'))) list.push(r); });
+    list.sort(boCompareRestaurants);
+    list.forEach((r,i)=>{ r.rank=i+1; });
+  }
+  install('dessert',dessert);
+  install('24hours',allnight);
+})();
+
+// Priority build, batch two: verified dessert destinations and genuinely
+// all-night / late-night food in Miami, San Francisco, Boston and Philadelphia.
+(function buildDessertAndAllNightPriorityBatchTwo(){
+  const dessert = [
+    {name:"Fireman Derek's Bake Shop — Wynwood",city:"miami",rating:"4.7",reviews:4100,ratingSource:"Google",why:"Miami-born pies, cakes and oversized dessert-bar favorites",note:"A homegrown dessert institution best known for key lime pie, crack pie and towering layer cakes.",address:"2545 N Miami Ave, Miami, FL 33127",phone:"(786) 703-3623",price:2},
+    {name:"The Salty Donut — Wynwood",city:"miami",rating:"4.5",reviews:4400,ratingSource:"Google",why:"Small-batch brioche doughnuts from one of Miami's defining sweet shops",note:"Inventive seasonal flavors and strong sustained demand made The Salty a modern Miami original.",address:"50 NW 23rd St, Miami, FL 33127",phone:"(305) 925-8126",price:2},
+    {name:"Tartine Bakery — Guerrero",city:"sanfrancisco",rating:"4.5",reviews:5144,ratingSource:"Google",why:"A globally influential San Francisco bakery and pastry destination",note:"Morning buns, croissants, tarts and bread make the original Guerrero Street bakery essential.",address:"600 Guerrero St, San Francisco, CA 94110",phone:"(415) 487-2600",price:2},
+    {name:"U:Dessert Story",city:"sanfrancisco",rating:"4.4",reviews:1474,ratingSource:"Google",why:"Asian-inspired bingsu, crepe cakes and dramatic shareable desserts",note:"The kitchen now serves takeout and delivery until 1 a.m., extending its usefulness beyond normal dessert hours.",address:"3489 16th St, San Francisco, CA 94114",phone:"(415) 796-3633",price:2},
+    {name:"Modern Pastry",city:"boston",rating:"4.5",reviews:2563,ratingSource:"Google",why:"North End cannoli and classic Italian pastry with generations of history",note:"Modern's filled-to-order cannoli and deep Italian pastry case make it one of Boston's defining dessert stops.",address:"257 Hanover St, Boston, MA 02113",phone:"(617) 523-3783",price:2},
+    {name:"Mike's Pastry — North End",city:"boston",rating:"4.3",reviews:6239,ratingSource:"Google",why:"Boston's instantly recognizable cannoli institution",note:"The famous blue-and-white boxes, enormous selection and extraordinary volume make Mike's impossible to omit.",address:"300 Hanover St, Boston, MA 02113",phone:"(617) 742-3050",price:2},
+    {name:"Isgro Pastries",city:"philadelphia",rating:"4.7",reviews:2091,ratingSource:"Google",why:"Fourth-generation Italian pastry and celebrated cannoli since 1904",note:"One of Philadelphia's strongest dessert ratings, backed by more than two thousand reviews.",address:"1009 Christian St, Philadelphia, PA 19147",phone:"(215) 923-3092",price:2},
+    {name:"Termini Brothers Bakery — South 8th Street",city:"philadelphia",rating:"4.6",reviews:710,ratingSource:"Google",why:"A century-old Philadelphia bakery known for cannoli and sfogliatelle",note:"The flagship preserves the full old-school Italian bakery experience and remains a city standard.",address:"1523 S 8th St, Philadelphia, PA 19147",phone:"(215) 334-1816",price:2}
+  ];
+  const allnight = [
+    {name:"McDonald's — NW 7th Street",city:"miami",rating:"3.8",reviews:3100,ratingSource:"Google",why:"A true 24-hour Miami dining room and drive-thru",note:"The official location listing confirms both dine-in and drive-thru service around the clock.",address:"3747 NW 7th St, Miami, FL 33126",phone:"(305) 646-0423",open24:true,price:1},
+    {name:"Panther Cave",city:"miami",rating:"4.7",reviews:950,ratingSource:"Google",why:"An FIU neighborhood kitchen serving until 1 or 2 a.m.",note:"A genuine late-night restaurant with burgers, wings, bowls and desserts—not merely a bar that stays open.",address:"646 SW 109th Ave, Miami, FL 33174",phone:"(786) 542-9059",hours:[{days:[0,1,2,3],open:'11:00',close:'01:00'},{days:[4,5,6],open:'11:00',close:'02:00'}],price:1},
+    {name:"Rocco's Cafe",city:"sanfrancisco",rating:"4.5",reviews:1400,ratingSource:"Google",why:"Full-menu Italian comfort food until 3 a.m. on weekends",note:"The official restaurant confirms a complete late-night menu through 3 a.m. Friday and Saturday.",address:"1131 Folsom St, San Francisco, CA 94103",phone:"(415) 554-0522",hours:[{days:[5,6],open:'16:30',close:'03:00'}],price:2},
+    {name:"Grubstake Diner",city:"sanfrancisco",rating:"4.2",reviews:2200,ratingSource:"Google",why:"A classic train-car diner serving until 3 or 4 a.m.",note:"One of San Francisco's clearest true late-night food options, with breakfast, burgers, pies and Portuguese specialties.",address:"1525 Pine St, San Francisco, CA 94109",phone:"(415) 228-8420",hours:[{days:[0,1,2,3],open:'18:30',close:'03:00'},{days:[4,5,6],open:'18:30',close:'04:00'}],price:2},
+    {name:"Terminus Cafe & Bar",city:"sanfrancisco",rating:"4.4",reviews:520,ratingSource:"Google",why:"Embarcadero food and drinks until 2 a.m. every night",note:"The official schedule confirms daily 2 a.m. closing, with a limited food menu on weekends.",address:"16 California St, San Francisco, CA 94111",phone:"(415) 960-8405",hours:[{days:[0,1,2,3,4,5,6],open:'11:00',close:'02:00'}],price:2},
+    {name:"Causeway Restaurant & Bar",city:"boston",rating:"4.3",reviews:1800,ratingSource:"Google",why:"TD Garden-area late-night food until 1:30 a.m. on weekends",note:"The official late-night menu runs Friday and Saturday from 11 p.m. to 1:30 a.m.",address:"65 Causeway St, Boston, MA 02114",phone:"(617) 858-1880",hours:[{days:[5,6],open:'09:00',close:'01:30'}],price:2},
+    {name:"Back Bay Social",city:"boston",rating:"4.2",reviews:2200,ratingSource:"Google",why:"A real Back Bay late-night menu served until 12:45 a.m.",note:"Food—not only drinks—is offered near 1 a.m. every night, with expanded weekend energy.",address:"867 Boylston St, Boston, MA 02116",phone:"(617) 247-3200",hours:[{days:[0,1,2,3],open:'11:00',close:'00:45'},{days:[4,5,6],open:'10:00',close:'00:45'}],price:2},
+    {name:"Beantown Pub",city:"boston",rating:"4.3",reviews:5000,ratingSource:"Google",why:"A downtown Boston pub open daily until 2 a.m.",note:"The pub stays open until 2 a.m.; its official FAQ says food is generally served until 11:30 p.m., subject to demand.",address:"100 Tremont St, Boston, MA 02108",phone:"(617) 426-0111",hours:[{days:[0,1,2,3,4,5,6],open:'09:00',close:'02:00'}],price:2},
+    {name:"Pat's King of Steaks",city:"philadelphia",rating:"4.1",reviews:18000,ratingSource:"Google",why:"The cheesesteak originator serving Philadelphia 24/7",note:"The official restaurant confirms continuous service every day of the year.",address:"1237 E Passyunk Ave, Philadelphia, PA 19147",phone:"(215) 468-1546",open24:true,price:1},
+    {name:"Geno's Steaks",city:"philadelphia",rating:"4.0",reviews:16000,ratingSource:"Google",why:"The neon-lit half of Philadelphia's famous 24-hour cheesesteak corner",note:"Geno's remains open around the clock, directly across from Pat's at 9th and Passyunk.",address:"1219 S 9th St, Philadelphia, PA 19147",phone:"(215) 389-0659",open24:true,price:1},
+    {name:"McDonald's — West Allegheny Avenue",city:"philadelphia",rating:"3.5",reviews:2900,ratingSource:"Google",why:"A 24-hour drive-thru with a dining room open nearly around the clock",note:"The official listing confirms 24/7 drive-thru service and lobby hours from 5:30 a.m. until 4 a.m.",address:"3100 W Allegheny Ave, Philadelphia, PA 19132",phone:"(215) 221-1035",open24:true,price:1},
+    {name:"Fat Shack — Philadelphia",city:"philadelphia",rating:"4.4",reviews:900,ratingSource:"Google",why:"Over-the-top sandwiches and fried desserts until 3 a.m. on weekends",note:"The official location serves until 1 a.m. Sunday through Thursday and 3 a.m. Friday and Saturday.",address:"1308 W Girard Ave, Philadelphia, PA 19123",phone:"",hours:[{days:[0,1,2,3,4],open:'16:00',close:'01:00'},{days:[5,6],open:'16:00',close:'03:00'}],price:1}
   ];
   function install(cat, records){
     const list=boCategoryData[cat] || (boCategoryData[cat]=[]);
@@ -23949,6 +23986,59 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   .bop-landing-near-btn::before{background:linear-gradient(28deg,transparent 43%,rgba(255,45,63,.62) 44% 46%,transparent 47%),linear-gradient(152deg,transparent 44%,rgba(255,45,63,.52) 45% 47%,transparent 48%),radial-gradient(circle at 27% 68%,rgba(255,45,63,.9) 0 2px,transparent 3px),radial-gradient(circle at 69% 31%,rgba(255,45,63,.82) 0 2px,transparent 3px) !important;}
   .bop-landing-near-btn::after{background:#ff2d3f !important;box-shadow:0 0 8px rgba(255,45,63,.92) !important;}
 </style>
+<style id="sitewide-footer-structural-lock-v129">
+/* The gold rule is now part of the footer itself. It cannot disappear when a
+   dynamically rendered page or overlay omits the old helper divider. The
+   generous top padding creates the requested uninterrupted black breathing
+   room between the rule and the first line of footer copy. */
+.bop-pre-footer-divider{display:none!important;}
+body footer,
+#promotionsOverlay footer.promotions-standard-footer,
+#aboutUsOverlay footer.founders-standard-footer,
+.bo-near-map-footer{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  box-sizing:border-box!important;
+  margin:42px 0 0!important;
+  padding:68px 18px 28px!important;
+  border-top:2px solid #F59E0B!important;
+  box-shadow:0 -2px 7px rgba(245,158,11,.72),0 -7px 18px rgba(245,158,11,.28)!important;
+  background:#000!important;
+  overflow:hidden!important;
+}
+body footer .fine-print,
+#promotionsOverlay footer.promotions-standard-footer .fine-print,
+#aboutUsOverlay footer.founders-standard-footer .fine-print,
+.bo-near-map-footer .fine-print{
+  width:100%!important;
+  max-width:430px!important;
+  box-sizing:border-box!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+/* Several legacy templates place the brand spans directly together in the
+   HTML. A real visual word space keeps "Best of Period" correct everywhere,
+   including footers created after initial page load. */
+body footer .fine-print>span:first-child+span,
+#promotionsOverlay footer .fine-print>span:first-child+span,
+#aboutUsOverlay footer .fine-print>span:first-child+span,
+.bo-near-map-footer .fine-print>span:first-child+span{
+  margin-left:.3em!important;
+}
+@media(max-width:520px){
+  body footer,
+  #promotionsOverlay footer.promotions-standard-footer,
+  #aboutUsOverlay footer.founders-standard-footer,
+  .bo-near-map-footer{
+    margin-top:36px!important;
+    padding:62px 16px 24px!important;
+  }
+}
+</style>
 <script id="fixed-share-page-opposite-bjs"> (function(){
   function exactShareUrl(){
     const url=new URL(location.href),overlay=document.getElementById('fntOverlay'),frame=document.getElementById('fntFrame');
@@ -25249,5 +25339,21 @@ body footer .fine-print + .fine-print,
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
-<!-- Fresh delivery build v130: 2026-08-10 — Nations expansion and Code 55 refreshed upload signature -->
+<style id="sitewide-footer-structural-lock-final-v131">
+.bop-pre-footer-divider{display:none!important}
+body footer,#promotionsOverlay footer.promotions-standard-footer,#aboutUsOverlay footer.founders-standard-footer,.bo-near-map-footer{
+  position:relative!important;display:block!important;width:100%!important;max-width:none!important;
+  box-sizing:border-box!important;margin:42px 0 0!important;padding:68px 18px 28px!important;
+  border-top:2px solid #F59E0B!important;
+  box-shadow:0 -2px 7px rgba(245,158,11,.72),0 -7px 18px rgba(245,158,11,.28)!important;
+  background:#000!important;overflow:hidden!important
+}
+body footer .fine-print,#promotionsOverlay footer .fine-print,#aboutUsOverlay footer .fine-print,.bo-near-map-footer .fine-print{
+  width:100%!important;max-width:430px!important;box-sizing:border-box!important;
+  margin-left:auto!important;margin-right:auto!important;overflow-wrap:anywhere!important
+}
+body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-print>span:first-child+span,#aboutUsOverlay footer .fine-print>span:first-child+span,.bo-near-map-footer .fine-print>span:first-child+span{margin-left:.3em!important}
+@media(max-width:520px){body footer,#promotionsOverlay footer.promotions-standard-footer,#aboutUsOverlay footer.founders-standard-footer,.bo-near-map-footer{margin-top:36px!important;padding:62px 16px 24px!important}}
+</style>
+<!-- Fresh delivery build v132: Legend organization-copy correction -->
 </body></html> 
