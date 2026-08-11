@@ -26913,7 +26913,8 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     songs:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 28V9l22-4v19M18 13l22-4"/><ellipse cx="12" cy="31" rx="6" ry="4"/><ellipse cx="34" cy="27" rx="6" ry="4"/></svg>',
     automotive:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M7 28v-8l5-9h24l5 9v8M9 20h30M14 28h20"/><circle cx="13" cy="29" r="4"/><circle cx="35" cy="29" r="4"/><path d="M15 14h18"/></svg>',
     watches:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 9l2-6h8l2 6M18 31l2 6h8l2-6"/><circle cx="24" cy="20" r="12"/><path d="M24 13v8l6 3"/></svg>',
-    cellphones:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="14" y="3" width="20" height="34" rx="4"/><path d="M20 7h8M21 32h6"/><circle cx="24" cy="27" r="1"/></svg>'
+    cellphones:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="14" y="3" width="20" height="34" rx="4"/><path d="M20 7h8M21 32h6"/><circle cx="24" cy="27" r="1"/></svg>',
+    restaurants:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M13 4v13M8 4v9c0 3 2 5 5 5s5-2 5-5V4M13 18v18M31 4v32M31 4c6 3 8 9 8 15h-8"/><path d="M25 28h12"/></svg>'
   };
 
   const leaderNames=[
@@ -26930,6 +26931,19 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
       const old=tile.querySelector('span');
       if(old&&worldIcons[key])old.outerHTML=worldIcons[key];
     });
+  }
+
+  function ensureRestaurantTile(root){
+    const scope=root&&root.querySelector?root:document;
+    const grid=scope.querySelector('#bopWorldwideLanding .bop-world-tiles')||document.querySelector('#bopWorldwideLanding .bop-world-tiles');
+    if(!grid||grid.querySelector('[data-worldwide-key="restaurants"]'))return;
+    const tile=document.createElement('button');
+    tile.type='button';
+    tile.className='bop-world-tile';
+    tile.dataset.worldwideKey='restaurants';
+    tile.setAttribute('aria-label','Restaurants — Best of Period');
+    tile.innerHTML=worldIcons.restaurants+'RESTAURANTS';
+    grid.appendChild(tile);
   }
 
   function ensureOtherLeaders(){
@@ -26991,9 +27005,33 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     });
   }
 
-  function refresh(root){replaceWorldIcons(root);enrichLegend(root);bindWorldWhy(root);}
+  function refresh(root){ensureRestaurantTile(root);replaceWorldIcons(root);enrichLegend(root);bindWorldWhy(root);}
   function install(){
     ensureOtherLeaders();refresh(document);
+    /* The World landing page has a deliberately high z-index. Open each
+       completed destination only after removing that landing layer; otherwise
+       the destination opens correctly but remains invisible underneath it. */
+    document.addEventListener('click',function(event){
+      const tile=event.target.closest('#bopWorldwideLanding .bop-world-tile[data-worldwide-key]');
+      if(!tile)return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const key=tile.dataset.worldwideKey;
+      const worldLanding=document.getElementById('bopWorldwideLanding');
+      if(worldLanding)worldLanding.classList.remove('open');
+      document.body.style.overflow='';
+      if(key==='restaurants'){
+        window.location.assign('https://bestofperiod.com/');
+        return;
+      }
+      window.requestAnimationFrame(function(){
+        if(key==='movies'&&typeof boOpenMoviesPage==='function'){
+          boOpenMoviesPage();
+        }else if(typeof boOpenWorldwidePage==='function'){
+          boOpenWorldwidePage(key);
+        }
+      });
+    },true);
     document.addEventListener('click',function(event){
       const more=event.target.closest('.bo-plus-more');
       if(!more)return;
