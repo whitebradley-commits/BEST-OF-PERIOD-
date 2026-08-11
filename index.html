@@ -18812,6 +18812,22 @@ let boWorldwideRotatorTimer=null;
 function boStartWorldwideTitleRotation(element,target){
   if(!element)return;
   const destination=String(target||'').toUpperCase();
+  if(destination==='AIRLINES'){
+    const airlines=['Delta Air Lines','United Airlines','American Airlines','Southwest Airlines','Alaska Airlines','JetBlue','Air Canada','WestJet','Aeromexico','LATAM Airlines','Avianca','Copa Airlines','British Airways','Virgin Atlantic','Lufthansa','SWISS','Austrian Airlines','Air France','KLM','Iberia','Aer Lingus','SAS','Finnair','TAP Air Portugal','Turkish Airlines','ITA Airways','LOT Polish Airlines','Emirates','Qatar Airways','Etihad Airways','Saudia','Gulf Air','Royal Jordanian','El Al','EgyptAir','Ethiopian Airlines','South African Airways','Kenya Airways','Royal Air Maroc','Air India','IndiGo','Singapore Airlines','Cathay Pacific','Japan Airlines','ANA','Korean Air','Asiana Airlines','Qantas','Air New Zealand','Malaysia Airlines','Thai Airways','Vietnam Airlines','Philippine Airlines','Garuda Indonesia','China Airlines','EVA Air'];
+    let airlineIndex=0;
+    clearInterval(boWorldwideRotatorTimer);
+    element.classList.add('bo-airline-name-scroll');
+    element.textContent=airlines[airlineIndex];
+    boWorldwideRotatorTimer=setInterval(function(){
+      airlineIndex=(airlineIndex+1)%airlines.length;
+      element.classList.remove('is-airline-scrolling');
+      void element.offsetWidth;
+      element.textContent=airlines[airlineIndex];
+      element.classList.add('is-airline-scrolling');
+    },1200);
+    return;
+  }
+  element.classList.remove('bo-airline-name-scroll','is-airline-scrolling');
   const categories=['MOVIES','TELEVISION','MUSIC','THEATER','COMEDY','PODCASTS','STREAMING','VIDEO GAMES','RESTAURANTS','HOTELS','AIRLINES','AUTOS','LUXURY GOODS','CELLULAR'];
   const sequence=[];
   for(let pass=0;pass<3;pass++) categories.forEach(label=>{if(label!==destination)sequence.push(label);});
@@ -27382,4 +27398,79 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 }
 </style>
 <!-- Fresh delivery build v143: Share, Near Me, and Globe float on every page -->
+<style id="bop-movie-circles-airline-scroll-v144">
+/* Permanent arrow rule: use hand-drawn line geometry, never emoji/icon glyphs. */
+#boMoviesPage .bo-ticket-cta::before,
+#boMoviesPage .bo-ticket-cta::after{
+  content:''!important;
+  top:-3px!important;
+  width:18px;
+  height:18px;
+  border-right:2px solid #F59E0B;
+  border-bottom:2px solid #F59E0B;
+  font-size:0!important;
+  line-height:0!important;
+  filter:drop-shadow(0 0 4px rgba(245,158,11,.85));
+}
+#boMoviesPage .bo-ticket-cta::before{left:8px!important;transform:rotate(45deg)!important}
+#boMoviesPage .bo-ticket-cta::after{right:8px!important;transform:rotate(135deg)!important}
+@keyframes boMovieWatchArrow{
+  0%,100%{opacity:.58;margin-top:-3px}
+  50%{opacity:1;margin-top:3px}
+}
+
+/* Circular movie artwork: black inset behind the image and a glowing gold ring. */
+#boMoviesPage .bo-movie-card{grid-template-columns:98px minmax(0,1fr)}
+#boMoviesPage .bo-current-card{grid-template-columns:122px minmax(0,1fr)}
+#boMoviesPage .bo-movie-poster,
+#boMoviesPage .bo-movie-poster.bo-real-poster{
+  align-self:center;
+  justify-self:center;
+  display:block;
+  width:84px!important;
+  height:84px!important;
+  min-height:0!important;
+  margin:auto!important;
+  padding:5px;
+  box-sizing:border-box;
+  border:2.5px solid #F59E0B;
+  border-radius:50%;
+  background:#000!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  box-shadow:0 0 12px rgba(245,158,11,.72),inset 0 0 10px rgba(0,0,0,.9)!important;
+}
+#boMoviesPage .bo-current-card .bo-movie-poster,
+#boMoviesPage .bo-current-card .bo-movie-poster.bo-real-poster{
+  width:104px!important;
+  height:104px!important;
+}
+
+/* Airlines heading: readable, continuous major-airline loop that never lands. */
+#boWorldwidePage .bo-airline-name-scroll{
+  padding-right:22%;
+  font-size:clamp(1.45rem,5.3vw,3.55rem);
+  line-height:1.02;
+  text-overflow:clip;
+  animation:boAirlineHeadingIn .42s ease-out both;
+}
+#boWorldwidePage .bo-airline-name-scroll.is-airline-scrolling{animation:boAirlineHeadingIn .42s ease-out both}
+@keyframes boAirlineHeadingIn{
+  from{opacity:.18;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:620px){
+  #boMoviesPage .bo-movie-card{grid-template-columns:88px minmax(0,1fr)}
+  #boMoviesPage .bo-current-card{grid-template-columns:106px minmax(0,1fr)}
+  #boMoviesPage .bo-movie-poster,
+  #boMoviesPage .bo-movie-poster.bo-real-poster{width:76px!important;height:76px!important}
+  #boMoviesPage .bo-current-card .bo-movie-poster,
+  #boMoviesPage .bo-current-card .bo-movie-poster.bo-real-poster{width:92px!important;height:92px!important}
+  #boWorldwidePage .bo-airline-name-scroll{font-size:clamp(1.15rem,5.6vw,2rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  #boWorldwidePage .bo-airline-name-scroll{animation:none!important}
+}
+</style>
+<!-- Fresh delivery build v144: circular movie posters, drawn arrows, continuous airline heading -->
 </body></html>
