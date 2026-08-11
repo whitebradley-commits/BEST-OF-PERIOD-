@@ -20342,7 +20342,10 @@ const boPickerConfig = {
     { label: 'Fusion Asian', cat: 'asianfusion' },
     { label: 'Combo', cat: 'combo' },
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: '🏆 Best of Period', cat: 'asianbestofrest' }
+    // RULE: aggregate Best Of tiles always use the branded rotating lockup
+    // and finish on the category they summarize—never a generic trophy or
+    // plain-text "Best of Period" button.
+    { label: '<span class="bo-lead-best-lockup bo-category-best-lockup"><span class="bo-lead-best-top">BEST OF</span><span class="bo-lead-best-city is-active" id="boAsianBestCategoryText">SUSHI</span><span class="bo-picker-period bo-lead-best-period">Period<span class="period-mark">&copy;</span></span></span>', cat: 'asianbestofrest' }
   ],
   otheroptions: [
     // The first row is deliberately fixed by priority/search popularity.
@@ -21861,6 +21864,15 @@ function boRenderCategory(cat){
       const leadCitySpin=[leadTargetCity].concat(leadCityPool.filter(city=>city!==leadTargetCity));
       startBopVegasSlotCycler('boLeadBestCity',leadCitySpin,42,5000,2,2,20,true);
     }
+    // Category aggregate buttons share the same Best Of / rotating name /
+    // Period© identity as the city tile. Each one must stop on its own genre.
+    if(document.getElementById('boAsianBestCategoryText') && typeof startBopVegasSlotCycler === 'function'){
+      startBopVegasSlotCycler(
+        'boAsianBestCategoryText',
+        ['ASIAN','SUSHI','KOREAN','THAI','PHO','CHINESE','INDIAN','FUSION'],
+        55, 5000, 12, 12, 10, true
+      );
+    }
     const nearMePreviewBtn = document.getElementById('boNearMePreviewBtn');
     if(nearMePreviewBtn){
       nearMePreviewBtn.addEventListener('click', () => {
@@ -21924,9 +21936,32 @@ function boRenderCategory(cat){
   // elsewhere instead of ever borrowing another city's restaurants.
   // Entries with no city tag are treated as Vegas's own (city: 'bestof'),
   // so this is a no-op for every existing Vegas list and for Vegas itself.
-  const boScopedCategoryList = (!isMainCityPage && !isBjsPicksCat(cat) && Array.isArray(boCategoryData[cat]))
+  let boScopedCategoryList = (!isMainCityPage && !isBjsPicksCat(cat) && Array.isArray(boCategoryData[cat]))
     ? boCategoryData[cat].filter(r => (r.city || 'bestof') === boCityContext)
     : boCategoryData[cat];
+  // "Best Asian Period" is a live city aggregate, not a standalone genre.
+  // Its original array was assembled once, before many later city records
+  // were installed, and then sliced to ten globally. That left cities such
+  // as Los Angeles with an empty/dead destination even though their Asian
+  // subgenre pages had restaurants. Rebuild it for the active city whenever
+  // it opens so it always represents the strongest entries currently shown
+  // across every tile on that city's Asian hub.
+  if(cat === 'asianbestofrest'){
+    const asianSourceCats = ['korean','sushi','chinese','thai','vietnamese','pho','indian','asianfusion','combo'];
+    const seenAsian = new Map();
+    asianSourceCats.forEach(sourceCat => {
+      const sourceList = Array.isArray(boCategoryData[sourceCat]) ? boCategoryData[sourceCat] : [];
+      sourceList.forEach(record => {
+        if(!record || !record.name || (record.city || 'bestof') !== boCityContext) return;
+        const key = record.name.trim().toLowerCase();
+        const previous = seenAsian.get(key);
+        if(!previous || Number(record.rating || 0) > Number(previous.rating || 0)) seenAsian.set(key, record);
+      });
+    });
+    boScopedCategoryList = boRankedRestaurantList(Array.from(seenAsian.values()))
+      .slice(0, 10)
+      .map(record => Object.assign({}, record));
+  }
   const isSingleEntry = boScopedCategoryList && boScopedCategoryList.length <= 1;
   // Main city pages and BJS Picks pages both always have real content below
   // the fold (footer, Other Bests, the intro sentence) no matter how many
@@ -23745,7 +23780,9 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
         // Tiered cuisine pages have one extra level in their hierarchy:
         // Fine/Casual/Dive Steak returns to Steak, Italian to Italian,
         // Mexican to Mexican, Sushi to Sushi, and so on.
-        boRenderCategory(boPickerParent[boCurrentCat]);
+        const parentCat = boPickerParent[boCurrentCat];
+        boReplaceBestOfRoute(parentCat, boCityContext);
+        boRenderCategory(parentCat);
       } else {
         // A non-tiered category/list returns to the selected city's grid.
         openSelectedCityMainTiles();
