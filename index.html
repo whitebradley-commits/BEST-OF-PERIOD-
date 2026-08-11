@@ -26745,6 +26745,8 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   ].join('\n');
 
   async function shareWorldwideLanding(event){
+    const landing=document.getElementById('bopLandingOverlay');
+    if(!landing||!landing.classList.contains('open'))return;
     event.preventDefault();
     event.stopImmediatePropagation();
     const button=event.currentTarget;
@@ -27364,4 +27366,20 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v142: real movie posters and BJS-logo Movie Picks button -->
+<style id="bop-global-three-icon-dock-v143">
+/* Keep Share, Near Me, and Worldwide floating together on every page. */
+#bopStaticLandingDock.bop-static-landing-dock{
+  display:flex!important;
+  position:fixed!important;
+  left:clamp(12px,4vw,28px)!important;
+  bottom:max(14px,env(safe-area-inset-bottom))!important;
+  z-index:2147483000!important;
+}
+#bopStaticFounders{display:none!important}
+#landingSharePage,#globalSharePage{display:none!important}
+@media(max-width:350px){
+  #bopStaticLandingDock.bop-static-landing-dock{left:8px!important;gap:6px!important}
+}
+</style>
+<!-- Fresh delivery build v143: Share, Near Me, and Globe float on every page -->
 </body></html>
