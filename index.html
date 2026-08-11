@@ -19310,14 +19310,28 @@ function boGetMapRestaurants(cityKey){
       henderson:!!(primary.henderson||secondary.henderson)
     });
   };
-  // Near Me is universal: the visitor's location and current map viewport
-  // decide what is nearby, not the city page from which the map was opened.
-  // Pull every addressed restaurant on the platform and deduplicate it by
-  // name + address so zooming from San Diego to Los Angeles (or farther)
-  // naturally reveals the complete available inventory.
+  // Near Me is city-scoped. The active/geolocated city includes its complete
+  // approved aggregate territory (for example, San Diego's Oceanside-to-
+  // Tijuana group), but never leaks restaurants from another platform city.
+  const normalizeCity = value => {
+    const raw=String(value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    const aliases={vegas:'bestof',lasvegas:'bestof',lasvegascounty:'bestof',la:'losangeles',losangelescounty:'losangeles',sd:'sandiego',sandiegocounty:'sandiego',sf:'sanfrancisco',nyc:'newyork',newyorkcity:'newyork',dc:'washingtondc',washington:'washingtondc',philly:'philadelphia',nola:'neworleans',boise:'idaho'};
+    return aliases[raw]||raw;
+  };
+  const requestedCity=normalizeCity(cityKey)||'bestof';
+  const cityConfig=BO_CITY_CONFIG[requestedCity]||BO_CITY_CONFIG.bestof;
+  const belongsToRequestedCity=(restaurant,cat)=>{
+    const explicit=normalizeCity(restaurant&&restaurant.city);
+    if(explicit) return explicit===requestedCity;
+    const categoryCity=normalizeCity(cat);
+    if(categoryCity===requestedCity) return true;
+    if(cityConfig && cat===cityConfig.bjsPicksCat) return true;
+    // Legacy records without a city were originally Las Vegas records.
+    return requestedCity==='bestof';
+  };
   Object.entries(boCategoryData).forEach(([cat,list])=>{
     if(!Array.isArray(list)) return;
-    list.forEach(r=>add(r,cat));
+    list.forEach(r=>{if(belongsToRequestedCity(r,cat)) add(r,cat);});
   });
   return Array.from(seen.values());
 }
@@ -26441,23 +26455,24 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 #bopWorldwideLanding.open{display:block}
 .bop-world-landing-shell{position:relative;width:min(720px,calc(100% - 24px));min-height:100vh;margin:0 auto;padding:34px 18px 90px;border-left:1px solid rgba(245,158,11,.45);border-right:1px solid rgba(245,158,11,.45);background:linear-gradient(135deg,rgba(245,158,11,.022),transparent 38%,rgba(229,29,48,.018))}
 .bop-world-back{position:absolute;top:34px;left:18px;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#ff3048;font:900 .68rem/1.05 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer}
-.bop-world-hero{padding:105px 0 38px;text-align:center}
-.bop-world-best{color:#fff;font:900 clamp(2.35rem,10vw,4.9rem)/.92 'Cormorant Garamond',serif;letter-spacing:.02em;text-transform:uppercase}
-.bop-world-title-line{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:13px;white-space:nowrap}
-.bop-world-hero-globe{width:clamp(116px,33vw,185px);height:clamp(116px,33vw,185px);filter:drop-shadow(0 0 14px rgba(245,158,11,.72));animation:bopLandingGlobeTurn 18s linear infinite}
+.bop-world-hero{padding:92px 0 34px;text-align:center}
+.bop-world-best{position:relative;z-index:2;color:#fff;font:900 clamp(3rem,13vw,6rem)/.86 'Cormorant Garamond',serif;letter-spacing:.015em;text-transform:uppercase}
+.bop-world-title-line{display:flex;align-items:center;justify-content:center;gap:0;margin-top:-25px;white-space:nowrap}
+.bop-world-hero-globe{position:relative;z-index:3;width:clamp(138px,39vw,215px);height:clamp(138px,39vw,215px);margin-left:clamp(-30px,-5vw,-10px);margin-right:-4px;filter:drop-shadow(0 0 14px rgba(245,158,11,.72));animation:bopLandingGlobeTurn 18s linear infinite}
 .bop-world-hero-globe *{fill:none;stroke:#F59E0B;stroke-width:2.25;stroke-linecap:round}
-.bop-world-period{color:#F59E0B;font:700 clamp(2.05rem,9vw,4.3rem)/1 'Cormorant Garamond',serif;text-transform:none}
+.bop-world-period{position:relative;z-index:2;margin-left:-5px;color:#F59E0B;font:700 clamp(2.75rem,11.5vw,5.25rem)/.92 'Cormorant Garamond',serif;text-transform:none}
 .bop-world-period sup{font:700 .28em/1 'Archivo Black',sans-serif;vertical-align:super}
-.bop-world-tagline{margin:30px auto 0;color:#F59E0B;font:900 clamp(.82rem,3.3vw,1.05rem)/1.35 'Archivo Black',sans-serif;letter-spacing:.035em;text-transform:uppercase}
-.bop-world-why{margin:9px auto 0;color:#F59E0B;font:900 .9rem/1 'Archivo Black',sans-serif;opacity:.82}
+.bop-world-tagline{display:none!important}
+.bop-world-why{margin:-5px auto 0;color:#F59E0B;font:900 1rem/1 'Archivo Black',sans-serif;opacity:.88;text-shadow:0 0 8px rgba(245,158,11,.72)}
 .bop-world-divider{height:2px;margin:7px 0 42px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8)}
 .bop-world-tiles-title{margin:0 0 24px;color:#F59E0B;font:900 clamp(1.65rem,6vw,2.7rem)/1 'Archivo Black',sans-serif;letter-spacing:.035em;text-align:center;text-transform:uppercase}
 .bop-world-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:610px;margin:0 auto}
 .bop-world-tile{min-height:112px;padding:12px 5px;border:2px solid #F59E0B;border-radius:15px;background:#070707;color:#F59E0B;font:900 clamp(.68rem,2.6vw,.91rem)/1.1 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.42),inset 0 0 14px rgba(245,158,11,.06);cursor:pointer}
 .bop-world-tile span{display:block;margin-bottom:9px;font-size:2rem}
 .bop-world-tile:active{transform:scale(.97)}
-@media(max-width:470px){.bop-world-landing-shell{width:calc(100% - 16px);padding-left:12px;padding-right:12px}.bop-world-title-line{gap:7px}.bop-world-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bop-world-tile{min-height:100px}.bop-world-back{left:12px}}
+@media(max-width:470px){.bop-world-landing-shell{width:calc(100% - 16px);padding-left:12px;padding-right:12px}.bop-world-title-line{gap:0}.bop-world-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bop-world-tile{min-height:100px}.bop-world-back{left:12px}}
 @media(prefers-reduced-motion:reduce){#bopLandingOverlay .bop-landing-control-row>.bop-landing-control-btn,#bopLandingOverlay .bop-landing-world-btn svg,.bop-world-hero-globe{animation:none!important}}
+
 </style>
 <script id="bop-landing-world-controls-v133">
 (function(){
