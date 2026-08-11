@@ -28004,4 +28004,113 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 }
 </style>
 <!-- Fresh delivery build v155: full-bleed movie art with a soft fade into black -->
+<style id="bop-final-best-pages-v156">
+/* Main four: 24 Hours now matches the adjacent Near Me tile exactly. */
+.bo-main-picker-lead .bo-24-ish-text{display:none!important}
+.bo-main-picker-lead .bo-24-clock-label{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;line-height:1!important}
+.bo-main-picker-lead .bo-24-rainbow-text{font:inherit!important;color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important}
+.bo-main-picker-lead .bo-24-clock-tile,.bo-main-picker-lead .bo-near-me-tile{width:var(--bo-picker-small-size,78px)!important;height:var(--bo-picker-small-size,78px)!important;min-width:0!important;flex:0 0 var(--bo-picker-small-size,78px)!important}
+
+/* Match the Other Las Vegas Bests heading to the blue tiles below it. */
+.bo-main-hub-title{color:#168CFF!important;text-shadow:0 0 8px rgba(22,140,255,.58)!important}
+
+/* Small custom fingerprint cue; no emoji/icon glyph. */
+#boMoviesPage .bo-movie-screen-wrap::after{
+  content:'HOLD TO ENLARGE';
+  display:block!important;
+  position:absolute!important;
+  left:8px!important;
+  bottom:7px!important;
+  width:auto!important;
+  height:auto!important;
+  padding:5px 7px 5px 24px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background-color:rgba(0,0,0,.72)!important;
+  background-image:radial-gradient(ellipse at 12px 50%,transparent 0 3px,#F59E0B 3.5px 4.5px,transparent 5px 6px,#F59E0B 6.5px 7.5px,transparent 8px)!important;
+  background-repeat:no-repeat!important;
+  color:#F59E0B!important;
+  font:800 .43rem/1 'Archivo Narrow',sans-serif!important;
+  letter-spacing:.07em!important;
+  opacity:.86!important;
+  z-index:4!important;
+  pointer-events:none!important;
+  box-shadow:0 0 6px rgba(245,158,11,.22)!important;
+}
+
+/* Direct Access: clean, borderless logos on black. */
+#boWorldwidePage .bo-current-source{color:#F59E0B!important;font-size:.76rem!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+#boWorldwidePage .bo-current-grid{gap:16px 20px!important;align-items:center!important}
+#boWorldwidePage .bo-provider-logo-card,
+#boWorldwidePage .bo-airline-direct-card{
+  min-height:118px!important;
+  padding:8px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+}
+#boWorldwidePage .bo-provider-logo-link,
+#boWorldwidePage .bo-airline-direct-inner{
+  min-height:100px!important;
+  border:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  pointer-events:auto!important;
+}
+#boWorldwidePage .bo-provider-logo{
+  width:auto!important;height:auto!important;max-width:170px!important;max-height:92px!important;
+  padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;object-fit:contain!important;
+}
+
+/* Aircraft photography follows the poster language and fades into the card. */
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card{overflow:hidden!important;background:#000!important;grid-template-columns:42% minmax(0,1fr)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-aircraft-photo{width:calc(100% + 32px)!important;height:100%!important;min-height:150px!important;border:0!important;border-radius:0!important;object-fit:cover!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-info{position:relative;z-index:2;background:linear-gradient(to right,rgba(0,0,0,.15),#000 18%)!important}
+
+/* Permanent ending for Best of Period pages only. */
+.bop-best-ending{clear:both;width:100%;box-sizing:border-box;margin:46px auto 0;padding:0 14px 26px;text-align:center;background:#000}
+.bop-best-ending-rule{width:min(100%,760px);height:2px;margin:0 auto 18px;background:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.72)}
+.bop-best-ending-badges{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto 15px;padding:0;border:0;background:transparent;cursor:pointer}
+.bop-best-ending-badge{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;font:900 .58rem/1 'Archivo Black',sans-serif;box-shadow:0 0 7px rgba(245,158,11,.35)}
+.bop-best-ending-badge.is-check{color:#168CFF;font-size:1rem}
+.bop-best-ending-footer{color:#888;font:700 .62rem/1.4 'Archivo Narrow',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.bop-best-ending-footer strong{display:block;color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:.7rem;margin-bottom:3px}
+</style>
+<script id="bop-final-best-pages-v156">
+(function(){
+  const airlinePhotoCacheKey='bop-aircraft-photos-v156';let airlinePhotos={};
+  try{airlinePhotos=JSON.parse(localStorage.getItem(airlinePhotoCacheKey)||'{}')||{};}catch(e){airlinePhotos={};}
+  function saveAirlinePhotos(){try{localStorage.setItem(airlinePhotoCacheKey,JSON.stringify(airlinePhotos));}catch(e){}}
+  async function findAircraftPhoto(name){
+    if(Object.prototype.hasOwnProperty.call(airlinePhotos,name))return airlinePhotos[name]||'';
+    const endpoint='https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(name+' aircraft airline livery')+'&gsrnamespace=0&gsrlimit=6&prop=pageimages&piprop=thumbnail&pithumbsize=720&format=json&origin=*';
+    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});const data=await response.json();const pages=Object.values((data&&data.query&&data.query.pages)||{}).sort(function(a,b){return(a.index||99)-(b.index||99)});const page=pages.find(function(item){return item.thumbnail&&item.thumbnail.source});const url=page&&page.thumbnail?page.thumbnail.source:'';airlinePhotos[name]=url;saveAirlinePhotos();return url;}catch(e){return '';}
+  }
+  async function hydrateAirlines(){
+    const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');if(!page)return;
+    const cards=Array.from(page.querySelectorAll('.bo-movie-card'));
+    for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.aircraftPhoto==='1')return;card.dataset.aircraftPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const url=await findAircraftPhoto(title.textContent.trim());if(!url)return;const probe=new Image();probe.onload=function(){if(probe.naturalWidth<160||probe.naturalHeight<100)return;image.src=url;image.alt=title.textContent.trim()+' aircraft';image.classList.add('bo-aircraft-photo')};probe.src=url;}));}
+  }
+  function endingMarkup(){return '<div class="bop-best-ending" data-bop-ending="1"><div class="bop-best-ending-rule"></div><button class="bop-best-ending-badges" type="button" aria-label="Open badge directory"><span class="bop-best-ending-badge">M★★★</span><span class="bop-best-ending-badge">JB</span><span class="bop-best-ending-badge is-check">✓</span><span class="bop-best-ending-badge">BJS</span></button><footer class="bop-best-ending-footer"><strong>bestofperiod.com</strong>Best restaurants. Best directory. Period.</footer></div>'}
+  function installEndings(){
+    const targets=[];
+    const list=document.getElementById('boList');if(list&&list.offsetParent!==null)targets.push(list);
+    document.querySelectorAll('#boMoviesPage.open .bo-movies-shell,#boWorldwidePage.open .bo-movies-shell').forEach(function(node){targets.push(node)});
+    targets.forEach(function(target){if(target.querySelector(':scope>.bop-best-ending'))return;target.insertAdjacentHTML('beforeend',endingMarkup());const button=target.querySelector(':scope>.bop-best-ending .bop-best-ending-badges');if(button)button.addEventListener('click',function(){if(typeof window.boOpenBadgesPage==='function')window.boOpenBadgesPage();else if(typeof boOpenBadgesPage==='function')boOpenBadgesPage();});});
+  }
+  function normalizeMainTile(){const tile=document.querySelector('.bo-main-picker-lead .bo-24-clock-tile');if(!tile)return;tile.setAttribute('aria-label','24 Hours');const ish=tile.querySelector('.bo-24-ish-text');if(ish)ish.remove();}
+  function directAccessLabel(){const page=document.querySelector('#boWorldwidePage.open');if(!page)return;const source=page.querySelector('.bo-current-source');if(source&&source.textContent!=='Tap a logo for direct access')source.textContent='Tap a logo for direct access';}
+  function refresh(){normalizeMainTile();directAccessLabel();hydrateAirlines();installEndings();}
+  document.addEventListener('click',function(event){
+    const anchor=event.target.closest('#boWorldwidePage a[href],#boMoviesPage a[href]');if(!anchor||anchor.matches('[data-theater-provider]'))return;
+    event.preventDefault();event.stopImmediatePropagation();const opened=window.open(anchor.href,'_blank','noopener');if(!opened)window.location.href=anchor.href;
+  },true);
+  document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"]'))setTimeout(refresh,120);},true);
+  function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-worldwide-key']});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v156: final Best pages, direct links, aircraft photos, pizza coverage -->
 </body></html>
