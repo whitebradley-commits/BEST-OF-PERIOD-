@@ -23612,6 +23612,12 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
       // Back from the city tile grid returns to the rotating city selector.
       if(typeof boCurrentCat !== 'undefined' && boCurrentCat === 'otheroptions'){
         openRotatingCityLanding();
+      } else if(typeof boCurrentCat !== 'undefined' && typeof boPickerParent !== 'undefined' && boPickerParent[boCurrentCat] === 'otheroptions'){
+        // Michelin, James Beard and every other direct category belong one
+        // level beneath the selected city's Main tile grid. Explicitly use
+        // the Main-page opener here so the rotating landing overlay is closed
+        // and the city context/refresh route are both preserved.
+        openSelectedCityMainTiles();
       } else if(typeof boCurrentCat !== 'undefined' && typeof boPickerParent !== 'undefined' && boPickerParent[boCurrentCat]){
         // Tiered cuisine pages have one extra level in their hierarchy:
         // Fine/Casual/Dive Steak returns to Steak, Italian to Italian,
