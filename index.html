@@ -19187,10 +19187,159 @@ boCategoryData.cannabisinfused = boBuildDerivedRestaurantList(r =>
   r.cannabisInfused === true || (Array.isArray(r.tags) && r.tags.some(tag => /cannabis.?infused/i.test(String(tag)))) ||
   /cannabis.?infused/i.test([r.name,r.note,r.why].filter(Boolean).join(' '))
 );
+/* Cannabis dining is shown only where adult-use service is legally viable and
+   we have a specifically verified qualifying venue. This prevents an entry
+   added elsewhere in the data from accidentally exposing the category in an
+   ineligible city. DC is intentionally excluded because possession rules do
+   not create a conventional licensed adult-use restaurant market. */
+const BO_CANNABIS_ELIGIBLE_CITIES = new Set([
+  'bestof', 'sandiego', 'siliconvalley', 'losangeles', 'santabarbara',
+  'sanfrancisco', 'newyork', 'chicago', 'boston'
+]);
+function boCannabisCategoryAvailable(cityKey){
+  if(!BO_CANNABIS_ELIGIBLE_CITIES.has(cityKey)) return false;
+  return (boCategoryData.cannabisinfused || []).some(r =>
+    (r.city || 'bestof') === cityKey && r.cannabisInfused === true
+  );
+}
 boCategoryData.bagels = boBuildDerivedRestaurantList(r =>
   r.bagels === true || (Array.isArray(r.tags) && r.tags.some(tag => /bagels?/i.test(String(tag)))) ||
   /\bbagels?\b/i.test([r.name,r.note,r.why].filter(Boolean).join(' '))
 );
+/* Bagel launch roster — three verified, currently operating specialists for
+   every active Best Of location. Rankings reflect the strongest available
+   cross-source reputation and meaningful review history; photos are deferred
+   under the site-wide non-Best-Of/non-Michelin image rule. */
+boCategoryData.bagels = [
+  {rank:1,name:"Abel's Bagels",city:"bestof",price:1,url:"https://www.abelsbagels.com/",address:"1201 W Warm Springs Rd, Henderson, NV 89014",phone:"(702) 547-3700"},
+  {rank:2,name:"New York Bagel N Bakery",city:"bestof",price:1,url:"https://www.newyorkbagelnbakery.com/",address:"840 S Rancho Dr, Las Vegas, NV 89106",phone:"(702) 258-7400"},
+  {rank:3,name:"Siegel's Bagelmania",city:"bestof",price:2,url:"https://siegelsbagelmania.com/",address:"252 Convention Center Dr, Las Vegas, NV 89109",phone:"(702) 369-3322"},
+  {rank:1,name:"El Bagel",city:"miami",price:1,url:"https://elbagel.com/",address:"6910 Biscayne Blvd, Miami, FL 33138",phone:""},
+  {rank:2,name:"Bagel Bar East",city:"miami",price:2,url:"https://www.bagelbareast.com/",address:"1990 NE 123rd St, North Miami, FL 33181",phone:"(305) 895-7022"},
+  {rank:3,name:"Bagel Emporium & Grille",city:"miami",price:2,url:"https://www.bagelshopmiami.com/",address:"1238 S Dixie Hwy, Coral Gables, FL 33146",phone:"(305) 666-9519"},
+  {rank:1,name:"Beigel Bake",city:"london",price:1,url:"https://beigelbake.co.uk/",address:"159 Brick Ln, London E1 6SB, United Kingdom",phone:"+44 20 7729 0616"},
+  {rank:2,name:"Papo's Bagels",city:"london",price:1,url:"https://www.paposbagels.com/",address:"Amhurst Rd, London E8 2AJ, United Kingdom",phone:""},
+  {rank:3,name:"B Bagel — Soho",city:"london",price:1,url:"https://www.bbagel.co.uk/",address:"54 Wardour St, London W1D 4JF, United Kingdom",phone:"+44 20 7287 0420"},
+  {rank:1,name:"Marigold Bagels",city:"sandiego",price:1,url:"https://www.marigoldbagels.com/",address:"2850 El Cajon Blvd, San Diego, CA 92104",phone:""},
+  {rank:2,name:"Mission Bagel",city:"sandiego",price:1,url:"https://missionbagel.com/",address:"1344 Garnet Ave, San Diego, CA 92109",phone:"(858) 522-0389"},
+  {rank:3,name:"Big City Bagel Cafe",city:"sandiego",price:1,url:"https://www.bcbcafesd.com/",address:"1010 University Ave, San Diego, CA 92103",phone:""},
+  {rank:1,name:"Boichik Bagels — Palo Alto",city:"siliconvalley",price:1,url:"https://boichikbagels.com/",address:"855 El Camino Real #115, Palo Alto, CA 94301",phone:"(650) 352-5995"},
+  {rank:2,name:"Izzy's Brooklyn Bagels",city:"siliconvalley",price:1,url:"https://www.izzysbrooklynbagels.com/",address:"477 S California Ave, Palo Alto, CA 94306",phone:"(650) 329-0700"},
+  {rank:3,name:"House of Bagels — San Jose",city:"siliconvalley",price:1,url:"https://www.houseofbagels.com/",address:"505 E San Carlos St, San Jose, CA 95112",phone:"(408) 286-1776"},
+  {rank:1,name:"Courage Bagels",city:"losangeles",price:1,url:"https://couragebagels.com/",address:"777 N Virgil Ave, Los Angeles, CA 90029",phone:"(323) 828-9963"},
+  {rank:2,name:"Maury's Bagels",city:"losangeles",price:1,url:"https://www.maurysbagels.com/",address:"2829 Bellevue Ave, Los Angeles, CA 90026",phone:"(323) 800-0034"},
+  {rank:3,name:"Layla Bagels — Ocean Park",city:"losangeles",price:2,url:"https://www.laylabagels.com/",address:"1614 Ocean Park Blvd, Santa Monica, CA 90405",phone:""},
+  {rank:1,name:"Mother Dough Bagels",city:"santabarbara",price:1,url:"https://motherdoughbagels.com/",address:"604 Santa Barbara St, Santa Barbara, CA 93101",phone:""},
+  {rank:2,name:"Jack's Bistro & Famous Bagels",city:"santabarbara",price:1,url:"https://bagelnet.com/",address:"53 S Milpas St, Santa Barbara, CA 93103",phone:"(805) 564-4331"},
+  {rank:3,name:"Yetz's Bagels",city:"santabarbara",price:1,url:"https://yetzsbagels.com/",address:"901 Embarcadero del Mar #301, Goleta, CA 93117",phone:"(805) 961-4555"},
+  {rank:1,name:"Schlok's Bagels & Lox",city:"sanfrancisco",price:1,url:"https://www.schloks.com/",address:"1263 Fell St, San Francisco, CA 94117",phone:""},
+  {rank:2,name:"Boichik Bagels — Presidio Heights",city:"sanfrancisco",price:1,url:"https://boichikbagels.com/",address:"3665 Sacramento St, San Francisco, CA 94118",phone:"(628) 867-7485"},
+  {rank:3,name:"Wise Sons Jewish Delicatessen",city:"sanfrancisco",price:2,url:"https://www.wisesonsdeli.com/",address:"3150 24th St, San Francisco, CA 94110",phone:"(415) 787-3354"},
+  {rank:1,name:"Utopia Bagels — Midtown",city:"newyork",price:1,url:"https://www.utopiabagelsny.com/",address:"120 E 34th St, New York, NY 10016",phone:"(646) 914-6981"},
+  {rank:2,name:"Tompkins Square Bagels — East Village",city:"newyork",price:1,url:"https://www.tompkinssquarebagels.com/",address:"184 2nd Ave, New York, NY 10003",phone:"(917) 472-7639"},
+  {rank:3,name:"Apollo Bagels — Greenwich Village",city:"newyork",price:1,url:"https://www.apollobagels.com/",address:"242 E 10th St, New York, NY 10003",phone:""},
+  {rank:1,name:"Tilly Bagel Shop",city:"chicago",price:1,url:"https://www.tillybagelshop.com/",address:"680 N Milwaukee Ave, Chicago, IL 60642",phone:""},
+  {rank:2,name:"New York Bagel & Bialy",city:"chicago",price:1,url:"https://www.nybagelandbialy.com/",address:"4714 W Touhy Ave, Lincolnwood, IL 60712",phone:"(847) 677-9388"},
+  {rank:3,name:"Gotham Bagels — Gold Coast",city:"chicago",price:1,url:"https://www.gothambagels.com/",address:"1212 N Dearborn St, Chicago, IL 60610",phone:"(312) 656-8166"},
+  {rank:1,name:"Call Your Mother — Park View",city:"washingtondc",price:1,url:"https://www.callyourmotherdeli.com/",address:"3301 Georgia Ave NW, Washington, DC 20010",phone:""},
+  {rank:2,name:"Bethesda Bagels — Navy Yard",city:"washingtondc",price:1,url:"https://bethesdabagels.com/",address:"120 M St SE, Washington, DC 20003",phone:"(202) 804-5548"},
+  {rank:3,name:"Bagels Etc.",city:"washingtondc",price:1,url:"",address:"2122 P St NW, Washington, DC 20037",phone:"(202) 466-7171"},
+  {rank:1,name:"Bagelsaurus",city:"boston",price:1,url:"https://www.bagelsaurus.com/",address:"1796 Massachusetts Ave, Cambridge, MA 02140",phone:"(857) 285-6103"},
+  {rank:2,name:"Kupel's Bakery",city:"boston",price:1,url:"https://www.kupelsbakery.com/",address:"421 Harvard St, Brookline, MA 02446",phone:"(617) 566-9528"},
+  {rank:3,name:"Rosenfeld's Bagels",city:"boston",price:1,url:"https://rosenfeldsbagels.com/",address:"1280 Centre St, Newton, MA 02459",phone:"(617) 527-8080"},
+  {rank:1,name:"Kismet Bagels — Rittenhouse",city:"philadelphia",price:1,url:"https://kismetbagels.com/",address:"1700 Sansom St, Philadelphia, PA 19103",phone:"(215) 259-8385"},
+  {rank:2,name:"Bart's Bagels — South Philadelphia",city:"philadelphia",price:1,url:"https://bartsbagels.com/",address:"769 S 10th St, Philadelphia, PA 19147",phone:"(267) 876-7004"},
+  {rank:3,name:"Spread Bagelry — 16th Street",city:"philadelphia",price:1,url:"https://www.spreadbagelry.com/",address:"106 S 16th St, Philadelphia, PA 19102",phone:"(215) 366-0071"},
+  {rank:1,name:"Emerald City Bagels — East Atlanta Village",city:"atlanta",price:1,url:"https://www.emeraldcitybagels.com/",address:"1257A Glenwood Ave SE, Atlanta, GA 30316",phone:""},
+  {rank:2,name:"Bagelicious",city:"atlanta",price:1,url:"https://bageliciousatlanta.com/",address:"1255 Johnson Ferry Rd, Marietta, GA 30068",phone:"(770) 509-9505"},
+  {rank:3,name:"Brooklyn Bagel Bakery & Deli",city:"atlanta",price:1,url:"https://brooklynbagel-deli.com/",address:"2227 Old Milton Pkwy, Alpharetta, GA 30009",phone:"(770) 569-7290"},
+  {rank:1,name:"Flour Moon Bagels",city:"neworleans",price:1,url:"https://www.flourmoonbagels.com/",address:"457 N Dorgenois St, New Orleans, LA 70119",phone:""},
+  {rank:2,name:"Stein's Market and Deli",city:"neworleans",price:1,url:"https://steinsdeli.com/",address:"2207 Magazine St, New Orleans, LA 70130",phone:"(504) 527-0771"},
+  {rank:3,name:"Small Mart",city:"neworleans",price:1,url:"https://www.smallmartnola.com/",address:"2700 Chartres St, New Orleans, LA 70117",phone:""},
+  {rank:1,name:"Goldstein's Bagels & Bialys",city:"idaho",price:1,url:"https://www.goldsteinsbagels.com/",address:"611 S 8th St #103, Boise, ID 83702",phone:"(208) 336-8189"},
+  {rank:2,name:"Good Times Bagels",city:"idaho",price:1,url:"https://www.goodtimesbagels.com/",address:"2422 W Main St, Boise, ID 83702",phone:"(208) 900-2420"},
+  {rank:3,name:"Blue Sky Bagels — Downtown Boise",city:"idaho",price:1,url:"https://blueskybagels.com/",address:"407 W Main St, Boise, ID 83702",phone:"(208) 388-4242"}
+].map(r => Object.assign({image:'',imagePosition:'center',rating:null,reviews:null,hue:'32, 45%, 24%',why:'One of the strongest bagel specialists in this Best Of location.',note:'Ranked from the available cross-source bagel reputation and meaningful review history.',hours:[],instagram:null,facebook:null},r));
+
+/* Cheesesteak launch roster — three credible cheesesteak destinations in all
+   16 active locations. A business need not be a cheesesteak-only shop, but its
+   cheesesteak must be a recognized specialty rather than a token menu item. */
+boCategoryData.cheesesteak = [
+  {rank:1,name:"POP'S Pride of Philly Steaks",city:"bestof",address:"501 S Decatur Blvd, Las Vegas, NV 89107",phone:"(702) 878-6444",url:"https://www.popscheesesteaks.com/"},
+  {rank:2,name:"Shay's Cheesesteaks",city:"bestof",address:"6587 Las Vegas Blvd S, Las Vegas, NV 89119",phone:"(484) 678-1718",url:""},
+  {rank:3,name:"Gyro Express Philly Steak",city:"bestof",address:"9635 Bermuda Rd #110, Las Vegas, NV 89123",phone:"(702) 888-3535",url:"https://gyroexpressphillysteak.wordpress.com/"},
+  {rank:1,name:"Peppi's Steaks & Hoagies",city:"miami",address:"550 NW 1st Ave, Miami, FL 33136",phone:"(267) 614-6684",url:""},
+  {rank:2,name:"Spanky's Cheesesteak Factory",city:"miami",address:"309 N State Road 7, Margate, FL 33063",phone:"(954) 973-2170",url:"https://spankysmargate.com/"},
+  {rank:3,name:"Cheesesteak For Sale",city:"miami",address:"1522 Washington Ave, Miami Beach, FL 33139",phone:"(786) 907-4434",url:""},
+  {rank:1,name:"Passyunk Avenue — Fitzrovia",city:"london",address:"80 Cleveland St, London W1T 6NE, United Kingdom",phone:"+44 20 3960 2251",url:"https://passyunkavenue.com/"},
+  {rank:2,name:"Gerry's Hot Subs",city:"london",address:"50 Exmouth Market, London EC1R 4QE, United Kingdom",phone:"+44 20 3409 5511",url:"https://gerryshotsubs.com/"},
+  {rank:3,name:"Passyunk Avenue — Waterloo",city:"london",address:"22 Leake St, London SE1 7NN, United Kingdom",phone:"+44 20 3926 5144",url:"https://passyunkavenue.com/waterloo/"},
+  {rank:1,name:"Giorgino's",city:"sandiego",address:"1237 28th St, San Diego, CA 92102",phone:"(619) 234-9141",url:"https://giorginos.com/"},
+  {rank:2,name:"Dougie's Best",city:"sandiego",address:"1869 Cable St, San Diego, CA 92107",phone:"(619) 955-3165",url:"https://www.dougiesbest.com/"},
+  {rank:3,name:"Philly Frank's Steaks",city:"sandiego",address:"151 S Rancho Santa Fe Rd, San Marcos, CA 92078",phone:"(760) 591-0145",url:"https://phillyfranks.com/"},
+  {rank:1,name:"Amato's Cheesesteaks",city:"siliconvalley",address:"1162 Saratoga Ave, San Jose, CA 95129",phone:"(408) 246-4007",url:"https://www.amatoscheesesteaks.com/"},
+  {rank:2,name:"The Cheese Steak Shop — San Jose",city:"siliconvalley",address:"832 W El Camino Real, Sunnyvale, CA 94087",phone:"",url:"https://cheesesteakshop.com/"},
+  {rank:3,name:"Jake's of Sunnyvale",city:"siliconvalley",address:"1074 N Mathilda Ave, Sunnyvale, CA 94089",phone:"(408) 734-8124",url:"https://jakesrestaurants.com/"},
+  {rank:1,name:"Matū",city:"losangeles",address:"239 S Beverly Dr #100, Beverly Hills, CA 90212",phone:"(424) 317-5031",url:"https://www.matusteak.com/matu/matu-lunch-menu/",price:4,bjsPickCity:"losangeles",bjsPickLabel:"BJS Pick — Wagyu Cheesesteak"},
+  {rank:2,name:"Boo's Philly Cheesesteaks — Silver Lake",city:"losangeles",address:"4501 Fountain Ave, Los Angeles, CA 90029",phone:"(323) 661-1955",url:"https://boosphilly.com/"},
+  {rank:3,name:"South Philly Experience",city:"losangeles",address:"5401 W Pico Blvd, Los Angeles, CA 90019",phone:"(323) 424-3055",url:"https://southphillyexperience.com/"},
+  {rank:1,name:"South Coast Deli — Chapala",city:"santabarbara",address:"10 E Carrillo St, Santa Barbara, CA 93101",phone:"(805) 845-4600",url:"https://southcoastdeli.com/"},
+  {rank:2,name:"Pickles & Swiss",city:"santabarbara",address:"811 State St, Santa Barbara, CA 93101",phone:"(805) 845-4444",url:"https://picklesandswiss.com/"},
+  {rank:3,name:"Three Pickles Deli",city:"santabarbara",address:"126 E Canon Perdido St, Santa Barbara, CA 93101",phone:"(805) 965-1015",url:"https://threepickles.com/"},
+  {rank:1,name:"Buster's Cheesesteak",city:"sanfrancisco",address:"366 Columbus Ave, San Francisco, CA 94133",phone:"(415) 392-2800",url:""},
+  {rank:2,name:"The Cheese Steak Shop — Divisadero",city:"sanfrancisco",address:"1716 Divisadero St, San Francisco, CA 94115",phone:"(415) 922-1871",url:"https://cheesesteakshop.com/"},
+  {rank:3,name:"Jay's Cheesesteak",city:"sanfrancisco",address:"3285 21st St, San Francisco, CA 94110",phone:"(415) 285-5200",url:""},
+  {rank:1,name:"Olde City Cheesesteaks & Brew",city:"newyork",address:"66 Madison Ave, New York, NY 10016",phone:"(929) 271-7820",url:"https://oldecitycheesesteaks.com/"},
+  {rank:2,name:"Wogies Bar & Grill — West Village",city:"newyork",address:"39 Greenwich Ave, New York, NY 10014",phone:"(212) 229-2171",url:"https://wogies.com/"},
+  {rank:3,name:"Shorty's — Hell's Kitchen",city:"newyork",address:"576 9th Ave, New York, NY 10036",phone:"(212) 967-3055",url:"https://shortysnyc.com/"},
+  {rank:1,name:"Monti's",city:"chicago",address:"4757 N Talman Ave, Chicago, IL 60625",phone:"(773) 942-6012",url:"https://ilovemontis.com/"},
+  {rank:2,name:"Philly's Best — Chicago",city:"chicago",address:"907 W Belmont Ave, Chicago, IL 60657",phone:"(773) 525-7900",url:"https://www.phillysbest.com/"},
+  {rank:3,name:"Capriotti's Sandwich Shop — Chicago",city:"chicago",address:"180 N Wacker Dr, Chicago, IL 60606",phone:"",url:"https://capriottis.com/"},
+  {rank:1,name:"Grazie Grazie",city:"washingtondc",address:"85 District Square SW, Washington, DC 20024",phone:"(202) 216-2999",url:"https://www.graziegrazie.com/"},
+  {rank:2,name:"Ghostburger",city:"washingtondc",address:"1250 9th St NW, Washington, DC 20001",phone:"",url:"https://ghostburgerdc.com/"},
+  {rank:3,name:"Al's Steak House",city:"washingtondc",address:"1504 Mount Vernon Ave, Alexandria, VA 22301",phone:"(703) 836-9443",url:""},
+  {rank:1,name:"Carl's Steak Subs",city:"boston",address:"55 Prospect St, Waltham, MA 02453",phone:"(781) 894-3354",url:"https://carlssteaksubs.com/"},
+  {rank:2,name:"Rondo's Sub Shop",city:"boston",address:"134 W Broadway, Boston, MA 02127",phone:"(617) 269-0274",url:""},
+  {rank:3,name:"Bennett's Sandwich Shop",city:"boston",address:"84 Peterborough St, Boston, MA 02215",phone:"",url:"https://bennettsandwichshop.com/"},
+  {rank:1,name:"Angelo's Pizzeria South Philly",city:"philadelphia",address:"736 S 9th St, Philadelphia, PA 19147",phone:"(215) 922-0000",url:"https://angelospizzeriasouthphiladelphia.com/"},
+  {rank:2,name:"John's Roast Pork",city:"philadelphia",address:"14 E Snyder Ave, Philadelphia, PA 19148",phone:"(215) 463-1951",url:"https://johnsroastpork.com/"},
+  {rank:3,name:"Dalessandro's Steaks",city:"philadelphia",address:"600 Wendover St, Philadelphia, PA 19128",phone:"(215) 482-5407",url:"https://dalessandros.com/"},
+  {rank:1,name:"Fred's Meat & Bread — Krog Street Market",city:"atlanta",address:"99 Krog St NE, Atlanta, GA 30307",phone:"(404) 688-3733",url:"https://fredsmeatandbread.com/"},
+  {rank:2,name:"Woody's CheeseSteaks",city:"atlanta",address:"981 Monroe Dr NE, Atlanta, GA 30308",phone:"(404) 876-1939",url:"https://woodyscheesesteaks.com/"},
+  {rank:3,name:"Big Dave's Cheesesteaks — Downtown",city:"atlanta",address:"57 Forsyth St NW, Atlanta, GA 30303",phone:"(404) 343-0259",url:"https://www.bigdavescheesesteaks.com/"},
+  {rank:1,name:"Philly's Steak House — Marrero",city:"neworleans",address:"4639 Westbank Expy, Marrero, LA 70072",phone:"(504) 347-0909",url:""},
+  {rank:2,name:"Stein's Market and Deli",city:"neworleans",address:"2207 Magazine St, New Orleans, LA 70130",phone:"(504) 527-0771",url:"https://steinsdeli.com/"},
+  {rank:3,name:"Parkway Bakery & Tavern",city:"neworleans",address:"538 Hagan Ave, New Orleans, LA 70119",phone:"(504) 482-3047",url:"https://parkwaypoorboys.com/"},
+  {rank:1,name:"The Cheesesteak Guy",city:"idaho",address:"The Cheesesteak Guy, Boise, ID",phone:"",url:"https://thecheesesteakguy.com/"},
+  {rank:2,name:"Uncle Giuseppe's Italian Deli",city:"idaho",address:"6826 N Glenwood St, Garden City, ID 83714",phone:"(208) 322-9866",url:"https://unclegiuseppesidaho.com/"},
+  {rank:3,name:"Charleys Cheesesteaks — Boise",city:"idaho",address:"350 N Milwaukee St, Boise, ID 83704",phone:"",url:"https://www.charleys.com/"}
+].map(r => Object.assign({image:'',imagePosition:'center',rating:null,reviews:null,price:1,hue:'28, 48%, 23%',why:'A leading cheesesteak destination for this Best Of location.',note:'Ranked from current cross-source cheesesteak reputation and meaningful review history.',hours:[],instagram:null,facebook:null},r));
+
+// Keep every city's BJS Picks page synchronized with editorial picks added to
+// a genre roster later in the file. This makes Matū visible both under Best
+// Cheesesteak and on Los Angeles's dedicated BJS Picks page.
+(function boSyncCityEditorialPicks(){
+  Object.keys(BO_CITY_CONFIG).forEach(cityKey => {
+    const picksCat = BO_CITY_CONFIG[cityKey].bjsPicksCat;
+    const picks = Array.isArray(boCategoryData[picksCat]) ? boCategoryData[picksCat] : [];
+    const seen = new Set(picks.filter(Boolean).map(r => String(r.name || '').trim().toLowerCase()));
+    Object.values(boCategoryData).forEach(list => {
+      if(!Array.isArray(list)) return;
+      list.forEach(r => {
+        if(!r || r.bjsPickCity !== cityKey) return;
+        const key = String(r.name || '').trim().toLowerCase();
+        if(!key || seen.has(key)) return;
+        picks.push(Object.assign({}, r, {
+          bjsPick:true,
+          bjsSources:r.bjsPickLabel ? [r.bjsPickLabel] : []
+        }));
+        seen.add(key);
+      });
+    });
+    picks.forEach((r, index) => { r.rank = index + 1; });
+    boCategoryData[picksCat] = picks;
+  });
+})();
 
 // The nation directory is deliberately separate from the cuisine hierarchy.
 // It can include a themed pub, beer hall or cultural restaurant even when the
@@ -19280,6 +19429,7 @@ const boPickerConfig = {
     { label: 'Casual', cat: 'breakfastcasual' },
     { label: 'Fine', cat: 'breakfasthighend' },
     { label: 'Coffee', cat: 'coffee' },
+    { label: 'Bagels', cat: 'bagels' },
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' }
   ],
   asian: [
@@ -20322,7 +20472,7 @@ function boRenderCategory(cat){
     ` : '';
     const pickerOptions = boPickerConfig[cat].filter(opt => {
       if(cat !== 'otheroptions') return true;
-      if(opt.cat === 'cannabisinfused') return (boCategoryData.cannabisinfused || []).some(r => (r.city || 'bestof') === boCityContext);
+      if(opt.cat === 'cannabisinfused') return boCannabisCategoryAvailable(boCityContext);
       return true;
     });
     const mainHubCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
@@ -20613,32 +20763,7 @@ function boRenderCategory(cat){
         ${callButtonHTML(s.phone)}
         ${directionsButtonHTML(s.address, s.name)}
         ${cat === 'pizza' ? '' : siteButtonHTML(s.url)}
-        ${cat === 'pizza' ? '' : (s.facebook ? `
-        <a class="bo-icon-btn bo-fb-btn" href="https://facebook.com/${s.facebook}" target="_blank" rel="noopener" title="Facebook">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13.5 21v-7.5h2.5l.5-3h-3V8.3c0-.87.24-1.46 1.5-1.46H16.5V4.14C16.2 4.1 15.2 4 14 4c-2.4 0-4 1.47-4 4.16V10.5H7.5v3H10V21h3.5z"/>
-          </svg>
-        </a>` : `
-        <span class="bo-icon-btn bo-fb-btn icon-btn-pending" title="Facebook coming soon">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13.5 21v-7.5h2.5l.5-3h-3V8.3c0-.87.24-1.46 1.5-1.46H16.5V4.14C16.2 4.1 15.2 4 14 4c-2.4 0-4 1.47-4 4.16V10.5H7.5v3H10V21h3.5z"/>
-          </svg>
-        </span>`)}
-        ${cat === 'pizza' ? '' : (s.instagram ? `
-        <a class="bo-icon-btn bo-ig-btn" href="https://instagram.com/${s.instagram}" target="_blank" rel="noopener" title="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-          </svg>
-        </a>` : `
-        <span class="bo-icon-btn bo-ig-btn icon-btn-pending" title="Instagram coming soon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-          </svg>
-        </span>`)}
+        ${'' /* Facebook and Instagram are intentionally omitted sitewide. */}
         ${emailButtonHTML(s.email)}
         ${picsButtonHTML(s.name)}
         <button type="button" style="all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:3px;width:55px;height:31px;background:#0a0a0a;border:1.5px solid #F59E0B;border-radius:6px;color:#F59E0B;font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:0.02em;cursor:pointer;animation:bo-send-pulse-glow 2s ease-in-out infinite;" title="Send this restaurant" data-send-restaurant="${s.name.replace(/"/g, '&quot;')}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>SEND</button>
