@@ -3936,6 +3936,44 @@
     text-shadow:0 0 6px rgba(245,158,11,0.5);
   }
 
+  .bo-lead-best-lockup{
+    display:flex;
+    width:100%;
+    height:100%;
+    min-height:52px;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    line-height:.88;
+    overflow:hidden;
+  }
+  .bo-lead-best-top{
+    color:#fff;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:.9em;
+    letter-spacing:.055em;
+    white-space:nowrap;
+  }
+  .bo-lead-best-city{
+    display:block;
+    width:100%;
+    min-height:1em;
+    overflow:hidden;
+    color:#e21f2b;
+    font-family:'Fraunces','Playfair Display',serif;
+    font-size:clamp(.72rem,2.6vw,.94rem);
+    font-style:italic;
+    font-weight:900;
+    line-height:1;
+    text-align:center;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+  .bo-lead-best-city.animating-out{opacity:.12;transform:translateY(-2px)}
+  .bo-lead-best-city.animating-in{opacity:1;transform:translateY(0)}
+  .bo-lead-best-period{font-size:.72em;line-height:1;color:#F59E0B;}
+
   .period-mark{
     font-size:0.34em;
     vertical-align:baseline;
@@ -5884,7 +5922,53 @@
     padding:12px 5px !important;
     font-size:clamp(.92rem,4vw,1.12rem) !important;
   }
-} </style> <style id="bop-final-hub-grid-globe-city-colors"> .bo-main-hub-title-wrap{
+}
+.bo-main-hub-movies-row{grid-template-columns:1fr !important;max-width:260px;margin:18px auto 0 !important;}
+.bo-main-hub-movies-tile{min-height:72px !important;display:flex;align-items:center;justify-content:center;gap:10px;}
+.bo-movies-clapper{font-size:1.55rem;line-height:1;filter:drop-shadow(0 0 7px rgba(159,226,255,.7));}
+@keyframes bo-movies-tile-pulse{
+  0%,100%{box-shadow:0 0 10px rgba(159,226,255,.44),0 0 24px rgba(159,226,255,.18),inset 0 0 16px rgba(159,226,255,.045);transform:scale(1)}
+  50%{box-shadow:0 0 18px rgba(159,226,255,.9),0 0 38px rgba(159,226,255,.48),inset 0 0 22px rgba(159,226,255,.1);transform:scale(1.025)}
+}
+.bo-main-hub-movies-tile{animation:bo-movies-tile-pulse 1.75s ease-in-out infinite;}
+.bo-main-hub-footer .bo-main-tile-label{font-size:1.18em;letter-spacing:.045em;}
+
+/* Universal Movies destination — deliberately reuses BOF card, border and typography language. */
+.bo-movies-page{position:fixed;inset:0;z-index:100020;display:none;overflow-y:auto;background:#000;color:#fff;-webkit-overflow-scrolling:touch;}
+.bo-movies-page.open{display:block;}
+.bo-movies-shell{width:min(1120px,100%);min-height:100%;margin:0 auto;padding:34px clamp(12px,3vw,30px) 90px;background:radial-gradient(circle at 50% 5%,rgba(245,158,11,.11),transparent 27%),#000;border-left:1px solid rgba(245,158,11,.34);border-right:1px solid rgba(245,158,11,.34);}
+.bo-movies-back{position:sticky;top:12px;z-index:4;width:68px;height:68px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#ef3340;font:800 12px/1 Arial;box-shadow:0 0 13px rgba(245,158,11,.68);cursor:pointer;}
+.bo-movies-hero{text-align:center;margin:-38px auto 34px;padding:12px 78px 28px;border-bottom:1px solid rgba(245,158,11,.42);}
+.bo-movies-bestof{font-family:'Fraunces','Playfair Display',serif;font-size:clamp(2rem,7vw,4.6rem);font-weight:900;letter-spacing:.02em;line-height:.94;text-shadow:0 0 13px rgba(255,255,255,.25);}
+.bo-movies-rotating{display:inline-block;min-width:7ch;color:#ef3340;font-style:italic;}
+.bo-movies-period{color:#f59e0b;}
+.bo-movies-kicker{margin-top:20px;color:#f59e0b;font-family:'Archivo Narrow',sans-serif;font-size:clamp(.92rem,2.8vw,1.18rem);font-weight:800;letter-spacing:.16em;text-transform:uppercase;}
+.bo-movies-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2vw,22px);align-items:start;}
+.bo-movie-column{min-width:0;}
+.bo-movie-column-head{min-height:150px;padding:18px 12px 14px;border:2px solid #f59e0b;border-radius:18px 18px 8px 8px;background:#080808;text-align:center;box-shadow:0 0 18px rgba(245,158,11,.23);}
+.bo-movie-column-head h2{margin:0;color:#fff;font-family:'Fraunces','Playfair Display',serif;font-size:clamp(1.35rem,4vw,2.35rem);line-height:1;}
+.bo-movie-column-head h2 span{color:#f59e0b;}
+.bo-movie-source{margin:12px auto 0;color:#f5a623;font-family:'Archivo Narrow',sans-serif;font-size:clamp(.7rem,1.7vw,.93rem);line-height:1.35;}
+.bo-movie-source strong{color:#fff;}
+.bo-movie-list{display:grid;gap:12px;margin-top:12px;}
+.bo-movie-card{position:relative;display:grid;grid-template-columns:86px minmax(0,1fr);min-height:132px;overflow:hidden;border:1.5px solid #f59e0b;border-radius:14px;background:#070707;box-shadow:0 0 12px rgba(245,158,11,.17);}
+.bo-movie-rank{position:absolute;top:5px;left:5px;z-index:2;display:grid;place-items:center;width:29px;height:29px;border:2px solid #f59e0b;border-radius:50%;background:#000;color:#ef3340;font:900 15px/1 'Archivo Narrow',sans-serif;box-shadow:0 0 8px rgba(245,158,11,.48);}
+.bo-movie-poster{width:86px;height:100%;min-height:132px;object-fit:cover;background:linear-gradient(145deg,#2b0808,#050505 58%,#5b3a00);}
+.bo-movie-info{min-width:0;padding:12px 10px 10px;}
+.bo-movie-info h3{margin:0 0 7px;color:#fff;font-family:'Fraunces','Playfair Display',serif;font-size:clamp(.9rem,2vw,1.18rem);line-height:1.05;}
+.bo-movie-metric{color:#ef3340;font:900 clamp(.92rem,2.2vw,1.2rem)/1 'Archivo Narrow',sans-serif;}
+.bo-movie-date{margin-top:6px;color:#f5a623;font:700 clamp(.68rem,1.6vw,.84rem)/1.2 'Archivo Narrow',sans-serif;}
+.bo-movie-award{margin-top:7px;color:#ddd;font:700 clamp(.64rem,1.45vw,.78rem)/1.25 'Archivo Narrow',sans-serif;}
+.bo-current-movies{margin-top:42px;padding-top:34px;border-top:3px solid #f59e0b;box-shadow:0 -8px 20px -18px #f59e0b;}
+.bo-current-movies-title{text-align:center;margin:0;color:#fff;font-family:'Fraunces','Playfair Display',serif;font-size:clamp(1.7rem,5vw,3rem);}.bo-current-movies-title span{color:#ef3340;font-style:italic;}
+.bo-current-source{text-align:center;max-width:720px;margin:10px auto 22px;color:#f5a623;font:700 clamp(.74rem,2vw,.95rem)/1.4 'Archivo Narrow',sans-serif;}
+.bo-current-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.bo-current-card{position:relative;display:grid;grid-template-columns:112px minmax(0,1fr);min-height:174px;overflow:hidden;border:2px solid #f59e0b;border-radius:16px;background:#080808;box-shadow:0 0 15px rgba(245,158,11,.2);}
+.bo-current-card .bo-movie-poster{width:112px;min-height:174px;}
+.bo-ticket-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px;}
+.bo-ticket-btn{display:flex;align-items:center;justify-content:center;min-height:30px;padding:4px;border:1px solid #f59e0b;border-radius:8px;background:#000;color:#fff;text-decoration:none;font:900 9px/1 Arial;text-align:center;}.bo-ticket-btn:hover{color:#ef3340;box-shadow:0 0 8px rgba(245,158,11,.5);}
+@media(max-width:620px){.bo-movies-shell{padding-left:8px;padding-right:8px}.bo-movies-hero{padding-left:62px;padding-right:34px}.bo-movies-columns{gap:7px}.bo-movie-column-head{min-height:164px;padding-left:6px;padding-right:6px}.bo-movie-card{grid-template-columns:58px minmax(0,1fr);min-height:116px}.bo-movie-poster{width:58px;min-height:116px}.bo-movie-info{padding:9px 6px 7px}.bo-current-grid{grid-template-columns:1fr}.bo-current-card{grid-template-columns:98px minmax(0,1fr)}.bo-current-card .bo-movie-poster{width:98px}}
+</style> <style id="bop-final-hub-grid-globe-city-colors"> .bo-main-hub-title-wrap{
   display:flex;
   justify-content:center;
   margin:0 auto 20px;
@@ -6833,6 +6917,9 @@
   .bo-near-map-title{position:absolute;top:calc(33.333vh + 14px);left:calc(9vw + 15px);z-index:10025;display:flex;flex-direction:column;pointer-events:none;text-shadow:0 2px 8px #000;}
   .bo-near-map-title strong{font-family:'Archivo Black',sans-serif;font-size:18px;line-height:1;color:#fff;letter-spacing:.03em;}
   .bo-near-map-title span{margin-top:4px;font:800 9px 'Archivo Narrow',sans-serif;color:#F59E0B;letter-spacing:.06em;}
+  .bo-near-radius-count{position:absolute;top:calc(33.333vh + 12px);right:calc(8vw + 12px);z-index:10025;display:flex;align-items:center;gap:7px;pointer-events:none;}
+  .bo-near-radius-count-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#050505;border:2px solid #F59E0B;color:#e21f2b;font:900 .8rem/1 'Archivo Black',sans-serif;box-shadow:0 0 10px rgba(245,158,11,.65);}
+  .bo-near-radius-count-label{max-width:62px;color:#F59E0B;font:900 8px/1.15 'Archivo Narrow',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 7px #000;}
   .bo-near-map-page .leaflet-popup-content-wrapper{padding:0;border-radius:12px;background:#06090d;color:#fff;border:1px solid rgba(245,158,11,.82);box-shadow:0 8px 30px rgba(0,0,0,.8),0 0 18px rgba(245,158,11,.28);overflow:hidden;}
   .bo-near-map-page .leaflet-popup-content{margin:0;width:auto !important;}
   .bo-near-map-page .leaflet-popup-tip{background:#06090d;border-color:#F59E0B;}
@@ -18466,7 +18553,181 @@ Object.keys(BO_CITY_CONFIG).forEach(cityCat => {
 const BJS_PICKS_BUTTON_LABEL = '<svg viewBox="0 0 40 40" width="22" height="22" style="vertical-align:-6px;margin-right:2px;"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">Picks</span>';
 
 
+// ===== Universal Best Of Movies page =====
+const BO_MOVIES_ALL_TIME=[
+  {title:'Avatar',metric:'$2.924B worldwide',date:'December 18, 2009',award:'🏆 3 Academy Awards'},
+  {title:'Avengers: Endgame',metric:'$2.799B worldwide',date:'April 26, 2019',award:'★ Academy Award nominee'},
+  {title:'Avatar: The Way of Water',metric:'$2.334B worldwide',date:'December 16, 2022',award:'🏆 Academy Award winner'},
+  {title:'Ne Zha 2',metric:'$2.267B worldwide',date:'January 29, 2025',award:'★ Global animated box-office record'},
+  {title:'Titanic',metric:'$2.265B worldwide',date:'December 19, 1997',award:'🏆 11 Academy Awards'},
+  {title:'Star Wars: The Force Awakens',metric:'$2.071B worldwide',date:'December 18, 2015',award:'★ 5 Academy Award nominations'},
+  {title:'Avengers: Infinity War',metric:'$2.052B worldwide',date:'April 27, 2018',award:'★ Academy Award nominee'},
+  {title:'Spider-Man: No Way Home',metric:'$1.921B worldwide',date:'December 17, 2021',award:'★ Academy Award nominee'},
+  {title:'Zootopia 2',metric:'$1.867B worldwide',date:'November 26, 2025',award:'★ Global box-office hit'},
+  {title:'Inside Out 2',metric:'$1.699B worldwide',date:'June 14, 2024',award:'★ Academy Award nominee'}
+];
+const BO_MOVIES_RATED=[
+  {title:'The Godfather',metric:'97% critics',date:'March 24, 1972',award:'🏆 3 Academy Awards'},
+  {title:'Seven Samurai',metric:'100% critics',date:'April 26, 1954',award:'🏆 Venice Silver Lion'},
+  {title:'Casablanca',metric:'99% critics',date:'January 23, 1943',award:'🏆 3 Academy Awards'},
+  {title:'Rear Window',metric:'99% critics',date:'September 1, 1954',award:'★ 4 Academy Award nominations'},
+  {title:'L.A. Confidential',metric:'99% critics',date:'September 19, 1997',award:'🏆 2 Academy Awards'},
+  {title:'On the Waterfront',metric:'99% critics',date:'July 28, 1954',award:'🏆 8 Academy Awards'},
+  {title:'Chinatown',metric:'98% critics',date:'June 20, 1974',award:'🏆 Academy Award winner'},
+  {title:'Modern Times',metric:'98% critics',date:'February 5, 1936',award:'★ National Film Registry'},
+  {title:'The Battle of Algiers',metric:'99% critics',date:'September 8, 1966',award:'★ 3 Academy Award nominations'},
+  {title:"Schindler's List",metric:'98% critics',date:'December 15, 1993',award:'🏆 7 Academy Awards'}
+];
+const BO_MOVIES_CURRENT=[
+  {title:'Spider-Man: Brand New Day',metric:'Current #1',date:'Now playing'},
+  {title:'The Odyssey',metric:'Current #2',date:'Now playing'},
+  {title:'One Night Only',metric:'Current #3',date:'Now playing'},
+  {title:'Super Troopers 3',metric:'Current Top 10',date:'Now playing'},
+  {title:'CatVideoFest 2026',metric:'Current Top 10',date:'Limited release'},
+  {title:'Tony',metric:'Current release',date:'Select theaters'},
+  {title:'Teenage Sex and Death at Camp Miasma',metric:'Current release',date:'Select theaters'},
+  {title:'Late Fame',metric:'Current release',date:'Select theaters'},
+  {title:'Toy Story 5',metric:'Still in theaters',date:'Now playing'},
+  {title:'Minions & Monsters',metric:'Still in theaters',date:'Now playing'}
+];
+function boMoviePoster(title,index){
+  const safe=String(title).replace(/[&<>"']/g,'').toUpperCase();
+  const hues=['#641018','#142a52','#4d2700','#163e36','#3d174f'];
+  const color=hues[index%hues.length];
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="540" viewBox="0 0 360 540"><defs><radialGradient id="g"><stop stop-color="${color}"/><stop offset="1" stop-color="#020202"/></radialGradient></defs><rect width="360" height="540" fill="url(#g)"/><circle cx="180" cy="220" r="118" fill="none" stroke="#f59e0b" stroke-width="3" opacity=".65"/><path d="M40 54h280M40 486h280" stroke="#ef3340" stroke-width="8"/><text x="180" y="245" fill="white" font-family="Arial" font-size="27" font-weight="900" text-anchor="middle">${safe.slice(0,20)}</text><text x="180" y="279" fill="#f59e0b" font-family="Arial" font-size="20" font-weight="800" text-anchor="middle">${safe.slice(20,40)}</text><text x="180" y="445" fill="#ef3340" font-family="Arial" font-size="18" font-weight="900" text-anchor="middle">BEST OF PERIOD.</text></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
+function boMovieCardHTML(movie,index,current){
+  const rank=index+1;
+  const ticket=current?`<div class="bo-ticket-row">
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}">FANDANGO</a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.amctheatres.com/search?q=${encodeURIComponent(movie.title)}">AMC</a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}">REGAL</a>
+    <a class="bo-ticket-btn" target="_blank" rel="noopener" href="https://www.cinemark.com/search/?q=${encodeURIComponent(movie.title)}">CINEMARK</a>
+  </div>`:'';
+  return `<article class="${current?'bo-current-card':'bo-movie-card'}"><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art"><div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${movie.award?`<div class="bo-movie-award">${movie.award}</div>`:''}${ticket}</div></article>`;
+}
+let boMoviesRotatorTimer=null;
+function boEnsureMoviesPage(){
+  let page=document.getElementById('boMoviesPage');
+  if(page) return page;
+  page=document.createElement('section');
+  page.id='boMoviesPage';page.className='bo-movies-page';page.setAttribute('aria-label','Best Of Movies');
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>BOX OFFICE</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div>`;
+  document.body.appendChild(page);
+  document.getElementById('boMoviesBack').addEventListener('click',boCloseMoviesPage);
+  return page;
+}
+function boOpenMoviesPage(){
+  const page=boEnsureMoviesPage();page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;
+  try{const p=new URLSearchParams();p.set('page','movies');history.replaceState(null,'',window.location.pathname+'?'+p.toString());}catch(e){}
+  const rot=document.getElementById('boMoviesRotator'),words=['RESTAURANTS','HOTELS','BARS','NIGHTCLUBS','POOLS','SPAS','MOVIES'];let i=0;
+  clearInterval(boMoviesRotatorTimer);rot.textContent=words[0];
+  boMoviesRotatorTimer=setInterval(()=>{i++;rot.textContent=words[Math.min(i,words.length-1)];if(i>=words.length-1)clearInterval(boMoviesRotatorTimer);},240);
+}
+function boCloseMoviesPage(){
+  const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);
+  boRenderCategory('otheroptions');
+}
+
 // ===== Near Me map page =====
+
+// London expansion: authoritative editorial order is preserved for newly
+// researched listings while their full BJS aggregate is still being built.
+// No placeholder rating is invented; blank ratings remain blank until the
+// underlying platform scores have actually been calculated.
+(function boExpandLondonDining2026(){
+  const base={city:'london',image:'',rating:null,reviews:0};
+  const add=(cat,rows)=>{
+    if(!Array.isArray(boCategoryData[cat])) boCategoryData[cat]=[];
+    rows.forEach(row=>{
+      const item={...base,...row};
+      const exists=boCategoryData[cat].some(r=>r&&r.name===item.name&&r.address===item.address);
+      if(!exists) boCategoryData[cat].push(item);
+    });
+  };
+  const burgers=[
+    {name:'Bleecker — Spitalfields',address:'Old Spitalfields Market, Unit B, Pavilion Building, London E1 6EA, United Kingdom',phone:'+44 20 7247 6620',price:'$$',why:'Ranked No. 1 in the World’s 101 Best Burger Places 2026.'},
+    {name:'Black Bear Burger — Shoreditch',address:'Unit 61, BOXPARK, 2-10 Bethnal Green Road, London E1 6GY, United Kingdom',phone:'+44 20 7729 3813',price:'$$',why:'Ranked No. 2 in the World’s 101 Best Burger Places 2026.'},
+    {name:'Hawksmoor St Pancras',address:'1 Euston Road, London NW1 2AR, United Kingdom',price:'$$$',why:'Its Royale burger placed No. 7 in the World’s 101 Best Burger Places 2026.'},
+    {name:'Burger & Beyond — Shoreditch',address:'147 Shoreditch High Street, London E1 6JE, United Kingdom',price:'$$',why:'Ranked No. 11 in the World’s 101 Best Burger Places 2026.'}
+  ];
+  const french=[
+    {name:'Camille',address:'2-3 Stoney Street, London SE1 9AA, United Kingdom',price:'$$$',why:'Time Out’s No. 1 London restaurant and No. 1 French restaurant for 2026.'},
+    {name:'Bouchon Racine',address:'66 Cowcross Street, London EC1M 6BP, United Kingdom',price:'$$$',why:'National Restaurant Awards’ No. 1 restaurant in the United Kingdom for 2026.'},
+    {name:'Casse-Croûte',address:'109 Bermondsey Street, London SE1 3XB, United Kingdom',price:'$$$',why:'A consistently acclaimed traditional French bistro.'},
+    {name:'Brasserie Zédel',address:'20 Sherwood Street, London W1F 7ED, United Kingdom',price:'$$',why:'A landmark grand French brasserie near Piccadilly Circus.'}
+  ];
+  const ramen=[
+    {name:'Bone Daddies — Old Street',address:'The Bower, 211 Old Street, London EC1V 9NR, United Kingdom',phone:'+44 20 3019 6300',price:'$$',why:'One of London’s highest-rated ramen destinations.'},
+    {name:'Monohon Ramen',address:'102 Old Street, London EC1V 9AY, United Kingdom',price:'$$',why:'Highly regarded for focused, carefully balanced ramen.'},
+    {name:'Hakata Ramen + Bar',address:'177 Bermondsey Street, London SE1 3UW, United Kingdom',phone:'+44 20 7234 0244',price:'$$',why:'A highly rated Bermondsey ramen favorite.'},
+    {name:'Tonkotsu Bankside',address:'4 Canvey Street, London SE1 9AN, United Kingdom',phone:'+44 20 7928 2228',price:'$$',why:'A consistently strong London ramen standard.'}
+  ];
+  const greek=[
+    {name:'OMA',address:'3 Bedale Street, London SE1 9AL, United Kingdom',phone:'+44 20 8129 6760',price:'$$$',michelinStars:1,why:'Michelin-starred live-fire Greek cooking above Borough Market.'},
+    {name:'Kima',address:'57 Greek Street, London W1D 3DX, United Kingdom',price:'$$$',why:'Acclaimed Greek seafood cooking in Soho.'},
+    {name:'Mazi',address:'12-14 Hillgate Street, London W8 7SR, United Kingdom',price:'$$$',why:'A leading modern Greek restaurant in Notting Hill.'},
+    {name:'Ampéli',address:'18 Charlotte Street, London W1T 2LZ, United Kingdom',price:'$$$',why:'Modern Greek sharing plates and Greek wine in Fitzrovia.'}
+  ];
+  const vegan=[
+    {name:'Plates London',address:'320 Old Street, London EC1V 9DR, United Kingdom',price:'$$$$',michelinStars:1,why:'The first fully vegan restaurant in the United Kingdom to earn a Michelin Star.'},
+    {name:'Mildreds Soho',address:'45 Lexington Street, London W1F 9AN, United Kingdom',price:'$$',why:'One of London’s longest-running and best-known plant-based restaurants.'},
+    {name:'Gauthier Soho',address:'21 Romilly Street, London W1D 5AF, United Kingdom',price:'$$$$',why:'Fine-dining vegan tasting menus in a Soho townhouse.'},
+    {name:'Tendril',address:'5 Princes Street, London W1B 2LQ, United Kingdom',price:'$$$',why:'Plant-first cooking near Oxford Circus.'}
+  ];
+  const korean=[
+    {name:'Miga',address:'1 Mare Street, London E8 4RP, United Kingdom',price:'$$$',why:'Time Out’s No. 1 London restaurant for 2025.'},
+    {name:'Sollip',address:'8 Melior Street, London SE1 3QP, United Kingdom',price:'$$$$',michelinStars:1,why:'Michelin-starred Korean-European tasting menus.'},
+    {name:'Koba',address:'11 Rathbone Street, London W1T 1NA, United Kingdom',price:'$$$',why:'A long-established Fitzrovia destination for Korean barbecue.'},
+    {name:'Jinjuu',address:'15 Kingly Street, London W1B 5PS, United Kingdom',price:'$$$',why:'Modern Korean cooking in the heart of Soho.'}
+  ];
+  const vietnamese=[
+    {name:'Sông Quê Café',address:'134 Kingsland Road, London E2 8DY, United Kingdom',price:'$$',why:'A cornerstone of London’s Vietnamese restaurant corridor.'},
+    {name:'Mien Tay',address:'122 Kingsland Road, London E2 8DP, United Kingdom',price:'$$',why:'Highly regarded southern Vietnamese cooking.'},
+    {name:'Cây Tre Soho',address:'42-43 Dean Street, London W1D 4PZ, United Kingdom',price:'$$',why:'A central London favorite for modern Vietnamese food.'},
+    {name:'Viet Grill',address:'58 Kingsland Road, London E2 8DP, United Kingdom',price:'$$',why:'A polished Vietnamese destination on Kingsland Road.'}
+  ];
+  const mexican=[
+    {name:'KOL',address:'9 Seymour Street, London W1H 7BA, United Kingdom',price:'$$$$',michelinStars:1,why:'Michelin-starred Mexican cooking by Santiago Lastra.'},
+    {name:'Fonda',address:'12 Heddon Street, London W1B 4BZ, United Kingdom',price:'$$$',why:'A contemporary Mexican restaurant from Santiago Lastra.'},
+    {name:'Santo Remedio',address:'152 Tooley Street, London SE1 2TU, United Kingdom',price:'$$$',why:'A leading London destination for regional Mexican cooking.'},
+    {name:'Mestizo',address:'103 Hampstead Road, London NW1 3EL, United Kingdom',price:'$$',why:'A longstanding Mexican restaurant known for regional breadth.'}
+  ];
+  const breakfast=[
+    {name:'E Pellicci',address:'332 Bethnal Green Road, London E2 0AG, United Kingdom',price:'$',why:'A historic East End café and London breakfast institution.'},
+    {name:'Regency Café',address:'17-19 Regency Street, London SW1P 4BY, United Kingdom',price:'$',why:'An iconic traditional London café.'},
+    {name:'The Wolseley',address:'160 Piccadilly, London W1J 9EB, United Kingdom',price:'$$$$',why:'One of London’s best-known grand breakfast rooms.'},
+    {name:'Dishoom Covent Garden',address:'12 Upper St Martin’s Lane, London WC2H 9FB, United Kingdom',price:'$$',why:'A celebrated Bombay-inspired breakfast destination.'}
+  ];
+  const coffee=[
+    {name:'Rosslyn — Queen Victoria Street',address:'78 Queen Victoria Street, London EC4N 4SJ, United Kingdom',price:'$',why:'One of London’s most highly regarded specialty coffee bars.'},
+    {name:'Prufrock Coffee',address:'23-25 Leather Lane, London EC1N 7TE, United Kingdom',price:'$',why:'A foundational London specialty-coffee destination.'},
+    {name:'Monmouth Coffee — Covent Garden',address:'27 Monmouth Street, London WC2H 9EU, United Kingdom',price:'$',why:'A landmark London coffee roaster and shop.'},
+    {name:'Formative Coffee',address:'4 Butler Place, London SW1H 0PT, United Kingdom',price:'$',why:'A highly regarded modern specialty-coffee bar.'}
+  ];
+  const spanish=[
+    {name:'Sabor',address:'35-37 Heddon Street, London W1B 4BR, United Kingdom',price:'$$$',michelinStars:1,why:'Michelin-starred Spanish cooking on Heddon Street.'},
+    {name:'Barrafina — Dean Street',address:'26-27 Dean Street, London W1D 3LL, United Kingdom',price:'$$$',why:'One of London’s defining Spanish counter restaurants.'},
+    {name:'Tapas Brindisa — London Bridge',address:'18-20 Southwark Street, London SE1 1TJ, United Kingdom',price:'$$$',why:'A Borough Market-area standard for Spanish tapas.'},
+    {name:'Parrillan Borough Yards',address:'4 Dirty Lane, London SE1 9PA, United Kingdom',price:'$$$',why:'Tabletop Spanish grilling at Borough Yards.'}
+  ];
+  const ethiopian=[
+    {name:'Queen of Sheba',address:'12 Fortess Road, London NW5 2EU, United Kingdom',price:'$$',why:'A longstanding destination for traditional Ethiopian cooking.'},
+    {name:'Wolkite Kitfo',address:'82 Hornsey Road, London N7 7NN, United Kingdom',price:'$$',why:'Known for Ethiopian specialties including kitfo.'},
+    {name:'Zeret Kitchen',address:'216-218 Camberwell Road, London SE5 0ED, United Kingdom',price:'$$',why:'A highly regarded family-run Ethiopian restaurant.'},
+    {name:'Andu Café',address:'528 Kingsland Road, London E8 4AH, United Kingdom',price:'$',why:'A popular vegan Ethiopian café in Dalston.'}
+  ];
+  add('burgers',burgers); add('french',french); add('ramen',ramen); add('greek',greek);
+  add('vegan',vegan); add('korean',korean); add('vietnamese',vietnamese);
+  add('mexicancasual',[mexican[2],mexican[3]]); add('mexicanhighend',[mexican[0],mexican[1]]);
+  add('breakfastdive',[breakfast[0],breakfast[1]]); add('breakfasthighend',[breakfast[2]]); add('breakfastcasual',[breakfast[3]]);
+  add('coffee',coffee); add('spanish',spanish); add('ethiopian',ethiopian);
+  add('nationfrench',french); add('nationgreek',greek); add('nationkorean',korean);
+  add('nationvietnamese',vietnamese); add('nationmexican',mexican); add('nationspanish',spanish); add('nationethiopian',ethiopian);
+  add('michelin',[greek[0],vegan[0],korean[1],mexican[0],spanish[0]]);
+  add('london',[french[0],french[1],burgers[0],greek[0],vegan[0],korean[0]]);
+})();
 
 /* Restaurant image policy:
    Only restaurant-specific images from the restaurant or its official
@@ -18542,6 +18803,7 @@ function boBuildExpandedLegend(){
         <div><span class="bo-legend-jb">JB</span><p><b>James Beard Recognition</b><small>Recognition may mean winner, nominee, finalist, semifinalist or another official acknowledgement. Not every James Beard mention is an award win; the listing states the exact honor.</small></p></div>
         <div><span class="bo-world-famous-badge bo-legend-badge">WORLD FAMOUS</span><p><b>World Famous</b><small>Exceptional international name recognition or landmark status. Fame is separate from the current BJS ranking.</small></p></div>
         <div><span class="bo-badge-count-demo bo-legend-count">99</span><p><b>Category Count</b><small>The exact number of restaurants waiting behind that category tile in the selected city.</small></p></div>
+        <div><span class="bo-badge-count-demo bo-legend-count">12</span><p><b>Near Me Count</b><small>On the Near Me map, the numbered circle represents listed restaurants within a three-mile radius of your current location.</small></p></div>
         <div><span class="bo-badge-onebite-demo bo-legend-onebite"><span class="bo-badge-bjs-mark">BJS</span><span class="bo-badge-onebite-vs">VS</span><span class="bo-badge-onebite-mark">ONE<br>BITE</span></span><p><b>BJS vs One Bite</b><small>BJS comparison score to the One Bite national average.</small></p></div>
         <div><span class="bo-legend-check">&#10003;</span><p><b>Verified Listing</b><small>Core listing details have been checked.</small></p></div>
         <div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>An editorial selection from Best of Period.</small></p></div>
@@ -18718,6 +18980,7 @@ function boNearCityDefaults(cityKey){
     ,philadelphia:{ center:[39.9526,-75.1652], zoom:10, label:'Philadelphia' }
     ,atlanta:{ center:[33.7490,-84.3880], zoom:10, label:'Atlanta' }
     ,neworleans:{ center:[29.9511,-90.0715], zoom:10, label:'New Orleans' }
+    ,idaho:{ center:[43.6150,-116.2023], zoom:9, label:'Idaho' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
 }
 
@@ -18730,6 +18993,7 @@ function boGetMapRestaurants(cityKey){
     const incoming = {
       name:r.name,
       address:r.address,
+      city:r.city||cat||'bestof',
       url:r.url||'',
       rating:rating,
       ratingText:r.rating||'',
@@ -18775,18 +19039,15 @@ function boGetMapRestaurants(cityKey){
       henderson:!!(primary.henderson||secondary.henderson)
     });
   };
-  if(cityKey === 'bestof'){
-    const excluded = new Set(BO_MAIN_CITY_CATS.concat(Object.values(BO_CITY_CONFIG).map(c=>c.bjsPicksCat)));
-    Object.entries(boCategoryData).forEach(([cat,list])=>{
-      if(excluded.has(cat) || !Array.isArray(list)) return;
-      list.forEach(r=>add(r,cat));
-    });
-  }else{
-    const direct = boCategoryData[cityKey] || [];
-    direct.forEach(r=>add(r,cityKey));
-    const picks = boCategoryData['bjspicks'+cityKey] || [];
-    picks.forEach(r=>add(r,cityKey));
-  }
+  // Near Me is universal: the visitor's location and current map viewport
+  // decide what is nearby, not the city page from which the map was opened.
+  // Pull every addressed restaurant on the platform and deduplicate it by
+  // name + address so zooming from San Diego to Los Angeles (or farther)
+  // naturally reveals the complete available inventory.
+  Object.entries(boCategoryData).forEach(([cat,list])=>{
+    if(!Array.isArray(list)) return;
+    list.forEach(r=>add(r,cat));
+  });
   return Array.from(seen.values());
 }
 
@@ -18814,6 +19075,11 @@ function boEnsureNearMapPage(){
   page.id='boNearMapPage'; page.className='bo-near-map-page';
   page.innerHTML=`<div id="boNearMapCanvas" class="bo-near-map-canvas"></div><div class="bo-near-map-title"><strong>NEAR YOU!</strong><span>YUMMY SPOTS NEAR YOU</span></div><div id="boNearMapLoading" class="bo-near-map-loading"><div class="bo-near-loading-main">LOADING...</div></div><button id="boNearMapBack" class="lv-logo-circle bo-near-map-back" type="button" aria-label="Back">←<br>Back</button><div class="bo-near-map-other-cities"><div class="oc-globe-wrap"><button type="button" class="oc-globe-btn" id="boNearOcGlobeBtn" aria-label="Other cities"><span class="oc-arrow oc-arrow-l">&#9654;</span><span class="oc-arrow oc-arrow-r">&#9664;</span><span class="oc-arrow oc-arrow-t">&#9660;</span><span class="oc-arrow oc-arrow-b">&#9650;</span><span class="oc-globe" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="#050505" stroke="#F59E0B" stroke-width="4"/><ellipse cx="32" cy="32" rx="12" ry="27" fill="none" stroke="#F59E0B" stroke-width="3"/><path d="M7 32h50M11 20h42M11 44h42" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg></span></button><svg class="oc-curve" viewBox="0 0 100 32" aria-hidden="true"><defs><path id="boNearOcCurvePath" d="M 8,4 A 46,46 0 0 0 92,4" fill="none"/></defs><text><textPath href="#boNearOcCurvePath" startOffset="50%" text-anchor="middle">OTHER CITIES</textPath></text></svg></div></div><div id="boNearInfoCard" class="bo-near-info-card" role="dialog" aria-live="polite" aria-label="Restaurant information"><button id="boNearInfoClose" class="bo-near-info-close" type="button" aria-label="Close restaurant information">×</button><div id="boNearInfoMedia" class="bo-near-info-media"></div><div id="boNearInfoCopy" class="bo-near-info-copy"></div></div><div class="bo-near-map-meta"><div class="bo-near-map-legend"><span class="bo-near-legend-item"><i class="bo-near-legend-blue" aria-hidden="true"></i><span>You</span></span><span class="bo-near-legend-item"><i class="bo-near-legend-orange" aria-hidden="true"></i><span>Yummy</span></span></div><div id="boNearMapStatus" class="bo-near-map-status is-loading">LOADING...</div></div><div class="bo-near-map-lower"><div class="bo-near-map-search-wrap bo-search-wrap bo-search-wrap-big"><input type="text" id="boNearMapSearchInput" class="bo-search-input bo-search-input-big" placeholder="Search restaurants..." autocomplete="off"><div class="bo-search-powered-by"><svg viewBox="0 0 24 24" width="11" height="11" fill="#F59E0B" style="vertical-align:-1px;margin-right:1px;"><path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"/></svg> Powered by <svg viewBox="0 0 40 40" width="15" height="15"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg></div><div id="boNearMapSearchResults" class="bo-near-map-search-results"></div></div><footer class="bo-near-map-footer"><p class="fine-print"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span> <span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg viewBox="0 0 40 40" width="20" height="20"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="18" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="11" fill="#F59E0B">BJS</text><text x="20" y="28" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="8" fill="#F59E0B">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice — always confirm directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p><p class="fine-print" style="margin-top:14px;"><button type="button" class="footer-hotlink" data-dest="bopmember" style="color:#F59E0B;">Become a Member</button><span style="color:#666;margin:0 8px;">&middot;</span><button type="button" class="footer-hotlink" data-dest="legend" style="color:#F59E0B;">Legend</button></p></footer></div>`;
   document.body.appendChild(page);
+  const nearRadiusCount=document.createElement('div');
+  nearRadiusCount.className='bo-near-radius-count';
+  nearRadiusCount.setAttribute('aria-live','polite');
+  nearRadiusCount.innerHTML='<span class="bo-near-radius-count-circle" id="boNearRadiusCount">0</span><span class="bo-near-radius-count-label">within 3 miles</span>';
+  page.appendChild(nearRadiusCount);
   document.getElementById('boNearMapBack').addEventListener('click',()=>boCloseNearMap(true));
   // Other Cities globe is handled by the shared delegated .oc-globe-btn
   // listener, so it always opens the same Other Cities page everywhere.
@@ -19003,6 +19269,9 @@ function boCloseNearMap(returnToOrigin=false){
     const landing=document.getElementById('bopLandingOverlay');
     if(landing) landing.classList.add('open');
     window.scrollTo(0,0);
+    boReplaceBestOfRoute('', '');
+  }else if(returnToOrigin){
+    boReplaceBestOfRoute(boCurrentCat||'otheroptions',boCityContext);
   }
 }
 
@@ -19035,6 +19304,7 @@ async function boGeocodeRestaurant(r,cityLabel){
 
 async function boOpenNearMap(){
   const cityKey=(typeof boCityContext!=='undefined' && BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+  boReplaceBestOfRoute('nearme',cityKey);
   const defaults=boNearCityDefaults(cityKey);
   const restaurants=boGetMapRestaurants(cityKey);
   const page=boEnsureNearMapPage();
@@ -19063,6 +19333,8 @@ async function boOpenNearMap(){
   if(boNearUserMarker){ boNearMap.removeLayer(boNearUserMarker); boNearUserMarker=null; }
   if(boNearAccuracyCircle){ boNearMap.removeLayer(boNearAccuracyCircle); boNearAccuracyCircle=null; }
   boNearMappedRestaurants=[];
+  const nearRadiusCountEl=document.getElementById('boNearRadiusCount');
+  if(nearRadiusCountEl) nearRadiusCountEl.textContent='0';
   boNearInitialRadiusMode=true;
   boNearUserLatLng=null;
   boNearGeocodingComplete=false;
@@ -19087,7 +19359,7 @@ async function boOpenNearMap(){
       boNearUserMarker.bindTooltip('Your location',{direction:'top',offset:[0,-12],opacity:.98});
       boNearAccuracyCircle=L.circle([lat,lon],{radius:Math.max(position.coords.accuracy||0,20),color:'#1687ff',weight:1,fillColor:'#1687ff',fillOpacity:.08,opacity:.45,interactive:false}).addTo(boNearMap);
       boNearUserLatLng=L.latLng(lat,lon);
-      boNearMap.setView([lat,lon],14);
+      boNearMap.setView([lat,lon],13);
       if(typeof boNearViewportHandler==='function') boNearViewportHandler();
       resolve(true);
     },(error)=>{
@@ -19117,17 +19389,23 @@ async function boOpenNearMap(){
     if(!boNearMapLayer || !boNearMap) return;
     boNearMapLayer.clearLayers();
     const bounds=boNearMap.getBounds();
+    const withinThreeMiles=boNearUserLatLng ? boNearMappedRestaurants.filter(item=>{
+      const point=L.latLng(item.geo.lat,item.geo.lon);
+      return milesBetween(boNearUserLatLng,point)<=3;
+    }).length : 0;
+    const liveRadiusCount=document.getElementById('boNearRadiusCount');
+    if(liveRadiusCount) liveRadiusCount.textContent=String(withinThreeMiles);
     const visible=boNearMappedRestaurants.filter(item=>{
       const point=L.latLng(item.geo.lat,item.geo.lon);
       if(boNearInitialRadiusMode && boNearUserLatLng){
-        return milesBetween(boNearUserLatLng,point)<=1;
+        return milesBetween(boNearUserLatLng,point)<=3;
       }
       return bounds.contains(point);
     });
     const touchMode=window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
     const grouped=new Map();
     visible.forEach(item=>{
-      const property=boNearPropertyInfo(item.restaurant,cityKey);
+      const property=boNearPropertyInfo(item.restaurant,(item.restaurant.city&&BO_CITY_CONFIG[item.restaurant.city])?item.restaurant.city:cityKey);
       if(!grouped.has(property.key)) grouped.set(property.key,{...property,items:[],lat:0,lon:0});
       const group=grouped.get(property.key);
       const restaurantKey=String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||'');
@@ -19169,14 +19447,14 @@ async function boOpenNearMap(){
         if(run!==boNearMapGeocodeRun) return;
         status.classList.remove('is-loading');
         status.textContent=(!visible.length && boNearInitialRadiusMode && boNearUserLatLng)
-          ? 'No listed spots within one mile. Zoom out for more options.'
+          ? 'No listed spots within three miles. Zoom out for more options.'
           : 'Tap any pin for more information.';
       }, loadingRemaining);
     }
   };
 
   boNearViewportHandler=()=>{
-    // The first user pan or zoom changes the map from the one-mile starting
+    // The first user pan or zoom changes the map from the three-mile starting
     // view to a live visible-area view, repopulating pins as the map moves.
     if(boNearInitialRadiusMode && boNearUserLatLng){
       const center=boNearMap.getCenter();
@@ -19210,18 +19488,22 @@ async function boOpenNearMap(){
       nearestZone=zones[0].key;
     }
     const score=r=>{
-      const property=boNearPropertyRuleForRestaurant(r,cityKey);
+      const property=boNearPropertyRuleForRestaurant(r,(r.city&&BO_CITY_CONFIG[r.city])?r.city:cityKey);
       if(property){
         const propertyPoint=L.latLng(property.lat,property.lon);
         const distance=milesBetween(boNearUserLatLng,propertyPoint);
         if(distance<=0.35) return -1000+distance;
-        if(distance<=1) return -500+distance;
+        if(distance<=3) return -500+distance;
         return distance;
       }
       if(cityKey==='bestof' && nearestZone){
         if(nearestZone==='downtown' && (/89101/.test(r.address)||r.downtown)) return 50;
         if(r[nearestZone]) return 50;
         if(r.downtown||r.strip||r.summerlin||r.henderson) return 75;
+      }
+      if(r.city && BO_CITY_CONFIG[r.city]){
+        const restaurantCity=boNearCityDefaults(r.city);
+        return milesBetween(boNearUserLatLng,L.latLng(restaurantCity.center[0],restaurantCity.center[1]));
       }
       return 100;
     };
@@ -19233,7 +19515,7 @@ async function boOpenNearMap(){
     if(run!==boNearMapGeocodeRun) return;
     const r=geocodeQueue[i];
     let geo=null;
-    const property=boNearPropertyRuleForRestaurant(r,cityKey);
+    const property=boNearPropertyRuleForRestaurant(r,(r.city&&BO_CITY_CONFIG[r.city])?r.city:cityKey);
     const usedSavedPropertyLocation=!!property;
     if(property){
       geo={lat:Number(property.lat),lon:Number(property.lon)};
@@ -21390,7 +21672,7 @@ function boRenderCategory(cat){
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours-ish"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label"><span class="bo-24-rainbow-text">24 Hours</span><span class="bo-24-ish-text">ish</span></span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof" aria-label="Best Of rotating cities Period"><span class="bo-lead-best-lockup"><span class="bo-lead-best-top">BEST OF</span><span class="bo-lead-best-city is-active" id="boLeadBestCity">Vegas</span><span class="bo-picker-period bo-lead-best-period">Period<span class="period-mark">&copy;</span></span></span></button>
         </div>
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
       </div>
@@ -21409,15 +21691,18 @@ function boRenderCategory(cat){
         </div>
 
 <div class="bo-main-hub-footer-grid">
-  <button type="button" class="bo-main-hub-blue-tile" id="boBestHotelsPreviewBtn" aria-label="Preview Best Hotels"><span class="bo-main-tile-icon bo-icon-hotel" aria-hidden="true"></span><span class="bo-main-tile-label">BEST HOTELS</span></button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-bar" aria-hidden="true"></span><span class="bo-main-tile-label">BEST BARS</span></button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-club" aria-hidden="true"></span><span class="bo-main-tile-label">BEST NIGHTCLUBS</span></button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-massage" aria-hidden="true"></span><span class="bo-main-tile-label">BEST MASSAGES</span></button>
+  <button type="button" class="bo-main-hub-blue-tile bo-main-hub-movies-tile" id="boMoviesPreviewBtn" aria-label="Open Best Of Movies"><span class="bo-movies-clapper" aria-hidden="true">🎬</span><span class="bo-main-tile-label">MOVIES</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" id="boBestHotelsPreviewBtn" aria-label="Preview Hotels"><span class="bo-main-tile-icon bo-icon-hotel" aria-hidden="true"></span><span class="bo-main-tile-label">HOTELS</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-bar" aria-hidden="true"></span><span class="bo-main-tile-label">BARS</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-club" aria-hidden="true"></span><span class="bo-main-tile-label">NIGHTCLUBS</span></button>
 </div>
 <div class="bo-main-hub-footer-grid" style="margin-top:18px;">
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-pool" aria-hidden="true"></span><span class="bo-main-tile-label">BEST POOLS</span></button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-spa" aria-hidden="true"></span><span class="bo-main-tile-label">BEST SPAS</span></button>
-  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-nails" aria-hidden="true"></span><span class="bo-main-tile-label">BEST MANI-PEDI</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-massage" aria-hidden="true"></span><span class="bo-main-tile-label">MASSAGES</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-pool" aria-hidden="true"></span><span class="bo-main-tile-label">POOLS</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-spa" aria-hidden="true"></span><span class="bo-main-tile-label">SPAS</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-nails" aria-hidden="true"></span><span class="bo-main-tile-label">MANI-PEDI</span></button>
+</div>
+<div class="bo-main-hub-footer-grid" style="margin-top:18px;grid-template-columns:1fr !important;max-width:260px;margin-left:auto;margin-right:auto;">
   <button type="button" class="bo-main-hub-blue-tile bo-main-hub-send-tile" id="boMainHubSendPage" aria-label="Send this exact page"><span class="bo-main-tile-icon bo-icon-send" aria-hidden="true"></span><span class="bo-main-tile-label">SEND PAGE</span></button>
 </div>
 
@@ -21454,6 +21739,14 @@ function boRenderCategory(cat){
     });
     const boBadgesPageBtn=document.getElementById('boBadgesPageBtn');
     if(boBadgesPageBtn) boBadgesPageBtn.addEventListener('click',boOpenBadgesPage);
+    const boMoviesPreviewBtn=document.getElementById('boMoviesPreviewBtn');
+    if(boMoviesPreviewBtn) boMoviesPreviewBtn.addEventListener('click',boOpenMoviesPage);
+    if(document.getElementById('boLeadBestCity') && typeof startBopVegasSlotCycler === 'function'){
+      const leadTargetCity=(BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+      const leadCityPool=(typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : BOP_SPLASH_CITIES);
+      const leadCitySpin=[leadTargetCity].concat(leadCityPool.filter(city=>city!==leadTargetCity));
+      startBopVegasSlotCycler('boLeadBestCity',leadCitySpin,42,5000,2,2,20,true);
+    }
     const nearMePreviewBtn = document.getElementById('boNearMePreviewBtn');
     if(nearMePreviewBtn){
       nearMePreviewBtn.addEventListener('click', () => {
@@ -21952,6 +22245,23 @@ boBackBtnEl.addEventListener('click', (e) => {
 
   // Current, correct format: ?page=cat&city=name
   const queryPage = params.get('page');
+  if(queryPage==='movies'){
+    revealSharedBestOfPage();
+    boRenderCategory('otheroptions');
+    setTimeout(boOpenMoviesPage,350);
+    return;
+  }
+  if(queryPage==='nearme'){
+    const queryCity=params.get('city');
+    if(queryCity && BO_CITY_CONFIG[queryCity]) boCityContext=queryCity;
+    revealSharedBestOfPage();
+    boRenderCategory('otheroptions');
+    setTimeout(()=>{
+      boNearMapReturnTarget='city';
+      boOpenNearMap();
+    },350);
+    return;
+  }
   if(queryPage){
     const queryCityIsReal = params.get('city') && BO_CITY_CONFIG[params.get('city')];
     const catIsReal = Object.prototype.hasOwnProperty.call(boCategoryData, queryPage) || Object.prototype.hasOwnProperty.call(boPickerConfig, queryPage);
