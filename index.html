@@ -27930,4 +27930,114 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v152: larger circular luxury product photos and gold Direct Access -->
+<style id="bop-bottom-trio-navigation-v154">
+/* One shared bottom navigation row: content, space, trio, gold line, footer. */
+#bopStaticLandingDock.bop-static-landing-dock{
+  display:flex!important;
+  position:relative!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  width:max-content!important;
+  max-width:calc(100% - 20px);
+  margin:48px auto 18px!important;
+  padding:0!important;
+  justify-content:center;
+  align-items:center;
+  gap:clamp(8px,2.2vw,14px)!important;
+  z-index:5!important;
+}
+#bopStaticLandingDock .bop-static-landing-button{
+  position:relative!important;
+  inset:auto!important;
+  flex:0 0 68px!important;
+}
+#bopStaticFounders{display:none!important}
+.bop-bottom-trio-divider{
+  display:block!important;
+  width:min(92%,760px);
+  height:2px;
+  margin:0 auto 20px;
+  border:0;
+  background:#F59E0B;
+  box-shadow:0 0 8px rgba(245,158,11,.55);
+}
+/* Retire the former standalone versions now replaced by the shared trio. */
+#landingSharePage,#globalSharePage,.bop-landing-near-wrap,#boNearMePreviewBtn{display:none!important}
+@media(max-width:350px){
+  #bopStaticLandingDock.bop-static-landing-dock{gap:6px!important;max-width:calc(100% - 10px)}
+  #bopStaticLandingDock .bop-static-landing-button{flex-basis:64px!important;width:64px!important;height:64px!important}
+}
+</style>
+<script id="bop-bottom-trio-navigation-v154">
+(function(){
+  const dockId='bopStaticLandingDock';
+  let scheduled=false,placing=false;
+  function visible(element){return !!(element&&element.getClientRects().length&&getComputedStyle(element).display!=='none'&&getComputedStyle(element).visibility!=='hidden');}
+  function activeHost(){
+    const selectors=[
+      '#boNearMapPage.open .bo-near-map-lower',
+      '#boMoviesPage.open .bo-movies-shell',
+      '#boWorldwidePage.open .bo-movies-shell',
+      '#bopWorldwideLanding.open .bop-world-landing-shell'
+    ];
+    for(const selector of selectors){const node=document.querySelector(selector);if(visible(node))return {host:node,footer:null};}
+    const footers=Array.from(document.querySelectorAll('footer')).filter(visible);
+    if(footers.length){const footer=footers[footers.length-1];return {host:footer.parentElement,footer:footer};}
+    const landing=document.querySelector('#bopLandingOverlay.open');
+    if(visible(landing))return {host:landing,footer:null};
+    const visibleOverlay=Array.from(document.querySelectorAll('.thank-you-overlay.open,.overlay.open,[id$="Overlay"].open')).filter(visible).pop();
+    if(visibleOverlay)return {host:visibleOverlay.querySelector('.ty-content,.content,.panel')||visibleOverlay,footer:null};
+    return {host:document.body,footer:null};
+  }
+  function placeDock(){
+    scheduled=false;if(placing)return;placing=true;
+    const dock=document.getElementById(dockId);if(!dock){placing=false;return;}
+    const target=activeHost(),host=target.host,footer=target.footer;
+    let divider=host.querySelector(':scope > .bop-bottom-trio-divider');
+    const existingFooterDivider=footer&&footer.previousElementSibling&&footer.previousElementSibling.classList.contains('bop-pre-footer-divider')?footer.previousElementSibling:null;
+    if(footer){
+      const anchor=existingFooterDivider||footer;
+      if(dock.parentElement!==host||dock.nextElementSibling!==anchor)host.insertBefore(dock,anchor);
+      if(!existingFooterDivider){
+        if(!divider){divider=document.createElement('div');divider.className='bop-bottom-trio-divider';divider.setAttribute('aria-hidden','true');}
+        if(divider.parentElement!==host||divider.nextElementSibling!==footer)host.insertBefore(divider,footer);
+      }else if(divider)divider.remove();
+    }else{
+      const retainedLine=host.querySelector(':scope > .bop-pre-footer-divider');
+      if(retainedLine){
+        if(dock.parentElement!==host||dock.nextElementSibling!==retainedLine)host.insertBefore(dock,retainedLine);
+        if(divider)divider.remove();
+      }else{
+        if(dock.parentElement!==host)host.appendChild(dock);
+        if(!divider){divider=document.createElement('div');divider.className='bop-bottom-trio-divider';divider.setAttribute('aria-hidden','true');}
+        if(divider.parentElement!==host||dock.nextElementSibling!==divider)dock.insertAdjacentElement('afterend',divider);
+      }
+    }
+    placing=false;
+  }
+  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(placeDock);}
+  function openNearMap(event){
+    event.preventDefault();event.stopImmediatePropagation();
+    const landing=document.getElementById('bopLandingOverlay');
+    const fromLanding=!!(landing&&landing.classList.contains('open'));
+    try{boNearMapReturnTarget=fromLanding?'landing':'city';}catch(e){}
+    ['bopWorldwideLanding','boMoviesPage','boWorldwidePage'].forEach(function(id){document.getElementById(id)?.classList.remove('open');});
+    if(fromLanding)landing.classList.remove('open');
+    document.body.style.overflow='';
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+  }
+  function install(){
+    const near=document.getElementById('bopStaticNear');if(near)near.addEventListener('click',openNearMap,true);
+    placeDock();
+    new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
+    document.addEventListener('click',function(){setTimeout(schedule,25);},true);
+    window.addEventListener('hashchange',schedule);window.addEventListener('popstate',schedule);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v154: working Near Me and shared bottom trio above footers -->
 </body></html>
