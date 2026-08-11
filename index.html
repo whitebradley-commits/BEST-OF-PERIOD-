@@ -5841,6 +5841,8 @@
 }
 .bo-kosher-star svg{display:block;width:100%;height:100%;overflow:visible;}
 .bo-picker-row-break{flex:0 0 100%;height:0;margin:0;padding:0;}
+.bo-picker-cluster-break{flex:0 0 100%;height:24px;margin:0;padding:0;pointer-events:none;}
+@media(max-width:560px){.bo-picker-cluster-break{height:19px;}}
 .bo-nation-directory-note{
   margin:16px auto 2px;
   padding:0 14px;
@@ -20347,26 +20349,26 @@ const boPickerConfig = {
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
     { label: '<span style="display:inline-block;font-size:1.08em;line-height:1;color:#F59E0B;">M&#9733;&#9733;&#9733;</span><br><span style="display:inline-block;margin-top:3px;font-size:calc(1em + 2px);line-height:1;color:#F59E0B;">Michelin</span>', cat: 'michelin' },
     { label: '<span class="bo-jb-tile-label"><span class="bo-jb-badge" aria-hidden="true">JB</span><span>James Beard</span></span>', cat: 'jamesbeard' },
+    { label: 'Steak', cat: 'steak' },
+    { label: 'Italian', cat: 'italian' },
+    { label: 'Mexican', cat: 'mexican' },
 { label: '<span class="bo-pizza-tile"><span class="bo-pizza-tile-name">PIZZA</span><span class="bo-pizza-tile-duel" aria-label="BJS versus One Bite"><span class="bo-badge-tabs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="bo-pizza-tile-bjs">BJS</span><span class="bo-pizza-tile-vs">VS</span><span class="bo-pizza-tile-ob">ONE<br>BITE</span></span></span>', cat: 'pizza' },
     { label: 'Cheesesteak', cat: 'cheesesteak' },
-    { label: 'Bagels', cat: 'bagels' },
-    { label: 'Steak', cat: 'steak' },
     { label: 'Breakfast', cat: 'breakfast' },
     { label: 'Burgers', cat: 'burgers' },
-    { label: 'Italian', cat: 'italian' },
     { label: 'Asian', cat: 'asian' },
-    { label: 'Mexican', cat: 'mexican' },
-    { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
     { label: 'Seafood', cat: 'seafood' },
     { label: 'BBQ', cat: 'bbq' },
+    { label: 'Bagels', cat: 'bagels' },
     { label: 'Coffee', cat: 'coffee' },
-    { label: 'Smoothies', cat: 'smoothies' },
-    { label: 'Vegan & Vegetarian', cat: 'vegan' },
-    { label: 'Mediterranean', cat: 'mediterranean' },
     { label: 'Tacos', cat: 'tacos' },
     { label: 'Ramen', cat: 'ramen' },
-    { label: 'Pho', cat: 'pho' },
     { label: 'Indian', cat: 'indian' },
+    { label: 'Vegan & Vegetarian', cat: 'vegan' },
+    { label: 'Mediterranean', cat: 'mediterranean' },
+    { label: '<span class="bo-kosher-star" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M10 1.5 18 15H2Z M10 18.5 2 5h16Z" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round"/></svg></span>Kosher', cat: 'nationkosher' },
+    { label: 'Smoothies', cat: 'smoothies' },
+    { label: 'Pho', cat: 'pho' },
     { label: 'Fast Food / Drive-Thru', cat: 'fastfood' },
     { label: 'Diner', cat: 'diner' },
     { label: 'Buffet', cat: 'buffet' },
@@ -21478,14 +21480,15 @@ function boTileRestaurantCount(cat, cityKey){
 
 function boTileCountBadgeHTML(cat, cityKey){
   const count=boTileRestaurantCount(cat,cityKey);
-  return `<span class="bo-tile-count" aria-label="${count} restaurants">${count}</span>`;
+  const pending=count===0;
+  return `<span class="bo-tile-count" aria-label="${pending?'Category count pending':count+' restaurants'}">${pending?'?':count}</span>`;
 }
 
 const BO_BADGE_GUIDE = {
   michelin:{title:'MICHELIN',copy:'Official MICHELIN Guide recognition. The star count shown on an individual restaurant card reflects that restaurant’s awarded distinction.'},
   jamesbeard:{title:'JAMES BEARD',copy:'Direct James Beard Foundation recognition, including winners, nominees, semifinalists, America’s Classics, and other acknowledged honors identified on the listing.'},
   worldfamous:{title:'WORLD FAMOUS',copy:'A restaurant or venue with exceptional international name recognition or landmark status. Fame is separate from its current BJS ranking.'},
-  count:{title:'CATEGORY COUNT',copy:'The number is the exact count of restaurants available behind that category tile in the city you selected. It updates as the directory grows.'},
+  count:{title:'CATEGORY COUNT',copy:'The number is the exact count of restaurants available behind that category tile in the city you selected. A question mark means the category is pending, not that it has no qualifying restaurants. Open the category for its current status.'},
   onebite:{title:'BJS VS ONE BITE',copy:'BJS comparison score to the One Bite national average.'},
   bjspick:{title:'BJS PICK',copy:'An editorial selection personally highlighted by BJS. It is distinct from the restaurant’s aggregate review score.'},
   new:{title:'NEW',copy:'A newly opened restaurant or a recent addition to the directory.'},
@@ -21828,7 +21831,7 @@ function boRenderCategory(cat){
     ` : '';
 
     boListEl.innerHTML = specialCirclesHTML + searchPopularityNoteHTML + nationDirectoryNoteHTML + `<div class="bo-picker-grid${cat === 'otheroptions' ? ' bo-picker-grid-below-fold' : ''}">` + pickerOptions.map(opt => `
-      ${cat === 'otheroptions' && opt.cat === 'newrestaurants' ? '<span class="bo-picker-row-break" aria-hidden="true"></span>' : ''}<button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${['newrestaurants','offstrip','undernewownership'].includes(opt.cat) ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}${boTileCountBadgeHTML(opt.cat,boCityContext)}</button>
+      ${cat === 'otheroptions' && ['breakfast','nationkosher'].includes(opt.cat) ? '<span class="bo-picker-cluster-break" aria-hidden="true"></span>' : ''}${cat === 'otheroptions' && opt.cat === 'newrestaurants' ? '<span class="bo-picker-row-break" aria-hidden="true"></span>' : ''}<button type="button" class="bo-picker-btn${opt.label.length > 12 ? ' bo-picker-btn-long' : ''}${opt.cat === 'dessert' ? ' bo-picker-btn-rainbow' : ''}${opt.cat === 'bjspicks' ? ' bo-picker-btn-bjs' : ''}${['newrestaurants','offstrip','undernewownership'].includes(opt.cat) ? ' bo-picker-btn-special-gold' : ''}${opt.cat === 'nations' ? ' bo-picker-btn-nations' : ''}" data-picker-cat="${opt.cat}">${opt.label}${boTileCountBadgeHTML(opt.cat,boCityContext)}</button>
     `).join('') + `</div>` + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML + badgesBottomHTML;
 
     boListEl.querySelectorAll('.bo-picker-btn[data-picker-cat]').forEach(btn => {
