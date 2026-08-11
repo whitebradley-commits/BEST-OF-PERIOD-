@@ -27546,4 +27546,29 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 }
 </style>
 <!-- Fresh delivery build v146: restored home-page BJS logo -->
+<style id="bop-home-bjs-inert-raised-dock-v149">
+/* Home BJS is a signature mark only; it never navigates or opens anything. */
+#bopLandingOverlay.open>button.footer-hotlink[data-dest="about"]{
+  pointer-events:none!important;
+  cursor:default!important;
+  animation:none!important;
+}
+/* Keep the three global controls visually separate and slightly higher. */
+#bopStaticLandingDock.bop-static-landing-dock{
+  bottom:max(32px,calc(env(safe-area-inset-bottom) + 16px))!important;
+}
+</style>
+<script id="bop-home-bjs-inert-v149">
+(function(){
+  function lockHomeBjs(){
+    const logo=document.querySelector('#bopLandingOverlay>button.footer-hotlink[data-dest="about"]');
+    if(!logo)return;
+    logo.setAttribute('aria-label','BJS Co.');
+    logo.setAttribute('tabindex','-1');
+    logo.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();},true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',lockHomeBjs);else lockHomeBjs();
+})();
+</script>
+<!-- Fresh delivery build v149: inert home BJS and raised three-icon dock -->
 </body></html>
