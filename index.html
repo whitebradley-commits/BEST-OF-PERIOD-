@@ -4256,23 +4256,26 @@
     0%,100%{border-color:#F59E0B;box-shadow:0 3px 8px rgba(0,0,0,.8),0 0 3px rgba(255,255,255,.30),0 0 5px rgba(245,158,11,.20);filter:brightness(1)}
     50%{border-color:#FFB52E;box-shadow:0 3px 8px rgba(0,0,0,.8),0 0 9px rgba(255,255,255,.88),0 0 13px rgba(245,158,11,.48),inset 0 0 5px rgba(255,255,255,.10);filter:brightness(1.08)}
   }
-  @media (prefers-reduced-motion:reduce){.bo-pizza-dave{animation:none}}
+  @media (prefers-reduced-motion:reduce){.bo-pizza-dave,.bo-pizza-vote{animation:none}}
   .bo-source-name{display:inline-block;white-space:nowrap}
   .bo-plus-more{color:#e1262f!important}
   .bo-pizza-vote{
     position:absolute;
     z-index:7;
-    right:-24px;
-    top:145px;
-    width:100px;
-    padding:6px 6px 5px;
+    left:8px;
+    right:auto;
+    top:156px;
+    width:94px;
+    padding:5px 5px 4px;
     border:1px solid rgba(245,158,11,.68);
     border-radius:7px;
     background:linear-gradient(145deg,rgba(5,5,5,.98),rgba(26,13,8,.96));
-    box-shadow:inset 0 0 15px rgba(245,158,11,.07),0 4px 12px rgba(0,0,0,.34);
+    box-shadow:inset 0 0 15px rgba(245,158,11,.10),0 4px 12px rgba(0,0,0,.50),0 0 5px rgba(255,255,255,.24),0 0 8px rgba(245,158,11,.34);
     text-align:center;
+    transform-origin:center;
+    animation:bo-pizza-vote-callout 1.65s ease-in-out infinite;
   }
-  .bo-pizza-vote-question{margin:0 0 5px;color:#F59E0B;font:800 .60rem 'Archivo Black',sans-serif;line-height:1.18}
+  .bo-pizza-vote-question{margin:0 0 5px;color:#F59E0B;font:900 .66rem 'Archivo Black',sans-serif;line-height:1.14;letter-spacing:-.015em}
   .bo-pizza-vote-buttons{display:flex;align-items:center;justify-content:center;gap:4px}
   .bo-pizza-vote-btn{display:flex;align-items:center;justify-content:center;gap:3px;width:39px;height:24px;padding:0 3px;border:1px solid rgba(245,158,11,.7);border-radius:12px;background:#070707;cursor:pointer;transition:transform .18s ease,background .18s ease,box-shadow .18s ease,opacity .18s ease}
   .bo-pizza-vote-btn:hover:not(:disabled){transform:translateY(-1px);background:#17100b;box-shadow:0 0 8px rgba(245,158,11,.28)}
@@ -4283,6 +4286,17 @@
   .bo-pizza-vote-down{color:#e1262f}
   .bo-pizza-vote-count{color:currentColor;font:900 .62rem 'Archivo Black',sans-serif;min-width:1ch}
   .bo-pizza-vote-status{min-height:8px;margin-top:3px;color:#999;font:600 .43rem Arial,sans-serif;line-height:1}
+  .bo-tell-dave{display:flex;align-items:center;justify-content:center;gap:3px;width:78px;height:21px;margin:3px auto 0;border:1.5px solid #F59E0B;border-radius:999px;background:#000;color:#F59E0B;text-decoration:none;font:900 .51rem 'Archivo Black',sans-serif;line-height:1;letter-spacing:.01em;box-sizing:border-box;box-shadow:0 0 4px rgba(245,158,11,.30);animation:bo-tell-dave-pulse 1.35s ease-in-out infinite}
+  .bo-tell-dave-arrow{display:inline-block;color:#e1262f;font-size:.62rem;line-height:1;animation:bo-tell-dave-arrow 1.35s ease-in-out infinite}
+  .bo-tell-dave-arrow:last-child{animation-delay:.18s}
+  .bo-tell-dave:hover{color:#fff;box-shadow:0 0 8px rgba(255,255,255,.62),0 0 12px rgba(245,158,11,.72)}
+  @keyframes bo-tell-dave-pulse{0%,100%{transform:scale(1);box-shadow:0 0 3px rgba(245,158,11,.28)}50%{transform:scale(1.045);box-shadow:0 0 7px rgba(255,255,255,.60),0 0 11px rgba(245,158,11,.76)}}
+  @keyframes bo-tell-dave-arrow{0%,100%{opacity:.48;transform:scale(1)}50%{opacity:1;transform:scale(1.20)}}
+  @media (prefers-reduced-motion:reduce){.bo-tell-dave,.bo-tell-dave-arrow{animation:none}}
+  @keyframes bo-pizza-vote-callout{
+    0%,100%{border-color:rgba(245,158,11,.68);box-shadow:inset 0 0 12px rgba(245,158,11,.08),0 4px 12px rgba(0,0,0,.50),0 0 4px rgba(255,255,255,.22),0 0 7px rgba(245,158,11,.30);transform:scale(1)}
+    50%{border-color:#F59E0B;box-shadow:inset 0 0 16px rgba(245,158,11,.16),0 4px 12px rgba(0,0,0,.50),0 0 10px rgba(255,255,255,.72),0 0 17px rgba(245,158,11,.70);transform:scale(1.035)}
+  }
   .bo-pizza-tile{display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;box-sizing:border-box;white-space:nowrap}
   .bo-pizza-tile-duel{position:relative;width:50px;height:50px;flex:0 0 50px;display:grid;grid-template-columns:1fr 8px 1fr;align-items:center;justify-items:center;padding:10px 5px;background:#050505;border:2px solid #F59E0B;border-radius:50%;clip-path:none;filter:drop-shadow(0 0 5px rgba(245,158,11,.45))}
   .bo-pizza-tile-duel::before{content:'';position:absolute;inset:4px;z-index:1;border-radius:50%;border:1px solid rgba(245,158,11,.5);background:#050505}
@@ -20358,12 +20372,13 @@ function boRenderCategory(cat){
           </div>
           ${s.oneBiteDaveScore != null ? `<div class="bo-pizza-dave">DAVE <strong>${Number(s.oneBiteDaveScore).toFixed(1)}</strong></div>` : ''}
         </div>` : ''}
-        ${cat === 'pizza' && s.oneBiteScore == null ? `<div class="bo-pizza-vote" aria-label="Vote on whether Dave should rate ${s.name.replace(/"/g, '&quot;')}">
-          <div class="bo-pizza-vote-question">SHOULD DAVE RATE<br>${s.name.toUpperCase()}?</div>
+        ${cat === 'pizza' && s.oneBiteScore == null ? `<div class="bo-pizza-vote" aria-label="Vote on whether Dave should score ${s.name.replace(/"/g, '&quot;')}">
+          <div class="bo-pizza-vote-question">SHOULD DAVE SCORE<br>${s.name.toUpperCase()}?</div>
           <div class="bo-pizza-vote-buttons">
             <button type="button" class="bo-pizza-vote-btn bo-pizza-vote-up" data-vote-choice="up" aria-label="Thumbs up" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L14.2.9 7.6 7.6C7.2 8 7 8.5 7 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c.1-.2.2-.5.2-.8v-2z"/></svg><span class="bo-pizza-vote-count">0</span></button>
             <button type="button" class="bo-pizza-vote-btn bo-pizza-vote-down" data-vote-choice="down" aria-label="Thumbs down" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 3h-4v12h4V3zM1 14c0 1.1.9 2 2 2h6.3l-1 4.6v.3c0 .4.2.8.4 1.1l1.1 1.1 6.6-6.7c.4-.4.6-.9.6-1.4V5c0-1.1-.9-2-2-2H6c-.8 0-1.5.5-1.8 1.2l-3 7c-.1.2-.2.5-.2.8v2z"/></svg><span class="bo-pizza-vote-count">0</span></button>
           </div>
+          <a class="bo-tell-dave" href="https://x.com/messages/compose?recipient_id=43775786&amp;text=${encodeURIComponent('Hey Dave! Check out ' + s.name + '!')}" target="_blank" rel="noopener" aria-label="Privately message Dave about ${s.name.replace(/"/g, '&quot;')}"><span class="bo-tell-dave-arrow" aria-hidden="true">&#8250;</span><span>TELL DAVE</span><span class="bo-tell-dave-arrow" aria-hidden="true">&#8249;</span></a>
           <div class="bo-pizza-vote-status" aria-live="polite"></div>
         </div>` : ''}
       </div>
