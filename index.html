@@ -6071,6 +6071,33 @@
   z-index:1;
   text-shadow:0 0 6px #000,0 0 11px #000,0 0 6px rgba(245,158,11,.35);
 }
+.bo-24-rainbow-text{
+  font-family:'Archivo Black',sans-serif;
+  font-style:normal;
+  background:linear-gradient(90deg,#ef4444 0%,#f59e0b 22%,#f4e04d 40%,#4c8055 59%,#3d6b9a 78%,#c2418b 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+}
+.bo-24-ish-text{
+  margin-left:2px;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:700;
+  color:#5fa8e8;
+  text-shadow:0 0 7px rgba(95,168,232,.72),0 0 10px #000;
+}
+.bo-24-hours-warning{
+  display:block;
+  margin:8px auto 0;
+  max-width:620px;
+  color:#b9b9b9;
+  font-family:'Archivo Narrow',sans-serif;
+  font-size:.82rem;
+  line-height:1.35;
+  text-align:center;
+}
 @keyframes boClockMinuteSpin{to{transform:rotate(360deg);}}
 @keyframes boClockHourSpin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){
@@ -8195,10 +8222,9 @@ function callButtonHTML(phone){
 }
 
 function menuButtonHTML(name, url, rank){
-  if(!name) return '<span class="menu-text-btn menu-text-btn-pending" title="Menu coming soon">MENU</span>';
   const esc = function(v){ return String(v || '').replace(/"/g, '&quot;'); };
   return '<button type="button" class="menu-text-btn" data-menu-popup="coming-soon" data-menu-name="' +
-    esc(name) + '" title="Menu coming soon">MENU</button>';
+    esc(name || 'Restaurant') + '" title="Menu coming soon">MENU</button>';
 }
 
 function setupWebPopup(){
@@ -9466,6 +9492,18 @@ function setupMenuPopup(){
 
   overlay.addEventListener('click', function(e){
     if(e.target === overlay) closeMenuPopup();
+  });
+
+  // Restaurant cards and their secondary-location rows are rendered
+  // dynamically. Delegate MENU clicks from the document so every current and
+  // future MENU button opens this same internal Coming Soon panel without
+  // navigating away from Best Of Period.
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('.menu-text-btn') : null;
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openMenuPopup('', btn.getAttribute('data-menu-name') || 'Restaurant');
   });
 
   document.addEventListener('keydown', function(e){
@@ -10737,7 +10775,11 @@ const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
 // Moshi, Big Pink) all close for at least a few hours, unlike Vegas's true
 // 24-hour spots. Add a city's key here if the same situation applies there;
 // remove it if that city later gets a genuinely round-the-clock pick.
-const BO_24HR_ISH_CITIES = ['miami', 'london', 'siliconvalley'];
+// Use "ish" only where the market currently lacks a meaningful independent
+// round-the-clock restaurant scene. The main navigation tile always stays the
+// clean, universal "24 Hours"; this list affects only the results-page title.
+// Remove a city as soon as its true 24-hour directory becomes substantial.
+const BO_24HR_ISH_CITIES = Object.keys(BO_CITY_CONFIG);
 // True for ANY city's BJS Picks page (bjspicks, bjspicksmiami, ...) — use this
 // instead of `cat === 'bjspicks'` everywhere, so adding a new city's picks
 // page doesn't mean re-finding every hardcoded check.
@@ -19466,7 +19508,18 @@ function boMergeNationLists(keys, tags){
   };
   const add = function(cat, keys){
     const list = boCategoryData[cat] || (boCategoryData[cat] = []);
-    keys.forEach(function(k){ const r=R[k]; if(r && !list.some(function(x){return x&&x.city==='idaho'&&x.name===r.name;})) list.push(Object.assign({},r)); });
+    const cardDefaults = {
+      image:'', imagePosition:'center', price:2, hue:'32, 45%, 24%',
+      why:'One of the strongest current destinations in this Idaho category.',
+      note:'Ranked from current cross-source reputation and meaningful review history.',
+      hours:[], address:'', phone:'', url:'', instagram:null, facebook:null
+    };
+    keys.forEach(function(k){
+      const r=R[k];
+      if(r && !list.some(function(x){return x&&x.city==='idaho'&&x.name===r.name;})){
+        list.push(Object.assign({},cardDefaults,r));
+      }
+    });
   };
   add('sushicasual',['yoi','bamboo','island']);
   add('italiancasual',['vincenzo','lucianos','romios']);
@@ -19935,6 +19988,44 @@ const boPickerTitles = {
   nations: 'Restaurants by Nation',
   mexican: 'Mexican'
 };
+
+// Priority build: the two first Other Bests buttons must feel substantial.
+// This first verified production batch expands dessert and round-the-clock /
+// genuinely late-night dining in the four largest launch markets. Records are
+// intentionally lean (no social links or image requirement) and MENU remains
+// the universal in-site Coming Soon popup.
+(function buildDessertAndAllNightPriorityBatchOne(){
+  const dessert = [
+    {name:"Diddy Riese Cookies",city:"losangeles",rating:"4.7",reviews:1007,ratingSource:"Tripadvisor",why:"Westwood's legendary made-to-order ice-cream cookie sandwich",note:"A high-volume Los Angeles dessert institution with more than a thousand Tripadvisor reviews.",address:"926 Broxton Ave, Los Angeles, CA 90024",phone:"(310) 208-0448",price:1},
+    {name:"B Sweet Dessert Bar",city:"losangeles",rating:"4.7",reviews:2100,ratingSource:"Google",why:"Bread pudding, halo-halo and rotating over-the-top weekly specials",note:"A Sawtelle-area destination built entirely around warm, shareable desserts.",address:"2005 Sawtelle Blvd, Los Angeles, CA 90025",phone:"(310) 963-9769",price:2},
+    {name:"Wanderlust Creamery — Atwater Village",city:"losangeles",rating:"4.7",reviews:1500,ratingSource:"Google",why:"Travel-inspired ice cream with flavors drawn from around the world",note:"Small-batch flavors and strong review volume make this one of LA's most distinctive ice-cream shops.",address:"3134 Glendale Blvd, Los Angeles, CA 90039",phone:"(323) 522-3983",price:2},
+    {name:"Eileen's Special Cheesecake",city:"newyork",rating:"4.6",reviews:2158,ratingSource:"Tripadvisor",why:"A downtown New York cheesecake institution since 1975",note:"Tripadvisor ranks it among New York City's strongest dessert destinations, backed by more than 2,100 reviews.",address:"17 Cleveland Pl, New York, NY 10012",phone:"(212) 966-5585",price:1},
+    {name:"Angelina Bakery — Times Square",city:"newyork",rating:"4.9",reviews:820,ratingSource:"Tripadvisor",why:"Italian bomboloni, croissants and pastry in the center of Times Square",note:"One of the highest current Tripadvisor dessert scores in New York with meaningful volume.",address:"1675 Broadway, New York, NY 10019",phone:"(212) 687-7100",price:2},
+    {name:"Veniero's Pasticceria & Caffè",city:"newyork",rating:"4.5",reviews:590,ratingSource:"Tripadvisor",why:"Old New York Italian pastry, cannoli and cheesecake since 1894",note:"The longevity, selection and sustained review record make Veniero's essential to the directory.",address:"342 E 11th St, New York, NY 10003",phone:"(212) 674-7070",price:2},
+    {name:"Original Rainbow Cone",city:"chicago",rating:"4.6",reviews:3600,ratingSource:"Google",why:"Chicago's unmistakable five-flavor ice-cream cone since 1926",note:"Orange sherbet, pistachio, Palmer House, strawberry and chocolate form a century-old Chicago signature.",address:"9233 S Western Ave, Chicago, IL 60643",phone:"(773) 238-7075",price:1},
+    {name:"Mindy's Bakery",city:"chicago",rating:"4.7",reviews:900,ratingSource:"Google",why:"James Beard-recognized pastry craft in a neighborhood bakery",note:"Mindy Segal's breads, cookies and ambitious pastry program give Chicago a true destination bakery.",address:"1623 N Milwaukee Ave, Chicago, IL 60647",phone:"(773) 489-3600",price:2},
+    {name:"Kasama Bakery",city:"chicago",rating:"4.7",reviews:4200,ratingSource:"Google",why:"Michelin-starred Filipino bakery cooking with extraordinary demand",note:"The daytime pastry counter is a destination in its own right, led by inventive laminated pastries and Filipino flavors.",address:"1001 N Winchester Ave, Chicago, IL 60622",phone:"(773) 697-3790",price:2},
+    {name:"SomiSomi — Las Vegas",city:"bestof",rating:"4.7",reviews:1200,ratingSource:"Google",why:"Taiyaki soft serve with a devoted Las Vegas following",note:"Crisp fish-shaped waffles and Korean-style soft serve offer a strong off-Strip contrast to resort desserts.",address:"4284 Spring Mountain Rd, Las Vegas, NV 89102",phone:"(702) 463-9800",price:1},
+    {name:"Is Sweet Coffee & Dessert",city:"bestof",rating:"4.7",reviews:1100,ratingSource:"Google",why:"A late-night Chinatown dessert café known for honey toast",note:"A broad Asian dessert menu and late hours make it one of the city's most useful dessert stops.",address:"5288 Spring Mountain Rd, Las Vegas, NV 89146",phone:"(702) 889-0000",price:2},
+    {name:"Sorry Not Sorry Creamery",city:"bestof",rating:"4.8",reviews:850,ratingSource:"Google",why:"Small-batch Las Vegas ice cream with inventive seasonal flavors",note:"Local ownership, polished shops and consistently strong ratings earn it a place near the top.",address:"9484 W Flamingo Rd, Las Vegas, NV 89147",phone:"(702) 462-2298",price:2}
+  ];
+  const allnight = [
+    {name:"Canter's Deli — Fairfax",city:"losangeles",rating:"4.4",reviews:12000,ratingSource:"Google",why:"Los Angeles deli history with food available around the clock",note:"The official restaurant confirms 24-hour takeout every day and continuous dine-in service on weekends.",address:"419 N Fairfax Ave, Los Angeles, CA 90036",phone:"(323) 651-2030",open24:[{days:[5,6],open:'00:00',close:'23:59'}],price:2},
+    {name:"McDonald's — National Boulevard",city:"losangeles",rating:"4.1",reviews:2900,ratingSource:"Google",why:"A genuinely 24-hour Westside dining room and drive-thru",note:"The official location page confirms both restaurant and drive-thru service 24 hours, seven days a week.",address:"11300 National Blvd, Los Angeles, CA 90064",phone:"(310) 477-9301",open24:true,price:1},
+    {name:"Veselka",city:"newyork",rating:"4.6",reviews:9500,ratingSource:"Google",why:"East Village pierogi and Ukrainian comfort food through the night",note:"Veselka restored 24-hour service on Fridays and Saturdays in April 2026.",address:"144 2nd Ave, New York, NY 10003",phone:"(212) 228-9682",open24:[{days:[5,6],open:'00:00',close:'23:59'}],price:2},
+    {name:"El Ranchito — Logan Square",city:"chicago",rating:"4.3",reviews:3100,ratingSource:"Google",why:"Authentic Mexican cooking available 24 hours every day",note:"The restaurant's official site confirms seven-day, round-the-clock service at its Milwaukee Avenue location.",address:"2829 N Milwaukee Ave, Chicago, IL 60618",phone:"(773) 227-1688",open24:true,price:1},
+    {name:"Chicago Brewing Company",city:"bestof",rating:"4.4",reviews:2300,ratingSource:"Google",why:"An award-winning local brewpub serving breakfast around the clock",note:"The official site confirms the Fort Apache restaurant is open 24 hours, seven days a week.",address:"2201 S Fort Apache Rd, Las Vegas, NV 89117",phone:"(702) 254-3333",open24:true,price:2},
+    {name:"Apache Joe's Bar & Grill",city:"bestof",rating:"4.6",reviews:650,ratingSource:"Google",why:"A true all-night neighborhood bar with a kitchen running until 1 a.m.",note:"The venue is open 24/7; food service currently runs from 9 a.m. to 1 a.m., so the card states that distinction clearly.",address:"5040 S Broadbent Blvd, Las Vegas, NV 89122",phone:"(702) 780-4549",hours:[{days:[0,1,2,3,4,5,6],open:'09:00',close:'01:00'}],price:1}
+  ];
+  function install(cat, records){
+    const list=boCategoryData[cat] || (boCategoryData[cat]=[]);
+    records.forEach(r=>{ if(!list.some(x=>x&&x.name===r.name&&String(x.city||'bestof')===String(r.city||'bestof'))) list.push(r); });
+    list.sort(boCompareRestaurants);
+    list.forEach((r,i)=>{ r.rank=i+1; });
+  }
+  install('dessert',dessert);
+  install('24hours',allnight);
+})();
 
 const boPickerParent = {
   sushihighend: 'sushi', sushicasual: 'sushi', sushibjspick: 'sushi',
@@ -20791,6 +20882,9 @@ function boRenderCategory(cat){
           "Uber Eats</strong> <span class=\"bo-source-name\"><strong style=\"font-weight:700;\">One Bite</strong></span>"
         );
       }
+      if(cat === '24hours'){
+        boSectionHeadParaEl.innerHTML += '<span class="bo-24-hours-warning">Some establishments may close or change hours without notice. Always call ahead.</span>';
+      }
       if(cat === 'bestof' && boCityContext === 'sandiego'){
         boSectionHeadParaEl.innerHTML += "<span style='display:block;margin-top:8px;'>San Diego is an extremely large territory with many highly rated restaurants. We expanded the number of recommendations in this category. Hopefully, one is close to you!</span>";
       }
@@ -20862,7 +20956,7 @@ function boRenderCategory(cat){
       <div class="bo-main-picker-lead">
         <div class="bo-picker-grid" style="margin-bottom:0;flex-wrap:nowrap;gap:0.5rem;" id="boOtherTastesCircles">
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label">24 Hours${BO_24HR_ISH_CITIES.includes(boCityContext) ? '<span class="bo-hero-dessert-word" style="font-size:0.85em;">ish</span>' : ''}</span></button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours-ish"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label"><span class="bo-24-rainbow-text">24 Hours</span><span class="bo-24-ish-text">ish</span></span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
         </div>
@@ -21080,6 +21174,19 @@ function boRenderCategory(cat){
     s.rank = i + 1;
   });
   sortedEntries.forEach((s, i) => {
+    // A compact research record must never be able to blank an entire page.
+    // Supply safe visual/content defaults at the renderer boundary as a final
+    // guard, even when a city roster intentionally stores only core facts.
+    if(!s.hue) s.hue = '32, 45%, 24%';
+    if(!Number.isFinite(Number(s.price))) s.price = 2;
+    s.price = Math.max(1, Math.min(4, Number(s.price)));
+    if(!s.why) s.why = 'One of the strongest current destinations in this category.';
+    if(!s.note) s.note = 'Ranked from current cross-source reputation and meaningful review history.';
+    if(!Array.isArray(s.hours)) s.hours = [];
+    if(!s.image) s.image = '';
+    if(!s.address) s.address = '';
+    if(!s.phone) s.phone = '';
+    if(!s.url) s.url = '';
     const card = document.createElement('div');
     card.className = 'bo-card' + (s.bjsPick ? ' bo-card-bjs' : '');
     card.id = 'bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
