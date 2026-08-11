@@ -28431,7 +28431,57 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+<script id="bop-locked-movie-posters-v160">
+(function(){
+  /* Every Movies-page title uses reviewed, title-specific artwork and is
+     never handed back to the loose title-image resolver. */
+  const locked={
+    'Avatar':'https://filmartgallery.com/cdn/shop/files/Avatar-Vintage-Movie-Poster-Original_62ffcfeb_5000x.jpg?v=1771973085',
+    'Avengers: Endgame':'https://media.vogue.mx/photos/5cc326b7224e5635d0ca74b9/2:3/w_2560,c_limit/avengers-endgame.jpg',
+    'Avatar: The Way of Water':'https://s3-mittlag-prod.innocode.dev/production/uploads/image/image/838478/article_img_1674649423327.jpg',
+    'Ne Zha 2':'https://assets.voxcinemas.com/posters/P_HO00012335_1752735996901.jpg',
+    'Titanic':'https://artofthemovies.co.uk/cdn/shop/products/titanic_intl_styleB_SD15752_B_32c0d0d1-69d3-41f1-9e4f-77e99f80e030-329531.jpg?v=1778596473&width=1200',
+    'Star Wars: The Force Awakens':'https://cdn-blog.adafruit.com/uploads/2015/10/star-wars-force-awakens-official-poster.jpg',
+    'Avengers: Infinity War':'https://moviepostermexico.com/cdn/shop/products/w3XORYUDxH53iiuWRw6nqrZdwybBM0kI88F9ccHiDmw_2048x.jpg?v=1619731898',
+    'Spider-Man: No Way Home':'https://www.cineadaffiches.com/cdn/shop/products/57_2ebee602-6397-4077-9185-34d83c6125dc_1024x1024.jpg?v=1669555703',
+    'Zootopia 2':'https://www.disneyphile.fr/wp-content/uploads/2025/09/zootopie-2-poster.jpeg',
+    'Inside Out 2':'https://static.wikia.nocookie.net/filmguide/images/6/62/Inside_Out_2_Poster.jpeg/revision/latest/scale-to-width-down/1200?cb=20240807132609',
+    'The Godfather':'https://www.originalfilmart.com/cdn/shop/products/the_godfather_1972_30x40_original_film_art_1600x.jpg?v=1608248462',
+    'Seven Samurai':'https://cdn.posteritati.com/posters/000/000/058/528/seven-samurai-md-web.jpg',
+    'Casablanca':'https://oblikon.net/wp-content/uploads/affiche_casablanca.jpg',
+    'Rear Window':'https://printedoriginals.com/cdn/shop/products/reawi4.jpg?v=1677673360',
+    'L.A. Confidential':'https://www.kinonews.ru/insimgs/poster/poster7046_1.jpg',
+    'On the Waterfront':'https://www.originalfilmart.com/cdn/shop/products/on_the_waterfront_1954_linen_original_film_art.jpg?v=1568998754&width=1200',
+    'Chinatown':'https://www.adammcdaniel.com/AmselArt/Amsel_Chinatown.jpg',
+    'Modern Times':'https://m.media-amazon.com/images/M/MV5BYjJiZjMzYzktNjU0NS00OTkxLWEwYzItYzdhYWJjN2QzMTRlL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg',
+    'The Battle of Algiers':'https://www.ecartelera.com/carteles/9500/9511/001_m.jpg',
+    "Schindler's List":'https://filmartgallery.com/cdn/shop/products/Schindlers-List-Vintage-Movie-Poster-Original_2d9396e4_5000x.jpg?v=1741736643',
+    'Spider-Man: Brand New Day':'https://www.newdvdreleasedates.com/images/posters/spider-man-brand-new-day-2026.jpg',
+    'The Odyssey':'https://www.newdvdreleasedates.com/images/posters/the-odyssey-2026.jpg',
+    'One Night Only':'https://m.media-amazon.com/images/M/MV5BMjQ5MmMxMjItNWQ5NC00OGI1LWFjNTYtYjA3NjNmM2EzNmIyXkEyXkFqcGc@._V1_.jpg',
+    'Super Troopers 3':'https://cdn.kinocheck.com/i/3tpjkild9n.jpg',
+    'CatVideoFest 2026':'https://s3.amazonaws.com/nightjarprod/content/uploads/sites/243/2026/03/23131524/CVF26_pre_01a_3000-scaled.jpg',
+    'Tony':'https://cinemacomrapadura.com.br/imagens/2026/05/20260505-tony-anthony-bourdain-dominic-sessa-a24-poster-cartaz-scaled.jpeg',
+    'Teenage Sex and Death at Camp Miasma':'https://images.justwatch.com/poster/345804971/s718/teenage-sex-and-death-at-camp-miasma.jpg',
+    'Late Fame':'https://www.newdvdreleasedates.com/images/posters/late-fame-2025.jpg',
+    'Toy Story 5':'https://lumiere-a.akamaihd.net/v1/images/toystory5-sg-poster1_41b4f476.jpeg?region=0,0,743,1100',
+    'Minions & Monsters':'https://media.the-numbers.com/images/movie-posters/Minions-and-Monsters-%282026%29.jpg'
+  };
+  function lockPosters(){
+    document.querySelectorAll('#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card').forEach(function(card){
+      const heading=card.querySelector('.bo-movie-info h3');const image=card.querySelector('.bo-movie-poster');if(!heading||!image)return;
+      const title=heading.textContent.trim();const src=locked[title];if(!src)return;
+      card.dataset.posterLookup='1';card.dataset.exactPoster='1';image.dataset.posterResolved='1';image.dataset.bjsLockedPoster='1';
+      if(image.getAttribute('src')!==src){image.src=src;image.alt=title+' official movie poster';image.classList.add('bo-real-poster');}
+    });
+  }
+  function install(){lockPosters();new MutationObserver(function(){requestAnimationFrame(lockPosters);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 <!-- Fresh delivery build v157: exact movie posters, 40 live airline logos, clean page endings -->
 <!-- Fresh delivery build v158: BJS verification seals and dedicated vendor confirmation -->
 <!-- Fresh delivery build v159: deduplicated industry leaders and tightened BJS WHY copy -->
+<!-- Fresh delivery build v160: reviewed lead movie posters locked against bad search matches -->
+<!-- Fresh delivery build v161: title-matched artwork locked across all 30 movie cards -->
 </body></html>
