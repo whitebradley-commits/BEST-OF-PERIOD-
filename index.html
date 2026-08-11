@@ -8504,6 +8504,9 @@ function setupBopReturnToLandingBtn(){
       results.classList.remove('open');
     }
     landing.classList.add('open');
+    // The rotating landing page is a real refresh destination too. Clear any
+    // city/category route left by the Main grid before handing control back.
+    boReplaceBestOfRoute('', '');
     window.scrollTo(0, 0);
   });
 }
@@ -18507,13 +18510,14 @@ function boBuildExpandedLegend(){
   if(!document.getElementById('boExpandedLegendStyles')){
     const style = document.createElement('style');
     style.id = 'boExpandedLegendStyles';
-    style.textContent = `.bo-legend-title{text-align:center;font-family:'Archivo Black',sans-serif;color:#F59E0B;font-size:1.45rem;letter-spacing:.06em;margin:115px 0 24px;text-shadow:0 0 12px rgba(245,158,11,.7)}.bo-legend-section{border-top:1px solid rgba(245,158,11,.58);padding:20px 4px 6px}.bo-legend-section h3{margin:0 0 15px;color:#fff;font:800 .82rem 'Archivo Black',sans-serif;letter-spacing:.11em}.bo-legend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bo-legend-grid>div,.bo-legend-list>div{background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.2);border-radius:10px}.bo-legend-grid>div{display:flex;align-items:center;gap:11px;padding:12px}.bo-legend-grid b{color:#F59E0B;min-width:42px}.bo-legend-grid span{color:#eee;font-size:.78rem}.bo-legend-list{display:grid;gap:9px}.bo-legend-list>div{display:flex;align-items:center;gap:13px;padding:11px 12px}.bo-legend-list p{margin:0;color:#fff;line-height:1.25}.bo-legend-list p b{display:block;font-size:.78rem}.bo-legend-list p small{display:block;margin-top:3px;color:#bbb;font-size:.68rem;line-height:1.35}.bo-legend-badge{position:static!important;display:inline-flex!important;flex:0 0 auto;margin:0!important;transform:none!important}.bo-legend-strip-badge{min-width:48px;height:23px;padding:0 7px;border:1px solid #F59E0B;border-radius:5px;color:#F59E0B;background:#090909;font:800 .61rem 'Archivo Black',sans-serif;align-items:center;justify-content:center}.bo-legend-michelin{position:static!important;display:inline-flex!important;flex:0 0 auto;transform:none!important;margin:0!important}.bo-legend-jb,.bo-legend-check,.bo-legend-bjs{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:43px;height:25px;border-radius:6px;font:800 .64rem 'Archivo Black',sans-serif}.bo-legend-jb{background:#8b1e22;color:#fff;border:1px solid #d75b60}.bo-legend-check{min-width:25px;border-radius:50%;background:#1678d3;color:#fff}.bo-legend-bjs{padding:0 6px;background:#090909;color:#F59E0B;border:1px solid #F59E0B}.bo-ranking-method{margin:0;background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.28);border-radius:10px;padding:14px;color:#ddd;font-size:.74rem;line-height:1.55}.bo-ranking-method strong{color:#fff}.bo-ranking-example{display:block;margin-top:7px;color:#F59E0B;font-weight:700}.bo-source-ack{text-align:center;padding-bottom:28px}.bo-source-ack-title{margin:0 0 14px;color:#fff;font-size:.8rem;line-height:1.5}.bo-source-leaders{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:5px 8px;color:#ddd;font-size:.72rem;line-height:1.5}.bo-source-name{display:inline-block;white-space:nowrap}.bo-source-diamond{color:#F59E0B;font-size:.62rem}.bo-plus-more{font-size:.72em;font-weight:400!important;letter-spacing:.02em;color:#e1262f!important;white-space:nowrap}.bo-source-leaders .bo-plus-more{font-size:.68rem;color:#e1262f!important}.bo-source-ack-copy{margin:17px auto 0;max-width:430px;color:#aaa;font-size:.7rem;line-height:1.55}@media(max-width:520px){#legendOverlay .ty-content{padding-left:18px!important;padding-right:18px!important}.bo-legend-title{margin-top:105px}.bo-legend-section{padding-top:16px}}`;
+    style.textContent = `.bo-legend-title{text-align:center;font-family:'Archivo Black',sans-serif;color:#F59E0B;font-size:1.45rem;letter-spacing:.06em;margin:115px 0 24px;text-shadow:0 0 12px rgba(245,158,11,.7)}.bo-legend-section{border-top:1px solid rgba(245,158,11,.58);padding:20px 4px 6px;scroll-margin-top:18px}.bo-legend-section h3{margin:0 0 15px;color:#fff;font:800 .9rem 'Archivo Black',sans-serif;letter-spacing:.11em}.bo-legend-price .bo-price-legend{transform:scale(1.12);transform-origin:center;margin:8px auto 10px!important}.bo-legend-price .bo-price-legend-item{font-size:.92rem!important;padding:8px 10px!important}.bo-legend-price .bo-price-legend-sign{font-size:1.05rem!important}.bo-legend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bo-legend-grid>div,.bo-legend-list>div{background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.2);border-radius:10px}.bo-legend-grid>div{display:flex;align-items:center;gap:11px;padding:12px}.bo-legend-grid b{color:#F59E0B;min-width:42px}.bo-legend-grid span{color:#eee;font-size:.78rem}.bo-legend-list{display:grid;gap:9px}.bo-legend-list>div{display:flex;align-items:center;gap:13px;padding:11px 12px}.bo-legend-list p{margin:0;color:#fff;line-height:1.25}.bo-legend-list p b{display:block;font-size:.82rem}.bo-legend-list p small{display:block;margin-top:3px;color:#bbb;font-size:.72rem;line-height:1.4}.bo-legend-badge{position:static!important;display:inline-flex!important;flex:0 0 auto;margin:0!important;transform:none!important}.bo-legend-strip-badge{min-width:48px;height:23px;padding:0 7px;border:1px solid #F59E0B;border-radius:5px;color:#F59E0B;background:#090909;font:800 .61rem 'Archivo Black',sans-serif;align-items:center;justify-content:center}.bo-legend-michelin{position:static!important;display:inline-flex!important;flex:0 0 auto;transform:none!important;margin:0!important}.bo-legend-jb,.bo-legend-check,.bo-legend-bjs{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:43px;height:25px;border-radius:6px;font:800 .64rem 'Archivo Black',sans-serif}.bo-legend-jb{background:#8b1e22;color:#fff;border:1px solid #d75b60}.bo-legend-check{min-width:25px;border-radius:50%;background:#1678d3;color:#fff}.bo-legend-bjs{padding:0 6px;background:#090909;color:#F59E0B;border:1px solid #F59E0B}.bo-legend-onebite{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;transform:scale(.72);transform-origin:center}.bo-legend-count{position:static!important;flex:0 0 auto;width:31px!important;height:31px!important;font-size:.75rem!important}.bo-ranking-method{margin:0;background:rgba(255,255,255,.035);border:1px solid rgba(245,158,11,.28);border-radius:10px;padding:14px;color:#ddd;font-size:.74rem;line-height:1.55}.bo-ranking-method strong{color:#fff}.bo-ranking-example{display:block;margin-top:7px;color:#F59E0B;font-weight:700}.bo-source-ack{text-align:center;padding-bottom:28px}.bo-source-ack-title{margin:0 0 14px;color:#fff;font-size:.8rem;line-height:1.5}.bo-source-leaders{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:5px 8px;color:#ddd;font-size:.72rem;line-height:1.5}.bo-source-name{display:inline-block;white-space:nowrap}.bo-source-diamond{color:#F59E0B;font-size:.62rem}.bo-plus-more{font-size:.72em;font-weight:400!important;letter-spacing:.02em;color:#e1262f!important;white-space:nowrap}.bo-source-leaders .bo-plus-more{font-size:.68rem;color:#e1262f!important}.bo-source-ack-copy{margin:17px auto 0;max-width:430px;color:#aaa;font-size:.7rem;line-height:1.55}@media(max-width:520px){#legendOverlay .ty-content{padding-left:18px!important;padding-right:18px!important}.bo-legend-title{margin-top:105px}.bo-legend-section{padding-top:16px}}`;
     document.head.appendChild(style);
   }
   legend.style.maxWidth = '520px';
   legend.innerHTML = `
     <h2 class="bo-legend-title">LEGEND</h2>
-    <section class="bo-legend-section">
+    <section class="bo-legend-section bo-legend-price">
+      <h3>PRICE &amp; STYLE</h3>
       <div class="bo-price-legend" style="display:flex;margin:0 auto 2px;">
         <span class="bo-price-legend-item"><span class="bo-price-legend-sign">$</span> Dive</span>
         <span class="bo-price-legend-item"><span class="bo-price-legend-sign">$$–$$$</span> Casual</span>
@@ -18531,11 +18535,14 @@ function boBuildExpandedLegend(){
         <div><span class="bo-oos-badge bo-legend-badge">&#8599; OOS</span><p><b>Out of State</b><small>An additional location outside the current state.</small></p></div>
       </div>
     </section>
-    <section class="bo-legend-section">
-      <h3>RECOGNITION</h3>
+    <section class="bo-legend-section" id="boLegendBadges">
+      <h3>BADGES</h3>
       <div class="bo-legend-list">
         <div><span class="bo-michelin-badge bo-legend-michelin"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;&#9733;&#9733;</span></span><p><b>Michelin Stars</b><small>M plus one, two or three stars shows the restaurant's Michelin distinction.</small></p></div>
         <div><span class="bo-legend-jb">JB</span><p><b>James Beard Recognition</b><small>Recognition may mean winner, nominee, finalist, semifinalist or another official acknowledgement. Not every James Beard mention is an award win; the listing states the exact honor.</small></p></div>
+        <div><span class="bo-world-famous-badge bo-legend-badge">WORLD FAMOUS</span><p><b>World Famous</b><small>Exceptional international name recognition or landmark status. Fame is separate from the current BJS ranking.</small></p></div>
+        <div><span class="bo-badge-count-demo bo-legend-count">99</span><p><b>Category Count</b><small>The exact number of restaurants waiting behind that category tile in the selected city.</small></p></div>
+        <div><span class="bo-badge-onebite-demo bo-legend-onebite"><span class="bo-badge-bjs-mark">BJS</span><span class="bo-badge-onebite-vs">VS</span><span class="bo-badge-onebite-mark">ONE<br>BITE</span></span><p><b>BJS vs One Bite</b><small>BJS comparison score to the One Bite national average.</small></p></div>
         <div><span class="bo-legend-check">&#10003;</span><p><b>Verified Listing</b><small>Core listing details have been checked.</small></p></div>
         <div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>An editorial selection from Best of Period.</small></p></div>
       </div>
@@ -21147,9 +21154,15 @@ function boEnsureBadgesPage(){
 }
 
 function boOpenBadgesPage(){
-  const page=boEnsureBadgesPage();
-  page.classList.add('is-open');page.setAttribute('aria-hidden','false');page.scrollTop=0;
-  document.body.style.overflow='hidden';
+  if(typeof closeAllPageOverlays==='function') closeAllPageOverlays();
+  const legend=document.getElementById('legendOverlay');
+  if(!legend) return;
+  legend.classList.add('open');
+  const badgeSection=document.getElementById('boLegendBadges');
+  requestAnimationFrame(()=>{
+    if(badgeSection) badgeSection.scrollIntoView({behavior:'smooth',block:'start'});
+    else legend.scrollTop=0;
+  });
 }
 function boCloseBadgesPage(){
   const page=document.getElementById('boBadgesOverlay');
@@ -21177,6 +21190,13 @@ function boRenderCategory(cat){
   const bestOfOverlayEl = document.getElementById('bestOfOverlay');
   if(bestOfOverlayEl) bestOfOverlayEl.scrollTop = 0;
   boCurrentCat = cat;
+  // Record the destination immediately for EVERY Best Of screen, including
+  // picker/hub pages such as a city's Main tile grid. Those branches return
+  // before the older route-sync block at the bottom of this function, which
+  // left Safari's address pointed at the landing page and made Refresh jump
+  // home. The visible screen and reloadable URL now change together first.
+  const boImmediateRouteCity = BO_CITY_CONFIG[cat] ? cat : boCityContext;
+  boReplaceBestOfRoute(cat, boImmediateRouteCity);
   const titleCityKey = BO_CITY_CONFIG[cat] ? cat : boCityContext;
   const titleCityLabel = (BO_CITY_CONFIG[titleCityKey] || BO_CITY_CONFIG.bestof).displayName;
   document.title = `Best of ${titleCityLabel} | Best of Period`;
@@ -21367,10 +21387,10 @@ function boRenderCategory(cat){
     const specialCirclesHTML = cat === 'otheroptions' ? `
       <div class="bo-main-picker-lead">
         <div class="bo-picker-grid" style="margin-bottom:0;flex-wrap:nowrap;gap:0.5rem;" id="boOtherTastesCircles">
-          <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert${boTileCountBadgeHTML('dessert',boCityContext)}</button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours-ish"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label"><span class="bo-24-rainbow-text">24 Hours</span><span class="bo-24-ish-text">ish</span></span>${boTileCountBadgeHTML('24hours',boCityContext)}</button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span>${boTileCountBadgeHTML('__citytotal',boCityContext)}</button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span>${boTileCountBadgeHTML('bestof',boCityContext)}</button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours-ish"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label"><span class="bo-24-rainbow-text">24 Hours</span><span class="bo-24-ish-text">ish</span></span></button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof">Best of <span class="bo-picker-period">Period<span class="period-mark">&copy;</span></span></button>
         </div>
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
       </div>
