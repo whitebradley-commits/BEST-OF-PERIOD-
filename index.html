@@ -15535,6 +15535,34 @@ boCategoryData.pizza = [
     boCategoryData.pizza.push({rank:existingCount+1,name,city,image:'',rating:(r[2]/2).toFixed(2)+' / 5',reviews:null,price:2,hue:'18, 42%, 27%',why:r[6],note:'Rapid pizza expansion listing. Broader details and restaurant media are coming later.',url:'',address:r[5],phone:'',hours:[],bjsPizzaScore:r[2].toFixed(1),oneBiteScore:r[3],oneBiteReviews:null,oneBiteDaveScore:r[4]});
   });
 })();
+(function pushPizzaPastOneHundred(){
+  // Current operating details were checked against restaurant or local
+  // directory pages. A blank score is deliberate: it means the BJS aggregate
+  // is still being calculated and no official One Bite/Dave score was
+  // verified. Those cards therefore receive the Should Dave score prompt.
+  const verifiedAdditions = [
+    ['miami','Ash Pizza Parlor','8300 NE 2nd Ave, Miami, FL 33138','(786) 442-5509','Little River pizzeria from the team behind Stanzione, centered on naturally leavened pies'],
+    ['london',"L’Antica Pizzeria da Michele — Baker Street",'199 Baker St, London NW1 6UY, United Kingdom','+44 20 7935 6458','The London home of the historic Naples institution and its traditional Neapolitan pizza'],
+    ['sandiego','Pizza Port Ocean Beach','1956 Bacon St, San Diego, CA 92107','(619) 224-4700','Ocean Beach brewpub serving handmade pizza one block from the beach'],
+    ['siliconvalley','Pizzeria Delfina — Palo Alto','651 Emerson St, Palo Alto, CA 94301','(650) 353-2208','Downtown Palo Alto outpost for seasonal, wood-fired Neapolitan-inspired pizza'],
+    ['sanfrancisco','Pizzeria Delfina — Mission','3611 18th St, San Francisco, CA 94110','(415) 552-4055','The original Mission District pizzeria from the acclaimed Delfina family'],
+    ['chicago','Spacca Napoli Pizzeria','1769 W Sunnyside Ave, Chicago, IL 60640','(773) 878-2420','Long-running Chicago standard-bearer for carefully made Neapolitan pizza'],
+    ['washingtondc','Pupatella — Capitol Hill','301 Massachusetts Ave NE, Washington, DC 20002','(202) 506-3869','Neapolitan pizza prepared around traditional Naples technique in Capitol Hill'],
+    ['atlanta','Firewall Food Stop','1548 Ralph David Abernathy Blvd SW, Atlanta, GA 30310','(404) 610-7600','Westview neighborhood stop for wood-fired pizza and handmade Mediterranean-driven food'],
+    ['neworleans',"Margot’s Pizza",'1243 Frenchmen St, New Orleans, LA 70116','(504) 224-2892','Seventh Ward destination for naturally leavened sourdough pizza and seasonal pies'],
+    ['idaho',"Lulu’s Fine Pizza & Sushi",'2594 N Bogus Basin Rd, Boise, ID 83702','(208) 387-4992','Long-running Boise neighborhood shop serving New York-style pizza']
+  ];
+  verifiedAdditions.forEach(function(r){
+    const city=r[0],name=r[1];
+    if(boCategoryData.pizza.some(function(existing){return existing&&existing.name===name&&(existing.city||'bestof')===city;})) return;
+    const cityCount=boCategoryData.pizza.filter(function(existing){return (existing.city||'bestof')===city;}).length;
+    boCategoryData.pizza.push({
+      rank:cityCount+1,name:name,city:city,image:'',rating:null,reviews:null,price:2,hue:'18, 42%, 27%',
+      why:r[4],note:'BJS multi-source score is pending final verification. No official One Bite community or Dave score has been confirmed for this listing.',
+      url:'',address:r[2],phone:r[3],hours:[],bjsPizzaScore:null,oneBiteScore:null,oneBiteReviews:null,oneBiteDaveScore:null
+    });
+  });
+})();
 boCategoryData.vegan = [
   {
     rank: 1,
