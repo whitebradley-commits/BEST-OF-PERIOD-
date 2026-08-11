@@ -28113,4 +28113,157 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v156: final Best pages, direct links, aircraft photos, pizza coverage -->
+<style id="bop-bradley-final-v157">
+/* Other Bests is one solid tile-blue treatment: no gold fill or outline. */
+.bo-main-hub-title,
+.bo-main-hub-title *{
+  color:#168CFF!important;
+  -webkit-text-fill-color:#168CFF!important;
+  -webkit-text-stroke:0 transparent!important;
+  text-shadow:0 0 8px rgba(22,140,255,.55)!important;
+}
+
+/* Airline direct access is a compact, borderless four-logo grid. */
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source{
+  max-width:760px!important;
+  color:#F59E0B!important;
+  font-size:.78rem!important;
+  line-height:1.45!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{
+  min-width:0!important;
+  min-height:104px!important;
+  padding:4px!important;
+  border:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-link{
+  display:flex!important;
+  width:100%!important;
+  min-height:96px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  background:#000!important;
+  text-decoration:none!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{
+  width:100%!important;
+  min-height:92px!important;
+  padding:8px!important;
+  background:#000!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo{
+  width:100%!important;
+  max-width:120px!important;
+  max-height:62px!important;
+  object-fit:contain!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-fallback{
+  color:#fff!important;
+  font-size:.64rem!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-now{display:none!important}
+@media(max-width:620px){
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{min-height:84px!important;padding:2px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner,
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-link{min-height:80px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{min-height:76px!important;padding:5px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo{max-width:72px!important;max-height:45px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-fallback{font-size:.48rem!important}
+}
+
+/* Keep only the gold divider from the injected ending. The existing Badges
+   button and full legal footer immediately below remain the page ending. */
+.bop-best-ending{margin-top:46px!important;padding:0 14px!important}
+.bop-best-ending-badges,
+.bop-best-ending-footer{display:none!important}
+.bop-best-ending-rule{margin-bottom:0!important}
+</style>
+<script id="bop-bradley-final-v157">
+(function(){
+  const airlines=[
+    ['Delta Air Lines','https://www.delta.com/'],['United Airlines','https://www.united.com/'],
+    ['American Airlines','https://www.aa.com/'],['Southwest Airlines','https://www.southwest.com/'],
+    ['Alaska Airlines','https://www.alaskaair.com/'],['JetBlue','https://www.jetblue.com/'],
+    ['Air Canada','https://www.aircanada.com/'],['WestJet','https://www.westjet.com/'],
+    ['Aeromexico','https://www.aeromexico.com/'],['LATAM Airlines','https://www.latamairlines.com/'],
+    ['Avianca','https://www.avianca.com/'],['Copa Airlines','https://www.copaair.com/'],
+    ['British Airways','https://www.britishairways.com/'],['Virgin Atlantic','https://www.virginatlantic.com/'],
+    ['Lufthansa','https://www.lufthansa.com/'],['SWISS','https://www.swiss.com/'],
+    ['Air France','https://www.airfrance.com/'],['KLM','https://www.klm.com/'],
+    ['Iberia','https://www.iberia.com/'],['Aer Lingus','https://www.aerlingus.com/'],
+    ['SAS','https://www.flysas.com/'],['Finnair','https://www.finnair.com/'],
+    ['TAP Air Portugal','https://www.flytap.com/'],['Turkish Airlines','https://www.turkishairlines.com/'],
+    ['Emirates','https://www.emirates.com/'],['Qatar Airways','https://www.qatarairways.com/'],
+    ['Etihad Airways','https://www.etihad.com/'],['Saudia','https://www.saudia.com/'],
+    ['Air India','https://www.airindia.com/'],['Singapore Airlines','https://www.singaporeair.com/'],
+    ['Cathay Pacific','https://www.cathaypacific.com/'],['Japan Airlines','https://www.jal.com/'],
+    ['ANA','https://www.ana.co.jp/'],['Korean Air','https://www.koreanair.com/'],
+    ['Qantas','https://www.qantas.com/'],['Air New Zealand','https://www.airnewzealand.com/'],
+    ['Malaysia Airlines','https://www.malaysiaairlines.com/'],['Thai Airways','https://www.thaiairways.com/'],
+    ['EVA Air','https://www.evaair.com/'],['Philippine Airlines','https://www.philippineairlines.com/']
+  ];
+  if(typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA.airlines)BO_WORLDWIDE_DATA.airlines.links=airlines;
+
+  /* Logos themselves are the links; there is no secondary Book Now control. */
+  if(typeof boWorldwideActionHTML==='function'){
+    const previousActionHTML=boWorldwideActionHTML;
+    boWorldwideActionHTML=function(item,index,action,key){
+      if(key!=='airlines')return previousActionHTML(item,index,action,key);
+      let domain='';try{domain=new URL(item[1]).hostname.replace(/^www\./,'');}catch(error){}
+      const logo='https://logo.clearbit.com/'+encodeURIComponent(domain)+'?size=256';
+      return '<article class="bo-current-card bo-airline-direct-card"><div class="bo-airline-direct-inner"><a class="bo-airline-direct-link" target="_blank" rel="noopener" aria-label="Open '+item[0]+' official website" href="'+item[1]+'"><span class="bo-airline-logo-wrap"><img class="bo-airline-logo" src="'+logo+'" alt="'+item[0]+' logo" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="bo-airline-logo-fallback">'+item[0]+'</span></span></a></div></article>';
+    };
+  }
+
+  /* Exact film pages prevent unrelated images such as a Nickelodeon network
+     result from being accepted for a movie with the same word in its title. */
+  const exactPages={
+    'Avatar':'Avatar (2009 film)','Avengers: Endgame':'Avengers: Endgame',
+    'Avatar: The Way of Water':'Avatar: The Way of Water','Ne Zha 2':'Ne Zha 2',
+    'Titanic':'Titanic (1997 film)','Star Wars: The Force Awakens':'Star Wars: The Force Awakens',
+    'Avengers: Infinity War':'Avengers: Infinity War','Spider-Man: No Way Home':'Spider-Man: No Way Home',
+    'Zootopia 2':'Zootopia 2','Inside Out 2':'Inside Out 2','The Godfather':'The Godfather',
+    'Seven Samurai':'Seven Samurai','Casablanca':'Casablanca (film)','Rear Window':'Rear Window',
+    'L.A. Confidential':'L.A. Confidential (film)','On the Waterfront':'On the Waterfront',
+    'Chinatown':'Chinatown (1974 film)','Modern Times':'Modern Times (film)',
+    'The Battle of Algiers':'The Battle of Algiers',"Schindler's List":"Schindler's List",
+    'Nickelodeon':'Nickelodeon (film)'
+  };
+  const posterKey='bop-exact-movie-posters-v157';
+  let posters={};try{posters=JSON.parse(localStorage.getItem(posterKey)||'{}')||{};}catch(error){}
+  async function exactPoster(title){
+    if(posters[title])return posters[title];
+    const page=exactPages[title]||title+' (film)';
+    const endpoint='https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(page)+'&prop=pageimages&piprop=thumbnail&pithumbsize=720&format=json&origin=*';
+    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});const data=await response.json();const record=Object.values((data&&data.query&&data.query.pages)||{})[0];const url=record&&record.thumbnail&&record.thumbnail.source||'';if(url){posters[title]=url;try{localStorage.setItem(posterKey,JSON.stringify(posters));}catch(error){}}return url;}catch(error){return '';}
+  }
+  async function refreshPosters(){
+    const cards=Array.from(document.querySelectorAll('#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card'));
+    for(let start=0;start<cards.length;start+=4){await Promise.all(cards.slice(start,start+4).map(async function(card){
+      if(card.dataset.exactPoster==='1')return;const heading=card.querySelector('.bo-movie-info h3');const image=card.querySelector('.bo-movie-poster');if(!heading||!image)return;
+      const title=heading.textContent.trim();const url=await exactPoster(title);if(!url)return;const probe=new Image();probe.onload=function(){if(probe.naturalWidth<90||probe.naturalHeight<120)return;image.src=url;image.alt=title+' movie poster';image.classList.add('bo-real-poster');image.dataset.posterResolved='1';card.dataset.exactPoster='1';};probe.src=url;
+    }));}
+  }
+  function cleanEnding(){document.querySelectorAll('.bop-best-ending-badges,.bop-best-ending-footer').forEach(function(node){node.remove();});}
+  function refresh(){
+    const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');
+    if(page){const source=page.querySelector('.bo-current-source');if(source)source.textContent='For immediate booking at one of these airlines, tap the iconic icon.';}
+    refreshPosters();cleanEnding();
+  }
+  document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"],[data-worldwide-key="movies"]'))setTimeout(refresh,140);},true);
+  function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v157: exact movie posters, 40 live airline logos, clean page endings -->
 </body></html>
