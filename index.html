@@ -26903,7 +26903,19 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   font:800 clamp(.57rem,2.45vw,.72rem)/1.65 'Archivo Narrow',Arial,sans-serif;
   letter-spacing:.015em;
 }
+.bo-other-leaders-list>span:not(.sep){display:inline-block;white-space:nowrap}
 .bo-other-leaders-list .sep{padding:0 .35em;color:#e1262f;font-size:.78em}
+.bo-other-leaders-secondary{
+  max-width:310px;
+  margin-top:15px;
+  padding-top:12px;
+  border-top:1px solid rgba(245,158,11,.45);
+  color:#F59E0B;
+  font:700 clamp(.46rem,1.95vw,.58rem)/1.62 'Archivo Narrow',Arial,sans-serif;
+  letter-spacing:.01em;
+}
+.bo-other-leaders-secondary>span:not(.sep){display:inline-block;white-space:nowrap}
+.bo-other-leaders-secondary .sep{padding:0 .34em;color:#e1262f;font-size:.75em}
 .bo-other-leaders-close{
   position:absolute;
   top:24px;
@@ -26916,6 +26928,24 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   background:#050505;
   color:#e1262f;
   font:900 18px/25px Arial,sans-serif;
+  cursor:pointer;
+  z-index:3;
+  box-shadow:0 0 9px rgba(245,158,11,.62);
+}
+.bo-other-leaders-back{
+  position:fixed;
+  top:max(18px,env(safe-area-inset-top));
+  left:16px;
+  z-index:2147483647;
+  width:68px;
+  height:68px;
+  padding:0;
+  border:2.5px solid #F59E0B;
+  border-radius:50%;
+  background:#050505;
+  color:#e1262f;
+  font:900 11px/1.05 'Archivo Black',Arial,sans-serif;
+  box-shadow:0 0 13px rgba(245,158,11,.76);
   cursor:pointer;
 }
 @media(max-width:370px){
@@ -26941,6 +26971,10 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     'Skytrax','APEX','Condé Nast Traveler','Travel + Leisure','Rotten Tomatoes','Metacritic','IMDb',
     'Google','Google Menu','Tripadvisor','OpenTable','Resy','Yelp','Sirved','Uber Eats','Grubhub','Slice',
     'Restaurant Guru','Facebook','One Bite'
+  ];
+  const secondaryLeaderNames=[
+    'Box Office Mojo','The Numbers','Letterboxd','TMDB','Billboard','Recording Academy','Spotify Charts',
+    'J.D. Power','Cirium','Consumer Reports','Kelley Blue Book','Edmunds','Ookla Speedtest','PCMag'
   ];
 
   function replaceWorldIcons(root){
@@ -26973,9 +27007,10 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     overlay.setAttribute('role','dialog');
     overlay.setAttribute('aria-modal','true');
     overlay.setAttribute('aria-labelledby','boOtherLeadersTitle');
-    overlay.innerHTML='<div class="bo-other-leaders-circle"><button class="bo-other-leaders-close" type="button" aria-label="Close">×</button><h2 id="boOtherLeadersTitle">OTHER LEADERS</h2><div class="bo-other-leaders-list">'+leaderNames.map(function(name){return '<span>'+name+'</span>';}).join('<span class="sep" aria-hidden="true">◆</span>')+'</div></div>';
+    overlay.innerHTML='<button class="bo-other-leaders-back" type="button" aria-label="Go back">&larr;<br>Back</button><div class="bo-other-leaders-circle"><button class="bo-other-leaders-close" type="button" aria-label="Close">×</button><h2 id="boOtherLeadersTitle">OTHER LEADERS</h2><div class="bo-other-leaders-list">'+leaderNames.map(function(name){return '<span>'+name+'</span>';}).join('<span class="sep" aria-hidden="true">◆</span>')+'</div><div class="bo-other-leaders-secondary">'+secondaryLeaderNames.map(function(name){return '<span>'+name+'</span>';}).join('<span class="sep" aria-hidden="true">◆</span>')+'</div></div>';
     document.body.appendChild(overlay);
     overlay.querySelector('.bo-other-leaders-close').addEventListener('click',closeOtherLeaders);
+    overlay.querySelector('.bo-other-leaders-back').addEventListener('click',closeOtherLeaders);
     overlay.addEventListener('click',function(event){if(event.target===overlay)closeOtherLeaders();});
     return overlay;
   }
