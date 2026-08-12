@@ -30214,11 +30214,11 @@ footer .bop-mini-legend-badge,
     function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
     function constrain(){var r=map.getBoundingClientRect();state.x=clamp(state.x,r.width-r.width*state.scale,0);state.y=clamp(state.y,r.height-r.height*state.scale,0)}
     function paint(animate){constrain();stage.style.transition=animate?'transform .2s ease':'none';stage.style.transform='translate3d('+state.x+'px,'+state.y+'px,0) scale('+state.scale+')';if(animate)setTimeout(function(){stage.style.transition='none'},220)}
-    function zoom(next,cx,cy){var r=map.getBoundingClientRect(),old=state.scale;cx=cx==null?r.width/2:cx;cy=cy==null?r.height/2:cy;next=clamp(next,1,4);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;paint(true)}
+    function zoom(next,cx,cy){var r=map.getBoundingClientRect(),old=state.scale;cx=cx==null?r.width/2:cx;cy=cy==null?r.height/2:cy;next=clamp(next,1,6);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;paint(true)}
     function reset(){state.scale=1;state.x=0;state.y=0;state.pointers.clear();state.start=null;paint(true)}
     controls.addEventListener('pointerdown',function(e){e.stopPropagation()});controls.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();if(e.target.closest('[data-oc-plus]'))zoom(state.scale+.65);if(e.target.closest('[data-oc-minus]'))zoom(state.scale-.65)});
     map.addEventListener('pointerdown',function(e){if(e.target.closest('.oc-active-zoom-controls'))return;state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});try{map.setPointerCapture(e.pointerId)}catch(_e){}if(state.pointers.size===1)state.start={kind:'pan',x:e.clientX,y:e.clientY,sx:state.x,sy:state.y};else{var p=Array.from(state.pointers.values());state.start={kind:'pinch',distance:Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),scale:state.scale};state.moved=true}}, {passive:false});
-    map.addEventListener('pointermove',function(e){if(!state.pointers.has(e.pointerId))return;e.preventDefault();state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});var p=Array.from(state.pointers.values());if(p.length===2&&state.start&&state.start.kind==='pinch'){var d=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),r=map.getBoundingClientRect(),cx=(p[0].x+p[1].x)/2-r.left,cy=(p[0].y+p[1].y)/2-r.top,old=state.scale,next=clamp(state.start.scale*d/state.start.distance,1,4);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;state.moved=true;paint(false)}else if(p.length===1&&state.start&&state.start.kind==='pan'&&state.scale>1){state.x=state.start.sx+(e.clientX-state.start.x);state.y=state.start.sy+(e.clientY-state.start.y);state.moved=true;paint(false)}}, {passive:false});
+    map.addEventListener('pointermove',function(e){if(!state.pointers.has(e.pointerId))return;e.preventDefault();state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});var p=Array.from(state.pointers.values());if(p.length===2&&state.start&&state.start.kind==='pinch'){var d=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),r=map.getBoundingClientRect(),cx=(p[0].x+p[1].x)/2-r.left,cy=(p[0].y+p[1].y)/2-r.top,old=state.scale,next=clamp(state.start.scale*Math.pow(d/state.start.distance,.88),1,6);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;state.moved=true;paint(false)}else if(p.length===1&&state.start&&state.start.kind==='pan'&&state.scale>1){state.x=state.start.sx+(e.clientX-state.start.x);state.y=state.start.sy+(e.clientY-state.start.y);state.moved=true;paint(false)}}, {passive:false});
     function end(e){state.pointers.delete(e.pointerId);if(state.pointers.size===1){var p=Array.from(state.pointers.values())[0];state.start={kind:'pan',x:p.x,y:p.y,sx:state.x,sy:state.y}}else if(!state.pointers.size)state.start=null}
     map.addEventListener('pointerup',end);map.addEventListener('pointercancel',end);map.addEventListener('click',function(e){if(state.moved){e.preventDefault();e.stopPropagation();state.moved=false}},true);
     window.ocResetMapZoom=reset;new MutationObserver(function(){if(overlay.classList.contains('open'))reset()}).observe(overlay,{attributes:true,attributeFilter:['class']});
@@ -30326,4 +30326,150 @@ footer .bop-mini-legend-badge,
 }
 </style>
 <!-- Fresh delivery build v201: pinch-only map and friendly round territory choice orb -->
+<style id="bop-territory-choice-direct-city-v202">
+#ocWorldOverlay #ocCityCard.oc-territory-catch .oc-choice-city{
+  padding:10px 4px!important;
+  font-size:11px!important;
+  line-height:1!important;
+  letter-spacing:.045em!important;
+  text-shadow:none!important;
+}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card.oc-territory-catch{
+  animation:bopTerritoryOuterPulse 1.8s ease-in-out infinite!important;
+}
+@keyframes bopTerritoryOuterPulse{
+  0%,100%{border-color:#F59E0B;box-shadow:0 0 12px rgba(245,158,11,.42),0 0 0 9999px rgba(0,0,0,.58)}
+  50%{border-color:#ffc04a;box-shadow:0 0 25px rgba(245,158,11,.9),0 0 43px rgba(245,158,11,.28),0 0 0 9999px rgba(0,0,0,.58)}
+}
+@media(prefers-reduced-motion:reduce){#ocWorldOverlay #ocCityCard.oc-city-choice-card.oc-territory-catch{animation:none!important}}
+</style>
+<script id="bop-territory-choice-direct-city-v202">
+(function(){
+  var destinationByName={London:'london',Paris:'paris',Zurich:'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
+  function openCity(destination){
+    var world=document.getElementById('ocWorldOverlay'),card=document.getElementById('ocCityCard');
+    if(card)card.classList.remove('open','oc-city-choice-card','oc-territory-catch');
+    if(world){world.classList.remove('open');world.setAttribute('aria-hidden','true')}
+    document.body.classList.remove('oc-world-active');
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var worldwide=document.getElementById('bopWorldwideLanding');if(worldwide)worldwide.classList.remove('open');
+    var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+    if(typeof boCityContext!=='undefined')boCityContext=destination;
+    if(typeof window.boCityContext!=='undefined')window.boCityContext=destination;
+    if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',destination);
+    if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');
+    try{history.replaceState(null,'',location.pathname+'?page=otheroptions&city='+encodeURIComponent(destination))}catch(_e){}
+    window.scrollTo(0,0);if(best)best.scrollTop=0;
+  }
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#ocCityCard.oc-territory-catch .oc-choice-city');if(!button)return;
+    var destination=destinationByName[button.textContent.trim()];if(!destination)return;
+    event.preventDefault();event.stopImmediatePropagation();openCity(destination);
+  },true);
+})();
+</script>
+<!-- Fresh delivery build v202: larger territory choices, outer-ring pulse and direct city Main-page routing -->
+<style id="bop-tighter-real-map-pins-v203">
+/* Compact teardrop map pins: quieter glow, visible lean, generous invisible
+   tap target, and a tighter visual footprint at world scale. */
+#ocWorldOverlay .oc-pin-destination-group{
+  width:24px!important;height:28px!important;margin:-22px 0 0 -12px!important;
+  transform:rotate(var(--oc-pin-angle,0deg))!important;
+  overflow:visible!important;
+}
+#ocWorldOverlay .oc-pin-destination-group::before{
+  width:14px!important;height:14px!important;
+  left:5px!important;top:4px!important;
+  border:1.5px solid rgba(255,255,255,.92)!important;
+  border-radius:50% 50% 50% 7%!important;
+  background:#3B82F6!important;
+  transform:rotate(45deg)!important;
+  box-shadow:0 0 5px rgba(59,130,246,.56)!important;
+}
+#ocWorldOverlay .oc-pin-destination-group::after{
+  width:18px!important;height:18px!important;
+  left:3px!important;top:2px!important;
+  border:1px solid rgba(59,130,246,.36)!important;
+  border-radius:50%!important;
+  box-shadow:none!important;
+  opacity:.45!important;
+  animation:ocTightPinBreath 2.4s ease-in-out infinite!important;
+}
+#ocWorldOverlay .oc-pin-destination-group span{
+  position:absolute!important;left:0!important;top:4px!important;
+  width:24px!important;height:16px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  color:#fff!important;font-size:8px!important;line-height:1!important;
+  text-shadow:0 1px 1px rgba(0,0,0,.85)!important;
+  transform:rotate(calc(var(--oc-pin-angle,0deg) * -1))!important;
+}
+@keyframes ocTightPinBreath{0%,100%{transform:scale(.88);opacity:.2}50%{transform:scale(1.08);opacity:.48}}
+@media(prefers-reduced-motion:reduce){#ocWorldOverlay .oc-pin-destination-group::after{animation:none!important}}
+</style>
+<!-- Fresh delivery build v203: compact angled teardrop pins and smoother six-times pinch zoom -->
+<style id="bop-solid-gold-fate-sequence-v204">
+#boMoviesPage .bop-fate-instruction p,
+#boMoviesPage .bop-fate-instruction p strong,
+#boMoviesPage .bop-fate-instruction p span,
+#boMoviesPage .bop-thumb-arrow,
+#boMoviesPage .bop-fate-count,
+.bop-fate-decided,
+.bop-movie-fun{
+  color:#F59E0B!important;
+  text-shadow:none!important;
+  filter:none!important;
+  animation:none!important;
+  opacity:1!important;
+}
+#boMoviesPage .bop-fate-thumb{
+  border-color:#F59E0B!important;
+  box-shadow:none!important;
+  animation:none!important;
+  filter:none!important;
+}
+#boMoviesPage .bop-fate-thumb svg{
+  stroke:#F59E0B!important;
+  filter:none!important;
+}
+#boMoviesPage .bop-fate-count{
+  border-color:#F59E0B!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bop-fate-thumb.is-holding{box-shadow:none!important;animation:none!important}
+</style>
+<!-- Fresh delivery build v204: unified solid-gold Fate sequence with no glow -->
+<style id="bop-floating-nonconnecting-dividers-v205">
+/* Gold rules guide the eye without ever joining into boxes or T-junctions. */
+#boMoviesPage .bop-movie-launcher{
+  position:relative!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
+  margin-bottom:18px!important;
+}
+#boMoviesPage .bop-movie-launcher::after{
+  content:'';position:absolute;left:22px;right:22px;bottom:0;height:1.5px;
+  background:#F59E0B;box-shadow:0 0 5px rgba(245,158,11,.42);pointer-events:none;
+}
+#boMoviesPage .bo-movies-columns,
+#boWorldwidePage .bo-movies-columns{position:relative!important}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage .bo-movies-columns>.bo-movie-column:first-child{border-right:0!important}
+#boMoviesPage .bo-movies-columns::after,
+#boWorldwidePage .bo-movies-columns::after{
+  content:'';position:absolute;z-index:7;left:50%;top:14px;bottom:14px;width:1.5px;
+  transform:translateX(-50%);background:#F59E0B;
+  box-shadow:0 0 5px rgba(245,158,11,.42);pointer-events:none;
+}
+#boMoviesPage .bo-current-movies{
+  position:relative!important;
+  border-top:0!important;
+  margin-top:36px!important;
+  padding-top:32px!important;
+}
+#boMoviesPage .bo-current-movies::before{
+  content:'';position:absolute;left:22px;right:22px;top:0;height:1.5px;
+  background:#F59E0B;box-shadow:0 0 5px rgba(245,158,11,.42);pointer-events:none;
+}
+</style>
+<!-- Fresh delivery build v205: floating gold rules with no connected boxes or line junctions -->
 </body></html>
