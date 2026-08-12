@@ -31656,6 +31656,9 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
 .bop-legend-disclaimer{margin:0 auto 28px;max-width:390px;color:#F59E0B;font:600 10px/1.6 'Archivo Narrow',Arial,sans-serif;text-align:center;letter-spacing:.01em}
 .bop-legend-disclaimer-star{display:block;margin:0 auto 8px;color:#F59E0B;font-size:17px;line-height:1;filter:drop-shadow(0 0 4px rgba(245,158,11,.48))}
 .bop-legend-disclaimer strong{color:#fff;font-family:'Fraunces',Georgia,serif}.bop-legend-disclaimer .period{color:#F59E0B}
+#legendOverlay{overflow-x:hidden!important;align-items:flex-start!important;justify-content:center!important}
+#legendOverlay>.ty-content{position:relative!important;left:auto!important;right:auto!important;transform:none!important;width:calc(100vw - 32px)!important;max-width:520px!important;margin:0 auto!important;padding-left:16px!important;padding-right:16px!important;box-sizing:border-box!important;text-align:center!important}
+#legendOverlay .bop-icons-only-dock{left:auto!important;right:auto!important;transform:none!important;width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important}
 @media(max-width:380px){.bop-icons-only-row{gap:10px}.bop-icons-only-social{width:24px;height:24px}.bop-icons-only-social svg{width:22px;height:22px}}
 </style>
 <script id="icons-only-no-footer-v228-script">
@@ -31685,14 +31688,17 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
-    if(!page||page.id==='ocWorldOverlay'||page.matches(retired)||page.closest(retired))return false;
-    if(page.querySelector(':scope > .bop-icons-only-dock'))return false;
+    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.matches(retired)||page.closest(retired))return false;
     return true;
   }
   function addDocks(){
     document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
+      if(page.id==='bopLandingOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
       if(!eligible(page))return;
-      var dock=document.createElement('div');dock.className='bop-icons-only-dock';dock.innerHTML=row;page.appendChild(dock);
+      var host=page.querySelector(':scope > .ty-content,:scope > .bo-page-inner,:scope > .tpa-scope,:scope > .concepts-content,:scope > .directory-content')||page;
+      var dock=page.querySelector('.bop-icons-only-dock');
+      if(!dock){dock=document.createElement('div');dock.className='bop-icons-only-dock';dock.innerHTML=row}
+      if(dock.parentElement!==host)host.appendChild(dock);
     });
   }
   function closePages(){document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(page){if(page.id&&(/Overlay$|Page$/.test(page.id)||page.id==='bopWorldwideLanding'))page.classList.remove('open','active','is-open','tg-open')})}
