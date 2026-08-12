@@ -28552,4 +28552,44 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 }
 </style>
 <!-- Fresh delivery build v163: dark/light movie columns with center divider -->
+<script id="bop-clean-entry-always-home-v164">
+(function(){
+  const STORE='bop-sitewide-page-state-v1';
+  const routedKeys=['page','tag','fnt','retry','rescue','t','n','founder'];
+  const restorablePages=[
+    'bestOfOverlay','tbotrLandingOverlay','wtfLandingOverlay','directoryOverlay',
+    'companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay',
+    'bopMemberOverlay','lvMemberOverlay','lvSteamOverlay','tpaOverlay',
+    'tpaCoachingOverlay','tpaStakingOverlay','tpaAffiliateOverlay','tpaJoinOverlay',
+    'shuttleOverlay','hhOverlay','thc24Overlay','ocWorldOverlay','otherCitiesOverlay',
+    'tapCardOverlay','boMoviesPage'
+  ];
+  function isCleanEntry(){
+    const params=new URLSearchParams(location.search);
+    if(location.hash)return false;
+    return !routedKeys.some(function(key){return params.has(key);});
+  }
+  function showTrueLanding(){
+    if(!isCleanEntry())return;
+    try{sessionStorage.removeItem(STORE);}catch(error){}
+    restorablePages.forEach(function(id){
+      const page=document.getElementById(id);if(!page)return;
+      page.classList.remove('open','active','is-open','tg-open');
+    });
+    const landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.add('open');
+    try{
+      const params=new URLSearchParams(location.search);
+      params.delete('city');params.delete('restaurant');params.delete('movie');
+      const query=params.toString();
+      history.replaceState(null,'',location.pathname+(query?'?'+query:''));
+    }catch(error){}
+    window.scrollTo(0,0);
+  }
+  function start(){showTrueLanding();setTimeout(showTrueLanding,240);setTimeout(showTrueLanding,520);}
+  window.addEventListener('pageshow',function(){showTrueLanding();setTimeout(showTrueLanding,120);});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v164: clean domain visits always open the true landing page -->
 </body></html>
