@@ -28606,15 +28606,20 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <script id="bop-three-button-ending-v165">
 (function(){
-  const actions='<div class="bop-best-ending-actions" aria-label="Best of Period information"><button type="button" class="bop-best-ending-action" data-bop-ending-action="badges">BADGES</button><button type="button" class="bop-best-ending-action" data-bop-ending-action="member">MEMBER</button><button type="button" class="bop-best-ending-action" data-bop-ending-action="promotions">PROMOTION<br>&amp; REACH</button></div>';
+  const actions='<div class="bop-best-ending-actions bop-legend-only" aria-label="Best of Period legend"><button type="button" class="bop-best-ending-action bop-legend-emblem" data-bop-ending-action="badges" aria-label="Open Legend"><span class="bop-legend-emblem-shield" aria-hidden="true"><span class="bop-legend-emblem-check">✓</span></span><span class="bop-legend-emblem-label">LEGEND</span></button></div>';
   const compactFooter='<footer class="bop-best-ending-standard-footer"><strong>Best of Period©</strong> is an independent listing service developed by <strong>BJS Co.</strong> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings may change without notice—always confirm directly.<br>For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B">info@bestofperiod.com</a></footer>';
   function openBadges(){
+    const movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
+    window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
+    if(typeof boOpenBadgesPage==='function'){boOpenBadgesPage();return;}
     if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
-    if(typeof boEnsureBadgesPage!=='function')return;
-    const page=boEnsureBadgesPage();
-    page.classList.add('is-open');page.setAttribute('aria-hidden','false');page.scrollTop=0;document.body.style.overflow='hidden';
+    const legend=document.getElementById('legendOverlay');if(legend){legend.classList.add('open');legend.scrollTop=0;}
   }
   function openMember(){
+    const movies=document.getElementById('boMoviesPage');
+    const worldwide=document.getElementById('boWorldwidePage');
+    const context=movies&&movies.classList.contains('open')?'movies':(worldwide&&worldwide.classList.contains('open')?'worldwide':'restaurants');
+    if(typeof window.bopPrepareMemberPage==='function')window.bopPrepareMemberPage(context);
     if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
     const page=document.getElementById('bopMemberOverlay');if(page){page.classList.add('open');page.scrollTop=0;}window.scrollTo(0,0);
   }
@@ -28642,8 +28647,6 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     const button=event.target.closest('[data-bop-ending-action]');if(!button)return;
     event.preventDefault();event.stopImmediatePropagation();
     if(button.dataset.bopEndingAction==='badges')openBadges();
-    else if(button.dataset.bopEndingAction==='member')openMember();
-    else openReach();
   },true);
   function install(){window.boOpenBadgesPage=openBadges;refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -28804,7 +28807,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   let pendingUrl='',pendingLabel='';
   function loadingHTML(label){
     const safe=String(label||'Opening…').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});
-    return '<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safe+'</title><body style="margin:0;background:#000;color:#F59E0B;font:900 17px Arial;display:grid;place-items:center;text-align:center;height:100vh"><div><div style="width:52px;height:52px;margin:0 auto 18px;border:2px solid #F59E0B;border-radius:50%;box-shadow:0 0 16px rgba(245,158,11,.7)"></div>'+safe+'<small style="display:block;margin-top:12px;color:#888;font-size:11px">BestOfPeriod remains open behind this window.</small></div></body>';
+    return '<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+safe+'</title><body style="margin:0;background:#000;color:#F59E0B;font:900 17px Arial;display:grid;place-items:center;text-align:center;height:100vh"><div><div style="width:52px;height:52px;margin:0 auto 18px;border:2px solid #F59E0B;border-radius:50%;box-shadow:0 0 16px rgba(245,158,11,.7)"></div>'+safe+'<small style="display:block;margin-top:12px;color:#aaa;font-size:11px">Opening the provider in this window…</small><button onclick="window.close()" style="margin-top:22px;padding:10px 18px;border:1px solid #F59E0B;border-radius:999px;background:#050505;color:#ef3340;font:900 11px Arial">CLOSE WINDOW</button></div></body>';
   }
   function ensureFallback(){
     let modal=document.getElementById('bopExternalFallback');if(modal)return modal;
@@ -28831,4 +28834,119 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v168: external providers never replace BestOfPeriod -->
+<style id="bop-movie-rent-showtimes-v169">
+#boMoviesPage .bo-movie-awards-more{display:none!important}
+#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card{position:relative!important;padding-bottom:34px!important}
+#boMoviesPage .bo-movie-card-actions{position:absolute!important;right:7px!important;bottom:6px!important;z-index:9!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important}
+#boMoviesPage .bo-movie-action{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:42px!important;min-height:23px!important;padding:4px 7px!important;border:1px solid #F59E0B!important;border-radius:999px!important;background:#050505!important;color:#F59E0B!important;font:900 .5rem/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:.035em!important;text-decoration:none!important;box-shadow:0 0 6px rgba(245,158,11,.42)!important;cursor:pointer!important}
+#boMoviesPage .bo-movie-action-showtimes{border-color:#ef3340!important;color:#ef3340!important;box-shadow:0 0 6px rgba(239,51,64,.42)!important}
+#boMoviesPage .bo-movie-action::before{content:'';display:inline-block;width:5px;height:5px;margin-right:4px;border-radius:50%;background:currentColor;box-shadow:0 0 4px currentColor}
+</style>
+<script id="bop-movie-rent-showtimes-v169">
+(function(){
+  function titleOf(card){const h=card.querySelector('.bo-movie-info h3');return h?h.textContent.trim():'';}
+  function actions(title,current){
+    const safe=title.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    const rent='https://www.justwatch.com/us/search?q='+encodeURIComponent(title);
+    return '<div class="bo-movie-card-actions"><a class="bo-movie-action bo-movie-action-rent" href="'+rent+'" target="_blank" rel="noopener" aria-label="Rent '+safe+'">RENT</a>'+(current?'<a class="bo-movie-action bo-movie-action-showtimes" href="https://www.fandango.com/search?q='+encodeURIComponent(title)+'" data-theater-provider="fandango" aria-label="Find '+safe+' showtimes">SHOWTIMES</a>':'')+'</div>';
+  }
+  function enhance(){
+    document.querySelectorAll('#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card').forEach(function(card){
+      card.querySelectorAll('.bo-movie-awards-more').forEach(function(button){button.remove();});
+      if(card.querySelector('.bo-movie-card-actions'))return;
+      const title=titleOf(card);if(!title)return;
+      card.insertAdjacentHTML('beforeend',actions(title,card.classList.contains('bo-current-card')));
+    });
+  }
+  function install(){enhance();new MutationObserver(function(){requestAnimationFrame(enhance);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v169: compact Rent and current Showtimes actions -->
+<style id="bop-movies-period-spacing-v170">
+/* Bring Period© halfway back toward the settled MOVIES word. */
+#boMoviesPage .bo-movies-period{left:64%!important}
+</style>
+<!-- Fresh delivery build v170: tighter Movies-to-Period spacing -->
+<style id="bop-current-box-office-star-v171">
+#boMoviesPage .bo-current-movies-title{
+  flex-direction:column!important;
+  width:154px!important;
+  height:154px!important;
+  padding:18px!important;
+  font-size:clamp(.9rem,2.6vw,1.38rem)!important;
+  line-height:1.02!important;
+}
+#boMoviesPage .bo-current-movies-title::before{
+  content:'★';
+  display:block;
+  margin:0 0 5px;
+  color:#fff;
+  font:inherit;
+  line-height:1;
+  text-shadow:0 0 7px rgba(255,255,255,.38);
+}
+#boMoviesPage .bo-current-movies-title span{display:block!important}
+@media(max-width:620px){#boMoviesPage .bo-current-movies-title{width:132px!important;height:132px!important;padding:15px!important;font-size:.96rem!important}}
+</style>
+<!-- Fresh delivery build v171: matching starred Current Box Office circle -->
+<style id="bop-movie-send-preview-v172">
+#boMoviesPage .bo-current-card{padding-bottom:66px!important}
+#boMoviesPage .bo-current-card .bo-movie-card-actions{left:7px!important;right:auto!important;bottom:7px!important}
+#boMoviesPage .bo-send-preview-row{position:absolute!important;right:7px!important;bottom:7px!important;z-index:10!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:5px!important}
+#boMoviesPage .bo-send-preview-row .bo-send-movie-btn,
+#boMoviesPage .bo-preview-movie-btn{position:static!important;inset:auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:58px!important;min-height:27px!important;margin:0!important;padding:5px 8px!important;border:1.5px solid #F59E0B!important;border-radius:999px!important;background:#050505!important;color:#ef3340!important;font:900 .52rem/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:.04em!important;text-decoration:none!important;box-shadow:0 0 8px rgba(245,158,11,.55)!important;cursor:pointer!important}
+#boMoviesPage .bo-preview-movie-btn{color:#F59E0B!important}
+</style>
+<script id="bop-movie-send-preview-v172">
+(function(){
+  function enhance(){
+    document.querySelectorAll('#boMoviesPage .bo-current-card').forEach(function(card){
+      let send=card.querySelector('.bo-send-movie-btn');if(!send)return;
+      let row=card.querySelector('.bo-send-preview-row');
+      const heading=card.querySelector('.bo-movie-info h3');const title=heading?heading.textContent.trim():(card.dataset.movieTitle||'');
+      if(!row){row=document.createElement('div');row.className='bo-send-preview-row';send.parentNode.insertBefore(row,send);row.appendChild(send);}
+      if(!row.querySelector('.bo-preview-movie-btn')){
+        const preview=document.createElement('a');preview.className='bo-preview-movie-btn';preview.textContent='PREVIEW';preview.href='https://www.youtube.com/results?search_query='+encodeURIComponent(title+' official trailer');preview.target='_blank';preview.rel='noopener';preview.setAttribute('aria-label','Preview '+title+' official trailer');row.appendChild(preview);
+      }
+    });
+  }
+  function install(){enhance();new MutationObserver(function(){requestAnimationFrame(enhance);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v172: clear lower-right Send and Preview controls -->
+<style id="bop-legend-only-ending-v174">
+#bopMemberOverlay,[data-dest="bopmember"]{display:none!important}
+.bop-best-ending-actions.bop-legend-only{gap:0!important}
+.bop-best-ending-action.bop-legend-emblem{position:relative!important;display:flex!important;flex-direction:column!important;width:86px!important;height:86px!important;min-width:86px!important;min-height:86px!important;padding:9px 6px 7px!important;border:2px solid #F59E0B!important;border-radius:50%!important;background:radial-gradient(circle at 50% 42%,#241008 0,#090303 48%,#000 72%)!important;color:#ef3340!important;box-shadow:0 0 14px rgba(245,158,11,.85),inset 0 0 16px rgba(239,51,64,.14)!important}
+.bop-legend-emblem-shield{display:grid!important;place-items:center!important;width:36px!important;height:38px!important;margin:0 auto 3px!important;background:linear-gradient(150deg,#ef3340,#7c0710)!important;clip-path:polygon(50% 0,92% 15%,85% 70%,50% 100%,15% 70%,8% 15%)!important;filter:drop-shadow(0 0 4px rgba(239,51,64,.78))!important}
+.bop-legend-emblem-check{color:#5d050b!important;font:900 22px/1 Arial!important;text-shadow:0 1px 0 rgba(255,100,100,.25)!important}
+.bop-legend-emblem-label{color:#F59E0B!important;font:900 .56rem/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:.08em!important;text-shadow:0 0 6px rgba(245,158,11,.8)!important}
+.bop-legend-emblem::before,.bop-legend-emblem::after,.bop-mini-legend-badge::before,.bop-mini-legend-badge::after{position:absolute!important;top:50%!important;color:#F59E0B!important;font:400 15px/1 Arial!important;text-shadow:0 0 6px rgba(245,158,11,.9)!important;animation:bopLegendArrowNudge 1.45s ease-in-out infinite!important}
+.bop-legend-emblem::before,.bop-mini-legend-badge::before{content:'→'!important;right:calc(100% + 7px)!important}
+.bop-legend-emblem::after,.bop-mini-legend-badge::after{content:'←'!important;left:calc(100% + 7px)!important}
+.bop-mini-legend-badge{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:48px!important;height:48px!important;margin:8px 24px!important;padding:0!important;border:1.5px solid #F59E0B!important;border-radius:50%!important;background:radial-gradient(circle,#210b08,#020202 70%)!important;box-shadow:0 0 9px rgba(245,158,11,.68)!important;vertical-align:middle!important;animation:bopMiniLegendPulse 1.8s ease-in-out infinite!important}
+.bop-mini-legend-shield{display:grid!important;place-items:center!important;width:27px!important;height:30px!important;background:linear-gradient(150deg,#ef3340,#72070e)!important;clip-path:polygon(50% 0,92% 15%,85% 70%,50% 100%,15% 70%,8% 15%)!important;color:#520308!important;font:900 17px/1 Arial!important;filter:drop-shadow(0 0 3px rgba(239,51,64,.7))!important}
+@keyframes bopMiniLegendPulse{0%,100%{transform:scale(.96);box-shadow:0 0 7px rgba(245,158,11,.55)}50%{transform:scale(1.04);box-shadow:0 0 15px rgba(245,158,11,.95),0 0 24px rgba(239,51,64,.24)}}
+@keyframes bopLegendArrowNudge{0%,100%{opacity:.55;transform:translateY(-50%) translateX(0)}50%{opacity:1;transform:translateY(-50%) translateX(3px)}}
+#legendOverlay #legendBack{display:flex!important;align-items:center!important;justify-content:center!important;width:58px!important;height:58px!important;border:2px solid #F59E0B!important;border-radius:50%!important;background:#050505!important;color:#ef3340!important;box-shadow:0 0 13px rgba(245,158,11,.75)!important;font:900 .62rem/1.08 'Archivo Black',Arial,sans-serif!important}
+@media(prefers-reduced-motion:reduce){.bop-mini-legend-badge,.bop-legend-emblem::before,.bop-legend-emblem::after,.bop-mini-legend-badge::before,.bop-mini-legend-badge::after{animation:none!important}}
+</style>
+<script id="bop-legend-only-ending-v174">
+(function(){
+  function removeMemberLinks(){document.querySelectorAll('[data-dest="bopmember"]').forEach(function(link){const separator=link.nextElementSibling;if(separator&&separator.tagName==='SPAN'&&/[·•]/.test(separator.textContent||''))separator.remove();link.remove();});}
+  function upgradeLegendLinks(){document.querySelectorAll('[data-dest="legend"]').forEach(function(link){if(link.classList.contains('bop-mini-legend-badge'))return;link.classList.add('bop-mini-legend-badge');link.innerHTML='<span class="bop-mini-legend-shield" aria-hidden="true">✓</span>';link.setAttribute('aria-label','Open Legend');link.title='Legend';});}
+  document.addEventListener('click',function(event){
+    const back=event.target.closest&&event.target.closest('#legendBack');if(!back)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    const legend=document.getElementById('legendOverlay');if(legend)legend.classList.remove('open');
+    const returnId=window.bopLegendReturnPage||'bestOfOverlay';const page=document.getElementById(returnId);
+    if(page)page.classList.add('open');window.scrollTo(0,0);
+  },true);
+  function install(){removeMemberLinks();upgradeLegendLinks();new MutationObserver(function(){removeMemberLinks();upgradeLegendLinks();}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v174: one designed Legend emblem, no Member signup flow -->
 </body></html>
