@@ -30067,6 +30067,7 @@ footer .bop-mini-legend-badge,
 #bopStaticLandingDock .bop-static-city-label{
   color:#ff3048!important;
   font-family:'Archivo Black',Arial,sans-serif!important;
+  font-size:calc(.58rem + 1px)!important;
   font-weight:900!important;
   text-shadow:none!important;
   filter:none!important;
@@ -30099,4 +30100,33 @@ footer .bop-mini-legend-badge,
 }
 </style>
 <!-- Fresh delivery build v194: smaller angled map pins and separate London, Paris and Zurich targets -->
+<script id="bop-main-other-cities-direct-link-v195">
+(function(){
+  function openOtherCities(event){
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    var button=document.getElementById('bopStaticOtherCities');
+    var overlay=document.getElementById('ocWorldOverlay');
+    if(!overlay)return;
+    window.bopOtherCitiesReturnPage='bopLandingOverlay';
+    if(typeof ocBuildWorld==='function')ocBuildWorld();
+    if(typeof window.ocBuildPins==='function')window.ocBuildPins();
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    overlay.scrollTop=0;
+    document.body.classList.add('oc-world-active');
+    if(button){button.classList.add('oc-firing');setTimeout(function(){button.classList.remove('oc-firing')},520);}
+  }
+  function install(){
+    var button=document.getElementById('bopStaticOtherCities');
+    if(!button||button.dataset.directOtherCities==='1')return;
+    button.dataset.directOtherCities='1';
+    button.addEventListener('click',openOtherCities,true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="bop-main-other-cities-direct-link-style-v195">
+#ocWorldOverlay.open{display:block!important;visibility:visible!important;opacity:1!important;z-index:2147483645!important}
+</style>
+<!-- Fresh delivery build v195: one-pixel larger Other Cities label and direct reliable map opening -->
 </body></html>
