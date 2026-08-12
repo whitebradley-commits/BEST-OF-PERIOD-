@@ -31591,4 +31591,58 @@ html,body{background:#000!important}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<style id="direct-city-routing-and-leaf-removal-v227">
+/* Remove marijuana-leaf artwork without changing maps, city content, or other colors. */
+.mini-leaf,
+.bo-cannabis-tile svg,
+svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],
+img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!important;visibility:hidden!important}
+</style>
+<script id="direct-city-routing-and-leaf-removal-v227-script">
+(function(){
+  var fixed={London:'london',Paris:'paris',Zurich:'zurich','Zürich':'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
+  function destinationFor(button){
+    var label=(button.textContent||'').trim();
+    if(fixed[label])return fixed[label];
+    if(typeof OC_CITIES!=='undefined'){
+      var city=OC_CITIES.find(function(item){
+        return item&&item.t==='live'&&((item.n||item.name||'').trim().toLowerCase()===label.toLowerCase());
+      });
+      if(city&&city.dest)return city.dest;
+    }
+    return '';
+  }
+  function closePage(id){var page=document.getElementById(id);if(page){page.classList.remove('open');page.setAttribute('aria-hidden','true')}}
+  function openCity(destination){
+    var card=document.getElementById('ocCityCard');
+    if(card)card.classList.remove('open','oc-city-choice-card','oc-territory-catch');
+    ['ocWorldOverlay','boNearMapPage','bopLandingOverlay','bopWorldwideLanding'].forEach(closePage);
+    document.body.classList.remove('oc-world-active');
+    document.body.style.overflow='';
+    if(typeof boCityContext!=='undefined')boCityContext=destination;
+    window.boCityContext=destination;
+    var best=document.getElementById('bestOfOverlay');
+    if(best){best.classList.add('open');best.setAttribute('aria-hidden','false')}
+    if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',destination);
+    if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');
+    try{history.replaceState(null,'','?page=otheroptions&city='+encodeURIComponent(destination))}catch(_e){}
+    window.scrollTo(0,0);if(best)best.scrollTop=0;
+  }
+  /* Window capture runs before the older document handlers, preventing Near You fallback. */
+  window.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#ocCityCard .oc-choice-city');
+    if(!button)return;
+    var destination=destinationFor(button);if(!destination)return;
+    event.preventDefault();event.stopImmediatePropagation();openCity(destination);
+  },true);
+  function removeLeafArtwork(){
+    document.querySelectorAll('.mini-leaf,.bo-cannabis-tile svg,svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]').forEach(function(node){node.remove()});
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),nodes=[],node;
+    while((node=walker.nextNode()))if(/[🌿🍃☘]/u.test(node.nodeValue||''))nodes.push(node);
+    nodes.forEach(function(textNode){textNode.nodeValue=textNode.nodeValue.replace(/[🌿🍃☘]/gu,'')});
+  }
+  function start(){removeLeafArtwork();new MutationObserver(function(){requestAnimationFrame(removeLeafArtwork)}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
