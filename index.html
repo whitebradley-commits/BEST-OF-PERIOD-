@@ -30611,4 +30611,57 @@ img.bop-image-pending{opacity:.18!important;filter:saturate(.25) brightness(.45)
 }
 </style>
 <!-- Fresh delivery build v208: restrained gold pulse and glow on Fate arrows and fingerprint -->
+<script id="bop-navigation-reliability-v209">
+(function(){
+  function openLandingNear(event){
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    if(typeof boNearMapReturnTarget!=='undefined')boNearMapReturnTarget='landing';
+    window.bopNearOpenedFromOtherCities=false;
+    var city=(typeof boCityContext!=='undefined'&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+    if(typeof boCityContext!=='undefined')boCityContext=city;
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open');
+    var results=document.getElementById('bopLandingResults');
+    if(results){results.classList.remove('open');results.innerHTML='';}
+    if(typeof boOpenNearMap==='function')boOpenNearMap();
+  }
+
+  function returnFromOtherCities(event){
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    var world=document.getElementById('ocWorldOverlay');
+    if(world){world.classList.remove('open');world.setAttribute('aria-hidden','true');}
+    var card=document.getElementById('ocCityCard');if(card)card.classList.remove('open');
+    document.body.classList.remove('oc-world-active');
+    var returnId=window.bopOtherCitiesReturnPage||'bopLandingOverlay';
+    var destination=document.getElementById(returnId);
+    if(returnId==='bopLandingOverlay'){
+      ['bestOfOverlay','boMoviesPage','boWorldwidePage','bopWorldwideLanding','boNearMapPage'].forEach(function(id){
+        var page=document.getElementById(id);if(page)page.classList.remove('open','active','is-open');
+      });
+      document.body.style.overflow='';
+      if(destination){destination.classList.add('open');destination.scrollTop=0;}
+      try{
+        var params=new URLSearchParams(location.search);
+        ['city','category','restaurant','movie','page'].forEach(function(key){params.delete(key)});
+        history.replaceState(null,'',location.pathname+(params.toString()?'?'+params.toString():''));
+      }catch(error){}
+    }else if(destination){
+      destination.classList.add('open');
+      destination.scrollTop=0;
+      if(returnId==='boNearMapPage')document.body.style.overflow='hidden';
+    }
+    window.scrollTo(0,0);
+  }
+
+  document.addEventListener('click',function(event){
+    var target=event.target.closest&&event.target.closest('#bopStaticNear,#bopLandingNearMeBtn');
+    if(target)openLandingNear(event);
+  },true);
+  document.addEventListener('click',function(event){
+    var target=event.target.closest&&event.target.closest('#ocWorldClose');
+    if(target)returnFromOtherCities(event);
+  },true);
+})();
+</script>
+<!-- Fresh delivery build v209: reliable Other Cities Back and immediate landing-page Near Me -->
 </body></html>
