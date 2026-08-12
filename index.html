@@ -30509,4 +30509,72 @@ footer .bop-mini-legend-badge,
 })();
 </script>
 <!-- Fresh delivery build v206: clearer pin instruction and Near Me Back restores Other Cities -->
+<style id="bop-sitewide-image-loading-v207">
+.bop-image-loading-host{position:relative!important}
+.bop-image-loading-indicator{
+  position:absolute;z-index:40;display:flex;align-items:center;justify-content:center;
+  box-sizing:border-box;min-width:42px;min-height:28px;padding:5px;
+  border:1px solid rgba(245,158,11,.72);border-radius:7px;
+  background:rgba(0,0,0,.82);color:#F59E0B;
+  font:900 clamp(7px,1.6vw,10px)/1 'Archivo Black',Arial,sans-serif;
+  letter-spacing:.06em;text-align:center;pointer-events:none;
+  box-shadow:0 0 7px rgba(245,158,11,.34),inset 0 0 7px rgba(245,158,11,.06);
+  animation:bopImageLoadingFlash 1.05s ease-in-out infinite;
+}
+.bop-image-loading-indicator::before{
+  content:'';width:10px;height:10px;flex:0 0 10px;margin-right:5px;
+  border:2px solid rgba(245,158,11,.28);border-top-color:#F59E0B;border-radius:50%;
+  animation:bopImageLoadingTurn .7s linear infinite;
+}
+.bop-image-loading-indicator.is-error{color:#ef3340;border-color:rgba(239,51,64,.65);animation:none}
+.bop-image-loading-indicator.is-error::before{display:none}
+img.bop-image-pending{opacity:.18!important;filter:saturate(.25) brightness(.45)!important}
+@keyframes bopImageLoadingFlash{0%,100%{opacity:.68;box-shadow:0 0 5px rgba(245,158,11,.25)}50%{opacity:1;box-shadow:0 0 13px rgba(245,158,11,.68),0 0 23px rgba(245,158,11,.2)}}
+@keyframes bopImageLoadingTurn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.bop-image-loading-indicator,.bop-image-loading-indicator::before{animation:none!important}}
+</style>
+<script id="bop-sitewide-image-loading-v207">
+(function(){
+  var tracked=new WeakMap();
+  function usableSource(img){return img.currentSrc||img.getAttribute('src')||''}
+  function place(img,indicator){
+    var parent=img.parentElement;if(!parent)return;
+    var left=img.offsetLeft,top=img.offsetTop,width=img.offsetWidth,height=img.offsetHeight;
+    indicator.style.left=left+'px';indicator.style.top=top+'px';indicator.style.width=Math.max(42,width)+'px';indicator.style.height=Math.max(28,height)+'px';
+  }
+  function indicatorFor(img){
+    var state=tracked.get(img),parent=img.parentElement;if(!parent)return null;
+    if(state&&state.indicator&&state.indicator.isConnected)return state.indicator;
+    parent.classList.add('bop-image-loading-host');
+    var indicator=document.createElement('span');indicator.className='bop-image-loading-indicator';indicator.textContent='LOADING…';indicator.setAttribute('aria-live','polite');parent.appendChild(indicator);
+    state=state||{};state.indicator=indicator;tracked.set(img,state);requestAnimationFrame(function(){place(img,indicator)});return indicator;
+  }
+  function pending(img){
+    if(!img||img.tagName!=='IMG'||!usableSource(img))return;
+    var indicator=indicatorFor(img);if(!indicator)return;
+    indicator.classList.remove('is-error');indicator.textContent='LOADING…';img.classList.add('bop-image-pending');place(img,indicator);
+  }
+  function ready(img){
+    var state=tracked.get(img);img.classList.remove('bop-image-pending');if(state&&state.indicator){state.indicator.remove();state.indicator=null;}
+  }
+  function failed(img){
+    var indicator=indicatorFor(img);img.classList.remove('bop-image-pending');if(indicator){indicator.classList.add('is-error');indicator.textContent='IMAGE UNAVAILABLE';place(img,indicator);}
+  }
+  function watch(img){
+    if(!img||img.tagName!=='IMG')return;
+    var state=tracked.get(img)||{};
+    if(!state.wired){img.addEventListener('load',function(){ready(img)});img.addEventListener('error',function(){failed(img)});state.wired=true;tracked.set(img,state);}
+    if(!usableSource(img))return;
+    if(img.complete&&img.naturalWidth>0)ready(img);else if(img.complete&&img.naturalWidth===0)failed(img);else pending(img);
+  }
+  function scan(root){if(root&&root.tagName==='IMG')watch(root);if(root&&root.querySelectorAll)root.querySelectorAll('img').forEach(watch)}
+  function install(){
+    scan(document);
+    new MutationObserver(function(records){records.forEach(function(record){if(record.type==='attributes'){pending(record.target);requestAnimationFrame(function(){watch(record.target)})}else record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})})}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['src','srcset']});
+    window.addEventListener('resize',function(){document.querySelectorAll('img.bop-image-pending').forEach(function(img){var state=tracked.get(img);if(state&&state.indicator)place(img,state.indicator)})},{passive:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v207: sitewide gold image-loading state until every replacement is ready -->
 </body></html>
