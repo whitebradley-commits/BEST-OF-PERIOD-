@@ -25057,7 +25057,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     tpaOverlay:'tpa',tpaCoachingOverlay:'tpa-coaching',tpaStakingOverlay:'tpa-staking',
     tpaAffiliateOverlay:'tpa-affiliate',tpaJoinOverlay:'tpa-join',shuttleOverlay:'shuttle',
     hhOverlay:'high-and-hungry',thc24Overlay:'24-hour-thc',ocWorldOverlay:'other-cities',
-    tapCardOverlay:'tapic'
+    tapCardOverlay:'tapic',boMoviesPage:'movies',boWorldwidePage:'worldwide'
   };
   const priority=Object.keys(pageRoutes).reverse();
   const pageBySlug=Object.fromEntries(Object.entries(pageRoutes).map(function(entry){return [entry[1],entry[0]];}));
@@ -26356,9 +26356,10 @@ body.oc-world-active>#ocWorldOverlay{visibility:visible!important;display:block!
     <button class="vendor-close" type="button" aria-label="Close Vendor page">×</button>
     <h2 class="vendor-title">Become a Verified Vendor</h2>
     <p class="vendor-prompt"><span class="vendor-check" aria-label="verified check"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.2 8.2 3 3.1 6.7-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></p>
-    <p class="vendor-copy">Enter your company email and a representative of <strong>BJS</strong> will get right back with you.</p>
+    <p class="vendor-copy">Someone from <strong>BJS</strong> will be with you shortly.</p>
     <form class="vendor-form" novalidate>
-      <input class="vendor-email" type="email" inputmode="email" autocomplete="email" placeholder="Company email address" aria-label="Company email address" required>
+      <input class="vendor-email" type="email" inputmode="email" autocomplete="email" placeholder="Enter your email address" aria-label="Enter your email address" required>
+      <div class="vendor-powered-by" aria-label="Powered by BJS"><span>POWERED BY</span><span class="vendor-powered-bjs">BJS</span></div>
       <input class="vendor-website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
       <button class="vendor-submit" type="submit">ENTER</button>
       <p class="vendor-status" aria-live="polite"></p>
@@ -28070,6 +28071,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 /* Aircraft photography follows the poster language and fades into the card. */
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card{overflow:hidden!important;background:#000!important;grid-template-columns:42% minmax(0,1fr)!important}
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-aircraft-photo{width:calc(100% + 32px)!important;height:100%!important;min-height:150px!important;border:0!important;border-radius:0!important;object-fit:cover!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-airline-logo-poster{width:100%!important;height:100%!important;min-height:150px!important;box-sizing:border-box!important;padding:14px 12px!important;border:0!important;border-radius:0!important;background:#000!important;object-fit:contain!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 74%,rgba(0,0,0,.72) 88%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 74%,rgba(0,0,0,.72) 88%,transparent 100%)!important}
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-info{position:relative;z-index:2;background:linear-gradient(to right,rgba(0,0,0,.15),#000 18%)!important}
 
 /* Permanent ending for Best of Period pages only. */
@@ -28083,18 +28085,26 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <script id="bop-final-best-pages-v156">
 (function(){
-  const airlinePhotoCacheKey='bop-aircraft-photos-v156';let airlinePhotos={};
+  const airlinePhotoCacheKey='bop-aircraft-photos-v176';let airlinePhotos={};
+  try{localStorage.removeItem('bop-aircraft-photos-v156');}catch(e){}
   try{airlinePhotos=JSON.parse(localStorage.getItem(airlinePhotoCacheKey)||'{}')||{};}catch(e){airlinePhotos={};}
   function saveAirlinePhotos(){try{localStorage.setItem(airlinePhotoCacheKey,JSON.stringify(airlinePhotos));}catch(e){}}
   async function findAircraftPhoto(name){
     if(Object.prototype.hasOwnProperty.call(airlinePhotos,name))return airlinePhotos[name]||'';
-    const endpoint='https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(name+' aircraft airline livery')+'&gsrnamespace=0&gsrlimit=6&prop=pageimages&piprop=thumbnail&pithumbsize=720&format=json&origin=*';
-    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});const data=await response.json();const pages=Object.values((data&&data.query&&data.query.pages)||{}).sort(function(a,b){return(a.index||99)-(b.index||99)});const page=pages.find(function(item){return item.thumbnail&&item.thumbnail.source});const url=page&&page.thumbnail?page.thumbnail.source:'';airlinePhotos[name]=url;saveAirlinePhotos();return url;}catch(e){return '';}
+    const exactTitles={'ANA All Nippon Airways':'All Nippon Airways'};
+    const title=exactTitles[name]||name;
+    const endpoint='https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(title)+'&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=900&format=json&origin=*';
+    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});const data=await response.json();const pages=Object.values((data&&data.query&&data.query.pages)||{});const page=pages.find(function(item){return item.thumbnail&&item.thumbnail.source});let url=page&&page.thumbnail?page.thumbnail.source:'';if(/hazmat|cleaner|cleaning|worker|disinfect|janitor/i.test(url))url='';airlinePhotos[name]=url;saveAirlinePhotos();return url;}catch(e){return '';}
+  }
+  function officialLogo(name){
+    const links=typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA.airlines&&Array.isArray(BO_WORLDWIDE_DATA.airlines.links)?BO_WORLDWIDE_DATA.airlines.links:[];
+    const match=links.find(function(item){return item[0]===name});if(!match)return '';
+    try{return 'https://logo.clearbit.com/'+encodeURIComponent(new URL(match[1]).hostname.replace(/^www\./,''))+'?size=256';}catch(e){return '';}
   }
   async function hydrateAirlines(){
     const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');if(!page)return;
-    const cards=Array.from(page.querySelectorAll('.bo-movie-card'));
-    for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.aircraftPhoto==='1')return;card.dataset.aircraftPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const url=await findAircraftPhoto(title.textContent.trim());if(!url)return;const probe=new Image();probe.onload=function(){if(probe.naturalWidth<160||probe.naturalHeight<100)return;image.src=url;image.alt=title.textContent.trim()+' aircraft';image.classList.add('bo-aircraft-photo')};probe.src=url;}));}
+    const cards=Array.from(page.querySelectorAll('.bo-movie-card')),usedPhotos=new Set();
+    for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.aircraftPhoto==='1')return;card.dataset.aircraftPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const name=title.textContent.trim(),logo=officialLogo(name);if(logo){image.src=logo;image.alt=name+' logo';image.classList.remove('bo-aircraft-photo');image.classList.add('bo-airline-logo-poster');}const url=await findAircraftPhoto(name);if(!url||usedPhotos.has(url))return;const probe=new Image();probe.onload=function(){if(probe.naturalWidth<240||probe.naturalHeight<120)return;usedPhotos.add(url);image.src=url;image.alt=name+' aircraft';image.classList.remove('bo-airline-logo-poster');image.classList.add('bo-aircraft-photo')};probe.src=url;}));}
   }
   function endingMarkup(){return '<div class="bop-best-ending" data-bop-ending="1"><div class="bop-best-ending-rule"></div><button class="bop-best-ending-badges" type="button" aria-label="Open badge directory"><span class="bop-best-ending-badge">M★★★</span><span class="bop-best-ending-badge">JB</span><span class="bop-best-ending-badge is-check">✓</span><span class="bop-best-ending-badge">BJS</span></button><footer class="bop-best-ending-footer"><strong>bestofperiod.com</strong>Best restaurants. Best directory. Period.</footer></div>'}
   function installEndings(){
@@ -28309,7 +28319,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 #vendorThanksOverlay .vendor-thanks-close{position:absolute;right:16px;top:22px;width:38px;height:38px;border:1.5px solid #F59E0B;border-radius:50%;background:#050505;color:#ed2637;font:900 24px/1 Arial,sans-serif;cursor:pointer}
 #vendorThanksOverlay h2{margin:0 0 14px;color:#ed2637;font:900 clamp(1.55rem,7vw,2.25rem)/1 'Archivo Black',sans-serif;text-shadow:0 0 8px rgba(237,38,55,.4)}
 #vendorThanksOverlay p{margin:0;color:#F59E0B;font:700 .88rem/1.5 'Archivo Narrow',Arial,sans-serif}
-#vendorOverlay .vendor-title{background:none!important;color:#ed2637!important;-webkit-text-fill-color:#ed2637!important;animation:none!important;text-shadow:0 0 7px rgba(237,38,55,.35)}
+#vendorOverlay .vendor-title{background:linear-gradient(90deg,#ff3048,#F59E0B,#42d66b,#35a7ff,#b763ff,#ff3048)!important;background-size:220% auto!important;color:transparent!important;-webkit-text-fill-color:transparent!important;-webkit-background-clip:text!important;background-clip:text!important;animation:vendorRainbowMove 5s linear infinite!important;text-shadow:none!important}
 #vendorOverlay .vendor-check{width:54px!important;height:54px!important;border-radius:0!important;background:#d99b18!important;clip-path:polygon(50% 0%,61% 7%,74% 3%,83% 16%,96% 25%,91% 39%,100% 50%,91% 61%,96% 75%,83% 84%,74% 97%,61% 93%,50% 100%,39% 93%,26% 97%,17% 84%,4% 75%,9% 61%,0 50%,9% 39%,4% 25%,17% 16%,26% 3%,39% 7%)!important}
 #vendorOverlay .vendor-check svg{width:42px!important;height:42px!important;background:#168cff!important;clip-path:inherit;padding:9px;box-sizing:border-box}
 #vendorOverlay .vendor-check svg path{stroke:#064b9d!important}
@@ -28329,7 +28339,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     '<div class="bo-verification-key-item">'+badge('verified',true)+'<b>VERIFIED</b><small>4.9–5.0 or BJS verified</small></div>'+
     '<div class="bo-verification-key-item">'+badge('processing',true)+'<b>PROCESSING</b><small>4.4–4.8</small></div>'+
     '<div class="bo-verification-key-item">'+badge('unverified',true)+'<b>UNVERIFIED</b><small>4.3 or below</small></div></div>';}
-  function vendorLink(){return '<div class="bo-legend-vendor-row"><button type="button" class="bo-verified-vendor-link" data-dest="vendor">Become a verified vendor</button></div>';}
+  function vendorLink(){return '<div class="bo-legend-vendor-row"><button type="button" class="bo-verified-vendor-link" data-dest="vendor"><span>Become a verified vendor</span>'+badge('verified',false)+'</button></div>';}
   function upgradeLegend(){
     const section=document.getElementById('boLegendBadges');if(!section)return;
     const list=section.querySelector('.bo-legend-list');if(!list||list.dataset.verificationV158==='1')return;
@@ -28555,6 +28565,10 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 <script id="bop-clean-entry-always-home-v164">
 (function(){
   const STORE='bop-sitewide-page-state-v1';
+  const navigationEntry=typeof performance!=='undefined'&&performance.getEntriesByType?performance.getEntriesByType('navigation')[0]:null;
+  const legacyNavigation=typeof performance!=='undefined'?performance.navigation:null;
+  const navigationType=navigationEntry&&navigationEntry.type?navigationEntry.type:(legacyNavigation&&legacyNavigation.type===1?'reload':legacyNavigation&&legacyNavigation.type===2?'back_forward':'navigate');
+  const isFreshNavigation=navigationType==='navigate';
   const routedKeys=['page','tag','fnt','retry','rescue','t','n','founder'];
   const restorablePages=[
     'bestOfOverlay','tbotrLandingOverlay','wtfLandingOverlay','directoryOverlay',
@@ -28562,7 +28576,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     'bopMemberOverlay','lvMemberOverlay','lvSteamOverlay','tpaOverlay',
     'tpaCoachingOverlay','tpaStakingOverlay','tpaAffiliateOverlay','tpaJoinOverlay',
     'shuttleOverlay','hhOverlay','thc24Overlay','ocWorldOverlay','otherCitiesOverlay',
-    'tapCardOverlay','boMoviesPage'
+    'tapCardOverlay','boMoviesPage','boWorldwidePage'
   ];
   function isCleanEntry(){
     const params=new URLSearchParams(location.search);
@@ -28570,7 +28584,10 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     return !routedKeys.some(function(key){return params.has(key);});
   }
   function showTrueLanding(){
-    if(!isCleanEntry())return;
+    /* Only a genuinely new visit belongs on the rotating home page. A browser
+       refresh or history return must be left alone so the refresh-safe state
+       restorer can reopen the exact page the visitor was viewing. */
+    if(!isFreshNavigation||!isCleanEntry())return;
     try{sessionStorage.removeItem(STORE);}catch(error){}
     restorablePages.forEach(function(id){
       const page=document.getElementById(id);if(!page)return;
@@ -28587,7 +28604,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     window.scrollTo(0,0);
   }
   function start(){showTrueLanding();setTimeout(showTrueLanding,240);setTimeout(showTrueLanding,520);}
-  window.addEventListener('pageshow',function(){showTrueLanding();setTimeout(showTrueLanding,120);});
+  window.addEventListener('pageshow',function(event){if(event.persisted)return;showTrueLanding();setTimeout(showTrueLanding,120);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
@@ -28949,4 +28966,36 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v174: one designed Legend emblem, no Member signup flow -->
+<style id="bop-vendor-verification-v175">
+.footer-vendor-link,.footer-vendor-separator{display:none!important}
+.bo-legend-vendor-row{padding:18px 2px!important}
+.bo-verified-vendor-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;min-height:48px!important;padding:8px 12px!important;color:#F59E0B!important;font:900 .8rem/1.2 'Archivo Narrow',Arial,sans-serif!important;cursor:pointer!important}
+.bo-verified-vendor-link::before{content:'→'!important;order:0!important;margin-right:0!important;color:#F59E0B!important;font-size:1rem!important}
+.bo-verified-vendor-link::after{content:'←'!important;order:3!important;color:#F59E0B!important;font-size:1rem!important;animation:bopVendorArrowBack 1.8s ease-in-out infinite!important}
+.bo-verified-vendor-link .bo-verification-badge{order:2!important;width:34px!important;height:34px!important;min-width:34px!important;filter:drop-shadow(0 0 5px rgba(22,140,255,.72))!important}
+.bo-verified-vendor-link span:first-child{order:1!important}
+#vendorOverlay .vendor-powered-by{display:flex;align-items:center;justify-content:center;gap:6px;margin:-4px 0 2px;color:#777;font:800 .55rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em}
+#vendorOverlay .vendor-powered-bjs{display:grid;place-items:center;width:28px;height:28px;border:1.5px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;font:900 .5rem/1 'Archivo Black',Arial,sans-serif;box-shadow:0 0 7px rgba(245,158,11,.45)}
+#vendorOverlay .vendor-card{border:2px solid #F59E0B!important;background:#050505!important;box-shadow:0 0 22px rgba(245,158,11,.48)!important}
+#vendorOverlay .vendor-copy{margin-bottom:18px!important}
+@keyframes bopVendorArrowBack{0%,100%{transform:translateX(2px)}50%{transform:translateX(-2px)}}
+@media(prefers-reduced-motion:reduce){.bo-verified-vendor-link,.bo-verified-vendor-link::before,.bo-verified-vendor-link::after,#vendorOverlay .vendor-title{animation:none!important}}
+</style>
+<script id="bop-vendor-verification-v175">
+(function(){
+  function cleanFooterVendorLinks(){document.querySelectorAll('.footer-vendor-link').forEach(function(link){const separator=link.previousElementSibling;if(separator&&separator.classList.contains('footer-vendor-separator'))separator.remove();link.remove();});}
+  function ensureVendorRow(){
+    const section=document.getElementById('boLegendBadges');if(!section)return;
+    const row=section.querySelector('.bo-legend-vendor-row');if(!row)return;
+    const button=row.querySelector('[data-dest="vendor"]');if(!button)return;
+    if(!button.querySelector('.bo-verification-badge'))button.insertAdjacentHTML('beforeend','<span class="bo-verification-badge bo-verification-verified" aria-hidden="true"></span>');
+    button.setAttribute('aria-label','Become a verified vendor');
+  }
+  function refresh(){cleanFooterVendorLinks();ensureVendorRow();}
+  function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v175: dedicated verified-vendor signup from the Legend page -->
+<!-- Fresh upload signature v177: 2026-08-12T01:28:00-07:00 -->
 </body></html>
