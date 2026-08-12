@@ -30790,7 +30790,7 @@ img.bop-image-pending{opacity:.18!important;filter:saturate(.25) brightness(.45)
   }
 
   document.addEventListener('click',function(event){
-    var target=event.target.closest&&event.target.closest('#bopStaticNear,#bopLandingNearMeBtn');
+    var target=event.target.closest&&event.target.closest('#bopLandingNearMeBtn');
     if(target)openLandingNear(event);
   },true);
   document.addEventListener('click',function(event){
@@ -31118,6 +31118,13 @@ footer [data-dest="legend"],
 
   function openWorldNow(event){
     if(event){event.preventDefault();event.stopImmediatePropagation();}
+    var other=document.getElementById('ocWorldOverlay');
+    if(other){other.classList.remove('open');other.setAttribute('aria-hidden','true');}
+    var choice=document.getElementById('ocCityCard');if(choice)choice.classList.remove('open');
+    document.body.classList.remove('oc-world-active');
+    var near=document.getElementById('boNearMapPage');if(near)near.classList.remove('open');
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    document.body.style.overflow='';
     if(typeof window.bopOpenWorldwideLanding==='function'){
       window.bopOpenWorldwideLanding();
     }else{
@@ -31165,4 +31172,67 @@ footer [data-dest="legend"],
 })();
 </script>
 <!-- Fresh delivery build v216: immediate Worldwide first-touch response and verified four-button landing dock -->
+<style id="bop-persistent-map-dock-v217">
+/* Carry the same four-button dock onto Near Me and Other Cities. */
+body.oc-world-active>#bopStaticLandingDock,
+body:has(#boNearMapPage.open)>#bopStaticLandingDock{
+  display:flex!important;visibility:visible!important;pointer-events:auto!important;
+  z-index:2147483647!important;
+}
+body.oc-world-active>#bopStaticLandingDock *{visibility:visible!important;pointer-events:auto!important}
+body.oc-world-active>:not(#ocWorldOverlay):not(#bopStaticLandingDock):not(script):not(style):not(link){
+  visibility:hidden!important;pointer-events:none!important;
+}
+body.oc-world-active>#ocWorldOverlay{z-index:2147483645!important}
+</style>
+<script id="bop-persistent-map-dock-v217">
+(function(){
+  function hideOtherCities(){
+    var other=document.getElementById('ocWorldOverlay');
+    if(other){other.classList.remove('open');other.setAttribute('aria-hidden','true');}
+    var card=document.getElementById('ocCityCard');if(card)card.classList.remove('open');
+    document.body.classList.remove('oc-world-active');
+  }
+
+  function openNear(event){
+    event.preventDefault();event.stopImmediatePropagation();
+    hideOtherCities();
+    var world=document.getElementById('bopWorldwideLanding');if(world)world.classList.remove('open');
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var results=document.getElementById('bopLandingResults');if(results){results.classList.remove('open');results.innerHTML='';}
+    if(typeof boNearMapReturnTarget!=='undefined')boNearMapReturnTarget='landing';
+    window.bopNearOpenedFromOtherCities=false;
+    if(typeof boOpenNearMap==='function')boOpenNearMap();
+  }
+
+  function openOther(event){
+    event.preventDefault();event.stopImmediatePropagation();
+    var overlay=document.getElementById('ocWorldOverlay');if(!overlay)return;
+    var near=document.getElementById('boNearMapPage');
+    window.bopOtherCitiesReturnPage=near&&near.classList.contains('open')?'boNearMapPage':'bopLandingOverlay';
+    if(typeof ocBuildWorld==='function')ocBuildWorld();
+    if(typeof window.ocBuildPins==='function')window.ocBuildPins();
+    else if(typeof ocBuildPins==='function')ocBuildPins();
+    overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;
+    document.body.classList.add('oc-world-active');
+  }
+
+  function sharePage(event){
+    event.preventDefault();event.stopImmediatePropagation();
+    var exact=document.getElementById('globalSharePage');
+    var landing=document.getElementById('landingSharePage');
+    if(exact&&typeof exact.click==='function')exact.click();
+    else if(landing&&typeof landing.click==='function')landing.click();
+  }
+
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities');
+    if(!button)return;
+    if(button.id==='bopStaticShare')sharePage(event);
+    else if(button.id==='bopStaticNear')openNear(event);
+    else openOther(event);
+  },true);
+})();
+</script>
+<!-- Fresh delivery build v217: persistent four-button map dock with direct Share, Near Me, Other Cities and Worldwide actions -->
 </body></html>
