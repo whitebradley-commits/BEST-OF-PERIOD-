@@ -7821,6 +7821,31 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
   setTimeout(window.bopReleaseRouteGate,1400);
 })();
 </script>
+<script id="bop-mobile-performance-gate-v186">
+(function(){
+  const NativeObserver=window.MutationObserver;if(!NativeObserver)return;
+  window.MutationObserver=class BopControlledObserver{
+    constructor(callback){
+      this.callback=callback;this.pending=false;this.cooling=false;this.latest=[];
+      this.native=new NativeObserver((records)=>{
+        this.latest=records;
+        const landing=document.getElementById('bopLandingOverlay');
+        if(landing&&landing.classList.contains('open'))return;
+        if(this.pending||this.cooling)return;
+        this.pending=true;
+        setTimeout(()=>{
+          this.pending=false;this.cooling=true;
+          try{this.callback(this.latest,this);}catch(error){setTimeout(()=>{throw error},0)}
+          setTimeout(()=>{this.cooling=false},700);
+        },60);
+      });
+    }
+    observe(target,options){this.native.observe(target,options)}
+    disconnect(){this.native.disconnect();this.pending=false;this.latest=[]}
+    takeRecords(){return this.native.takeRecords()}
+  };
+})();
+</script>
 </head>
 <body><div class="open" id="bopLandingOverlay"><button aria-label="BJS CO." class="footer-hotlink" data-dest="about" style="position:fixed;bottom:14px;right:14px;z-index:99999;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;text-decoration:none;pointer-events:auto;animation:bjsFaintPulse 4s ease-in-out infinite;" type="button"><svg aria-hidden="true" height="30" viewbox="0 0 40 40" width="30"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11" text-anchor="middle" x="20" y="18">BJS</text><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8" text-anchor="middle" x="20" y="28">CO.</text></svg></button><button id="landingSharePage" aria-label="Share this exact page" type="button">SHARE<br>PAGE</button> <style> @keyframes bjsFaintPulse{
       0%,100%{ opacity:0.65; filter:drop-shadow(0 0 2px rgba(245,158,11,0.5)); }
@@ -8687,18 +8712,15 @@ function startInfiniteCityCycler(elId, cities, holdMs){
   }
 
   function step(){
-    el.classList.remove('animating-in');
-    el.classList.add('animating-out');
-    // Same near-instant timing as the real Vegas cycler's fast spin (2ms
-    // holds, interrupting its own CSS fade mid-flight each step) — that's
-    // what gives it that rapid slot-machine flicker instead of a slow crossfade.
-    setTimeout(() => {
-      last = pickNext();
-      el.textContent = last;
-      el.classList.remove('animating-out');
-      el.classList.add('animating-in');
-      setTimeout(step, holdMs);
-    }, 1);
+    last = pickNext();
+    // Update the existing text node directly. Replacing textContent and
+    // toggling animation classes here used to wake every page-wide observer
+    // five times per second, overwhelming mobile Safari and delaying taps.
+    // A character-data update keeps the same fast city display without
+    // broadcasting a structural/class mutation through the whole site.
+    if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = last;
+    else el.appendChild(document.createTextNode(last));
+    setTimeout(step, holdMs);
   }
 
   setTimeout(step, holdMs);
@@ -9681,17 +9703,10 @@ function setupBjsWhyPopup(){
     if(e.target === overlay) closeBjsWhy();
   });
 
-  setInterval(function(){
-    document.querySelectorAll('.bjs-why-trigger').forEach(function(btn){
-      if(btn.dataset.whyWired) return;
-      btn.dataset.whyWired = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        openBjsWhy();
-      });
-    });
-  }, 300);
+  document.addEventListener('click', function(e){
+    const btn=e.target.closest&&e.target.closest('.bjs-why-trigger');if(!btn)return;
+    e.preventDefault();e.stopPropagation();openBjsWhy();
+  });
 }
 
 function setupDirectionsPopup(){
@@ -9730,17 +9745,11 @@ function setupDirectionsPopup(){
     });
   }
 
-  setInterval(function(){
-    document.querySelectorAll('[data-directions-popup]').forEach(function(btn){
-      if(btn.dataset.dirWired) return;
-      btn.dataset.dirWired = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        openDirectionsPopup(btn.getAttribute('data-directions-popup'), btn.getAttribute('data-directions-name'));
-      });
-    });
-  }, 300);
+  document.addEventListener('click', function(e){
+    const btn=e.target.closest&&e.target.closest('[data-directions-popup]');if(!btn)return;
+    e.preventDefault();e.stopPropagation();
+    openDirectionsPopup(btn.getAttribute('data-directions-popup'),btn.getAttribute('data-directions-name'));
+  });
 }
 
 // ---- Phone popup ----
@@ -9792,18 +9801,11 @@ function setupPhonePopup(){
     });
   }
 
-  // Cards render continuously, so wire new phone buttons as they appear.
-  setInterval(function(){
-    document.querySelectorAll('[data-phone-popup]').forEach(function(btn){
-      if(btn.dataset.phoneWired) return;
-      btn.dataset.phoneWired = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        openPhonePopup(btn.getAttribute('data-phone-popup'), btn.getAttribute('data-phone-display'));
-      });
-    });
-  }, 300);
+  document.addEventListener('click', function(e){
+    const btn=e.target.closest&&e.target.closest('[data-phone-popup]');if(!btn)return;
+    e.preventDefault();e.stopPropagation();
+    openPhonePopup(btn.getAttribute('data-phone-popup'),btn.getAttribute('data-phone-display'));
+  });
 }
 
 // ---- Menu popup ----
@@ -23103,18 +23105,11 @@ function startBopCityCycler(elId, cities, firstHold, hold, outMs, inMs, rampSche
   }
   function swap(){
     const next = nextCity();
-    el.classList.remove('is-active');
-    el.classList.add('animating-out');
-    setTimeout(() => {
-      el.textContent = next;
-      el.classList.remove('animating-out');
-      el.classList.add('animating-in');
-      setTimeout(() => {
-        el.classList.remove('animating-in');
-        el.classList.add('is-active');
-        setTimeout(swap, getNextHold());
-      }, inMs);
-    }, outMs);
+    // These decorative badges also run while hidden. Updating their existing
+    // text node avoids waking every global observer for an invisible fade.
+    if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = next;
+    else el.appendChild(document.createTextNode(next));
+    setTimeout(swap, getNextHold());
   }
   setTimeout(swap, firstHold);
 }
@@ -28376,6 +28371,9 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     try{return 'https://logo.clearbit.com/'+encodeURIComponent(new URL(match[1]).hostname.replace(/^www\./,''))+'?size=256';}catch(e){return '';}
   }
   async function hydrateAirlines(){
+    // Airline rankings are intentionally text-only. Do not fetch or inject
+    // cabin, aircraft, or logo photography in the background.
+    return;
     const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');if(!page)return;
     const cards=Array.from(page.querySelectorAll('.bo-movie-card')),usedPhotos=new Set();
     for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.cabinPhoto==='1')return;card.dataset.cabinPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const name=title.textContent.trim(),logo=officialLogo(name);if(logo){image.src=logo;image.alt=name+' logo';image.classList.remove('bo-aircraft-photo','bo-cabin-photo');image.classList.add('bo-airline-logo-poster');let brand=card.querySelector('.bo-cabin-brand');if(!brand){brand=document.createElement('span');brand.className='bo-cabin-brand';brand.innerHTML='<img alt="" aria-hidden="true">';card.appendChild(brand);}brand.querySelector('img').src=logo;}const url=await findCabinPhoto(name);if(!url||usedPhotos.has(url))return;usedPhotos.add(url);const probe=new Image();probe.onload=function(){if(probe.naturalWidth<240||probe.naturalHeight<120){usedPhotos.delete(url);return;}image.src=url;image.alt=name+' premium cabin interior';image.classList.remove('bo-airline-logo-poster','bo-aircraft-photo');image.classList.add('bo-cabin-photo')};probe.onerror=function(){usedPhotos.delete(url)};probe.src=url;}));}
@@ -29611,4 +29609,45 @@ footer .bop-mini-legend-badge,
 </script>
 <!-- Fresh delivery build v185: three movie orbs, three-second Fate picker, persistent choice panels, and site-preserving external access -->
 <!-- Fresh upload signature: exact internal v185 recovery, 2026-08-11 22:17 PT -->
+<style id="bop-airlines-text-directory-v186">
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-cabin-brand,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{display:none!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-movies{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source{color:#F59E0B!important;font:800 .72rem/1.4 'Archivo Narrow',Arial,sans-serif!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source::before,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source::after{display:none!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{display:grid!important;grid-template-columns:repeat(15,minmax(112px,1fr))!important;grid-template-rows:repeat(2,94px)!important;grid-auto-flow:column!important;gap:9px!important;min-width:1800px!important;padding:8px 4px 15px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{display:block!important;min-height:94px!important;padding:0!important;border:1px solid rgba(245,158,11,.42)!important;border-radius:9px!important;background:#050505!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner{display:flex!important;min-height:92px!important;align-items:center!important;justify-content:center!important;padding:7px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-text-link{display:flex!important;min-height:78px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;color:#fff!important;text-align:center!important;text-decoration:none!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-name{color:#fff!important;font:900 .7rem/1.12 'Archivo Black',Arial,sans-serif!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-phone{color:#ef3340!important;font:800 .66rem/1 'Archivo Narrow',Arial,sans-serif!important;text-decoration:none!important;text-shadow:0 0 5px rgba(239,51,64,.5)!important}
+</style>
+<script id="bop-airlines-text-directory-v186">
+(function(){
+  const directory=[
+    ['Delta Air Lines','https://www.delta.com/','800-221-1212'],['United Airlines','https://www.united.com/','800-864-8331'],['American Airlines','https://www.aa.com/','800-433-7300'],['Southwest Airlines','https://www.southwest.com/','800-435-9792'],['Alaska Airlines','https://www.alaskaair.com/','800-252-7522'],
+    ['JetBlue','https://www.jetblue.com/','800-538-2583'],['Air Canada','https://www.aircanada.com/','888-247-2262'],['WestJet','https://www.westjet.com/','888-937-8538'],['Aeromexico','https://www.aeromexico.com/','800-237-6639'],['LATAM Airlines','https://www.latamairlines.com/','866-435-9526'],
+    ['Avianca','https://www.avianca.com/','866-919-0081'],['Copa Airlines','https://www.copaair.com/','800-359-2672'],['British Airways','https://www.britishairways.com/','800-247-9297'],['Virgin Atlantic','https://www.virginatlantic.com/','800-862-8621'],['Lufthansa','https://www.lufthansa.com/','800-645-3880'],
+    ['SWISS','https://www.swiss.com/','833-626-0737'],['Air France','https://www.airfrance.com/','800-237-2747'],['KLM','https://www.klm.com/','800-618-0104'],['Iberia','https://www.iberia.com/','800-772-4642'],['Aer Lingus','https://www.aerlingus.com/','800-474-7424'],
+    ['SAS','https://www.flysas.com/','800-221-2350'],['Finnair','https://www.finnair.com/','929-474-6049'],['TAP Air Portugal','https://www.flytap.com/','800-931-1821'],['Turkish Airlines','https://www.turkishairlines.com/','800-874-8875'],['Emirates','https://www.emirates.com/','800-777-3999'],
+    ['Qatar Airways','https://www.qatarairways.com/','877-777-2827'],['Etihad Airways','https://www.etihad.com/','877-690-0767'],['Air India','https://www.airindia.com/','888-634-1407'],['Singapore Airlines','https://www.singaporeair.com/','833-727-0118'],['Cathay Pacific','https://www.cathaypacific.com/','833-933-2244']
+  ];
+  if(typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA.airlines)BO_WORLDWIDE_DATA.airlines.links=directory.map(function(item){return[item[0],item[1],item[2]]});
+  if(typeof boWorldwideActionHTML==='function'){
+    const prior=boWorldwideActionHTML;
+    boWorldwideActionHTML=function(item,index,action,key){
+      if(key!=='airlines')return prior(item,index,action,key);
+      const phone=item[2]||'',digits=phone.replace(/\D/g,'');
+      return '<article class="bo-current-card bo-airline-direct-card"><div class="bo-airline-direct-inner"><a class="bo-airline-text-link" target="_blank" rel="noopener" aria-label="Open '+item[0]+' official website" href="'+item[1]+'"><span class="bo-airline-name">'+item[0]+'</span><span class="bo-airline-phone" data-airline-phone="'+digits+'">'+phone+'</span></a></div></article>';
+    };
+  }
+  document.addEventListener('click',function(event){
+    const phone=event.target.closest&&event.target.closest('[data-airline-phone]');if(!phone)return;
+    event.preventDefault();event.stopImmediatePropagation();location.href='tel:'+phone.dataset.airlinePhone;
+  },true);
+})();
+</script>
+<!-- Fresh delivery build v186: responsive homepage recovery and text-only 30-airline directory -->
 </body></html>
