@@ -25518,6 +25518,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(state.major&&pageRoutes[state.major])Object.keys(pageRoutes).forEach(function(id){
       if(id===state.major)return;const el=document.getElementById(id);if(el)el.classList.remove('open','is-open','active','tg-open');
     });
+    if(state.major==='ocWorldOverlay'){
+      const landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+      document.body.classList.add('oc-world-active');
+      requestAnimationFrame(function(){
+        if(typeof ocBuildWorld==='function')ocBuildWorld();
+        if(typeof window.ocBuildPins==='function')window.ocBuildPins();else if(typeof ocBuildPins==='function')ocBuildPins();
+      });
+    }else document.body.classList.remove('oc-world-active');
     Object.entries(state.fields||{}).forEach(function(entry){
       const el=document.getElementById(entry[0]);if(!el)return;
       el.value=entry[1].value;el.checked=entry[1].checked;
@@ -25536,6 +25544,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         restoring=true;
         Object.keys(pageRoutes).forEach(function(id){const el=document.getElementById(id);if(el)el.classList.remove('open','is-open','active','tg-open');});
         const page=document.getElementById(wanted);if(page){page.classList.add('open');if(page.style.display==='none')page.style.display='block';page.scrollTop=0;}
+        if(wanted==='ocWorldOverlay'){
+          const landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+          if(page)page.setAttribute('aria-hidden','false');
+          document.body.classList.add('oc-world-active');
+          if(typeof ocBuildWorld==='function')ocBuildWorld();
+          if(typeof window.ocBuildPins==='function')window.ocBuildPins();else if(typeof ocBuildPins==='function')ocBuildPins();
+        }else document.body.classList.remove('oc-world-active');
         scrollTo(0,0);
         restoring=false;
       }
@@ -30259,6 +30274,7 @@ footer .bop-mini-legend-badge,
     overlay.setAttribute('aria-hidden','false');
     overlay.scrollTop=0;
     document.body.classList.add('oc-world-active');
+    try{history.replaceState(null,'',location.pathname+location.search+'#/page/other-cities');}catch(error){}
     if(button){button.classList.add('oc-firing');setTimeout(function(){button.classList.remove('oc-firing')},520);}
   }
   function install(){
@@ -31177,6 +31193,7 @@ body.oc-world-active>#ocWorldOverlay{z-index:2147483645!important}
     else if(typeof ocBuildPins==='function')ocBuildPins();
     overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;
     document.body.classList.add('oc-world-active');
+    try{history.replaceState(null,'',location.pathname+location.search+'#/page/other-cities');}catch(error){}
   }
 
   function sharePage(event){
