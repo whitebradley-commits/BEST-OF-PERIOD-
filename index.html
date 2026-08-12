@@ -31262,6 +31262,9 @@ footer .bop-footer-obsolete-info{display:none!important}
   function makeBjs(){var b=document.createElement('button');b.type='button';b.className='bop-footer-bjs-icon';b.setAttribute('aria-label','Open the BJS Founders page');b.textContent='BJS';return b}
 
   function repair(footer){
+    /* The approved v224 footer owns every non-poker footer.  The retired v218
+       repair loop must not rebuild the old footer over it. */
+    if(document.getElementById('approved-global-footer-v224-script'))return;
     if(!footer)return;
     var originalText=(footer.textContent||'').replace(/\s+/g,' ').trim();
     var isPoker=/The Poker Agency|\bTPA\b/.test(originalText)||!!footer.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay');
@@ -31424,7 +31427,7 @@ footer .bop-footer-obsolete-info{display:none!important}
 </script>
 <!-- Fresh delivery build v221: clean Tag #1 launch, mandatory TAGGING THE WALL, one-million-space wall, and final footer BJS Founders route -->
 <style id="remove-internal-wtf-v222-style">
-#wtfLandingOverlay,#thankYouOverlay,#vendorVerifyOverlay,#directoryOverlay,#shuttleOverlay,#hhOverlay,#thc24Overlay,#app .ticker-wrap,#app .bonus-dock,#app header.hero,#app .category-bar,#app .filter-bar,#app .wtf-always-visible-row,#app .wtf-cities-toggle,#app .food-sky{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#wtfLandingOverlay,#thankYouOverlay,#vendorVerifyOverlay,#directoryOverlay,#shuttleOverlay,#hhOverlay,#thc24Overlay,#app .ticker-wrap,#app .bonus-dock,#app header.hero,#app .category-bar,#app .filter-bar,#app .wtf-always-visible-row,#app .wtf-cities-toggle,#app .food-sky,#app .join-box-wrap,#app #board{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #bopLandingOverlay{background:#000!important;min-height:100vh!important;min-height:100dvh!important;isolation:isolate!important}
 html,body{background:#000!important}
 </style>
@@ -31437,7 +31440,8 @@ html,body{background:#000!important}
     document.querySelectorAll(
       '#wtfCitiesWrap,#wtfCitiesToggleBtn,#thc24Btn,'+
       '#app .ticker-wrap,#app .bonus-dock,#app header.hero,#app .category-bar,#app .filter-bar,'+
-      '#app .wtf-always-visible-row,#app .wtf-cities-toggle,#app .food-sky'
+      '#app .wtf-always-visible-row,#app .wtf-cities-toggle,#app .food-sky,'+
+      '#app .join-box-wrap,#app #board'
     ).forEach(function(node){node.remove()});
     try{
       var saved=localStorage.getItem('bop-sitewide-page-state-v1')||'';
@@ -31534,7 +31538,7 @@ footer.bop-approved-footer .bop-footer-newsletter,footer.bop-approved-footer .bo
   function openFounders(event){event.preventDefault();event.stopImmediatePropagation();closePages();var page=document.getElementById('aboutUsOverlay');if(page){page.classList.add('open');page.setAttribute('aria-hidden','false');page.scrollTop=0}document.body.style.overflow='';window.scrollTo(0,0)}
   function openLegend(event){if(event){event.preventDefault();event.stopImmediatePropagation()}closePages();var page=document.getElementById('legendOverlay');if(page){page.classList.add('open');page.scrollTop=0}window.scrollTo(0,0)}
   document.addEventListener('click',function(event){var h=event.target.closest&&event.target.closest('footer.bop-approved-footer .bop-footer-home-icon');if(h)return openHome(event);var b=event.target.closest&&event.target.closest('footer.bop-approved-footer .bop-footer-bjs-icon');if(b)return openFounders(event)},true);
-  function start(){scan();new MutationObserver(function(){requestAnimationFrame(scan)}).observe(document.body,{childList:true,subtree:true});setInterval(function(){cityIndex=(cityIndex+1)%cities.length;document.querySelectorAll('footer.bop-approved-footer .bop-footer-city').forEach(function(node){node.textContent=cities[cityIndex]})},1450)}
+  function start(){scan();new MutationObserver(function(){requestAnimationFrame(scan)}).observe(document.body,{childList:true,subtree:true});setInterval(scan,600);setInterval(function(){cityIndex=(cityIndex+1)%cities.length;document.querySelectorAll('footer.bop-approved-footer .bop-footer-city').forEach(function(node){node.textContent=cities[cityIndex]})},1450)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
