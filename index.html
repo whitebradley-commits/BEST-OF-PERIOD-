@@ -25310,7 +25310,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function isShown(el){
     if(!el)return false;
     const style=getComputedStyle(el);
-    return style.display!=='none'&&style.visibility!=='hidden'&&(el.classList.contains('open')||el.classList.contains('is-open')||el.classList.contains('active')||style.position==='fixed');
+    return style.display!=='none'&&style.visibility!=='hidden'&&(el.classList.contains('open')||el.classList.contains('is-open')||el.classList.contains('active')||el.classList.contains('tg-open'));
   }
   function currentMajorPage(){
     for(const id of priority){const el=document.getElementById(id);if(isShown(el))return id;}
@@ -25327,6 +25327,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function syncAddress(replace){
     if(restoring||isShown(document.getElementById('conceptsOverlay')))return;
     const id=currentMajorPage();
+    if(id==='boWorldwidePage'){
+      const page=document.getElementById(id),key=page&&page.dataset.worldwideKey;
+      if(key){const p=new URLSearchParams(location.search);p.set('page','worldwide-'+key);p.delete('city');history[replace?'replaceState':'pushState'](null,'',location.pathname+'?'+p.toString());return;}
+    }
+    if(id==='boMoviesPage'){
+      const p=new URLSearchParams(location.search);p.set('page','movies');p.delete('city');history[replace?'replaceState':'pushState'](null,'',location.pathname+'?'+p.toString());return;
+    }
     if(id==='bestOfOverlay'){
       const category=categoryAddress();
       if(category){history[replace?'replaceState':'pushState'](null,'',category);return;}
@@ -29575,7 +29582,7 @@ footer .bop-mini-legend-badge,
   }
   function openMovie(title){
     const modal=ensureModal(),inTheaters=currentTitles().has(title),poster=posterFor(title),message=inTheaters?'This movie is currently in theaters. Here are your options.':'This movie is available to rent or purchase. Here are your options.';
-    modal.querySelector('.bop-movie-choice-content').innerHTML=(poster?'<img class="bop-movie-choice-poster" src="'+poster+'" alt="'+title.replace(/"/g,'&quot;')+' poster">':'')+'<h2>'+title+'</h2><p class="bop-movie-choice-message">'+message+'</p>'+providerHTML(inTheaters?theaterProviders:homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<div class="bop-fate-decided">FATE HAS DECIDED</div>'+(poster?'<img class="bop-movie-choice-poster" src="'+poster+'" alt="'+title.replace(/"/g,'&quot;')+' poster">':'')+'<h2>'+title+'</h2><p class="bop-movie-choice-message">'+message+'</p>'+providerHTML(inTheaters?theaterProviders:homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
     modal.classList.add('is-open');
   }
   function openInTheaters(){
@@ -29585,7 +29592,7 @@ footer .bop-mini-legend-badge,
   }
   function openWatchHome(){const modal=ensureModal();modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>WATCH AT HOME</h2><p class="bop-movie-choice-message">Search the world’s major rental and purchase services for virtually any movie.</p>'+providerHTML(homeProviders,'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';modal.classList.add('is-open');}
   function markup(){
-    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div><button class="bop-movie-orb bop-fate-orb" type="button" aria-label="Press and hold three seconds to let fate choose a movie"><span class="bop-movie-orb-art"></span><svg class="bop-fate-curve is-top" viewBox="0 0 120 40" aria-hidden="true"><defs><path id="bopFateTop" d="M12 33 Q60 1 108 33"/></defs><text><textPath href="#bopFateTop" startOffset="50%" text-anchor="middle">PRESS AND HOLD</textPath></text></svg><span class="bop-fate-count">3</span><svg class="bop-fate-curve is-bottom" viewBox="0 0 120 40" aria-hidden="true"><defs><path id="bopFateBottom" d="M12 7 Q60 39 108 7"/></defs><text><textPath href="#bopFateBottom" startOffset="50%" text-anchor="middle">LET FATE DECIDE</textPath></text></svg></button><p class="bop-movie-orb-hint">Press and hold three seconds</p></div><div><button class="bop-movie-orb bop-home-orb" type="button"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">WATCH<br>AT HOME</span></button></div></div></section>';
+    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div class="bop-side-orb bop-side-left"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div class="bop-center-orb"><div class="bop-movie-orb bop-fate-orb" aria-label="Rotating movie selector"><span class="bop-movie-orb-art"></span><span class="bop-fate-count">3</span></div></div><div class="bop-side-orb bop-side-right"><button class="bop-movie-orb bop-home-orb" type="button"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">WATCH<br>AT HOME</span></button></div></div><div class="bop-fate-instruction"><p><strong>PRESS AND HOLD RIGHT HERE FOR THREE SECONDS</strong><span>LET FATE DECIDE</span></p><span class="bop-thumb-arrow" aria-hidden="true">→</span><button class="bop-fate-thumb" type="button" aria-label="Press and hold here for three seconds to let fate decide"><svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><span class="bop-thumb-arrow is-right" aria-hidden="true">←</span></div></section>';
   }
   let carouselTimer=null,holdTimer=null,countTimers=[],currentIndex=0;
   function stopHold(orb,completed){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(!completed){orb.classList.remove('is-holding');orb.querySelector('.bop-fate-count').textContent='3';}}
@@ -29594,8 +29601,9 @@ footer .bop-mini-legend-badge,
     const fate=launcher.querySelector('.bop-fate-orb'),art=fate.querySelector('.bop-movie-orb-art'),count=fate.querySelector('.bop-fate-count');
     function spin(){const movies=allMovies();if(!movies.length)return;currentIndex=(currentIndex+1)%movies.length;const poster=posterFor(movies[currentIndex].title);if(poster)art.style.backgroundImage='url("'+poster.replace(/"/g,'%22')+'")';}
     spin();carouselTimer=setInterval(spin,260);
-    fate.addEventListener('pointerdown',function(event){event.preventDefault();stopHold(fate,false);fate.classList.add('is-holding');count.textContent='3';countTimers.push(setTimeout(function(){count.textContent='2';},1000),setTimeout(function(){count.textContent='1';},2000));holdTimer=setTimeout(function(){const movies=allMovies();if(!movies.length)return;const selected=movies[currentIndex%movies.length];stopHold(fate,true);fate.classList.remove('is-holding');count.textContent='3';openMovie(selected.title);},3000);});
-    ['pointerup','pointercancel','pointerleave'].forEach(function(type){fate.addEventListener(type,function(){if(holdTimer)stopHold(fate,false);});});
+    const thumb=launcher.querySelector('.bop-fate-thumb');
+    thumb.addEventListener('pointerdown',function(event){event.preventDefault();stopHold(fate,false);fate.classList.add('is-holding');thumb.classList.add('is-holding');count.textContent='3';countTimers.push(setTimeout(function(){count.textContent='2';},1000),setTimeout(function(){count.textContent='1';},2000));holdTimer=setTimeout(function(){const movies=allMovies();if(!movies.length)return;const selected=movies[currentIndex%movies.length];stopHold(fate,true);fate.classList.remove('is-holding');thumb.classList.remove('is-holding');count.textContent='3';openMovie(selected.title);},3000);});
+    ['pointerup','pointercancel','pointerleave'].forEach(function(type){thumb.addEventListener(type,function(){if(holdTimer){stopHold(fate,false);thumb.classList.remove('is-holding');}});});
     launcher.querySelector('.bop-theaters-orb').addEventListener('click',openInTheaters);launcher.querySelector('.bop-home-orb').addEventListener('click',openWatchHome);
   }
   function installLauncher(){const page=document.getElementById('boMoviesPage');if(!page)return;const hero=page.querySelector('.bo-movies-hero');if(hero&&!page.querySelector('.bop-movie-launcher'))hero.insertAdjacentHTML('afterend',markup());wire(page);}
@@ -29914,4 +29922,57 @@ footer .bop-mini-legend-badge,
 #boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:nth-child(2) .bo-movie-info{background:linear-gradient(90deg,rgba(17,17,17,.12),#111 18%,#111 100%)!important}
 </style>
 <!-- Fresh delivery build v190: two-tone upper rankings for Movies, Autos, Luxury Goods, Airlines and Cellular -->
+<style id="bop-fate-and-column-finish-v191">
+/* The discovery area is one clean black field; its single lower gold rule is
+   the top edge of the two rankings immediately below. */
+#boMoviesPage .bo-movies-hero{border-bottom:0!important;box-shadow:none!important}
+#boMoviesPage .bop-movie-launcher{margin-bottom:0!important;padding:24px 4px 25px!important;border-bottom:2px solid #F59E0B!important;box-shadow:none!important}
+#boMoviesPage .bop-movie-launcher-row{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:clamp(4px,2vw,18px)!important;max-width:650px!important}
+#boMoviesPage .bop-center-orb{position:relative;z-index:2;transform:translateY(-9px)}
+#boMoviesPage .bop-side-orb{transform:translateY(18px)}
+#boMoviesPage .bop-fate-orb{width:clamp(124px,29vw,174px)!important;height:clamp(124px,29vw,174px)!important;cursor:default!important}
+#boMoviesPage .bop-fate-orb .bop-movie-orb-art{inset:5px!important}
+#boMoviesPage .bop-fate-curve,#boMoviesPage .bop-movie-orb-hint{display:none!important}
+#boMoviesPage .bop-fate-instruction{display:flex;align-items:center;justify-content:center;gap:8px;margin:43px auto 0;text-align:center}
+#boMoviesPage .bop-fate-instruction p{width:min(225px,47vw);margin:0;color:#F59E0B;font:900 clamp(.76rem,2.5vw,1rem)/1.15 'Archivo Black',Arial,sans-serif;text-shadow:0 0 6px rgba(245,158,11,.45)}
+#boMoviesPage .bop-fate-instruction p span{display:block;margin-top:6px;color:#ef3340;font-size:1.08em}
+#boMoviesPage .bop-thumb-arrow{color:#F59E0B;font:900 clamp(1.15rem,4vw,1.75rem)/1 Arial;text-shadow:0 0 7px rgba(245,158,11,.8);animation:bopThumbPoint 1s ease-in-out infinite}
+#boMoviesPage .bop-thumb-arrow.is-right{animation-direction:reverse}
+#boMoviesPage .bop-fate-thumb{display:grid;place-items:center;width:76px;height:88px;flex:0 0 76px;padding:5px;border:2px solid #F59E0B;border-radius:48% 48% 44% 44%;background:#030303;box-shadow:0 0 13px rgba(245,158,11,.6);touch-action:none;cursor:pointer;-webkit-user-select:none;user-select:none}
+#boMoviesPage .bop-fate-thumb svg{width:58px;height:70px;fill:none;stroke:#ef3340;stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(239,51,64,.65))}
+#boMoviesPage .bop-fate-thumb.is-holding{transform:scale(.96);box-shadow:0 0 24px rgba(245,158,11,1),0 0 38px rgba(239,51,64,.45)}
+@keyframes bopThumbPoint{50%{transform:translateX(4px)}}
+.bop-fate-decided{margin:0 38px 17px;color:#ef3340;font:900 clamp(1.55rem,6vw,2.25rem)/1 'Archivo Black',Arial,sans-serif;letter-spacing:.035em;text-shadow:0 0 12px rgba(239,51,64,.72)}
+.bop-movie-fun{font-size:clamp(1.25rem,5vw,1.8rem)!important;line-height:1.08!important}
+/* Carry the vertical divider directly from the launcher's gold rule and make
+   the right-hand ranking unmistakably lighter across every two-column page. */
+#boMoviesPage .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns{border-top:0!important;border-radius:0!important}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns>.bo-movie-column:first-child{background:#000!important;border-right:2px solid #F59E0B!important}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns>.bo-movie-column:nth-child(2){background:#181818!important;box-shadow:inset 10px 0 22px rgba(255,255,255,.025)!important}
+#boMoviesPage .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card){background-color:#181818!important}
+#boMoviesPage .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:nth-child(2) .bo-movie-info{background:linear-gradient(90deg,rgba(24,24,24,.1),#181818 18%,#181818 100%)!important}
+@media(max-width:460px){#boMoviesPage .bop-movie-orb{width:88px;height:88px}#boMoviesPage .bop-fate-orb{width:120px!important;height:120px!important}#boMoviesPage .bop-fate-instruction{gap:5px}#boMoviesPage .bop-fate-thumb{width:66px;height:78px;flex-basis:66px}#boMoviesPage .bop-fate-thumb svg{width:50px;height:61px}}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-thumb-arrow{animation:none}}
+</style>
+<!-- Fresh delivery build v191: dedicated fingerprint hold control, larger Fate result, seamless ranking divider and exact refresh routing -->
 </body></html>
