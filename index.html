@@ -30950,6 +30950,7 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
   function bjsButton(){var button=document.createElement('button');button.type='button';button.className='bop-footer-bjs-icon';button.setAttribute('aria-label','Open the BJS Founders page');button.textContent='BJS';return button}
   function upgrade(footer){
     if(!footer||footer.dataset.hotBrandFooter==='1')return;
+    if(/The Poker Agency|\bTPA\b/.test((footer.textContent||'').replace(/\s+/g,' '))||footer.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay'))return;
     var first=footer.querySelector('.fine-print')||footer.querySelector('p')||footer;
     if(!first)return;footer.dataset.hotBrandFooter='1';
     first.innerHTML='';
@@ -31011,6 +31012,7 @@ footer [data-dest="legend"],
 (function(){
   function simplify(footer){
     if(!footer)return;
+    if(/The Poker Agency|\bTPA\b/.test((footer.textContent||'').replace(/\s+/g,' '))||footer.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay'))return;
     var email=footer.querySelector('a[href^="mailto:info@bestofperiod.com"]');
     if(!email)return;
     var line=email.closest('p')||email.parentElement;
@@ -31219,7 +31221,7 @@ body.oc-world-active>#ocWorldOverlay{z-index:2147483645!important}
 <!-- Fresh delivery build v217: persistent four-button map dock with direct Share, Near Me, Other Cities and Worldwide actions -->
 <style id="bop-footer-content-lock-v218">
 footer .bop-footer-brand-copy{display:flex!important;align-items:center!important;justify-content:center!important;flex-wrap:wrap!important;gap:4px!important}
-.bop-footer-icon-row{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;margin:0 auto 9px!important;padding:0!important}
+.bop-footer-icon-row{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:20!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:min(92%,520px)!important;min-height:42px!important;margin:0 auto 9px!important;padding:0!important;background:#000!important}
 .bop-footer-icon-row .bop-footer-legend-icon{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:38px!important;height:38px!important;padding:2px!important;border:1.5px solid #F59E0B!important;border-radius:50%!important;background:radial-gradient(circle,#26090d,#050505 72%)!important;color:#ef3340!important;box-shadow:0 0 8px rgba(245,158,11,.62)!important}
 .bop-footer-icon-row .bop-footer-legend-shield{display:grid!important;place-items:center!important;width:19px!important;height:20px!important;background:linear-gradient(150deg,#ff4050,#8a0711)!important;clip-path:polygon(50% 0,92% 15%,85% 70%,50% 100%,15% 70%,8% 15%)!important;color:#5d050b!important;font:900 12px/1 Arial!important}
 .bop-footer-icon-row .bop-footer-legend-word{margin-top:1px!important;color:#F59E0B!important;font:900 5px/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:.08em!important}
@@ -31238,10 +31240,7 @@ footer .bop-footer-obsolete-info{display:none!important}
       '<a class="bop-footer-social-icon" href="mailto:info@bestofperiod.com" aria-label="Email Best of Period"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg></a>'+
       '<span class="bop-footer-social-icon is-locked" role="img" aria-label="Facebook — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="social-fill" d="M14.1 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H8v3h2.7v8h3.4z"></path></svg></span>'+
       '<span class="bop-footer-social-icon is-locked" role="img" aria-label="Instagram — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-fill" cx="17.4" cy="6.7" r="1.1"></circle></svg></span>'+
-      '<span class="bop-footer-social-icon is-locked" role="img" aria-label="LinkedIn — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="3" height="11"></rect><circle class="social-fill" cx="5.5" cy="5.5" r="1.8"></circle><path d="M11 20V9h3v1.7c1-1.4 5-2.1 5 3.4V20h-3v-5.2c0-2.7-2-2.5-2-0.1V20z"></path></svg></span>'+
       '<span class="bop-footer-social-icon is-locked" role="img" aria-label="X — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4l14 16M19 4 5 20"></path></svg></span>'+
-      '<span class="bop-footer-social-icon is-locked" role="img" aria-label="TikTok — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.2a4.2 4.2 0 1 1-3.3-4.1"></path><path d="M14 4c.8 2.5 2.5 3.8 5 4"></path></svg></span>'+
-      '<span class="bop-footer-social-icon is-locked" role="img" aria-label="YouTube — coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="4"></rect><path class="social-fill" d="m10 9 6 3-6 3z"></path></svg></span>'+
     '</div>';
 
   function makeHome(){var b=document.createElement('button');b.type='button';b.className='bop-footer-home-icon';b.setAttribute('aria-label','Go to the Best of Period main page');b.innerHTML='<span class="bop-footer-best">BEST OF</span><span class="bop-footer-city">Vegas</span><span class="bop-footer-period">Period©</span>';return b}
@@ -31249,22 +31248,34 @@ footer .bop-footer-obsolete-info{display:none!important}
 
   function repair(footer){
     if(!footer)return;
-    var first=footer.querySelector('.fine-print')||footer.querySelector('p');
-    if(first&&!first.querySelector('.bop-footer-home-icon')){
-      first.classList.add('bop-footer-brand-copy');first.innerHTML='';first.appendChild(makeHome());
-      first.appendChild(document.createTextNode(' is an independent listing service developed by '));first.appendChild(makeBjs());
-      first.appendChild(document.createTextNode(' and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings and details may change without notice—always confirm directly.'));
+    var originalText=(footer.textContent||'').replace(/\s+/g,' ').trim();
+    var isPoker=/The Poker Agency|\bTPA\b/.test(originalText)||!!footer.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay');
+    var isShareTagline=/^bestofperiod\.com\s+Best restaurants\. Best directory\. Period\.?$/i.test(originalText);
+    if(isPoker||isShareTagline){
+      var protectedRow=footer.querySelector('[data-bop-footer-icons="1"],.bop-footer-email-line');if(protectedRow)protectedRow.remove();
+      var before=footer.previousElementSibling;if(before&&before.matches&&before.matches('[data-bop-footer-icons="1"],.bop-footer-email-line'))before.remove();
+      return;
     }
-    Array.from(footer.querySelectorAll('p')).forEach(function(p){if(p!==first&&/For further information|info@bestofperiod\.com/i.test(p.textContent||''))p.classList.add('bop-footer-obsolete-info')});
+    var first=footer.querySelector('.fine-print')||footer.querySelector('p');
+    if(!first){first=document.createElement('p');first.className='fine-print';footer.prepend(first);}
+    if(!first.dataset.bopStandardThree){
+      first.dataset.bopStandardThree='1';first.classList.add('bop-footer-brand-copy');first.innerHTML='';first.appendChild(makeHome());
+      first.appendChild(document.createTextNode(' is an independent listing service developed by '));first.appendChild(makeBjs());
+      first.appendChild(document.createTextNode(' and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly.'));
+    }
+    Array.from(footer.querySelectorAll('p')).forEach(function(p){if(p!==first)p.remove();});
+    var newsletter=document.createElement('p');newsletter.className='fine-print bop-footer-newsletter';newsletter.style.marginTop='10px';newsletter.innerHTML='<a class="footer-hotlink" href="https://wtfddnews-imc8abbb.manus.space" target="_blank" rel="noopener" style="color:#F59E0B;font-weight:700;">Newsletter</a>';footer.appendChild(newsletter);
     var ending=footer.closest('.bop-best-ending');
     var row=ending?ending.querySelector(':scope > [data-bop-footer-icons="1"]'):footer.previousElementSibling;
     if(row&&!(row.matches&&row.matches('[data-bop-footer-icons="1"],.bop-footer-email-line')))row=null;
     var oldRow=footer.querySelector('[data-bop-footer-icons="1"],.bop-footer-email-line');if(oldRow&&oldRow!==row){if(row)oldRow.remove();else row=oldRow;}
-    if(!row||!row.querySelector('.bop-footer-legend-shield')||row.querySelectorAll('.bop-footer-social-icon').length<7||row.querySelectorAll('.bop-footer-social-icon.is-locked').length<6){
+    if(!row||!row.querySelector('.bop-footer-legend-shield')||row.querySelectorAll('.bop-footer-social-icon').length!==4||row.querySelectorAll('.bop-footer-social-icon.is-locked').length!==3){
       if(row)row.remove();footer.insertAdjacentHTML('beforebegin',iconRow);row=footer.previousElementSibling;
     }
     var rule=ending&&ending.querySelector(':scope > .bop-best-ending-rule');
-    if(rule&&row!==rule.previousElementSibling)ending.insertBefore(row,rule);
+    if(!rule&&footer.parentElement){var siblings=Array.from(footer.parentElement.children),footerIndex=siblings.indexOf(footer);rule=siblings.slice(0,footerIndex).reverse().find(function(el){return el.classList&&el.classList.contains('bop-pre-footer-divider')})||null;}
+    if(ending&&rule&&row!==rule.previousElementSibling)ending.insertBefore(row,rule);
+    else if(rule&&row!==rule.previousElementSibling)rule.parentElement.insertBefore(row,rule);
     else if(!rule&&row!==footer.previousElementSibling)footer.insertAdjacentElement('beforebegin',row);
   }
   function repairAll(){if(busy)return;busy=true;document.querySelectorAll('footer').forEach(repair);busy=false}
@@ -31276,7 +31287,8 @@ footer .bop-footer-obsolete-info{display:none!important}
 <script id="bop-footer-founders-direct-v219">
 (function(){
   function isFooterBjs(target){
-    return target&&target.closest&&target.closest('footer .bop-footer-bjs-icon,footer .bop-footer-bjs-hot,footer [aria-label="BJS CO."],footer [aria-label="BJS Co."],footer [aria-label="BJS"]');
+    var hit=target&&target.closest&&target.closest('footer .bop-footer-bjs-icon,footer .bop-footer-bjs-hot,footer [aria-label="BJS CO."],footer [aria-label="BJS Co."],footer [aria-label="BJS"]');
+    return hit&&!hit.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay')?hit:null;
   }
   function openFounders(event){
     if(event){event.preventDefault();event.stopImmediatePropagation();}
@@ -31292,9 +31304,11 @@ footer .bop-footer-obsolete-info{display:none!important}
   }
   function activate(){
     document.querySelectorAll('footer .bop-footer-bjs-icon').forEach(function(button){
+      if(button.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay'))return;
       button.type='button';button.disabled=false;button.style.pointerEvents='auto';button.setAttribute('aria-label','Open the Founders page');
     });
     document.querySelectorAll('footer [aria-label="BJS CO."],footer [aria-label="BJS Co."],footer [aria-label="BJS"]').forEach(function(mark){
+      if(mark.closest('#tpaOverlay,#tpaCoachingOverlay,#tpaStakingOverlay,#tpaAffiliateOverlay,#tpaJoinOverlay'))return;
       mark.classList.add('bop-footer-bjs-hot');mark.style.pointerEvents='auto';mark.style.cursor='pointer';mark.setAttribute('role','button');mark.setAttribute('tabindex','0');mark.setAttribute('aria-label','Open the Founders page');
     });
   }
