@@ -29695,6 +29695,12 @@ footer .bop-mini-legend-badge,
 .bop-movie-provider img{display:block;max-width:92px;max-height:30px;object-fit:contain}
 .bop-movie-provider.is-fandango{color:#ff7900}.bop-movie-provider.is-amc{color:#e21b2d}.bop-movie-provider.is-regal{color:#F59E0B}.bop-movie-provider.is-cinemark{color:#e32934}.bop-movie-provider.is-justwatch{color:#fbc500}.bop-movie-provider.is-apple{font-size:1rem}.bop-movie-provider.is-prime{color:#19a9e5}.bop-movie-provider.is-youtube{color:#f00}.bop-movie-provider.is-google{color:#4285f4}.bop-movie-provider.is-fah{color:#ff7900}
 .bop-movie-fun{margin:5px 0 0;color:#ef3340;font:900 .9rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-shadow:0 0 7px rgba(239,51,64,.62)}
+.bop-zip-form{display:flex;gap:8px;margin:14px 0 6px}
+.bop-zip-input{flex:1;min-width:0;padding:13px 14px;border:1.5px solid rgba(245,158,11,.7);border-radius:999px;background:#111;color:#fff;font:700 16px Arial,sans-serif;text-align:center}
+.bop-zip-input:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.14)}
+.bop-zip-submit{padding:13px 16px;border:1.5px solid #F59E0B;border-radius:999px;background:#000;color:#F59E0B;font:900 .72rem 'Archivo Black',Arial,sans-serif;letter-spacing:.05em;cursor:pointer;white-space:nowrap}
+.bop-gold-divider{width:min(90%,320px);height:1px;margin:20px auto 14px;background:#F59E0B;box-shadow:0 0 4px rgba(245,158,11,.9),0 0 11px rgba(245,158,11,.5)}
+.bop-watch-instantly-heading{margin:0 0 10px;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase}
 @media(max-width:460px){#boMoviesPage .bop-movie-launcher{padding-left:0;padding-right:0}#boMoviesPage .bop-movie-launcher-row{gap:3px}#boMoviesPage .bop-movie-orb{width:94px;height:94px;padding:8px}#boMoviesPage .bop-fate-curve text{font-size:6.8px}.bop-movie-choice-card{padding-left:14px;padding-right:14px}}
 @media(prefers-reduced-motion:reduce){#boMoviesPage .bop-fate-orb .bop-movie-orb-art{animation:none}}
 </style>
@@ -29740,9 +29746,32 @@ footer .bop-mini-legend-badge,
     section.scrollIntoView({behavior:'auto',block:'start'});
     const title=section.querySelector('.bo-current-movies-title');if(title){title.classList.remove('bop-current-jump');void title.offsetWidth;title.classList.add('bop-current-jump');setTimeout(function(){title.classList.remove('bop-current-jump');},1700);}
   }
-  function openWatchHome(){const modal=ensureModal();modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>WATCH AT HOME</h2><p class="bop-movie-choice-message">Search the world’s major rental and purchase services for virtually any movie.</p>'+providerHTML(homeProviders,'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';modal.classList.add('is-open');}
+  function openBuyTickets(){
+    const modal=ensureModal();
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>BUY TICKETS</h2><p class="bop-movie-choice-message">Enter your ZIP code to find showtimes near you.</p><form class="bop-zip-form" novalidate><input class="bop-zip-input" type="tel" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button></form>';
+    modal.classList.add('is-open');
+    const input=modal.querySelector('.bop-zip-input');setTimeout(function(){input.focus();},60);
+    modal.querySelector('.bop-zip-form').addEventListener('submit',function(event){
+      event.preventDefault();
+      const zip=input.value.trim();
+      if(!/^\d{5}$/.test(zip)){input.style.borderColor='#ef3340';return;}
+      showTicketVendors(zip);
+    });
+  }
+  function showTicketVendors(zip){
+    const modal=ensureModal();
+    // Only chains with a real, verified zip-code deep link are listed here —
+    // no vendor whose only path is "leave the site and figure it out over there."
+    const ticketVendors=[
+      ['FANDANGO','is-fandango','https://www.fandango.com/'+encodeURIComponent(zip)+'_movietimes'],
+      ['AMC','is-amc','https://www.amctheatres.com/showtimes/zip/'+encodeURIComponent(zip)+'/default/default']
+    ];
+    const ticketGrid='<div class="bop-movie-provider-grid">'+ticketVendors.map(function(item){return '<a class="bop-movie-provider '+item[1]+'" href="'+item[2]+'" target="_blank" rel="noopener" aria-label="Find theaters near '+zip+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>THEATERS NEAR '+zip+'</h2>'+ticketGrid+'<div class="bop-gold-divider"></div><h3 class="bop-watch-instantly-heading">WATCH INSTANTLY</h3>'+providerHTML(homeProviders,'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
+    modal.classList.add('is-open');
+  }
   function markup(){
-    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div class="bop-side-orb bop-side-left"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div class="bop-center-orb"><div class="bop-movie-orb bop-fate-orb" aria-label="Rotating movie selector"><span class="bop-movie-orb-art"></span><span class="bop-fate-count">3</span></div></div><div class="bop-side-orb bop-side-right"><button class="bop-movie-orb bop-home-orb" type="button"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">WATCH<br>AT HOME</span></button></div></div><div class="bop-fate-instruction"><p><strong>PRESS AND HOLD RIGHT HERE FOR THREE SECONDS</strong><span>LET FATE DECIDE</span></p><span class="bop-thumb-arrow" aria-hidden="true">→</span><button class="bop-fate-thumb" type="button" aria-label="Press and hold here for three seconds to let fate decide"><svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><span class="bop-thumb-arrow is-right" aria-hidden="true">←</span></div></section>';
+    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div class="bop-side-orb bop-side-left"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div class="bop-center-orb"><div class="bop-movie-orb bop-fate-orb" aria-label="Rotating movie selector"><span class="bop-movie-orb-art"></span><span class="bop-fate-count">3</span></div></div><div class="bop-side-orb bop-side-right"><button class="bop-movie-orb bop-home-orb" type="button" aria-label="Buy tickets"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">BUY<br>TICKETS</span></button></div></div><div class="bop-fate-instruction"><p><strong>PRESS AND HOLD RIGHT HERE FOR THREE SECONDS</strong><span>LET FATE DECIDE</span></p><span class="bop-thumb-arrow" aria-hidden="true">→</span><button class="bop-fate-thumb" type="button" aria-label="Press and hold here for three seconds to let fate decide"><svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><span class="bop-thumb-arrow is-right" aria-hidden="true">←</span></div></section>';
   }
   let carouselTimer=null,holdTimer=null,countTimers=[],currentIndex=0;
   function stopHold(orb,completed){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(!completed){orb.classList.remove('is-holding');orb.querySelector('.bop-fate-count').textContent='3';}}
@@ -29754,7 +29783,7 @@ footer .bop-mini-legend-badge,
     const thumb=launcher.querySelector('.bop-fate-thumb');
     thumb.addEventListener('pointerdown',function(event){event.preventDefault();stopHold(fate,false);fate.classList.add('is-holding');thumb.classList.add('is-holding');count.textContent='3';countTimers.push(setTimeout(function(){count.textContent='2';},1000),setTimeout(function(){count.textContent='1';},2000));holdTimer=setTimeout(function(){const movies=allMovies();if(!movies.length)return;const selected=movies[currentIndex%movies.length];stopHold(fate,true);fate.classList.remove('is-holding');thumb.classList.remove('is-holding');count.textContent='3';openMovie(selected.title);},3000);});
     ['pointerup','pointercancel','pointerleave'].forEach(function(type){thumb.addEventListener(type,function(){if(holdTimer){stopHold(fate,false);thumb.classList.remove('is-holding');}});});
-    launcher.querySelector('.bop-theaters-orb').addEventListener('click',openInTheaters);launcher.querySelector('.bop-home-orb').addEventListener('click',openWatchHome);
+    launcher.querySelector('.bop-theaters-orb').addEventListener('click',openInTheaters);launcher.querySelector('.bop-home-orb').addEventListener('click',openBuyTickets);
   }
   function installLauncher(){const page=document.getElementById('boMoviesPage');if(!page)return;const hero=page.querySelector('.bo-movies-hero');if(hero&&!page.querySelector('.bop-movie-launcher'))hero.insertAdjacentHTML('afterend',markup());wire(page);}
   function install(){installLauncher();new MutationObserver(function(){requestAnimationFrame(installLauncher);}).observe(document.body,{childList:true,subtree:true});document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="movies"]'))setTimeout(installLauncher,120);},true);}
@@ -30837,29 +30866,14 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
 </style>
 <script id="bop-direct-external-and-fate-copy-v210">
 (function(){
-  function openSeparate(url){
-    if(!url)return null;
-    var popup=null;
-    try{popup=window.open(String(url),'_blank');if(popup)popup.opener=null;}catch(error){}
-    /* A direct user tap normally reaches window.open above. This anchor is a
-       second standards-based attempt for browsers that ignore the window API. */
-    if(!popup){
-      try{
-        var anchor=document.createElement('a');anchor.href=String(url);
-        anchor.target='_blank';anchor.rel='noopener noreferrer';anchor.style.display='none';
-        document.body.appendChild(anchor);anchor.click();anchor.remove();
-      }catch(error){}
-    }
-    return popup;
-  }
-  window.bopOfferExternalLink=function(url){return openSeparate(url)};
-  window.bopOpenExternal=function(url){return openSeparate(url)};
-  window.bopReserveExternal=function(){return null};
-  window.bopNavigateExternal=function(popup,url){
-    if(popup&&!popup.closed){try{popup.opener=null;popup.location.href=String(url);return true}catch(error){}}
-    openSeparate(url);return true;
-  };
-  var old=document.getElementById('bopExternalFallback');if(old)old.remove();
+  /* The direct-open override that used to live here (openSeparate, and the
+     removal of #bopExternalFallback) has been taken back out. It silently
+     skipped the "BestOfPeriod will stay right here" confirmation popup from
+     build v168 for every external link site-wide, with no confirmation and
+     no explanation before someone got sent off to a provider. v168's
+     bopOfferExternalLink / bopReserveExternal / bopNavigateExternal /
+     bopOpenExternal are the site-wide rule again: always ask first, always
+     open the provider in a separate window so this site is never replaced. */
 
   function updateFateCopy(){
     var copy=document.querySelector('#boMoviesPage .bop-fate-instruction p');
@@ -31091,27 +31105,12 @@ footer [data-dest="legend"],
 }
 #bopStaticWorld svg,.bop-landing-world-btn svg{pointer-events:none!important}
 </style>
-<script id="bop-worldwide-touch-target-v215">
-(function(){
-  function openWorld(event){
-    var button=event.target.closest&&event.target.closest('#bopStaticWorld,#bopLandingWorldBtn,.bop-static-world,.bop-landing-world-btn');
-    if(!button)return;
-    event.preventDefault();event.stopImmediatePropagation();
-    if(typeof window.bopOpenWorldwideLanding==='function'){
-      window.bopOpenWorldwideLanding();
-      return;
-    }
-    var page=document.getElementById('bopWorldwideLanding');
-    if(page){page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';}
-  }
-  document.addEventListener('click',openWorld,true);
-})();
-</script>
-<!-- Fresh delivery build v215: larger invisible Worldwide touch target and one reliable global action -->
+<!-- Fresh delivery build v215: larger invisible Worldwide touch target. Its duplicate
+     document-level click handler was removed in a later cleanup pass — v216 below
+     is now the single source of truth for opening the Worldwide page, so the globe
+     button no longer has three competing listeners fighting for the same tap. -->
 <script id="bop-immediate-landing-controls-v216">
 (function(){
-  var lastWorldTouch=0;
-
   function worldButton(target){
     return target&&target.closest&&target.closest('#bopStaticWorld,#bopLandingWorldBtn,.bop-static-world,.bop-landing-world-btn');
   }
@@ -31133,27 +31132,12 @@ footer [data-dest="legend"],
     }
   }
 
-  /* Open on the actual finger-down event.  The following synthetic click is
-     consumed so iOS cannot replay the navigation several seconds later. */
-  document.addEventListener('pointerdown',function(event){
-    if(!worldButton(event.target)||event.pointerType==='mouse')return;
-    lastWorldTouch=Date.now();
-    openWorldNow(event);
-  },true);
-
-  document.addEventListener('touchstart',function(event){
-    if(!worldButton(event.target)||Date.now()-lastWorldTouch<700)return;
-    lastWorldTouch=Date.now();
-    openWorldNow(event);
-  },{capture:true,passive:false});
-
+  /* One single click listener. touch-action:manipulation (set above) already
+     removes the old mobile tap delay, so there's no need for separate
+     pointerdown/touchstart handlers racing against this one — that layered
+     debounce logic was the actual source of the button feeling unreliable. */
   document.addEventListener('click',function(event){
     if(!worldButton(event.target))return;
-    if(Date.now()-lastWorldTouch<1400){
-      event.preventDefault();event.stopImmediatePropagation();
-      return;
-    }
-    /* Mouse clicks and keyboard-generated clicks still work immediately. */
     openWorldNow(event);
   },true);
 
@@ -31171,7 +31155,7 @@ footer [data-dest="legend"],
   else verifyLandingControls();
 })();
 </script>
-<!-- Fresh delivery build v216: immediate Worldwide first-touch response and verified four-button landing dock -->
+<!-- Fresh delivery build v216: single reliable Worldwide click handler and verified four-button landing dock -->
 <style id="bop-persistent-map-dock-v217">
 /* Carry the same four-button dock onto Near Me and Other Cities. */
 body.oc-world-active>#bopStaticLandingDock,
@@ -31231,6 +31215,9 @@ body.oc-world-active>#ocWorldOverlay{z-index:2147483645!important}
     if(button.id==='bopStaticShare')sharePage(event);
     else if(button.id==='bopStaticNear')openNear(event);
     else openOther(event);
+    /* The Worldwide globe is intentionally left out of this delegated handler:
+       build v216's own document-level click listener already opens it from
+       anywhere the button appears, including here on the persisted dock. */
   },true);
 })();
 </script>
