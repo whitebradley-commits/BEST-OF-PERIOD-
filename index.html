@@ -30345,7 +30345,7 @@ footer .bop-mini-legend-badge,
 </style>
 <script id="bop-territory-choice-direct-city-v202">
 (function(){
-  var destinationByName={London:'london',Paris:'paris',Zurich:'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
+  var destinationByName={London:'london',Paris:'paris',Zurich:'zurich','Zürich':'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
   function openCity(destination){
     var world=document.getElementById('ocWorldOverlay'),card=document.getElementById('ocCityCard');
     if(card)card.classList.remove('open','oc-city-choice-card','oc-territory-catch');
@@ -30736,4 +30736,45 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
 })();
 </script>
 <!-- Fresh delivery build v210: sealed BOP viewport, direct separate-window links, finalized Fate choices -->
+<style id="bop-legend-badges-first-v211">
+#legendOverlay .bo-legend-price .bo-price-legend{
+  transform:none!important;display:flex!important;align-items:stretch!important;
+  justify-content:center!important;gap:8px!important;width:100%!important;
+}
+#legendOverlay .bo-legend-price .bo-price-legend-item{
+  display:flex!important;flex:1 1 0!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:5px!important;
+  min-width:0!important;padding:12px 5px!important;font-size:.9rem!important;
+}
+#legendOverlay .bo-legend-price .bo-price-legend-sign{
+  display:block!important;color:#F59E0B!important;
+  font:900 clamp(1.35rem,6vw,1.8rem)/1 'Archivo Black',Arial,sans-serif!important;
+  letter-spacing:-.06em!important;text-shadow:0 0 7px rgba(245,158,11,.5)!important;
+}
+#legendOverlay .bo-legend-price>h3{
+  color:transparent!important;
+  background:linear-gradient(90deg,#b86f08 0%,#F59E0B 24%,#ffd06a 50%,#F59E0B 76%,#b86f08 100%)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  text-shadow:0 0 8px rgba(245,158,11,.2)!important;
+}
+</style>
+<script id="bop-legend-badges-first-v211">
+(function(){
+  function arrange(){
+    var content=document.querySelector('#legendOverlay .ty-content');if(!content)return;
+    var title=content.querySelector('.bo-legend-title');
+    var badges=document.getElementById('boLegendBadges');
+    var price=content.querySelector('.bo-legend-price');
+    var location=Array.from(content.querySelectorAll('.bo-legend-section')).find(function(section){var h=section.querySelector('h3');return h&&h.textContent.trim()==='LOCATION & STATUS'});
+    if(!title||!badges||!price)return;
+    if(title.nextElementSibling!==badges)title.insertAdjacentElement('afterend',badges);
+    if(badges.nextElementSibling!==price)badges.insertAdjacentElement('afterend',price);
+    if(location&&price.nextElementSibling!==location)price.insertAdjacentElement('afterend',location);
+  }
+  function install(){arrange();var root=document.getElementById('legendOverlay');if(root)new MutationObserver(function(){requestAnimationFrame(arrange)}).observe(root,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v211: badges first on Legend, followed by enlarged price guide -->
 </body></html>
