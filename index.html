@@ -19080,7 +19080,7 @@ function boEnsureMoviesPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boMoviesPage';page.className='bo-movies-page';page.setAttribute('aria-label','Best Of Movies');
-  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>BOX OFFICE</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
   document.body.appendChild(page);
   page.querySelector('.bo-movies-kicker').textContent='Worldwide Movies Universal Page';
   page.querySelector('.bo-current-source').textContent='Choose theater tickets or search verified streaming, rental, and purchase providers for the exact movie.';
@@ -30129,4 +30129,141 @@ footer .bop-mini-legend-badge,
 #ocWorldOverlay.open{display:block!important;visibility:visible!important;opacity:1!important;z-index:2147483645!important}
 </style>
 <!-- Fresh delivery build v195: one-pixel larger Other Cities label and direct reliable map opening -->
+<style id="bop-all-blue-fate-instruction-v196">
+#boMoviesPage .bop-fate-instruction p,
+#boMoviesPage .bop-fate-instruction p strong,
+#boMoviesPage .bop-fate-instruction p span,
+#boMoviesPage .bop-thumb-arrow{
+  color:#2f8cff!important;
+  text-shadow:0 0 3px rgba(47,140,255,.42)!important;
+}
+#boMoviesPage .bop-fate-instruction p{
+  animation:bopSoftBlueFateCopy 1.8s ease-in-out infinite!important;
+}
+@keyframes bopSoftBlueFateCopy{
+  0%,100%{opacity:.86;text-shadow:0 0 2px rgba(47,140,255,.28)}
+  50%{opacity:1;text-shadow:0 0 5px rgba(47,140,255,.55)}
+}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-fate-instruction p{animation:none!important}}
+</style>
+<!-- Fresh delivery build v196: unified blue Fate instructions with reduced glow -->
+<style id="bop-current-box-office-readable-divider-v197">
+#boMoviesPage .bo-current-movies{
+  margin-top:34px!important;
+  padding-top:30px!important;
+  border-top:2px solid #F59E0B!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-current-movies-title{
+  width:166px!important;
+  height:166px!important;
+  padding:20px!important;
+  font-size:clamp(1rem,2.8vw,1.48rem)!important;
+  text-shadow:0 0 3px rgba(245,158,11,.4)!important;
+  box-shadow:0 0 8px rgba(245,158,11,.38),inset 0 0 12px rgba(245,158,11,.045)!important;
+}
+#boMoviesPage .bo-current-movies-title::before{
+  text-shadow:0 0 3px rgba(255,255,255,.22)!important;
+}
+@media(max-width:620px){
+  #boMoviesPage .bo-current-movies-title{width:144px!important;height:144px!important;padding:17px!important;font-size:1.02rem!important}
+}
+</style>
+<!-- Fresh delivery build v197: larger clearer Current Box Office and gold section divider -->
+<style id="bop-blue-fate-count-and-result-v198">
+#boMoviesPage .bop-fate-count{
+  width:50px!important;
+  height:50px!important;
+  border-color:rgba(47,140,255,.78)!important;
+  color:#2f8cff!important;
+  font-size:1.85rem!important;
+  text-shadow:0 0 3px rgba(47,140,255,.48)!important;
+  box-shadow:0 0 7px rgba(47,140,255,.28)!important;
+}
+.bop-fate-decided{
+  color:#2f8cff!important;
+  font-size:clamp(1.75rem,6.5vw,2.55rem)!important;
+  text-shadow:0 0 4px rgba(47,140,255,.48)!important;
+}
+.bop-movie-fun{
+  color:#2f8cff!important;
+  font-size:clamp(1.45rem,5.5vw,2rem)!important;
+  text-shadow:0 0 3px rgba(47,140,255,.42)!important;
+}
+</style>
+<!-- Fresh delivery build v198: larger blue countdown and clearer blue Fate result -->
+<style id="bop-other-cities-active-zoom-v199">
+#ocWorldOverlay .oc-active-zoom-controls{position:absolute;left:8px;top:8px;z-index:95;display:flex;flex-direction:column;border:1.5px solid #F59E0B;border-radius:7px;overflow:visible;background:#050505;box-shadow:0 0 8px rgba(245,158,11,.45)}
+#ocWorldOverlay .oc-active-zoom-controls>button{width:34px;height:34px;padding:0;border:0;background:#050505;color:#F59E0B;font:900 22px/32px Arial;cursor:pointer}
+#ocWorldOverlay .oc-active-zoom-controls>button+button{border-top:1px solid rgba(245,158,11,.58)}
+#ocWorldOverlay .oc-active-zoom-guide{position:absolute;left:41px;top:0;display:flex;align-items:center;gap:4px;width:max-content;max-width:150px;padding:4px 6px;border:1px solid rgba(245,158,11,.72);border-radius:6px;background:rgba(0,0,0,.88);color:#F59E0B;font:800 7px/1.1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-transform:uppercase;box-shadow:0 0 7px rgba(245,158,11,.22);pointer-events:none}
+#ocWorldOverlay .oc-active-zoom-guide svg{flex:0 0 22px;width:22px;height:18px;fill:none;stroke:#F59E0B;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#ocWorldOverlay .oc-live-zoom-stage{position:absolute;inset:0;width:100%;height:100%;transform-origin:0 0;will-change:transform;touch-action:none}
+@media(max-width:420px){#ocWorldOverlay .oc-active-zoom-guide{max-width:116px;font-size:6.5px}}
+</style>
+<script id="bop-other-cities-active-zoom-v199">
+(function(){
+  function install(){
+    var overlay=document.getElementById('ocWorldOverlay'),map=document.getElementById('ocWorldMap'),svg=document.getElementById('ocWorldSvg'),pins=document.getElementById('ocPinLayer');
+    if(!overlay||!map||!svg||!pins||map.querySelector('.oc-live-zoom-stage'))return;
+    var stage=document.createElement('div');stage.className='oc-live-zoom-stage';map.insertBefore(stage,svg);stage.appendChild(svg);stage.appendChild(pins);
+    var controls=document.createElement('div');controls.className='oc-active-zoom-controls';controls.setAttribute('aria-label','Other Cities map zoom controls');
+    controls.innerHTML='<button type="button" data-oc-plus aria-label="Zoom in">+</button><button type="button" data-oc-minus aria-label="Zoom out">−</button><span class="oc-active-zoom-guide" aria-hidden="true"><svg viewBox="0 0 26 20"><path d="M7 17c-2-1-3-3-3-5V6c0-1 .7-2 1.7-2S7.4 5 7.4 6v4-7c0-1 .7-2 1.7-2s1.7 1 1.7 2v7"/><path d="M19 17c2-1 3-3 3-5V6c0-1-.7-2-1.7-2s-1.7 1-1.7 2v4-7c0-1-.7-2-1.7-2s-1.7 1-1.7 2v7M12 10h2M12.5 8.5 11 10l1.5 1.5M13.5 8.5 15 10l-1.5 1.5"/></svg><span>Pinch or + / − to zoom</span></span>';
+    map.appendChild(controls);
+    var state={scale:1,x:0,y:0,pointers:new Map(),start:null,moved:false};
+    function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+    function constrain(){var r=map.getBoundingClientRect();state.x=clamp(state.x,r.width-r.width*state.scale,0);state.y=clamp(state.y,r.height-r.height*state.scale,0)}
+    function paint(animate){constrain();stage.style.transition=animate?'transform .2s ease':'none';stage.style.transform='translate3d('+state.x+'px,'+state.y+'px,0) scale('+state.scale+')';if(animate)setTimeout(function(){stage.style.transition='none'},220)}
+    function zoom(next,cx,cy){var r=map.getBoundingClientRect(),old=state.scale;cx=cx==null?r.width/2:cx;cy=cy==null?r.height/2:cy;next=clamp(next,1,4);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;paint(true)}
+    function reset(){state.scale=1;state.x=0;state.y=0;state.pointers.clear();state.start=null;paint(true)}
+    controls.addEventListener('pointerdown',function(e){e.stopPropagation()});controls.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();if(e.target.closest('[data-oc-plus]'))zoom(state.scale+.65);if(e.target.closest('[data-oc-minus]'))zoom(state.scale-.65)});
+    map.addEventListener('pointerdown',function(e){if(e.target.closest('.oc-active-zoom-controls'))return;state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});try{map.setPointerCapture(e.pointerId)}catch(_e){}if(state.pointers.size===1)state.start={kind:'pan',x:e.clientX,y:e.clientY,sx:state.x,sy:state.y};else{var p=Array.from(state.pointers.values());state.start={kind:'pinch',distance:Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),scale:state.scale};state.moved=true}}, {passive:false});
+    map.addEventListener('pointermove',function(e){if(!state.pointers.has(e.pointerId))return;e.preventDefault();state.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});var p=Array.from(state.pointers.values());if(p.length===2&&state.start&&state.start.kind==='pinch'){var d=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y),r=map.getBoundingClientRect(),cx=(p[0].x+p[1].x)/2-r.left,cy=(p[0].y+p[1].y)/2-r.top,old=state.scale,next=clamp(state.start.scale*d/state.start.distance,1,4);state.x=cx-(cx-state.x)*(next/old);state.y=cy-(cy-state.y)*(next/old);state.scale=next;state.moved=true;paint(false)}else if(p.length===1&&state.start&&state.start.kind==='pan'&&state.scale>1){state.x=state.start.sx+(e.clientX-state.start.x);state.y=state.start.sy+(e.clientY-state.start.y);state.moved=true;paint(false)}}, {passive:false});
+    function end(e){state.pointers.delete(e.pointerId);if(state.pointers.size===1){var p=Array.from(state.pointers.values())[0];state.start={kind:'pan',x:p.x,y:p.y,sx:state.x,sy:state.y}}else if(!state.pointers.size)state.start=null}
+    map.addEventListener('pointerup',end);map.addEventListener('pointercancel',end);map.addEventListener('click',function(e){if(state.moved){e.preventDefault();e.stopPropagation();state.moved=false}},true);
+    window.ocResetMapZoom=reset;new MutationObserver(function(){if(overlay.classList.contains('open'))reset()}).observe(overlay,{attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v199: Near Me-matching zoom guide with working pinch and plus-minus Other Cities zoom -->
+<style id="bop-other-cities-territory-catch-v200">
+#ocWorldOverlay #ocCityCard.oc-city-choice-card.oc-territory-catch .oc-choice-title{margin-left:10px;margin-right:10px;font-size:12px;line-height:1.3;text-transform:none;letter-spacing:.025em}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card.oc-territory-catch .oc-choice-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card.oc-territory-catch .oc-choice-city{padding:10px 6px;font-size:9px}
+</style>
+<script id="bop-other-cities-territory-catch-v200">
+(function(){
+  var europeIds=['london','paris','zurich','switzerland'],last={id:'',time:0};
+  function groupId(pin){var match=pin&&String(pin.className).match(/oc-pin-group-([a-z]+)/);return match?match[1]:''}
+  function europeanCities(){
+    if(typeof OC_CITIES==='undefined')return [];
+    var wanted=['london','paris','zurich','lucerne','geneva','zermatt'];
+    return wanted.map(function(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}).filter(Boolean);
+  }
+  function showCatch(){
+    var cities=europeanCities();if(!cities.length||typeof window.ocShowDestinationChoices!=='function')return;
+    window.ocShowDestinationChoices(cities);
+    var card=document.getElementById('ocCityCard'),title=card&&card.querySelector('.oc-choice-title');
+    if(card)card.classList.add('oc-territory-catch');
+    if(title)title.textContent="You've selected multiple pins in this territory. Please decide.";
+  }
+  document.addEventListener('click',function(event){
+    var pin=event.target.closest&&event.target.closest('#ocPinLayer .oc-pin-destination-group');if(!pin)return;
+    var id=groupId(pin);if(europeIds.indexOf(id)===-1)return;
+    var now=Date.now(),nearby=[];
+    if(document.elementsFromPoint)nearby=document.elementsFromPoint(event.clientX,event.clientY).map(function(el){return el.closest&&el.closest('#ocPinLayer .oc-pin-destination-group')}).filter(function(item,index,array){return item&&array.indexOf(item)===index&&europeIds.indexOf(groupId(item))!==-1});
+    var rapidDifferent=last.id&&last.id!==id&&now-last.time<700;
+    last={id:id,time:now};
+    if(nearby.length>1||rapidDifferent){event.preventDefault();event.stopImmediatePropagation();showCatch();}
+  },true);
+  document.addEventListener('pointerdown',function(event){
+    var pin=event.target.closest&&event.target.closest('#ocPinLayer .oc-pin-destination-group');if(!pin)return;
+    var id=groupId(pin),now=Date.now();if(europeIds.indexOf(id)===-1)return;
+    if(last.id&&last.id!==id&&now-last.time<420){event.preventDefault();event.stopImmediatePropagation();showCatch();}
+    else last={id:id,time:now};
+  },true);
+})();
+</script>
+<!-- Fresh delivery build v200: rapid and overlapping European pin territory choice safeguard -->
 </body></html>
