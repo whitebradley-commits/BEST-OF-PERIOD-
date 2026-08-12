@@ -19161,11 +19161,15 @@ const BO_WORLDWIDE_SYMBOLS={
   'BMW':'BMW.DE','Subaru':'7270.T','Lexus':'TM','Porsche':'P911.DE','Mini':'BMW.DE','Acura':'HMC','Mazda':'7261.T','Audi':'VOW3.DE',
   'LVMH':'MC.PA','Richemont':'CFR.SW','Kering':'KER.PA','Hermès':'RMS.PA','Ferrari':'RACE','Prada Group':'1913.HK','Moncler':'MONC.MI','Burberry':'BRBY.L','Rolls-Royce':'RR.L','Louis Vuitton':'MC.PA','Dior':'CDI.PA'
 };
-function boWorldwideRankHTML(item,index){
+function boWorldwideRankHTML(item,index,key){
   const symbol=BO_WORLDWIDE_SYMBOLS[item[0]]||'';
   const highlight=item[2]?`<div class="bo-worldwide-highlight">${item[2]}</div>`:'';
   const ticker=symbol?`<div class="bo-market-ticker" data-market-symbol="${symbol}"><span class="bo-market-live">LIVE</span><span class="bo-market-symbol">${symbol}</span><span class="bo-market-price">Loading…</span><span class="bo-market-change"></span><span class="bo-market-cap">Valuation loading…</span></div>`:'';
-  return `<article class="bo-movie-card"><span class="bo-movie-rank">${index+1}</span><img class="bo-movie-poster" src="${boMoviePoster(item[0],index)}" alt="${item[0]} artwork"><div class="bo-movie-info"><h3>${item[0]}</h3><div class="bo-movie-metric">${item[1]}</div>${highlight}${ticker}</div></article>`;
+  // Luxury Goods deliberately keeps imagery in both upper ranking columns.
+  // Autos, Cellular, and Airlines are information-only throughout.
+  const textOnly=['airlines','automotive','cellphones'].includes(key);
+  const media=textOnly?'':`<img class="bo-movie-poster" src="${boMoviePoster(item[0],index)}" alt="${item[0]} artwork">`;
+  return `<article class="bo-movie-card"><span class="bo-movie-rank">${index+1}</span>${media}<div class="bo-movie-info"><h3>${item[0]}</h3><div class="bo-movie-metric">${item[1]}</div>${highlight}${ticker}</div></article>`;
 }
 function boWorldwideActionHTML(item,index,action,key){
   // RULE: direct-access cards for recognizable companies/chains use the
@@ -19207,7 +19211,7 @@ function boOpenWorldwidePage(key){
   const data=BO_WORLDWIDE_DATA[key];if(!data)return;
   let page=document.getElementById('boWorldwidePage');if(!page){page=document.createElement('section');page.id='boWorldwidePage';page.className='bo-movies-page';document.body.appendChild(page);}
   page.dataset.worldwideKey=key;
-  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map(boWorldwideRankHTML).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map(boWorldwideRankHTML).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>DIRECT ACCESS</span></h2><div class="bo-current-source">Go directly to the companies and providers.</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>DIRECT ACCESS</span></h2><div class="bo-current-source">Go directly to the companies and providers.</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
   clearInterval(boMarketTickerTimer);boUpdateMarketTickers(page);boMarketTickerTimer=setInterval(()=>boUpdateMarketTickers(page),60000);
   page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;document.getElementById('boWorldwideBack').addEventListener('click',boCloseWorldwidePage);
   boStartWorldwideTitleRotation(document.getElementById('boWorldwideRotator'),data.title);
@@ -26174,7 +26178,9 @@ body footer .fine-print>span:first-child+span,
   var originalShowCity=window.ocShowCity;
   var groups=[
     {id:'unitedstates',la:38.25,lo:-97.10,dests:['bestof','sandiego','losangeles','santabarbara','siliconvalley','sanfrancisco','idaho','newyork','philadelphia','boston','washingtondc','chicago','miami','atlanta','neworleans']},
-    {id:'london',la:51.51,lo:-0.13,dests:['london']}
+    {id:'london',la:51.51,lo:-0.13,dests:['london']},
+    {id:'paris',la:48.86,lo:2.35,dests:['paris']},
+    {id:'switzerland',la:46.82,lo:8.23,dests:['zurich','lucerne','geneva','zermatt']}
   ];
   function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
   function groupCities(group){return group.dests.map(liveCity).filter(Boolean)}
@@ -29650,4 +29656,58 @@ footer .bop-mini-legend-badge,
 })();
 </script>
 <!-- Fresh delivery build v186: responsive homepage recovery and text-only 30-airline directory -->
+<style id="bop-four-directories-v187">
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-card>.bo-movie-poster,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-card>.bo-movie-poster,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-current-grid img,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-current-grid img,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-current-grid img,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid img{display:none!important}
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-card,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-card,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card{display:block!important;min-height:150px!important;background:#050505!important}
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-info{width:100%!important;min-height:150px!important;padding:18px 12px 14px 48px!important;background:#050505!important}
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-current-movies,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-current-movies,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-current-movies,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-movies{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important}
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-current-grid,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-current-grid,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-current-grid,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{display:grid!important;grid-template-columns:repeat(15,minmax(112px,1fr))!important;grid-template-rows:94px!important;grid-auto-flow:column!important;gap:9px!important;min-width:1800px!important;padding:8px 4px 15px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{grid-template-rows:repeat(2,94px)!important}
+.bo-company-text-card{display:block!important;min-height:94px!important;padding:0!important;border:1px solid rgba(245,158,11,.42)!important;border-radius:9px!important;background:#050505!important;box-shadow:none!important}
+.bo-company-text-inner{display:flex!important;min-height:92px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;padding:7px!important;text-align:center!important}
+.bo-company-name-link{color:#fff!important;font:900 .7rem/1.12 'Archivo Black',Arial,sans-serif!important;text-decoration:none!important}
+.bo-company-phone{padding:0!important;border:0!important;background:transparent!important;color:#ef3340!important;font:800 .66rem/1 'Archivo Narrow',Arial,sans-serif!important;text-shadow:0 0 5px rgba(239,51,64,.5)!important;cursor:pointer!important}
+</style>
+<script id="bop-four-directories-v187">
+(function(){
+  const directories={
+    automotive:[
+      ['Toyota','https://www.toyota.com/','800-331-4331'],['Volkswagen','https://www.vw.com/','800-822-8987'],['Hyundai','https://www.hyundai.com/','800-633-5151'],['Ford','https://www.ford.com/','800-392-3673'],['Honda','https://www.honda.com/','800-999-1009'],['Kia','https://www.kia.com/','800-333-4542'],['Nissan','https://www.nissanusa.com/','800-647-7261'],['Chevrolet','https://www.chevrolet.com/','800-222-1020'],['BMW','https://www.bmwusa.com/','800-831-1117'],['Mercedes-Benz','https://www.mbusa.com/','800-367-6372'],['Lexus','https://www.lexus.com/','800-255-3987'],['Porsche','https://www.porsche.com/usa/','800-767-7243'],['Subaru','https://www.subaru.com/','800-782-2783'],['Mazda','https://www.mazdausa.com/','800-222-5500'],['Audi','https://www.audiusa.com/','800-822-2834']
+    ],
+    cellphones:[
+      ['T-Mobile','https://www.t-mobile.com/','800-937-8997'],['Verizon','https://www.verizon.com/','800-922-0204'],['AT&T','https://www.att.com/wireless/','800-331-0500'],['Google Fi','https://fi.google.com/','844-825-5234'],['Consumer Cellular','https://www.consumercellular.com/','888-345-5509'],['US Mobile','https://www.usmobile.com/','878-205-0088'],['Mint Mobile','https://www.mintmobile.com/','800-683-7392'],['Visible','https://www.visible.com/','866-331-3527'],['Cricket Wireless','https://www.cricketwireless.com/','800-274-2538'],['Xfinity Mobile','https://www.xfinity.com/mobile/','888-936-4968'],['Boost Mobile','https://www.boostmobile.com/','833-502-6678'],['Metro by T-Mobile','https://www.metrobyt-mobile.com/','888-863-8768'],['Spectrum Mobile','https://www.spectrum.com/mobile','833-224-6603'],['Straight Talk','https://www.straighttalk.com/','877-430-2355'],['Tracfone','https://www.tracfone.com/','800-867-7183']
+    ],
+    watches:[
+      ['LVMH','https://www.lvmh.com/',''],['Hermès','https://www.hermes.com/','800-441-4488'],['Chanel','https://www.chanel.com/','800-550-0005'],['Kering','https://www.kering.com/',''],['Richemont','https://www.richemont.com/',''],['Rolex','https://www.rolex.com/',''],['Ferrari','https://www.ferrari.com/',''],['Prada','https://www.prada.com/','877-997-7232'],['Moncler','https://www.moncler.com/','888-320-9162'],['Burberry','https://www.burberry.com/','877-217-4085'],['Cartier','https://www.cartier.com/','800-227-8437'],['Patek Philippe','https://www.patek.com/','212-218-1240'],['Louis Vuitton','https://us.louisvuitton.com/','866-884-8866'],['Dior','https://www.dior.com/','800-929-3467'],['Audemars Piguet','https://www.audemarspiguet.com/','888-214-6858']
+    ]
+  };
+  Object.keys(directories).forEach(function(key){if(typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA[key])BO_WORLDWIDE_DATA[key].links=directories[key]});
+  if(typeof boWorldwideActionHTML==='function'){
+    const previous=boWorldwideActionHTML;
+    boWorldwideActionHTML=function(item,index,action,key){
+      if(!['automotive','cellphones','watches','airlines'].includes(key))return previous(item,index,action,key);
+      const name=item[0],url=item[1],phone=item[2]||'',digits=phone.replace(/\D/g,'');
+      const phoneButton=digits?'<button type="button" class="bo-company-phone" data-phone-popup="'+digits+'" data-phone-display="'+phone+'" aria-label="Call '+name+'">'+phone+'</button>':'';
+      return '<article class="bo-current-card bo-company-text-card"><div class="bo-company-text-inner"><a class="bo-company-name-link" href="'+url+'" aria-label="Open '+name+' official website">'+name+'</a>'+phoneButton+'</div></article>';
+    };
+  }
+})();
+</script>
+<!-- Fresh delivery build v187: picture-free direct access for Autos, Cellular, Luxury Goods and Airlines -->
 </body></html>
