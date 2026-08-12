@@ -18894,7 +18894,8 @@ function boOpenMoviesPage(){
 }
 function boCloseMoviesPage(){
   const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);clearInterval(boWorldwideRotatorTimer);
-  boRenderCategory('otheroptions');
+  try{history.replaceState(null,'',window.location.pathname+'#/page/worldwide');}catch(e){}
+  if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
 }
 
 const BO_WORLDWIDE_DATA={
@@ -28088,10 +28089,12 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;object-fit:contain!important;
 }
 
-/* Aircraft photography follows the poster language and fades into the card. */
+/* Premium cabin photography follows the poster language and fades into the card. */
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card{overflow:hidden!important;background:#000!important;grid-template-columns:42% minmax(0,1fr)!important}
-#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-aircraft-photo{width:calc(100% + 32px)!important;height:100%!important;min-height:150px!important;border:0!important;border-radius:0!important;object-fit:cover!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-cabin-photo{width:calc(100% + 32px)!important;height:100%!important;min-height:150px!important;border:0!important;border-radius:0!important;object-fit:cover!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 66%,rgba(0,0,0,.75) 82%,transparent 100%)!important}
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster.bo-airline-logo-poster{width:100%!important;height:100%!important;min-height:150px!important;box-sizing:border-box!important;padding:14px 12px!important;border:0!important;border-radius:0!important;background:#000!important;object-fit:contain!important;object-position:center!important;box-shadow:none!important;-webkit-mask-image:linear-gradient(to right,#000 0%,#000 74%,rgba(0,0,0,.72) 88%,transparent 100%)!important;mask-image:linear-gradient(to right,#000 0%,#000 74%,rgba(0,0,0,.72) 88%,transparent 100%)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-cabin-brand{position:absolute!important;left:7px!important;bottom:7px!important;z-index:6!important;display:flex!important;align-items:center!important;justify-content:center!important;width:54px!important;height:28px!important;padding:4px 6px!important;border:1px solid rgba(245,158,11,.7)!important;border-radius:6px!important;background:rgba(0,0,0,.86)!important;box-shadow:0 0 8px rgba(245,158,11,.42)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-cabin-brand img{display:block!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important}
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-info{position:relative;z-index:2;background:linear-gradient(to right,rgba(0,0,0,.15),#000 18%)!important}
 
 /* Permanent ending for Best of Period pages only. */
@@ -28105,18 +28108,27 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <script id="bop-final-best-pages-v156">
 (function(){
-  const airlinePhotoCacheKey='bop-aircraft-photos-v176';let airlinePhotos={};
-  try{localStorage.removeItem('bop-aircraft-photos-v156');}catch(e){}
+  const airlinePhotoCacheKey='bop-cabin-photos-v179';let airlinePhotos={},genericCabinPromise=null;
+  try{localStorage.removeItem('bop-aircraft-photos-v156');localStorage.removeItem('bop-aircraft-photos-v176');}catch(e){}
   try{airlinePhotos=JSON.parse(localStorage.getItem(airlinePhotoCacheKey)||'{}')||{};}catch(e){airlinePhotos={};}
   function saveAirlinePhotos(){try{localStorage.setItem(airlinePhotoCacheKey,JSON.stringify(airlinePhotos));}catch(e){}}
-  async function findAircraftPhoto(name){
+  function cabinCandidates(data){
+    return Object.values((data&&data.query&&data.query.pages)||{}).map(function(page){const info=page.imageinfo&&page.imageinfo[0];return{title:page.title||'',url:info&&(info.thumburl||info.url)||''};}).filter(function(item){return item.url&&/cabin|interior|business.class|first.class|premium|suite|seat|crew/i.test(item.title)&&!/exterior|takeoff|landing|side.view|cockpit|flight.deck|airport|terminal|logo|map|diagram|safety.card/i.test(item.title);});
+  }
+  async function searchCabins(query,limit){
+    const endpoint='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(query)+'&gsrnamespace=6&gsrlimit='+(limit||18)+'&prop=imageinfo&iiprop=url&iiurlwidth=900&format=json&origin=*';
+    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});return cabinCandidates(await response.json());}catch(e){return [];}
+  }
+  function nameHash(name){let value=0;for(let i=0;i<name.length;i++)value=((value<<5)-value+name.charCodeAt(i))|0;return Math.abs(value);}
+  async function findCabinPhoto(name){
     if(Object.prototype.hasOwnProperty.call(airlinePhotos,name))return airlinePhotos[name]||'';
-    const exactTitles={'ANA All Nippon Airways':'All Nippon Airways'};
-    const title=exactTitles[name]||name;
-    const endpoint='https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(title)+'&redirects=1&prop=pageimages&piprop=thumbnail&pithumbsize=900&format=json&origin=*';
-    try{const response=await fetch(endpoint,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});const data=await response.json();const pages=Object.values((data&&data.query&&data.query.pages)||{});const page=pages.find(function(item){return item.thumbnail&&item.thumbnail.source});let url=page&&page.thumbnail?page.thumbnail.source:'';if(/hazmat|cleaner|cleaning|worker|disinfect|janitor/i.test(url))url='';airlinePhotos[name]=url;saveAirlinePhotos();return url;}catch(e){return '';}
+    let choices=await searchCabins(name+' airline cabin interior business class',20);
+    if(!choices.length){if(!genericCabinPromise)genericCabinPromise=searchCabins('luxury airline cabin interior business class seats',40);choices=await genericCabinPromise;}
+    const selected=choices.length?choices[nameHash(name)%choices.length].url:'';airlinePhotos[name]=selected;saveAirlinePhotos();return selected;
   }
   function officialLogo(name){
+    const knownDomains={'Delta Air Lines':'delta.com','United Airlines':'united.com','American Airlines':'aa.com','Lufthansa Group':'lufthansa.com','IAG':'iairgroup.com','Air France-KLM':'airfranceklm.com','Emirates':'emirates.com','Southwest Airlines':'southwest.com','Turkish Airlines':'turkishairlines.com','Qatar Airways':'qatarairways.com','Singapore Airlines':'singaporeair.com','ANA All Nippon Airways':'ana.co.jp','Cathay Pacific':'cathaypacific.com','Japan Airlines':'jal.com','EVA Air':'evaair.com','Air France':'airfrance.com','SWISS':'swiss.com'};
+    if(knownDomains[name])return 'https://logo.clearbit.com/'+knownDomains[name]+'?size=256';
     const links=typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA.airlines&&Array.isArray(BO_WORLDWIDE_DATA.airlines.links)?BO_WORLDWIDE_DATA.airlines.links:[];
     const match=links.find(function(item){return item[0]===name});if(!match)return '';
     try{return 'https://logo.clearbit.com/'+encodeURIComponent(new URL(match[1]).hostname.replace(/^www\./,''))+'?size=256';}catch(e){return '';}
@@ -28124,7 +28136,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   async function hydrateAirlines(){
     const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');if(!page)return;
     const cards=Array.from(page.querySelectorAll('.bo-movie-card')),usedPhotos=new Set();
-    for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.aircraftPhoto==='1')return;card.dataset.aircraftPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const name=title.textContent.trim(),logo=officialLogo(name);if(logo){image.src=logo;image.alt=name+' logo';image.classList.remove('bo-aircraft-photo');image.classList.add('bo-airline-logo-poster');}const url=await findAircraftPhoto(name);if(!url||usedPhotos.has(url))return;const probe=new Image();probe.onload=function(){if(probe.naturalWidth<240||probe.naturalHeight<120)return;usedPhotos.add(url);image.src=url;image.alt=name+' aircraft';image.classList.remove('bo-airline-logo-poster');image.classList.add('bo-aircraft-photo')};probe.src=url;}));}
+    for(let i=0;i<cards.length;i+=4){await Promise.all(cards.slice(i,i+4).map(async function(card){if(card.dataset.cabinPhoto==='1')return;card.dataset.cabinPhoto='1';const title=card.querySelector('.bo-movie-info h3');const image=card.querySelector(':scope>.bo-movie-poster');if(!title||!image)return;const name=title.textContent.trim(),logo=officialLogo(name);if(logo){image.src=logo;image.alt=name+' logo';image.classList.remove('bo-aircraft-photo','bo-cabin-photo');image.classList.add('bo-airline-logo-poster');let brand=card.querySelector('.bo-cabin-brand');if(!brand){brand=document.createElement('span');brand.className='bo-cabin-brand';brand.innerHTML='<img alt="" aria-hidden="true">';card.appendChild(brand);}brand.querySelector('img').src=logo;}const url=await findCabinPhoto(name);if(!url||usedPhotos.has(url))return;usedPhotos.add(url);const probe=new Image();probe.onload=function(){if(probe.naturalWidth<240||probe.naturalHeight<120){usedPhotos.delete(url);return;}image.src=url;image.alt=name+' premium cabin interior';image.classList.remove('bo-airline-logo-poster','bo-aircraft-photo');image.classList.add('bo-cabin-photo')};probe.onerror=function(){usedPhotos.delete(url)};probe.src=url;}));}
   }
   function endingMarkup(){return '<div class="bop-best-ending" data-bop-ending="1"><div class="bop-best-ending-rule"></div><button class="bop-best-ending-badges" type="button" aria-label="Open badge directory"><span class="bop-best-ending-badge">M★★★</span><span class="bop-best-ending-badge">JB</span><span class="bop-best-ending-badge is-check">✓</span><span class="bop-best-ending-badge">BJS</span></button><footer class="bop-best-ending-footer"><strong>bestofperiod.com</strong>Best restaurants. Best directory. Period.</footer></div>'}
   function installEndings(){
@@ -29021,5 +29033,5 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v175: dedicated verified-vendor signup from the Legend page -->
-<!-- Fresh upload signature v178: 2026-08-12T01:44:00-07:00; routing-gate build -->
+<!-- Fresh upload signature v179: 2026-08-12T01:58:00-07:00; worldwide-back and premium-cabin build -->
 </body></html>
