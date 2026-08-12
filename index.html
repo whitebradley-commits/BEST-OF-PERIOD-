@@ -28592,4 +28592,62 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v164: clean domain visits always open the true landing page -->
+<style id="bop-three-button-ending-v165">
+.bop-best-ending{display:block!important;margin:46px auto 0!important;padding:0 14px 24px!important;background:#000!important}
+.bop-best-ending-rule{display:block!important;width:min(100%,760px)!important;height:2px!important;margin:0 auto 20px!important;background:#F59E0B!important;box-shadow:0 0 11px rgba(245,158,11,.78)!important}
+.bop-best-ending-actions{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;margin:0 auto 18px!important}
+.bop-best-ending-action{display:flex!important;align-items:center!important;justify-content:center!important;width:68px!important;height:68px!important;min-width:68px!important;min-height:68px!important;padding:7px!important;border:2px solid #F59E0B!important;border-radius:50%!important;background:#050505!important;color:#ff3048!important;font:900 .62rem/1.08 'Archivo Black',Arial,sans-serif!important;letter-spacing:.02em!important;text-align:center!important;box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 12px rgba(245,158,11,.07)!important;cursor:pointer!important;animation:bopEndingButtonPulse 2.2s ease-in-out infinite!important}
+.bop-best-ending-action:nth-child(2){animation-delay:.18s!important}.bop-best-ending-action:nth-child(3){animation-delay:.36s!important}
+@keyframes bopEndingButtonPulse{0%,100%{box-shadow:0 0 9px rgba(245,158,11,.58),inset 0 0 10px rgba(245,158,11,.06)}50%{box-shadow:0 0 18px rgba(245,158,11,.98),0 0 32px rgba(245,158,11,.35),inset 0 0 16px rgba(245,158,11,.12)}}
+.bop-best-ending-standard-footer{display:block!important;margin:0 auto!important;padding:18px 8px 0!important;border:0!important;background:#000!important;color:#888!important;font:700 .62rem/1.5 'Archivo Narrow',Arial,sans-serif!important;letter-spacing:.035em!important;text-align:center!important}
+.bop-best-ending-standard-footer strong{color:#F59E0B!important;font-family:'Archivo Black',Arial,sans-serif!important}
+@media(max-width:370px){.bop-best-ending-actions{gap:9px!important}.bop-best-ending-action{width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;font-size:.57rem!important}}
+@media(prefers-reduced-motion:reduce){.bop-best-ending-action{animation:none!important}}
+</style>
+<script id="bop-three-button-ending-v165">
+(function(){
+  const actions='<div class="bop-best-ending-actions" aria-label="Best of Period information"><button type="button" class="bop-best-ending-action" data-bop-ending-action="badges">BADGES</button><button type="button" class="bop-best-ending-action" data-bop-ending-action="member">MEMBER</button><button type="button" class="bop-best-ending-action" data-bop-ending-action="promotions">PROMOTION<br>&amp; REACH</button></div>';
+  const compactFooter='<footer class="bop-best-ending-standard-footer"><strong>Best of Period©</strong> is an independent listing service developed by <strong>BJS Co.</strong> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Listings may change without notice—always confirm directly.<br>For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B">info@bestofperiod.com</a></footer>';
+  function openBadges(){
+    if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
+    if(typeof boEnsureBadgesPage!=='function')return;
+    const page=boEnsureBadgesPage();
+    page.classList.add('is-open');page.setAttribute('aria-hidden','false');page.scrollTop=0;document.body.style.overflow='hidden';
+  }
+  function openMember(){
+    if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
+    const page=document.getElementById('bopMemberOverlay');if(page){page.classList.add('open');page.scrollTop=0;}window.scrollTo(0,0);
+  }
+  function openReach(){if(typeof openPromotions==='function'){openPromotions();window.scrollTo(0,0);}}
+  function buildEnding(target,needsFooter){
+    let ending=target.querySelector(':scope>.bop-best-ending');
+    if(!ending){ending=document.createElement('div');ending.className='bop-best-ending';ending.dataset.bopEnding='1';target.appendChild(ending);}
+    let rule=ending.querySelector('.bop-best-ending-rule');if(!rule){rule=document.createElement('div');rule.className='bop-best-ending-rule';ending.prepend(rule);}
+    ending.querySelectorAll('.bop-best-ending-badges,.bop-best-ending-footer').forEach(function(node){node.remove();});
+    if(!ending.querySelector('.bop-best-ending-actions'))ending.insertAdjacentHTML('beforeend',actions);
+    if(needsFooter&&!ending.querySelector('.bop-best-ending-standard-footer'))ending.insertAdjacentHTML('beforeend',compactFooter);
+  }
+  function cleanOldFooterNavigation(){
+    const host=document.getElementById('bestOfOverlay');if(!host)return;
+    host.querySelectorAll('footer p').forEach(function(line){
+      if(line.querySelector('[data-dest="legend"],[data-dest="promotions"],[data-dest="bopmember"]'))line.remove();
+    });
+  }
+  function refresh(){
+    const list=document.getElementById('boList');if(list&&list.offsetParent!==null)buildEnding(list,false);
+    document.querySelectorAll('#boMoviesPage.open .bo-movies-shell,#boWorldwidePage.open .bo-movies-shell').forEach(function(shell){buildEnding(shell,true);});
+    cleanOldFooterNavigation();
+  }
+  document.addEventListener('click',function(event){
+    const button=event.target.closest('[data-bop-ending-action]');if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(button.dataset.bopEndingAction==='badges')openBadges();
+    else if(button.dataset.bopEndingAction==='member')openMember();
+    else openReach();
+  },true);
+  function install(){window.boOpenBadgesPage=openBadges;refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v165: gold line, three equal live circles, then footer -->
 </body></html>
