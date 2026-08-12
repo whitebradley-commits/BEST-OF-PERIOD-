@@ -29613,4 +29613,67 @@ footer .bop-mini-legend-badge,
 })();
 </script>
 <!-- Fresh delivery build v185: three movie orbs, three-second Fate picker, persistent choice panels, and site-preserving external access -->
+<style id="bop-card-distance-v186">
+.bo-card .bop-card-distance{display:flex;align-items:center;flex-wrap:wrap;gap:5px 7px;margin:5px 0 7px;padding:4px 0;border-top:1px solid rgba(239,51,64,.16);border-bottom:1px solid rgba(239,51,64,.11);min-height:19px}
+.bo-card .bop-card-distance-away{color:#ef3340;font:900 .56rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 5px rgba(239,51,64,.52);white-space:nowrap}
+.bo-card .bop-card-travel{display:inline-flex;align-items:center;gap:2px;color:#aaa;font:800 .5rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.025em;white-space:nowrap}
+.bo-card .bop-card-travel svg{display:block;width:12px;height:12px;fill:none;stroke:#F59E0B;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 2px rgba(245,158,11,.4))}
+.bo-card .bop-card-travel.is-rail svg{stroke:#ef3340}
+.bo-card .bop-card-distance-est{margin-left:auto;color:#666;font:700 .39rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:620px){.bo-card .bop-card-distance{gap:4px 5px}.bo-card .bop-card-distance-away{font-size:.51rem}.bo-card .bop-card-travel{font-size:.46rem}.bo-card .bop-card-distance-est{width:100%;margin-left:0}}
+</style>
+<script id="bop-card-distance-v186">
+(function(){
+  let visitor=null,locationPromise=null,queue=Promise.resolve();
+  const geoMemory=new Map();
+  const carIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15V9.5l2-4h12l2 4V15M6 15v3m12-3v3M4 11h16M7 8h10"/><circle cx="7" cy="14" r="1"/><circle cx="17" cy="14" r="1"/></svg>';
+  const walkIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M11 8l3 2 2 4m-5-6-2 5-3 3m5-3 1 4-3 4m5-7 4 2"/></svg>';
+  const railIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3"/><path d="M8 7h8M7 13h10M8 21l3-3m5 3-3-3"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
+  function esc(value){return String(value||'').replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+  function getLocation(){
+    if(locationPromise)return locationPromise;
+    locationPromise=new Promise(function(resolve){
+      if(!navigator.geolocation){resolve(null);return;}
+      navigator.geolocation.getCurrentPosition(function(position){visitor={lat:position.coords.latitude,lon:position.coords.longitude};resolve(visitor);},function(){resolve(null);},{enableHighAccuracy:true,timeout:12000,maximumAge:600000});
+    });
+    return locationPromise;
+  }
+  function addressFor(card){const button=card.querySelector('[data-directions-popup]');return button?String(button.dataset.directionsPopup||'').trim():'';}
+  function cachedGeo(address){
+    if(geoMemory.has(address))return geoMemory.get(address);
+    try{const raw=localStorage.getItem('boGeo:'+address.toLowerCase());if(raw){const value=JSON.parse(raw);if(value&&Number.isFinite(Number(value.lat))&&Number.isFinite(Number(value.lon))){const geo={lat:Number(value.lat),lon:Number(value.lon)};geoMemory.set(address,geo);return geo;}}}catch(error){}
+    return null;
+  }
+  function fetchGeo(address){
+    const cached=cachedGeo(address);if(cached)return Promise.resolve(cached);
+    return fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(address),{headers:{Accept:'application/json'},credentials:'omit',referrerPolicy:'no-referrer'}).then(function(response){if(!response.ok)throw new Error('geocode');return response.json();}).then(function(data){if(!data||!data[0])return null;const geo={lat:Number(data[0].lat),lon:Number(data[0].lon)};if(!Number.isFinite(geo.lat)||!Number.isFinite(geo.lon))return null;geoMemory.set(address,geo);try{localStorage.setItem('boGeo:'+address.toLowerCase(),JSON.stringify(geo));}catch(error){}return geo;}).catch(function(){return null;});
+  }
+  function queuedGeo(address){const cached=cachedGeo(address);if(cached)return Promise.resolve(cached);queue=queue.then(function(){return fetchGeo(address);}).then(function(result){return new Promise(function(resolve){setTimeout(function(){resolve(result);},850);});});return queue;}
+  function milesBetween(a,b){const rad=function(v){return v*Math.PI/180;},lat1=rad(a.lat),lat2=rad(b.lat),dLat=lat2-lat1,dLon=rad(b.lon-a.lon),h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;return 2*3958.8*Math.asin(Math.sqrt(h));}
+  function timeText(minutes){minutes=Math.max(1,Math.round(minutes));if(minutes<60)return minutes+' MIN';const hours=Math.floor(minutes/60),mins=minutes%60;return mins?hours+'H '+mins+'M':hours+' HR';}
+  function travelHTML(miles){
+    const roadMiles=Math.max(.1,miles*1.18),driveSpeed=roadMiles<4?20:roadMiles<18?32:roadMiles<65?48:58,driveMinutes=(roadMiles/driveSpeed)*60+3;
+    const walkMinutes=(Math.max(.05,miles*1.1)/3)*60;
+    const railMinutes=(Math.max(1,miles*1.08)/45)*60+20;
+    let html='<span class="bop-card-travel is-drive" aria-label="Estimated drive '+timeText(driveMinutes)+'">'+carIcon+'<span>'+timeText(driveMinutes)+'</span></span>';
+    if(miles<=18)html+='<span class="bop-card-travel is-walk" aria-label="Estimated walk '+timeText(walkMinutes)+'">'+walkIcon+'<span>'+timeText(walkMinutes)+'</span></span>';
+    if(miles>=12)html+='<span class="bop-card-travel is-rail" aria-label="Estimated rail travel '+timeText(railMinutes)+'">'+railIcon+'<span>'+timeText(railMinutes)+'</span></span>';
+    return html;
+  }
+  function render(card,miles){
+    if(!card.isConnected)return;let strip=card.querySelector('.bop-card-distance');if(!strip){strip=document.createElement('div');strip.className='bop-card-distance';const row=card.querySelector('.bo-rating-row'),body=card.querySelector('.bo-card-body');if(row)row.insertAdjacentElement('afterend',strip);else if(body)body.insertAdjacentElement('afterbegin',strip);else return;}
+    const shown=miles<.05?'UNDER 0.1':miles<100?miles.toFixed(1):Math.round(miles).toLocaleString();strip.innerHTML='<span class="bop-card-distance-away">'+shown+' MI AWAY</span>'+travelHTML(miles)+'<span class="bop-card-distance-est">EST.</span>';strip.dataset.ready='1';
+  }
+  async function enhance(card){
+    if(!card||card.dataset.distancePending==='1'||card.querySelector('.bop-card-distance[data-ready="1"]'))return;
+    const address=addressFor(card);if(!address)return;card.dataset.distancePending='1';
+    const here=await getLocation();if(!here){delete card.dataset.distancePending;return;}
+    const destination=await queuedGeo(address);if(destination)render(card,milesBetween(here,destination));delete card.dataset.distancePending;
+  }
+  function scan(){document.querySelectorAll('.bo-card').forEach(function(card){if(card.getClientRects().length)enhance(card);});}
+  function install(){scan();new MutationObserver(function(){requestAnimationFrame(scan);}).observe(document.body,{childList:true,subtree:true});document.addEventListener('click',function(event){if(event.target.closest('[data-category],.category-card,.bo-worldwide-tile'))setTimeout(scan,180);},true);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v186: live distance and compact estimated car, walking, and rail times on every restaurant card after location consent -->
 </body></html>
