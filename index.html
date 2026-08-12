@@ -8548,33 +8548,26 @@ function setupWebPopup(){
     if(e.target === overlay) closeWebPopup();
   });
 
-  setInterval(function(){
-    document.querySelectorAll('[data-web-popup]').forEach(function(btn){
-      if(btn.dataset.wired) return;
-      btn.dataset.wired = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        const url = btn.getAttribute('data-web-popup');
-        openInPopup(url);
-      });
-    });
-  }, 300);
+  // Dynamic cards are handled with one delegated listener. The old version
+  // rescanned the entire 13 MB document every 300 ms, even while idle.
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest && e.target.closest('[data-web-popup]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openInPopup(btn.getAttribute('data-web-popup'));
+  });
 }
 
 function setupRestaurantMenuPopup(){
-  // Dynamic restaurant cards are wired as they appear.
-  setInterval(function(){
-    document.querySelectorAll('[data-menu-popup]').forEach(function(btn){
-      if(btn.dataset.menuWired) return;
-      btn.dataset.menuWired = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        openMenuPopup('', btn.getAttribute('data-menu-name') || 'Restaurant');
-      });
-    });
-  },300);
+  // One listener covers both existing and dynamically rendered cards.
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest && e.target.closest('[data-menu-popup]');
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openMenuPopup('', btn.getAttribute('data-menu-name') || 'Restaurant');
+  });
 }
 
 // ---- Everything stays inside our page ----
@@ -23610,7 +23603,7 @@ function setupTbotrLanding(){
   }
 }
 
-setInterval(function(){
+function wireTbotrEnter(){
   const btn = document.getElementById('tbotrEnterBtn');
   if(btn && !btn.dataset.enterWired){
     btn.dataset.enterWired = '1';
@@ -23629,7 +23622,9 @@ setInterval(function(){
       }
     });
   }
-}, 300);
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireTbotrEnter);
+else wireTbotrEnter();
 
 function setupSecretMenu(){
   const overlay = document.getElementById('secretMenuOverlay');
@@ -25520,7 +25515,7 @@ body footer .fine-print>span:first-child+span,
   }
   function isVisible(element){if(!element)return false;const style=getComputedStyle(element);return style.display!=='none'&&style.visibility!=='hidden'}
   function shouldShow(){return !isVisible(document.getElementById('bopLandingOverlay'))}
-  function updateVisibility(){const button=document.getElementById('globalSharePage');if(button)button.style.display=shouldShow()?'flex':'none'}
+  function updateVisibility(){const button=document.getElementById('globalSharePage');if(!button)return;const next=shouldShow()?'flex':'none';if(button.style.display!==next)button.style.display=next}
   async function shareCurrentPage(button){
     const original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
     try{
@@ -25539,7 +25534,9 @@ body footer .fine-print>span:first-child+span,
     const landingButton=document.getElementById('landingSharePage');if(landingButton)landingButton.addEventListener('click',function(){shareCurrentPage(landingButton)});
     const button=document.createElement('button');button.id='globalSharePage';button.type='button';button.setAttribute('aria-label','Share this exact page');button.innerHTML='SHARE<br>PAGE';
     button.addEventListener('click',function(){shareCurrentPage(button)});document.body.appendChild(button);updateVisibility();
-    new MutationObserver(updateVisibility).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
+    // Observe navigation state only. Watching every inline style while this
+    // callback writes an inline style created a feedback loop on mobile Safari.
+    new MutationObserver(updateVisibility).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
     window.addEventListener('hashchange',function(){setTimeout(updateVisibility,20)});document.addEventListener('click',function(){setTimeout(updateVisibility,30)},true);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
