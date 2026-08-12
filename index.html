@@ -30888,7 +30888,7 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
     var copy=document.querySelector('#boMoviesPage .bop-fate-instruction p');
     if(!copy||copy.dataset.finalFateCopy==='1')return;
     copy.dataset.finalFateCopy='1';
-    copy.innerHTML='<strong>CHOOSE FROM THE ALL-TIME MONEY LIST, TOP RATED, OR A <span class="bop-inline-bjs-word">BJS PICK</span>.</strong>';
+    copy.innerHTML='<strong>CHOOSE FROM THE ALL-TIME MONEY LIST, TOP RATED, <span class="bop-fate-lowercase">or a</span> <span class="bop-inline-bjs-word" role="button" tabindex="0" aria-label="Open BJS Picks coming soon page">BJS PICK</span></strong>';
   }
   function install(){updateFateCopy();new MutationObserver(function(){requestAnimationFrame(updateFateCopy)}).observe(document.body,{childList:true,subtree:true})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -31334,4 +31334,40 @@ footer .bop-footer-obsolete-info{display:none!important}
 })();
 </script>
 <!-- Fresh delivery build v219: every footer BJS logo opens the Founders page directly -->
+<style id="bop-movie-bjs-pick-coming-soon-v220">
+#boMoviesPage .bop-fate-lowercase{text-transform:none!important}
+#boMoviesPage .bop-inline-bjs-word{position:relative!important;cursor:pointer!important;animation:bopBjsPickFlash 1.15s ease-in-out infinite!important}
+#boMoviesPage .bop-inline-bjs-word::before,#boMoviesPage .bop-inline-bjs-word::after{position:absolute;top:50%;transform:translateY(-50%);color:#F59E0B;font:900 1.05em/1 Arial;text-shadow:0 0 5px rgba(245,158,11,.72);animation:bopBjsPickArrow .85s ease-in-out infinite}
+#boMoviesPage .bop-inline-bjs-word::before{content:'→';right:calc(100% + 6px)}
+#boMoviesPage .bop-inline-bjs-word::after{content:'←';left:calc(100% + 6px)}
+@keyframes bopBjsPickFlash{0%,100%{color:#ef3340;box-shadow:0 0 5px rgba(245,158,11,.35);transform:scale(1)}50%{color:#ff5965;box-shadow:0 0 13px rgba(245,158,11,.85),0 0 22px rgba(239,51,64,.25);transform:scale(1.045)}}
+@keyframes bopBjsPickArrow{0%,100%{opacity:.58}50%{opacity:1}}
+#bopMovieBjsSoon{display:none;position:fixed;inset:0;z-index:2147483647;overflow-y:auto;background:#000;color:#fff;padding:0 20px 40px;box-sizing:border-box}
+#bopMovieBjsSoon.open{display:block}
+#bopMovieBjsSoon .bop-bjs-soon-back{position:sticky;top:28px;z-index:2;display:grid;place-items:center;width:64px;height:64px;margin:28px 0 54px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#ef3340;font:800 11px/1.15 Arial;box-shadow:0 0 10px rgba(245,158,11,.55)}
+#bopMovieBjsSoon .bop-bjs-soon-inner{width:min(100%,680px);margin:0 auto;text-align:center}
+#bopMovieBjsSoon h2{margin:0;color:#ef3340;font:900 clamp(2.7rem,12vw,5.8rem)/.88 'Archivo Black',Arial,sans-serif;letter-spacing:-.045em;text-shadow:0 0 5px rgba(239,51,64,.28)}
+#bopMovieBjsSoon h2 span{display:block;margin-top:11px;color:#F59E0B;font-size:.48em;letter-spacing:.035em;text-shadow:none}
+#bopMovieBjsSoon .bop-bjs-soon-sub{margin:22px auto 30px;color:#d8d8d8;font:700 clamp(.78rem,2.7vw,1rem)/1.45 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+#bopMovieBjsSoon .bop-bjs-question-row{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;width:min(100%,470px);margin:0 auto}
+#bopMovieBjsSoon .bop-bjs-question{display:grid;place-items:center;aspect-ratio:1;border:1.5px solid #F59E0B;border-radius:18px;background:#070707;color:#ef3340;font:900 clamp(2.6rem,13vw,4.8rem)/1 'Archivo Black',Arial,sans-serif;box-shadow:0 0 8px rgba(245,158,11,.24)}
+#bopMovieBjsSoon .bop-bjs-soon-rule{width:min(86%,520px);height:2px;margin:38px auto 0;background:#F59E0B;box-shadow:0 0 7px rgba(245,158,11,.5)}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-inline-bjs-word,#boMoviesPage .bop-inline-bjs-word::before,#boMoviesPage .bop-inline-bjs-word::after{animation:none!important}}
+</style>
+<script id="bop-movie-bjs-pick-coming-soon-v220">
+(function(){
+  function ensure(){
+    var page=document.getElementById('bopMovieBjsSoon');if(page)return page;
+    page=document.createElement('section');page.id='bopMovieBjsSoon';page.setAttribute('aria-label','BJS Picks coming soon');
+    page.innerHTML='<button class="bop-bjs-soon-back" type="button" aria-label="Back to Movies">←<br>Back</button><div class="bop-bjs-soon-inner"><h2>BJS PICKS<span>COMING SOON</span></h2><p class="bop-bjs-soon-sub">Our worldwide movie picks are being selected.</p><div class="bop-bjs-question-row" aria-hidden="true"><span class="bop-bjs-question">?</span><span class="bop-bjs-question">?</span><span class="bop-bjs-question">?</span></div><div class="bop-bjs-soon-rule"></div></div>';
+    document.body.appendChild(page);return page;
+  }
+  function open(event){if(event){event.preventDefault();event.stopImmediatePropagation();}var page=ensure();page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden'}
+  function close(event){if(event){event.preventDefault();event.stopImmediatePropagation();}var page=ensure();page.classList.remove('open');document.body.style.overflow='hidden';var movies=document.getElementById('boMoviesPage');if(movies)movies.scrollTop=0}
+  document.addEventListener('click',function(event){var pick=event.target.closest&&event.target.closest('#boMoviesPage .bop-inline-bjs-word');if(pick)open(event);var back=event.target.closest&&event.target.closest('#bopMovieBjsSoon .bop-bjs-soon-back');if(back)close(event)},true);
+  document.addEventListener('keydown',function(event){if((event.key==='Enter'||event.key===' ')&&event.target.matches&&event.target.matches('#boMoviesPage .bop-inline-bjs-word'))open(event);if(event.key==='Escape'&&document.getElementById('bopMovieBjsSoon')&&document.getElementById('bopMovieBjsSoon').classList.contains('open'))close(event)},true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
+})();
+</script>
+<!-- Fresh delivery build v220: flashing movie BJS PICK link and restrained Coming Soon page -->
 </body></html>
