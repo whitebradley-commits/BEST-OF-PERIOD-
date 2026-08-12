@@ -26200,9 +26200,10 @@ body footer .fine-print>span:first-child+span,
   var originalShowCity=window.ocShowCity;
   var groups=[
     {id:'unitedstates',la:38.25,lo:-97.10,dests:['bestof','sandiego','losangeles','santabarbara','siliconvalley','sanfrancisco','idaho','newyork','philadelphia','boston','washingtondc','chicago','miami','atlanta','neworleans']},
-    {id:'london',la:51.51,lo:-0.13,dests:['london']},
-    {id:'paris',la:48.86,lo:2.35,dests:['paris']},
-    {id:'switzerland',la:46.82,lo:8.23,dests:['zurich','lucerne','geneva','zermatt']}
+    {id:'london',la:51.51,lo:-0.13,dests:['london'],xOffset:-2.6,yOffset:-2.2},
+    {id:'paris',la:48.86,lo:2.35,dests:['paris'],xOffset:0,yOffset:1.0},
+    {id:'zurich',la:47.38,lo:8.54,dests:['zurich'],xOffset:2.7,yOffset:-1.7},
+    {id:'switzerland',la:46.35,lo:7.30,dests:['lucerne','geneva','zermatt'],xOffset:2.0,yOffset:3.3}
   ];
   function liveCity(dest){return OC_CITIES.find(function(city){return city.t==='live'&&city.dest===dest})}
   function groupCities(group){return group.dests.map(liveCity).filter(Boolean)}
@@ -26227,7 +26228,7 @@ body footer .fine-print>span:first-child+span,
     layer.innerHTML='';layer.dataset.built='clusters';
     var frag=document.createDocumentFragment();
     OC_CITIES.forEach(function(city,idx){if(city.t==='live')return;var p=ocProject(city.la,city.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-'+city.t;pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.setAttribute('aria-label',city.n);pin.dataset.cityIndex=idx;frag.appendChild(pin)});
-    groups.forEach(function(group,idx){var cities=groupCities(group),p=ocProject(group.la,group.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-live oc-pin-destination-group';pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.setAttribute('aria-label',cities.length+' available '+(cities.length===1?'destination':'destinations'));pin.dataset.groupIndex=idx;pin.innerHTML='<span>'+cities.length+'</span>';frag.appendChild(pin)});
+    groups.forEach(function(group,idx){var cities=groupCities(group),p=ocProject(group.la,group.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-live oc-pin-destination-group oc-pin-group-'+group.id;pin.style.left=(p.xPct+(group.xOffset||0))+'%';pin.style.top=(p.yPct+(group.yOffset||0))+'%';pin.style.setProperty('--oc-pin-angle',((group.xOffset||0)*4)+'deg');pin.setAttribute('aria-label',(cities.length===1?cities[0].n:cities.length+' available destinations'));pin.dataset.groupIndex=idx;pin.innerHTML='<span>'+cities.length+'</span>';frag.appendChild(pin)});
     layer.appendChild(frag);
     layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.groupIndex!=null)window.ocShowDestinationChoices(groupCities(groups[Number(pin.dataset.groupIndex)]));else window.ocShowCity(OC_CITIES[Number(pin.dataset.cityIndex)])};
   };
@@ -30072,4 +30073,30 @@ footer .bop-mini-legend-badge,
 }
 </style>
 <!-- Fresh delivery build v193: crisp red Other Cities label with no text glow -->
+<style id="bop-world-map-separated-pins-v194">
+/* Slightly smaller, subtly angled live-destination pins. London, Paris and
+   Zurich are deliberately separate targets rather than one Europe cluster. */
+#ocWorldOverlay .oc-pin-destination-group{
+  width:28px!important;height:28px!important;margin:-14px 0 0 -14px!important;
+  font-size:10px!important;transform:rotate(var(--oc-pin-angle,0deg))!important;
+  transform-origin:50% 85%!important;
+}
+#ocWorldOverlay .oc-pin-destination-group::before,
+#ocWorldOverlay .oc-pin-destination-group::after{width:20px!important;height:20px!important}
+#ocWorldOverlay .oc-pin-destination-group::before{box-shadow:0 0 10px rgba(59,157,255,.88),0 0 3px #fff!important}
+#ocWorldOverlay .oc-pin-destination-group span{transform:rotate(calc(var(--oc-pin-angle,0deg) * -1));display:block!important}
+#ocWorldOverlay .oc-pin-group-london,
+#ocWorldOverlay .oc-pin-group-paris,
+#ocWorldOverlay .oc-pin-group-zurich{z-index:18!important}
+/* Give the world artwork a little more breathing room inside its existing
+   frame without changing the map design or the pinch-to-zoom controls. */
+#ocWorldOverlay .oc-map-zoom-stage>#ocWorldSvg,
+#ocWorldOverlay .oc-map-zoom-stage>#ocPinLayer{transform:scale(.965)!important;transform-origin:center!important}
+@media(max-width:430px){
+  #ocWorldOverlay .oc-pin-destination-group{width:26px!important;height:26px!important;margin:-13px 0 0 -13px!important}
+  #ocWorldOverlay .oc-pin-destination-group::before,
+  #ocWorldOverlay .oc-pin-destination-group::after{width:18px!important;height:18px!important}
+}
+</style>
+<!-- Fresh delivery build v194: smaller angled map pins and separate London, Paris and Zurich targets -->
 </body></html>
