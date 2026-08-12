@@ -30472,4 +30472,41 @@ footer .bop-mini-legend-badge,
 }
 </style>
 <!-- Fresh delivery build v205: floating gold rules with no connected boxes or line junctions -->
+<script id="bop-other-cities-near-return-v206">
+(function(){
+  function updateNote(){
+    var note=document.querySelector('#ocWorldOverlay .oc-map-tap-note');if(!note)return;
+    note.innerHTML='Tap any pin for locations.<br>For a closer look at restaurants <strong>NEAR YOU</strong>, click here <span aria-hidden="true">&larr;</span>';
+    note.onclick=function(event){
+      if(event){event.preventDefault();event.stopPropagation();}
+      window.bopNearOpenedFromOtherCities=true;
+      if(typeof boNearMapReturnTarget!=='undefined')boNearMapReturnTarget='othercities';
+      var world=document.getElementById('ocWorldOverlay');
+      if(world){world.classList.remove('open');world.setAttribute('aria-hidden','true');}
+      document.body.classList.remove('oc-world-active');
+      if(typeof boOpenNearMap==='function')boOpenNearMap();
+    };
+  }
+  function returnToOtherCities(event){
+    if(!window.bopNearOpenedFromOtherCities)return;
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    window.bopNearOpenedFromOtherCities=false;
+    var near=document.getElementById('boNearMapPage');if(near)near.classList.remove('open');
+    if(typeof boNearMapGeocodeRun!=='undefined')boNearMapGeocodeRun++;
+    if(typeof boHideNearRestaurantCard==='function')boHideNearRestaurantCard();
+    document.body.style.overflow='';
+    var world=document.getElementById('ocWorldOverlay');
+    if(world){world.classList.add('open');world.setAttribute('aria-hidden','false');world.scrollTop=0;}
+    document.body.classList.add('oc-world-active');
+    if(typeof window.ocBuildPins==='function')window.ocBuildPins();
+  }
+  function install(){
+    updateNote();
+    var back=document.getElementById('boNearMapBack');if(back)back.addEventListener('click',returnToOtherCities,true);
+    new MutationObserver(function(){updateNote();var button=document.getElementById('boNearMapBack');if(button&&button.dataset.ocReturnWired!=='1'){button.dataset.ocReturnWired='1';button.addEventListener('click',returnToOtherCities,true);}}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v206: clearer pin instruction and Near Me Back restores Other Cities -->
 </body></html>
