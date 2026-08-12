@@ -9439,6 +9439,27 @@ function openOtherCitiesFrom(sourceBtn){
   var overlay = document.getElementById('ocWorldOverlay');
   if(!overlay) return;
   var btn = sourceBtn || document.getElementById('ocGlobeBtn');
+  /* Remember the page that genuinely opened Other Cities. Several legacy
+     layers can remain marked open underneath the visible page (most notably
+     Best of Vegas), so never use that old layer as an implicit fallback. */
+  var returnPage = null;
+  var pageIds = ['boMoviesPage','boWorldwidePage','bopWorldwideLanding','boNearMapPage','bestOfOverlay','bopLandingOverlay'];
+  if(btn){
+    for(var p=0;p<pageIds.length;p++){
+      var contained = btn.closest && btn.closest('#'+pageIds[p]);
+      if(contained){ returnPage=pageIds[p]; break; }
+    }
+  }
+  if(!returnPage && document.elementsFromPoint){
+    var stack=document.elementsFromPoint(Math.max(1,innerWidth/2),Math.max(1,innerHeight/2));
+    for(var s=0;s<stack.length&&!returnPage;s++){
+      for(var q=0;q<pageIds.length;q++){
+        var host=stack[s].closest&&stack[s].closest('#'+pageIds[q]);
+        if(host){returnPage=pageIds[q];break;}
+      }
+    }
+  }
+  window.bopOtherCitiesReturnPage=returnPage||'bopLandingOverlay';
   if(btn){
     btn.classList.remove('oc-firing');
     void btn.offsetWidth;
@@ -9482,6 +9503,23 @@ function setupOtherCities(){
       overlay.classList.remove('open');
       var card = document.getElementById('ocCityCard');
       if(card) card.classList.remove('open');
+      var returnId=window.bopOtherCitiesReturnPage||'bopLandingOverlay';
+      var returnPage=document.getElementById(returnId);
+      if(returnId==='bopLandingOverlay'){
+        /* A missing/stale source returns home, never to Vegas. */
+        ['bestOfOverlay','boMoviesPage','boWorldwidePage','bopWorldwideLanding'].forEach(function(id){
+          var page=document.getElementById(id);if(page)page.classList.remove('open','active','is-open');
+        });
+        if(returnPage)returnPage.classList.add('open');
+        try{
+          var params=new URLSearchParams(location.search);
+          params.delete('city');params.delete('category');params.delete('restaurant');params.delete('movie');
+          history.replaceState(null,'',location.pathname+(params.toString()?'?'+params.toString():''));
+        }catch(error){}
+      }else if(returnPage){
+        returnPage.classList.add('open');
+      }
+      window.scrollTo(0,0);
     });
   }
 
@@ -18994,7 +19032,11 @@ function boOpenWorldwidePage(key){
   if(key==='watches'&&typeof window.boHydrateLuxuryPhotos==='function')setTimeout(window.boHydrateLuxuryPhotos,0);
   try{history.replaceState(null,'',window.location.pathname+'?page=worldwide-'+key);}catch(e){}
 }
-function boCloseWorldwidePage(){const page=document.getElementById('boWorldwidePage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boWorldwideRotatorTimer);clearInterval(boMarketTickerTimer);boRenderCategory('otheroptions');}
+function boCloseWorldwidePage(){
+  const page=document.getElementById('boWorldwidePage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boWorldwideRotatorTimer);clearInterval(boMarketTickerTimer);
+  try{history.replaceState(null,'',window.location.pathname+'#/page/worldwide');}catch(e){}
+  if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
+}
 
 // ===== Near Me map page =====
 
@@ -26698,6 +26740,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 <nav class="bop-static-landing-dock" id="bopStaticLandingDock" aria-label="Landing page controls">
   <button class="bop-static-landing-button" id="bopStaticShare" type="button" aria-label="Share this page">SHARE<br>PAGE</button>
   <button class="bop-static-landing-button bop-static-near" id="bopStaticNear" type="button" aria-label="Near Me"><span class="bop-static-near-label">NEAR<br>ME</span></button>
+  <button class="bop-static-landing-button bop-static-other-cities" id="bopStaticOtherCities" type="button" aria-label="Other Cities"><span class="bop-static-city-skyline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="bop-static-city-label">OTHER<br>CITIES</span></button>
   <button class="bop-static-landing-button bop-static-world" id="bopStaticWorld" type="button" aria-label="Worldwide bests"><svg aria-hidden="true" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg></button>
   <button class="bop-static-landing-button bop-static-bjs" id="bopStaticFounders" type="button" aria-label="BJS Co." tabindex="-1"><span class="bop-static-bjs-lockup"><strong>BJS</strong><small>CO.</small></span></button>
 </nav>
@@ -26705,9 +26748,10 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 (function(){
   function clickOriginal(selector){const target=document.querySelector(selector);if(target)target.click();}
   function bind(){
-    const share=document.getElementById('bopStaticShare');const near=document.getElementById('bopStaticNear');const world=document.getElementById('bopStaticWorld');
+    const share=document.getElementById('bopStaticShare');const near=document.getElementById('bopStaticNear');const other=document.getElementById('bopStaticOtherCities');const world=document.getElementById('bopStaticWorld');
     if(share)share.addEventListener('click',function(){clickOriginal('#landingSharePage')});
     if(near)near.addEventListener('click',function(){clickOriginal('#bopLandingNearMeBtn')});
+    if(other)other.addEventListener('click',function(){if(typeof openOtherCitiesFrom==='function')openOtherCitiesFrom(other);});
     if(world)world.addEventListener('click',function(){if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
@@ -27446,7 +27490,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </script>
 <!-- Fresh delivery build v142: real movie posters and BJS-logo Movie Picks button -->
 <style id="bop-global-three-icon-dock-v143">
-/* Keep Share, Near Me, and Worldwide floating together on every page. */
+/* Keep Share, Near Me, Other Cities, and Worldwide together on every page. */
 #bopStaticLandingDock.bop-static-landing-dock{
   display:flex!important;
   position:fixed!important;
@@ -27460,7 +27504,16 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   #bopStaticLandingDock.bop-static-landing-dock{left:8px!important;gap:6px!important}
 }
 </style>
-<!-- Fresh delivery build v143: Share, Near Me, and Globe float on every page -->
+<style id="bop-global-four-icon-dock-v181">
+#bopStaticLandingDock .bop-static-other-cities{position:relative;overflow:hidden!important;color:#ff3048!important}
+#bopStaticLandingDock .bop-static-city-skyline{position:absolute;left:9px;right:9px;bottom:9px;height:34px;display:flex;align-items:flex-end;justify-content:center;gap:2px;opacity:.34;filter:drop-shadow(0 0 3px rgba(245,158,11,.5));transform:skewX(-2deg)}
+#bopStaticLandingDock .bop-static-city-skyline::after{content:'';position:absolute;left:0;right:0;bottom:0;border-bottom:1px solid #F59E0B;transform:rotate(-1deg)}
+#bopStaticLandingDock .bop-static-city-skyline i{display:block;width:7px;border:1px solid #F59E0B;border-bottom:0;background:repeating-linear-gradient(0deg,transparent 0 4px,rgba(245,158,11,.38) 5px 6px)}
+#bopStaticLandingDock .bop-static-city-skyline i:nth-child(1){height:18px}#bopStaticLandingDock .bop-static-city-skyline i:nth-child(2){height:27px}#bopStaticLandingDock .bop-static-city-skyline i:nth-child(3){height:34px;width:9px;clip-path:polygon(42% 0,58% 0,58% 12%,100% 23%,100% 100%,0 100%,0 23%,42% 12%)}#bopStaticLandingDock .bop-static-city-skyline i:nth-child(4){height:24px}#bopStaticLandingDock .bop-static-city-skyline i:nth-child(5){height:15px}
+#bopStaticLandingDock .bop-static-city-label{position:relative;z-index:2;color:#ff3048;font:900 .58rem/1.02 'Archivo Black',sans-serif;text-shadow:0 0 6px rgba(255,48,72,.72)}
+@media(max-width:390px){#bopStaticLandingDock.bop-static-landing-dock{left:8px!important;gap:6px!important}#bopStaticLandingDock .bop-static-landing-button{flex-basis:64px!important;width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important}}
+</style>
+<!-- Fresh delivery build v181: four-button dock and source-safe Other Cities Back -->
 <style id="bop-movie-circles-airline-scroll-v144">
 /* Permanent arrow rule: use hand-drawn line geometry, never emoji/icon glyphs. */
 #boMoviesPage .bo-ticket-cta::before,
@@ -29034,4 +29087,111 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </script>
 <!-- Fresh delivery build v175: dedicated verified-vendor signup from the Legend page -->
 <!-- Fresh upload signature v179: 2026-08-12T01:58:00-07:00; worldwide-back and premium-cabin build -->
+<style id="bop-hide-top-right-other-cities-v180">
+/* Temporarily retire only the restaurant-page Other Cities controls while
+   their new permanent placement is selected. Worldwide and footer globes stay. */
+#bestOfOverlay>.oc-globe-wrap,
+#boNearMapPage .bo-near-map-other-cities{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+</style>
+<!-- Fresh delivery build v180: restaurant-page top-right Other Cities globes removed -->
+<style id="bop-airlines-information-and-book-now-v182">
+/* Airline rankings are information-first: no aircraft, cabin, or logo image
+   competes with the commercial and reputation details in the two columns. */
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card{
+  display:block!important;
+  min-height:150px!important;
+  padding:0!important;
+  background:#050505!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-poster,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-cabin-brand{display:none!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-info{
+  width:100%!important;
+  min-height:150px!important;
+  box-sizing:border-box!important;
+  padding:18px 12px 14px 48px!important;
+  background:#050505!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card .bo-movie-rank{left:9px!important;top:10px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card h3{font-size:clamp(1.08rem,4.2vw,1.65rem)!important;line-height:1.05!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card .bo-movie-metric{margin-top:9px!important}
+
+/* The directory is a borderless field of crisp logos on pure black. */
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source{
+  position:relative!important;
+  min-height:30px!important;
+  color:transparent!important;
+  font-size:0!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source::before{
+  content:'BOOK NOW'!important;
+  display:block!important;
+  color:#F59E0B!important;
+  font:900 .9rem/1 'Archivo Black',Arial,sans-serif!important;
+  letter-spacing:.13em!important;
+  text-shadow:0 0 8px rgba(245,158,11,.78)!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source::after{
+  content:''!important;
+  display:block!important;
+  width:58px!important;
+  height:9px!important;
+  margin:8px auto 0!important;
+  border-left:2px solid #F59E0B!important;
+  border-bottom:2px solid #F59E0B!important;
+  border-right:2px solid #F59E0B!important;
+  transform:perspective(20px) rotateX(-24deg)!important;
+  filter:drop-shadow(0 0 4px rgba(245,158,11,.8))!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-link,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{
+  border:0!important;border-radius:0!important;background:#000!important;box-shadow:none!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{min-height:112px!important;padding:5px 2px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-link{min-height:102px!important;flex-direction:column!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{min-height:72px!important;padding:4px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo{max-width:112px!important;max-height:55px!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.14))!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label{position:relative;display:block;margin-top:3px;color:#ef3340;font:900 .48rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.1em;text-shadow:0 0 5px rgba(239,51,64,.7)}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label::before,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label::after{content:'';position:absolute;top:50%;width:9px;height:5px;border-bottom:1px solid #F59E0B}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label::before{right:calc(100% + 5px);border-right:1px solid #F59E0B;transform:translateY(-50%) skewX(34deg)}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label::after{left:calc(100% + 5px);border-left:1px solid #F59E0B;transform:translateY(-50%) skewX(-34deg)}
+@media(max-width:620px){
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-card>.bo-movie-info{padding:15px 8px 12px 42px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{min-height:96px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-inner,#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-link{min-height:88px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo-wrap{min-height:61px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-logo{max-width:74px!important;max-height:42px!important}
+  #boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-book-label{font-size:.4rem!important}
+}
+</style>
+<script id="bop-airlines-information-and-book-now-v182">
+(function(){
+  /* The existing worldwide list contains 40 major airlines. Keep all forty,
+     and make the full logo lockup the direct official-site booking link. */
+  if(typeof boWorldwideActionHTML==='function'){
+    const prior=boWorldwideActionHTML;
+    boWorldwideActionHTML=function(item,index,action,key){
+      if(key!=='airlines')return prior(item,index,action,key);
+      let domain='';try{domain=new URL(item[1]).hostname.replace(/^www\./,'');}catch(error){}
+      const logo='https://logo.clearbit.com/'+encodeURIComponent(domain)+'?size=256';
+      return '<article class="bo-current-card bo-airline-direct-card"><div class="bo-airline-direct-inner"><a class="bo-airline-direct-link" target="_blank" rel="noopener" aria-label="Book now with '+item[0]+'" href="'+item[1]+'"><span class="bo-airline-logo-wrap"><img class="bo-airline-logo" src="'+logo+'" alt="'+item[0]+' logo" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><span class="bo-airline-logo-fallback">'+item[0]+'</span></span><span class="bo-airline-book-label">BOOK NOW</span></a></div></article>';
+    };
+  }
+  function stripRankingPhotos(){
+    const page=document.querySelector('#boWorldwidePage[data-worldwide-key="airlines"]');if(!page)return;
+    page.querySelectorAll('.bo-movie-card>.bo-movie-poster,.bo-movie-card>.bo-cabin-brand').forEach(function(media){media.remove();});
+  }
+  function install(){stripRankingPhotos();new MutationObserver(function(){requestAnimationFrame(stripRankingPhotos);}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-worldwide-key','class']});document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"]'))setTimeout(stripRankingPhotos,100);},true);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v182: information-only airline rankings and 40-logo Book Now directory -->
 </body></html>
