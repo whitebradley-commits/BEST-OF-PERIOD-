@@ -19036,7 +19036,7 @@ function boMovieCardHTML(movie,index,current){
     <a class="bo-home-viewing-link" target="_blank" rel="noopener" aria-label="Search Prime Video for ${movie.title}" href="https://www.amazon.com/s?k=${encodeURIComponent(movie.title)}&i=instant-video"><img class="bo-home-viewing-logo" src="https://cdn.simpleicons.org/primevideo/00A8E1" alt="Prime Video"></a>
     <a class="bo-home-viewing-link" target="_blank" rel="noopener" aria-label="Search YouTube for ${movie.title}" href="https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title+' movie')}"><img class="bo-home-viewing-logo" src="https://cdn.simpleicons.org/youtube/FF0000" alt="YouTube"></a>
   </div><div class="bo-home-viewing-note">Availability and purchase options vary by title and region.</div>`:'';
-  return `<article class="${current?'bo-current-card':'bo-movie-card'}"${current?` data-movie-title="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"`:''}><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art">${current?`<button type="button" class="bo-send-movie-btn" data-send-movie="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">SEND MOVIE</button>`:''}<div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${boMovieAccoladesHTML(movie.title)}${ticket}</div></article>`;
+  return `<article class="${current?'bo-current-card':'bo-movie-card'}" data-movie-title="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"><span class="bo-movie-rank">${rank}</span><img class="bo-movie-poster" src="${boMoviePoster(movie.title,index)}" alt="${movie.title} poster art"><button type="button" class="bo-send-movie-btn" data-send-movie="${movie.title.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">SEND MOVIE</button><div class="bo-movie-info"><h3>${movie.title}</h3><div class="bo-movie-metric">${movie.metric}</div><div class="bo-movie-date">${movie.date}</div>${boMovieAccoladesHTML(movie.title)}${ticket}</div></article>`;
 }
 let boMoviesRotatorTimer=null;
 let boWorldwideRotatorTimer=null;
@@ -19110,7 +19110,7 @@ function boOpenMoviesPage(){
   try{const p=new URLSearchParams();p.set('page','movies');if(requestedMovie)p.set('movie',requestedMovie);history.replaceState(null,'',window.location.pathname+'?'+p.toString());}catch(e){}
   const rot=document.getElementById('boMoviesRotator');
   boStartWorldwideTitleRotation(rot,'MOVIES');
-  if(requestedMovie)setTimeout(()=>{const card=[...page.querySelectorAll('.bo-current-card[data-movie-title]')].find(item=>item.dataset.movieTitle===requestedMovie);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow='0 0 28px rgba(239,51,64,.85),0 0 18px rgba(245,158,11,.72)';setTimeout(()=>card.style.boxShadow='',2400);}},500);
+  if(requestedMovie)setTimeout(()=>{const card=[...page.querySelectorAll('[data-movie-title]')].find(item=>item.dataset.movieTitle===requestedMovie);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow='0 0 28px rgba(239,51,64,.85),0 0 18px rgba(245,158,11,.72)';setTimeout(()=>card.style.boxShadow='',2400);}},500);
 }
 function boCloseMoviesPage(){
   const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);clearInterval(boWorldwideRotatorTimer);
@@ -25514,23 +25514,36 @@ body footer .fine-print>span:first-child+span,
       }else if(typeof frame.contentWindow.getFntShareTeam==='function'){
         const team=frame.contentWindow.getFntShareTeam(),query=team?'team='+encodeURIComponent(team):'';url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash=team?'/concepts/fnt?'+query:'/concepts/fnt';
       }
-    }else if((document.getElementById('boMoviesPage')&&document.getElementById('boMoviesPage').classList.contains('open'))||(document.getElementById('boWorldwidePage')&&document.getElementById('boWorldwidePage').classList.contains('open'))){
-      return url.toString();
-    }else if(isVisible(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function'){
+    }else if(document.getElementById('boMoviesPage')&&document.getElementById('boMoviesPage').classList.contains('open')){
+      url.search='';url.hash='';url.searchParams.set('page','movies');return url.toString();
+    }else if(document.getElementById('boWorldwidePage')&&document.getElementById('boWorldwidePage').classList.contains('open')){
+      const world=document.getElementById('boWorldwidePage'),key=world.dataset.worldwideKey;url.search='';url.hash='';if(key)url.searchParams.set('page','worldwide-'+key);return url.toString();
+    }else if(isOpen(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function'){
       return window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext).url;
     }
     return url.toString();
   }
   function isVisible(element){if(!element)return false;const style=getComputedStyle(element);return style.display!=='none'&&style.visibility!=='hidden'}
+  function isOpen(element){return !!(element&&isVisible(element)&&(element.classList.contains('open')||element.classList.contains('active')||element.classList.contains('is-open')||element.classList.contains('tg-open')))}
+  function exactShareData(){
+    const movies=document.getElementById('boMoviesPage'),world=document.getElementById('boWorldwidePage');
+    if(isOpen(movies))return {title:'Best of Movies Period',text:'Check out the Best of Movies Period page.',url:exactShareUrl()};
+    if(isOpen(world)){
+      const key=world.dataset.worldwideKey||'',data=(typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA[key])||null;
+      const label=data&&data.title?String(data.title).replace(/\s+/g,' ').trim():key.replace(/(^|[-_])([a-z])/g,function(_,space,letter){return (space?' ':'')+letter.toUpperCase();});
+      return {title:'Best of '+label+' Period',text:'Check out the Best of '+label+' Period page.',url:exactShareUrl()};
+    }
+    if(isOpen(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function')return window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext);
+    const url=new URL(location.href);url.hash='';return {title:'Best of Period',text:'Check out Best of Period.',url:url.toString()};
+  }
   function shouldShow(){return !isVisible(document.getElementById('bopLandingOverlay'))}
   function updateVisibility(){const button=document.getElementById('globalSharePage');if(!button)return;const next=shouldShow()?'flex':'none';if(button.style.display!==next)button.style.display=next}
   async function shareCurrentPage(button){
     const original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
     try{
       await new Promise(function(resolve){setTimeout(resolve,120)});
-    const bestOfIsOpen=isVisible(document.getElementById('bestOfOverlay'));
-    const exactData=bestOfIsOpen&&typeof window.boBuildExactPageShare==='function'?window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext):null;
-    const url=exactData?exactData.url:exactShareUrl(),data={title:exactData?exactData.title:(document.title||'Best of Period'),text:exactData?exactData.text:'Check this out!',url:url};
+    const exactData=exactShareData();
+    const url=exactData.url,data={title:exactData.title,text:exactData.text,url:url};
       if(navigator.share)await navigator.share(data);
       else if(navigator.clipboard){await navigator.clipboard.writeText(url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1200)})}
       else prompt('Copy this exact-page link:',url);
@@ -29975,4 +29988,88 @@ footer .bop-mini-legend-badge,
 @media(prefers-reduced-motion:reduce){#boMoviesPage .bop-thumb-arrow{animation:none}}
 </style>
 <!-- Fresh delivery build v191: dedicated fingerprint hold control, larger Fate result, seamless ranking divider and exact refresh routing -->
+<style id="bop-open-two-columns-and-blue-fingerprint-v192">
+/* Two true page halves: edge-to-edge shade, one center divider, and no
+   horizontal rule beneath either ranking heading. */
+#boMoviesPage .bo-movies-columns,
+#boWorldwidePage .bo-movies-columns{
+  position:relative!important;
+  left:50%!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:-50vw!important;
+  gap:0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column,
+#boWorldwidePage .bo-movies-columns>.bo-movie-column{
+  min-width:0!important;
+  padding:0 12px 22px!important;
+  border-top:0!important;
+  border-bottom:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage .bo-movies-columns>.bo-movie-column:first-child{
+  background:#000!important;
+  border-left:0!important;
+  border-right:2px solid #F59E0B!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage .bo-movies-columns>.bo-movie-column:nth-child(2){
+  background:#181818!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#boMoviesPage .bo-movie-column-head,
+#boWorldwidePage .bo-movie-column-head{
+  border:0!important;
+  border-bottom:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+#boMoviesPage .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card){background-color:#000!important}
+#boMoviesPage .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card){background-color:#181818!important}
+#boMoviesPage .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage .bo-movie-column:nth-child(2) .bo-movie-info{background:linear-gradient(90deg,rgba(24,24,24,.08),#181818 18%,#181818 100%)!important}
+/* Blue fingerprint with its own visible breathing pulse. */
+#boMoviesPage .bop-fate-thumb{
+  border-color:#2f8cff!important;
+  box-shadow:0 0 12px rgba(47,140,255,.72),0 0 25px rgba(47,140,255,.22)!important;
+  animation:bopBlueFingerprintPulse 1.35s ease-in-out infinite!important;
+}
+#boMoviesPage .bop-fate-thumb svg{
+  stroke:#2f8cff!important;
+  filter:drop-shadow(0 0 5px rgba(47,140,255,.92))!important;
+}
+#boMoviesPage .bop-fate-thumb.is-holding{animation-duration:.58s!important}
+@keyframes bopBlueFingerprintPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(47,140,255,.62),0 0 20px rgba(47,140,255,.16)}
+  50%{transform:scale(1.065);box-shadow:0 0 21px rgba(47,140,255,1),0 0 39px rgba(47,140,255,.5)}
+}
+@media(max-width:620px){
+  #boMoviesPage .bo-movies-columns>.bo-movie-column,
+  #boWorldwidePage .bo-movies-columns>.bo-movie-column{padding-left:7px!important;padding-right:7px!important}
+}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-fate-thumb{animation:none!important}}
+</style>
+<!-- Fresh delivery build v192: open edge-to-edge ranking halves, center line only, blue pulsing fingerprint -->
+<style id="bop-readable-other-cities-v193">
+#bopStaticLandingDock .bop-static-city-label{
+  color:#ff3048!important;
+  font-family:'Archivo Black',Arial,sans-serif!important;
+  font-weight:900!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+</style>
+<!-- Fresh delivery build v193: crisp red Other Cities label with no text glow -->
 </body></html>
