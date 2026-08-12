@@ -8657,7 +8657,7 @@ const BOP_LANDING_CITIES = [
   "Tokyo", "Seoul", "Bangkok", "Singapore", "Hong Kong", "Shanghai",
   "Dubai", "Abu Dhabi", "Doha", "Tel Aviv", "Istanbul",
   "London", "Paris", "Rome", "Milan", "Barcelona", "Madrid", "Ibiza",
-  "Mykonos", "Berlin", "Amsterdam", "Monaco", "Zurich", "Vienna", "Prague",
+  "Mykonos", "Berlin", "Amsterdam", "Monaco", "Zürich", "Lucerne", "Geneva", "Zermatt", "Vienna", "Prague",
   "Lisbon", "Sydney", "Melbourne", "Cancun", "Tulum", "Rio de Janeiro",
   "Mexico City", "Toronto", "Vancouver", "Montreal",
   "Portland", "Minneapolis", "Kansas City", "St. Louis", "Detroit",
@@ -8803,6 +8803,11 @@ function setupBopLanding(){
     { name: 'Las Vegas', region: 'Nevada', dest: 'bestof' },
     { name: 'Miami', region: 'Florida', dest: 'miami' },
     { name: 'London', region: 'England', dest: 'london' },
+    { name: 'Paris', region: 'France', dest: 'paris' },
+    { name: 'Zürich', region: 'Switzerland', dest: 'zurich', aliases: ['Zurich'] },
+    { name: 'Lucerne', region: 'Switzerland', dest: 'lucerne', aliases: ['Luzern'] },
+    { name: 'Geneva', region: 'Switzerland', dest: 'geneva', aliases: ['Genève', 'Geneve'] },
+    { name: 'Zermatt', region: 'Switzerland', dest: 'zermatt' },
     { name: 'San Diego', region: 'California', dest: 'sandiego' },
     { name: 'Silicon Valley', region: 'California', dest: 'siliconvalley', aliases: ['S.V.', 'SV', 'S V'] },
     { name: 'Los Angeles', region: 'California', dest: 'losangeles', aliases: ['L.A.', 'LA', 'L A'] },
@@ -8867,6 +8872,11 @@ function setupBopLanding(){
         ,philadelphia:[39.9526,-75.1652]
         ,atlanta:[33.7490,-84.3880]
         ,neworleans:[29.9511,-90.0715]
+        ,paris:[48.8566,2.3522]
+        ,zurich:[47.3769,8.5417]
+        ,lucerne:[47.0502,8.3093]
+        ,geneva:[46.2044,6.1432]
+        ,zermatt:[46.0207,7.7491]
       };
       const openForCity = function(cityKey){
         boNearMapReturnTarget = 'landing';
@@ -9119,7 +9129,7 @@ var OC_CITIES = [
   {n:"Calgary",la:51.05,lo:-114.07,t:"2027"},
   {n:"Mexico City",la:19.43,lo:-99.13,t:"2027"},
   {n:"Cancun",la:21.16,lo:-86.85,t:"2027"},
-  {n:"Paris",la:48.86,lo:2.35,t:"2027"},
+  {n:"Paris",la:48.86,lo:2.35,t:"live",dest:"paris"},
   {n:"Madrid",la:40.42,lo:-3.7,t:"2027"},
   {n:"Barcelona",la:41.39,lo:2.17,t:"2027"},
   {n:"Rome",la:41.9,lo:12.5,t:"2027"},
@@ -9154,7 +9164,10 @@ var OC_CITIES = [
   {n:"Quito",la:-0.18,lo:-78.47,t:"2028"},
   {n:"Munich",la:48.14,lo:11.58,t:"2028"},
   {n:"Brussels",la:50.85,lo:4.35,t:"2028"},
-  {n:"Zurich",la:47.38,lo:8.54,t:"2028"},
+  {n:"Zürich",la:47.38,lo:8.54,t:"live",dest:"zurich"},
+  {n:"Lucerne",la:47.05,lo:8.31,t:"live",dest:"lucerne"},
+  {n:"Geneva",la:46.20,lo:6.14,t:"live",dest:"geneva"},
+  {n:"Zermatt",la:46.02,lo:7.75,t:"live",dest:"zermatt"},
   {n:"Vienna",la:48.21,lo:16.37,t:"2028"},
   {n:"Prague",la:50.08,lo:14.44,t:"2028"},
   {n:"Budapest",la:47.5,lo:19.04,t:"2028"},
@@ -10956,6 +10969,45 @@ const BO_CITY_CONFIG = {
     useNameCycler: true,
     bjsPicksCat: 'bjspickslondon'   // London's own, separate BJS Picks page
   },
+  paris: {
+    displayName: 'Paris',
+    areaList: ['1st to 20th Arrondissements', 'Greater Paris'],
+    tickerMessages: ['PARIS', 'YUMMY SOON!'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspicksparis'
+  },
+  zurich: {
+    displayName: 'Zürich',
+    areaList: ['Zürich City', 'Lake Zürich'],
+    tickerMessages: ['ZÜRICH', 'YUMMY SOON!'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspickszurich',
+    countryLabel: 'Switzerland'
+  },
+  lucerne: {
+    displayName: 'Lucerne',
+    areaList: ['Lucerne Old Town', 'Lake Lucerne'],
+    tickerMessages: ['LUCERNE', 'YUMMY SOON!'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspickslucerne',
+    countryLabel: 'Switzerland'
+  },
+  geneva: {
+    displayName: 'Geneva',
+    areaList: ['Geneva City', 'Lake Geneva'],
+    tickerMessages: ['GENEVA', 'YUMMY SOON!'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspicksgeneva',
+    countryLabel: 'Switzerland'
+  },
+  zermatt: {
+    displayName: 'Zermatt',
+    areaList: ['Zermatt Village', 'Matterhorn'],
+    tickerMessages: ['ZERMATT', 'YUMMY SOON!'],
+    useNameCycler: true,
+    bjsPicksCat: 'bjspickszermatt',
+    countryLabel: 'Switzerland'
+  },
   sandiego: {
     displayName: 'San Diego',
     landingName: 'S.D.',
@@ -11044,6 +11096,68 @@ const BO_CITY_CONFIG = {
    these verified starters keep a new page useful while its wider dining
    coverage, imagery and direct links continue to grow. */
 const BO_CITY_LAUNCH_PIPELINE = {
+  paris: {
+    displayName: 'Paris', region: 'France', status: 'live',
+    restaurants: [
+      {name:'Kei', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Plénitude — Cheval Blanc Paris', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:"L’Ambroisie", distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Arpège', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Alléno Paris au Pavillon Ledoyen', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Le Cinq', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Épicure', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Pierre Gagnaire', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Le Gabriel — La Réserve Paris', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'},
+      {name:'Le Pré Catelan', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide France 2025'}
+    ]
+  },
+  zurich: {
+    displayName: 'Zürich', region: 'Switzerland', status: 'live',
+    restaurants: [
+      {name:'IGNIV Zürich by Andreas Caminada', distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'The Counter', distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'The Restaurant', distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Widder Restaurant', distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Eden Kitchen & Bar', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'elmira', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'EquiTable', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'KLE', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'La Rôtisserie', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Neue Taverne', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'ORSINI', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Shin', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Wirtschaft im FRANZ', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Wöschi', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'}
+    ]
+  },
+  lucerne: {
+    displayName: 'Lucerne', region: 'Switzerland', status: 'live',
+    restaurants: [
+      {name:'Colonnade', distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'de MATOS', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Minamo', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'}
+    ]
+  },
+  geneva: {
+    displayName: 'Geneva', region: 'Switzerland', status: 'live',
+    restaurants: [
+      {name:"L’Atelier Robuchon", distinction:'Two MICHELIN Stars', stars:2, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Arakel', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'F.P. Journe — Le Restaurant', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Domaine de Châteauvieux', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Le Cigalon', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'La Chaumière by Serge Labrosse', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'}
+    ]
+  },
+  zermatt: {
+    displayName: 'Zermatt', region: 'Switzerland', status: 'live',
+    restaurants: [
+      {name:'After Seven', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Alpine Gourmet Prato Borni', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Brasserie Uno', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'},
+      {name:'Capri', distinction:'One MICHELIN Star', stars:1, source:'MICHELIN Guide Switzerland 2025'}
+    ]
+  },
   losangeles: {
     displayName: 'Los Angeles', region: 'California', status: 'live',
     restaurants: [{name:'Somni', distinction:'Three MICHELIN Stars', stars:3, source:'MICHELIN Guide California 2025'}]
@@ -11122,7 +11236,7 @@ const BO_MAIN_CITY_CATS = Object.keys(BO_CITY_CONFIG);
 // round-the-clock restaurant scene. The main navigation tile always stays the
 // clean, universal "24 Hours"; this list affects only the results-page title.
 // Remove a city as soon as its true 24-hour directory becomes substantial.
-const BO_24HR_ISH_CITIES = Object.keys(BO_CITY_CONFIG);
+const BO_24HR_ISH_CITIES = Object.keys(BO_CITY_CONFIG).filter(key => key !== 'paris');
 // True for ANY city's BJS Picks page (bjspicks, bjspicksmiami, ...) — use this
 // instead of `cat === 'bjspicks'` everywhere, so adding a new city's picks
 // page doesn't mean re-finding every hardcoded check.
@@ -18541,6 +18655,79 @@ boCategoryData.bjspickssandiego = (() => {
   });
 })();
 
+/* Dessert and late-night starter coverage for the Switzerland/Paris launch.
+   These are intentionally compact bases: three useful entries per tile and
+   city, ready for the same photo/rating expansion as the established pages. */
+(function boActivateSwissParisDessertAndLateNight(){
+  const dessertStarters = {
+    paris:[
+      ['Cédric Grolet Opéra','35 Avenue de l’Opéra, 75002 Paris, France','https://cedric-grolet.com/','Paris pastry theater from one of the world’s most recognizable modern pâtissiers'],
+      ['Pierre Hermé Paris — Saint-Germain','72 Rue Bonaparte, 75006 Paris, France','https://www.pierreherme.com/','The essential Paris address for macarons, entremets and inventive flavor pairings'],
+      ['Stohrer','51 Rue Montorgueil, 75002 Paris, France','https://stohrer.fr/','Paris’s historic pâtisserie, founded in 1730 and celebrated for classic French pastry']
+    ],
+    zurich:[
+      ['ORO Zürich','Münstergasse 2, 8001 Zürich, Switzerland','https://oro-zurich.ch/','House-made Italian gelato and sweets in Zürich’s Niederdorf, open until midnight Friday and Saturday'],
+      ['ētre Pâtisserie','Dufourstrasse 43, 8008 Zürich, Switzerland','https://www.etre-patisserie.com/','Small-batch seasonal pastry, brunch and coffee made fresh each day'],
+      ['MOON Chocolate & Buns','Bertastrasse 4, 8003 Zürich, Switzerland','https://www.moonshop.ch/','Bean-to-bar chocolate, filled buns and highly polished seasonal sweets']
+    ],
+    lucerne:[
+      ['Aux Merveilleux de Fred — Lucerne','Hirschenplatz 7, 6004 Lucerne, Switzerland','https://www.auxmerveilleux.com/','Feather-light meringue cakes, brioche and French pastry in the Old Town'],
+      ['Max Chocolatier','Schweizerhofquai 2, 6004 Lucerne, Switzerland','https://www.maxchocolatier.com/','Lucerne artisan chocolatier known for seasonal pralines and precise Swiss craft'],
+      ['Confiseur Bachmann — Schwanenplatz','Schwanenplatz 7, 6004 Lucerne, Switzerland','https://www.confiseur.ch/','A Lucerne institution for cakes, chocolates, macarons and classic Swiss pastry']
+    ],
+    geneva:[
+      ['Pâtisserie Dolcetti','Ruelle du Couchant 9 bis, 1207 Geneva, Switzerland','https://patisserie-dolcetti.ch/','Italian-style pastry and viennoiserie made fresh in central Geneva'],
+      ['Crêperie du Bourg-de-Four','Place du Bourg-de-Four 17, 1204 Geneva, Switzerland','https://creperiebdf.ch/','Sweet crêpes, artisan chocolate and ice-cream sundaes in Geneva’s Old Town'],
+      ['Aux Merveilleux de Fred — Geneva','Cours de Rive 14, 1204 Geneva, Switzerland','https://www.auxmerveilleux.com/','French meringue cakes and brioche from the celebrated northern-French pâtisserie']
+    ],
+    zermatt:[
+      ["L’Atelier Grandsire",'Getwingstrasse 20, 3920 Zermatt, Switzerland','https://www.ateliergrandsire.ch/','Highly regarded French pâtisserie with croissants, cakes and evening dessert service'],
+      ['Petit Royal Café','Bahnhofstrasse 7b, 3920 Zermatt, Switzerland','https://www.petitroyal.ch/','Boutique café with its own pastry and chocolate production in the village center'],
+      ['Bäckerei Fuchs — Bahnhofstrasse','Bahnhofstrasse 28, 3920 Zermatt, Switzerland','https://fuchs-zermatt.ch/','Long-running Zermatt bakery for Swiss pastry, chocolate and mountain-town classics']
+    ]
+  };
+  const lateStarters = {
+    paris:[
+      ['Au Pied de Cochon','6 Rue Coquillière, 75001 Paris, France','https://www.pieddecochon.com/','The legendary Les Halles brasserie serves classic French food 24 hours a day, seven days a week','Open 24 hours daily'],
+      ['Le Rey','130 Rue de la Roquette, 75011 Paris, France','https://www.lerey.fr/','A true all-hours Paris brasserie for full meals, seafood and late-night standards','Open 24 hours daily'],
+      ['Le Départ Saint-Michel','1 Place Saint-Michel, 75005 Paris, France','https://www.departsaintmichel.com/','Landmark Left Bank brasserie serving travelers and night owls at every hour','Open 24 hours daily']
+    ],
+    zurich:[
+      ['Gräbli Bar','Niederdorfstrasse 66, 8001 Zürich, Switzerland','https://www.zuerich.com/en/visit/bars-lounges/grabli-bar','One of central Zürich’s rare nearly all-night addresses, operating around the clock on Friday and Saturday','24 hours Fri–Sat; 5am–4am other days'],
+      ['Napulé Josefstrasse','Josefstrasse 89, 8005 Zürich, Switzerland','https://www.napule.ch/','Neapolitan pizza and wallet-style street pizza for Zürich night owls','Until midnight Fri–Sat'],
+      ['ORO Zürich','Münstergasse 2, 8001 Zürich, Switzerland','https://oro-zurich.ch/','Late gelato, coffee and house-made sweets in Niederdorf','Until midnight Fri–Sat']
+    ],
+    lucerne:[
+      ['Burger King — Lucerne Station','Zentralstrasse 1, 6003 Lucerne, Switzerland','https://www.sbb.ch/en/travel-information/stations/find-station/luzern-station/shops/shop-detail.html/geo-burger-king-1749','The station’s most dependable overnight hot-food counter','Until 6am Fri–Sat'],
+      ['Brezelkönig — Lucerne Station','Zentralstrasse 1, 6003 Lucerne, Switzerland','https://www.sbb.ch/en/travel-information/stations/find-station/luzern-station/shops/shop-detail.html/geo-brezelkoenig-176a','Fresh pretzels and filled rolls from early morning into the late night','5am–2am Fri–Sat'],
+      ['Bar 58','Klosterstrasse 5, 6003 Lucerne, Switzerland','https://bar58.ch/','A central late-night stop with a small food offering and one of Lucerne’s latest closing times','Until 2am; 3am Fri–Sat']
+    ],
+    geneva:[
+      ['Brasserie Lipp Genève','Rue de la Confédération 8, 1204 Geneva, Switzerland','https://www.brasserie-lipp.ch/','The polished Geneva brasserie for a proper late dinner when most kitchens have closed','Late service; confirm kitchen hours'],
+      ['Casa Nostra','Rue de la Navigation 4, 1201 Geneva, Switzerland','https://www.casanostra-geneve.ch/','Dependable late Italian cooking in the Pâquis district','Late service; confirm kitchen hours'],
+      ['Les Brasseurs Genève','Place de Cornavin 20, 1201 Geneva, Switzerland','https://www.les-brasseurs.ch/','Station-side brewery cooking hot food late into the evening','Late service; confirm kitchen hours']
+    ],
+    zermatt:[
+      ['The Dude','Spissstrasse 58, 3920 Zermatt, Switzerland','https://www.dude.ch/','Zermatt’s dependable late casual address with food served nightly','Food until 10:45pm; venue until 1am Fri–Sat'],
+      ["Grampi’s",'Bahnhofstrasse 70, 3920 Zermatt, Switzerland','https://grampis.ch/','Central pizza and casual Italian food for a later mountain-town meal','Late evening; confirm seasonal hours'],
+      ['Papperla Pub','Steinmattstrasse 34, 3920 Zermatt, Switzerland','https://papperlapub.ch/','A lively Zermatt night stop with casual food and après-ski energy','Late evening; confirm seasonal hours']
+    ]
+  };
+  function record(city,item,index,isLate){
+    return {rank:index+1,name:item[0],city:city,rating:null,reviews:null,image:'',imagePosition:'center',
+      why:item[3],note:item[4] ? item[3]+'. '+item[4]+'.' : item[3]+'.',url:item[2],address:item[1],phone:null,hours:[],
+      open24:isLate && /^Open 24 hours/i.test(item[4]||''),price:isLate?2:3,hue:isLate?'28, 38%, 22%':'326, 44%, 25%'};
+  }
+  boCategoryData.dessert = boCategoryData.dessert || [];
+  boCategoryData['24hours'] = boCategoryData['24hours'] || [];
+  Object.keys(dessertStarters).forEach(city => dessertStarters[city].forEach((item,index) => {
+    if(!boCategoryData.dessert.some(r => r && r.name===item[0] && r.city===city))boCategoryData.dessert.push(record(city,item,index,false));
+  }));
+  Object.keys(lateStarters).forEach(city => lateStarters[city].forEach((item,index) => {
+    if(!boCategoryData['24hours'].some(r => r && r.name===item[0] && r.city===city))boCategoryData['24hours'].push(record(city,item,index,true));
+  }));
+})();
+
 // Michelin category — scans every restaurant category, so starred Italian,
 // Chinese, Japanese, Indian and city-main entries cannot slip through.
 // Duplicates are merged by restaurant name, keeping the richest record and
@@ -19405,6 +19592,11 @@ function boNearCityDefaults(cityKey){
     ,atlanta:{ center:[33.7490,-84.3880], zoom:10, label:'Atlanta' }
     ,neworleans:{ center:[29.9511,-90.0715], zoom:10, label:'New Orleans' }
     ,idaho:{ center:[43.6150,-116.2023], zoom:9, label:'Idaho' }
+    ,paris:{ center:[48.8566,2.3522], zoom:11, label:'Paris' }
+    ,zurich:{ center:[47.3769,8.5417], zoom:11, label:'Zürich' }
+    ,lucerne:{ center:[47.0502,8.3093], zoom:12, label:'Lucerne' }
+    ,geneva:{ center:[46.2044,6.1432], zoom:11, label:'Geneva' }
+    ,zermatt:{ center:[46.0207,7.7491], zoom:13, label:'Zermatt' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
 }
 
@@ -29194,4 +29386,118 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 })();
 </script>
 <!-- Fresh delivery build v182: information-only airline rankings and 40-logo Book Now directory -->
+<style id="bop-single-legend-ending-v183">
+/* Every page ends in one fixed sequence: gold line, one Legend emblem, footer. */
+.bo-badges-page-link-wrap,
+#boBadgesPageBtn,
+footer [data-dest="legend"],
+.fine-print [data-dest="legend"],
+footer .bop-mini-legend-badge,
+.fine-print .bop-mini-legend-badge{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.bop-legend-emblem{position:relative!important;overflow:visible!important}
+.bop-legend-emblem .bop-legend-emblem-shield{transform:translateY(-5px)!important}
+.bop-legend-emblem .bop-legend-emblem-label{
+  position:absolute!important;
+  left:4px!important;
+  right:4px!important;
+  bottom:0!important;
+  width:78px!important;
+  height:28px!important;
+  margin:0 auto!important;
+  display:block!important;
+  color:#F59E0B!important;
+  pointer-events:none!important;
+}
+.bop-legend-emblem .bop-legend-emblem-label svg{display:block;width:100%;height:100%;overflow:visible}
+.bop-legend-emblem .bop-legend-emblem-label text{
+  fill:#F59E0B;
+  font:900 8px/1 'Archivo Black',Arial,sans-serif;
+  letter-spacing:1.25px;
+  filter:drop-shadow(0 0 3px rgba(245,158,11,.85));
+}
+</style>
+<script id="bop-single-legend-ending-v183">
+(function(){
+  function removeLegacyLegendControls(){
+    document.querySelectorAll('.bo-badges-page-link-wrap').forEach(function(node){node.remove();});
+    document.querySelectorAll('footer [data-dest="legend"],.fine-print [data-dest="legend"]').forEach(function(link){
+      const before=link.previousElementSibling,after=link.nextElementSibling;
+      if(before&&before.tagName==='SPAN'&&/^[\s\u00b7\u2022|]+$/.test(before.textContent||''))before.remove();
+      else if(after&&after.tagName==='SPAN'&&/^[\s\u00b7\u2022|]+$/.test(after.textContent||''))after.remove();
+      link.remove();
+    });
+  }
+  function curveLegendLabels(){
+    document.querySelectorAll('.bop-legend-emblem-label').forEach(function(label,index){
+      if(label.querySelector('svg'))return;
+      const pathId='bopLegendCurve'+index+'_'+Math.random().toString(36).slice(2,7);
+      label.innerHTML='<svg viewBox="0 0 78 28" aria-hidden="true"><defs><path id="'+pathId+'" d="M8 5 Q39 27 70 5"/></defs><text><textPath href="#'+pathId+'" startOffset="50%" text-anchor="middle">LEGEND</textPath></text></svg>';
+    });
+  }
+  function refresh(){removeLegacyLegendControls();curveLegendLabels();}
+  function install(){
+    refresh();
+    new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v183: one curved-label Legend emblem between the gold line and footer -->
+<style id="bop-simple-legend-circle-v184">
+/* The Legend control is intentionally distinct from the three verification shields. */
+.bop-legend-emblem{
+  width:86px!important;
+  height:86px!important;
+  min-width:86px!important;
+  min-height:86px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:3px solid #F59E0B!important;
+  border-radius:50%!important;
+  background:#050505!important;
+  box-shadow:0 0 8px rgba(245,158,11,.7),0 0 18px rgba(245,158,11,.28)!important;
+  animation:bopLegendCirclePulse 2.7s ease-in-out infinite!important;
+}
+.bop-legend-emblem .bop-legend-emblem-shield{display:none!important}
+.bop-legend-emblem .bop-legend-emblem-label{
+  position:static!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  display:block!important;
+  color:#F59E0B!important;
+  font:900 .68rem/1 'Archivo Black',Arial,sans-serif!important;
+  letter-spacing:.09em!important;
+  text-shadow:0 0 5px rgba(245,158,11,.72)!important;
+}
+.bop-legend-emblem .bop-legend-emblem-label svg{display:none!important}
+@keyframes bopLegendCirclePulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 7px rgba(245,158,11,.64),0 0 15px rgba(245,158,11,.22)}
+  50%{transform:scale(1.035);box-shadow:0 0 10px rgba(245,158,11,.78),0 0 22px rgba(245,158,11,.34)}
+}
+@media(prefers-reduced-motion:reduce){.bop-legend-emblem{animation:none!important}}
+</style>
+<script id="bop-simple-legend-circle-v184">
+(function(){
+  function simplifyLegend(){
+    document.querySelectorAll('.bop-legend-emblem').forEach(function(button){
+      button.setAttribute('aria-label','Open Legend');
+      const shield=button.querySelector('.bop-legend-emblem-shield');
+      if(shield)shield.remove();
+      let label=button.querySelector('.bop-legend-emblem-label');
+      if(!label){label=document.createElement('span');label.className='bop-legend-emblem-label';button.appendChild(label);}
+      if(label.textContent.trim()!=='LEGEND'||label.querySelector('svg'))label.textContent='LEGEND';
+    });
+  }
+  function install(){simplifyLegend();new MutationObserver(function(){requestAnimationFrame(simplifyLegend);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v184: simple glowing orange-gold Legend circle, no shield -->
 </body></html>
