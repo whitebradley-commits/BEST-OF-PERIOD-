@@ -22373,7 +22373,7 @@ function boRenderCategory(cat){
       <div class="bo-main-hub-footer">
         
 <div class="bo-main-hub-title-wrap">
-          <div class="bo-main-hub-title">OTHER ${mainHubCityName.toUpperCase()} BESTS</div>
+          <div class="bo-main-hub-title"><span class="bo-main-hub-fixed-word">OTHER</span> <span class="bo-main-hub-city-name">${mainHubCityName.toUpperCase()}</span> <span class="bo-main-hub-fixed-word">BESTS</span></div>
         </div>
 
 <div class="bo-main-hub-footer-grid">
@@ -30840,12 +30840,28 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
 </script>
 <!-- Fresh delivery build v212: rotating Best of Period home icon and BJS Founders hotlink in every footer -->
 <style id="bop-footer-email-only-v213">
-footer .bop-footer-email-line{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;margin-top:16px!important;text-align:center!important}
-footer .bop-footer-social-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:24px!important;height:24px!important;color:#F59E0B!important;text-decoration:none!important}
+footer .bop-footer-email-line{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;margin-top:12px!important;text-align:center!important}
+footer .bop-footer-social-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:24px!important;height:24px!important;border:0!important;color:#F59E0B!important;text-decoration:none!important}
 footer a.bop-footer-social-icon{cursor:pointer!important}
 footer span.bop-footer-social-icon{cursor:default!important}
 footer .bop-footer-social-icon svg{display:block;width:22px;height:22px;fill:none;stroke:#F59E0B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 footer .bop-footer-social-icon .social-fill{fill:#F59E0B;stroke:none}
+footer .bop-footer-legend-icon{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;background:transparent;color:#ef3340;cursor:pointer}
+footer .bop-footer-legend-icon svg{display:block;width:23px;height:23px;fill:none;stroke:#ef3340;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+footer .bop-footer-legend-icon:focus-visible{outline:2px solid #ef3340;outline-offset:3px;border-radius:50%}
+
+/* Legend now lives only in the footer icon row. */
+.bop-best-ending-actions.bop-legend-only,
+.bop-legend-emblem,
+.bo-badges-page-link-wrap,
+#boBadgesPageBtn,
+footer [data-dest="legend"],
+.fine-print [data-dest="legend"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+/* Bring each page's final content closer to its gold footer divider. */
+.bop-best-ending{margin-top:14px!important;padding-top:0!important}
+.bop-best-ending-rule{margin-bottom:10px!important}
+.bop-best-ending-standard-footer{padding-top:8px!important}
 </style>
 <script id="bop-footer-email-only-v213">
 (function(){
@@ -30860,6 +30876,7 @@ footer .bop-footer-social-icon .social-fill{fill:#F59E0B;stroke:none}
       line.dataset.socialIcons='1';
       line.classList.add('bop-footer-email-line');
       line.innerHTML=
+        '<button class="bop-footer-legend-icon" type="button" aria-label="Open Legend"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="10" r="6"></circle><path d="m8.5 15-1 6 4.5-2 4.5 2-1-6"></path><path d="m9.5 10 1.6 1.6 3.4-3.5"></path></svg></button>'+
         '<a class="bop-footer-social-icon" href="mailto:info@bestofperiod.com" aria-label="Email Best of Period"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg></a>'+
         '<span class="bop-footer-social-icon" role="img" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="social-fill" d="M14.1 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H8v3h2.7v8h3.4z"></path></svg></span>'+
         '<span class="bop-footer-social-icon" role="img" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-fill" cx="17.4" cy="6.7" r="1.1"></circle></svg></span>'+
@@ -30877,6 +30894,14 @@ footer .bop-footer-social-icon .social-fill{fill:#F59E0B;stroke:none}
   }
   function install(){
     scan(document);
+    document.addEventListener('click',function(event){
+      var button=event.target.closest&&event.target.closest('.bop-footer-legend-icon');if(!button)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      var movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
+      window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
+      if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
+      var legend=document.getElementById('legendOverlay');if(legend){legend.classList.add('open');legend.scrollTop=0;}
+    },true);
     new MutationObserver(function(records){
       records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})});
     }).observe(document.body,{childList:true,subtree:true});
@@ -30885,4 +30910,66 @@ footer .bop-footer-social-icon .social-fill{fill:#F59E0B;stroke:none}
 })();
 </script>
 <!-- Fresh delivery build v213: email-only final footer line; removed "For further information" -->
+<style id="bop-single-line-city-heading-v214">
+.bo-main-hub-title{
+  display:flex!important;align-items:baseline!important;justify-content:center!important;
+  flex-wrap:nowrap!important;max-width:100%!important;white-space:nowrap!important;
+}
+.bo-main-hub-title .bo-main-hub-fixed-word,
+.bo-main-hub-title .bo-main-hub-city-name{
+  display:inline-block!important;flex:0 0 auto!important;white-space:nowrap!important;
+}
+.bo-main-hub-title .bo-main-hub-city-name{font-size:var(--bop-city-heading-scale,1em)!important}
+</style>
+<script id="bop-single-line-city-heading-v214">
+(function(){
+  function fit(title){
+    if(!title)return;
+    var city=title.querySelector('.bo-main-hub-city-name');if(!city)return;
+    city.style.setProperty('--bop-city-heading-scale','1em');
+    var parent=title.parentElement;if(!parent)return;
+    var available=Math.max(120,parent.clientWidth-4),scale=1;
+    while(title.scrollWidth>available&&scale>.44){
+      scale-=.02;
+      city.style.setProperty('--bop-city-heading-scale',scale.toFixed(2)+'em');
+    }
+  }
+  function fitAll(){document.querySelectorAll('.bo-main-hub-title').forEach(fit)}
+  function install(){
+    fitAll();
+    window.addEventListener('resize',function(){requestAnimationFrame(fitAll)},{passive:true});
+    new MutationObserver(function(){requestAnimationFrame(fitAll)}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v214: long city names shrink independently to keep Other City Bests on one line -->
+<style id="bop-worldwide-touch-target-v215">
+#bopStaticWorld,.bop-landing-world-btn{
+  position:relative!important;overflow:visible!important;touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+#bopStaticWorld::after,.bop-landing-world-btn::after{
+  content:'';position:absolute;top:-12px;right:-12px;bottom:-12px;left:-5px;
+  border-radius:50%;background:transparent;pointer-events:auto;
+}
+#bopStaticWorld svg,.bop-landing-world-btn svg{pointer-events:none!important}
+</style>
+<script id="bop-worldwide-touch-target-v215">
+(function(){
+  function openWorld(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticWorld,#bopLandingWorldBtn,.bop-static-world,.bop-landing-world-btn');
+    if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(typeof window.bopOpenWorldwideLanding==='function'){
+      window.bopOpenWorldwideLanding();
+      return;
+    }
+    var page=document.getElementById('bopWorldwideLanding');
+    if(page){page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';}
+  }
+  document.addEventListener('click',openWorld,true);
+})();
+</script>
+<!-- Fresh delivery build v215: larger invisible Worldwide touch target and one reliable global action -->
 </body></html>
