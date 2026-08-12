@@ -19211,7 +19211,9 @@ function boOpenWorldwidePage(key){
   const data=BO_WORLDWIDE_DATA[key];if(!data)return;
   let page=document.getElementById('boWorldwidePage');if(!page){page=document.createElement('section');page.id='boWorldwidePage';page.className='bo-movies-page';document.body.appendChild(page);}
   page.dataset.worldwideKey=key;
-  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>DIRECT ACCESS</span></h2><div class="bo-current-source">Go directly to the companies and providers.</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
+  const directTitle=key==='airlines'?'TOP AIRLINES <span>DIRECT ACCESS</span>':'CURRENT <span>DIRECT ACCESS</span>';
+  const directSource=key==='airlines'?'* For immediate booking at one of these airlines, tap the name or phone number.':'Go directly to the companies and providers.';
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">${directTitle}</h2><div class="bo-current-source">${directSource}</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
   clearInterval(boMarketTickerTimer);boUpdateMarketTickers(page);boMarketTickerTimer=setInterval(()=>boUpdateMarketTickers(page),60000);
   page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;document.getElementById('boWorldwideBack').addEventListener('click',boCloseWorldwidePage);
   boStartWorldwideTitleRotation(document.getElementById('boWorldwideRotator'),data.title);
@@ -28548,7 +28550,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   function cleanEnding(){document.querySelectorAll('.bop-best-ending-badges,.bop-best-ending-footer').forEach(function(node){node.remove();});}
   function refresh(){
     const page=document.querySelector('#boWorldwidePage.open[data-worldwide-key="airlines"]');
-    if(page){const source=page.querySelector('.bo-current-source');if(source)source.textContent='For immediate booking at one of these airlines, tap the iconic icon.';}
+    if(page){const source=page.querySelector('.bo-current-source');if(source)source.textContent='* For immediate booking at one of these airlines, tap the name or phone number.';}
     refreshPosters();cleanEnding();
   }
   document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"],[data-worldwide-key="movies"]'))setTimeout(refresh,140);},true);
@@ -29651,7 +29653,8 @@ footer .bop-mini-legend-badge,
   }
   document.addEventListener('click',function(event){
     const phone=event.target.closest&&event.target.closest('[data-airline-phone]');if(!phone)return;
-    event.preventDefault();event.stopImmediatePropagation();location.href='tel:'+phone.dataset.airlinePhone;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(typeof openPhonePopup==='function')openPhonePopup(phone.dataset.airlinePhone,phone.textContent.trim());
   },true);
 })();
 </script>
@@ -29679,9 +29682,10 @@ footer .bop-mini-legend-badge,
 #boWorldwidePage[data-worldwide-key="watches"] .bo-current-grid,
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{display:grid!important;grid-template-columns:repeat(15,minmax(112px,1fr))!important;grid-template-rows:94px!important;grid-auto-flow:column!important;gap:9px!important;min-width:1800px!important;padding:8px 4px 15px!important}
 #boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{grid-template-rows:repeat(2,94px)!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-movies-title span{display:block!important}
 .bo-company-text-card{display:block!important;min-height:94px!important;padding:0!important;border:1px solid rgba(245,158,11,.42)!important;border-radius:9px!important;background:#050505!important;box-shadow:none!important}
 .bo-company-text-inner{display:flex!important;min-height:92px!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;padding:7px!important;text-align:center!important}
-.bo-company-name-link{color:#fff!important;font:900 .7rem/1.12 'Archivo Black',Arial,sans-serif!important;text-decoration:none!important}
+.bo-company-name-link{color:#fff!important;font-family:'Fraunces','Playfair Display',serif!important;font-size:clamp(.9rem,2vw,1.18rem)!important;font-weight:700!important;line-height:1.05!important;text-decoration:none!important}
 .bo-company-phone{padding:0!important;border:0!important;background:transparent!important;color:#ef3340!important;font:800 .66rem/1 'Archivo Narrow',Arial,sans-serif!important;text-shadow:0 0 5px rgba(239,51,64,.5)!important;cursor:pointer!important}
 </style>
 <script id="bop-four-directories-v187">
@@ -29707,7 +29711,207 @@ footer .bop-mini-legend-badge,
       return '<article class="bo-current-card bo-company-text-card"><div class="bo-company-text-inner"><a class="bo-company-name-link" href="'+url+'" aria-label="Open '+name+' official website">'+name+'</a>'+phoneButton+'</div></article>';
     };
   }
+  document.addEventListener('click',function(event){
+    const button=event.target.closest&&event.target.closest('.bo-company-phone[data-phone-popup]');if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(typeof openPhonePopup==='function')openPhonePopup(button.dataset.phonePopup,button.dataset.phoneDisplay||button.textContent.trim());
+  },true);
 })();
 </script>
 <!-- Fresh delivery build v187: picture-free direct access for Autos, Cellular, Luxury Goods and Airlines -->
+<style id="bop-worldwide-line-art-v188">
+/* Quiet hand-drawn category diagrams: fixed line art, never photography,
+   cartoons, emoji, or animation. */
+#bopWorldwideLanding .bop-world-tile,
+#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card,
+#boWorldwidePage .bo-movie-card,#boWorldwidePage .bo-current-card{position:relative!important;isolation:isolate!important;overflow:hidden!important}
+#bopWorldwideLanding .bop-world-tile::before,
+#boMoviesPage .bo-movie-card::before,#boMoviesPage .bo-current-card::before,
+#boWorldwidePage .bo-movie-card::before,#boWorldwidePage .bo-current-card::before{
+  content:'';position:absolute;inset:5px;z-index:-1;pointer-events:none;background-image:var(--bop-line-art);background-position:center;background-repeat:no-repeat;background-size:82% 82%;opacity:.16;filter:drop-shadow(0 0 4px rgba(245,158,11,.38))
+}
+#bopWorldwideLanding .bop-world-tile::before{inset:10px;background-size:68% 68%;opacity:.25}
+#bopWorldwideLanding .bop-world-tile>* ,
+#boMoviesPage .bo-movie-card>* ,#boMoviesPage .bo-current-card>* ,
+#boWorldwidePage .bo-movie-card>* ,#boWorldwidePage .bo-current-card>*{position:relative;z-index:1}
+
+/* Film reel and clapperboard. */
+#bopWorldwideLanding [data-worldwide-key="movies"],#boMoviesPage{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='56' cy='55' r='38'/%3E%3Ccircle cx='56' cy='55' r='8'/%3E%3Ccircle cx='56' cy='33' r='8'/%3E%3Ccircle cx='78' cy='55' r='8'/%3E%3Ccircle cx='56' cy='77' r='8'/%3E%3Ccircle cx='34' cy='55' r='8'/%3E%3Cpath d='M94 70h70v28H94zM94 70l9-18h70l-9 18M105 52l8 18m13-18 8 18m13-18 8 18'/%3E%3C/svg%3E")
+}
+/* Plane and route line. */
+#bopWorldwideLanding [data-worldwide-key="airlines"],#boWorldwidePage[data-worldwide-key="airlines"]{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 76c30 20 76 16 114-12' stroke-dasharray='5 8'/%3E%3Ccircle cx='20' cy='76' r='4'/%3E%3Cpath d='M85 55l35-12 17-25 8 2-8 29 25 10c5 2 4 8-1 9l-30-5-15 18-7-2 6-22-20 3-10 10-5-2 5-13z'/%3E%3C/svg%3E")
+}
+/* Music staff and notes. */
+#bopWorldwideLanding [data-worldwide-key="songs"],#boWorldwidePage[data-worldwide-key="songs"]{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 34h150M15 46h150M15 58h150M15 70h150M15 82h150' opacity='.65'/%3E%3Cpath d='M67 23v53M67 27l48-10v50'/%3E%3Cellipse cx='56' cy='78' rx='13' ry='8' transform='rotate(-14 56 78)'/%3E%3Cellipse cx='104' cy='69' rx='13' ry='8' transform='rotate(-14 104 69)'/%3E%3Cpath d='M135 40c15 8 18 22 6 31'/%3E%3C/svg%3E")
+}
+/* Clean automobile profile. */
+#bopWorldwideLanding [data-worldwide-key="automotive"],#boWorldwidePage[data-worldwide-key="automotive"]{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 72l8-22 24-8 22-23h55l23 24 17 7 5 22v13h-18M46 85H28c-7 0-11-5-10-13M72 85h54M44 85a14 14 0 1 0 28 0 14 14 0 1 0-28 0M126 85a14 14 0 1 0 28 0 14 14 0 1 0-28 0M72 42h54M88 20v22'/%3E%3C/svg%3E")
+}
+/* Watch and faceted diamond. */
+#bopWorldwideLanding [data-worldwide-key="watches"],#boWorldwidePage[data-worldwide-key="watches"]{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M35 12h38l6 21v44l-6 21H35l-6-21V33z'/%3E%3Ccircle cx='54' cy='55' r='27'/%3E%3Cpath d='M54 38v18l13 8M54 28v5M54 77v5M27 55h5M76 55h5'/%3E%3Cpath d='M108 38h45l14 17-37 39-37-39zM93 55h74M108 38l22 56 23-56M108 38l-15 17m60-17 14 17'/%3E%3C/svg%3E")
+}
+/* Phone and signal tower. */
+#bopWorldwideLanding [data-worldwide-key="cellphones"],#boWorldwidePage[data-worldwide-key="cellphones"]{
+ --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='25' y='12' width='54' height='86' rx='10'/%3E%3Cpath d='M43 24h18M48 87h8M122 34v58M105 92h34M113 92l9-58 9 58M100 52c-12-12-12-31 0-43M144 52c12-12 12-31 0-43M108 44c-7-7-7-18 0-25M136 44c7-7 7-18 0-25'/%3E%3Ccircle cx='122' cy='34' r='4'/%3E%3C/svg%3E")
+}
+#bopWorldwideLanding .bop-world-tile{font-size:1.04em!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-name,
+#boWorldwidePage .bo-company-name-link{font-size:clamp(.94rem,2.1vw,1.22rem)!important}
+@media(prefers-reduced-motion:reduce){#bopWorldwideLanding .bop-world-tile::before,#boMoviesPage .bo-movie-card::before,#boMoviesPage .bo-current-card::before,#boWorldwidePage .bo-movie-card::before,#boWorldwidePage .bo-current-card::before{animation:none!important}}
+</style>
+<!-- Fresh delivery build v188: fixed gold line-art backdrops throughout Worldwide Bests -->
+<style id="bop-movie-poster-panels-v189">
+/* Movies keep real poster art. Posters are rectangular left-side panels that
+   dissolve softly into the booking and viewing controls on the right. */
+#boMoviesPage .bo-movie-list .bo-movie-card,
+#boMoviesPage .bo-current-grid .bo-current-card{
+  display:grid!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+#boMoviesPage .bo-movie-list .bo-movie-card{
+  grid-template-columns:clamp(132px,37%,205px) minmax(0,1fr)!important;
+}
+#boMoviesPage .bo-current-grid .bo-current-card{
+  grid-template-columns:clamp(170px,43%,250px) minmax(0,1fr)!important;
+  min-height:410px!important;
+}
+#boMoviesPage .bo-movie-list .bo-movie-screen-wrap,
+#boMoviesPage .bo-current-grid .bo-current-card .bo-movie-screen-wrap{
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:stretch!important;
+  position:relative!important;
+  width:calc(100% + 46px)!important;
+  height:100%!important;
+  min-height:205px!important;
+  margin:0 -46px 0 0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#000!important;
+  z-index:1!important;
+}
+#boMoviesPage .bo-current-grid .bo-current-card .bo-movie-screen-wrap{
+  min-height:410px!important;
+}
+#boMoviesPage .bo-movie-screen{
+  width:100%!important;
+  height:100%!important;
+  min-height:inherit!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+#boMoviesPage .bo-movie-screen::after,
+#boMoviesPage .bo-movie-screen-wrap::after,
+#boMoviesPage .bo-hold-enlarge{display:none!important}
+#boMoviesPage .bo-movie-screen .bo-movie-poster,
+#boMoviesPage .bo-movie-screen .bo-movie-poster.bo-real-poster{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:inherit!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  object-fit:cover!important;
+  object-position:center top!important;
+  box-shadow:none!important;
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 58%,rgba(0,0,0,.96) 68%,rgba(0,0,0,.76) 78%,rgba(0,0,0,.34) 90%,transparent 100%)!important;
+  mask-image:linear-gradient(90deg,#000 0%,#000 58%,rgba(0,0,0,.96) 68%,rgba(0,0,0,.76) 78%,rgba(0,0,0,.34) 90%,transparent 100%)!important;
+}
+#boMoviesPage .bo-movie-list .bo-movie-info,
+#boMoviesPage .bo-current-grid .bo-current-card .bo-movie-info{
+  grid-column:2!important;
+  grid-row:2!important;
+  position:relative!important;
+  z-index:2!important;
+  min-width:0!important;
+  padding-left:12px!important;
+  background:linear-gradient(90deg,rgba(0,0,0,.08),rgba(0,0,0,.88) 17px,#000 50px,#000 100%)!important;
+}
+#boMoviesPage .bo-current-grid .bo-ticket-row,
+#boMoviesPage .bo-current-grid .bo-home-viewing-row{position:relative!important;z-index:3!important}
+@media(max-width:620px){
+  #boMoviesPage .bo-movie-list .bo-movie-card{grid-template-columns:clamp(118px,39%,158px) minmax(0,1fr)!important}
+  #boMoviesPage .bo-current-grid .bo-current-card{grid-template-columns:clamp(142px,44%,186px) minmax(0,1fr)!important;min-height:390px!important}
+  #boMoviesPage .bo-movie-list .bo-movie-screen-wrap,
+  #boMoviesPage .bo-current-grid .bo-current-card .bo-movie-screen-wrap{width:calc(100% + 34px)!important;margin-right:-34px!important;min-height:190px!important}
+  #boMoviesPage .bo-current-grid .bo-current-card .bo-movie-screen-wrap{min-height:390px!important}
+  #boMoviesPage .bo-movie-list .bo-movie-info,
+  #boMoviesPage .bo-current-grid .bo-current-card .bo-movie-info{padding-left:8px!important;background:linear-gradient(90deg,rgba(0,0,0,.06),rgba(0,0,0,.9) 13px,#000 38px,#000 100%)!important}
+}
+</style>
+<!-- Fresh delivery build v189: 20 original movie posters and current releases as full-height, softly faded left panels -->
+<style id="bop-two-tone-ranking-columns-v190">
+/* Make the two upper ranking columns immediately distinct while leaving every
+   Direct Access / BJS section below them on its existing black backdrop. */
+#boMoviesPage .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns{
+  gap:0!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns>.bo-movie-column,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns>.bo-movie-column,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns>.bo-movie-column,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns>.bo-movie-column{
+  box-sizing:border-box!important;
+  padding-left:7px!important;
+  padding-right:7px!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns>.bo-movie-column:first-child{
+  background:#010101!important;
+  border-right:1px solid rgba(245,158,11,.7)!important;
+}
+#boMoviesPage .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movies-columns>.bo-movie-column:nth-child(2),
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movies-columns>.bo-movie-column:nth-child(2){
+  background:#111!important;
+  box-shadow:inset 8px 0 18px rgba(255,255,255,.018)!important;
+}
+#boMoviesPage .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:first-child :is(.bo-movie-column-head,.bo-movie-card){background-color:#010101!important}
+#boMoviesPage .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card),
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:nth-child(2) :is(.bo-movie-column-head,.bo-movie-card){background-color:#111!important}
+#boMoviesPage .bo-movie-column:first-child .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:first-child .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:first-child .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:first-child .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:first-child .bo-movie-info{background:linear-gradient(90deg,rgba(1,1,1,.12),#010101 18%,#010101 100%)!important}
+#boMoviesPage .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="automotive"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="watches"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-column:nth-child(2) .bo-movie-info,
+#boWorldwidePage[data-worldwide-key="cellphones"] .bo-movie-column:nth-child(2) .bo-movie-info{background:linear-gradient(90deg,rgba(17,17,17,.12),#111 18%,#111 100%)!important}
+</style>
+<!-- Fresh delivery build v190: two-tone upper rankings for Movies, Autos, Luxury Goods, Airlines and Cellular -->
 </body></html>
