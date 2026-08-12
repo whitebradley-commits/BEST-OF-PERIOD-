@@ -29718,4 +29718,64 @@ body.bop-landing-locked #bopLandingOverlay .bop-landing-results{touch-action:man
 })();
 </script>
 <!-- Fresh delivery build v187: iPhone-safe landing scroll lock and complete WTF bleed-through isolation -->
+<style id="bop-airline-text-directory-v195">
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-source::before{content:'DIRECT AIRLINE ACCESS'!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px 12px!important;max-width:720px!important;margin:18px auto 0!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-direct-card{display:block!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-bottom:1px solid rgba(245,158,11,.24)!important;border-radius:0!important;background:#000!important;box-shadow:none!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-text-row{display:grid!important;grid-template-columns:24px minmax(0,1fr)!important;grid-template-areas:'num name' 'num phone'!important;column-gap:5px!important;align-items:center!important;min-height:54px!important;padding:6px 3px!important}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-list-number{grid-area:num;color:#ef3340;font:900 .7rem/1 'Archivo Black',Arial,sans-serif;text-align:center}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-name-link{grid-area:name;min-width:0;color:#F59E0B;font:900 clamp(.58rem,2.25vw,.79rem)/1.1 'Archivo Black',Arial,sans-serif;text-decoration:none;overflow-wrap:anywhere}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-phone-link{grid-area:phone;width:max-content;margin-top:3px;color:#fff;font:700 clamp(.57rem,2.1vw,.72rem)/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.025em;text-decoration:none}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-phone-link::before{content:'CALL ';color:#ef3340;font-weight:900;font-size:.82em;letter-spacing:.08em}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-name-link:active,#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-phone-link:active{opacity:.68}
+@media(max-width:390px){#boWorldwidePage[data-worldwide-key="airlines"] .bo-current-grid{gap:5px 7px!important}#boWorldwidePage[data-worldwide-key="airlines"] .bo-airline-text-row{grid-template-columns:20px minmax(0,1fr)!important;min-height:58px!important;padding:5px 1px!important}}
+</style>
+<script id="bop-airline-text-directory-v195">
+(function(){
+  const airlines=[
+    ['Delta Air Lines','https://www.delta.com/','800-221-1212','18002211212'],
+    ['United Airlines','https://www.united.com/','800-864-8331','18008648331'],
+    ['American Airlines','https://www.aa.com/','800-433-7300','18004337300'],
+    ['Southwest Airlines','https://www.southwest.com/','800-435-9792','18004359792'],
+    ['Alaska Airlines','https://www.alaskaair.com/','800-252-7522','18002527522'],
+    ['JetBlue','https://www.jetblue.com/','800-538-2583','18005382583'],
+    ['Air Canada','https://www.aircanada.com/','888-247-2262','18882472262'],
+    ['WestJet','https://www.westjet.com/','888-937-8538','18889378538'],
+    ['Aeromexico','https://www.aeromexico.com/','800-237-6639','18002376639'],
+    ['LATAM Airlines','https://www.latamairlines.com/','866-435-9526','18664359526'],
+    ['Avianca','https://www.avianca.com/','866-919-0081','18669190081'],
+    ['Copa Airlines','https://www.copaair.com/','800-359-2672','18003592672'],
+    ['British Airways','https://www.britishairways.com/','800-247-9297','18002479297'],
+    ['Virgin Atlantic','https://www.virginatlantic.com/','800-862-8621','18008628621'],
+    ['Lufthansa','https://www.lufthansa.com/','800-645-3880','18006453880'],
+    ['SWISS','https://www.swiss.com/','833-626-0737','18336260737'],
+    ['Air France','https://www.airfrance.com/','800-237-2747','18002372747'],
+    ['KLM','https://www.klm.com/','800-618-0104','18006180104'],
+    ['Iberia','https://www.iberia.com/','800-772-4642','18007724642'],
+    ['Aer Lingus','https://www.aerlingus.com/','800-474-7424','18004747424'],
+    ['SAS','https://www.flysas.com/','800-221-2350','18002212350'],
+    ['Finnair','https://www.finnair.com/','929-474-6049','19294746049'],
+    ['TAP Air Portugal','https://www.flytap.com/','800-903-7914','18009037914'],
+    ['Turkish Airlines','https://www.turkishairlines.com/','800-874-8875','18008748875'],
+    ['Emirates','https://www.emirates.com/','800-777-3999','18007773999'],
+    ['Qatar Airways','https://www.qatarairways.com/','877-777-2827','18777772827'],
+    ['Etihad Airways','https://www.etihad.com/','877-690-0767','18776900767'],
+    ['Saudia','https://www.saudia.com/','800-472-8342','18004728342'],
+    ['Air India','https://www.airindia.com/','888-634-1407','18886341407'],
+    ['Singapore Airlines','https://www.singaporeair.com/','833-727-0118','18337270118']
+  ];
+  function row(item,index){
+    return '<article class="bo-current-card bo-airline-direct-card"><div class="bo-airline-text-row"><span class="bo-airline-list-number">'+(index+1)+'</span><a class="bo-airline-name-link" href="'+item[1]+'" target="_blank" rel="noopener" aria-label="Open '+item[0]+' official website">'+item[0]+'</a><a class="bo-airline-phone-link" href="tel:+'+item[3]+'" aria-label="Call '+item[0]+' at '+item[2]+'">'+item[2]+'</a></div></article>';
+  }
+  function install(){
+    if(typeof BO_WORLDWIDE_DATA!=='undefined'&&BO_WORLDWIDE_DATA.airlines)BO_WORLDWIDE_DATA.airlines.links=airlines.map(function(item){return[item[0],item[1],item[2],item[3]]});
+    if(typeof boWorldwideActionHTML==='function'&&!boWorldwideActionHTML.bopAirlineTextDirectory){const prior=boWorldwideActionHTML;const replacement=function(item,index,action,key){if(key==='airlines')return row(item,index);return prior(item,index,action,key)};replacement.bopAirlineTextDirectory=true;boWorldwideActionHTML=replacement;}
+    const page=document.querySelector('#boWorldwidePage[data-worldwide-key="airlines"].open');
+    if(page){const grid=page.querySelector('.bo-current-grid');if(grid&&grid.querySelector('.bo-airline-logo'))grid.innerHTML=airlines.map(row).join('');}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"]'))setTimeout(install,80)},true);
+})();
+</script>
+<!-- Fresh delivery build v195: 30-airline text-and-phone direct-access directory -->
 </body></html>
