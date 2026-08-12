@@ -29676,4 +29676,46 @@ footer .bop-mini-legend-badge,
 })();
 </script>
 <!-- Fresh delivery build v186: live distance and compact estimated car, walking, and rail times on every restaurant card after location consent -->
+<style id="bop-landing-bleed-lock-v187">
+html.bop-landing-locked,html.bop-landing-locked body{width:100%!important;height:100%!important;max-height:100%!important;overflow:hidden!important;overscroll-behavior:none!important;background:#000!important}
+body.bop-landing-locked{position:fixed!important;left:0!important;right:0!important;touch-action:none!important}
+body.bop-landing-locked #bopLandingOverlay.open{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;min-height:100vh!important;min-height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important;contain:layout paint!important;isolation:isolate!important;background:#000!important}
+/* The legacy WTF application remains packaged in this single-file site, but
+   it must be completely unpainted while the BestOfPeriod front door is live. */
+body.bop-landing-locked #app{visibility:hidden!important;pointer-events:none!important}
+body.bop-landing-locked #app #bjsWhyOverlay.open{visibility:visible!important;pointer-events:auto!important}
+body.bop-landing-locked #wtfLandingOverlay,
+body.bop-landing-locked .join-box-wrap,
+body.bop-landing-locked .goto-newsletter-link{visibility:hidden!important;pointer-events:none!important}
+body.bop-landing-locked #bopLandingOverlay input,
+body.bop-landing-locked #bopLandingOverlay button,
+body.bop-landing-locked #bopLandingOverlay .bop-landing-results{touch-action:manipulation!important}
+</style>
+<script id="bop-landing-bleed-lock-v187">
+(function(){
+  let savedY=0,locked=false;
+  function landingIsOpen(){const landing=document.getElementById('bopLandingOverlay');return !!(landing&&landing.classList.contains('open'));}
+  function lock(){
+    if(locked)return;locked=true;savedY=window.scrollY||document.documentElement.scrollTop||0;
+    document.documentElement.classList.add('bop-landing-locked');document.body.classList.add('bop-landing-locked');document.body.style.top=(-savedY)+'px';
+    window.scrollTo(0,0);
+  }
+  function unlock(){
+    if(!locked)return;locked=false;document.documentElement.classList.remove('bop-landing-locked');document.body.classList.remove('bop-landing-locked');document.body.style.top='';window.scrollTo(0,savedY);
+  }
+  function sync(){if(landingIsOpen())lock();else unlock();}
+  function blockLandingOverscroll(event){
+    if(!locked)return;
+    const target=event.target;
+    if(target&&target.closest&&target.closest('#bopLandingOverlay input,#bopLandingOverlay .bop-landing-results.open'))return;
+    event.preventDefault();
+  }
+  function install(){
+    sync();const landing=document.getElementById('bopLandingOverlay');if(landing)new MutationObserver(sync).observe(landing,{attributes:true,attributeFilter:['class']});
+    document.addEventListener('touchmove',blockLandingOverscroll,{passive:false,capture:true});window.addEventListener('pageshow',sync);window.addEventListener('resize',sync);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh delivery build v187: iPhone-safe landing scroll lock and complete WTF bleed-through isolation -->
 </body></html>
