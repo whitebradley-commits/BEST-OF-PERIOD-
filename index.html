@@ -32313,5 +32313,36 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<!-- Fresh delivery build v232: ZIP-first movie ticket concierge -->
+<!-- Landing dock state repair only: preserve the approved four-orb design exactly. -->
+<style id="bop-main-four-orbs-visibility-lock-v234">
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock.bop-static-landing-dock{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock.bop-static-landing-dock .bop-static-landing-button{
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+</style>
+<script id="bop-main-four-orbs-visibility-lock-v234-script">
+(function(){
+  function syncLandingDock(){
+    var landing=document.getElementById('bopLandingOverlay');
+    var dock=document.getElementById('bopStaticLandingDock');
+    if(!landing||!dock)return;
+    var mainIsOpen=landing.classList.contains('open');
+    dock.classList.toggle('bop-main-landing-visible',mainIsOpen);
+    if(mainIsOpen)document.body.classList.remove('bop-content-open');
+  }
+  function start(){
+    syncLandingDock();
+    new MutationObserver(function(){requestAnimationFrame(syncLandingDock)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v234: main four-orb visibility restored, design untouched -->
 </body></html>
