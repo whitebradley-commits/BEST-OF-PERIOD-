@@ -33996,4 +33996,29 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<script id="bop-fnt-home-direct-route-v268">
+(function(){
+  function isFntHomeRoute(){
+    var params=new URLSearchParams(location.search);
+    return params.get('page')==='fnt-home' || location.hash==='#/concepts/fnt-home';
+  }
+  function openDirect(){
+    if(!isFntHomeRoute())return;
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open','active');
+    if(typeof openFntHome==='function')openFntHome();
+    if(typeof window.bopReleaseRouteGate==='function')window.bopReleaseRouteGate();
+  }
+  function start(){
+    if(!isFntHomeRoute())return;
+    openDirect();
+    // Reassert after the site's general startup/restoration handlers finish.
+    setTimeout(openDirect,180);
+    setTimeout(openDirect,650);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);
+  else start();
+  window.addEventListener('hashchange',openDirect);
+})();
+</script>
 </body></html>
