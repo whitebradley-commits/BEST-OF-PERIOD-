@@ -32681,4 +32681,74 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installVendorRepair);else installVendorRepair();
 })();
 </script>
+<!-- v238: concept pages are self-contained; never inject the main-site footer dock -->
+<style id="bop-concept-footer-exclusion-v238">
+#conceptsOverlay .bop-icons-only-dock,
+#conceptImgOverlay .bop-icons-only-dock,
+#conceptWebPopup .bop-icons-only-dock,
+#noBaxsyzOverlay .bop-icons-only-dock,
+#fntOverlay .bop-icons-only-dock,
+#tapCardOverlay .bop-icons-only-dock,
+#tagGameOverlay .bop-icons-only-dock,
+#wppConceptViewer .bop-icons-only-dock,
+#lvSteamOverlay .bop-icons-only-dock,
+#tpaOverlay .bop-icons-only-dock,
+#wtfLandingOverlay .bop-icons-only-dock,
+body.bop-concept-active > .bop-icons-only-dock,
+body.bop-concept-active > footer.bop-approved-footer{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+</style>
+<script id="bop-concept-footer-exclusion-v238-script">
+(function(){
+  var conceptIds=[
+    'conceptsOverlay','conceptImgOverlay','conceptWebPopup','noBaxsyzOverlay',
+    'fntOverlay','tapCardOverlay','tagGameOverlay','wppConceptViewer',
+    'lvSteamOverlay','tpaOverlay','wtfLandingOverlay'
+  ];
+  var selector=conceptIds.map(function(id){return '#'+id+' .bop-icons-only-dock'}).join(',');
+  var openSelector=[
+    '#conceptImgOverlay.open','#conceptWebPopup.is-open','#noBaxsyzOverlay.open',
+    '#noBaxsyzOverlay.active','#fntOverlay.open','#fntOverlay.active',
+    '#tapCardOverlay.open','#tapCardOverlay.active','#tagGameOverlay.tg-open',
+    '#wppConceptViewer.open','#lvSteamOverlay.open','#lvSteamOverlay.active',
+    '#tpaOverlay.open','#tpaOverlay.active','#wtfLandingOverlay.open',
+    '#wtfLandingOverlay.active'
+  ].join(',');
+  function clean(){
+    if(selector)document.querySelectorAll(selector).forEach(function(dock){dock.remove()});
+    document.body.classList.toggle('bop-concept-active',!!document.querySelector(openSelector));
+  }
+  function start(){
+    clean();
+    new MutationObserver(function(){requestAnimationFrame(clean)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+    document.addEventListener('click',function(event){
+      var tile=event.target.closest&&event.target.closest('#conceptsOverlay .conceptsTile');
+      if(tile)setTimeout(clean,0);
+      var close=event.target.closest&&event.target.closest('#fntBack,#noBaxsyzBack,.conceptImgClose,.conceptWebClose,.tg-back,#wppConceptClose');
+      if(close)setTimeout(clean,0);
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- v239: remove the Top Rated BJS Picks control until a new placement is chosen -->
+<style id="bop-remove-top-rated-bjs-picks-v239">
+#boMoviesPage #boMoviePicksLaunch,
+#boMoviesPage .bo-movie-column:nth-child(2) .bo-movie-picks-launch-wrap,
+#boMoviesPage .bo-movies-columns + .bo-movie-picks-launch-wrap{display:none!important}
+</style>
+<script id="bop-remove-top-rated-bjs-picks-v239-script">
+(function(){
+  function remove(){
+    var button=document.querySelector('#boMoviesPage #boMoviePicksLaunch');
+    if(button){var wrap=button.closest('.bo-movie-picks-launch-wrap');if(wrap)wrap.remove();else button.remove()}
+    document.querySelectorAll('#boMoviesPage .bo-movie-picks-launch-wrap').forEach(function(wrap){wrap.remove()});
+  }
+  function start(){remove();new MutationObserver(function(){requestAnimationFrame(remove)}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
