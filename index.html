@@ -32288,7 +32288,11 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
 .bop-world-best .bop-world-secret-concepts:visited,
 .bop-world-best .bop-world-secret-concepts:hover,
 .bop-world-best .bop-world-secret-concepts:active{
-  display:inline!important;
+  display:inline-block!important;
+  position:relative!important;
+  z-index:2147483001!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
   color:inherit!important;
   font:inherit!important;
   letter-spacing:inherit!important;
@@ -32302,5 +32306,32 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   margin:0!important;
   box-shadow:none!important;
 }
+.bop-world-best .bop-world-secret-concepts::before{
+  content:''!important;
+  position:absolute!important;
+  inset:-14px -9px!important;
+  background:transparent!important;
+}
 </style>
+<script id="bop-world-secret-concepts-direct-v219">
+(function(){
+  var lastOpen=0;
+  function openSecretConcepts(event){
+    var link=event.target&&event.target.closest&&event.target.closest('.bop-world-secret-concepts');
+    if(!link)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var now=Date.now();if(now-lastOpen<700)return;lastOpen=now;
+    if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
+    else document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(page){
+      if(page.id&&(/Overlay$|Page$/.test(page.id)||page.id==='bopWorldwideLanding'))page.classList.remove('open','active','is-open','tg-open');
+    });
+    var concepts=document.getElementById('conceptsOverlay');
+    if(concepts){concepts.classList.add('open');concepts.setAttribute('aria-hidden','false');concepts.scrollTop=0;}
+    document.documentElement.style.overflow='';document.body.style.overflow='';window.scrollTo(0,0);
+    try{history.pushState(null,'',location.pathname+location.search+'#/concepts');}catch(error){location.hash='/concepts';}
+  }
+  document.addEventListener('pointerup',openSecretConcepts,true);
+  document.addEventListener('click',openSecretConcepts,true);
+})();
+</script>
 </body></html>
