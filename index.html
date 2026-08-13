@@ -29443,7 +29443,7 @@ body.fnt-is-open #bopStaticLandingDock{display:none!important}
     return popup;
   };
   window.bopNavigateExternal=function(popup,url,label){
-    if(popup&&!popup.closed){try{popup.opener=null;popup.location.replace(url);return true;}catch(error){}}
+    if(popup&&!popup.closed){try{popup.location.href=url;setTimeout(function(){try{popup.opener=null;}catch(error){}},80);return true;}catch(error){}}
     window.bopOfferExternalLink(url,label);return false;
   };
   window.bopOpenExternal=function(url,label){const popup=window.bopReserveExternal(label);return window.bopNavigateExternal(popup,url,label);};
@@ -29935,7 +29935,7 @@ footer .bop-mini-legend-badge,
     modal.classList.add('is-open');
   }
   function markup(){
-    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div class="bop-side-orb bop-side-left"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div class="bop-center-orb"><div class="bop-movie-orb bop-fate-orb" aria-label="Rotating movie selector"><span class="bop-movie-orb-art"></span><span class="bop-fate-count">3</span></div></div><div class="bop-side-orb bop-side-right"><button class="bop-movie-orb bop-home-orb" type="button" aria-label="Buy tickets"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">BUY<br>TICKETS</span></button></div></div><div class="bop-fate-instruction"><p><strong>PRESS AND HOLD RIGHT HERE FOR THREE SECONDS</strong><span>LET FATE DECIDE</span></p><span class="bop-thumb-arrow" aria-hidden="true">→</span><div class="bop-thumb-wrap"><button class="bop-fate-thumb" type="button" aria-label="Press and hold here for three seconds to let fate decide"><svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><svg class="bop-thumb-label bop-thumb-curve" viewBox="0 0 190 34" role="img" aria-label="Hold thumb for three seconds"><defs><path id="bopThumbInstructionArc" d="M8 28 Q95 -2 182 28"/></defs><text><textPath href="#bopThumbInstructionArc" startOffset="50%" text-anchor="middle">HOLD THUMB FOR THREE SECONDS</textPath></text></svg></div><span class="bop-thumb-arrow is-right" aria-hidden="true">←</span></div></section>';
+    return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><div class="bop-side-orb bop-side-left"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button></div><div class="bop-center-orb"><div class="bop-movie-orb bop-fate-orb" aria-label="Rotating movie selector"><span class="bop-movie-orb-art"></span><span class="bop-fate-count">3</span></div></div><div class="bop-side-orb bop-side-right"><button class="bop-movie-orb bop-home-orb" type="button" aria-label="Buy tickets"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">BUY<br>TICKETS</span></button></div></div><div class="bop-fate-instruction"><p><strong>PRESS AND HOLD RIGHT HERE FOR THREE SECONDS</strong><span>LET FATE DECIDE</span></p><span class="bop-thumb-arrow" aria-hidden="true">→</span><div class="bop-thumb-wrap"><button class="bop-fate-thumb" type="button" aria-label="Press and hold here for three seconds to let fate decide"><svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><svg class="bop-thumb-label bop-thumb-curve" viewBox="0 0 190 38" role="img" aria-label="Hold thumb for 3 seconds"><defs><path id="bopThumbInstructionArc" d="M4 31 Q95 -4 186 31"/></defs><text><textPath href="#bopThumbInstructionArc" startOffset="50%" text-anchor="middle">HOLD THUMB FOR 3 SECONDS</textPath></text></svg></div><span class="bop-thumb-arrow is-right" aria-hidden="true">←</span></div></section>';
   }
   let carouselTimer=null,holdTimer=null,countTimers=[],currentIndex=0;
   function stopHold(orb,completed){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(!completed){orb.classList.remove('is-holding');orb.querySelector('.bop-fate-count').textContent='3';}}
@@ -32144,22 +32144,6 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)makeIshHot(node)})})}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
-<style id="bop-footer-double-black-bars-v215">
-.bop-icons-only-dock{overflow:visible!important;margin-bottom:22px!important}
-.bop-icons-only-dock::before,.bop-icons-only-dock::after{
-  content:''!important;
-  position:absolute!important;
-  left:4%!important;
-  right:4%!important;
-  display:block!important;
-  height:3px!important;
-  border-radius:999px!important;
-  background:#010101!important;
-  pointer-events:none!important;
-}
-.bop-icons-only-dock::before{bottom:-9px!important;box-shadow:0 1px 2px rgba(245,158,11,.19),0 0 5px rgba(245,158,11,.08)!important}
-.bop-icons-only-dock::after{bottom:-18px!important;box-shadow:0 1px 2px rgba(245,158,11,.13),0 0 4px rgba(245,158,11,.06)!important}
-</style>
 <style id="bop-home-bjs-bottom-right-v214">
 #bopLandingOverlay.open>button.footer-hotlink[data-dest="about"]{
   right:max(2px,env(safe-area-inset-right))!important;
@@ -32188,9 +32172,9 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
 .bop-movie-title-input{width:100%;box-sizing:border-box;padding:13px 14px;border:1.5px solid rgba(245,158,11,.7);border-radius:999px;background:#111;color:#fff;font:700 16px Arial,sans-serif;text-align:center}
 .bop-movie-title-input:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.14)}
 .bop-title-zip-form .bop-zip-submit{width:100%}
-#boMoviesPage .bop-thumb-curve{display:block;width:190px;height:34px;margin:-2px -57px 0;overflow:visible;fill:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.62)}
-#boMoviesPage .bop-thumb-curve text{font:900 9px 'Archivo Black',Arial,sans-serif;letter-spacing:.65px}
-@media(max-width:460px){#boMoviesPage .bop-thumb-curve{width:174px;margin-left:-54px;margin-right:-54px}#boMoviesPage .bop-thumb-curve text{font-size:8.5px}}
+#boMoviesPage .bop-thumb-curve{display:block;width:196px;height:38px;margin:-2px -60px 0;overflow:visible;fill:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.62)}
+#boMoviesPage .bop-thumb-curve text{font:900 11px 'Archivo Black',Arial,sans-serif;letter-spacing:.35px}
+@media(max-width:460px){#boMoviesPage .bop-thumb-curve{width:188px;height:37px;margin-left:-61px;margin-right:-61px}#boMoviesPage .bop-thumb-curve text{font-size:10.5px}}
 </style>
 <script id="bop-live-movie-vendor-links-v212">
 (function(){
@@ -32233,10 +32217,9 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
     return 'https://www.cinemark.com/movies/'+slug+'?zip='+z;
   }
   function directOpen(url){
-    let opened=null;
-    try{opened=window.open(url,'_blank');}catch(error){}
-    if(opened){try{opened.opener=null;}catch(error){}return;}
-    window.location.href=url;
+    const anchor=document.createElement('a');
+    anchor.href=url;anchor.target='_blank';anchor.rel='noopener noreferrer';
+    anchor.style.display='none';document.body.appendChild(anchor);anchor.click();anchor.remove();
   }
   function modalTitle(){const h=document.querySelector(modalSelector+' .bop-movie-choice-content h2');return cleanTitle(h&&h.textContent);}
   function selectedClass(link,map){return Object.keys(map).find(function(name){return link.classList.contains(name);});}
@@ -32284,8 +32267,7 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
 })();
 </script>
 <style id="bop-footer-icon-strip-clear-orbs-v216">
-/* Raise the entire footer icon strip above the persistent four-orb dock.
-   Its gold borders and paired black/gold-shadow bars move with it. */
+/* Raise the entire footer icon strip above the persistent four-orb dock. */
 .bop-icons-only-dock{
   top:-108px!important;
 }
@@ -32530,6 +32512,86 @@ body.concept-image-open .mobile-fixed-nav{visibility:hidden!important;pointer-ev
   new MutationObserver(function(){
     if(overlay.classList.contains('is-open'))opened();else closed();
   }).observe(overlay,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<style id="bop-worldwide-movie-repair-v230">
+/* Long ranking pages already have their own Back controls; keep the global
+   four-orb dock from covering titles, posters, and purchase controls. */
+body.bop-ranking-active #bopStaticLandingDock{display:none!important}
+#boMoviesPage .bo-movie-card-title{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:8px!important;
+  padding-right:8px!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  text-align:center!important;
+  white-space:normal!important;
+}
+#boMoviesPage .bo-movie-card-title .bop-title-word{
+  display:inline-block;
+  max-width:100%;
+  margin:0 .08em;
+  vertical-align:baseline;
+  white-space:nowrap;
+}
+</style>
+<script id="bop-worldwide-movie-repair-v230-script">
+(function(){
+  function visible(node){return !!(node&&node.classList.contains('open'))}
+  function syncRankingState(){
+    document.body.classList.toggle('bop-ranking-active',visible(document.getElementById('boMoviesPage'))||visible(document.getElementById('boWorldwidePage')));
+  }
+  function closeRankingPages(){
+    ['boMoviesPage','boWorldwidePage'].forEach(function(id){var page=document.getElementById(id);if(page)page.classList.remove('open')});
+  }
+  function openWorldHub(){
+    closeRankingPages();
+    var world=document.getElementById('bopWorldwideLanding');
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
+    else if(world){world.classList.add('open');world.scrollTop=0}
+    document.body.style.overflow='hidden';syncRankingState();
+    try{history.replaceState(null,'',location.pathname+'#/page/worldwide')}catch(error){}
+  }
+  function openOriginalLanding(){
+    closeRankingPages();
+    var world=document.getElementById('bopWorldwideLanding');if(world)world.classList.remove('open');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing){landing.classList.add('open');landing.setAttribute('aria-hidden','false');landing.scrollTop=0}
+    document.body.style.overflow='hidden';syncRankingState();
+    try{history.replaceState(null,'',location.pathname)}catch(error){}
+  }
+  window.addEventListener('click',function(event){
+    var button=event.target&&event.target.closest&&event.target.closest('#boMoviesBack,#boWorldwideBack,#bopWorldwideLanding .bop-world-back');
+    if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(button.matches('#bopWorldwideLanding .bop-world-back'))openOriginalLanding();else openWorldHub();
+  },true);
+
+  function fitHeading(heading){
+    if(!heading||heading.dataset.wordFit==='1'||!heading.textContent.trim())return;
+    var title=heading.textContent.replace(/\s+/g,' ').trim();heading.dataset.wordFit='1';heading.dataset.fullTitle=title;
+    heading.textContent='';
+    title.split(' ').forEach(function(word){var span=document.createElement('span');span.className='bop-title-word';span.textContent=word;heading.appendChild(span)});
+    requestAnimationFrame(function(){
+      var available=Math.max(40,heading.clientWidth-20),base=parseFloat(getComputedStyle(heading).fontSize)||32;
+      heading.querySelectorAll('.bop-title-word').forEach(function(span){
+        span.style.fontSize=base+'px';
+        var width=span.getBoundingClientRect().width;
+        if(width>available)span.style.fontSize=Math.max(19,base*(available/width)*.94)+'px';
+      });
+    });
+  }
+  function fitAll(){document.querySelectorAll('#boMoviesPage .bo-movie-card-title').forEach(fitHeading);syncRankingState()}
+  function start(){
+    fitAll();
+    new MutationObserver(function(){requestAnimationFrame(fitAll)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+    window.addEventListener('resize',function(){document.querySelectorAll('#boMoviesPage .bo-movie-card-title').forEach(function(h){h.dataset.wordFit='';h.textContent=h.dataset.fullTitle||h.textContent});fitAll()});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 </body></html>
