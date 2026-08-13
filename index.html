@@ -19333,7 +19333,7 @@ function boEnsureMoviesPage(){
   if(page) return page;
   page=document.createElement('section');
   page.id='boMoviesPage';page.className='bo-movies-page';page.setAttribute('aria-label','Best Of Movies');
-  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
+  page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.slice(0,10).map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.slice(0,10).map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
   document.body.appendChild(page);
   page.querySelector('.bo-movies-kicker').textContent='Worldwide Movies Universal Page';
   page.querySelector('.bo-current-source').textContent='Choose theater tickets or search verified streaming, rental, and purchase providers for the exact movie.';
@@ -27821,7 +27821,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 #boMoviesPage .bo-movie-info{padding:14px 11px 12px}
 #boMoviesPage .bo-movie-info h3{
   margin-bottom:8px;
-  color:#F59E0B!important;
+  color:#050505!important;
   font-family:'Archivo Black','Fraunces',serif;
   font-size:clamp(1.03rem,2.45vw,1.34rem);
   font-weight:900;
@@ -29302,11 +29302,13 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   border:0!important;
   border-radius:0!important;
   background:none!important;
-  color:#F59E0B!important;
+  color:#050505!important;
   font:900 1.05rem/1 'Archivo Black',Arial,sans-serif!important;
   letter-spacing:.06em!important;
   text-transform:uppercase!important;
-  text-shadow:none!important;
+  -webkit-text-stroke:1.15px #F59E0B!important;
+  paint-order:stroke fill!important;
+  text-shadow:0 0 4px rgba(245,158,11,.72),0 0 10px rgba(245,158,11,.36)!important;
   box-shadow:none!important;
   text-align:center!important;
   animation:none!important;
@@ -29315,7 +29317,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <script id="bop-movie-top-ten-popcorn-v166">
 (function(){
-  const marker='<div class="bo-top-ten-marker" aria-label="Top eleven">TOP ELEVEN</div>';
+  const marker='<div class="bo-top-ten-marker" aria-label="Top 10">TOP 10</div>';
   function installMarkers(){document.querySelectorAll('#boMoviesPage .bo-movie-column-head').forEach(function(head){if(!head.querySelector('.bo-top-ten-marker'))head.insertAdjacentHTML('beforeend',marker);});}
   function install(){installMarkers();new MutationObserver(function(){requestAnimationFrame(installMarkers);}).observe(document.body,{childList:true,subtree:true});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -29885,7 +29887,7 @@ footer .bop-mini-legend-badge,
     const card=cards.find(function(node){const h=node.querySelector('.bo-movie-card-title,.bo-movie-info h3');return h&&h.textContent.trim()===title;});
     const image=card&&card.querySelector('.bo-movie-poster');return image?(image.currentSrc||image.src):'';
   }
-  function providerHTML(list,title){return '<div class="bop-movie-provider-grid">'+list.map(function(item){const suffix=item[0]==='Google TV'?encodeURIComponent(title+' rent or buy movie'):encodeURIComponent(title);return '<a class="bop-movie-provider '+item[1]+'" href="'+item[2]+suffix+'" target="_blank" rel="noopener" aria-label="Find '+title+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';}
+  function providerHTML(list,title){const safeTitle=String(title||'').replace(/"/g,'&quot;');return '<div class="bop-movie-provider-grid">'+list.map(function(item){const suffix=item[0]==='Google TV'?encodeURIComponent(title+' rent or buy movie'):encodeURIComponent(title);return '<a class="bop-movie-provider '+item[1]+'" data-movie-title="'+safeTitle+'" href="'+item[2]+suffix+'" target="_blank" rel="noopener" aria-label="Find '+safeTitle+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';}
   function ensureModal(){
     let modal=document.getElementById('bopMovieChoiceModal');if(modal)return modal;
     modal=document.createElement('div');modal.id='bopMovieChoiceModal';modal.className='bop-movie-choice-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
@@ -29905,26 +29907,28 @@ footer .bop-mini-legend-badge,
   }
   function openBuyTickets(){
     const modal=ensureModal();
-    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>BUY TICKETS</h2><p class="bop-movie-choice-message">Enter your ZIP code to find showtimes near you.</p><form class="bop-zip-form" novalidate><input class="bop-zip-input" type="tel" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button></form>';
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>BUY TICKETS</h2><p class="bop-movie-choice-message">Enter the movie and your ZIP code so every result is for the exact movie you want.</p><form class="bop-title-zip-form" novalidate><input class="bop-movie-title-input" type="text" autocomplete="off" placeholder="Movie title" aria-label="Movie title" required><input class="bop-zip-input" type="tel" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button><p class="bop-zip-error" aria-live="polite"></p></form>';
     modal.classList.add('is-open');
-    const input=modal.querySelector('.bop-zip-input');setTimeout(function(){input.focus();},60);
-    modal.querySelector('.bop-zip-form').addEventListener('submit',function(event){
+    const titleInput=modal.querySelector('.bop-movie-title-input'),zipInput=modal.querySelector('.bop-zip-input');setTimeout(function(){titleInput.focus();},60);
+    modal.querySelector('.bop-title-zip-form').addEventListener('submit',function(event){
       event.preventDefault();
-      const zip=input.value.trim();
-      if(!/^\d{5}$/.test(zip)){input.style.borderColor='#E4002B';return;}
-      showTicketVendors(zip);
+      const title=titleInput.value.trim(),zip=zipInput.value.trim(),error=modal.querySelector('.bop-zip-error');
+      if(!title){titleInput.style.borderColor='#E4002B';error.textContent='Please enter a movie title.';return;}
+      if(!/^\d{5}$/.test(zip)){zipInput.style.borderColor='#E4002B';error.textContent='Please enter a five-digit ZIP code.';return;}
+      showTicketVendors(zip,title);
     });
   }
-  function showTicketVendors(zip){
+  function showTicketVendors(zip,title){
     const modal=ensureModal();
     // Only chains with a real, verified zip-code deep link are listed here —
     // no vendor whose only path is "leave the site and figure it out over there."
     const ticketVendors=[
-      ['FANDANGO','is-fandango','https://www.fandango.com/'+encodeURIComponent(zip)+'_movietimes'],
-      ['AMC','is-amc','https://www.amctheatres.com/showtimes/zip/'+encodeURIComponent(zip)+'/default/default']
+      ['FANDANGO','is-fandango','fandango'],
+      ['AMC','is-amc','amc']
     ];
-    const ticketGrid='<div class="bop-movie-provider-grid">'+ticketVendors.map(function(item){return '<a class="bop-movie-provider '+item[1]+'" href="'+item[2]+'" target="_blank" rel="noopener" aria-label="Find theaters near '+zip+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';
-    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>THEATERS NEAR '+zip+'</h2>'+ticketGrid+'<div class="bop-gold-divider"></div><h3 class="bop-watch-instantly-heading">WATCH INSTANTLY</h3>'+providerHTML(homeProviders,'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
+    const safeTitle=String(title||'').replace(/"/g,'&quot;');
+    const ticketGrid='<div class="bop-movie-provider-grid">'+ticketVendors.map(function(item){return '<a class="bop-movie-provider '+item[1]+'" data-movie-title="'+safeTitle+'" data-movie-zip="'+zip+'" data-movie-theater-provider="'+item[2]+'" href="#movie-provider" aria-label="Find '+safeTitle+' near '+zip+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>'+safeTitle+'</h2><p class="bop-movie-choice-message">SHOWTIMES NEAR '+zip+'</p>'+ticketGrid+'<div class="bop-gold-divider"></div><h3 class="bop-watch-instantly-heading">WATCH INSTANTLY</h3>'+providerHTML(homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
     modal.classList.add('is-open');
   }
   function markup(){
@@ -32137,4 +32141,114 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)makeIshHot(node)})})}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+<style id="bop-home-bjs-bottom-right-v214">
+#bopLandingOverlay.open>button.footer-hotlink[data-dest="about"]{
+  right:max(2px,env(safe-area-inset-right))!important;
+  bottom:max(2px,env(safe-area-inset-bottom))!important;
+}
+</style>
+<style id="bop-double-movie-titles-v213">
+#boMoviesPage .bo-movie-card-title{
+  color:#F59E0B!important;
+  font-family:'Archivo Black','Fraunces',serif!important;
+  font-size:clamp(2.04rem,4.9vw,2.68rem)!important;
+  font-weight:900!important;
+  line-height:1.02!important;
+  letter-spacing:-.015em!important;
+  -webkit-text-stroke:1.5px #000!important;
+  paint-order:stroke fill!important;
+  text-shadow:0 0 2px rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.42),0 2px 0 #000!important;
+}
+@media(max-width:620px){#boMoviesPage .bo-movie-card-title{font-size:2rem!important;line-height:1.02!important}}
+</style>
+<style id="bop-live-movie-vendor-links-v212">
+.bop-movie-zip-back{margin:4px 0 12px;padding:7px 13px;border:1px solid rgba(245,158,11,.65);border-radius:999px;background:#000;color:#F59E0B;font:900 .65rem/1 'Archivo Black',Arial,sans-serif;cursor:pointer}
+.bop-movie-provider:focus-visible,.bo-home-viewing-link:focus-visible,.bo-ticket-btn:focus-visible{outline:2px solid #F59E0B!important;outline-offset:3px!important}
+.bop-zip-error{min-height:17px;margin:5px 0 0;color:#E4002B;font:800 .7rem/1.2 'Archivo Narrow',Arial,sans-serif}
+.bop-title-zip-form{display:grid;gap:9px;margin:14px 0 6px}
+.bop-movie-title-input{width:100%;box-sizing:border-box;padding:13px 14px;border:1.5px solid rgba(245,158,11,.7);border-radius:999px;background:#111;color:#fff;font:700 16px Arial,sans-serif;text-align:center}
+.bop-movie-title-input:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.14)}
+.bop-title-zip-form .bop-zip-submit{width:100%}
+</style>
+<script id="bop-live-movie-vendor-links-v212">
+(function(){
+  const modalSelector='#bopMovieChoiceModal';
+  const homeClasses={
+    'is-justwatch':'justwatch','is-apple':'apple','is-prime':'prime',
+    'is-youtube':'youtube','is-google':'google','is-fah':'fandango-home','is-netflix':'netflix'
+  };
+  const theaterClasses={'is-fandango':'fandango','is-amc':'amc','is-regal':'regal','is-cinemark':'cinemark'};
+  function cleanTitle(value){return String(value||'').replace(/\s+/g,' ').trim();}
+  function esc(value){return String(value||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+  function cardTitle(node){const card=node.closest('.bo-movie-card,.bo-current-card');const heading=card&&card.querySelector('.bo-movie-card-title,.bo-movie-info h3');return cleanTitle(heading&&heading.textContent);}
+  function homeUrl(provider,title){
+    const q=encodeURIComponent(title);
+    if(provider==='justwatch')return 'https://www.justwatch.com/us/search?q='+q;
+    if(provider==='apple')return 'https://tv.apple.com/search?term='+q;
+    if(provider==='prime')return 'https://www.amazon.com/s?k='+q+'&i=instant-video';
+    if(provider==='youtube')return 'https://www.youtube.com/results?search_query='+encodeURIComponent(title+' movie rent buy');
+    if(provider==='google')return 'https://www.google.com/search?q='+encodeURIComponent(title+' watch rent buy Google TV');
+    if(provider==='netflix')return 'https://www.netflix.com/search?q='+q;
+    return 'https://athome.fandango.com/content/movies/search?searchString='+q;
+  }
+  function theaterUrl(provider,title,zip){
+    const q=encodeURIComponent(title),z=encodeURIComponent(zip);
+    if(provider==='fandango')return 'https://www.fandango.com/search?q='+q+'&location='+z;
+    if(provider==='amc')return 'https://www.amctheatres.com/search?searchMode=Movies&query='+q+'&location='+z;
+    if(provider==='regal')return 'https://www.regmovies.com/search?query='+q+'&location='+z;
+    const slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    return 'https://www.cinemark.com/movies/'+slug+'?zip='+z;
+  }
+  function directOpen(url){
+    let opened=null;
+    try{opened=window.open(url,'_blank');}catch(error){}
+    if(opened){try{opened.opener=null;}catch(error){}return;}
+    window.location.href=url;
+  }
+  function modalTitle(){const h=document.querySelector(modalSelector+' .bop-movie-choice-content h2');return cleanTitle(h&&h.textContent);}
+  function selectedClass(link,map){return Object.keys(map).find(function(name){return link.classList.contains(name);});}
+  function wireChoiceLinks(){
+    const modal=document.querySelector(modalSelector);if(!modal)return;
+    modal.querySelectorAll('.bop-movie-provider').forEach(function(link){
+      if(link.dataset.movieVendorReady==='1')return;
+      const homeClass=selectedClass(link,homeClasses),theaterClass=selectedClass(link,theaterClasses);
+      if(!homeClass&&!theaterClass)return;
+      link.dataset.movieVendorReady='1';link.dataset.movieTitle=cleanTitle(link.dataset.movieTitle)||modalTitle();
+      if(homeClass){link.dataset.movieHomeProvider=homeClasses[homeClass];}
+      else{link.dataset.movieTheaterProvider=theaterClasses[theaterClass];}
+      link.dataset.originalHref=link.getAttribute('href')||'';link.setAttribute('href','#movie-provider');link.removeAttribute('target');
+    });
+  }
+  function wireCardLinks(){
+    document.querySelectorAll('#boMoviesPage .bo-home-viewing-link').forEach(function(link){
+      if(link.dataset.movieVendorReady==='1')return;const provider=link.dataset.homeProvider;if(!provider)return;
+      link.dataset.movieVendorReady='1';link.dataset.movieHomeProvider=provider;link.dataset.movieTitle=cardTitle(link);link.dataset.originalHref=link.getAttribute('href')||'';link.setAttribute('href','#movie-provider');link.removeAttribute('target');
+    });
+    document.querySelectorAll('#boMoviesPage [data-theater-provider]').forEach(function(link){
+      const provider=link.getAttribute('data-theater-provider');if(!provider)return;
+      link.removeAttribute('data-theater-provider');link.dataset.movieTheaterProvider=provider;link.dataset.movieTitle=cardTitle(link);if(link.tagName==='A'){link.dataset.originalHref=link.getAttribute('href')||'';link.setAttribute('href','#movie-provider');link.removeAttribute('target');}
+    });
+  }
+  function showZip(provider,title){
+    const modal=document.querySelector(modalSelector);if(!modal)return;
+    const content=modal.querySelector('.bop-movie-choice-content');
+    content.innerHTML='<button type="button" class="bop-movie-zip-back">← BACK</button><h2>'+esc(title)+'</h2><p class="bop-movie-choice-message">Enter your ZIP code to find nearby showtimes and tickets for this movie.</p><form class="bop-zip-form" novalidate><input class="bop-zip-input" type="tel" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button></form><p class="bop-zip-error" aria-live="polite"></p>';
+    modal.classList.add('is-open');const input=content.querySelector('.bop-zip-input');setTimeout(function(){input.focus();},60);
+    content.querySelector('.bop-movie-zip-back').addEventListener('click',function(){modal.classList.remove('is-open');});
+    content.querySelector('form').addEventListener('submit',function(event){event.preventDefault();const zip=input.value.trim();if(!/^\d{5}$/.test(zip)){input.style.borderColor='#E4002B';content.querySelector('.bop-zip-error').textContent='Please enter a five-digit ZIP code.';return;}directOpen(theaterUrl(provider,title,zip));});
+  }
+  document.addEventListener('click',function(event){
+    const link=event.target.closest&&event.target.closest('[data-movie-home-provider],[data-movie-theater-provider]');if(!link)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    const title=cleanTitle(link.dataset.movieTitle)||modalTitle();
+    if(link.dataset.movieHomeProvider)directOpen(homeUrl(link.dataset.movieHomeProvider,title));
+    else if(link.dataset.movieZip)directOpen(theaterUrl(link.dataset.movieTheaterProvider,title,link.dataset.movieZip));
+    else showZip(link.dataset.movieTheaterProvider,title);
+  },true);
+  function refresh(){wireChoiceLinks();wireCardLinks();}
+  function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- Fresh downloadable copy: 2026-08-12 21:12 PT -->
 </body></html>
