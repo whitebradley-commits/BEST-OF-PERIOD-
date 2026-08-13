@@ -32344,15 +32344,15 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<!-- Permanent BEST OF spade-link lock: survives every dynamic city/heading rebuild. -->
+<!-- Permanent VEGAS-ONLY BEST OF spade-link lock. -->
 <style id="bop-best-of-spade-concepts-lock-v235">
   .bop-concepts-o{
     all:unset!important;
     display:inline-block!important;
     position:relative!important;
     box-sizing:content-box!important;
-    width:.72em!important;
-    height:1em!important;
+    width:.76em!important;
+    height:.88em!important;
     margin:0!important;
     padding:0!important;
     color:inherit!important;
@@ -32363,36 +32363,47 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
     letter-spacing:0!important;
     text-align:center!important;
     text-shadow:inherit!important;
-    vertical-align:-.055em!important;
+    vertical-align:-.035em!important;
     cursor:pointer!important;
   }
-  .bop-concepts-o-letter{display:block!important;position:absolute!important;inset:0!important;color:inherit!important;font:inherit!important;line-height:1!important;text-align:center!important;}
-  .bop-concepts-o-spade{position:absolute!important;z-index:2!important;left:50%!important;top:49%!important;width:.42em!important;height:.50em!important;transform:translate(-50%,-50%)!important;filter:drop-shadow(0 0 .018em #000)!important;pointer-events:none!important;}
-  .bop-concepts-o-spade path{fill:#050505!important;stroke:#050505!important;stroke-width:1.2!important;stroke-linejoin:round!important;}
+  .bop-concepts-o-mark{display:block!important;width:100%!important;height:100%!important;overflow:visible!important;filter:drop-shadow(0 0 .07em rgba(255,255,255,.46))!important;pointer-events:none!important;}
+  .bop-concepts-o-mark .bop-o-body{fill:#fff!important;}
+  .bop-concepts-o-mark .bop-o-spade{fill:#050505!important;stroke:#050505!important;stroke-width:1!important;stroke-linejoin:round!important;}
   .bop-concepts-o:focus-visible{outline:2px solid #F59E0B!important;outline-offset:3px!important;border-radius:2px!important;}
 </style>
 <script id="bop-best-of-spade-concepts-lock-v235-script">
 (function(){
-  var selector='#boHeroTitle,.bop-splash-line1,.bo-lead-best-top,.bjs-why-best-of,.bo-movies-bestof,.bop-world-best';
-  var spade='<svg class="bop-concepts-o-spade" aria-hidden="true" viewBox="0 0 100 116"><path d="M50 4C42 19 12 38 12 67c0 18 14 29 29 22-2 9-7 16-14 23h46c-7-7-12-14-14-23 15 7 29-4 29-22C88 38 58 19 50 4Z"/></svg>';
-  function makeO(letter){
+  function makeO(){
     var button=document.createElement('button');
     button.type='button';button.className='bop-concepts-o';button.setAttribute('aria-label','Open Concepts');button.setAttribute('title','Concepts');
-    button.innerHTML='<span class="bop-concepts-o-letter">'+letter+'</span>'+spade;
+    button.innerHTML='<svg class="bop-concepts-o-mark" aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="bop-o-body" cx="41" cy="50" rx="39" ry="49"/><path class="bop-o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
     return button;
   }
-  function repair(root){
-    (root||document).querySelectorAll(selector).forEach(function(node){
-      if(node.querySelector(':scope > .bop-concepts-o'))return;
-      Array.from(node.childNodes).some(function(child){
+  function isVegasPage(){
+    var title=document.getElementById('boHeroTitle');
+    if(!title||!/^\s*BEST OF\b/i.test(title.textContent||''))return false;
+    var city=title.querySelector('.bo-line2');
+    return !!city&&/^\s*Vegas\s*$/i.test(city.textContent||'');
+  }
+  function removeWrongSpades(){
+    document.querySelectorAll('.bop-concepts-o').forEach(function(button){
+      if(button.parentElement&&button.parentElement.id==='boHeroTitle'&&isVegasPage())return;
+      button.replaceWith(document.createTextNode('O'));
+    });
+  }
+  function repair(){
+    removeWrongSpades();
+    if(!isVegasPage())return;
+    var node=document.getElementById('boHeroTitle');
+    if(!node||node.querySelector(':scope > .bop-concepts-o'))return;
+    Array.from(node.childNodes).some(function(child){
         if(child.nodeType!==3)return false;
         var match=child.nodeValue.match(/\b(BEST|Best) (OF|Of)\b/);if(!match)return false;
         var value=child.nodeValue,start=match.index,oIndex=start+match[1].length+1;
         var before=document.createTextNode(value.slice(0,oIndex));
-        var button=makeO(value.charAt(oIndex));
+        var button=makeO();
         var after=document.createTextNode(value.slice(oIndex+1));
         child.replaceWith(before,button,after);return true;
-      });
     });
   }
   function openConcepts(event){
@@ -32404,12 +32415,51 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
     var concepts=document.getElementById('conceptsOverlay');if(concepts){concepts.classList.add('open');concepts.scrollTop=0;window.scrollTo(0,0)}
   }
   function start(){
-    repair(document);
+    repair();
     document.addEventListener('click',openConcepts,true);
-    new MutationObserver(function(){requestAnimationFrame(function(){repair(document)})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+    new MutationObserver(function(){requestAnimationFrame(repair)}).observe(document.body,{childList:true,subtree:true,characterData:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<!-- Fresh delivery build v235: BEST OF spade Concepts link permanently restored; approved design untouched -->
+<!-- Restaurant-section dock scope lock: approved four orbs, no redesign. -->
+<style id="bop-restaurant-four-orb-scope-lock-v237">
+  body.bop-restaurant-dock-visible #bopStaticLandingDock.bop-static-landing-dock{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  body.bop-restaurant-dock-visible #bopStaticLandingDock .bop-static-landing-button{
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  body:not(.bop-restaurant-dock-visible) #bopStaticLandingDock.bop-static-landing-dock{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+</style>
+<script id="bop-restaurant-four-orb-scope-lock-v237-script">
+(function(){
+  var restaurantPages=['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','boNearMapPage'];
+  var outsidePages=['boMoviesPage','boWorldwidePage','bopWorldwideLanding','conceptsOverlay','wppConceptViewer','wtfLandingOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay'];
+  function isOpen(id){var node=document.getElementById(id);return !!node&&(node.classList.contains('open')||node.classList.contains('is-open'))}
+  function sync(){
+    var restaurantOpen=restaurantPages.some(isOpen);
+    var outsideOpen=outsidePages.some(isOpen);
+    document.body.classList.toggle('bop-restaurant-dock-visible',restaurantOpen&&!outsideOpen);
+    if(restaurantOpen&&!outsideOpen)document.body.classList.remove('bop-content-open');
+  }
+  function start(){
+    sync();
+    new MutationObserver(function(){requestAnimationFrame(sync)}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+    window.addEventListener('hashchange',function(){setTimeout(sync,0)});
+    document.addEventListener('click',function(){setTimeout(sync,0)},true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v237: Vegas-only spade plus restaurant-only four-orb scope; approved designs untouched -->
 </body></html>
