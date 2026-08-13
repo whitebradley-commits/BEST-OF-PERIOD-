@@ -29879,7 +29879,10 @@ footer .bop-mini-legend-badge,
   function allMovies(){
     const seen=new Set(),list=[];
     const sources=[];
-    try{sources.push(BO_MOVIES_CURRENT,BO_MOVIES_ALL_TIME,BO_MOVIES_RATED);}catch(error){}
+    try{
+      sources.push(BO_MOVIES_ALL_TIME,BO_MOVIES_RATED);
+      if(Array.isArray(BO_BJS_MOVIE_PICKS))sources.push(BO_BJS_MOVIE_PICKS.filter(Boolean).map(function(title){return typeof title==='string'?{title:title}:title;}));
+    }catch(error){}
     sources.forEach(function(source){(source||[]).forEach(function(movie){if(movie&&movie.title&&!seen.has(movie.title)){seen.add(movie.title);list.push(movie);}});});
     if(!list.length)document.querySelectorAll('#boMoviesPage .bo-movie-card-title,#boMoviesPage .bo-movie-info h3').forEach(function(h){const title=h.textContent.trim();if(title&&!seen.has(title)){seen.add(title);list.push({title:title});}});
     return list;
@@ -31063,7 +31066,7 @@ body:has(#bopLandingOverlay.open){overflow:hidden!important;background:#000!impo
     var copy=document.querySelector('#boMoviesPage .bop-fate-instruction p');
     if(!copy||copy.dataset.finalFateCopy==='1')return;
     copy.dataset.finalFateCopy='1';
-    copy.innerHTML='<strong>CHOOSE FROM THE ALL-TIME MONEY LIST, TOP RATED, <span class="bop-fate-lowercase">or a</span> <span class="bop-inline-bjs-word" role="button" tabindex="0" aria-label="Open BJS Picks coming soon page">BJS PICK</span></strong>';
+    copy.innerHTML='<strong><span class="bop-fate-copy-row">CHOOSE FROM THE</span><span class="bop-fate-copy-row">ALL-TIME MONEY LIST,</span><span class="bop-fate-copy-row bop-fate-choice-row"><span>TOP RATED,</span> <span class="bop-fate-lowercase">or a</span> <span class="bop-inline-bjs-word" role="button" tabindex="0" aria-label="Open BJS Picks coming soon page">BJS PICK</span></span></strong>';
   }
   function install(){updateFateCopy();new MutationObserver(function(){requestAnimationFrame(updateFateCopy)}).observe(document.body,{childList:true,subtree:true})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -32566,6 +32569,17 @@ body.bop-ranking-active #bopStaticLandingDock{display:none!important}
   transform:none!important;
 }
 #boMoviesPage .bop-thumb-straight strong{font:inherit!important;color:inherit!important}
+#boMoviesPage .bop-fate-copy-row{
+  display:block!important;
+  width:100%!important;
+  white-space:nowrap!important;
+}
+#boMoviesPage .bop-fate-choice-row{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+}
 </style>
 <script id="bop-worldwide-movie-repair-v230-script">
 (function(){
