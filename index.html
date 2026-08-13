@@ -24614,7 +24614,18 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
       event.stopImmediatePropagation();
       // Back from the city tile grid returns to the rotating city selector.
       if(typeof boCurrentCat !== 'undefined' && boCurrentCat === 'otheroptions'){
-        openRotatingCityLanding();
+        // New York's five directories sit one level below the New York
+        // gateway. Back from Manhattan/Brooklyn/Queens/Bronx/Hamptons Main
+        // must return to that chooser, not reopen the same borough or skip
+        // all the way past New York to the global city search.
+        const nySubcities = ['manhattan','brooklyn','queens','bronx','hamptons'];
+        if(nySubcities.includes(boCityContext) && typeof window.bopOpenNewYorkGateway === 'function'){
+          const bestOverlay = document.getElementById('bestOfOverlay');
+          if(bestOverlay) bestOverlay.classList.remove('open');
+          window.bopOpenNewYorkGateway();
+        } else {
+          openRotatingCityLanding();
+        }
       } else if(typeof boCurrentCat !== 'undefined' && typeof boPickerParent !== 'undefined' && boPickerParent[boCurrentCat] === 'otheroptions'){
         // Michelin, James Beard and every other direct category belong one
         // level beneath the selected city's Main tile grid. Explicitly use
@@ -33208,22 +33219,42 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
   var originalRender=boRenderCategory,bypassNewYork=false;
   function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
   function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
-  function closeGateway(){gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false)}
+  function closeGateway(returnToSearch){
+    gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false);
+    if(returnToSearch){
+      var landing=document.getElementById('bopLandingOverlay');
+      var input=document.getElementById('bopLandingSearchInput');
+      var results=document.getElementById('bopLandingResults');
+      if(input)input.value='';
+      if(results){results.innerHTML='';results.classList.remove('open','bop-ny-search-results')}
+      if(landing)landing.classList.add('open');
+      if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
+      window.scrollTo(0,0);
+    }
+  }
   function openComing(name){comingTitle.textContent=name;coming.classList.add('open');coming.setAttribute('aria-hidden','false');lock(true)}
   function closeComing(){coming.classList.remove('open');coming.setAttribute('aria-hidden','true');lock(gateway.classList.contains('open'))}
   boRenderCategory=function(cat){
     if(cat==='newyork'&&!bypassNewYork){openGateway();return}
     return originalRender.apply(this,arguments);
   };
-  gateway.querySelector('.bop-ny-gateway-close').addEventListener('click',closeGateway);
+  gateway.querySelector('.bop-ny-gateway-close').addEventListener('click',function(){closeGateway(true)});
   gateway.addEventListener('click',function(event){
     var tile=event.target.closest('.bop-ny-gateway-tile');if(!tile)return;
     var dest=tile.dataset.nyDestination;
-    if(childCities[dest]){closeGateway();boCityContext=dest;originalRender(dest);return}
+    if(childCities[dest]){
+      closeGateway(false);
+      boCityContext=dest;
+      if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
+      var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+      originalRender('otheroptions');
+      window.scrollTo(0,0);
+      return;
+    }
   });
   coming.querySelector('button').addEventListener('click',closeComing);
   coming.addEventListener('click',function(event){if(event.target===coming)closeComing()});
-  document.addEventListener('keydown',function(event){if(event.key!=='Escape')return;if(coming.classList.contains('open'))closeComing();else if(gateway.classList.contains('open'))closeGateway()});
+  document.addEventListener('keydown',function(event){if(event.key!=='Escape')return;if(coming.classList.contains('open'))closeComing();else if(gateway.classList.contains('open'))closeGateway(true)});
   function relabelNewYork(){
     document.querySelectorAll('button,[role="button"],option').forEach(function(el){
       if(el.children.length===0&&el.textContent.trim()==='New York City')el.textContent='New York';
@@ -33336,6 +33367,57 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
     });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- v253: direct borough Main routing and descending BROOKLYN lockup -->
+<style id="bop-brooklyn-descender-v253-style">
+.bop-brooklyn-word{display:inline-flex!important;align-items:flex-start!important;white-space:nowrap!important;padding-right:.08em!important}
+.bop-brooklyn-word .bop-brooklyn-fixed{display:inline-block!important}
+.bop-brooklyn-word .bop-brooklyn-fall{display:inline-block!important;position:relative!important;margin-left:-.055em!important}
+.bop-brooklyn-word .bop-brooklyn-l{transform:translateY(.07em) rotate(2deg)!important}
+.bop-brooklyn-word .bop-brooklyn-y{transform:translateY(.16em) rotate(4deg)!important}
+.bop-brooklyn-word .bop-brooklyn-n{transform:translateY(.27em) rotate(6deg)!important}
+</style>
+<script id="bop-brooklyn-descender-v253-script">
+(function(){
+  function styleBrooklyn(){
+    if(typeof boCityContext==='undefined'||boCityContext!=='brooklyn')return;
+    ['bopResultsCityText','bopMainCityText','boLeadBestCity'].forEach(function(id){
+      var el=document.getElementById(id);if(!el||el.dataset.brooklynV253==='1')return;
+      if(String(el.textContent||'').trim().toLowerCase()!=='brooklyn')return;
+      el.dataset.brooklynV253='1';
+      el.innerHTML='<span class="bop-brooklyn-word" aria-label="Brooklyn"><span class="bop-brooklyn-fixed">BROOK</span><span class="bop-brooklyn-fall bop-brooklyn-l">L</span><span class="bop-brooklyn-fall bop-brooklyn-y">Y</span><span class="bop-brooklyn-fall bop-brooklyn-n">N</span></span>';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',styleBrooklyn);else styleBrooklyn();
+  new MutationObserver(function(){requestAnimationFrame(styleBrooklyn)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+<!-- v254: authoritative Back router for every New York grouped directory -->
+<script id="bop-new-york-authoritative-back-v254-script">
+(function(){
+  var nyCities=['manhattan','brooklyn','queens','bronx','hamptons'];
+  function isNy(){return typeof boCityContext!=='undefined'&&nyCities.indexOf(boCityContext)>-1}
+  function showBest(){var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open')}
+  function render(cat){showBest();if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(cat,boCityContext);if(typeof boRenderCategory==='function')boRenderCategory(cat);window.scrollTo(0,0)}
+  window.addEventListener('click',function(event){
+    if(!isNy())return;
+    var target=event.target&&event.target.closest?event.target.closest('#boBackBtn'):null;
+    if(!target&&event.composedPath){target=event.composedPath().find(function(node){return node&&node.id==='boBackBtn'})}
+    if(!target)return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    var cat=typeof boCurrentCat!=='undefined'?boCurrentCat:'otheroptions';
+    if(cat==='otheroptions'){
+      var best=document.getElementById('bestOfOverlay');if(best)best.classList.remove('open');
+      if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();
+      return;
+    }
+    if(nyCities.indexOf(cat)>-1){render('otheroptions');return}
+    var parent=(typeof boPickerParent!=='undefined'&&boPickerParent[cat])?boPickerParent[cat]:null;
+    // Fine/Casual/Dive and nation pages retain their genuine intermediate
+    // group. Every direct tile returns to the borough Main directory.
+    render(parent&&parent!=='otheroptions'?parent:'otheroptions');
+  },true);
 })();
 </script>
 </body></html>
