@@ -32101,4 +32101,44 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)makeIshHot(node)})})}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+<style id="bop-final-movie-rules-v230">
+/* Final movie rule: the landing dock never floats over an open content page. */
+body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#boMoviesPage .bop-thumb-label{display:flex!important;flex-direction:column!important;align-items:center!important;gap:2px!important;line-height:1!important}
+#boMoviesPage .bop-thumb-label small{display:block;color:#F59E0B;font:900 .72rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em}
+</style>
+<script id="bop-final-movie-rules-v230-script">
+(function(){
+  function enforceMovieCopy(){
+    document.querySelectorAll('#boMoviesPage .bop-thumb-label').forEach(function(label){
+      if(label.dataset.finalThumbCopy==='1')return;
+      label.dataset.finalThumbCopy='1';
+      label.innerHTML='<span>PRESS THUMB</span><small>3 SECONDS</small>';
+    });
+  }
+  function enforceDock(){
+    var openContent=Array.from(document.querySelectorAll('[id$="Overlay"].open,[id$="Page"].open,#bopWorldwideLanding.open')).some(function(page){
+      return page.id!=='bopLandingOverlay';
+    });
+    document.body.classList.toggle('bop-content-open',openContent);
+  }
+  /* Run before the retired document-level fallback. Direct user taps open the
+     provider itself in a separate tab/window, so BestOfPeriod stays intact and
+     no synthetic "Opening the provider" page can become stranded on iPhone. */
+  window.addEventListener('click',function(event){
+    if(event.defaultPrevented||event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+    var link=event.target.closest&&event.target.closest('a[href]');if(!link)return;
+    var url;try{url=new URL(link.href,location.href)}catch(_error){return}
+    if(!/^https?:$/.test(url.protocol)||url.origin===location.origin)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var popup=null;try{popup=window.open(url.href,'_blank')}catch(_error){}
+    if(popup){try{popup.opener=null}catch(_error){}}
+    else location.href=url.href;
+  },true);
+  function enforce(){enforceMovieCopy();enforceDock()}
+  function start(){enforce();new MutationObserver(function(){requestAnimationFrame(enforce)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v230: final thumb copy, direct providers, no content-covering landing dock -->
 </body></html>
