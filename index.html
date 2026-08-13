@@ -32611,4 +32611,74 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
 })();
 </script>
 <!-- Fresh delivery build v240: hidden Concepts spade attached to the rendered Best of Vegas O -->
+<!-- v235: reliable movie/ZIP routing and verified-vendor delivery repair -->
+<script id="bop-ticket-vendor-repair-v235">
+(function(){
+  function cleanZip(value){return String(value||'').replace(/\D/g,'').slice(0,5)}
+  function ticketUrl(provider,movie,zip){
+    var domains={
+      cinepolis:'cinepolisusa.com',
+      amc:'amctheatres.com',
+      regal:'regmovies.com',
+      cinemark:'cinemark.com',
+      fandango:'fandango.com',
+      atom:'atomtickets.com'
+    };
+    var query=[movie,'showtimes near',zip,'site:'+domains[provider]].join(' ');
+    return 'https://www.google.com/search?q='+encodeURIComponent(query);
+  }
+  /* Run before the older document-level concierge handler. Every handoff now
+     contains the selected film, ZIP code, showtimes intent, and provider. */
+  window.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopTicketProviders .bop-provider-btn');
+    if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var zipInput=document.getElementById('bopTicketZip');
+    var providers=document.getElementById('bopTicketProviders');
+    var error=document.getElementById('bopTicketError');
+    var zip=cleanZip(zipInput&&zipInput.value);
+    if(zipInput)zipInput.value=zip;
+    if(zip.length!==5){if(error)error.textContent='Please enter a five-digit ZIP code.';if(providers)providers.classList.remove('ready');return}
+    try{localStorage.setItem('bop-movie-zip',zip)}catch(_e){}
+    if(error)error.textContent='';if(providers)providers.classList.add('ready');
+    var movie=((document.getElementById('bopTicketTitle')||{}).textContent||'Movie').trim();
+    var popup=window.open(ticketUrl(button.dataset.provider,movie,zip),'_blank');
+    if(popup)try{popup.opener=null}catch(_e){}
+  },true);
+
+  function installVendorRepair(){
+    var form=document.querySelector('#vendorOverlay .vendor-form');
+    if(!form||form.dataset.deliveryRepair==='1')return;
+    form.dataset.deliveryRepair='1';
+    form.addEventListener('submit',async function(event){
+      event.preventDefault();event.stopImmediatePropagation();
+      var email=form.querySelector('.vendor-email').value.trim();
+      var website=form.querySelector('.vendor-website').value;
+      var status=form.querySelector('.vendor-status');
+      var button=form.querySelector('.vendor-submit');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status.textContent='Please enter a valid email address.';return}
+      button.disabled=true;status.textContent='SENDING…';
+      try{
+        var response=await fetch('https://formspree.io/f/xpqgbnje',{
+          method:'POST',
+          headers:{'Accept':'application/json','Content-Type':'application/json'},
+          body:JSON.stringify({
+            form:'BestOfPeriod Verified Vendor Request',
+            email:email,
+            _replyto:email,
+            _subject:'New BestOfPeriod Verified Vendor Request',
+            website:website
+          })
+        });
+        var result=await response.json().catch(function(){return{}});
+        if(!response.ok||result.error)throw new Error('send_failed');
+        status.textContent='SENT. Someone from BJS will be with you shortly.';
+        form.reset();
+      }catch(_error){status.textContent='Please try again or email info@bestofperiod.com.'}
+      button.disabled=false;
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installVendorRepair);else installVendorRepair();
+})();
+</script>
 </body></html>
