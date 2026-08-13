@@ -31831,7 +31831,7 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
 .bop-icons-only-vendor{color:#ffd36a}
 .bop-legend-disclaimer{margin:0 auto 28px;max-width:390px;color:#F59E0B;font:600 10px/1.6 'Archivo Narrow',Arial,sans-serif;text-align:center;letter-spacing:.01em}
 .bop-legend-disclaimer-star{display:block;margin:0 auto 8px;color:#F59E0B;font-size:17px;line-height:1;filter:drop-shadow(0 0 4px rgba(245,158,11,.48))}
-.bop-legend-disclaimer strong{color:#fff;font-family:'Fraunces',Georgia,serif}.bop-legend-disclaimer .period{color:#F59E0B}
+.bop-legend-disclaimer strong{color:#fff;font-family:'Fraunces',Georgia,serif}.bop-legend-disclaimer .period{color:#F59E0B}.bop-legend-disclaimer .bop-brand-copyright{display:inline-block;margin-left:.08em;font-size:.27em;line-height:1;vertical-align:.05em}
 #legendOverlay{overflow-x:hidden!important;align-items:flex-start!important;justify-content:center!important}
 #legendOverlay>.ty-content{position:relative!important;left:auto!important;right:auto!important;transform:none!important;width:calc(100vw - 32px)!important;max-width:520px!important;margin:0 auto!important;padding-left:16px!important;padding-right:16px!important;box-sizing:border-box!important;text-align:center!important}
 #legendOverlay .bop-icons-only-dock{left:auto!important;right:auto!important;transform:none!important;width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important}
@@ -31862,7 +31862,7 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(!content||content.querySelector('.bop-legend-disclaimer'))return;
     var title=content.querySelector('h2'),copy=document.createElement('div');
     copy.className='bop-legend-disclaimer';
-    copy.innerHTML='<span class="bop-legend-disclaimer-star" aria-hidden="true">★</span><strong>Best of<span class="period">Period©</span></strong> is an independent listing service developed by BJS and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.';
+    copy.innerHTML='<span class="bop-legend-disclaimer-star" aria-hidden="true">★</span><strong>Best of <span class="period">Period<span class="bop-brand-copyright">©</span></span></strong> is an independent listing service developed by BJS Co. and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings. Please consume responsibly.';
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
@@ -32839,6 +32839,39 @@ body.bop-concept-active > footer.bop-approved-footer{
     var viewer=document.getElementById('wppConceptViewer'),frame=document.getElementById('wppConceptFrame');if(!viewer||!frame)return;
     frame.src=approved;viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';
   },true);
+})();
+</script>
+<!-- v242: centered Michelin/James Beard row, separate +MORE line, no row-end diamonds -->
+<style id="bop-leader-row-cleanup-v242">
+#bjsWhyOverlay .bjs-primary-leaders .bop-primary-more-row{display:block!important;text-align:center!important;margin-top:3px!important}
+#bjsWhyOverlay .bjs-primary-leaders .bop-primary-more-row .bo-plus-more{margin:0!important}
+#boOtherLeadersOverlay .bo-other-leaders-list .bop-clean-leader-row{display:block!important;white-space:nowrap!important;text-align:center!important}
+</style>
+<script id="bop-leader-row-cleanup-v242-script">
+(function(){
+  var primary=[['Google Menu','Tripadvisor','OpenTable'],['Sirved','Uber Eats','Time Out'],['Restaurant Guru','One Bite','Yelp'],['Michelin Guide','James Beard Foundation']];
+  var other=[
+    ['The World’s 50 Best','La Liste','Forbes Travel Guide'],
+    ['AAA Diamond','APEX','Condé Nast Traveler'],
+    ['Travel + Leisure','IMDb','Box Office Mojo','The Numbers'],
+    ['Letterboxd','TMDB','Billboard','Recording Academy'],
+    ['Spotify Charts','J.D. Power','Cirium','Consumer Reports'],
+    ['Kelley Blue Book','Edmunds','Ookla Speedtest','PCMag']
+  ];
+  function sep(cls){return '<span class="'+cls+'" aria-hidden="true">◆</span>'}
+  function cleanWhy(){
+    var list=document.querySelector('#bjsWhyOverlay .bjs-primary-leaders');if(!list||list.dataset.rowsV242==='1')return;
+    list.innerHTML=primary.map(function(row){return '<span style="display:block;white-space:nowrap;text-align:center">'+row.map(function(name){return '<span style="white-space:nowrap">'+name+'</span>'}).join(sep('bo-source-diamond'))+'</span>'}).join('')+'<span class="bop-primary-more-row"><button type="button" class="bo-plus-more" aria-label="Open other industry leaders">+ MORE</button></span>';
+    list.dataset.rowsV242='1';
+  }
+  function cleanOther(){
+    var list=document.querySelector('#boOtherLeadersOverlay .bo-other-leaders-list');if(!list||list.dataset.rowsV242==='1')return;
+    list.innerHTML=other.map(function(row){return '<span class="bop-clean-leader-row">'+row.map(function(name){return '<span>'+name+'</span>'}).join(sep('sep'))+'</span>'}).join('');
+    list.dataset.rowsV242='1';
+  }
+  function clean(){cleanWhy();cleanOther()}
+  function start(){clean();new MutationObserver(function(){requestAnimationFrame(clean)}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 </body></html>
