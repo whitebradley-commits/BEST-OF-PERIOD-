@@ -32364,4 +32364,155 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<!-- LV Steam Back reliability: catch the tap before full-page overlay handlers can swallow it. -->
+<script id="lv-steam-back-reliability-v221">
+(function(){
+  var lastHandled=0;
+  function returnFromLvSteam(event){
+    var button=event.target&&event.target.closest&&event.target.closest('#lvBjsHomeBtn');
+    if(!button)return;
+    event.preventDefault();
+    event.stopPropagation();
+    if(event.stopImmediatePropagation)event.stopImmediatePropagation();
+
+    var now=Date.now();
+    if(now-lastHandled<650)return;
+    lastHandled=now;
+
+    var dayPass=document.getElementById('lvDayPassView');
+    var grid=document.getElementById('lvGridView');
+    var toggle=document.getElementById('lvDayPassToggle');
+    if(dayPass&&dayPass.classList.contains('open')){
+      dayPass.classList.remove('open');
+      if(grid)grid.style.display='block';
+      if(toggle)toggle.innerHTML='Day<br>Passes';
+      window.scrollTo(0,0);
+      return;
+    }
+
+    var lv=document.getElementById('lvSteamOverlay');
+    if(lv){lv.classList.remove('open','active');lv.setAttribute('aria-hidden','true');}
+
+    if(window.__lvSteamReturnTo==='hub'){
+      var hub=document.getElementById('companyHubOverlay');
+      if(hub){hub.classList.add('open');hub.setAttribute('aria-hidden','false');hub.scrollTop=0;}
+    }else{
+      var concepts=document.getElementById('conceptsOverlay');
+      if(concepts){concepts.classList.add('open');concepts.setAttribute('aria-hidden','false');concepts.scrollTop=0;}
+      try{history.replaceState(null,'',location.pathname+location.search+'#/concepts');}catch(error){location.hash='/concepts';}
+    }
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('pointerup',returnFromLvSteam,true);
+  window.addEventListener('click',returnFromLvSteam,true);
+})();
+</script>
+<!-- Universal Concepts one-sheet viewer: isolated above every footer, dock and page overlay. -->
+<style id="concept-image-viewer-mobile-fix-v222">
+#conceptImgOverlay{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  height:100dvh!important;
+  margin:0!important;
+  padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))!important;
+  box-sizing:border-box!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  background:#000!important;
+  z-index:2147483000!important;
+  align-items:center!important;
+  justify-content:center!important;
+  isolation:isolate!important;
+  transform:none!important;
+}
+#conceptImgOverlay.is-open{display:flex!important;}
+#conceptImgOverlay #conceptImgOverlayImg{
+  display:block!important;
+  position:static!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:calc(100vw - 24px)!important;
+  max-height:calc(100vh - 24px)!important;
+  max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+  margin:auto!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border:0!important;
+  border-radius:8px!important;
+  transform:none!important;
+  box-shadow:0 0 24px rgba(245,158,11,.18)!important;
+}
+#conceptImgOverlay .conceptImgClose{
+  position:fixed!important;
+  top:max(14px,env(safe-area-inset-top))!important;
+  right:14px!important;
+  z-index:2147483646!important;
+  width:48px!important;
+  height:48px!important;
+  margin:0!important;
+  border:2px solid #F59E0B!important;
+  border-radius:50%!important;
+  background:#050505!important;
+  color:#F59E0B!important;
+  box-shadow:0 0 14px rgba(245,158,11,.65)!important;
+  transform:none!important;
+}
+body.concept-image-open{overflow:hidden!important;touch-action:none!important;}
+body.concept-image-open .persistent-dock,
+body.concept-image-open .floating-dock,
+body.concept-image-open .site-footer-shell,
+body.concept-image-open .mobile-fixed-nav{visibility:hidden!important;pointer-events:none!important;}
+</style>
+<script id="concept-image-viewer-mobile-fix-v222-script">
+(function(){
+  var overlay=document.getElementById('conceptImgOverlay');
+  var image=document.getElementById('conceptImgOverlayImg');
+  if(!overlay||!image)return;
+
+  function opened(){
+    document.body.classList.add('concept-image-open');
+    document.documentElement.style.overflow='hidden';
+    document.body.style.overflow='hidden';
+    overlay.setAttribute('aria-hidden','false');
+    overlay.scrollTop=0;overlay.scrollLeft=0;
+  }
+  function closed(){
+    document.body.classList.remove('concept-image-open');
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  var originalOpen=window.openConceptImg;
+  window.openConceptImg=function(key){
+    var source=window.conceptImgMap&&window.conceptImgMap[key];
+    if(!source&&originalOpen)return originalOpen(key);
+    if(!source)return;
+    image.alt=key||'Concept one-sheet';
+    image.src=source;
+    overlay.classList.add('is-open');
+    opened();
+  };
+  window.closeConceptImg=function(){
+    overlay.classList.remove('is-open');
+    image.removeAttribute('src');
+    closed();
+  };
+
+  overlay.addEventListener('click',function(event){
+    if(event.target===overlay)window.closeConceptImg();
+  });
+  new MutationObserver(function(){
+    if(overlay.classList.contains('is-open'))opened();else closed();
+  }).observe(overlay,{attributes:true,attributeFilter:['class']});
+})();
+</script>
 </body></html>
