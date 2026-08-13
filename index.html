@@ -24238,6 +24238,19 @@ function openFnt(){
   document.body.style.overflow = 'hidden';
 }
 
+/* A click from the Concepts gallery always starts at the F'N Team homepage.
+   Shared F'N links still use openFnt() directly so their exact team/item state
+   remains intact. */
+function openFntHome(){
+  const frame = document.getElementById('fntFrame');
+  if(frame){
+    try{ frame.contentWindow.sessionStorage.removeItem('fnt-current-team'); }catch(_error){}
+    frame.dataset.loaded = '';
+    frame.srcdoc = '';
+  }
+  openFnt();
+}
+
 function closeFnt(){
   const overlay = document.getElementById('fntOverlay');
   if(!overlay) return;
@@ -25527,7 +25540,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     'SOS':()=>openConceptImg('sos'),
     'Cool Can':()=>openConceptImg('coolcan'),
     'Lozingering':()=>openConceptImg('lozingering'),
-    'FNT':()=>openFnt(),
+    'FNT':()=>openFntHome(),
     "Tag the World":()=>openTagGame(),
     'Murake':()=>openConceptImg('murake'),
     'White Haus Auto':()=>openConceptImg('whitehausauto'),
