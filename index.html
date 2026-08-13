@@ -8784,7 +8784,7 @@ function sfPad(text){
 // world. This is deliberately separate from BOP_SPLASH_CITIES (the shorter
 // list used elsewhere), since this page needs real breadth, not just flavor.
 const BOP_LANDING_CITIES = [
-  "Las Vegas", "Miami", "S.V.", "Los Angeles", "Santa Barbara", "New York", "Chicago", "Austin",
+  "Las Vegas", "Miami", "S.V.", "Los Angeles", "Santa Barbara", "N.Y.C.", "Chicago", "Austin",
   "Nashville", "New Orleans", "San Francisco", "S.D.", "Dallas",
   "Houston", "Atlanta", "Orlando", "Tampa", "Scottsdale", "Phoenix",
   "Denver", "Seattle", "Boston", "Washington DC", "Charlotte", "Honolulu",
@@ -8945,7 +8945,13 @@ function setupBopLanding(){
     { name: 'Los Angeles', region: 'California', dest: 'losangeles', aliases: ['L.A.', 'LA', 'L A'] },
     { name: 'Santa Barbara', region: 'California', dest: 'santabarbara' },
     { name: 'San Francisco', region: 'California', dest: 'sanfrancisco', aliases: ['S.F.', 'SF', 'S F'] },
-    { name: 'New York City', region: 'New York', dest: 'newyork', aliases: ['New York', 'NYC', 'N.Y.C.'] },
+    { name: 'New York', region: 'State Directory', dest: 'newyork', aliases: ['New York State'] },
+    { name: 'New York City', region: 'New York', dest: 'manhattan', aliases: ['NYC', 'N.Y.C.'] },
+    { name: 'Manhattan', region: 'New York City', dest: 'manhattan', aliases: ['N.Y.C. Manhattan', 'NYC Manhattan'] },
+    { name: 'Brooklyn', region: 'New York City', dest: 'brooklyn' },
+    { name: 'Queens', region: 'New York City', dest: 'queens' },
+    { name: 'The Bronx', region: 'New York City', dest: 'bronx', aliases: ['Bronx'] },
+    { name: 'The Hamptons', region: 'New York', dest: 'hamptons', aliases: ['Hamptons'] },
     { name: 'Chicago', region: 'Illinois', dest: 'chicago' },
     { name: 'Washington, D.C.', region: 'District of Columbia', dest: 'washingtondc', aliases: ['Washington DC', 'Washington D.C.', 'D.C.', 'DC'] },
     { name: 'Boston', region: 'Massachusetts', dest: 'boston' },
@@ -8959,6 +8965,17 @@ function setupBopLanding(){
     // City selections from the top landing-page dropdown always open
     // that city's Main/Hub page first.
     if(typeof BO_CITY_CONFIG === 'undefined' || !BO_CITY_CONFIG[dest]) return;
+
+    // New York is a parent destination, not a restaurant page. It opens the
+    // internal five-area chooser; New York City/NYC routes directly to the
+    // Manhattan directory through its own search result above.
+    if(dest === 'newyork' && typeof window.bopOpenNewYorkGateway === 'function'){
+      overlay.classList.remove('open');
+      const nyResults = document.getElementById('bopLandingResults');
+      if(nyResults){nyResults.classList.remove('open');nyResults.innerHTML='';}
+      window.bopOpenNewYorkGateway();
+      return;
+    }
 
     boCityContext = dest;
     // A city picked from the landing search always starts at that city's
@@ -23301,7 +23318,7 @@ boBackBtnEl.addEventListener('click', (e) => {
 })();
 
 const BOP_SPLASH_CITIES = [
-  "Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
+  "Vegas", "Miami", "LA", "Tokyo", "N.Y.C.", "Dubai", "London",
   "Paris", "Ibiza", "Monaco",
   "Hong Kong", "Bangkok", "Berlin", "Milan",
   "Sydney", "Chicago",
@@ -23313,7 +23330,7 @@ const BOP_SPLASH_CITIES = [
   "Shanghai", "Tel Aviv", "Abu Dhabi"
 ];
 const BOP_MINI_CITIES = [
-  "Vegas", "Miami", "LA", "Tokyo", "NYC", "Dubai", "London",
+  "Vegas", "Miami", "LA", "Tokyo", "N.Y.C.", "Dubai", "London",
   "Paris", "Ibiza", "Cabo", "Austin", "Aspen", "Monaco",
   "HK", "Berlin", "Milan", "Rio", "Sydney", "Seoul",
   "Dallas", "Chicago", "Toronto", "Doha", "Osaka", "CDMX",
@@ -32942,6 +32959,327 @@ body.bop-concept-active > footer.bop-approved-footer{
     document.documentElement.style.overflow='';document.body.style.overflow='';
     window.location.assign(WPP_PAGE);
   },true);
+})();
+</script>
+<!-- v249: full Best Of NYC launch; 100+ dining directory and universal Street Vendors tile -->
+<style id="bop-nyc-launch-v249-style">
+body.bop-nyc-context #boHeroTitle .bop-splash-line1{font-size:clamp(3.2rem,15vw,8.5rem)!important;letter-spacing:.02em!important}
+body.bop-nyc-context #boHeroTitle .bop-splash-line2{font-size:clamp(3rem,14vw,8rem)!important}
+body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-shadow:0 0 18px rgba(228,0,43,.55)!important}
+.bo-street-vendor-tile{position:relative!important;overflow:hidden!important;color:#F59E0B!important}
+.bo-street-vendor-tile::before{content:'';position:absolute;inset:5px;border:1px dashed rgba(245,158,11,.62);border-radius:inherit;pointer-events:none}
+.bo-street-vendor-tile .bo-street-vendor-label{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:.42rem}
+.bo-street-vendor-tile .bo-street-vendor-cart{width:21px;height:14px;border:2px solid currentColor;border-radius:3px;position:relative;display:inline-block}
+.bo-street-vendor-tile .bo-street-vendor-cart::before{content:'';position:absolute;left:-3px;right:-3px;top:-7px;height:5px;border:2px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0}
+.bo-street-vendor-tile .bo-street-vendor-cart::after{content:'••';position:absolute;left:1px;top:8px;font-size:13px;letter-spacing:7px}
+</style>
+<script id="bop-nyc-launch-v249-script">
+(function(){
+  if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData==='undefined'||typeof boPickerConfig==='undefined'||typeof boHeroCopy==='undefined')return;
+  BO_CITY_CONFIG.newyork.landingName='NYC';
+  BO_CITY_CONFIG.newyork.areaList=['Manhattan','Brooklyn','Queens','The Bronx','Staten Island'];
+  BO_CITY_CONFIG.newyork.tickerMessages=['BEST OF NYC','100+ RESTAURANTS','THE CITY THAT NEVER STOPS EATING'];
+  boHeroCopy.streetvendors={title:'BEST STREET VENDORS',sub:'Famous carts, trucks and open-air food vendors worth finding.'};
+
+  var vendorLabel='<span class="bo-street-vendor-label"><span class="bo-street-vendor-cart" aria-hidden="true"></span><span>Street Vendors</span></span>';
+  if(!boPickerConfig.otheroptions.some(function(o){return o.cat==='streetvendors'})){
+    var insertAt=Math.min(6,boPickerConfig.otheroptions.length);
+    boPickerConfig.otheroptions.splice(insertAt,0,{label:vendorLabel,cat:'streetvendors'});
+  }
+  boCategoryData.streetvendors=Array.isArray(boCategoryData.streetvendors)?boCategoryData.streetvendors:[];
+
+  var michelin=[
+    ['Sushi Sho','sushihighend',3],['Le Bernardin','seafood',3],['Per Se','newrestaurants',3],['Eleven Madison Park','vegan',3],
+    ['Jungsik','korean',3],['Atomix','korean',2],['Aquavit','newrestaurants',2],['Aska','newrestaurants',2],['Atera','newrestaurants',2],
+    ['Daniel','french',2],['Gabriel Kreuther','french',2],['Jean-Georges','french',2],['Saga','newrestaurants',2],['The Modern','newrestaurants',2],
+    ['Café Boulud','french',1],['Café Carmellini','italianhighend',1],['Casa Enrique','mexicancasual',1],['Cote','korean',1],
+    ['Crown Shy','newrestaurants',1],['Dirt Candy','vegan',1],['Don Angie','italianhighend',1],['Essential by Christophe','french',1],
+    ['Estela','newrestaurants',1],['Frevo','newrestaurants',1],['Gramercy Tavern','newrestaurants',1],['Icca','sushihighend',1],
+    ['Jeju Noodle Bar','korean',1],['Jua','korean',1],['Kochi','korean',1],['Kono','newrestaurants',1],['Kosaka','sushihighend',1],
+    ["L'Abeille",'french',1],['Le Coucou','french',1],['Mari','korean',1],['Meju','korean',1],['Naro','korean',1],
+    ['Noksu','newrestaurants',1],['Oiji Mi','korean',1],['One White Street','newrestaurants',1],['Red Paper Clip','newrestaurants',1],
+    ['Rezdôra','italianhighend',1],['Semma','indian',1],['Shmoné','mediterranean',1],['Shota Omakase','sushihighend',1],
+    ['Sushi Amane','sushihighend',1],['Sushi Ichimura','sushihighend',1],['Tempura Matsui','sushihighend',1],['Torien','newrestaurants',1],
+    ['Tuome','asianfusion',1],['Vestry','newrestaurants',1],['Yingtao','chinese',1],['63 Clinton','newrestaurants',1],
+    ['Bom','korean',1],['César','newrestaurants',1],['Corima','newrestaurants',1],['Joo Ok','korean',1],['Kappo Sono','sushihighend',1],
+    ['La Bastide by Andrea Calstier','french',1],['Restaurant Yuu','french',1],['Sushi Nakazawa','sushihighend',1],
+    ['The Four Horsemen','newrestaurants',1],['Torrisi','italianhighend',1],['Yoshino','sushihighend',1],['Zou Zou’s','mediterranean',1]
+  ];
+  var beard=[
+    ['Frenchette','french','2025 Outstanding Restaurateur — Lee Hanson and Riad Nasr'],['Le Veau d’Or','french','2025 Outstanding Restaurateur — Lee Hanson and Riad Nasr'],
+    ['Le Rock','french','2025 Outstanding Restaurateur — Lee Hanson and Riad Nasr'],['Sofreh','mediterranean','2025 Best Chef: New York State nominee — Nasim Alikhani'],
+    ['Tatiana by Kwame Onwuachi','newrestaurants','2025 Best Chef: New York State semifinalist — Kwame Onwuachi'],['Ci Siamo','italianhighend','2025 Best Chef: New York State semifinalist — Hillary Sterling'],
+    ['Kisa','korean','2025 Best New Restaurant semifinalist'],['Café Mutton','newrestaurants','2025 Best Chef: New York State semifinalist — Shaina Loew-Banayan'],
+    ['Lingo','newrestaurants','2025 Best Chef: New York State semifinalist — Emily Yuen'],['Sylvia’s','southern','James Beard America’s Classics honoree'],
+    ['Patsy’s Pizzeria','pizza','James Beard America’s Classics honoree'],['Di Fara Pizza','pizza','James Beard-recognized New York institution'],
+    ['Russ & Daughters Cafe','deli','James Beard-recognized New York institution'],['Keens Steakhouse','steakhighend','James Beard-recognized historic New York dining room'],
+    ['Minetta Tavern','steakhighend','James Beard-recognized New York institution'],['Via Carota','italiancasual','James Beard-recognized West Village favorite'],
+    ['Superiority Burger','vegan','James Beard-recognized chef-driven restaurant'],['Thai Diner','thai','James Beard-recognized New York restaurant'],
+    ['Dhamaka','indian','James Beard-recognized New York restaurant'],['Adda Indian Canteen','indian','James Beard-recognized New York restaurant']
+  ];
+  var cityIcons=[
+    ['Rao’s','italianhighend','BJS favorite Italian restaurant'],['Peter Luger Steak House','steakhighend','BJS favorite fine steak — Brooklyn'],
+    ['Carbone','italianhighend','Celebrated Italian-American dining in Greenwich Village'],['Emilio’s Ballato','italianhighend','Old-school downtown Italian institution'],
+    ['Lilia','italianhighend','Brooklyn destination for handmade pasta and wood-fired cooking'],['Misi','italianhighend','Williamsburg pasta destination'],
+    ['Rubirosa','italiancasual','Nolita Italian-American favorite'],['I Sodi','italianhighend','Tuscan cooking in the West Village'],
+    ['L’Artusi','italianhighend','Modern Italian mainstay in the West Village'],['Frankies 457 Spuntino','italiancasual','Carroll Gardens Italian favorite'],
+    ['Bamonte’s','italianhighend','Century-old Williamsburg red-sauce institution'],['John’s of 12th Street','italiancasual','East Village Italian-American institution'],
+    ['Marea','italianhighend','Fine coastal Italian by Central Park'],['Locanda Verde','italianhighend','Tribeca Italian destination'],
+    ['Gallaghers Steakhouse','steakhighend','Classic Theater District steakhouse'],['Wolfgang’s Steakhouse','steakhighend','New York porterhouse specialist'],
+    ['Old Homestead Steakhouse','steakhighend','Historic Meatpacking District steakhouse'],['Smith & Wollensky','steakhighend','Classic Midtown steakhouse'],
+    ['Delmonico’s','steakhighend','Historic Financial District steakhouse'],['Hawksmoor New York','steakhighend','British-born steakhouse in Gramercy'],
+    ['Gage & Tollner','steakhighend','Revived Downtown Brooklyn landmark'],['St. Anselm','steakhighend','Williamsburg neighborhood steakhouse'],
+    ['4 Charles Prime Rib','steakhighend','Intimate prime-rib destination'],['Quality Meats','steakhighend','Modern Midtown steakhouse'],
+    ['Katz’s Delicatessen','deli','New York deli landmark'],['Grand Central Oyster Bar','seafood','Historic seafood room inside Grand Central'],
+    ['Union Square Cafe','newrestaurants','Defining New York hospitality institution'],['The Odeon','newrestaurants','Downtown all-day institution'],
+    ['Balthazar','french','SoHo brasserie landmark'],['Blue Hill','newrestaurants','Seasonal Greenwich Village dining'],
+    ['Momofuku Noodle Bar','ramen','Influential East Village noodle bar'],['Xi’an Famous Foods','chinese','New York hand-pulled noodle favorite'],
+    ['Golden Diner','diner','Modern downtown diner'],['Clinton St. Baking Company','breakfastcasual','Lower East Side breakfast institution'],
+    ['Absolute Bagels','bagels','Upper West Side bagel destination'],['Ess-a-Bagel','bagels','Classic New York bagel shop'],
+    ['Tompkins Square Bagels','bagels','East Village bagel favorite'],['Los Tacos No. 1','tacos','Taqueria with multiple Manhattan locations'],
+    ['Los Mariscos','seafood','Chelsea Market seafood counter'],['Fish Cheeks','thai','NoHo Thai seafood destination'],
+    ['Ugly Baby','thai','Carroll Gardens regional Thai favorite'],['Cho Dang Gol','korean','Koreatown tofu and homestyle Korean specialist'],
+    ['Ayat','mediterranean','Palestinian cooking in Brooklyn and beyond'],['Laser Wolf Brooklyn','mediterranean','Rooftop Israeli grill in Williamsburg'],
+    ['Llama Inn','peruvian','Williamsburg Peruvian destination'],['Contento','peruvian','East Harlem Peruvian restaurant'],
+    ['Melba’s','southern','Harlem soul-food favorite'],['Charles Pan-Fried Chicken','southern','Harlem fried-chicken institution']
+  ];
+  var allHours=[
+    ['Diner 24 NYC','diner','Open 24 hours daily'],['Empanada Mama — Hell’s Kitchen','24hours','Open 24 hours daily'],
+    ['Coppelia','24hours','All-night Cuban-Latin diner; confirm daily hours'],['Remedy Diner','diner','Long-running Lower East Side 24-hour diner; call ahead'],
+    ['Court Square Diner','diner','Queens diner known for round-the-clock service'],['Chelsea Square Restaurant','diner','Chelsea neighborhood diner with 24-hour service'],
+    ['Malibu Diner','diner','Chelsea diner with late-night and 24-hour service'],['Tick Tock Diner','diner','Midtown diner known for 24-hour service'],
+    ['Punjabi Deli','indian','East Village vegetarian counter known for all-hours service'],['Doña Maty','24hours','Hell’s Kitchen Latin restaurant open 24 hours'],
+    ['Dim Sum Palace — Midtown','chinese','Late-night dim sum with extended overnight hours'],['Wo Hop','chinese','Chinatown institution with very late service; verify current hours']
+  ];
+  var vendors=[
+    ['The Halal Guys — 53rd & 6th','streetvendors','Famous Midtown halal cart'],['Adel’s Famous Halal Food','streetvendors','Popular Midtown halal cart'],
+    ['NY Dosas','streetvendors','Washington Square Park vegan dosa cart'],['King of Falafel & Shawarma','streetvendors','Queens street-food institution'],
+    ['Birria-Landia','streetvendors','Celebrated birria truck with multiple NYC stops'],['Uncle Gussy’s','streetvendors','Greek street-food truck in Midtown'],
+    ['Wafels & Dinges','streetvendors','Belgian waffle carts and kiosks'],['Makina Cafe','streetvendors','Ethiopian and Eritrean food truck'],
+    ['King Souvlaki','streetvendors','Astoria souvlaki truck'],['Tacos El Bronco','streetvendors','Sunset Park taco truck'],
+    ['Ling’s Sweet Mini Cakes','streetvendors','Chinatown mini-cake cart'],['Mysttik Masaala','streetvendors','Indian street-food carts'],
+    ['Kwik Meal','streetvendors','Midtown halal cart known for lamb'],['Santa Halal Food','streetvendors','Astoria halal cart'],
+    ['Tony Dragon’s Grille','streetvendors','Upper East Side Greek street-food cart'],['Diso’s Italian Sandwich Society','streetvendors','Italian sandwich truck'],
+    ['El Olomega','streetvendors','Red Hook pupusa stand'],['Royal Grill Halal Food','streetvendors','Midtown halal street-food cart']
+  ];
+
+  var byName=new Map();
+  function base(name,genre,why){return {name:name,city:'newyork',genre:genre,rating:null,reviews:null,ratingSource:'Qualification verified; aggregate score pending',image:'',imagePosition:'center',why:why||'Best Of NYC launch selection',note:'Selected for the Best Of NYC launch directory. Public aggregate rating is not displayed until independently verified at 4.8 or 4.9.',url:'',address:'',phone:'',hours:[],price:genre.indexOf('highend')>-1?4:2,hue:'34, 58%, 23%'};}
+  function merge(record){var key=record.name.toLowerCase();var current=byName.get(key);if(current){Object.assign(current,record);return current}byName.set(key,record);return record;}
+  michelin.forEach(function(x){var r=base(x[0],x[1],x[2]+' MICHELIN Star'+(x[2]>1?'s':''));r.michelinGuide=true;r.michelinStars=x[2];r.note='MICHELIN Guide New York 2025 selection. Aggregate public rating remains hidden until independently verified at 4.8 or 4.9.';merge(r)});
+  beard.forEach(function(x){var r=base(x[0],x[1],x[2]);r.jamesBeard=true;r.jamesBeardHonor=x[2];merge(r)});
+  cityIcons.forEach(function(x){merge(base(x[0],x[1],x[2]))});
+  allHours.forEach(function(x){var r=merge(base(x[0],x[1],x[2]));r.open24=/24 hours|24-hour|round-the-clock|all-hours/i.test(x[2]);r.allHoursListing=true;r.note=x[2]+'. Hours can change; call the restaurant before making a special trip.'});
+  vendors.forEach(function(x){var r=merge(base(x[0],x[1],x[2]));r.price=1;r.note=x[2]+'. Street-vendor locations and service times can move or change; check the vendor’s current post before traveling.'});
+  var raos=byName.get('rao’s');if(raos){raos.bjsPick=true;raos.bjsVerified=true;raos.bjsPickCity='newyork';raos.bjsPickLabel='Favorite Italian Restaurant';raos.bjsSources=['Favorite Italian Restaurant'];raos.url='https://www.raos.com/'}
+  var luger=byName.get('peter luger steak house');if(luger){luger.bjsPick=true;luger.bjsVerified=true;luger.bjsPickCity='newyork';luger.bjsPickLabel='Favorite Fine Steak';luger.bjsSources=['Favorite Fine Steak'];luger.url='https://peterluger.com/'}
+  var all=Array.from(byName.values());
+  all.forEach(function(r,i){r.rank=i+1});
+  boCategoryData.newyork=all;
+  function install(cat,records){boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];var keep=boCategoryData[cat].filter(function(r){return (r.city||'bestof')!=='newyork'});records.forEach(function(r){keep.push(Object.assign({},r))});boCategoryData[cat]=keep;}
+  var categoryMap={};all.forEach(function(r){(categoryMap[r.genre]||(categoryMap[r.genre]=[])).push(r)});Object.keys(categoryMap).forEach(function(cat){install(cat,categoryMap[cat])});
+  install('michelin',all.filter(function(r){return r.michelinStars}));
+  install('jamesbeard',all.filter(function(r){return r.jamesBeard}));
+  install('streetvendors',all.filter(function(r){return r.genre==='streetvendors'}));
+  install('24hours',all.filter(function(r){return r.allHoursListing}));
+  install('bjspicksnewyork',all.filter(function(r){return r.bjsPick}));
+  var nycIshIndex=BO_24HR_ISH_CITIES.indexOf('newyork');if(nycIshIndex>-1)BO_24HR_ISH_CITIES.splice(nycIshIndex,1);
+  window.BOP_NYC_LAUNCH_COUNT=all.length;
+
+  function decorate(){
+    document.body.classList.toggle('bop-nyc-context',typeof boCityContext!=='undefined'&&boCityContext==='newyork');
+    document.querySelectorAll('.bo-picker-btn[data-picker-cat="streetvendors"]').forEach(function(btn){btn.classList.add('bo-street-vendor-tile')});
+  }
+  document.addEventListener('click',function(){requestAnimationFrame(decorate)},true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',decorate);else decorate();
+  new MutationObserver(function(){requestAnimationFrame(decorate)}).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+<!-- v250: New York state gateway; NYC directory is one of four internal destinations -->
+<style id="bop-new-york-gateway-v250-style">
+#bopNewYorkGateway{position:fixed;inset:0;z-index:2147483600;display:none;overflow:auto;background:radial-gradient(circle at 50% 18%,rgba(245,158,11,.18),transparent 35%),#020202;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))}
+#bopNewYorkGateway.open{display:block}
+.bop-ny-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.bop-ny-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}
+.bop-ny-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}
+.bop-ny-gateway-title{margin:0;text-align:center;font:900 clamp(3.3rem,15vw,8.2rem)/.8 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:-.055em;text-shadow:0 0 24px rgba(255,255,255,.18)}
+.bop-ny-gateway-title span{display:block;color:#F59E0B;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:.56em;letter-spacing:-.035em;text-transform:none;text-shadow:0 0 18px rgba(245,158,11,.55)}
+.bop-ny-gateway-prompt{margin:24px 0 16px;color:#f3e7cf;text-align:center;font:800 clamp(.78rem,3vw,1rem)/1.35 'Archivo Black',Arial;letter-spacing:.08em;text-transform:uppercase}
+.bop-ny-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
+.bop-ny-gateway-tile{position:relative;min-height:142px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(1.05rem,4.6vw,1.55rem)/1.05 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em}
+.bop-ny-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}
+.bop-ny-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.48)}
+.bop-ny-gateway-tile small{display:block;margin-top:8px;color:#aaa;font:700 .62rem/1.25 Arial;letter-spacing:.08em}
+.bop-ny-gateway-tile[data-ny-destination="nyc"]{background:radial-gradient(circle at 50% 40%,rgba(228,0,43,.22),transparent 56%),linear-gradient(145deg,#15100b,#030303);box-shadow:0 0 24px rgba(245,158,11,.38)}
+.bop-ny-gateway-tile[data-ny-destination="manhattan"]{background:radial-gradient(circle at 50% 40%,rgba(228,0,43,.22),transparent 56%),linear-gradient(145deg,#15100b,#030303);box-shadow:0 0 24px rgba(245,158,11,.38)}
+.bop-ny-gateway-tile[data-ny-destination="hamptons"]{grid-column:1/-1;width:calc(50% - 6px);justify-self:center}
+.bop-ny-coming{position:fixed;inset:0;z-index:2147483610;display:none;place-items:center;padding:22px;background:rgba(0,0,0,.88);backdrop-filter:blur(7px)}
+.bop-ny-coming.open{display:grid}
+.bop-ny-coming-card{position:relative;width:min(430px,100%);padding:34px 22px 25px;border:2px solid #F59E0B;border-radius:24px;background:#070707;text-align:center;box-shadow:0 0 28px rgba(245,158,11,.4)}
+.bop-ny-coming-card button{position:absolute;right:10px;top:10px;width:38px;height:38px;border:1.5px solid #F59E0B;border-radius:50%;background:#000;color:#E4002B;font:900 22px/1 Arial}
+.bop-ny-coming-card h2{margin:8px 25px 12px;color:#F59E0B;font:900 1.65rem/1.05 'Archivo Black',Arial;text-transform:uppercase}
+.bop-ny-coming-card p{margin:0;color:#ddd;font:700 .88rem/1.5 Arial}
+@media(max-width:370px){.bop-ny-gateway-grid{gap:8px}.bop-ny-gateway-tile{min-height:125px}}
+</style>
+<div id="bopNewYorkGateway" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Choose a New York destination">
+  <button type="button" class="bop-ny-gateway-close" aria-label="Close New York destinations">×</button>
+  <div class="bop-ny-gateway-inner">
+    <div class="bop-ny-gateway-kicker">CHOOSE YOUR DESTINATION</div>
+    <h1 class="bop-ny-gateway-title">BEST OF<br>NEW YORK<span>Period<span class="period-mark">©</span></span></h1>
+    <p class="bop-ny-gateway-prompt">Five dining worlds. Pick one.</p>
+    <div class="bop-ny-gateway-grid">
+      <button type="button" class="bop-ny-gateway-tile" data-number="01" data-ny-destination="manhattan"><strong>Manhattan</strong><small>Independent city directory</small></button>
+      <button type="button" class="bop-ny-gateway-tile" data-number="02" data-ny-destination="brooklyn"><strong>Brooklyn</strong><small>Independent city directory</small></button>
+      <button type="button" class="bop-ny-gateway-tile" data-number="03" data-ny-destination="queens"><strong>Queens</strong><small>Independent city directory</small></button>
+      <button type="button" class="bop-ny-gateway-tile" data-number="04" data-ny-destination="bronx"><strong>The Bronx</strong><small>Independent city directory</small></button>
+      <button type="button" class="bop-ny-gateway-tile" data-number="05" data-ny-destination="hamptons"><strong>The Hamptons</strong><small>Independent city directory</small></button>
+    </div>
+  </div>
+</div>
+<div id="bopNewYorkComing" class="bop-ny-coming" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="bop-ny-coming-card"><button type="button" aria-label="Close">×</button><h2 id="bopNewYorkComingTitle">New York</h2><p>This destination now has its own internal section. Its restaurant directory is being researched separately so it never gets mixed into NYC.</p></div>
+</div>
+<script id="bop-new-york-gateway-v250-script">
+(function(){
+  if(typeof boRenderCategory!=='function')return;
+  var childCities={
+    manhattan:{displayName:'Manhattan',landingName:'N.Y.C.',areaList:['Lower Manhattan','Midtown','Upper Manhattan'],tickerMessages:['BEST OF MANHATTAN','NEW YORK CITY'],useNameCycler:true,bjsPicksCat:'bjspicksmanhattan',newYorkSubcity:true},
+    brooklyn:{displayName:'Brooklyn',landingName:'Brooklyn',areaList:['North Brooklyn','Central Brooklyn','South Brooklyn'],tickerMessages:['BEST OF BROOKLYN','NEW YORK CITY'],useNameCycler:true,bjsPicksCat:'bjspicksbrooklyn',newYorkSubcity:true},
+    queens:{displayName:'Queens',landingName:'Queens',areaList:['Long Island City','Astoria','Flushing','Jackson Heights'],tickerMessages:['BEST OF QUEENS','NEW YORK CITY'],useNameCycler:true,bjsPicksCat:'bjspicksqueens',newYorkSubcity:true},
+    bronx:{displayName:'The Bronx',landingName:'Bronx',areaList:['Arthur Avenue','South Bronx','Riverdale','City Island'],tickerMessages:['BEST OF THE BRONX','NEW YORK CITY'],useNameCycler:true,bjsPicksCat:'bjspicksbronx',newYorkSubcity:true},
+    hamptons:{displayName:'The Hamptons',landingName:'Hamptons',areaList:['Southampton','East Hampton','Bridgehampton','Sag Harbor','Montauk'],tickerMessages:['BEST OF THE HAMPTONS','NEW YORK'],useNameCycler:true,bjsPicksCat:'bjspickshamptons',newYorkSubcity:true}
+  };
+  Object.keys(childCities).forEach(function(key){
+    BO_CITY_CONFIG[key]=childCities[key];
+    if(Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);
+    boCategoryData[childCities[key].bjsPicksCat]=[];
+  });
+
+  var brooklynNames=new Set([
+    'aska','don angie','restaurant yuu','shota omakase','the four horsemen','peter luger steak house','lilia','misi','frankies 457 spuntino','bamonte’s','gage & tollner','st. anselm','ugly baby','ayat','laser wolf brooklyn','llama inn','melba’s','charles pan-fried chicken','superiority burger','patsy’s pizzeria','di fara pizza','tacos el bronco','el olomega','sushi nakazawa'
+  ]);
+  var queensNames=new Set([
+    'casa enrique','meju','adda indian canteen','king of falafel & shawarma','king souvlaki','santa halal food','court square diner'
+  ]);
+  var bronxNames=new Set([]);
+  function boroughFor(name){var key=String(name||'').trim().toLowerCase();if(brooklynNames.has(key))return 'brooklyn';if(queensNames.has(key))return 'queens';if(bronxNames.has(key))return 'bronx';return 'manhattan'}
+  Object.values(boCategoryData).forEach(function(list){
+    if(!Array.isArray(list))return;
+    list.forEach(function(r){if(r&&r.city==='newyork'){r.city=boroughFor(r.name);if(r.bjsPickCity==='newyork')r.bjsPickCity=r.city}});
+  });
+  function starter(name,city,genre,why){return {name:name,city:city,genre:genre,rating:null,reviews:null,ratingSource:'Qualification verified; aggregate score pending',image:'',why:why,note:'Selected for this independent New York directory. A public aggregate rating will appear only after it is independently verified at 4.8 or 4.9.',url:'',address:'',phone:'',hours:[],price:genre.indexOf('highend')>-1?4:2,hue:'34, 58%, 23%'};}
+  var additions=[
+    starter("Roberto's",'bronx','italianhighend','Arthur Avenue fine-Italian institution'),starter('Zero Otto Nove','bronx','italianhighend','Arthur Avenue destination for southern Italian cooking'),
+    starter('Casa Della Mozzarella','bronx','deli','Arthur Avenue shop celebrated for fresh mozzarella'),starter("Enzo's of Arthur Avenue",'bronx','italiancasual','Beloved Arthur Avenue red-sauce restaurant'),
+    starter("Dominick's",'bronx','italiancasual','Communal Arthur Avenue Italian institution'),starter('Tra Di Noi','bronx','italianhighend','Traditional Roman and southern Italian cooking'),
+    starter('Bronx Beer Hall','bronx','newrestaurants','Arthur Avenue market hall gathering place'),starter("Antonio's Trattoria",'bronx','italiancasual','Long-running Belmont neighborhood trattoria'),
+    starter('Beatstro','bronx','southern','South Bronx restaurant blending food and hip-hop culture'),starter('Ceetay','bronx','sushicasual','Mott Haven sushi and Japanese favorite'),
+    starter('Hudson Garden Grill','bronx','newrestaurants','Seasonal dining inside the New York Botanical Garden'),starter("Mario's Restaurant",'bronx','italianhighend','Century-old Arthur Avenue dining room'),
+    starter("Patricia's of Morris Park",'bronx','italiancasual','Bronx neighborhood Italian favorite'),starter('Havana Cafe','bronx','nationcuban','Cuban cooking in Throggs Neck'),
+    starter('Arepa Lady','queens','nationcolombian','Jackson Heights street-food legend turned restaurant'),starter('SriPraPhai','queens','thai','Woodside destination for regional Thai cooking'),
+    starter('Zaab Zaab','queens','thai','Queens specialist in Isan cooking'),starter('Kebab Cafe','queens','mediterranean','Astoria Egyptian institution'),
+    starter('AbuQir Seafood','queens','seafood','Astoria Egyptian seafood destination'),starter('Taverna Kyclades','queens','greek','Astoria Greek seafood institution'),
+    starter('Astoria Seafood','queens','seafood','Pick-your-own seafood market and grill'),starter('Mariscos El Submarino','queens','mexicancasual','Jackson Heights Mexican seafood destination'),
+    starter('Pye Boat Noodle','queens','thai','Astoria specialist in Thai boat noodles'),starter('Jora','queens','peruvian','Long Island City Peruvian dining'),
+    starter('Nick & Toni’s','hamptons','italianhighend','East Hampton institution for seasonal Italian cooking'),starter('The 1770 House','hamptons','newrestaurants','Historic East Hampton fine-dining inn'),
+    starter('Topping Rose House','hamptons','newrestaurants','Bridgehampton luxury-hotel dining room'),starter('Dopo La Spiaggia','hamptons','italianhighend','Italian dining in Sag Harbor and East Hampton'),
+    starter('Sant Ambroeus East Hampton','hamptons','italianhighend','Milanese café and restaurant in East Hampton'),starter('Sí Sí','hamptons','mediterranean','Waterfront Mediterranean dining in East Hampton'),
+    starter('Duryea’s Montauk','hamptons','seafood','Montauk waterfront seafood destination'),starter('Harvest on Fort Pond','hamptons','italiancasual','Montauk institution for family-style dining'),
+    starter('East Hampton Grill','hamptons','newrestaurants','Polished East Hampton American dining'),starter('Il Buco al Mare','hamptons','italianhighend','Amagansett coastal Italian dining'),
+    starter('Almond','hamptons','newrestaurants','Bridgehampton neighborhood institution'),starter('The Crow’s Nest','hamptons','newrestaurants','Montauk waterside dining and gathering place'),
+    starter('Coche Comedor','hamptons','mexicancasual','Amagansett Mexican restaurant'),starter('Fresno','hamptons','newrestaurants','Long-running East Hampton neighborhood restaurant'),
+    starter('Bostwick’s Chowder House','hamptons','seafood','East Hampton seafood and chowder favorite'),starter('Carissa’s Bakery','hamptons','breakfastcasual','East Hampton bakery and café')
+  ];
+  additions.forEach(function(r){
+    boCategoryData[r.genre]=Array.isArray(boCategoryData[r.genre])?boCategoryData[r.genre]:[];
+    if(!boCategoryData[r.genre].some(function(x){return x&&x.name===r.name&&x.city===r.city}))boCategoryData[r.genre].push(r);
+  });
+  var allBoroughRecords=[];
+  Object.values(boCategoryData).forEach(function(list){if(Array.isArray(list))list.forEach(function(r){if(r&&childCities[r.city])allBoroughRecords.push(r)})});
+  Object.keys(childCities).forEach(function(city){
+    var seen=new Map();allBoroughRecords.forEach(function(r){if(r.city===city&&!seen.has(r.name.toLowerCase()))seen.set(r.name.toLowerCase(),Object.assign({},r))});
+    boCategoryData[city]=Array.from(seen.values());
+    boCategoryData[childCities[city].bjsPicksCat]=boCategoryData[city].filter(function(r){return r.bjsPick});
+  });
+  var gateway=document.getElementById('bopNewYorkGateway'),coming=document.getElementById('bopNewYorkComing'),comingTitle=document.getElementById('bopNewYorkComingTitle');
+  var originalRender=boRenderCategory,bypassNewYork=false;
+  function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
+  function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
+  function closeGateway(){gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false)}
+  function openComing(name){comingTitle.textContent=name;coming.classList.add('open');coming.setAttribute('aria-hidden','false');lock(true)}
+  function closeComing(){coming.classList.remove('open');coming.setAttribute('aria-hidden','true');lock(gateway.classList.contains('open'))}
+  boRenderCategory=function(cat){
+    if(cat==='newyork'&&!bypassNewYork){openGateway();return}
+    return originalRender.apply(this,arguments);
+  };
+  gateway.querySelector('.bop-ny-gateway-close').addEventListener('click',closeGateway);
+  gateway.addEventListener('click',function(event){
+    var tile=event.target.closest('.bop-ny-gateway-tile');if(!tile)return;
+    var dest=tile.dataset.nyDestination;
+    if(childCities[dest]){closeGateway();boCityContext=dest;originalRender(dest);return}
+  });
+  coming.querySelector('button').addEventListener('click',closeComing);
+  coming.addEventListener('click',function(event){if(event.target===coming)closeComing()});
+  document.addEventListener('keydown',function(event){if(event.key!=='Escape')return;if(coming.classList.contains('open'))closeComing();else if(gateway.classList.contains('open'))closeGateway()});
+  function relabelNewYork(){
+    document.querySelectorAll('button,[role="button"],option').forEach(function(el){
+      if(el.children.length===0&&el.textContent.trim()==='New York City')el.textContent='New York';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',relabelNewYork);else relabelNewYork();
+  new MutationObserver(function(){requestAnimationFrame(relabelNewYork)}).observe(document.body,{childList:true,subtree:true});
+  window.bopOpenNewYorkGateway=openGateway;
+})();
+</script>
+<!-- v251: clustered New York world-map pin and abbreviated Manhattan landing label -->
+<style id="bop-new-york-map-cluster-v251-style">
+#ocPinLayer .oc-pin-new-york-cluster{z-index:12!important;width:34px!important;height:34px!important;margin:-17px 0 0 -17px!important;border:2px solid #050505!important;border-radius:50%!important;background:#F59E0B!important;box-shadow:0 0 13px rgba(245,158,11,1),0 0 27px rgba(245,158,11,.58)!important}
+#ocPinLayer .oc-pin-new-york-cluster::before{content:'5'!important;inset:4px!important;width:auto!important;height:auto!important;border:1px solid rgba(0,0,0,.42)!important;border-radius:50%!important;background:#F59E0B!important;color:#050505!important;display:flex!important;align-items:center!important;justify-content:center!important;font:900 12px/1 'Archivo Black',Arial!important;box-shadow:none!important;transform:none!important}
+#ocPinLayer .oc-pin-new-york-cluster::after{inset:-7px!important;border-color:rgba(245,158,11,.9)!important}
+#ocCityCard.bop-new-york-cluster-card{border-color:#F59E0B!important;box-shadow:0 0 22px rgba(245,158,11,.42)!important}
+#ocCityCard.bop-new-york-cluster-card #ocCityStatus{color:#F59E0B!important}
+#ocCityCard.bop-new-york-cluster-card #ocCityGo{background:#F59E0B!important;color:#050505!important;box-shadow:0 0 15px rgba(245,158,11,.6)!important}
+</style>
+<script id="bop-new-york-map-cluster-v251-script">
+(function(){
+  if(typeof OC_CITIES==='undefined')return;
+  var nyIndex=OC_CITIES.findIndex(function(c){return c.dest==='newyork'});
+  if(nyIndex>-1){OC_CITIES[nyIndex].n='New York';OC_CITIES[nyIndex].clusterCount=5;OC_CITIES[nyIndex].clusterDestinations=['manhattan','brooklyn','queens','bronx','hamptons']}
+  function decorateCluster(){
+    if(nyIndex<0)return;
+    var pin=document.querySelector('#ocPinLayer [data-city-index="'+nyIndex+'"]');
+    if(pin){pin.classList.add('oc-pin-new-york-cluster');pin.setAttribute('aria-label','New York — 5 destinations')}
+  }
+  if(typeof ocShowCity==='function'){
+    var originalShowCity=ocShowCity;
+    ocShowCity=function(city){
+      originalShowCity.apply(this,arguments);
+      var card=document.getElementById('ocCityCard');
+      if(!city||city.dest!=='newyork'){if(card)card.classList.remove('bop-new-york-cluster-card');return}
+      if(card)card.classList.add('bop-new-york-cluster-card');
+      var name=document.getElementById('ocCityName'),status=document.getElementById('ocCityStatus'),go=document.getElementById('ocCityGo');
+      if(name)name.textContent='New York';
+      if(status)status.textContent='5 live destinations — choose your area';
+      if(go){
+        go.textContent='CHOOSE AREA';go.classList.add('open');
+        go.onclick=function(event){
+          if(event){event.preventDefault();event.stopPropagation()}
+          var world=document.getElementById('ocWorldOverlay');if(world)world.classList.remove('open');
+          if(card)card.classList.remove('open');
+          if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();
+        };
+      }
+    };
+  }
+  if(typeof ocLandOnCity==='function'){
+    var originalLandOnCity=ocLandOnCity;
+    ocLandOnCity=function(dest){
+      if(['manhattan','brooklyn','queens','bronx','hamptons'].indexOf(dest)>-1)dest='newyork';
+      return originalLandOnCity.call(this,dest);
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',decorateCluster);else decorateCluster();
+  new MutationObserver(function(){requestAnimationFrame(decorateCluster)}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 </body></html>
