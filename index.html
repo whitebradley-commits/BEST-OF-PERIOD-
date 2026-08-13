@@ -33103,12 +33103,15 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
 .bop-ny-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}
 .bop-ny-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}
 .bop-ny-gateway-title{margin:0;text-align:center;font:900 clamp(3.3rem,15vw,8.2rem)/.8 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:-.055em;text-shadow:0 0 24px rgba(255,255,255,.18)}
+.bop-ny-gateway-title .bop-ny-title-city{display:block;color:#E4002B;text-shadow:0 0 12px rgba(228,0,43,.34)}
 .bop-ny-gateway-title span{display:block;color:#F59E0B;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:.56em;letter-spacing:-.035em;text-transform:none;text-shadow:0 0 18px rgba(245,158,11,.55)}
+.bop-ny-gateway-title .bop-ny-title-period{display:block;color:#F59E0B}
+.bop-ny-gateway-title .bop-ny-title-period .period-mark{display:inline!important;position:relative!important;top:.08em!important;margin-left:.04em!important;font-family:Arial,sans-serif!important;font-style:normal!important;font-size:.2em!important;line-height:1!important;vertical-align:baseline!important;text-shadow:0 0 4px rgba(245,158,11,.35)!important}
 .bop-ny-gateway-prompt{margin:24px 0 16px;color:#f3e7cf;text-align:center;font:800 clamp(.78rem,3vw,1rem)/1.35 'Archivo Black',Arial;letter-spacing:.08em;text-transform:uppercase}
 .bop-ny-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
 .bop-ny-gateway-tile{position:relative;min-height:142px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(1.05rem,4.6vw,1.55rem)/1.05 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em}
 .bop-ny-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}
-.bop-ny-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.48)}
+.bop-ny-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.28)}
 .bop-ny-gateway-tile small{display:block;margin-top:8px;color:#aaa;font:700 .62rem/1.25 Arial;letter-spacing:.08em}
 .bop-ny-gateway-tile[data-ny-destination="nyc"]{background:radial-gradient(circle at 50% 40%,rgba(228,0,43,.22),transparent 56%),linear-gradient(145deg,#15100b,#030303);box-shadow:0 0 24px rgba(245,158,11,.38)}
 .bop-ny-gateway-tile[data-ny-destination="manhattan"]{background:radial-gradient(circle at 50% 40%,rgba(228,0,43,.22),transparent 56%),linear-gradient(145deg,#15100b,#030303);box-shadow:0 0 24px rgba(245,158,11,.38)}
@@ -33125,7 +33128,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
   <button type="button" class="bop-ny-gateway-close" aria-label="Close New York destinations">×</button>
   <div class="bop-ny-gateway-inner">
     <div class="bop-ny-gateway-kicker">CHOOSE YOUR DESTINATION</div>
-    <h1 class="bop-ny-gateway-title">BEST OF<br>NEW YORK<span>Period<span class="period-mark">©</span></span></h1>
+    <h1 class="bop-ny-gateway-title">BEST OF<span class="bop-ny-title-city">NEW YORK</span><span class="bop-ny-title-period">Period<span class="period-mark">©</span></span></h1>
     <p class="bop-ny-gateway-prompt">Five dining worlds. Pick one.</p>
     <div class="bop-ny-gateway-grid">
       <button type="button" class="bop-ny-gateway-tile" data-number="01" data-ny-destination="manhattan"><strong>Manhattan</strong><small>Independent city directory</small></button>
@@ -33280,6 +33283,59 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',decorateCluster);else decorateCluster();
   new MutationObserver(function(){requestAnimationFrame(decorateCluster)}).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+<!-- v252: deterministic New York parent/borough search results -->
+<style id="bop-new-york-search-v252-style">
+#bopLandingResults.bop-ny-search-results{max-height:min(58vh,480px)!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
+#bopLandingResults .bop-ny-parent-result{border-color:#F59E0B!important;background:linear-gradient(90deg,rgba(245,158,11,.16),rgba(0,0,0,.94))!important}
+#bopLandingResults .bop-ny-parent-result .bop-landing-result-dot{background:#F59E0B!important;box-shadow:0 0 9px rgba(245,158,11,.85)!important}
+#bopLandingResults .bop-ny-result-note{display:block;margin-left:18px;color:#aaa;font-size:.69em;letter-spacing:.04em}
+</style>
+<script id="bop-new-york-search-v252-script">
+(function(){
+  function start(){
+    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults'),landing=document.getElementById('bopLandingOverlay');
+    if(!input||!results||input.dataset.nySearchV252==='1')return;
+    input.dataset.nySearchV252='1';
+    var normalize=function(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')};
+    var areas=[
+      {name:'Manhattan',note:'N.Y.C.',dest:'manhattan'},
+      {name:'Brooklyn',note:'New York City',dest:'brooklyn'},
+      {name:'Queens',note:'New York City',dest:'queens'},
+      {name:'The Bronx',note:'New York City',dest:'bronx',aliases:['Bronx']},
+      {name:'The Hamptons',note:'New York',dest:'hamptons',aliases:['Hamptons']}
+    ];
+    function row(name,note,dest,parent){return '<button type="button" class="bop-landing-result'+(parent?' bop-ny-parent-result':'')+'" data-ny-search-dest="'+dest+'"><span class="bop-landing-result-dot"></span> '+name+'<span class="bop-ny-result-note">'+note+'</span></button>'}
+    function paint(){
+      var q=normalize(input.value);if(!q)return;
+      var html='';
+      if(q==='new'||q==='newo'||q==='newor'||q==='neworl'||q==='neworle'||q==='neworlea'||q==='neworlean'||q==='neworleans'){
+        html='<div class="bop-landing-results-label">Live Cities</div>'+row('New York','All Areas — choose one','newyork',true)+row('New York City','N.Y.C. — Manhattan','manhattan',false)+row('New Orleans','Louisiana','neworleans',false);
+      }else if(q==='nyc'||(q.length>7&&'newyorkcity'.startsWith(q))||q.startsWith('newyorkcity')){
+        html='<div class="bop-landing-results-label">New York City</div>'+row('New York City','N.Y.C. — Manhattan','manhattan',false);
+      }else if(q.startsWith('newyork')||q==='ny'||q==='nys'){
+        html='<div class="bop-landing-results-label">New York — Choose an Area</div>'+row('New York','All five destinations','newyork',true)+areas.map(function(a){return row(a.name,a.note,a.dest,false)}).join('');
+      }else{
+        var matched=areas.filter(function(a){return [a.name].concat(a.aliases||[]).some(function(n){return normalize(n).startsWith(q)})});
+        if(!matched.length)return;
+        html='<div class="bop-landing-results-label">New York Areas</div>'+matched.map(function(a){return row(a.name,a.note,a.dest,false)}).join('');
+      }
+      results.innerHTML=html;results.classList.add('open','bop-ny-search-results');
+    }
+    input.addEventListener('input',paint);
+    results.addEventListener('click',function(event){
+      var btn=event.target.closest('[data-ny-search-dest]');if(!btn)return;
+      event.preventDefault();event.stopPropagation();var dest=btn.dataset.nySearchDest;
+      results.classList.remove('open','bop-ny-search-results');results.innerHTML='';if(landing)landing.classList.remove('open');
+      if(dest==='newyork'){if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();return}
+      if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
+      boCityContext=dest;if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
+      var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+      if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');window.scrollTo(0,0);
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 </body></html>
