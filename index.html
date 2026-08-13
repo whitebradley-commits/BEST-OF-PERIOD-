@@ -19278,12 +19278,7 @@ function boMovieCardHTML(movie,index,current){
   // this flag data-driven so its logo only appears on titles confirmed for
   // the current catalog/market; rent-and-buy search providers remain stable.
   const hasNetflix=movie.netflix===true;
-  const ticket=current?`<div class="bo-ticket-cta">WATCH NOW</div><div class="bo-ticket-row">
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets on Fandango" href="https://www.fandango.com/search?q=${encodeURIComponent(movie.title)}"><span class="bo-brand-logo bo-brand-fandango"><b>F</b>FANDANGO</span></a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at AMC Theatres" href="https://www.amctheatres.com/search?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://cdn.freebiesupply.com/logos/large/2x/amc-theatres-logo-png-transparent.png" alt="AMC Theatres"></a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Regal" href="https://www.regmovies.com/search?query=${encodeURIComponent(movie.title)}"><span class="bo-brand-logo bo-brand-regal"><b>◇</b>REGAL</span></a>
-    <a class="bo-ticket-btn" target="_blank" rel="noopener" aria-label="Find ${movie.title} tickets at Cinemark" href="https://www.cinemark.com/search/?q=${encodeURIComponent(movie.title)}"><img class="bo-ticket-logo" src="https://www.liblogo.com/img-logo/ci7324c70d-cinemark-logo-cinemark.png" alt="Cinemark"></a>
-  </div><div class="bo-home-viewing-label">STREAM · RENT · BUY<span>↓</span></div><div class="bo-home-viewing-row${hasNetflix?' has-netflix':''}">
+  const ticket=current?`<div class="bo-home-viewing-label">STREAM · RENT · BUY<span>↓</span></div><div class="bo-home-viewing-row${hasNetflix?' has-netflix':''}">
     ${hasNetflix?`<a class="bo-home-viewing-link" target="_blank" rel="noopener" aria-label="Watch ${movie.title} on Netflix" href="https://www.netflix.com/search?q=${encodeURIComponent(movie.title)}"><img class="bo-home-viewing-logo" src="https://cdn.simpleicons.org/netflix/E50914" alt="Netflix"></a>`:''}
     <a class="bo-home-viewing-link" target="_blank" rel="noopener" aria-label="Search Apple TV for ${movie.title}" href="https://tv.apple.com/search?term=${encodeURIComponent(movie.title)}"><img class="bo-home-viewing-logo" src="https://cdn.simpleicons.org/appletv/FFFFFF" alt="Apple TV"></a>
     <a class="bo-home-viewing-link" target="_blank" rel="noopener" aria-label="Search Prime Video for ${movie.title}" href="https://www.amazon.com/s?k=${encodeURIComponent(movie.title)}&i=instant-video"><img class="bo-home-viewing-logo" src="https://cdn.simpleicons.org/primevideo/00A8E1" alt="Prime Video"></a>
@@ -28398,8 +28393,6 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
         home.className='bo-home-viewing-row';
         home.innerHTML=homeProviders.map(function(item){return '<a class="bo-home-viewing-link" data-home-provider="'+item[0]+'" target="_blank" rel="noopener" aria-label="Search '+item[1]+' for '+title.textContent+'" href="'+item[2]+encodeURIComponent(title.textContent)+'">'+providerMarkup(item[0],item[1])+'</a>';}).join('');
       }
-      const tickets=info.querySelectorAll('.bo-ticket-row .bo-ticket-btn');
-      ['fandango','amc','regal','cinemark'].forEach(function(provider,index){if(tickets[index])tickets[index].dataset.theaterProvider=provider;});
     }
   }
   function enhanceAll(){document.querySelectorAll('#boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card').forEach(enhanceCard);}
@@ -28413,29 +28406,6 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   let holdTimer=null,heldImage=null;
   document.addEventListener('pointerdown',function(e){const image=e.target.closest('#boMoviesPage .bo-movie-screen .bo-movie-poster');if(!image)return;heldImage=image;holdTimer=setTimeout(function(){openPoster(image);holdTimer=null;},520);},true);
   ['pointerup','pointercancel','pointerleave'].forEach(function(type){document.addEventListener(type,function(){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;heldImage=null;},true);});
-  function askLocation(){return new Promise(function(resolve){if(!navigator.geolocation){resolve(null);return;}navigator.geolocation.getCurrentPosition(function(p){resolve({lat:p.coords.latitude,lng:p.coords.longitude});},function(){resolve(null);},{enableHighAccuracy:false,timeout:8000,maximumAge:300000});});}
-  async function reverseLocation(coords){
-    if(!coords)return null;
-    try{const response=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+encodeURIComponent(coords.lat)+'&lon='+encodeURIComponent(coords.lng),{headers:{'Accept':'application/json'}});const data=await response.json(),a=data.address||{};return {city:a.city||a.town||a.village||a.county||'',state:a.state_code||a.state||'',zip:a.postcode||''};}catch(e){return null;}
-  }
-  function theaterUrl(provider,title,place){
-    const zip=(place&&place.zip)||'';
-    const query=encodeURIComponent(title);
-    if(provider==='fandango')return 'https://www.fandango.com/search?q='+query+(zip?'&location='+encodeURIComponent(zip):'');
-    if(provider==='amc')return 'https://www.amctheatres.com/search?searchMode=Movies&query='+query+(zip?'&location='+encodeURIComponent(zip):'');
-    if(provider==='regal')return 'https://www.regmovies.com/search?query='+query+(zip?'&location='+encodeURIComponent(zip):'');
-    const slug=title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    return 'https://www.cinemark.com/movies/'+slug+(zip?'?zip='+encodeURIComponent(zip):'');
-  }
-  document.addEventListener('click',async function(e){
-    const link=e.target.closest('#boMoviesPage [data-theater-provider]');if(!link)return;
-    e.preventDefault();
-    const card=link.closest('.bo-current-card'),title=movieTitle(card),provider=link.dataset.theaterProvider;
-    const popup=window.bopReserveExternal?window.bopReserveExternal('Finding nearby showtimes…'):window.open('about:blank','bopExternalViewer');
-    const coords=await askLocation();let place=await reverseLocation(coords);
-    if(!place||!place.zip){const zip=window.prompt('Enter your ZIP code for nearby '+title+' showtimes:','');place={zip:(zip||'').trim()};}
-    const url=theaterUrl(provider,title,place);if(window.bopNavigateExternal)window.bopNavigateExternal(popup,url,'Open '+provider+' showtimes');else if(popup)popup.location.replace(url);
-  },true);
   function install(){enhanceAll();window.__bopMutationBatchHandlers.push(enhanceAll);document.addEventListener('click',function(e){if(e.target.closest('[data-worldwide-key="movies"]'))setTimeout(enhanceAll,180);},true);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
@@ -29863,9 +29833,6 @@ footer .bop-mini-legend-badge,
 </style>
 <script id="bop-movie-launcher-v185">
 (function(){
-  const theaterProviders=[
-    ['FANDANGO','is-fandango','https://www.fandango.com/search?q='],['AMC','is-amc','https://www.amctheatres.com/search?q='],['REGAL','is-regal','https://www.regmovies.com/search?query='],['CINEMARK','is-cinemark','https://www.cinemark.com/search/?q=']
-  ];
   const homeProviders=[
     ['JUSTWATCH','is-justwatch','https://www.justwatch.com/us/search?q='],['Apple TV','is-apple','https://tv.apple.com/search?term='],['prime video','is-prime','https://www.amazon.com/s?k='],['YouTube','is-youtube','https://www.youtube.com/results?search_query='],['Google TV','is-google','https://www.google.com/search?q='],['FANDANGO AT HOME','is-fah','https://athome.fandango.com/content/movies/search?searchString=']
   ];
@@ -29894,8 +29861,10 @@ footer .bop-mini-legend-badge,
     modal.querySelector('.bop-movie-choice-close').addEventListener('click',close);modal.addEventListener('click',function(event){if(event.target===modal)close();});return modal;
   }
   function openMovie(title){
-    const modal=ensureModal(),inTheaters=currentTitles().has(title),poster=posterFor(title),message=inTheaters?'This movie is currently in theaters. Here are your options.':'This movie is available to rent or purchase. Here are your options.';
-    modal.querySelector('.bop-movie-choice-content').innerHTML='<div class="bop-fate-decided">FATE HAS DECIDED</div>'+(poster?'<img class="bop-movie-choice-poster" src="'+poster+'" alt="'+title.replace(/"/g,'&quot;')+' poster">':'')+'<h2>'+title+'</h2><p class="bop-movie-choice-message">'+message+'</p>'+providerHTML(inTheaters?theaterProviders:homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
+    const inTheaters=currentTitles().has(title);
+    if(inTheaters){openBuyTickets();return;}
+    const modal=ensureModal(),poster=posterFor(title),message='This movie is available to rent or purchase. Here are your options.';
+    modal.querySelector('.bop-movie-choice-content').innerHTML='<div class="bop-fate-decided">FATE HAS DECIDED</div>'+(poster?'<img class="bop-movie-choice-poster" src="'+poster+'" alt="'+title.replace(/"/g,'&quot;')+' poster">':'')+'<h2>'+title+'</h2><p class="bop-movie-choice-message">'+message+'</p>'+providerHTML(homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
     modal.classList.add('is-open');
   }
   function openInTheaters(){
