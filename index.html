@@ -33657,4 +33657,125 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   transform-box:fill-box!important;
 }
 </style>
+<!-- v263: international Michelin starter rollout + universal future openings and food trucks -->
+<style id="bop-global-michelin-v263-style">
+.bo-not-quite-open-label,.bo-food-truck-label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.22rem;line-height:.9;text-align:center}
+.bo-not-quite-open-label strong{color:#f59e0b;font-size:1.02em;letter-spacing:.08em;text-shadow:0 0 9px rgba(245,158,11,.72)}
+.bo-not-quite-open-label small{color:#fff;font-size:.48em;letter-spacing:.18em}
+.bo-not-quite-open-label .bo-opening-beacon{width:9px;height:9px;border-radius:50%;background:#e4002b;box-shadow:0 0 0 0 rgba(228,0,43,.72);animation:boOpeningBeacon 1.7s ease-out infinite}
+@keyframes boOpeningBeacon{0%{box-shadow:0 0 0 0 rgba(228,0,43,.72)}70%{box-shadow:0 0 0 12px rgba(228,0,43,0)}100%{box-shadow:0 0 0 0 rgba(228,0,43,0)}}
+.bo-food-truck-label strong{color:#f59e0b;letter-spacing:.06em}
+.bo-food-truck-icon{width:42px;height:24px;position:relative;border:2px solid #f59e0b;border-radius:4px 7px 3px 3px;box-shadow:0 0 10px rgba(245,158,11,.55)}
+.bo-food-truck-icon:before{content:'';position:absolute;left:4px;top:4px;width:17px;height:8px;border:1.5px solid #f59e0b;border-radius:1px}
+.bo-food-truck-icon:after{content:'\2022  \2022';position:absolute;left:4px;bottom:-10px;color:#f59e0b;font-size:20px;letter-spacing:14px;line-height:10px}
+.bo-food-truck-cab{position:absolute;right:3px;top:5px;width:10px;height:8px;border:1.5px solid #f59e0b;transform:skew(-8deg)}
+.bo-future-opening-card{border-style:dashed!important}
+</style>
+<script id="bop-global-michelin-v263-script">
+(function(){
+  if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData==='undefined'||typeof boPickerConfig==='undefined')return;
+
+  var cities={
+    tokyo:{name:'Tokyo',region:'Japan',la:35.6762,lo:139.6503,areas:['Tokyo Metropolis']},
+    hongkong:{name:'Hong Kong',region:'Hong Kong',la:22.3193,lo:114.1694,areas:['Hong Kong Island','Kowloon','New Territories']},
+    singapore:{name:'Singapore',region:'Singapore',la:1.3521,lo:103.8198,areas:['Singapore']},
+    bangkok:{name:'Bangkok',region:'Thailand',la:13.7563,lo:100.5018,areas:['Bangkok Metropolitan Region']},
+    barcelona:{name:'Barcelona',region:'Spain',la:41.3874,lo:2.1686,areas:['Barcelona']},
+    sansebastian:{name:'San Sebastián',region:'Spain',la:43.3183,lo:-1.9812,areas:['Donostia-San Sebastián','Basque Country']},
+    madrid:{name:'Madrid',region:'Spain',la:40.4168,lo:-3.7038,areas:['Madrid']},
+    rome:{name:'Rome',region:'Italy',la:41.9028,lo:12.4964,areas:['Rome']},
+    milan:{name:'Milan',region:'Italy',la:45.4642,lo:9.1900,areas:['Milan']},
+    mexicocity:{name:'Mexico City',region:'Mexico',la:19.4326,lo:-99.1332,areas:['Mexico City']},
+    copenhagen:{name:'Copenhagen',region:'Denmark',la:55.6761,lo:12.5683,areas:['Copenhagen','Greater Copenhagen']},
+    seoul:{name:'Seoul',region:'South Korea',la:37.5665,lo:126.9780,areas:['Seoul']},
+    osaka:{name:'Osaka',region:'Japan',la:34.6937,lo:135.5023,areas:['Osaka']},
+    kyoto:{name:'Kyoto',region:'Japan',la:35.0116,lo:135.7681,areas:['Kyoto']},
+    dubai:{name:'Dubai',region:'United Arab Emirates',la:25.2048,lo:55.2708,areas:['Dubai']}
+  };
+  Object.keys(cities).forEach(function(key){
+    var c=cities[key];
+    if(!BO_CITY_CONFIG[key]) BO_CITY_CONFIG[key]={displayName:c.name,areaList:c.areas,tickerMessages:[c.name.toUpperCase(),'MICHELIN FIRST'],useNameCycler:true,bjsPicksCat:'bjspicks'+key,countryLabel:c.region};
+    if(Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);
+    if(!Array.isArray(boCategoryData[key]))boCategoryData[key]=[];
+    if(!Array.isArray(boCategoryData['bjspicks'+key]))boCategoryData['bjspicks'+key]=[];
+    if(typeof LIVE_CITIES!=='undefined'&&!LIVE_CITIES.some(function(x){return x.dest===key}))LIVE_CITIES.push({name:c.name,region:c.region,dest:key,aliases:key==='sansebastian'?['San Sebastian','Donostia']:[]});
+    if(typeof OC_CITIES!=='undefined'){
+      var pin=OC_CITIES.find(function(x){return x.n===c.name});
+      if(pin){pin.t='live';pin.dest=key;pin.la=c.la;pin.lo=c.lo}else OC_CITIES.push({n:c.name,la:c.la,lo:c.lo,t:'live',dest:key});
+    }
+  });
+  /* Existing members of the 20-city launch list get their current pins/search
+     normalized too; their established pages and records remain untouched. */
+  var existingLive={
+    london:{name:'London',region:'England',la:51.5072,lo:-.1276},paris:{name:'Paris',region:'France',la:48.8566,lo:2.3522},
+    losangeles:{name:'Los Angeles',region:'California',la:34.0522,lo:-118.2437},sanfrancisco:{name:'San Francisco',region:'California',la:37.7749,lo:-122.4194},
+    newyork:{name:'New York City',region:'New York',la:40.7128,lo:-74.0060}
+  };
+  Object.keys(existingLive).forEach(function(key){
+    var c=existingLive[key],pin=typeof OC_CITIES!=='undefined'&&OC_CITIES.find(function(x){return x.n===c.name});
+    if(pin){pin.t='live';pin.dest=key;pin.la=c.la;pin.lo=c.lo}
+  });
+
+  var launch={
+    tokyo:[['Myojaku',3],['Kanda',3],['L’Effervescence',3]],
+    paris:[['Plénitude — Cheval Blanc Paris',3],['Kei',3],['Arpège',3]],
+    newyork:[['Sushi Sho',3],['Le Bernardin',3],['Per Se',3]],
+    london:[['The Ledbury',3],['CORE by Clare Smyth',3],['Restaurant Gordon Ramsay',3]],
+    hongkong:[['Caprice',3],['Forum',3],['8½ Otto e Mezzo Bombana',3]],
+    singapore:[['Les Amis',3],['Odette',3],['Zén',3]],
+    bangkok:[['Sorn',3],['Gaa',2],['Baan Tepa',2]],
+    barcelona:[['Disfrutar',3],['ABaC',3],['Lasarte',3]],
+    sansebastian:[['Arzak',3],['Akelarre',3],['Martín Berasategui',3]],
+    madrid:[['DiverXO',3],['Deessa',2],['Smoked Room',2]],
+    rome:[['La Pergola',3],['Il Pagliaccio',2],['Acquolina',2]],
+    milan:[['Enrico Bartolini al Mudec',3],['Seta by Antonio Guida',2],['Andrea Aprea',2]],
+    mexicocity:[['Quintonil',2],['Pujol',2],['Rosetta',1]],
+    losangeles:[['Somni',3],['Providence',3],['Hayato',2]],
+    sanfrancisco:[['Atelier Crenn',3],['Benu',3],['Quince',3]],
+    copenhagen:[['Geranium',3],['Jordnær',3],['Alchemist',2]],
+    seoul:[['Mingles',3],['La Yeon',2],['Soigné',2]],
+    osaka:[['HAJIME',3],['Kashiwaya Osaka Senriyama',3],['Taian',3]],
+    kyoto:[['Kikunoi Honten',3],['Hyotei',3],['Gion Sasaki',3]],
+    dubai:[['Trèsind Studio',3],['FZN by Björn Frantzén',3],['Row on 45',2]]
+  };
+  var photos=[
+    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=82',
+    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=82',
+    'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=82',
+    'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1200&q=82',
+    'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=82'
+  ];
+  boCategoryData.michelin=Array.isArray(boCategoryData.michelin)?boCategoryData.michelin:[];
+  Object.keys(launch).forEach(function(cityKey,cityIndex){
+    var coords=(cities[cityKey]||existingLive[cityKey]||{la:0,lo:0});
+    launch[cityKey].forEach(function(item,index){
+      var already=boCategoryData.michelin.some(function(r){return r&&r.city===cityKey&&String(r.name).toLowerCase()===item[0].toLowerCase()});
+      if(already)return;
+      var rec={rank:index+1,name:item[0],city:cityKey,rating:null,reviews:null,image:photos[(cityIndex+index)%photos.length],imagePosition:'center',michelinGuide:true,michelinStars:item[1],why:item[1]+' MICHELIN Stars',note:'Michelin-first international launch selection. Full local category coverage is next.',url:'https://guide.michelin.com/en/restaurants?q='+encodeURIComponent(item[0]),address:'',phone:'',hours:[],price:4,hue:'28, 34%, 24%',lat:coords.la+(index-1)*.006,lng:coords.lo+(index-1)*.006};
+      boCategoryData.michelin.push(rec);
+      if(Array.isArray(boCategoryData[cityKey]))boCategoryData[cityKey].push(rec);
+    });
+  });
+  boCategoryData.michelin.sort(function(a,b){return (b.michelinStars||0)-(a.michelinStars||0)||(a.name||'').localeCompare(b.name||'')});
+
+  if(typeof boHeroCopy!=='undefined'){
+    boHeroCopy.notquiteopen={title:'NOT QUITE OPEN',sub:'Credible, publicly announced restaurants and major dining concepts that are coming soon — not operating yet.'};
+    boHeroCopy.foodtrucks={title:'BEST FOOD TRUCKS',sub:'The live food-truck directory is being built here, including location tracking and voluntary vendor check-in.'};
+  }
+  boCategoryData.notquiteopen=[
+    {rank:1,name:'Le Colonial — Midtown Manhattan',city:'newyork',image:photos[0],why:'Announced for summer 2027',note:'French-Vietnamese restaurant announced for 50 West 57th Street. This listing is clearly marked future and is not yet operating.',url:'https://investors.vno.com/news-releases/news-release-details/vornado-realty-trust-and-lefrak-welcome-return-french-vietnamese',price:4,hue:'28, 34%, 24%'},
+    {rank:2,name:'L’Artusi — Midtown',city:'newyork',image:photos[1],why:'Announced — opening date to be confirmed',note:'A second L’Artusi location has been announced for 1271 Avenue of the Americas.',url:'https://www.rockefellergroup.com/news/lartusi-to-open-midtown-location-at-1271-avenue-of-the-americas/',price:4,hue:'28, 34%, 24%'},
+    {rank:1,name:'The Polo Bar Ralph Lauren — London',city:'london',image:photos[2],why:'Announced for 2028',note:'Ralph Lauren has announced a London Polo Bar at 1 Hanover Square. It is not yet operating.',url:'https://investor.ralphlauren.com/news-releases/news-release-details/ralph-lauren-open-polo-bar-ralph-lauren-london',price:4,hue:'28, 34%, 24%'}
+  ];
+  boCategoryData.foodtrucks=[];
+  var foodLabel='<span class="bo-food-truck-label"><span class="bo-food-truck-icon" aria-hidden="true"><i class="bo-food-truck-cab"></i></span><strong>FOOD TRUCKS</strong></span>';
+  var futureLabel='<span class="bo-not-quite-open-label"><span class="bo-opening-beacon" aria-hidden="true"></span><strong>NOT QUITE OPEN</strong><small>ANNOUNCED</small></span>';
+  if(!boPickerConfig.otheroptions.some(function(x){return x.cat==='foodtrucks'})){
+    var vendorAt=boPickerConfig.otheroptions.findIndex(function(x){return x.cat==='streetvendors'});
+    boPickerConfig.otheroptions.splice(vendorAt<0?6:vendorAt+1,0,{label:foodLabel,cat:'foodtrucks'});
+  }
+  if(!boPickerConfig.otheroptions.some(function(x){return x.cat==='notquiteopen'}))boPickerConfig.otheroptions.push({label:futureLabel,cat:'notquiteopen'});
+  if(typeof boCategoryParentKeys!=='undefined'){boCategoryParentKeys.foodtrucks='otheroptions';boCategoryParentKeys.notquiteopen='otheroptions'}
+})();
+</script>
 </body></html>
