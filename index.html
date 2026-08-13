@@ -24684,11 +24684,37 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
     if(!config) return null;
     return {name:config.displayName,region:hotelCityRegions[key]||config.displayName};
   }
-  function openPreview(button){
+  function normalizeCityName(value){return String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'').trim();}
+  function cityKeyFromName(value){
+    if(typeof BO_CITY_CONFIG==='undefined')return '';
+    const wanted=normalizeCityName(value);
+    if(!wanted)return '';
+    return Object.keys(BO_CITY_CONFIG).find(function(key){
+      const config=BO_CITY_CONFIG[key]||{};
+      return normalizeCityName(config.displayName)===wanted||normalizeCityName(config.landingName)===wanted||normalizeCityName(key)===wanted;
+    })||'';
+  }
+  function resolveHotelCity(button){
+    const valid=function(key){return typeof BO_CITY_CONFIG!=='undefined'&&key&&BO_CITY_CONFIG[key]&&key!=='bestof';};
     const buttonCity=button&&button.dataset?button.dataset.hotelCity:'';
-    const key=(buttonCity&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[buttonCity])
-      ?buttonCity
-      :((typeof boCityContext!=='undefined'&&boCityContext)?boCityContext:'bestof');
+    if(valid(buttonCity))return buttonCity;
+    try{
+      const queryCity=new URLSearchParams(location.search).get('city');
+      if(valid(queryCity))return queryCity;
+    }catch(_error){}
+    const hub=button&&button.closest('.bo-main-hub-footer');
+    const visibleName=(hub&&hub.querySelector('.bo-main-hub-city-name'))||document.querySelector('#bestOfOverlay.open .bo-main-hub-city-name,.bo-main-hub-city-name');
+    const visibleKey=cityKeyFromName(visibleName&&visibleName.textContent);
+    if(valid(visibleKey))return visibleKey;
+    if(typeof boCurrentCat!=='undefined'&&valid(boCurrentCat))return boCurrentCat;
+    if(typeof boCityContext!=='undefined'&&valid(boCityContext))return boCityContext;
+    const titleMatch=(document.title||'').match(/Best of\s+(.+?)\s*\|/i);
+    const titleKey=cityKeyFromName(titleMatch&&titleMatch[1]);
+    if(valid(titleKey))return titleKey;
+    return 'bestof';
+  }
+  function openPreview(button){
+    const key=resolveHotelCity(button);
     const city=getHotelCity(key);
     sheet.hidden=!!city;
     citySheet.hidden=!city;
@@ -26886,14 +26912,22 @@ body.oc-world-active>#ocWorldOverlay{visibility:visible!important;display:block!
 #vendorOverlay .vendor-close{position:absolute;right:14px;top:14px;width:44px;height:44px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 27px/1 Arial,sans-serif;cursor:pointer}
 #vendorOverlay .vendor-prompt{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 28px;color:#F59E0B;font:800 15px/1.3 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em}
 #vendorOverlay .vendor-title{margin:0 0 12px;font:italic 800 clamp(27px,7vw,38px)/1.08 'Fraunces',Georgia,serif;background:linear-gradient(90deg,#E4002B,#F59E0B,#42d66b,#35a7ff,#b763ff,#E4002B);background-size:220% auto;color:transparent;-webkit-background-clip:text;background-clip:text;animation:vendorRainbowMove 5s linear infinite}
-#vendorOverlay .vendor-copy{margin:0 auto 22px;max-width:330px;color:#ddd;font:600 14px/1.5 'Archivo Narrow',Arial,sans-serif}
-#vendorOverlay .vendor-copy strong{color:#fff}
+#vendorOverlay .vendor-copy{margin:0 auto 22px;max-width:330px;color:#F59E0B;font:600 14px/1.5 'Archivo Narrow',Arial,sans-serif;text-shadow:0 0 7px rgba(245,158,11,.34)}
+#vendorOverlay .vendor-copy strong{color:#F59E0B}
 @keyframes vendorRainbowMove{to{background-position:220% center}}
 #vendorOverlay .vendor-check{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#1d9bf0;box-shadow:0 0 8px rgba(29,155,240,.7)}
 #vendorOverlay .vendor-check svg{width:13px;height:13px}
 #vendorOverlay .vendor-form{display:grid;gap:12px}
-#vendorOverlay .vendor-email{width:100%;box-sizing:border-box;padding:15px 17px;border:1.5px solid rgba(245,158,11,.7);border-radius:999px;background:#111;color:#fff;font:700 16px Arial,sans-serif;text-align:center}
+#vendorOverlay .vendor-email-shell{position:relative;width:100%;box-sizing:border-box;border:1.5px solid #F59E0B;border-radius:999px;background:#0b0b0b;box-shadow:0 0 10px rgba(245,158,11,.24),inset 0 0 10px rgba(245,158,11,.06);overflow:hidden}
+#vendorOverlay .vendor-email{width:100%;box-sizing:border-box;padding:15px 126px 15px 16px;border:0;border-radius:999px;background:transparent;color:#F59E0B;font:700 clamp(12px,3.2vw,15px) Arial,sans-serif;text-align:left}
+#vendorOverlay .vendor-email::placeholder{color:#F59E0B;opacity:1;text-shadow:0 0 6px rgba(245,158,11,.58)}
 #vendorOverlay .vendor-email:focus{outline:none;border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.14)}
+#vendorOverlay .vendor-email-shell:focus-within{border-color:#F59E0B;box-shadow:0 0 12px rgba(245,158,11,.48),inset 0 0 10px rgba(245,158,11,.08)}
+#vendorOverlay .vendor-powered-by{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:flex-end;gap:3px;margin:0;color:#F59E0B;font:800 .45rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.04em;white-space:nowrap;pointer-events:none;text-shadow:0 0 5px rgba(245,158,11,.45)}
+#vendorOverlay .vendor-powered-bolt{display:inline-block;color:#F59E0B;font-size:.9rem;line-height:1;filter:drop-shadow(0 0 4px rgba(245,158,11,.55))}
+#vendorOverlay .vendor-powered-bjs-logo{display:block;width:24px;height:24px;filter:drop-shadow(0 0 4px rgba(245,158,11,.5))}
+#vendorOverlay .vendor-powered-bjs-logo circle{fill:#050505;stroke:#F59E0B}
+#vendorOverlay .vendor-powered-bjs-logo text{fill:#F59E0B}
 #vendorOverlay .vendor-submit{padding:14px 18px;border:1.5px solid #F59E0B;border-radius:999px;background:#050505;color:#F59E0B;font:900 13px 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;cursor:pointer}
 #vendorOverlay .vendor-status{min-height:20px;margin:2px 0 0;color:#F59E0B;font:700 12px/1.35 Arial,sans-serif}
 .footer-vendor-separator{color:#666;margin:0 8px}
@@ -26906,8 +26940,10 @@ body.oc-world-active>#ocWorldOverlay{visibility:visible!important;display:block!
     <p class="vendor-prompt"><span class="vendor-check" aria-label="verified check"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3.2 8.2 3 3.1 6.7-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></p>
     <p class="vendor-copy">Someone from <strong>BJS</strong> will be with you shortly.</p>
     <form class="vendor-form" novalidate>
-      <input class="vendor-email" type="email" inputmode="email" autocomplete="email" placeholder="Enter your email address" aria-label="Enter your email address" required>
-      <div class="vendor-powered-by" aria-label="Powered by BJS"><span>POWERED BY</span><span class="vendor-powered-bjs">BJS</span></div>
+      <div class="vendor-email-shell">
+        <input class="vendor-email" type="email" inputmode="email" autocomplete="email" placeholder="Enter your email address" aria-label="Enter your email address" required>
+        <div class="vendor-powered-by" aria-label="Powered by BJS"><span class="vendor-powered-bolt" aria-hidden="true">ϟ</span><span>POWERED BY</span><svg class="vendor-powered-bjs-logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17.5" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black,Arial,sans-serif" font-size="11">BJS</text></svg></div>
+      </div>
       <input class="vendor-website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
       <button class="vendor-submit" type="submit">ENTER</button>
       <p class="vendor-status" aria-live="polite"></p>
@@ -29532,8 +29568,8 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 .bo-verified-vendor-link::after{content:'←'!important;order:3!important;color:#F59E0B!important;font-size:1rem!important;animation:bopVendorArrowBack 1.8s ease-in-out infinite!important}
 .bo-verified-vendor-link .bo-verification-badge{order:2!important;width:34px!important;height:34px!important;min-width:34px!important;filter:drop-shadow(0 0 5px rgba(22,140,255,.72))!important}
 .bo-verified-vendor-link span:first-child{order:1!important}
-#vendorOverlay .vendor-powered-by{display:flex;align-items:center;justify-content:center;gap:6px;margin:-4px 0 2px;color:#777;font:800 .55rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em}
-#vendorOverlay .vendor-powered-bjs{display:grid;place-items:center;width:28px;height:28px;border:1.5px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;font:900 .5rem/1 'Archivo Black',Arial,sans-serif;box-shadow:0 0 7px rgba(245,158,11,.45)}
+#vendorOverlay .vendor-powered-by{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:3px!important;margin:0!important;color:#F59E0B!important;font:800 .45rem/1 'Archivo Narrow',Arial,sans-serif!important;letter-spacing:.04em!important}
+#vendorOverlay .vendor-powered-bjs{display:none!important}
 #vendorOverlay .vendor-card{border:2px solid #F59E0B!important;background:#050505!important;box-shadow:0 0 22px rgba(245,158,11,.48)!important}
 #vendorOverlay .vendor-copy{margin-bottom:18px!important}
 @keyframes bopVendorArrowBack{0%,100%{transform:translateX(2px)}50%{transform:translateX(-2px)}}
