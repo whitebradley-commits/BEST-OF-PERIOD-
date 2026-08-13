@@ -32622,7 +32622,7 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
     document.querySelectorAll('.bop-vegas-concepts-o').forEach(function(button){if(button.parentElement!==vegasTitle())button.replaceWith(document.createTextNode('O'))});
   }
   function install(){
-    var line=vegasTitle();restorePlainOutsideVegas();if(!line||line.querySelector('.bop-vegas-concepts-o'))return;
+    var line=vegasTitle();restorePlainOutsideVegas();if(!line)return;line.classList.add('bop-vegas-best-of-line');if(line.querySelector('.bop-vegas-concepts-o'))return;
     Array.from(line.childNodes).some(function(node){
       if(node.nodeType!==3)return false;var match=node.nodeValue.match(/\bBest Of\b/i);if(!match)return false;
       var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
@@ -33637,6 +33637,24 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
     gap:.22rem!important;
     right:24px!important;
   }
+}
+</style>
+<!-- v262: subtler, rounder Vegas Concepts O -->
+<style id="bop-vegas-concepts-o-subtle-v262">
+#boHeroTitle .bop-vegas-best-of-line{
+  font-size:105%!important;
+}
+#boHeroTitle .bop-vegas-concepts-o,
+#boHeroTitle .bop-concepts-o{
+  width:.88em!important;
+  height:.88em!important;
+  vertical-align:-.035em!important;
+}
+#boHeroTitle .bop-vegas-concepts-o .o-spade,
+#boHeroTitle .bop-concepts-o .bop-o-spade{
+  transform:scale(.95)!important;
+  transform-origin:center!important;
+  transform-box:fill-box!important;
 }
 </style>
 </body></html>
