@@ -19331,7 +19331,7 @@ function boEnsureMoviesPage(){
   page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof">BEST OF<br><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span> <span class="bo-movies-period">Period<span class="period-mark">©</span></span></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
   document.body.appendChild(page);
   page.querySelector('.bo-movies-kicker').textContent='Worldwide Movies Universal Page';
-  page.querySelector('.bo-current-source').textContent='Choose theater tickets or search verified streaming, rental, and purchase providers for the exact movie.';
+  page.querySelector('.bo-current-source').textContent='THEATER PICKS OR VERIFIED STREAMING, RENTAL, AND PURCHASE PROVIDERS.';
   document.getElementById('boMoviesBack').addEventListener('click',boCloseMoviesPage);
   document.getElementById('boMoviePicksLaunch').addEventListener('click',()=>document.getElementById('boMoviePicksModal').classList.add('open'));
   document.getElementById('boMoviePicksClose').addEventListener('click',()=>document.getElementById('boMoviePicksModal').classList.remove('open'));
@@ -19637,7 +19637,7 @@ function boBuildExpandedLegend(){
         <div><span class="bo-legend-strip-badge bo-legend-badge">STRIP</span><p><b>On the Strip</b><small>Located on the Las Vegas Strip; listings without OTS or DT use their stated address.</small></p></div>
         <div><span class="bo-uno-badge bo-legend-badge">UNO</span><p><b>Under New Ownership</b><small>Every UNO badge opens the ownership report for that specific business or parent company. One company's report never applies to another.</small></p></div>
         <div><span class="bo-new-badge bo-legend-badge">NEW</span><p><b>New</b><small>Opened during the current or previous calendar year. A restaurant keeps its NEW designation through December 31 of the year following its opening.</small></p></div>
-        <div><span class="bo-oos-badge bo-legend-badge">&#8599; OOS</span><p><b>Out of State</b><small>An additional location outside the current state.</small></p></div>
+        <div><span class="bo-oos-badge bo-legend-badge"><span class="bo-oos-drawn-arrow" aria-hidden="true"></span>OOS</span><p><b>Out of State</b><small>An additional location outside the current state.</small></p></div>
       </div>
     </section>
     <section class="bo-legend-section" id="boLegendBadges">
@@ -22946,7 +22946,7 @@ function boRenderCategory(cat){
           <div class="bo-other-locations-panel">
             ${s.otherLocations.map(loc => `
               <div class="bo-other-location-item">
-                <div class="bo-other-location-name">${loc.name}${loc.outOfState ? '<span class="bo-oos-badge" title="Out-of-state location">&#8599; OOS</span>' : ''}${loc.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${loc.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}</div>
+                <div class="bo-other-location-name">${loc.name}${loc.outOfState ? '<span class="bo-oos-badge" title="Out-of-state location"><span class="bo-oos-drawn-arrow" aria-hidden="true"></span>OOS</span>' : ''}${loc.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${loc.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}</div>
                 <div class="bo-other-location-meta">${loc.rating ? '★ ' + loc.rating : 'Not yet independently rated'} &middot; ${loc.address}</div>
                 <div class="bo-other-location-actions">
                   ${menuButtonHTML(loc.name || s.name, loc.url || s.url, s.rank)}
@@ -32874,4 +32874,59 @@ body.bop-concept-active > footer.bop-approved-footer{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<!-- v243: drawn OOS arrow; no platform emoji glyph -->
+<style id="bop-drawn-oos-arrow-v243">
+.bo-oos-drawn-arrow{position:relative!important;display:inline-block!important;width:14px!important;height:14px!important;margin-right:7px!important;vertical-align:-2px!important}
+.bo-oos-drawn-arrow::before{content:''!important;position:absolute!important;left:1px!important;bottom:2px!important;width:12px!important;height:2px!important;border-radius:2px!important;background:currentColor!important;transform:rotate(-45deg)!important;transform-origin:center!important}
+.bo-oos-drawn-arrow::after{content:''!important;position:absolute!important;right:0!important;top:0!important;width:7px!important;height:7px!important;border-top:2px solid currentColor!important;border-right:2px solid currentColor!important}
+</style>
+<!-- v244: stronger Movies PRESS THUMB pulse and glow -->
+<style id="bop-stronger-thumb-pulse-v244">
+#boMoviesPage .bop-thumb-label{animation:bopThumbInstructionGlow 1.18s ease-in-out infinite!important;transform-origin:center!important}
+#boMoviesPage .bop-thumb-label small{color:#F59E0B!important;text-shadow:0 0 6px rgba(245,158,11,.7)!important}
+#boMoviesPage .bop-fate-thumb{animation:bopStrongGoldThumbPulse 1.18s ease-in-out infinite!important}
+#boMoviesPage .bop-fate-thumb svg{filter:drop-shadow(0 0 5px rgba(245,158,11,.78))!important}
+#boMoviesPage .bop-fate-thumb.is-holding{animation:bopStrongGoldThumbPulse .62s ease-in-out infinite!important}
+@keyframes bopThumbInstructionGlow{
+  0%,100%{opacity:.72;transform:scale(.98);text-shadow:0 0 4px rgba(245,158,11,.45)}
+  50%{opacity:1;transform:scale(1.055);text-shadow:0 0 10px rgba(245,158,11,1),0 0 19px rgba(245,158,11,.56)}
+}
+@keyframes bopStrongGoldThumbPulse{
+  0%,100%{transform:scale(.98);box-shadow:0 0 9px rgba(245,158,11,.5),0 0 18px rgba(245,158,11,.2)}
+  50%{transform:scale(1.075);box-shadow:0 0 18px rgba(245,158,11,1),0 0 34px rgba(245,158,11,.5),inset 0 0 10px rgba(245,158,11,.18)}
+}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-thumb-label,#boMoviesPage .bop-fate-thumb{animation:none!important}}
+</style>
+<!-- v245: one clean Fate sentence with a plain BJS PICK text link -->
+<style id="bop-clean-fate-sentence-v245">
+#boMoviesPage .bop-fate-instruction p{width:min(410px,68vw)!important;margin:0!important;font-size:clamp(.72rem,2.45vw,.96rem)!important;line-height:1.3!important;text-align:center!important}
+#boMoviesPage .bop-fate-instruction p strong{display:inline!important;color:#F59E0B!important;font:900 inherit!important;letter-spacing:.025em!important}
+#boMoviesPage .bop-inline-bjs-word{
+  display:inline!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;
+  color:#E4002B!important;font:inherit!important;letter-spacing:inherit!important;white-space:nowrap!important;
+  text-decoration:underline!important;text-decoration-color:#F59E0B!important;text-decoration-thickness:1.5px!important;text-underline-offset:4px!important;
+  text-shadow:0 0 7px rgba(228,0,43,.8)!important;box-shadow:none!important;cursor:pointer!important;
+  animation:bopPlainBjsLinkGlow 1.6s ease-in-out infinite!important
+}
+#boMoviesPage .bop-inline-bjs-word::before,#boMoviesPage .bop-inline-bjs-word::after{content:none!important;display:none!important}
+@keyframes bopPlainBjsLinkGlow{0%,100%{color:#E4002B;text-shadow:0 0 4px rgba(228,0,43,.48)}50%{color:#ff3151;text-shadow:0 0 9px rgba(228,0,43,1),0 0 15px rgba(245,158,11,.34)}}
+@media(max-width:430px){#boMoviesPage .bop-fate-instruction p{width:min(320px,66vw)!important;font-size:.72rem!important}}
+@media(prefers-reduced-motion:reduce){#boMoviesPage .bop-inline-bjs-word{animation:none!important}}
+</style>
+<script id="bop-clean-fate-sentence-v245-script">
+(function(){
+  function clean(){
+    var copy=document.querySelector('#boMoviesPage .bop-fate-instruction p');if(!copy||copy.dataset.cleanFateV245==='1')return;
+    copy.dataset.cleanFateV245='1';
+    copy.innerHTML='<strong>RANDOMLY PICKS FROM THE ALL-TIME MONEY LIST, TOP RATED, OR A <span class="bop-inline-bjs-word" role="button" tabindex="0" aria-label="Open BJS Picks coming soon page">BJS PICK</span></strong>';
+  }
+  function start(){clean();new MutationObserver(function(){requestAnimationFrame(clean)}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- v246: concise one-line Current Box Office provider description -->
+<style id="bop-current-provider-line-v246">
+#boMoviesPage .bo-current-source{white-space:nowrap!important;font-size:clamp(.48rem,2.05vw,.72rem)!important;letter-spacing:-.01em!important;line-height:1.15!important}
+@media(max-width:360px){#boMoviesPage .bo-current-source{font-size:.46rem!important}}
+</style>
 </body></html>
