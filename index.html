@@ -32867,8 +32867,9 @@ body.bop-concept-active > footer.bop-approved-footer{
   document.addEventListener('click',function(event){
     var tile=event.target.closest&&event.target.closest('#conceptsOverlay .wppConceptTile');if(!tile)return;
     event.preventDefault();event.stopImmediatePropagation();
-    var viewer=document.getElementById('wppConceptViewer'),frame=document.getElementById('wppConceptFrame');if(!viewer||!frame)return;
-    frame.src=approved;viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';
+    var viewer=document.getElementById('wppConceptViewer');if(viewer){viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true')}
+    document.documentElement.style.overflow='';document.body.style.overflow='';
+    window.location.href=approved;
   },true);
 })();
 </script>
