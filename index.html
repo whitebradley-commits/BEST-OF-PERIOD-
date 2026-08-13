@@ -32443,8 +32443,8 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
 </style>
 <script id="bop-restaurant-four-orb-scope-lock-v237-script">
 (function(){
-  var restaurantPages=['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','boNearMapPage'];
-  var outsidePages=['boMoviesPage','boWorldwidePage','bopWorldwideLanding','conceptsOverlay','wppConceptViewer','wtfLandingOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay'];
+  var restaurantPages=['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','boNearMapPage','bopWorldwideLanding'];
+  var outsidePages=['boMoviesPage','boWorldwidePage','conceptsOverlay','wppConceptViewer','wtfLandingOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay'];
   function isOpen(id){var node=document.getElementById(id);return !!node&&(node.classList.contains('open')||node.classList.contains('is-open'))}
   function sync(){
     var restaurantOpen=restaurantPages.some(isOpen);
@@ -32461,5 +32461,154 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<!-- Fresh delivery build v237: Vegas-only spade plus restaurant-only four-orb scope; approved designs untouched -->
+<!-- Movie ticket modal geometry lock: prevents inherited section/page rules from collapsing it. -->
+<style id="bop-ticket-modal-geometry-lock-v238">
+  html body #bopTicketOverlay{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100vh!important;
+    height:100dvh!important;
+    margin:0!important;
+    padding:clamp(14px,4vw,28px)!important;
+    box-sizing:border-box!important;
+    align-items:center!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+    transform:none!important;
+    z-index:2147483646!important;
+  }
+  html body #bopTicketOverlay:not(.open){display:none!important;}
+  html body #bopTicketOverlay.open{display:flex!important;}
+  html body #bopTicketPanel{
+    position:relative!important;
+    inset:auto!important;
+    display:block!important;
+    flex:none!important;
+    width:min(520px,calc(100vw - 28px))!important;
+    min-width:0!important;
+    max-width:520px!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:min(680px,calc(100dvh - 40px))!important;
+    margin:auto!important;
+    padding:28px 20px calc(24px + env(safe-area-inset-bottom))!important;
+    box-sizing:border-box!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    transform:none!important;
+    border:2px solid #55e88b!important;
+    border-radius:22px!important;
+  }
+  html body #bopTicketPanel>*{max-width:100%!important;box-sizing:border-box!important;}
+  html body #bopTicketPanel .bop-ticket-zip-row{width:100%!important;grid-template-columns:minmax(0,1fr) auto!important;}
+  @media(max-width:390px){
+    html body #bopTicketOverlay{padding:10px!important;}
+    html body #bopTicketPanel{width:calc(100vw - 20px)!important;padding:26px 15px calc(20px + env(safe-area-inset-bottom))!important;}
+    html body #bopTicketFind{min-width:104px!important;}
+  }
+</style>
+<script id="bop-ticket-modal-geometry-lock-v238-script">
+(function(){
+  var overlay=document.getElementById('bopTicketOverlay');if(!overlay)return;
+  function sync(){
+    var open=overlay.classList.contains('open');
+    document.documentElement.classList.toggle('bop-ticket-modal-open',open);
+    document.body.classList.toggle('bop-ticket-modal-open',open);
+  }
+  new MutationObserver(sync).observe(overlay,{attributes:true,attributeFilter:['class']});
+  sync();
+})();
+</script>
+<style id="bop-ticket-modal-scroll-lock-v238">
+  html.bop-ticket-modal-open,body.bop-ticket-modal-open{overflow:hidden!important;overscroll-behavior:none!important;}
+</style>
+<!-- Worldwide hub controls: four orbs visible; Legend, email and Vendor are the only live footer controls. -->
+<style id="bop-worldwide-hub-controls-lock-v239">
+  body:has(#bopWorldwideLanding.open) #bopStaticLandingDock.bop-static-landing-dock{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    z-index:2147483000!important;
+  }
+  body:has(#bopWorldwideLanding.open) #bopStaticLandingDock .bop-static-landing-button{
+    visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+  }
+  #legendOverlay.open,#vendorOverlay.open{z-index:2147483646!important;}
+  #bopWorldwideLanding .bop-icons-only-social[type="button"]{pointer-events:none!important;cursor:default!important;}
+  #bopWorldwideLanding .bop-icons-only-social[href^="mailto:"]{pointer-events:auto!important;cursor:pointer!important;}
+  #bopWorldwideLanding .bop-icons-only-legend,
+  #bopWorldwideLanding .bop-icons-only-vendor{pointer-events:auto!important;cursor:pointer!important;}
+</style>
+<script id="bop-worldwide-hub-controls-lock-v239-script">
+(function(){
+  var world=document.getElementById('bopWorldwideLanding');
+  function openOverlay(id){
+    var page=document.getElementById(id);if(!page)return;
+    page.classList.add('open');page.setAttribute('aria-hidden','false');page.scrollTop=0;window.scrollTo(0,0);
+  }
+  document.addEventListener('click',function(event){
+    var worldPage=event.target.closest&&event.target.closest('#bopWorldwideLanding');if(!worldPage)return;
+    var legend=event.target.closest('.bop-icons-only-legend');
+    if(legend){event.preventDefault();event.stopImmediatePropagation();openOverlay('legendOverlay');return;}
+    var vendor=event.target.closest('.bop-icons-only-vendor,[data-dest="vendor"]');
+    if(vendor){event.preventDefault();event.stopImmediatePropagation();openOverlay('vendorOverlay');var field=document.querySelector('#vendorOverlay .vendor-email');if(field)setTimeout(function(){field.focus()},80);return;}
+    var inactive=event.target.closest('.bop-icons-only-social[type="button"]');
+    if(inactive){event.preventDefault();event.stopImmediatePropagation();return;}
+  },true);
+  function sync(){
+    if(!world)return;
+    var isOpen=world.classList.contains('open');
+    if(isOpen){document.body.classList.add('bop-restaurant-dock-visible');document.body.classList.remove('bop-content-open');}
+  }
+  if(world)new MutationObserver(function(){requestAnimationFrame(sync)}).observe(world,{attributes:true,attributeFilter:['class']});
+  sync();
+})();
+</script>
+<!-- Final Vegas title attachment: targets the nested title structure actually rendered by boRenderCategory. -->
+<style id="bop-vegas-concepts-spade-final-v240">
+  #boHeroTitle .bop-vegas-concepts-o{
+    appearance:none!important;-webkit-appearance:none!important;display:inline-block!important;position:relative!important;
+    width:.76em!important;height:.88em!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;
+    vertical-align:-.035em!important;cursor:pointer!important;font:inherit!important;line-height:1!important;color:inherit!important;
+  }
+  #boHeroTitle .bop-vegas-concepts-o svg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important;filter:drop-shadow(0 0 .07em rgba(255,255,255,.46))!important;pointer-events:none!important;}
+  #boHeroTitle .bop-vegas-concepts-o .o-body{fill:#fff!important;}
+  #boHeroTitle .bop-vegas-concepts-o .o-spade{fill:#050505!important;stroke:#050505!important;stroke-width:1!important;stroke-linejoin:round!important;}
+  #boHeroTitle .bop-vegas-concepts-o:focus-visible{outline:2px solid #F59E0B!important;outline-offset:3px!important;}
+</style>
+<script id="bop-vegas-concepts-spade-final-v240-script">
+(function(){
+  var svg='<svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
+  function vegasTitle(){
+    var title=document.getElementById('boHeroTitle');if(!title)return null;
+    var city=title.querySelector('.bop-splash-city,.bo-line2');
+    if(!city||String(city.textContent||'').trim().toLowerCase()!=='vegas')return null;
+    return title.querySelector('.bop-splash-line1')||title;
+  }
+  function restorePlainOutsideVegas(){
+    document.querySelectorAll('.bop-vegas-concepts-o').forEach(function(button){if(button.parentElement!==vegasTitle())button.replaceWith(document.createTextNode('O'))});
+  }
+  function install(){
+    var line=vegasTitle();restorePlainOutsideVegas();if(!line||line.querySelector('.bop-vegas-concepts-o'))return;
+    Array.from(line.childNodes).some(function(node){
+      if(node.nodeType!==3)return false;var match=node.nodeValue.match(/\bBest Of\b/i);if(!match)return false;
+      var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
+      var button=document.createElement('button');button.type='button';button.className='bop-vegas-concepts-o';button.setAttribute('aria-label','Open Concepts');button.innerHTML=svg;
+      node.replaceWith(document.createTextNode(value.slice(0,oIndex)),button,document.createTextNode(value.slice(oIndex+1)));return true;
+    });
+  }
+  function openConcepts(event){
+    var hit=event.target.closest&&event.target.closest('.bop-vegas-concepts-o');if(!hit)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(page){if(page.id&&(/Overlay$|Page$/.test(page.id)||page.id==='bopWorldwideLanding'))page.classList.remove('open','active','is-open','tg-open')});
+    var concepts=document.getElementById('conceptsOverlay');if(concepts){concepts.classList.add('open');concepts.setAttribute('aria-hidden','false');concepts.scrollTop=0;window.scrollTo(0,0);}
+  }
+  document.addEventListener('click',openConcepts,true);
+  function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v240: hidden Concepts spade attached to the rendered Best of Vegas O -->
 </body></html>
