@@ -31816,7 +31816,7 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
 </script>
 <style id="icons-only-no-footer-v228">
 /* Final BOP ending: this is an icons dock, never a footer. */
-.bop-icons-only-dock{position:relative;display:block;width:100%;margin:34px auto 0;padding:15px 10px 22px;box-sizing:border-box;border-top:1px solid #F59E0B;background:#000;text-align:center;box-shadow:0 -3px 10px rgba(245,158,11,.15)}
+.bop-icons-only-dock{position:relative;display:block;width:100%;margin:34px auto 0;padding:15px 10px 22px;box-sizing:border-box;border-top:1px solid #F59E0B;border-bottom:1px solid #F59E0B;background:#000;text-align:center;box-shadow:0 -3px 10px rgba(245,158,11,.15),0 3px 10px rgba(245,158,11,.15)}
 .bop-icons-only-row{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:8px;width:100%;margin:0 auto;color:#F59E0B}
 .bop-icons-only-legend,.bop-icons-only-vendor{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:46px;padding:0 7px;border:2px solid #F59E0B;border-radius:9px;background:#16091d;color:#ffd36a;font:900 8px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.015em;cursor:pointer;box-shadow:inset 0 0 0 2px #E4002B,0 0 6px rgba(245,158,11,.34);filter:none}
 .bop-icons-only-legend::before,.bop-icons-only-vendor::before{content:'◆';position:absolute;top:6px;left:50%;transform:translateX(-50%);color:#F59E0B;font-size:6px}
@@ -31830,6 +31830,7 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
 #legendOverlay{overflow-x:hidden!important;align-items:flex-start!important;justify-content:center!important}
 #legendOverlay>.ty-content{position:relative!important;left:auto!important;right:auto!important;transform:none!important;width:calc(100vw - 32px)!important;max-width:520px!important;margin:0 auto!important;padding-left:16px!important;padding-right:16px!important;box-sizing:border-box!important;text-align:center!important}
 #legendOverlay .bop-icons-only-dock{left:auto!important;right:auto!important;transform:none!important;width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important}
+#bjsWhyOverlay .bop-icons-only-dock,#boOtherLeadersOverlay .bop-icons-only-dock,#bopIshOverlay .bop-icons-only-dock{display:none!important}
 @media(max-width:380px){.bop-icons-only-row{gap:10px}.bop-icons-only-social{width:24px;height:24px}.bop-icons-only-social svg{width:22px;height:22px}}
 </style>
 <script id="icons-only-no-footer-v228-script">
@@ -31860,12 +31861,12 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
-    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.matches(retired)||page.closest(retired))return false;
+    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.matches(retired)||page.closest(retired))return false;
     return true;
   }
   function addDocks(){
     document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
-      if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
+      if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
       if(!eligible(page))return;
       var host=page.querySelector(':scope > .ty-content,:scope > .bo-page-inner,:scope > .tpa-scope,:scope > .concepts-content,:scope > .directory-content')||page;
       var dock=page.querySelector('.bop-icons-only-dock');
