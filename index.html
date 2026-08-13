@@ -33834,4 +33834,53 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   margin-top:calc(34px - var(--bop-restaurant-strip-height))!important;
 }
 </style>
+<!-- v264: all 20 Michelin launch cities, separated into tappable map regions -->
+<style id="bop-20-city-michelin-map-clusters-v264-style">
+#ocWorldOverlay #ocCityCard.oc-city-choice-card .oc-choice-list.oc-choice-quadrants{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card .oc-choice-list.oc-choice-quadrants .oc-choice-city{min-height:42px!important;padding:8px 6px!important;white-space:normal!important}
+#ocPinLayer .oc-michelin-launch-cluster{border-color:#050505!important;background:#F59E0B!important;box-shadow:0 0 11px rgba(245,158,11,.9),0 0 22px rgba(245,158,11,.45)!important}
+#ocPinLayer .oc-michelin-launch-cluster::before{background:#F59E0B!important;border-color:#050505!important;box-shadow:none!important}
+#ocPinLayer .oc-michelin-launch-cluster span{color:#050505!important;text-shadow:none!important}
+#ocWorldOverlay .oc-choice-region{grid-column:1/-1;margin:1px 0 0;color:#F59E0B;font:800 8px/1.2 'Archivo Narrow',Arial,sans-serif;letter-spacing:.14em;text-align:center}
+</style>
+<script id="bop-20-city-michelin-map-clusters-v264-script">
+(function(){
+  var regions=[
+    {id:'us-west',label:'UNITED STATES — WEST',la:36.1,lo:-120.2,dests:['losangeles','sanfrancisco']},
+    {id:'new-york',label:'NEW YORK',la:40.71,lo:-74.01,dests:['newyork']},
+    {id:'mexico',label:'MEXICO',la:19.43,lo:-99.13,dests:['mexicocity']},
+    {id:'uk-france',label:'LONDON + PARIS',la:50.15,lo:1.1,dests:['london','paris']},
+    {id:'iberia',label:'SPAIN',la:41.7,lo:-2.0,dests:['madrid','barcelona','sansebastian']},
+    {id:'italy',label:'ITALY',la:43.6,lo:10.9,dests:['rome','milan']},
+    {id:'denmark',label:'DENMARK',la:55.68,lo:12.57,dests:['copenhagen']},
+    {id:'japan',label:'JAPAN',la:35.05,lo:137.15,dests:['tokyo','osaka','kyoto']},
+    {id:'east-asia',label:'EAST ASIA',la:30.0,lo:120.0,dests:['hongkong','seoul']},
+    {id:'southeast-asia',label:'SOUTHEAST ASIA',la:7.8,lo:102.1,dests:['bangkok','singapore']},
+    {id:'gulf',label:'UNITED ARAB EMIRATES',la:25.2,lo:55.27,dests:['dubai']},
+    {id:'us-current',label:'MORE UNITED STATES',la:38.25,lo:-97.1,dests:['bestof','sandiego','santabarbara','siliconvalley','idaho','philadelphia','boston','washingtondc','chicago','miami','atlanta','neworleans']},
+    {id:'switzerland-current',label:'SWITZERLAND',la:46.35,lo:7.3,dests:['zurich','lucerne','geneva','zermatt']}
+  ];
+  function city(dest){return typeof OC_CITIES!=='undefined'&&OC_CITIES.find(function(item){return item&&item.t==='live'&&item.dest===dest})}
+  function cities(region){return region.dests.map(city).filter(Boolean)}
+  function choiceCard(region,list){
+    var card=document.getElementById('ocCityCard');if(!card||!list.length)return;
+    card.className='open oc-city-choice-card';
+    card.innerHTML='<button class="oc-choice-close" type="button" aria-label="Close">×</button><h3 class="oc-choice-title">CHOOSE YOUR CITY</h3><div class="oc-choice-list oc-choice-quadrants"><div class="oc-choice-region">'+region.label+'</div></div>';
+    var host=card.querySelector('.oc-choice-list');
+    list.forEach(function(item){var button=document.createElement('button');button.type='button';button.className='oc-choice-city';button.textContent=item.n;button.onclick=function(){card.classList.remove('open','oc-city-choice-card');var show=window.ocShowDestinationChoices;if(show){show([item]);var direct=card.querySelector('.oc-choice-city');if(direct)direct.click()}};host.appendChild(button)});
+    card.querySelector('.oc-choice-close').onclick=function(){card.classList.remove('open','oc-city-choice-card')};
+  }
+  function build(){
+    var layer=document.getElementById('ocPinLayer');if(!layer||typeof OC_CITIES==='undefined'||typeof ocProject!=='function')return;
+    layer.innerHTML='';layer.dataset.built='michelin-20-regions';var frag=document.createDocumentFragment();
+    OC_CITIES.forEach(function(item,index){if(item.t==='live')return;var p=ocProject(item.la,item.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-'+item.t;pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.dataset.cityIndex=index;pin.setAttribute('aria-label',item.n);frag.appendChild(pin)});
+    regions.forEach(function(region,index){var list=cities(region);if(!list.length)return;var p=ocProject(region.la,region.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-live oc-pin-destination-group oc-michelin-launch-cluster oc-pin-region-'+region.id;pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.dataset.regionIndex=index;pin.innerHTML='<span>'+list.length+'</span>';pin.setAttribute('aria-label',region.label+' — '+list.length+' Michelin launch '+(list.length===1?'city':'cities'));frag.appendChild(pin)});
+    layer.appendChild(frag);
+    layer.onclick=function(event){var pin=event.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.regionIndex!==undefined){var region=regions[Number(pin.dataset.regionIndex)];choiceCard(region,cities(region));return}var item=OC_CITIES[Number(pin.dataset.cityIndex)];if(item&&typeof window.ocShowCity==='function')window.ocShowCity(item)};
+  }
+  window.ocBuildPins=build;
+  function start(){build();document.addEventListener('click',function(event){if(event.target.closest&&event.target.closest('#ocGlobeBtn,.oc-globe-btn,[data-dest="othercities"]'))setTimeout(build,0)},true)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
