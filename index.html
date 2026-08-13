@@ -32140,5 +32140,95 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<!-- Fresh delivery build v230: final thumb copy, direct providers, no content-covering landing dock -->
+<!-- WPP concept integration: native Concepts tile + in-page viewer -->
+<style id="wpp-concepts-tile-v1">
+  #conceptsOverlay .wppConceptTile{
+    position:relative!important;min-height:150px!important;padding:6px!important;
+    border:0!important;background:transparent!important;overflow:visible!important;
+  }
+  #conceptsOverlay .wppConceptLogo{
+    width:100%;min-height:126px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;background:#050505;
+    border:1px solid rgba(245,158,11,.72);border-radius:12px;
+    box-shadow:0 0 13px rgba(245,158,11,.26),0 0 18px rgba(255,10,120,.16);
+  }
+  #conceptsOverlay .wppConceptLetters{
+    display:flex;align-items:center;justify-content:center;gap:1px;
+    font-family:Impact,'Arial Black',sans-serif;font-size:58px;font-weight:900;
+    line-height:.78;letter-spacing:-3px;filter:drop-shadow(0 4px 2px #000);
+  }
+  #conceptsOverlay .wppConceptW{
+    color:#f20972;-webkit-text-stroke:1px #f5bd29;
+    text-shadow:0 0 9px rgba(242,9,114,.72);
+  }
+  #conceptsOverlay .wppConceptP{
+    position:relative;color:#f5b91e;-webkit-text-stroke:1px #f8d66a;
+    text-shadow:0 0 9px rgba(245,185,30,.54);
+  }
+  #conceptsOverlay .wppConceptSpade{
+    position:absolute;left:52%;top:27%;transform:translate(-50%,-50%);
+    width:22px;height:22px;filter:drop-shadow(0 1px 0 #000);
+  }
+  #conceptsOverlay .wppConceptSpade:before{
+    content:'';position:absolute;left:4px;top:3px;width:14px;height:14px;
+    background:#050505;transform:rotate(45deg);border-radius:8px 0 8px 8px;
+  }
+  #conceptsOverlay .wppConceptSpade:after{
+    content:'';position:absolute;left:9px;top:13px;width:5px;height:8px;
+    background:#050505;clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);
+  }
+  #conceptsOverlay .wppConceptName{
+    margin-top:14px;color:#fff;font:800 10px/1 'Archivo Narrow',sans-serif;
+    letter-spacing:.115em;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.32);
+  }
+  #wppConceptViewer{
+    position:fixed;inset:0;z-index:80000;background:#000;display:none;overflow:hidden;
+  }
+  #wppConceptViewer.open{display:block}
+  #wppConceptViewer iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+  #wppConceptClose{
+    position:absolute;top:max(13px,env(safe-area-inset-top));right:14px;z-index:3;
+    width:44px;height:44px;border-radius:50%;border:2px solid #f5b91e;
+    background:rgba(0,0,0,.88);color:#fff;font:800 26px/1 Arial,sans-serif;
+    box-shadow:0 0 12px rgba(245,185,30,.5);cursor:pointer;
+  }
+</style>
+<div aria-hidden="true" id="wppConceptViewer" role="dialog" aria-label="Women's Poker Page">
+  <iframe id="wppConceptFrame" title="Women's Poker Page" allow="autoplay; clipboard-write"></iframe>
+  <button id="wppConceptClose" type="button" aria-label="Back to Concepts">×</button>
+</div>
+<script id="wpp-concepts-integration-v1">
+(function(){
+  var WPP_URL='https://womens-poker-page.white-bradley.chatgpt.site';
+  function openWpp(){
+    var viewer=document.getElementById('wppConceptViewer');
+    var frame=document.getElementById('wppConceptFrame');
+    if(!viewer||!frame)return;
+    frame.src=WPP_URL;viewer.classList.add('open');viewer.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';
+  }
+  function closeWpp(){
+    var viewer=document.getElementById('wppConceptViewer');
+    var frame=document.getElementById('wppConceptFrame');
+    if(!viewer||!frame)return;
+    viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true');frame.src='about:blank';
+    document.documentElement.style.overflow='';document.body.style.overflow='';
+    var concepts=document.getElementById('conceptsOverlay');if(concepts)concepts.classList.add('open');
+  }
+  function makeTile(){
+    var grid=document.querySelector('#conceptsOverlay .conceptsGrid');
+    if(!grid||grid.querySelector('.wppConceptTile'))return;
+    var tile=document.createElement('button');
+    tile.type='button';tile.className='conceptsTile wppConceptTile';tile.setAttribute('aria-label',"Women's Poker Page");
+    tile.innerHTML='<span class="wppConceptLogo" aria-hidden="true"><span class="wppConceptLetters"><span class="wppConceptW">W</span><span class="wppConceptP">P<i class="wppConceptSpade"></i></span><span class="wppConceptP">P<i class="wppConceptSpade"></i></span></span><span class="wppConceptName">WOMEN\'S POKER PAGE</span></span>';
+    tile.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();openWpp()});
+    grid.appendChild(tile);
+  }
+  document.getElementById('wppConceptClose').addEventListener('click',closeWpp);
+  document.addEventListener('keydown',function(event){if(event.key==='Escape')closeWpp()});
+  function start(){makeTile();new MutationObserver(makeTile).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- Fresh delivery build v231: WPP added to Concepts -->
 </body></html>
