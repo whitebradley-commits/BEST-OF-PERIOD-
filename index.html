@@ -22631,7 +22631,7 @@ function boRenderCategory(cat){
         </div>
 
 <div class="bo-main-hub-footer-grid">
-  <button type="button" class="bo-main-hub-blue-tile" id="boBestHotelsPreviewBtn" aria-label="Preview Hotels"><span class="bo-main-tile-icon bo-icon-hotel" aria-hidden="true"></span><span class="bo-main-tile-label">HOTELS</span></button>
+  <button type="button" class="bo-main-hub-blue-tile" id="boBestHotelsPreviewBtn" data-hotel-city="${boCityContext}" aria-label="Preview ${mainHubCityName} Hotels"><span class="bo-main-tile-icon bo-icon-hotel" aria-hidden="true"></span><span class="bo-main-tile-label">HOTELS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-bar" aria-hidden="true"></span><span class="bo-main-tile-label">BARS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-club" aria-hidden="true"></span><span class="bo-main-tile-label">NIGHTCLUBS</span></button>
   <button type="button" class="bo-main-hub-blue-tile" aria-disabled="true"><span class="bo-main-tile-icon bo-icon-massage" aria-hidden="true"></span><span class="bo-main-tile-label">MASSAGES</span></button>
@@ -24684,8 +24684,11 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
     if(!config) return null;
     return {name:config.displayName,region:hotelCityRegions[key]||config.displayName};
   }
-  function openPreview(){
-    const key=(typeof boCityContext!=='undefined'&&boCityContext)?boCityContext:'bestof';
+  function openPreview(button){
+    const buttonCity=button&&button.dataset?button.dataset.hotelCity:'';
+    const key=(buttonCity&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[buttonCity])
+      ?buttonCity
+      :((typeof boCityContext!=='undefined'&&boCityContext)?boCityContext:'bestof');
     const city=getHotelCity(key);
     sheet.hidden=!!city;
     citySheet.hidden=!city;
@@ -24703,7 +24706,7 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
   function showComingSoon(){coming.classList.add('open');}
   document.addEventListener('click',function(e){
     const btn=e.target.closest('#boBestHotelsPreviewBtn');
-    if(btn){e.preventDefault();e.stopImmediatePropagation();openPreview();}
+    if(btn){e.preventDefault();e.stopImmediatePropagation();openPreview(btn);}
   },true);
   closeBtn.addEventListener('click',closePreview);
   sheet.addEventListener('click',showComingSoon);
@@ -30027,41 +30030,51 @@ footer .bop-mini-legend-badge,
 <style id="bop-worldwide-line-art-v188">
 /* Quiet hand-drawn category diagrams: fixed line art, never photography,
    cartoons, emoji, or animation. */
-#bopWorldwideLanding .bop-world-tile,
+#bopWorldwideLanding .bop-world-tile,.bo-worldwide-hub .bo-worldwide-tile,
 #boMoviesPage .bo-movie-card,#boMoviesPage .bo-current-card,
 #boWorldwidePage .bo-movie-card,#boWorldwidePage .bo-current-card{position:relative!important;isolation:isolate!important;overflow:hidden!important}
-#bopWorldwideLanding .bop-world-tile::before,
+#bopWorldwideLanding .bop-world-tile::before,.bo-worldwide-hub .bo-worldwide-tile::before,
 #boMoviesPage .bo-movie-card::before,#boMoviesPage .bo-current-card::before,
 #boWorldwidePage .bo-movie-card::before,#boWorldwidePage .bo-current-card::before{
   content:'';position:absolute;inset:5px;z-index:-1;pointer-events:none;background-image:var(--bop-line-art);background-position:center;background-repeat:no-repeat;background-size:82% 82%;opacity:.16;filter:drop-shadow(0 0 4px rgba(245,158,11,.38))
 }
 #bopWorldwideLanding .bop-world-tile::before{inset:10px;background-size:68% 68%;opacity:.25}
+.bo-worldwide-hub .bo-worldwide-tile{
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  min-height:104px!important;padding:8px 3px!important;
+}
+.bo-worldwide-hub .bo-worldwide-tile::before{
+  position:static!important;display:block!important;flex:0 0 43px!important;width:54px!important;height:43px!important;
+  margin:0 auto 5px!important;background-size:contain!important;background-position:center!important;
+  opacity:.95!important;filter:drop-shadow(0 0 5px rgba(245,158,11,.58))!important;
+}
+.bo-worldwide-hub .bo-worldwide-icon,.bo-worldwide-hub .bop-world-line-icon{display:none!important}
 #bopWorldwideLanding .bop-world-tile>* ,
 #boMoviesPage .bo-movie-card>* ,#boMoviesPage .bo-current-card>* ,
 #boWorldwidePage .bo-movie-card>* ,#boWorldwidePage .bo-current-card>*{position:relative;z-index:1}
 
 /* Film reel and clapperboard. */
-#bopWorldwideLanding [data-worldwide-key="movies"],#boMoviesPage{
+#bopWorldwideLanding [data-worldwide-key="movies"],.bo-worldwide-hub [data-worldwide-key="movies"],#boMoviesPage{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='56' cy='55' r='38'/%3E%3Ccircle cx='56' cy='55' r='8'/%3E%3Ccircle cx='56' cy='33' r='8'/%3E%3Ccircle cx='78' cy='55' r='8'/%3E%3Ccircle cx='56' cy='77' r='8'/%3E%3Ccircle cx='34' cy='55' r='8'/%3E%3Cpath d='M94 70h70v28H94zM94 70l9-18h70l-9 18M105 52l8 18m13-18 8 18m13-18 8 18'/%3E%3C/svg%3E")
 }
 /* Plane and route line. */
-#bopWorldwideLanding [data-worldwide-key="airlines"],#boWorldwidePage[data-worldwide-key="airlines"]{
+#bopWorldwideLanding [data-worldwide-key="airlines"],.bo-worldwide-hub [data-worldwide-key="airlines"],#boWorldwidePage[data-worldwide-key="airlines"]{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 76c30 20 76 16 114-12' stroke-dasharray='5 8'/%3E%3Ccircle cx='20' cy='76' r='4'/%3E%3Cpath d='M85 55l35-12 17-25 8 2-8 29 25 10c5 2 4 8-1 9l-30-5-15 18-7-2 6-22-20 3-10 10-5-2 5-13z'/%3E%3C/svg%3E")
 }
 /* Music staff and notes. */
-#bopWorldwideLanding [data-worldwide-key="songs"],#boWorldwidePage[data-worldwide-key="songs"]{
+#bopWorldwideLanding [data-worldwide-key="songs"],.bo-worldwide-hub [data-worldwide-key="songs"],#boWorldwidePage[data-worldwide-key="songs"]{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 34h150M15 46h150M15 58h150M15 70h150M15 82h150' opacity='.65'/%3E%3Cpath d='M67 23v53M67 27l48-10v50'/%3E%3Cellipse cx='56' cy='78' rx='13' ry='8' transform='rotate(-14 56 78)'/%3E%3Cellipse cx='104' cy='69' rx='13' ry='8' transform='rotate(-14 104 69)'/%3E%3Cpath d='M135 40c15 8 18 22 6 31'/%3E%3C/svg%3E")
 }
 /* Clean automobile profile. */
-#bopWorldwideLanding [data-worldwide-key="automotive"],#boWorldwidePage[data-worldwide-key="automotive"]{
+#bopWorldwideLanding [data-worldwide-key="automotive"],.bo-worldwide-hub [data-worldwide-key="automotive"],#boWorldwidePage[data-worldwide-key="automotive"]{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 72l8-22 24-8 22-23h55l23 24 17 7 5 22v13h-18M46 85H28c-7 0-11-5-10-13M72 85h54M44 85a14 14 0 1 0 28 0 14 14 0 1 0-28 0M126 85a14 14 0 1 0 28 0 14 14 0 1 0-28 0M72 42h54M88 20v22'/%3E%3C/svg%3E")
 }
 /* Watch and faceted diamond. */
-#bopWorldwideLanding [data-worldwide-key="watches"],#boWorldwidePage[data-worldwide-key="watches"]{
+#bopWorldwideLanding [data-worldwide-key="watches"],.bo-worldwide-hub [data-worldwide-key="watches"],#boWorldwidePage[data-worldwide-key="watches"]{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M35 12h38l6 21v44l-6 21H35l-6-21V33z'/%3E%3Ccircle cx='54' cy='55' r='27'/%3E%3Cpath d='M54 38v18l13 8M54 28v5M54 77v5M27 55h5M76 55h5'/%3E%3Cpath d='M108 38h45l14 17-37 39-37-39zM93 55h74M108 38l22 56 23-56M108 38l-15 17m60-17 14 17'/%3E%3C/svg%3E")
 }
 /* Phone and signal tower. */
-#bopWorldwideLanding [data-worldwide-key="cellphones"],#boWorldwidePage[data-worldwide-key="cellphones"]{
+#bopWorldwideLanding [data-worldwide-key="cellphones"],.bo-worldwide-hub [data-worldwide-key="cellphones"],#boWorldwidePage[data-worldwide-key="cellphones"]{
  --bop-line-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 110' fill='none' stroke='%23F59E0B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='25' y='12' width='54' height='86' rx='10'/%3E%3Cpath d='M43 24h18M48 87h8M122 34v58M105 92h34M113 92l9-58 9 58M100 52c-12-12-12-31 0-43M144 52c12-12 12-31 0-43M108 44c-7-7-7-18 0-25M136 44c7-7 7-18 0-25'/%3E%3Ccircle cx='122' cy='34' r='4'/%3E%3C/svg%3E")
 }
 #bopWorldwideLanding .bop-world-tile{font-size:1.04em!important}
@@ -32019,4 +32032,67 @@ html,body{width:100%!important;max-width:100%!important;overflow-x:clip!importan
   transform-origin:center center;
 }
 </style>
+<!-- Sitewide ISH definition hotlink -->
+<style id="bop-ish-hotlink-style">
+.bop-ish-hotlink{
+  all:unset;display:inline;color:inherit!important;font:inherit!important;font-weight:inherit!important;
+  letter-spacing:inherit!important;text-transform:inherit!important;text-decoration:none!important;
+  text-shadow:inherit!important;-webkit-text-fill-color:inherit!important;cursor:pointer;
+}
+.bop-ish-hotlink:focus-visible{outline:1px dotted currentColor;outline-offset:2px}
+#bopIshOverlay{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+#bopIshOverlay.open{display:flex}
+.bop-ish-card{position:relative;box-sizing:border-box;width:min(91vw,455px);aspect-ratio:1/1;padding:66px 46px 48px;border:2px solid #F59E0B;border-radius:50%;background:radial-gradient(circle at 50% 42%,#090909 0,#030303 68%,#000 100%);color:#F59E0B;text-align:center;box-shadow:0 0 13px rgba(245,158,11,.68),0 0 30px rgba(245,158,11,.22),inset 0 0 25px rgba(245,158,11,.08);font-family:'Archivo Narrow',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:bopIshOrbPulse 2.8s ease-in-out infinite}
+@keyframes bopIshOrbPulse{0%,100%{box-shadow:0 0 11px rgba(245,158,11,.55),0 0 24px rgba(245,158,11,.16),inset 0 0 22px rgba(245,158,11,.06)}50%{box-shadow:0 0 17px rgba(245,158,11,.78),0 0 35px rgba(245,158,11,.27),inset 0 0 29px rgba(245,158,11,.1)}}
+.bop-ish-close{position:absolute;top:13px;right:13px;width:42px;height:42px;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 24px/38px Arial,sans-serif;box-shadow:0 0 10px rgba(245,158,11,.62);cursor:pointer}
+.bop-ish-rainbow{display:inline-block;margin:0 0 17px;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(2.2rem,10vw,4rem);font-weight:900;line-height:1;letter-spacing:.06em;background:linear-gradient(90deg,#ff304f,#ff9f1c,#ffe66d,#2ec4b6,#45a3ff,#a855f7,#ff4fa3);background-size:180% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 7px rgba(255,255,255,.18))}
+.bop-ish-definition{margin:0;color:#F59E0B;font-size:clamp(.91rem,3.65vw,1.15rem);line-height:1.38}
+.bop-ish-definition strong{color:#E4002B}
+.bop-ish-example{white-space:nowrap}
+.bop-ish-note{margin:16px 0 0;padding-top:13px;border-top:1px solid rgba(245,158,11,.45);color:#E4002B;font-size:clamp(.78rem,3.1vw,.96rem);font-style:italic;line-height:1.35}
+@media(max-width:380px){.bop-ish-card{padding:58px 38px 42px}.bop-ish-rainbow{margin-bottom:12px}.bop-ish-note{margin-top:12px;padding-top:10px}}
+@media(prefers-reduced-motion:reduce){.bop-ish-card{animation:none}}
+</style>
+<section id="bopIshOverlay" role="dialog" aria-modal="true" aria-labelledby="bopIshTitle" aria-hidden="true">
+  <div class="bop-ish-card">
+    <button class="bop-ish-close" type="button" aria-label="Close ISH definition">×</button>
+    <div class="bop-ish-rainbow" id="bopIshTitle">ISH:</div>
+    <p class="bop-ish-definition"><strong>Approximate Time or Number:</strong> Added to the end of a number or time to mean “around” or “about” <span class="bop-ish-example">(e.g., “See you at 5-ish”).</span></p>
+    <p class="bop-ish-note">*Some restaurants adjust their hours. Between 3–5 a.m., restaurants are commonly closed, so it’s worth double-checking.</p>
+  </div>
+</section>
+<script id="bop-ish-hotlink-script">
+(function(){
+  const overlay=document.getElementById('bopIshOverlay');
+  const closeButton=overlay.querySelector('.bop-ish-close');
+  const skipped='SCRIPT,STYLE,NOSCRIPT,TEXTAREA,INPUT,SELECT,OPTION,BUTTON,A,SVG,CANVAS';
+  function makeIshHot(root){
+    if(!root||root.nodeType!==1||root.closest('#bopIshOverlay'))return;
+    const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(node){
+      const parent=node.parentElement;
+      if(!parent||parent.closest('#bopIshOverlay,.bop-ish-hotlink')||parent.closest(skipped))return NodeFilter.FILTER_REJECT;
+      return /\bish\b/i.test(node.nodeValue||'')?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+    }});
+    const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(function(node){
+      const parts=node.nodeValue.split(/(\bish\b)/gi);if(parts.length<2)return;
+      const fragment=document.createDocumentFragment();
+      parts.forEach(function(part){
+        if(/^ish$/i.test(part)){
+          const button=document.createElement('button');button.type='button';button.className='bop-ish-hotlink';button.setAttribute('aria-label','What does ISH mean?');button.textContent=part;fragment.appendChild(button);
+        }else if(part)fragment.appendChild(document.createTextNode(part));
+      });
+      node.replaceWith(fragment);
+    });
+  }
+  function openIsh(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(function(){closeButton.focus()},0)}
+  function closeIsh(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+  document.addEventListener('click',function(event){const hit=event.target.closest&&event.target.closest('.bop-ish-hotlink');if(hit){event.preventDefault();event.stopPropagation();openIsh()}},true);
+  closeButton.addEventListener('click',closeIsh);
+  overlay.addEventListener('click',function(event){if(event.target===overlay)closeIsh()});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&overlay.classList.contains('open'))closeIsh()});
+  makeIshHot(document.body);
+  new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)makeIshHot(node)})})}).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 </body></html>
