@@ -31649,10 +31649,12 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
 /* Final BOP ending: this is an icons dock, never a footer. */
 .bop-icons-only-dock{position:relative;display:block;width:100%;margin:34px auto 0;padding:15px 10px 22px;box-sizing:border-box;border-top:1px solid #F59E0B;background:#000;text-align:center;box-shadow:0 -3px 10px rgba(245,158,11,.15)}
 .bop-icons-only-row{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:14px;width:100%;margin:0 auto;color:#F59E0B}
-.bop-icons-only-legend{display:inline-flex;align-items:center;justify-content:center;width:50px;height:56px;padding:0 3px 7px;border:2px solid #F59E0B;background:#080808;color:#ef3340;font:900 9px/1 'Archivo Black',Arial,sans-serif;clip-path:polygon(8% 0,92% 0,100% 72%,50% 100%,0 72%);cursor:pointer;filter:drop-shadow(0 0 5px rgba(245,158,11,.48))}
-.bop-icons-only-social{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;padding:0;border:0;background:transparent;color:#F59E0B;text-decoration:none;filter:drop-shadow(0 0 3px rgba(245,158,11,.36))}
-.bop-icons-only-social svg{display:block;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.bop-icons-only-social .fill{fill:currentColor;stroke:none}.bop-icons-only-social[type="button"]{cursor:default}
+.bop-icons-only-legend{position:relative;display:inline-flex;align-items:center;justify-content:center;width:57px;height:64px;padding:0 4px 6px;border:2px solid #F59E0B;background:linear-gradient(145deg,#7337a8 0%,#4d1f78 48%,#2b0f49 100%);color:#ffd36a;font:900 9px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.025em;clip-path:polygon(50% 0,94% 13%,88% 69%,50% 100%,12% 69%,6% 13%);cursor:pointer;text-shadow:0 1px 1px #1b092b,0 0 5px rgba(255,211,106,.5);box-shadow:inset 0 0 0 2px rgba(255,255,255,.1),inset 0 -12px 18px rgba(0,0,0,.3);filter:drop-shadow(0 0 7px rgba(126,63,176,.72)) drop-shadow(0 0 3px rgba(245,158,11,.5))}
+.bop-icons-only-legend::before{content:'★';position:absolute;top:8px;left:50%;transform:translateX(-50%);color:#F59E0B;font-size:8px;line-height:1;text-shadow:0 0 4px rgba(245,158,11,.75)}
+.bop-icons-only-legend::after{content:'';position:absolute;inset:5px 6px 8px;clip-path:inherit;border:1px solid rgba(255,211,106,.5);pointer-events:none}
+.bop-icons-only-social{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;padding:4px;border:0;border-radius:7px;background:linear-gradient(145deg,#ffd36a 0%,#F59E0B 52%,#b96700 100%);color:#050505;text-decoration:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.42),inset 0 -3px 5px rgba(0,0,0,.25);filter:drop-shadow(0 0 4px rgba(245,158,11,.48))}
+.bop-icons-only-social svg{display:block;width:21px;height:21px;fill:none;stroke:#050505;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bop-icons-only-social .fill{fill:#050505;stroke:none}.bop-icons-only-social[type="button"]{cursor:default}
 .bop-legend-disclaimer{margin:0 auto 28px;max-width:390px;color:#F59E0B;font:600 10px/1.6 'Archivo Narrow',Arial,sans-serif;text-align:center;letter-spacing:.01em}
 .bop-legend-disclaimer-star{display:block;margin:0 auto 8px;color:#F59E0B;font-size:17px;line-height:1;filter:drop-shadow(0 0 4px rgba(245,158,11,.48))}
 .bop-legend-disclaimer strong{color:#fff;font-family:'Fraunces',Georgia,serif}.bop-legend-disclaimer .period{color:#F59E0B}
@@ -31688,12 +31690,12 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
-    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.matches(retired)||page.closest(retired))return false;
+    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.matches(retired)||page.closest(retired))return false;
     return true;
   }
   function addDocks(){
     document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
-      if(page.id==='bopLandingOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
+      if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
       if(!eligible(page))return;
       var host=page.querySelector(':scope > .ty-content,:scope > .bo-page-inner,:scope > .tpa-scope,:scope > .concepts-content,:scope > .directory-content')||page;
       var dock=page.querySelector('.bop-icons-only-dock');
@@ -31710,6 +31712,61 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
   var busy=false;
   function enforce(){if(busy)return;busy=true;removeOldText();addLegendCopy();addDocks();busy=false}
   function start(){enforce();new MutationObserver(function(){requestAnimationFrame(enforce)}).observe(document.body,{childList:true,subtree:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<style id="stable-scroll-near-clean-world-back-v229">
+/* Stable document geometry: no sideways drift or browser page scaling. */
+html,body{width:100%!important;max-width:100%!important;overflow-x:clip!important;overscroll-behavior-x:none!important}
+[id$="Overlay"],[id$="Page"],#bopWorldwideLanding{max-width:100vw!important;overflow-x:hidden!important}
+/* Near Me / Near You never carries the icons-only ending. */
+#boNearMapPage .bop-icons-only-dock,#boNearInfoCard .bop-icons-only-dock{display:none!important}
+</style>
+<script id="stable-scroll-near-clean-world-back-v229-script">
+(function(){
+  var snapshot=null;
+  function pageFor(node){return node&&node.closest&&node.closest('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding')}
+  function remember(event){
+    var world=document.getElementById('bopWorldwideLanding');
+    if(world&&world.contains(event.target))return;
+    var page=pageFor(event.target);
+    if(!page||page.id==='bopWorldwideLanding')return;
+    var params;try{params=new URLSearchParams(location.search)}catch(_e){params=null}
+    snapshot={
+      pageId:page.id,
+      city:(typeof boCityContext!=='undefined'&&boCityContext)||window.boCityContext||params&&params.get('city')||'',
+      category:params&&params.get('page')||params&&params.get('category')||'otheroptions',
+      url:location.href,
+      scrollTop:page.scrollTop||window.scrollY||0
+    };
+  }
+  window.addEventListener('pointerdown',remember,true);
+  window.addEventListener('click',remember,true);
+  function returnFromWorldwide(event){
+    var button=event.target.closest&&event.target.closest('#bopWorldwideLanding .bop-world-back');if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var world=document.getElementById('bopWorldwideLanding');if(world)world.classList.remove('open');
+    document.body.style.overflow='';
+    var state=snapshot;
+    if(!state){var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.add('open');return}
+    if(state.city){if(typeof boCityContext!=='undefined')boCityContext=state.city;window.boCityContext=state.city}
+    var page=document.getElementById(state.pageId);
+    if(page){page.classList.add('open');page.setAttribute('aria-hidden','false')}
+    if(state.pageId==='bestOfOverlay'){
+      if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(state.category||'otheroptions',state.city);
+      if(typeof boRenderCategory==='function')boRenderCategory(state.category||'otheroptions');
+    }
+    try{history.replaceState(null,'',state.url)}catch(_e){}
+    requestAnimationFrame(function(){if(page)page.scrollTop=state.scrollTop||0;else window.scrollTo(0,state.scrollTop||0)});
+  }
+  window.addEventListener('click',returnFromWorldwide,true);
+  function removeNearDock(){document.querySelectorAll('#boNearMapPage .bop-icons-only-dock,#boNearInfoCard .bop-icons-only-dock').forEach(function(dock){dock.remove()})}
+  function lockViewport(){
+    var meta=document.querySelector('meta[name="viewport"]');
+    if(!meta){meta=document.createElement('meta');meta.name='viewport';document.head.appendChild(meta)}
+    meta.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');
+  }
+  function start(){lockViewport();removeNearDock();new MutationObserver(function(){requestAnimationFrame(removeNearDock)}).observe(document.body,{childList:true,subtree:true})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
