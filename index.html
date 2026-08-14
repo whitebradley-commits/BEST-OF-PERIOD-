@@ -34990,4 +34990,72 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
 })();
 
 </script>
+<script id="fnt-top-tagline-final-inline">
+(function () {
+  var PURPLE = '#7c3aed';
+
+  function normalize(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim().toUpperCase();
+  }
+
+  function install() {
+    var frame = document.getElementById('fntFrame');
+    if (!frame) return;
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.body) return;
+
+      if (!doc.getElementById('fnt-top-tagline-final-style')) {
+        var style = doc.createElement('style');
+        style.id = 'fnt-top-tagline-final-style';
+        style.textContent =
+          '.shophead .fnt-top-approved-tagline{font-size:1.18em!important;line-height:.82!important;transform-origin:left center!important}' +
+          '.shophead .fnt-top-approved-tagline .rep-hard{color:' + PURPLE + '!important;text-shadow:none!important}' +
+          '.shophead .fnt-top-approved-tagline .your-people{color:#050505!important;text-shadow:none!important}' +
+          '.fnt-model-choice-removed{display:none!important}';
+        doc.head.appendChild(style);
+      }
+
+      var tagline = doc.querySelector('.shophead .fnt-shop-rep');
+      if (!tagline) {
+        tagline = Array.prototype.find.call(doc.querySelectorAll('.shophead div,.shophead p'), function (element) {
+          return normalize(element.textContent).replace(/\s/g, '') === 'REPYOURPEOPLEHARD.';
+        });
+      }
+      if (tagline) {
+        tagline.classList.add('fnt-top-approved-tagline');
+        tagline.innerHTML = '<span class="rep-hard">REP</span> <span class="your-people">YOUR PEOPLE</span><br><span class="rep-hard">HARD.</span>';
+        tagline.setAttribute('aria-label', 'Rep Your People Hard');
+      }
+
+      Array.prototype.forEach.call(doc.querySelectorAll('body *'), function (element) {
+        var label = normalize(element.textContent);
+        if (label !== 'CHOOSE YOUR MODEL GUY GIRL') return;
+        var parent = element;
+        while (parent.parentElement && normalize(parent.parentElement.textContent) === label) parent = parent.parentElement;
+        parent.classList.add('fnt-model-choice-removed');
+        parent.setAttribute('aria-hidden', 'true');
+      });
+    } catch (error) {}
+  }
+
+  function schedule() {
+    setTimeout(install, 80);
+    setTimeout(install, 260);
+    setTimeout(install, 700);
+    setTimeout(install, 1400);
+  }
+
+  function start() {
+    var frame = document.getElementById('fntFrame');
+    if (frame) frame.addEventListener('load', schedule);
+    schedule();
+    new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+
+</script>
 </body></html>
