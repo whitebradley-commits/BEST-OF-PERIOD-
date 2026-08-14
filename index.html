@@ -34117,4 +34117,73 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<script id="fnt-brand-and-square-final-v1">
+(function(){
+  var squareLinks={
+    basicT:'https://square.link/u/K3JV8QEZ',
+    basicLong:'https://square.link/u/MuxiuIIq',
+    basicHoodie:'https://square.link/u/A9dgyu83',
+    jamesPerse:'https://square.link/u/IFr9AAN9',
+    aloCrew:'https://square.link/u/knBEcCCX',
+    aloHoodie:'https://square.link/u/JXzsIUxZ'
+  };
+  var realLogo='<div class="fnLogoLeft"><strong>F’N</strong><small>WHO’S YOURS</small></div><b class="fnLogoTeam">TEAM</b>';
+  var rally='<div class="fnt-footer-rally" aria-label="Rep Your People Hard"><span class="fnt-rally-stack"><b>REP</b><b>HARD</b></span><strong><span>YOUR</span><span>PEOPLE</span></strong></div>';
+  function paymentFor(doc,button){
+    var reserve=button.closest('.reserve-card');
+    if(reserve){
+      if(reserve.dataset.rid==='tee')return squareLinks.jamesPerse;
+      if(reserve.dataset.rid==='long')return squareLinks.aloCrew;
+      if(reserve.dataset.rid==='hoodie')return squareLinks.aloHoodie;
+    }
+    var card=button.closest('.product-card');
+    if(card){
+      var cards=Array.from(doc.querySelectorAll('#products .product-card'));
+      var index=cards.indexOf(card);
+      if(index===0)return squareLinks.basicT;
+      if(index===1)return squareLinks.basicLong;
+      if(index===2)return squareLinks.basicHoodie;
+    }
+    return '';
+  }
+  function install(){
+    var frame=document.getElementById('fntFrame');if(!frame)return;
+    try{
+      var doc=frame.contentDocument;if(!doc||!doc.body)return;
+      var headerLogo=doc.querySelector('header .logo.fnTeamLogo');
+      if(headerLogo){
+        headerLogo.innerHTML=realLogo;
+        headerLogo.setAttribute('aria-label','F apostrophe N Team — Who’s Yours');
+        headerLogo.style.cssText='';
+      }
+      var footer=doc.querySelector('.fnt-site-footer');
+      if(footer){
+        var oldRow=footer.querySelector('.fnt-footer-compact-row');if(oldRow)oldRow.remove();
+        var lockup=footer.querySelector('.fnt-footer-lockup');
+        if(!lockup){lockup=doc.createElement('div');lockup.className='fnt-footer-lockup';footer.insertBefore(lockup,footer.firstChild)}
+        lockup.innerHTML=rally+'<div class="logo fnTeamLogo fnt-footer-real-logo" aria-label="F apostrophe N Team — Who’s Yours">'+realLogo+'</div>';
+        lockup.setAttribute('aria-label','Rep Your People Hard — F apostrophe N Team');
+        lockup.style.cssText='';
+      }
+      if(!doc.getElementById('fnt-final-brand-style')){
+        var style=doc.createElement('style');style.id='fnt-final-brand-style';
+        style.textContent='.fnt-footer-lockup{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(16px,5vw,42px)!important;width:min(650px,94vw)!important;margin:0 auto 24px!important}.fnt-footer-rally{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex:1;min-width:0;font-family:Impact,"Arial Black",sans-serif;font-style:italic;line-height:.78;letter-spacing:-.025em;transform:skew(-4deg)}.fnt-rally-stack{display:flex;flex-direction:column;align-items:flex-end;color:#f4ead7;font-size:clamp(34px,9vw,60px);text-shadow:3px 3px 0 #050505}.fnt-footer-rally>strong{display:flex;flex-direction:column;color:#050505;font-size:clamp(27px,7vw,48px);line-height:.78;text-align:left;text-shadow:1px 1px 0 rgba(244,234,215,.28)}.fnt-footer-real-logo{position:relative!important;display:flex!important;flex:0 0 clamp(132px,35vw,180px)!important;width:clamp(132px,35vw,180px)!important;height:92px!important;margin:0!important;padding:5px 46px 5px 9px!important;background:#000!important;border:3px solid #071b45!important;outline:1px solid rgba(255,255,255,.75)!important;box-shadow:0 0 0 3px #050505,0 0 15px rgba(16,53,112,.78),0 7px 18px rgba(0,0,0,.42)!important;overflow:hidden!important}.fnt-footer-real-logo .fnLogoLeft{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-width:82px}.fnt-footer-real-logo .fnLogoLeft strong{font-family:Impact,"Arial Black",sans-serif;font-size:44px;line-height:.82;letter-spacing:-2px;color:#f4ead7;text-shadow:2px 1px 0 #071b45}.fnt-footer-real-logo .fnLogoLeft small{width:100%;border-top:1px solid #f4ead7;margin-top:6px;padding-top:3px;text-align:center;color:#f4ead7;font-size:8px;font-weight:1000;letter-spacing:.2px;white-space:nowrap}.fnt-footer-real-logo .fnLogoTeam{position:absolute;right:-3px;top:50%;transform:translateY(-50%) rotate(90deg);font-family:Impact,"Arial Black",sans-serif;font-size:27px;line-height:1;letter-spacing:1px;color:#f4ead7;text-shadow:2px 1px 0 #071b45}@media(max-width:430px){.fnt-footer-lockup{gap:12px!important}.fnt-footer-rally{gap:6px}.fnt-footer-real-logo{flex-basis:128px!important;width:128px!important;height:82px!important;padding-right:40px!important}.fnt-footer-real-logo .fnLogoLeft{min-width:72px}.fnt-footer-real-logo .fnLogoLeft strong{font-size:39px}.fnt-footer-real-logo .fnLogoTeam{font-size:24px}}';
+        doc.head.appendChild(style);
+      }
+      if(!doc.documentElement.dataset.squareCheckoutBound){
+        doc.documentElement.dataset.squareCheckoutBound='1';
+        doc.addEventListener('click',function(event){
+          var button=event.target.closest&&event.target.closest('.buy');if(!button)return;
+          var url=paymentFor(doc,button);if(!url)return;
+          event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+          var popup=window.open(url,'_blank','noopener,noreferrer');if(!popup)frame.contentWindow.location.href=url;
+        },true);
+      }
+    }catch(error){}
+  }
+  function schedule(){setTimeout(install,360);setTimeout(install,700);setTimeout(install,1300)}
+  function start(){var frame=document.getElementById('fntFrame');if(frame){frame.addEventListener('load',schedule);if(frame.contentDocument&&frame.contentDocument.body)schedule()}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
