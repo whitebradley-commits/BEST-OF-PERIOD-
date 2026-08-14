@@ -24301,7 +24301,7 @@ function openFnt(){
     // including exact shared product/team links. Once claimed, the existing
     // persistent shipping-credit key suppresses it on future visits.
     html = html.replace("offer.style.display=(Date.now()-firstVisit<=offerWindow)?'grid':'none';", "offer.style.display=free?'none':'grid';");
-    html = html.replace("else if(mode==='blackout-back')actual=JP_BLACKOUT_BACK;\n        else base=(mode==='back'?REAL_TEE_BACK:REAL_TEE_FRONT);", "else if(mode==='blackout-back'||mode==='heart-full-back-blackout')actual=JP_BLACKOUT_BACK;\n        else base=(mode==='back'||mode==='heart-full-back'?REAL_TEE_BACK:REAL_TEE_FRONT);");
+    html = html.replace("else if(mode==='blackout-back')actual=JP_BLACKOUT_BACK;\n        else base=(mode==='back'?REAL_TEE_BACK:REAL_TEE_FRONT);", "else if(mode==='blackout-heart')actual=JP_BLACKOUT_FRONT;\n        else if(mode==='blackout-back'||mode==='heart-full-back-blackout')actual=JP_BLACKOUT_BACK;\n        else base=(mode==='back'||mode==='heart-full-back'?REAL_TEE_BACK:REAL_TEE_FRONT);");
     html = html.replace("(mode==='back'||mode==='blackout-back')?'back':'front'", "(mode==='back'||mode==='blackout-back'||mode==='heart-full-back'||mode==='heart-full-back-blackout')?'back':'front'");
     const fntLiveShare = String.raw`
 (function(){
@@ -25674,7 +25674,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #tagGameOverlay .tg-back{position:fixed!important;top:max(12px,env(safe-area-inset-top))!important;right:14px!important;z-index:1200001!important;width:48px!important;height:48px!important;border-radius:50%!important;border:2px solid #fff!important;background:rgba(0,0,0,.82)!important;color:#fff!important;font-size:28px!important;display:grid!important;place-items:center!important}
 #tpaOverlay.open{z-index:60000!important} </style> <div id="conceptWebPopup" role="dialog" aria-modal="true" aria-label="Concept popup"><div class="conceptWebBar"><button class="conceptWebClose" type="button" aria-label="Back to Concepts">×</button><strong class="conceptWebTitle" id="conceptWebTitle">Concept</strong><a class="conceptWebDirect" id="conceptWebDirect" href="#" target="_blank" rel="noopener">OPEN SITE ↗</a></div><iframe class="conceptWebFrame" id="conceptWebFrame" title="Concept page" allow="geolocation; autoplay; clipboard-write"></iframe></div> <script> (function(){
   const popup=document.getElementById('conceptWebPopup'),frame=document.getElementById('conceptWebFrame');
-  popup.querySelector('.conceptWebClose').addEventListener('click',function(){popup.classList.remove('is-open');frame.src='about:blank';const c=document.getElementById('conceptsOverlay');if(c)c.classList.add('open')});
+  popup.querySelector('.conceptWebClose').addEventListener('click',function(){
+    var returnState=window.__bopExternalReturnState||null;
+    popup.classList.remove('is-open');frame.src='about:blank';
+    if(returnState){
+      window.__bopExternalReturnState=null;
+      requestAnimationFrame(function(){window.scrollTo(returnState.x||0,returnState.y||0)});
+      return;
+    }
+    const c=document.getElementById('conceptsOverlay');if(c)c.classList.add('open')
+  });
   const oldTagClose=window.closeTagGame;
   window.closeTagGame=function(){if(oldTagClose)oldTagClose();const c=document.getElementById('conceptsOverlay');if(c)c.classList.add('open')};
 })(); </script> <script id="conceptsSeparateWindowsScript"> (function(){
@@ -31851,10 +31860,29 @@ html,body{background:#000!important}
       '#hubWtfBtn,[data-dest="wtf"],button[aria-label="WTF"],a[aria-label="WTF"],a[href*="wtfdd.com"],button[onclick*="wtfdd.com"]'
     );
   }
+  function destinationFor(trigger){
+    var href=trigger&&trigger.getAttribute&&trigger.getAttribute('href');
+    if(href&&/wtfdd\.com/i.test(href))return href;
+    var dataUrl=trigger&&trigger.getAttribute&&(trigger.getAttribute('data-url')||trigger.getAttribute('data-href'));
+    if(dataUrl&&/wtfdd\.com/i.test(dataUrl))return dataUrl;
+    return WTF_URL;
+  }
+  function openWtfPanel(url){
+    var overlay=document.getElementById('conceptWebPopup');
+    var frame=document.getElementById('conceptWebFrame');
+    var title=document.getElementById('conceptWebTitle');
+    var direct=document.getElementById('conceptWebDirect');
+    if(!overlay||!frame){window.location.assign(url);return}
+    window.__bopExternalReturnState={x:window.scrollX||0,y:window.scrollY||0};
+    if(title)title.textContent='WTFDD';
+    if(direct)direct.href=url;
+    frame.src=url;
+    overlay.classList.add('is-open');
+  }
   function goToWtf(event){
     var trigger=isWtfTrigger(event.target);if(!trigger)return;
     event.preventDefault();event.stopImmediatePropagation();
-    window.location.assign(WTF_URL);
+    openWtfPanel(destinationFor(trigger));
   }
   function fixTagReturn(){
     window.closeTagGame=function(){
@@ -31868,7 +31896,8 @@ html,body{background:#000!important}
   }
   function start(){
     eraseInternalWtf();fixTagReturn();
-    if(/(?:^|[?#/&-])(wtf|directory|shuttle|high-and-hungry|24-hour-thc)(?:$|[=/&-])/i.test(location.href))window.location.replace(WTF_URL);
+    /* Preserve the current Best of Period page. WTFDD opens in the controlled
+       panel so closing it returns to the exact underlying view and scroll. */
     new MutationObserver(function(){eraseInternalWtf();fixTagReturn()}).observe(document.body,{childList:true,subtree:true});
   }
   document.addEventListener('click',goToWtf,true);
@@ -34965,8 +34994,8 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
           '.fnt-experience-card span{display:block;min-height:31px;padding:7px 2px 5px;color:#fff;font:800 7px/1.2 Arial,sans-serif;letter-spacing:.08em;text-align:center;text-shadow:0 0 7px rgba(124,58,237,.95)}' +
           '.fnt-experience-card small{display:block;margin-top:3px;color:#c4a7ff;font:400 6px/1.15 Arial,sans-serif;letter-spacing:.03em;text-transform:none}' +
           '.fnt-gallery-lightbox{position:fixed;inset:0;z-index:190;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.9)}' +
-          '.fnt-gallery-lightbox.open{display:grid}.fnt-gallery-lightbox img{display:block;max-width:94vw;max-height:82vh;object-fit:contain;border:2px solid #7c3aed;box-shadow:0 0 28px rgba(124,58,237,.7)}' +
-          '.fnt-gallery-lightbox button,.fnt-monthly-example button{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid #fff;border-radius:50%;background:#050505;color:#fff;font:800 27px/1 Arial,sans-serif}' +
+          '.fnt-gallery-lightbox.open{display:grid}.fnt-lightbox-frame{position:relative;display:inline-grid;place-items:center;max-width:94vw;max-height:82vh}.fnt-gallery-lightbox img{display:block;max-width:94vw;max-height:82vh;object-fit:contain;border:2px solid #7c3aed;box-shadow:0 0 28px rgba(124,58,237,.7)}' +
+          '.fnt-gallery-lightbox button,.fnt-monthly-example button{position:absolute;right:10px;top:10px;z-index:3;width:42px;height:42px;border:2px solid #7c3aed;border-radius:50%;background:#050505;color:#a97cff;box-shadow:0 0 13px rgba(124,58,237,.72);font:900 27px/1 Arial,sans-serif}' +
           '.fnt-monthly-example{position:fixed;inset:0;z-index:195;display:none;place-items:center;padding:24px;background:rgba(255,255,255,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}' +
           '.fnt-monthly-example.open{display:grid}.fnt-monthly-card{position:relative;width:min(410px,88vw);padding:58px 35px 42px;border:3px solid #7c3aed;background:#fff;color:#050505;box-shadow:10px 10px 0 #050505,0 0 28px rgba(124,58,237,.55);text-align:center}' +
           '.fnt-monthly-card b{display:block;color:#7c3aed;font:1000 23px/.98 Impact,Arial Black,sans-serif;letter-spacing:.03em}.fnt-monthly-card p{margin:17px 0 0;font:800 12px/1.45 Arial,sans-serif;letter-spacing:.09em}' +
@@ -34985,7 +35014,7 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
           var button=doc.createElement('button');button.type='button';button.className='fnt-experience-card';
           var note=index===4?'<small>★ Outside label, optional.</small>':'';
           button.innerHTML='<img src="'+item[1]+'" alt="'+item[0]+'"><span>'+item[0]+note+'</span>';
-          button.addEventListener('click',function(){var box=doc.getElementById('fntGalleryLightbox'),image=box&&box.querySelector('img');if(box&&image){image.src=item[1];image.alt=item[0];box.classList.add('open')}});
+          button.addEventListener('click',function(){var box=doc.getElementById('fntGalleryLightbox'),image=box&&box.querySelector('img');if(box&&image){image.src=item[1];image.alt=item[0];box.classList.add('open');setParentClose(true)}});
           row.appendChild(button);
         });
         picker.appendChild(gallery);
@@ -34993,15 +35022,15 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
 
       if(!doc.getElementById('fntGalleryLightbox')){
         var lightbox=doc.createElement('div');lightbox.id='fntGalleryLightbox';lightbox.className='fnt-gallery-lightbox';lightbox.setAttribute('role','dialog');lightbox.setAttribute('aria-modal','true');
-        lightbox.innerHTML='<button type="button" aria-label="Close image">×</button><img alt="">';
-        lightbox.querySelector('button').onclick=function(){lightbox.classList.remove('open')};
-        lightbox.onclick=function(e){if(e.target===lightbox)lightbox.classList.remove('open')};doc.body.appendChild(lightbox);
+        lightbox.innerHTML='<div class="fnt-lightbox-frame"><img alt=""><button type="button" aria-label="Close image">×</button></div>';
+        lightbox.querySelector('button').onclick=function(){closeLightbox(lightbox)};
+        lightbox.onclick=function(e){if(e.target===lightbox)closeLightbox(lightbox)};doc.body.appendChild(lightbox);
       }
 
       if(!doc.getElementById('fntMonthlyExample')){
         var modal=doc.createElement('div');modal.id='fntMonthlyExample';modal.className='fnt-monthly-example';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
         modal.innerHTML='<section class="fnt-monthly-card"><button type="button" aria-label="Close">×</button><span class="star">★</span><b>NEW YORK YANKEES IS OUR MONTHLY EXAMPLE.</b><p>HUNDREDS OF TEAMS ARE AVAILABLE.<br>PICK YOUR TEAM BELOW.</p></section>';
-        modal.querySelector('button').onclick=function(){modal.classList.remove('open')};modal.onclick=function(e){if(e.target===modal)modal.classList.remove('open')};doc.body.appendChild(modal);
+        modal.querySelector('button').onclick=function(){closeMonthly(modal)};modal.onclick=function(e){if(e.target===modal)closeMonthly(modal)};doc.body.appendChild(modal);
       }
 
       var callout=doc.querySelector('#picker .premium-callout');
@@ -35010,11 +35039,17 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
         callout.addEventListener('click',function(e){
           e.preventDefault();e.stopImmediatePropagation();
           if(win&&typeof win.jumpToReserveOrPicker==='function')win.jumpToReserveOrPicker();
-          setTimeout(function(){var modal=doc.getElementById('fntMonthlyExample');if(modal)modal.classList.add('open')},80);
+          setTimeout(function(){var modal=doc.getElementById('fntMonthlyExample');if(modal){modal.classList.add('open');setParentClose(true)}},80);
         },true);
       }
 
       var footerText=doc.querySelector('.fnt-footer-approved-tagline');if(footerText)footerText.remove();
+
+      function setParentClose(hidden){
+        try{var parentClose=window.parent&&window.parent.document&&window.parent.document.getElementById('fntBack');if(parentClose)parentClose.style.visibility=hidden?'hidden':'visible'}catch(ignore){}
+      }
+      function closeLightbox(box){if(box)box.classList.remove('open');setParentClose(false)}
+      function closeMonthly(box){if(box)box.classList.remove('open');setParentClose(false)}
     }catch(error){}
   }
   function schedule(){setTimeout(install,60);setTimeout(install,220);setTimeout(install,650);setTimeout(install,1300)}
@@ -35022,4 +35057,134 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<script id="fnt-logo-help-commerce-v1">
+(function(){
+  function clean(value){return String(value||'').replace(/\s+/g,' ').trim()}
+  function install(){
+    var frame=document.getElementById('fntFrame');if(!frame)return;
+    try{
+      var doc=frame.contentDocument,win=frame.contentWindow;if(!doc||!doc.body||!win)return;
+
+      Array.prototype.forEach.call(doc.querySelectorAll('.fnt-tag-feature,#fntTagPair'),function(node){node.remove()});
+
+      if(!doc.getElementById('fnt-logo-help-commerce-style-v1')){
+        var style=doc.createElement('style');style.id='fnt-logo-help-commerce-style-v1';style.textContent=
+          '.fnt-site-footer .fnt-footer-lockup.fnt-approved-logo-carousel{display:block!important;width:min(760px,96vw)!important;min-height:164px!important;margin:0 auto 24px!important;padding:7px 0!important;overflow:hidden!important;background:#050505!important}' +
+          '.fnt-approved-carousel{display:block!important;width:100%!important;height:150px!important;overflow:hidden!important;background:#050505!important;perspective:700px!important}' +
+          '.fnt-logo-track{display:flex!important;align-items:center!important;gap:16px!important;width:max-content!important;height:150px!important;animation:fntLogoParade 19s linear infinite!important}' +
+          '.fnt-logo-track .fnt-approved-slide{flex:0 0 138px!important;width:138px!important;height:138px!important;aspect-ratio:1!important}' +
+          '.fnt-logo-track .fnt-approved-slide:nth-child(5){animation-delay:-.55s!important}.fnt-logo-track .fnt-approved-slide:nth-child(6){animation-delay:-1.35s!important}' +
+          '@keyframes fntLogoParade{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 8px))}}' +
+          '.fnt-confused-orb{position:fixed;right:14px;bottom:88px;z-index:88;width:68px;height:68px;padding:6px;border:3px solid #ff334f;border-radius:50%;background:#080808;color:#fff;font:1000 9px/1.05 Arial,sans-serif;letter-spacing:.04em;text-align:center;box-shadow:0 0 0 3px #080808,0 0 17px rgba(255,24,59,.85);animation:fntConfusedPulse 1.25s ease-in-out infinite}' +
+          '@keyframes fntConfusedPulse{50%{transform:scale(1.09);border-color:#ff8092;box-shadow:0 0 0 3px #080808,0 0 27px rgba(255,24,59,1)}}' +
+          '.fnt-help-modal{position:fixed;inset:0;z-index:210;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.8)}.fnt-help-modal.open{display:grid}' +
+          '.fnt-help-card{position:relative;width:min(430px,90vw);padding:58px 28px 34px;border:3px solid #ff334f;background:#fff;color:#050505;box-shadow:8px 8px 0 #7c3aed;text-align:left}' +
+          '.fnt-help-close{position:absolute;right:10px;top:10px;width:40px;height:40px;border:2px solid #7c3aed;border-radius:50%;background:#050505;color:#a97cff;font:1000 25px/1 Arial,sans-serif}' +
+          '.fnt-help-card h2{margin:0 0 15px;color:#d40028;font:1000 25px/.95 Impact,Arial Black,sans-serif;letter-spacing:.03em}.fnt-help-card p{margin:0;font:700 13px/1.5 Arial,sans-serif}.fnt-help-card strong{color:#7c3aed}.fnt-help-phone{display:block;margin-top:17px;color:#d40028;font:1000 18px/1.2 Arial,sans-serif;text-decoration:none;letter-spacing:.03em}.fnt-help-phone small{display:block;margin-top:4px;color:#050505;font-size:10px;letter-spacing:.1em}' +
+          '.fnt-order-note{width:min(100%,310px);margin:10px 0 8px auto;padding:9px;border:2px solid #7c3aed;background:#080808;color:#fff;box-shadow:3px 3px 0 #2e1065}' +
+          '.fnt-order-note label{display:block;margin-bottom:6px;color:#c4a7ff;font:900 9px/1.2 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}.fnt-order-note textarea{display:block;width:100%;min-height:66px;resize:vertical;padding:8px;border:1px solid #7c3aed;background:#fff;color:#050505;font:600 11px/1.35 Arial,sans-serif}.fnt-order-note small{display:block;margin-top:5px;color:#ddd;font:500 8px/1.25 Arial,sans-serif}' +
+          '.fnt-cart-order-note{display:block;margin-top:3px;color:#7c3aed;font-weight:800}' +
+          '@media(max-width:430px){.fnt-approved-carousel,.fnt-logo-track{height:124px!important}.fnt-logo-track{gap:12px!important}.fnt-logo-track .fnt-approved-slide{flex-basis:112px!important;width:112px!important;height:112px!important}.fnt-confused-orb{right:11px;bottom:78px;width:60px;height:60px;font-size:8px}.fnt-order-note{width:205px!important;padding:7px!important}.fnt-order-note textarea{min-height:58px!important}}' +
+          '@media(prefers-reduced-motion:reduce){.fnt-logo-track,.fnt-confused-orb{animation:none!important}}';
+        doc.head.appendChild(style);
+      }
+
+      var carousel=doc.querySelector('.fnt-approved-carousel');
+      if(carousel&&!carousel.querySelector('.fnt-logo-track')){
+        var slides=Array.prototype.slice.call(carousel.querySelectorAll('.fnt-approved-slide'));
+        if(slides.length){
+          var teal=slides[0].cloneNode(true);teal.style.setProperty('--logo-filter','sepia(1) saturate(8) hue-rotate(118deg) brightness(1.03) contrast(1.16)');teal.querySelector('img').alt='REP HARD — emerald';slides.push(teal);
+          var rose=slides[1%slides.length].cloneNode(true);rose.style.setProperty('--logo-filter','sepia(1) saturate(9) hue-rotate(294deg) brightness(1.08) contrast(1.13)');rose.querySelector('img').alt='REP HARD — rose';slides.push(rose);
+          carousel.textContent='';var track=doc.createElement('div');track.className='fnt-logo-track';slides.forEach(function(slide){track.appendChild(slide)});slides.forEach(function(slide){track.appendChild(slide.cloneNode(true))});carousel.appendChild(track);
+        }
+      }
+
+      if(!doc.getElementById('fntHelpModal')){
+        var modal=doc.createElement('div');modal.id='fntHelpModal';modal.className='fnt-help-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+        modal.innerHTML='<section class="fnt-help-card"><button class="fnt-help-close" type="button" aria-label="Close">×</button><h2>ARE YOU F’N CONFUSED?</h2><p>Not a problem. Purchase any item and leave us <strong>detailed notes</strong> describing exactly what you want. If we have any questions, we’ll email you and help confirm every detail.</p><a class="fnt-help-phone" href="tel:+14244346322">424.434.6322<small>CALL US ANYTIME · AVAILABLE 24/7/365</small></a></section>';
+        modal.querySelector('button').onclick=function(){modal.classList.remove('open')};modal.onclick=function(event){if(event.target===modal)modal.classList.remove('open')};doc.body.appendChild(modal);
+      }
+      if(!doc.getElementById('fntConfusedOrb')){
+        var orb=doc.createElement('button');orb.id='fntConfusedOrb';orb.className='fnt-confused-orb';orb.type='button';orb.textContent="I’M CONFUSED";orb.setAttribute('aria-label','I am confused — get ordering help');orb.onclick=function(){doc.getElementById('fntHelpModal').classList.add('open')};doc.body.appendChild(orb);
+      }
+
+      Array.prototype.forEach.call(doc.querySelectorAll('.product-card,.reserve-card'),function(card,index){
+        if(card.querySelector('.fnt-order-note'))return;
+        var buy=card.querySelector('.buy');if(!buy)return;
+        var note=doc.createElement('div');note.className='fnt-order-note';
+        note.innerHTML='<label>Order comments / special request</label><textarea maxlength="700" placeholder="Tell us the team, color, placement, size, or any special details."></textarea><small>This comment is saved with this cart item.</small>';
+        var area=note.querySelector('textarea');var title=clean((card.querySelector('h2,h3,.title,.name')||{}).textContent)||('ITEM '+(index+1));
+        area.setAttribute('aria-label','Order comments for '+title);area.addEventListener('input',function(){card.dataset.orderComment=area.value});
+        var actionHost=buy.parentNode;actionHost.insertBefore(note,buy);
+      });
+
+      if(!win.__fntCommentCapture){
+        win.__fntCommentCapture=true;doc.addEventListener('click',function(event){var buy=event.target.closest&&event.target.closest('.product-card .buy,.reserve-card .buy');if(!buy)return;var card=buy.closest('.product-card,.reserve-card');var area=card&&card.querySelector('.fnt-order-note textarea');win.__fntPendingOrderComment=clean(area&&area.value)},true);
+      }
+      if(typeof win.addToCart==='function'&&!win.addToCart.__fntCommentWrapped){
+        var originalAdd=win.addToCart;var wrapped=function(){originalAdd.apply(this,arguments);try{var saved=JSON.parse(win.localStorage.getItem('fnt-cart-v2')||'[]');if(saved.length){saved[saved.length-1].orderComment=win.__fntPendingOrderComment||'';win.localStorage.setItem('fnt-cart-v2',JSON.stringify(saved))}}catch(ignore){}setTimeout(function(){decorateCart(doc,win)},40)};wrapped.__fntCommentWrapped=true;win.addToCart=wrapped;
+      }
+      decorateCart(doc,win);
+    }catch(ignore){}
+  }
+  function decorateCart(doc,win){var saved=[];try{saved=JSON.parse(win.localStorage.getItem('fnt-cart-v2')||'[]')}catch(ignore){}Array.prototype.forEach.call(doc.querySelectorAll('#cartContents .cartitem'),function(item,index){var small=item.querySelector('small');if(!small)return;var old=small.querySelector('.fnt-cart-order-note');if(old)old.remove();var comment=clean(saved[index]&&saved[index].orderComment);if(comment){var line=doc.createElement('span');line.className='fnt-cart-order-note';line.textContent='ORDER COMMENT: '+comment;small.appendChild(line)}})}
+  function schedule(){setTimeout(install,60);setTimeout(install,220);setTimeout(install,700);setTimeout(install,1400)}
+  function start(){var frame=document.getElementById('fntFrame');if(frame)frame.addEventListener('load',schedule);schedule()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<script id="fnt-label-readability-fix">
+(function () {
+  function install() {
+    var frame = document.getElementById('fntFrame');
+    if (!frame) return;
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.head) return;
+      var style = doc.getElementById('fnt-label-readability-v2');
+      if (!style) {
+        style = doc.createElement('style');
+        style.id = 'fnt-label-readability-v2';
+        style.textContent =
+          '.fnt-label-choice,.fnt-reserve-label-choice{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;gap:8px!important;width:min(230px,100%)!important;min-height:0!important;padding:10px 11px!important;overflow:visible!important;box-sizing:border-box!important}' +
+          '.fnt-label-choice-copy{display:grid!important;grid-template-columns:1fr!important;gap:4px!important;width:100%!important;min-width:0!important}' +
+          '.fnt-label-choice-title{display:block!important;width:100%!important;font-size:11px!important;line-height:1.1!important;white-space:normal!important;overflow:visible!important}' +
+          '.fnt-label-choice-note{display:block!important;width:100%!important;font-size:8px!important;line-height:1.25!important;white-space:normal!important;overflow:visible!important}' +
+          '.fnt-label-toggle{position:static!important;display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;margin:0!important;justify-self:stretch!important}' +
+          '.fnt-label-option{width:auto!important;min-width:0!important;height:30px!important}' +
+          '@media(max-width:430px){.fnt-label-choice,.fnt-reserve-label-choice{width:214px!important;padding:9px 10px!important;gap:7px!important}.fnt-label-choice-title{font-size:10px!important}.fnt-label-choice-note{font-size:7.5px!important}}';
+        doc.head.appendChild(style);
+      }
+    } catch (error) {}
+  }
+  function schedule() { setTimeout(install, 60); setTimeout(install, 300); setTimeout(install, 900); }
+  function start() {
+    var frame = document.getElementById('fntFrame');
+    if (frame) frame.addEventListener('load', schedule);
+    schedule();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+<style id="bop-orb-footer-spacing-v251">
+/* Keep the approved four-orb dock slightly lower without pinning it to the
+   absolute bottom edge. */
+#bopStaticLandingDock.bop-static-landing-dock{
+  bottom:max(24px,calc(env(safe-area-inset-bottom) + 10px))!important;
+}
+
+/* The space between the footer's two gold rules is about 96px. Adding half
+   that distance below the footer content raises every approved footer by
+   roughly 48px and keeps the floating dock from covering its controls. */
+body footer.bop-approved-footer{
+  padding-bottom:calc(228px + 5vh + env(safe-area-inset-bottom))!important;
+}
+
+@media(max-width:430px){
+  #bopStaticLandingDock.bop-static-landing-dock{
+    bottom:max(22px,calc(env(safe-area-inset-bottom) + 8px))!important;
+  }
+}
+</style>
 </body></html>
