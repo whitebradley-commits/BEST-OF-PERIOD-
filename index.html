@@ -37330,4 +37330,145 @@ body footer.bop-approved-footer{
   var close=document.getElementById('teenClose');if(close)close.addEventListener('click',function(){muted=true;dock.querySelector('.teen-funk-mute').textContent='PLAY'});
 })();
 </script>
+<!-- v156: Austin priority-section image coverage — brewery, Michelin, James Beard,
+     Best Of Period, Fine steak and Fine Italian. Shared names receive the same image
+     in every category so crossover cards remain visually consistent. -->
+<script id="bop-austin-priority-images-v156">
+(function(){
+  if(typeof boCategoryData==='undefined')return;
+  var photos={
+    brewery:[
+      'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1518099074172-2e47ee6cfdc0?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1400&q=84'
+    ],
+    dining:[
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=84'
+    ],
+    steak:[
+      'https://images.unsplash.com/photo-1546964124-0cce460f38ef?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1400&q=84'
+    ],
+    italian:[
+      'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=1400&q=84',
+      'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1400&q=84'
+    ]
+  };
+  function hash(s){var h=0;String(s||'').split('').forEach(function(c){h=((h<<5)-h)+c.charCodeAt(0);h|=0});return Math.abs(h)}
+  function list(key){return boCategoryData[key]||(boCategoryData[key]=[])}
+  var shared={};
+  ['michelin','jamesbeard','austin','steakhighend','italianhighend','brewery'].forEach(function(key){
+    list(key).forEach(function(r){if(r&&r.city==='austin'&&r.image)shared[String(r.name||'').toLowerCase()]=r.image});
+  });
+  function cover(key,pool,force){
+    list(key).forEach(function(r){
+      if(!r||r.city!=='austin')return;
+      var id=String(r.name||'').toLowerCase(),image=shared[id];
+      if(!image||force)image=pool[hash(id)%pool.length];
+      r.image=image;r.imagePosition=r.imagePosition||'center';shared[id]=image;
+    });
+  }
+  cover('brewery',photos.brewery,true);
+  cover('michelin',photos.dining,false);
+  cover('jamesbeard',photos.dining,false);
+  cover('austin',photos.dining,false);
+  cover('steakhighend',photos.steak,false);
+  cover('italianhighend',photos.italian,false);
+  /* Re-run shared-name propagation after every priority section has coverage. */
+  ['michelin','jamesbeard','austin','steakhighend','italianhighend','brewery','bjspicksaustin'].forEach(function(key){
+    list(key).forEach(function(r){if(r&&r.city==='austin'&&shared[String(r.name||'').toLowerCase()])r.image=shared[String(r.name||'').toLowerCase()]});
+  });
+})();
+</script>
+<!-- v157: Austin Pizza + Pho + Chinese + Indian completeness pass. -->
+<script id="bop-austin-pizza-pho-chinese-indian-v157">
+(function(){
+  if(typeof boCategoryData==='undefined')return;
+  function list(k){return boCategoryData[k]||(boCategoryData[k]=[])}
+  function maps(address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address)}
+  function upsert(k,r){var a=list(k),i=a.findIndex(function(x){return x&&x.city==='austin'&&String(x.name).toLowerCase()===String(r.name).toLowerCase()});if(i<0)a.push(r);else a[i]=Object.assign({},a[i],r)}
+  function venue(name,address,phone,url,why,price,image){return {city:'austin',name:name,address:address,phone:phone,url:url,why:why,note:why,rating:null,reviews:null,price:price||2,hue:'30, 45%, 25%',image:image,imagePosition:'center',hours:[],directionsUrl:maps(address),menuComingSoon:true,menuLabel:'MENU — COMING SOON'}}
+  var pizzaPhotos=[
+    'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1400&q=84'
+  ];
+  var pizzaContact={
+    'sammataro pizza':{address:'2907 E 12th St, Austin, TX 78702',phone:'(512) 580-8113',url:'https://www.sammataro.nyc/'},
+    'pedroso’s pizza':{address:'8315 Burnet Rd, Austin, TX 78757',phone:'(737) 600-1107',url:'https://www.pedrosospizza.com/'},
+    'via 313 pizza':{address:'12005 US-290, Austin, TX 78737',phone:'(737) 227-3313',url:'https://locations.via313.com/locations/12005-us-290/'},
+    'small’s pizza':{address:'1023 Springdale Rd, Bldg 1 Ste 1, Austin, TX 78721',phone:'(203) 903-1224',url:'https://smalls.pizza/'},
+    'allday pizza — tarrytown':{address:'3111 W 35th St, Austin, TX 78703',phone:'(512) 222-8750',url:'https://allday.pizza/'},
+    'home slice pizza — north loop':{address:'501 E 53rd St, Austin, TX 78751',phone:'(512) 707-7437',url:'https://homeslicepizza.com/'},
+    'pinthouse pizza':{address:'4729 Burnet Rd, Austin, TX 78756',phone:'(512) 436-9605',url:'https://pinthouse.com/'},
+    'desano pizzeria napoletana':{address:'8000 Burnet Rd, Austin, TX 78757',phone:'(512) 323-2426',url:'https://desanopizza.com/'},
+    'favorite pizza':{address:'801 W 6th St, Austin, TX 78703',phone:'(512) 478-4136',url:'https://favoritepizzaaustin.com/'},
+    'roppolo’s pizzeria':{address:'316 E 6th St, Austin, TX 78701',phone:'(512) 476-1490',url:'https://roppolos.com/'}
+  };
+  var pn=0;list('pizza').forEach(function(r){if(!r||r.city!=='austin')return;var c=pizzaContact[String(r.name).toLowerCase()]||{};r.address=c.address||r.address;r.phone=c.phone||r.phone;r.url=c.url||r.url;r.image=pizzaPhotos[pn++%pizzaPhotos.length];r.imagePosition='center';r.directionsUrl=maps(r.address);r.menuComingSoon=true;r.menuLabel='MENU — COMING SOON'});
+  var phoPhotos=[
+    'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1576577445504-6af96477db52?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1400&q=84'
+  ];
+  [
+    venue('Pho Phong Luu','11800 Dessau Rd Ste 302, Austin, TX 78754','(512) 834-1736','https://phophongluu.com/','Deep, carefully built broth and a focused menu make this one of Austin’s essential pho stops.',2,phoPhotos[0]),
+    venue('Sip Pho','512 W 29th St, Austin, TX 78705','(512) 551-9778','https://www.sippho.com/','Clean, modern North Campus room serving real-bone broth and thoughtfully prepared Vietnamese staples.',2,phoPhotos[1]),
+    venue('Pho Please','1920 E Riverside Dr Ste D-140, Austin, TX 78741','(512) 354-9779','https://phopleaseaustin.com/','A high-volume Riverside favorite for customizable pho, vermicelli, bao and banh mi.',2,phoPhotos[2]),
+    venue('Tan My Restaurant','1601 Ohlen Rd Ste E, Austin, TX 78758','(512) 832-9585','https://www.tanmyaustin.com/','Long-running North Austin Vietnamese favorite known for satisfying bowls and broad noodle choices.',1,phoPhotos[0]),
+    venue('Pho Saigon Noodle House','10901 N Lamar Blvd Ste 108, Austin, TX 78753','(512) 821-1022','https://phosaigonaustin.com/','Reliable North Lamar destination for traditional pho and a broad Vietnamese menu.',1,phoPhotos[1]),
+    venue('Pho Van','8557 Research Blvd Ste 126, Austin, TX 78758','(512) 832-5595','https://phovanaustin.com/','A compact Chinatown Center standby for aromatic broth, noodles and Vietnamese comfort food.',1,phoPhotos[2]),
+    venue('888 Pan Asian Restaurant','2400 E Oltorf St Ste 1A, Austin, TX 78741','(512) 448-4722','https://888panasianrestaurant.com/','Late-running Austin institution whose Vietnamese menu includes richly seasoned pho alongside pan-Asian favorites.',2,phoPhotos[0]),
+    venue('PhoWok','6705 US-290 E Ste 606, Austin, TX 78735','(512) 382-0066','https://phowokaustin.net/','Oak Hill kitchen pairing slow-cooked family-recipe pho with a full wok menu.',2,phoPhotos[1])
+  ].forEach(function(r){upsert('pho',r)});
+  var chinesePhotos=[
+    'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=1400&q=84'
+  ];
+  [
+    venue('House of Three Gorges','8557 Research Blvd Ste 144, Austin, TX 78758','(512) 953-8666','https://www.houseofthreegorges.com/','One of Austin’s strongest Sichuan kitchens, prized for mapo tofu, red-braised pork and serious chile depth.',2,chinesePhotos[0]),
+    venue('Din Ho Chinese BBQ','8557 Research Blvd Ste 116, Austin, TX 78758','(512) 832-8788','https://www.dinhochinesebbq.com/','Austin Cantonese institution since 1996, centered on roast duck, barbecue meats and seafood.',2,chinesePhotos[1]),
+    venue("Julie’s Noodles",'8557 Research Blvd Ste 110, Austin, TX 78758','(512) 394-6967','https://juliesnoodlesaustin.com/','Hand-pulled noodles, soup dumplings and northern Chinese comfort food in Chinatown Center.',1,chinesePhotos[2]),
+    venue('Wu Chow — Downtown','500 W 5th St Ste 168, Austin, TX 78701','(512) 476-2469','https://www.wuchowaustin.com/downtown','Polished farm-to-wok Chinese cooking with handmade dumplings and Sunday dim sum.',3,chinesePhotos[0]),
+    venue('Asia Cafe','8650 Spicewood Springs Rd Ste 114A, Austin, TX 78759','(512) 331-5788','https://asiacafeaustin.com/','A longtime destination for generous Sichuan and Chinese regional plates.',2,chinesePhotos[1]),
+    venue('Bamboo House Austin','7010 Easy Wind Dr, Austin, TX 78752','(682) 428-7846','https://bamboohouseaustin.com/','Known for crisp Beijing duck, soup dumplings and an expansive modern Chinese menu.',2,chinesePhotos[2]),
+    venue('First Chinese BBQ','10901 N Lamar Blvd Ste B203, Austin, TX 78753','(512) 835-8889','https://firstchinesebbq.com/','No-frills Hong Kong-style barbecue, roast meats, noodles and family-size Cantonese dishes.',1,chinesePhotos[0]),
+    venue('Fat Dragon','8650 Spicewood Springs Rd Ste 109, Austin, TX 78759','(512) 258-7587','https://fatdragonaustin.com/','Neighborhood Chinese kitchen known for dumplings, noodles and comforting house specialties.',2,chinesePhotos[1])
+  ].forEach(function(r){upsert('chinese',r)});
+  var indianPhotos=[
+    'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=1400&q=84'
+  ];
+  [
+    venue('Sangam Chettinad Indian Cuisine','6001 W Parmer Ln Ste 140, Austin, TX 78727','(512) 770-1104','https://www.sangamchettinad.com/','A major Austin destination for Chettinad specialties, dosas, curries and regional South Indian cooking.',2,indianPhotos[0]),
+    venue('Clay Pit','1601 Guadalupe St, Austin, TX 78701','(512) 322-5131','https://claypit.com/','Downtown Indian landmark in the historic Bertram Building with a broad contemporary menu.',3,indianPhotos[1]),
+    venue('Saffron South','3201 Bee Cave Rd Ste 148, Austin, TX 78746','(512) 329-0234','https://www.saffronsouth.com/','Scratch-made Indian and Himalayan dishes with a dedicated Nepalese side of the menu.',2,indianPhotos[2]),
+    venue('Bombay Dhaba','1207 S 1st St, Austin, TX 78704','(737) 247-4323','https://bombaydhaba.com/','Popular South First food truck for curries, biryani, naan and fast Indian comfort food.',1,indianPhotos[0]),
+    venue('Asiana Indian Cuisine','801 E William Cannon Dr Ste 205, Austin, TX 78745','(512) 445-3435','https://asianaaustin.com/','South Austin standby for classic curries, tandoori dishes and generous lunch combinations.',2,indianPhotos[1]),
+    venue("Naga’s South Indian Cuisine",'11120 N Lamar Blvd Ste B, Austin, TX 78753','(512) 719-4045','https://nagasatx.com/','Focused South Indian cooking with dosas, biryani and deeply spiced regional specialties.',2,indianPhotos[2]),
+    venue('Tarka Indian Kitchen — Brodie','5207 Brodie Ln Ste 120, Austin, TX 78745','(512) 892-2008','https://tarkaindiankitchen.com/','Fast-casual Austin-born Indian kitchen with reliable curries, kebabs and fresh naan.',2,indianPhotos[0]),
+    venue('Star of India','2900 W Anderson Ln Ste 12D, Austin, TX 78757','(512) 452-8199','https://starofindiaaustin.com/','Long-running North Austin restaurant for familiar northern Indian classics and a broad buffet-style selection.',2,indianPhotos[1])
+  ].forEach(function(r){upsert('indian',r)});
+  ['pizza','pho','chinese','indian'].forEach(function(k){var n=0;list(k).forEach(function(r){if(r&&r.city==='austin')r.rank=++n})});
+  if(typeof boHeroCopy!=='undefined'){
+    boHeroCopy.pho={title:'BEST PHO',sub:'Austin’s strongest bowls, from focused broth specialists to Vietnamese institutions.'};
+    boHeroCopy.chinese={title:'BEST CHINESE',sub:'Austin Sichuan, Cantonese, noodles, dumplings and regional Chinese cooking.'};
+    boHeroCopy.indian={title:'BEST INDIAN',sub:'Austin curries, dosas, tandoor cooking and regional Indian standouts.'};
+  }
+})();
+</script>
 </body></html>
