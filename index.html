@@ -22395,6 +22395,17 @@ function renderBjsPickFooter(cat){
     row.appendChild(allBjsBtn);
   }
 
+  if(cat==='pizza'){
+    const allPizzaBtn=document.createElement('button');
+    allPizzaBtn.type='button';
+    allPizzaBtn.className='bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed bo-all-pizza-scores-btn';
+    allPizzaBtn.innerHTML='<span>ALL BJS VS<br>ONE BITE SCORES</span>';
+    allPizzaBtn.addEventListener('click',function(){
+      if(typeof window.boOpenAllPizzaScores==='function')window.boOpenAllPizzaScores();
+    });
+    row.appendChild(allPizzaBtn);
+  }
+
   // BJS Picks tile — same as before, just now one item in a row instead of
   // its own full-width block. Hidden on the BJS Picks page itself, same as
   // it always was — no reason to link to the page you're already on.
@@ -22907,7 +22918,7 @@ function boRenderCategory(cat){
       boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
         ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
         : isBjsPicksCat(cat)
-        ? "⭐ <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> Picks are editorial selections. Displayed ratings use aggregate review data across <span class='bo-source-name'><strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong></span> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> <strong style='font-weight:700;'>Yelp</strong> <span class='bo-plus-more'>+ more</span>"
+        ? (()=>{const pickCount=(boCategoryData[cat]||[]).filter(Boolean).length;const pickCity=(BO_CITY_CONFIG[boCityContext]||BO_CITY_CONFIG.bestof).displayName;return "⭐ <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> <strong>"+pickCount+" current "+pickCity+" BJS "+(pickCount===1?'Pick':'Picks')+".</strong> Every selection is chosen directly by BJS—not ranked by aggregate review data. Ratings are shown only as additional reference.";})()
         : "⭐ Ranked by aggregate review data across <span class='bo-source-name'><strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong></span> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> <strong style='font-weight:700;'>Yelp</strong> <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#F59E0B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#F59E0B'>BJS</text></svg> <span class='bo-plus-more'>+ more</span>";
       if(cat === 'pizza'){
         boSectionHeadParaEl.innerHTML = boSectionHeadParaEl.innerHTML.replace(
@@ -23034,7 +23045,6 @@ function boRenderCategory(cat){
         <div class="bo-worldwide-grid">
           <button type="button" class="bo-worldwide-tile" data-worldwide-key="watches"><span class="bo-worldwide-icon" aria-hidden="true"></span>LUXURY<br>GOODS</button>
           <button type="button" class="bo-worldwide-tile" data-worldwide-key="cellphones"><span class="bo-worldwide-icon" aria-hidden="true"></span>CELLULAR</button>
-          <button type="button" class="bo-worldwide-tile bo-worldwide-all-bjs-launch" aria-label="Open All BJS Picks worldwide"><span class="bo-worldwide-bjs-icons" aria-hidden="true"><span class="bo-all-bjs-red-globe bo-all-bjs-red-globe-tile"><span class="bo-all-bjs-globe-lat"></span><span class="bo-all-bjs-globe-lon"></span></span><svg class="bo-bjs-outline-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.4 2.8c.7 3.5-1.8 4.8-1.8 7.2 0 1.2.7 2.1 1.8 2.5-.1-1.8 1.1-2.8 2.2-4.2 2.5 2 4.1 4.5 4.1 7.1A6.7 6.7 0 0 1 12 22a6.7 6.7 0 0 1-6.7-6.6c0-4.5 3.2-7.7 7.1-12.6Z"/><path d="M9.2 18.2c0-1.7 1.1-3 2.8-4.4 1.7 1.4 2.8 2.7 2.8 4.4A2.8 2.8 0 0 1 12 21a2.8 2.8 0 0 1-2.8-2.8Z"/></svg></span><span class="bo-worldwide-bjs-label">ALL BJS<br>PICKS</span></button>
         </div>
       </div>
       <div class="bo-main-hub-blue-scroll-cue-2" aria-hidden="true">SCROLL ↓</div>
@@ -35716,6 +35726,7 @@ body footer.bop-approved-footer{
       const activity=selected[0],destination=selected[1];
       fateMotion.innerHTML=picture(destination,chosenCategory[1]);fateStage='done';fateCopy.textContent='Fate has decided. Your plan is set.';fateLabel.textContent='Start Over';
       fateOptions.innerHTML='<div class="teen-fate-final"><div class="teen-fate-final-sentence">You’re going to '+activity+' at '+destination+'.</div><div class="teen-fate-final-pictures"><div class="teen-fate-final-picture">'+svg(chosenCategory[1])+'<span>'+chosenCategory[0]+'</span></div><div class="teen-fate-final-picture">'+svg('store')+'<span>'+destination+'</span></div></div><div class="teen-fate-fun"><svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="44" cy="27" r="16"></circle><path d="M36 24h1m14 0h1M36 32c5 5 11 5 16 0M43 44v30M43 52 25 63M43 52l21-12M25 63l-7 21m25-10-9 12M64 40l8-9m-8 9 10 4M72 31l6-2m-6 2 2 6"></path></svg><span>HAVE FUN!</span></div></div>';fateOptions.classList.add('open');fateOptions.scrollIntoView({behavior:'smooth',block:'center'});
+      if(chosenCategory[0]!=='Movies')showResults(chosenCategory[0]);
     }
     function beginHold(event){
       event.preventDefault();if(fateStage==='done'){fateStage='category';chosenCategory=null;fateOptions.classList.remove('open');fateOptions.innerHTML='';fateMotion.innerHTML=picture('Your move','ball');fateCopy.textContent='Press and hold the fingerprint for five seconds. First, fate chooses the category.';fateLabel.textContent='Hold 5 Seconds';return;}
@@ -35730,16 +35741,36 @@ body footer.bop-approved-footer{
   }
   function showResults(label){
     title.textContent='Closest '+label;
-    list.innerHTML='';
-    for(let i=1;i<=5;i++){
-      const row=document.createElement('div'); row.className='teen-result-row';
-      row.innerHTML='<div><span class="teen-result-name">Nearby '+label+' '+i+'</span><span class="teen-result-distance">Distance coming soon</span></div>'+
-        '<button class="teen-result-action" type="button" aria-label="Call this business" disabled>'+phoneSvg()+'</button>'+
-        '<button class="teen-result-action" type="button" aria-label="Directions to this business" disabled>'+dirSvg()+'</button>'+
-        (i===1?'<p class="teen-coming">More information about these businesses is coming soon.</p>':'');
-      list.appendChild(row);
-    }
+    list.innerHTML='<div class="teen-live-status"><span class="teen-live-spinner" aria-hidden="true"></span>Finding real '+label+' near you…</div>';
     results.classList.add('open'); results.scrollIntoView({behavior:'smooth',block:'start'});
+    findLiveNearby(label);
+  }
+  const nearbyTags={
+    'Gum & Candy':'[shop~"confectionery|convenience|supermarket"]','Poké Balls':'[shop~"toys|video_games|games"]',
+    'Fast Food':'[amenity="fast_food"]','Car Wash':'[amenity="car_wash"]','Gas':'[amenity="fuel"]',
+    '7-Eleven':'[name~"7-Eleven",i]','The Mall':'[shop="mall"]','Roller Coaster':'[tourism="theme_park"]',
+    'Boba':'[cuisine~"bubble_tea|boba",i]','Arcades':'[leisure="amusement_arcade"]','Sneakers':'[shop="shoes"]'
+  };
+  function miles(lat1,lon1,lat2,lon2){const r=3958.8,p=Math.PI/180,a=Math.sin((lat2-lat1)*p/2)**2+Math.cos(lat1*p)*Math.cos(lat2*p)*Math.sin((lon2-lon1)*p/2)**2;return 2*r*Math.asin(Math.sqrt(a));}
+  function escText(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function mapsSearch(label){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(label+' near me')}
+  function liveFailure(label,message){
+    list.innerHTML='<div class="teen-live-empty"><strong>'+escText(message)+'</strong><a class="teen-live-map-link" href="'+mapsSearch(label)+'" target="_blank" rel="noopener">SEARCH '+escText(label.toUpperCase())+' ON THE MAP</a></div>';
+  }
+  function findLiveNearby(label){
+    if(!navigator.geolocation){liveFailure(label,'Location is not available on this device.');return;}
+    navigator.geolocation.getCurrentPosition(function(pos){
+      const lat=pos.coords.latitude,lon=pos.coords.longitude,tag=nearbyTags[label]||'[name]';
+      const query='[out:json][timeout:18];nwr(around:25000,'+lat+','+lon+')'+tag+';out center tags;';
+      fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'data='+encodeURIComponent(query)})
+        .then(function(r){if(!r.ok)throw new Error('lookup');return r.json()})
+        .then(function(data){
+          const found=(data.elements||[]).map(function(x){const la=x.lat||(x.center&&x.center.lat),lo=x.lon||(x.center&&x.center.lon);return {name:x.tags&&(x.tags.name||x.tags.brand),phone:x.tags&&(x.tags.phone||x.tags['contact:phone']),lat:la,lon:lo,d:la&&lo?miles(lat,lon,la,lo):999};}).filter(function(x){return x.name&&x.d<999}).sort(function(a,b){return a.d-b.d}).filter(function(x,i,a){return a.findIndex(function(y){return y.name===x.name&&Math.abs(y.d-x.d)<.05})===i}).slice(0,5);
+          if(!found.length){liveFailure(label,'No verified nearby matches were returned.');return;}
+          list.innerHTML=found.map(function(x){const phone=x.phone?'<a class="teen-result-action" aria-label="Call '+escText(x.name)+'" href="tel:'+escText(x.phone.replace(/[^+\d]/g,''))+'">'+phoneSvg()+'</a>':'<span class="teen-result-action is-disabled" aria-hidden="true">'+phoneSvg()+'</span>';const directions='https://www.google.com/maps/dir/?api=1&destination='+x.lat+','+x.lon;return '<div class="teen-result-row"><div><span class="teen-result-name">'+escText(x.name)+'</span><span class="teen-result-distance">'+(x.d<.1?'Less than 0.1':x.d.toFixed(1))+' mi away</span></div>'+phone+'<a class="teen-result-action" aria-label="Directions to '+escText(x.name)+'" href="'+directions+'" target="_blank" rel="noopener">'+dirSvg()+'</a></div>';}).join('');
+          const note=results.querySelector('.teen-results-note');if(note)note.textContent='Showing the five closest live matches from your current location.';
+        }).catch(function(){liveFailure(label,'The live nearby service could not connect.');});
+    },function(){liveFailure(label,'Turn on location access to see the closest real places.');},{enableHighAccuracy:true,timeout:10000,maximumAge:120000});
   }
   function openTeen(){returnScroll=window.scrollY||0;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.documentElement.style.overflow='hidden';overlay.scrollTop=0;}
   function closeTeen(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.documentElement.style.overflow='';window.scrollTo(0,returnScroll);}
@@ -36745,6 +36776,181 @@ body footer.bop-approved-footer{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',correctFounderBadge);
   else correctFounderBadge();
+})();
+</script>
+<style id="bop-near-me-compact-raised-v1">
+  /* Tighten the standard Near Me screen without changing the separate
+     Closest 5 composition. */
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title{
+    top:13.5vh!important;
+  }
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-canvas,
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-loading{
+    top:30vh!important;
+    left:11vw!important;
+    right:11vw!important;
+    height:27vh!important;
+  }
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-radius-count{
+    top:calc(30vh + 9px)!important;
+    right:12vw!important;
+  }
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-meta{
+    top:calc(57vh + 7px)!important;
+    left:11vw!important;
+    max-width:78vw!important;
+  }
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-lower{
+    top:calc(57vh + 47px)!important;
+    padding-top:8px!important;
+  }
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-search-wrap{
+    margin-top:0!important;
+  }
+</style>
+<style id="bop-austin-steak-italian-pizza-and-all-scores-v1">
+  .bo-all-pizza-scores-btn{color:#F59E0B!important;font-size:.7rem!important;line-height:1.08!important;letter-spacing:.035em!important}
+  #bopAllPizzaScores{position:fixed;inset:0;z-index:13100;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}
+  .bop-all-pizza-open #bopAllPizzaScores{display:block}
+  .bop-all-pizza-shell{width:min(980px,100%);min-height:100%;margin:auto;padding:18px 12px 50px}
+  .bop-all-pizza-back{position:sticky;top:8px;z-index:3;display:grid;place-items:center;width:50px;height:50px;border:3px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font-size:34px;font-weight:900;line-height:1;box-shadow:0 0 15px rgba(245,158,11,.35);cursor:pointer}
+  .bop-all-pizza-title{margin:9px auto 8px;text-align:center;color:#F59E0B;font:900 clamp(27px,6vw,58px)/.94 'Archivo Black',Arial,sans-serif;letter-spacing:.025em}
+  .bop-all-pizza-sub{max-width:650px;margin:0 auto 24px;text-align:center;color:#d6b472;font:800 11px/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.055em;text-transform:uppercase}
+  .bop-all-pizza-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .bop-all-pizza-card{min-width:0;padding:11px 9px 10px;border:1.5px solid rgba(245,158,11,.62);border-radius:11px;background:#0a0a0a;color:#fff;text-align:center;transition:border-color .16s,box-shadow .16s,transform .16s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .bop-all-pizza-card:hover,.bop-all-pizza-card:focus-visible,.bop-all-pizza-card.is-highlighted{outline:none;border-color:#F59E0B;box-shadow:0 0 18px rgba(245,158,11,.58),inset 0 0 12px rgba(245,158,11,.08);transform:translateY(-1px)}
+  .bop-all-pizza-name{display:block;min-height:28px;margin:0 0 7px;color:#fff;font:900 12px/1.12 'Archivo Black',Arial,sans-serif;overflow-wrap:anywhere}
+  .bop-all-pizza-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+  .bop-all-pizza-score{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px;border:1px solid rgba(245,158,11,.28);border-radius:8px;background:#050505}
+  .bop-all-pizza-score small{color:#F59E0B;font:900 7px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.05em}
+  .bop-all-pizza-score strong{margin-top:3px;color:#fff;font:900 18px/1 'Archivo Black',Arial,sans-serif}
+  .bop-all-pizza-score.is-onebite small{color:#E4002B}.bop-all-pizza-vs{color:#E4002B;font:900 9px/1 'Archivo Black',Arial,sans-serif}
+  @media(max-width:620px){.bop-all-pizza-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.bop-all-pizza-shell{padding-inline:8px}.bop-all-pizza-name{font-size:10px}.bop-all-pizza-score strong{font-size:16px}}
+</style>
+<section id="bopAllPizzaScores" role="dialog" aria-modal="true" aria-label="All BJS versus One Bite pizza scores"><div class="bop-all-pizza-shell"><button type="button" class="bop-all-pizza-back" aria-label="Back to pizza">×</button><h2 class="bop-all-pizza-title">BJS VS ONE BITE</h2><p class="bop-all-pizza-sub">These are all BJS versus One Bite scores in alphabetical order.</p><div class="bop-all-pizza-grid"></div></div></section>
+<script id="bop-austin-steak-italian-pizza-and-all-scores-v1">
+(function(){
+  if(typeof boCategoryData==='undefined')return;
+  function list(key){return boCategoryData[key]||(boCategoryData[key]=[])}
+  function upsert(key,record){
+    var target=list(key),i=target.findIndex(function(x){return x&&x.city===record.city&&x.name===record.name});
+    if(i<0)target.push(record);else target[i]=Object.assign({},target[i],record);
+  }
+  function restaurant(name,url,address,why,price,extra){
+    return Object.assign({city:'austin',name:name,url:url,address:address,phone:'',hours:[],rating:null,reviews:null,why:why,note:why,price:price,hue:'30, 44%, 24%',image:'',imagePosition:'center'},extra||{});
+  }
+
+  ['steakhighend','steakcasual','italiandive','italiancasual','italianhighend'].forEach(function(key){
+    boCategoryData[key]=(boCategoryData[key]||[]).filter(function(r){return !r||r.city!=='austin'});
+  });
+  list('bbq').forEach(function(r){
+    if(r&&r.city==='austin'&&/franklin barbecue/i.test(r.name||'')){
+      delete r.bjsPick;delete r.bjsPickCity;delete r.bjsPickLabel;
+      r.why='The Austin brisket benchmark and one of the city’s highest-profile barbecue destinations.';
+      r.note='Nationally recognized Central Texas barbecue with Michelin Bib Gourmand recognition.';
+    }
+  });
+
+  [
+    restaurant("Jeffrey’s",'https://jeffreysofaustin.com/','1204 W Lynn St, Austin, TX 78703','Michelin Guide steakhouse and longstanding Clarksville fine-dining institution.',4,{rating:'4.7 / 5'}),
+    restaurant("J Carver’s Oyster Bar & Chophouse",'https://www.jcarver.com/','509 Rio Grande St, Austin, TX 78701','Downtown chophouse pairing prime steaks with a serious raw bar.',4,{rating:'4.8 / 5'}),
+    restaurant('Garrison','https://www.garrisongrill.com/','101 Red River St, Austin, TX 78701','Michelin Guide live-fire restaurant known for Akaushi wagyu and polished service.',4,{rating:'4.7 / 5'}),
+    restaurant("Dean’s Italian Steakhouse",'https://www.deanssteakhouseaustin.com/','110 E 2nd St, Austin, TX 78701','Downtown Italian steakhouse centered on prime cuts and Japanese A5 wagyu.',4,{rating:'4.8 / 5'}),
+    restaurant('Red Ash Italia','https://redashgrill.com/','303 Colorado St, Austin, TX 78701','Wood-fired Italian cooking with an especially strong steak and chop program.',4,{rating:'4.8 / 5'}),
+    restaurant("Perry’s Steakhouse & Grille",'https://perryssteakhouse.com/locations/tx/austin/downtown/','114 W 7th St, Austin, TX 78701','Established downtown steakhouse known for prime beef and its signature pork chop.',4,{rating:'4.7 / 5'}),
+    restaurant('Vince Young Steakhouse','https://vinceyoungsteakhouse.com/','301 San Jacinto Blvd, Austin, TX 78701','Locally rooted prime steakhouse with Texas character and a strong downtown following.',4,{rating:'4.7 / 5'}),
+    restaurant("Bartlett’s",'https://bartlettsaustin.com/','2408 W Anderson Ln, Austin, TX 78757','Long-running Austin favorite for carefully grilled steaks, ribs and classic service.',3,{rating:'4.7 / 5'}),
+    restaurant('Maie Day','https://www.maieday.com/','1603 S Congress Ave, Austin, TX 78704','Inventive South Congress steakhouse from the Olamaie team with shareable cuts and seafood.',4,{rating:'4.6 / 5'}),
+    restaurant('Dai Due','https://www.daidue.com/','2406 Manor Rd, Austin, TX 78722','Texas meat, whole-animal butchery and exacting local sourcing recognized by Michelin.',3,{rating:'4.7 / 5'})
+  ].forEach(function(r){upsert(r.price>=4?'steakhighend':'steakcasual',r)});
+
+  [
+    restaurant('Red Ash Italia','https://redashgrill.com/','303 Colorado St, Austin, TX 78701','One of Austin’s defining wood-fired Italian dining rooms.',4,{rating:'4.8 / 5'}),
+    restaurant('Intero','https://www.interorestaurant.com/','2612 E Cesar Chavez St, Austin, TX 78702','Seasonal Italian cooking, handmade pasta and whole-animal sourcing.',3,{rating:'4.7 / 5'}),
+    restaurant('Juniper','https://juniperaustin.com/','2400 E Cesar Chavez St Ste 304, Austin, TX 78702','Northern Italian tradition interpreted through seasonal Texas ingredients.',4,{rating:'4.6 / 5'}),
+    restaurant("L’Oca d’Oro",'https://www.locadoroaustin.com/','1900 Simond Ave, Austin, TX 78723','Celebrated neighborhood Italian restaurant with house-made pasta and thoughtful sourcing.',3,{rating:'4.6 / 5'}),
+    restaurant("Sammie’s Italian",'https://sammiesitalian.com/','807 W 6th St, Austin, TX 78703','Lively old-school Italian-American room for red sauce, pasta and steaks.',4,{rating:'4.7 / 5'}),
+    restaurant("Patrizi’s",'https://www.patrizis.com/','2307 Manor Rd, Austin, TX 78722','Beloved family pasta operation with handmade noodles and a relaxed Austin setting.',2,{rating:'4.7 / 5'}),
+    restaurant('Casa Bianca','https://www.casabiancaatx.com/','1510 E Cesar Chavez St, Austin, TX 78702','Italian restaurant and cocktail bar focused on seafood, handmade pasta and local ingredients.',3,{rating:'4.7 / 5'}),
+    restaurant("Dean’s Italian Steakhouse",'https://www.deanssteakhouseaustin.com/','110 E 2nd St, Austin, TX 78701','Polished Italian steakhouse with house-made pasta and a major wagyu program.',4,{rating:'4.8 / 5'}),
+    restaurant('North Italia — 2nd Street','https://www.northitalia.com/locations/austin-tx-2nd-street/','500 W 2nd St Ste 120, Austin, TX 78701','Reliable scratch-made pasta and contemporary Italian cooking downtown.',3,{rating:'4.7 / 5'}),
+    restaurant('Bellissima Italian Mediterranean','https://bellissimatx.com/','8300 N FM 620 Ste K-200, Austin, TX 78726','Northwest Austin destination for fresh handmade pasta and classic Italian dishes.',3,{rating:'4.8 / 5'})
+  ].forEach(function(r){upsert(r.price>=4?'italianhighend':'italiancasual',r)});
+
+  function pizza(name,url,address,bjs,oneBite,dave,reviews,why,phone){
+    return restaurant(name,url,address,why,2,{phone:phone||'',rating:(bjs/2).toFixed(2)+' / 5',bjsPizzaScore:bjs.toFixed(1),oneBiteScore:oneBite,oneBiteDaveScore:dave,oneBiteReviews:reviews});
+  }
+  [
+    pizza('Sammataro Pizza','https://www.sammataro.pizza/','2907 E 12th St, Austin, TX 78702',8.6,8.1,7.9,75,'Coal-fired Austin pizza with the strongest verified Dave and community convergence.',''),
+    pizza("Pedroso’s Pizza",'https://www.pedrosospizza.com/','8315 Burnet Rd, Austin, TX 78757',8.5,7.7,7.7,49,'Balanced New York-style pizza with crisp structure and an official Dave review.','(737) 600-1107'),
+    pizza('Via 313 Pizza','https://www.via313.com/','12005 US-290, Austin, TX 78737',8.3,7.4,7.5,56,'Austin’s Detroit-style standard-bearer with verified Dave and community scores.',''),
+    pizza('Small’s Pizza','https://www.smallspizza.com/','1023 Springdale Rd, Austin, TX 78721',8.8,8.6,null,7,'Thin, highly charred pizza with an exceptional early One Bite community score.','(203) 903-1224'),
+    pizza('Allday Pizza — Tarrytown','https://www.alldaypizza.com/','3111 W 35th St, Austin, TX 78703',8.7,8.9,null,2,'New-school Austin pizza with an elite but still small One Bite sample.','(512) 222-8750'),
+    pizza('Home Slice Pizza — North Loop','https://homeslicepizza.com/','501 E 53rd St, Austin, TX 78751',8.2,7.1,5.8,52,'Austin institution whose broader BJS result substantially outpaces Dave’s original review.','(512) 707-7437'),
+    pizza('Pinthouse Pizza','https://pinthouse.com/','4729 Burnet Rd, Austin, TX 78756',8.3,7.6,null,24,'Austin brewpub favorite with a meaningful One Bite community sample.','(512) 436-9605'),
+    pizza('DeSano Pizzeria Napoletana','https://desanopizza.com/','8000 Burnet Rd, Austin, TX 78757',8.2,7.3,null,46,'Traditional Neapolitan operation with one of Austin’s deeper One Bite samples.','(512) 323-2426'),
+    pizza('Favorite Pizza','https://favoritepizzaaustin.com/','801 W 6th St, Austin, TX 78703',8.1,7.1,null,29,'Crisp, straightforward downtown slices with solid cross-platform support.','(512) 478-4136'),
+    pizza("Roppolo’s Pizzeria",'https://roppolos.com/','316 E 6th St, Austin, TX 78701',7.8,6.4,null,63,'Long-running Sixth Street slice counter with Austin’s deepest late-night pizza history.','(512) 476-1490')
+  ].forEach(function(r){upsert('pizza',r)});
+
+  if(typeof boHeroCopy!=='undefined'){
+    boHeroCopy.steakhighend={title:'BEST STEAK',sub:'Austin’s strongest steakhouses, live-fire rooms and serious beef programs.'};
+    boHeroCopy.italian={title:'BEST ITALIAN',sub:'Austin pasta, red sauce, wood fire and modern Italian cooking.'};
+  }
+
+  var overlay=document.getElementById('bopAllPizzaScores'),savedY=0;
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function build(){
+    var seen=new Map();
+    list('pizza').forEach(function(r){
+      if(!r||!r.name)return;
+      var key=String(r.city||'bestof')+'|'+String(r.name).trim().toLowerCase();
+      if(!seen.has(key))seen.set(key,r);
+    });
+    var rows=Array.from(seen.values()).sort(function(a,b){return String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'})});
+    overlay.querySelector('.bop-all-pizza-grid').innerHTML=rows.map(function(r,i){
+      var bjs=r.bjsPizzaScore!=null?Number(r.bjsPizzaScore).toFixed(1):'—';
+      var hasDave=r.oneBiteDaveScore!=null;
+      var other=hasDave?Number(r.oneBiteDaveScore).toFixed(1):(r.oneBiteScore!=null?Number(r.oneBiteScore).toFixed(1):'—');
+      var otherLabel=hasDave?'DAVE':'ONE BITE';
+      return '<button type="button" class="bop-all-pizza-card" data-pizza-score-index="'+i+'"><strong class="bop-all-pizza-name">'+esc(r.name)+'</strong><span class="bop-all-pizza-duel"><span class="bop-all-pizza-score"><small>BJS</small><strong>'+bjs+'</strong></span><span class="bop-all-pizza-vs">VS</span><span class="bop-all-pizza-score is-onebite"><small>'+otherLabel+'</small><strong>'+other+'</strong></span></span></button>';
+    }).join('');
+    overlay.querySelectorAll('.bop-all-pizza-card').forEach(function(card){card.addEventListener('click',function(){card.classList.toggle('is-highlighted')})});
+  }
+  function open(){savedY=window.scrollY;build();document.documentElement.classList.add('bop-all-pizza-open');document.body.style.overflow='hidden';overlay.scrollTop=0}
+  function close(){document.documentElement.classList.remove('bop-all-pizza-open');document.body.style.overflow='';requestAnimationFrame(function(){window.scrollTo(0,savedY)})}
+  window.boOpenAllPizzaScores=open;
+  overlay.querySelector('.bop-all-pizza-back').addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.documentElement.classList.contains('bop-all-pizza-open'))close()});
+})();
+</script>
+<style id="bop-world-bjs-and-live-nearby-v145">
+/* Worldwide directory: Restaurants and All BJS Picks are a matched final row. */
+#bopWorldwideLanding .bop-world-tile.bop-world-all-bjs{border-color:#F59E0B;background:#070707;color:#E4002B;text-shadow:0 0 5px rgba(228,0,43,.42)}
+#bopWorldwideLanding .bop-world-all-bjs .bop-world-red-globe{display:block;position:relative;width:39px;height:39px;margin:0 auto 9px;border:3px solid #E4002B;border-radius:50%;box-sizing:border-box;box-shadow:0 0 8px rgba(228,0,43,.55)}
+#bopWorldwideLanding .bop-world-all-bjs .bop-world-red-globe:before{content:'';position:absolute;left:7px;right:7px;top:-3px;bottom:-3px;border:2px solid #E4002B;border-radius:50%}
+#bopWorldwideLanding .bop-world-all-bjs .bop-world-red-globe:after{content:'';position:absolute;left:2px;right:2px;top:16px;border-top:2px solid #E4002B;box-shadow:0 -9px 0 -1px #E4002B,0 9px 0 -1px #E4002B}
+/* Main Teen headings use one strong, equal display size. */
+#teenOverlay .teen-movie-choices h2,#teenOverlay .teen-fate-title{font-size:clamp(2.15rem,9vw,3.35rem)!important;line-height:.95!important;letter-spacing:.065em!important}
+#teenOverlay .teen-movie-choices>p{max-width:520px;font-size:clamp(.96rem,3.7vw,1.18rem)!important;line-height:1.35!important;color:#d2d2d2!important}
+.teen-live-status,.teen-live-empty{grid-column:1/-1;padding:28px 12px;color:#ddd;text-align:center;font:700 .88rem/1.45 'IBM Plex Sans Condensed',Arial,sans-serif}
+.teen-live-spinner{display:inline-block;width:15px;height:15px;margin-right:9px;border:2px solid rgba(245,158,11,.25);border-top-color:#F59E0B;border-radius:50%;vertical-align:-3px;animation:teenLiveSpin .8s linear infinite}
+.teen-live-empty strong{display:block;margin-bottom:17px;color:#ddd}
+.teen-live-map-link{display:inline-flex;align-items:center;justify-content:center;min-height:45px;padding:0 17px;border:2px solid #F59E0B;border-radius:24px;color:#F59E0B;text-decoration:none;font:900 .7rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.04em}
+.teen-result-action.is-disabled{opacity:.28}
+@keyframes teenLiveSpin{to{transform:rotate(360deg)}}
+</style>
+<script id="bop-world-bjs-tile-v145">
+(function(){
+  function install(){
+    const grid=document.querySelector('#bopWorldwideLanding .bop-world-tiles');if(!grid)return;
+    let tile=grid.querySelector('.bop-world-all-bjs');
+    if(!tile){tile=document.createElement('button');tile.type='button';tile.className='bop-world-tile bop-world-all-bjs';tile.setAttribute('aria-label','Open All BJS Picks');tile.innerHTML='<span class="bop-world-red-globe" aria-hidden="true"></span>ALL BJS<br>PICKS';grid.appendChild(tile);}
+    const restaurants=grid.querySelector('[data-worldwide-key="restaurants"]');if(restaurants&&restaurants.nextElementSibling!==tile)restaurants.insertAdjacentElement('afterend',tile);
+  }
+  document.addEventListener('click',function(e){const tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-bjs');if(!tile)return;e.preventDefault();e.stopImmediatePropagation();const landing=document.getElementById('bopWorldwideLanding');if(landing)landing.classList.remove('open');document.body.style.overflow='';if(typeof window.boOpenAllBjsPicks==='function')window.boOpenAllBjsPicks();},true);
+  function start(){install();new MutationObserver(install).observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 </body></html>
