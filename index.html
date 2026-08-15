@@ -20054,12 +20054,28 @@ function boNearCityDefaults(cityKey){
     ,atlanta:{ center:[33.7490,-84.3880], zoom:10, label:'Atlanta' }
     ,neworleans:{ center:[29.9511,-90.0715], zoom:10, label:'New Orleans' }
     ,idaho:{ center:[43.6150,-116.2023], zoom:9, label:'Idaho' }
+    ,austin:{ center:[30.2672,-97.7431], zoom:10, label:'Austin' }
     ,paris:{ center:[48.8566,2.3522], zoom:11, label:'Paris' }
     ,zurich:{ center:[47.3769,8.5417], zoom:11, label:'Zürich' }
     ,lucerne:{ center:[47.0502,8.3093], zoom:12, label:'Lucerne' }
     ,geneva:{ center:[46.2044,6.1432], zoom:11, label:'Geneva' }
     ,zermatt:{ center:[46.0207,7.7491], zoom:13, label:'Zermatt' }
   }[cityKey] || { center:[36.1699,-115.1398], zoom:10, label:'Las Vegas' };
+}
+
+/* Closest 5 is driven by the visitor's physical position, not by whichever
+   city happened to be open before the button was tapped. */
+function boNearClosestPlatformCity(point){
+  if(!point) return null;
+  const supported=['bestof','miami','london','sandiego','siliconvalley','losangeles','santabarbara','sanfrancisco','newyork','chicago','washingtondc','boston','philadelphia','atlanta','neworleans','idaho','austin','paris','zurich','lucerne','geneva','zermatt'];
+  let winner=null, winnerMiles=Infinity;
+  supported.forEach(key=>{
+    if(typeof BO_CITY_CONFIG==='undefined' || !BO_CITY_CONFIG[key]) return;
+    const city=boNearCityDefaults(key);
+    const miles=boNearDistanceMiles(point,{lat:city.center[0],lng:city.center[1]});
+    if(miles<winnerMiles){ winnerMiles=miles; winner=key; }
+  });
+  return winner;
 }
 
 function boGetMapRestaurants(cityKey){
@@ -20502,10 +20518,10 @@ async function boGeocodeRestaurant(r,cityLabel){
 }
 
 async function boOpenNearMap(){
-  const cityKey=(typeof boCityContext!=='undefined' && BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+  let cityKey=(typeof boCityContext!=='undefined' && BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
   boReplaceBestOfRoute('nearme',cityKey);
-  const defaults=boNearCityDefaults(cityKey);
-  const restaurants=boGetMapRestaurants(cityKey);
+  let defaults=boNearCityDefaults(cityKey);
+  let restaurants=boGetMapRestaurants(cityKey);
   const page=boEnsureNearMapPage();
   const status=document.getElementById('boNearMapStatus');
   const loading=document.getElementById('boNearMapLoading');
@@ -20679,6 +20695,25 @@ async function boOpenNearMap(){
   boNearMap.on('zoomend',boNearViewportHandler);
 
   await locationReady;
+
+  if(document.body.classList.contains('bo-closest-five-active') && !boNearUserLatLng){
+    boNearGeocodingComplete=true;
+    if(loading) loading.classList.add('is-hidden');
+    if(closestStatus) closestStatus.textContent='Location access is needed to find the restaurants closest to you.';
+    return;
+  }
+
+  /* Switch the restaurant pool after GPS resolves. A visitor in San Diego
+     must receive San Diego records even if Las Vegas was the prior page. */
+  if(boNearUserLatLng){
+    const physicalCity=boNearClosestPlatformCity(boNearUserLatLng);
+    if(physicalCity && physicalCity!==cityKey){
+      cityKey=physicalCity;
+      defaults=boNearCityDefaults(cityKey);
+      restaurants=boGetMapRestaurants(cityKey);
+      boReplaceBestOfRoute('nearme',cityKey);
+    }
+  }
 
   // Prioritize the neighborhood closest to the visitor. Las Vegas records
   // already carry Downtown/Strip/Summerlin/Henderson flags, and ZIP 89101 is
@@ -36572,7 +36607,7 @@ body footer.bop-approved-footer{
     left:0!important;
     right:0!important;
     min-height:64vh!important;
-    padding:0 22px 120px!important;
+    padding:0 22px calc(210px + env(safe-area-inset-bottom))!important;
   }
   body.bo-closest-five-active #boNearMapPage .bo-near-closest{
     display:block!important;
