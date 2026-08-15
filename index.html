@@ -36445,4 +36445,137 @@ body footer.bop-approved-footer{
     #boNearMapPage .bo-near-closest-filter{animation:none!important}
   }
 </style>
+<!-- Separate Near Me and Closest Five destinations; compact five-orb dock. -->
+<style id="bop-closest-five-separate-page-v1">
+  /* Five controls now fit across the phone without reducing their lettering. */
+  #bopStaticLandingDock.bop-static-landing-dock{
+    gap:clamp(5px,1.45vw,9px)!important;
+  }
+  #bopStaticLandingDock .bop-static-landing-button:not(.bop-static-bjs){
+    flex:0 0 58px!important;
+    width:58px!important;
+    height:58px!important;
+    min-width:58px!important;
+    min-height:58px!important;
+    font-size:.67rem!important;
+  }
+  #bopStaticClosestFive{
+    color:#E4002B!important;
+    border-color:#F59E0B!important;
+    text-shadow:0 0 2px rgba(228,0,43,.3)!important;
+  }
+
+  /* Near Me is the detailed map only. */
+  body:not(.bo-closest-five-active) #boNearMapPage .bo-near-closest-title,
+  body:not(.bo-closest-five-active) #boNearMapPage .bo-near-price-key,
+  body:not(.bo-closest-five-active) #boNearMapPage .bo-near-closest{
+    display:none!important;
+  }
+
+  /* Closest Five is a separate, focused page powered by the same location data. */
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-canvas,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-loading,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-meta,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-other-cities,
+  body.bo-closest-five-active #boNearMapPage .bo-near-radius-count,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-search-wrap,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-footer{
+    visibility:hidden!important;
+    pointer-events:none!important;
+    opacity:0!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-title{
+    top:max(150px,18vh)!important;
+    left:7vw!important;
+    right:7vw!important;
+    width:auto!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-title>strong:first-child,
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-title>span{
+    display:none!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-closest-title{
+    display:block!important;
+    margin:0!important;
+    color:#F59E0B!important;
+    font-size:clamp(3rem,13vw,5.8rem)!important;
+    line-height:.92!important;
+    white-space:nowrap!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-price-key{
+    display:flex!important;
+    margin-top:18px!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-map-lower{
+    top:max(315px,36vh)!important;
+    left:0!important;
+    right:0!important;
+    min-height:64vh!important;
+    padding:0 22px 120px!important;
+  }
+  body.bo-closest-five-active #boNearMapPage .bo-near-closest{
+    display:block!important;
+    max-width:680px!important;
+    margin:0 auto!important;
+  }
+  @media(max-width:370px){
+    #bopStaticLandingDock.bop-static-landing-dock{left:5px!important;gap:4px!important}
+    #bopStaticLandingDock .bop-static-landing-button:not(.bop-static-bjs){
+      flex-basis:54px!important;width:54px!important;height:54px!important;
+      min-width:54px!important;min-height:54px!important;
+    }
+  }
+</style>
+<script id="bop-closest-five-separate-page-v1-script">
+(function(){
+  function ensureButton(){
+    var dock=document.getElementById('bopStaticLandingDock');
+    var world=document.getElementById('bopStaticWorld');
+    if(!dock||!world)return null;
+    var button=document.getElementById('bopStaticClosestFive');
+    if(!button){
+      button=document.createElement('button');
+      button.type='button';
+      button.id='bopStaticClosestFive';
+      button.className='bop-static-landing-button bop-static-closest-five';
+      button.setAttribute('aria-label','Closest Five');
+      button.innerHTML='CLOSEST<br>FIVE';
+      dock.insertBefore(button,world);
+    }
+    return button;
+  }
+  function setMode(closest){
+    document.body.classList.toggle('bo-closest-five-active',!!closest);
+    var title=document.getElementById('boNearClosestTitle');
+    if(title)title.textContent='CLOSEST 5';
+  }
+  function openClosest(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    setMode(true);
+    if(typeof boOpenNearMap==='function')boOpenNearMap();
+  }
+  function install(){
+    var button=ensureButton();
+    if(button&&button.dataset.closestWired!=='1'){
+      button.dataset.closestWired='1';
+      button.addEventListener('click',openClosest);
+    }
+    var near=document.getElementById('bopStaticNear');
+    if(near&&near.dataset.separateNearWired!=='1'){
+      near.dataset.separateNearWired='1';
+      near.addEventListener('click',function(){setMode(false)},true);
+    }
+    var back=document.getElementById('boNearMapBack');
+    if(back&&back.dataset.closestModeWired!=='1'){
+      back.dataset.closestModeWired='1';
+      back.addEventListener('click',function(){setMode(false)},true);
+    }
+  }
+  function start(){
+    install();
+    new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
