@@ -36656,4 +36656,44 @@ body footer.bop-approved-footer{
     }
   }
 </style>
+<style id="bop-main-landing-bjs-co-corner-v1">
+  /* Main landing founder badge: complete BJS CO. lockup, slightly larger and
+     tucked farther into the lower-right corner independently of the orb dock. */
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock .bop-static-bjs{
+    right:3px!important;
+    bottom:max(3px,env(safe-area-inset-bottom))!important;
+    width:66px!important;
+    height:66px!important;
+    min-width:66px!important;
+    min-height:66px!important;
+  }
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock .bop-static-bjs-lockup{
+    width:52px!important;
+    height:52px!important;
+  }
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock .bop-static-bjs-lockup strong{
+    font-size:13px!important;
+  }
+  body:has(#bopLandingOverlay.open) #bopStaticLandingDock .bop-static-bjs-lockup small{
+    display:block!important;
+    font-size:9px!important;
+    line-height:1!important;
+  }
+</style>
+<script id="bop-main-landing-bjs-co-copy-v1">
+(function(){
+  function correctFounderBadge(){
+    var lockup=document.querySelector('#bopStaticFounders .bop-static-bjs-lockup');
+    if(!lockup)return;
+    var strong=lockup.querySelector('strong');
+    var small=lockup.querySelector('small');
+    if(strong)strong.textContent='BJS';
+    if(small)small.textContent='CO.';
+    var button=document.getElementById('bopStaticFounders');
+    if(button)button.setAttribute('aria-label','BJS Co.');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',correctFounderBadge);
+  else correctFounderBadge();
+})();
+</script>
 </body></html>
