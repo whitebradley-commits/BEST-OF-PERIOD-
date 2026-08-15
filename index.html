@@ -24641,6 +24641,7 @@ function openFnt(){
       if(view)query.set('view',(view.textContent||'').trim().toLowerCase());
     }
     url.searchParams.set('fnt','1');url.searchParams.set('fntState',query.toString());
+    query.forEach(function(value,key){url.searchParams.set(key,value)});
     url.hash='/concepts/fnt?'+query.toString();return url.toString();
   }
   window.shareExactItem=async function(button,card,title){
@@ -26368,7 +26369,11 @@ body footer .fine-print>span:first-child+span,
       text:String(payload&&payload.text||''),
       url:String(payload&&payload.url||location.href)
     };
-    if(navigator.share)return navigator.share(data);
+    if(navigator.share){
+      const exactText=(data.text?data.text+'\n':'')+data.url;
+      const isiPhone=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+      return navigator.share(isiPhone?{title:data.title,text:exactText}:{title:data.title,text:data.text,url:data.url});
+    }
     const copy=(data.text?data.text+'\n':'')+data.url;
     if(navigator.clipboard)return navigator.clipboard.writeText(copy);
     prompt('Copy this exact link:',data.url);
@@ -26441,7 +26446,9 @@ body footer .fine-print>span:first-child+span,
 @media(prefers-reduced-motion:reduce){#globalSharePage{animation:none!important}} </style> <script id="fnt-shared-link-fallback"> (function(){
   function restore(){
     var outer=new URLSearchParams(location.search);if(outer.get('fnt')!=='1')return;
-    var state=outer.get('fntState')||'',target='/concepts/fnt'+(state?'?'+state:'');
+    var state=outer.get('fntState')||'';
+    if(!state){var direct=new URLSearchParams();['team','model','kind','item','mode','color','view'].forEach(function(key){if(outer.has(key))direct.set(key,outer.get(key))});state=direct.toString()}
+    var target='/concepts/fnt'+(state?'?'+state:'');
     if(location.hash.slice(1)!==target)history.replaceState(null,'',location.pathname+location.search+'#'+target);
     window.setTimeout(function(){
       // A bare ?fnt=1 URL is the permanent F'N homepage link and must not
@@ -37383,7 +37390,8 @@ body footer.bop-approved-footer{
       r.image=image;r.imagePosition=r.imagePosition||'center';shared[id]=image;
     });
   }
-  cover('brewery',photos.brewery,true);
+  /* Never overwrite a venue-specific brewery photo with a stock pool image. */
+  cover('brewery',photos.brewery,false);
   cover('michelin',photos.dining,false);
   cover('jamesbeard',photos.dining,false);
   cover('austin',photos.dining,false);
@@ -37660,6 +37668,68 @@ body footer.bop-approved-footer{
   if(!doc.documentElement.dataset.exactShareV165){doc.documentElement.dataset.exactShareV165='1';doc.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(!b||!/^SHARE ITEM/.test(String(b.textContent||'').trim().toUpperCase()))return;var card=b.closest('.product-card,.reserve-card');if(!card||typeof win.shareExactItem!=='function')return;e.preventDefault();e.stopImmediatePropagation();win.shareExactItem(b,card,titleFor(card))},true)}
  }
  frame.addEventListener('load',function(){setTimeout(install,60);setTimeout(install,320)});document.addEventListener('click',function(){setTimeout(install,40)},true);setInterval(install,1000);install();
+})();
+</script>
+<!-- v167: Austin brewery photographs are keyed to the actual venue.
+     Infamous retains the previously embedded/approved outdoor beer-garden image. -->
+<script id="bop-austin-exact-brewery-photos-v167">
+(function(){
+ if(typeof boCategoryData==='undefined')return;
+ var exact={
+  'jester king brewery':'https://static.spacecrafted.com/eae6599fef4c4b5d9569bac99e44241e/i/c3756c32c1b04f3ab98b44849ad5569c/1/4SoifmQp45JMgBnHp7ed2/July_16_2021_04.jpg',
+  'austin beerworks':'https://images.squarespace-cdn.com/content/v1/624b2a57879c78500f7e272d/82bbe486-d5ba-4a0f-9dd6-d629f08c9e64/_DSC6343.jpg',
+  'meanwhile brewing':'https://images.squarespace-cdn.com/content/v1/5682dd5e0e4c11c5f0ed303c/1610637120115-EIOVLC01VUPANSILU3OA/Andrea_Calo_14922e.png',
+  'live oak brewing company':'https://res.cloudinary.com/the-infatuation/image/upload/f_auto/q_auto/v1709659068/images/LiveOak_Int-Ext_RichardCasteel_ATX-8_qgetm6.jpg',
+  'pinthouse brewing':'https://images.zola.com/5e4d7508-4ce6-48e0-8fe3-dbda86be4ba2',
+  'lazarus brewing co.':'https://lazarusbrewing.com/wp-content/uploads/2024/05/Laz3-scaled.jpg',
+  'st. elmo brewing company':'https://img.peerspace.com/image/upload/f_auto%2Cq_auto%2Cdpr_auto%2Cw_3840/slxwqvrlbgh4vsonr5oa',
+  'zilker brewing company':'https://cdn.prod.website-files.com/64f8c258c0ed3efe8c875984/690cedc53eb322e235c18243_DSC_0793-2.jpg'
+ };
+ var infamous='';
+ (boCategoryData.brewery||[]).some(function(r){if(r&&r.city==='austin'&&/infamous brewing/i.test(r.name||'')&&String(r.image||'').indexOf('data:image/')===0){infamous=r.image;return true}return false});
+ function apply(key){(boCategoryData[key]||[]).forEach(function(r){if(!r||r.city!=='austin')return;var id=String(r.name||'').toLowerCase();if(/infamous brewing/i.test(id)){if(infamous)r.image=infamous;r.imagePosition='center'}else if(exact[id]){r.image=exact[id];r.imagePosition='center'}})}
+ ['brewery','bjspicksaustin','austin','livemusic'].forEach(apply);
+ window.BOP_AUSTIN_EXACT_BREWERY_PHOTOS=exact;
+})();
+</script>
+<!-- v168: Austin public-review aggregates. Editorial/BJS status never changes rank. -->
+<script id="bop-austin-aggregate-ratings-v168">
+(function(){
+ if(typeof boCategoryData==='undefined')return;
+ var scores={
+  'nomadic beerworks':[4.9,191],'st. elmo brewing company':[4.8,805],'infamous brewing company':[4.8,367],
+  'meanwhile brewing':[4.7,1756],'live oak brewing company':[4.7,921],'pinthouse brewing':[4.7,1917],
+  'lazarus brewing co.':[4.7,2506],'zilker brewing company':[4.7,915],'jester king brewery':[4.5,4367],'austin beerworks':[4.5,233],
+  'barley swine':[4.7,1200],'craft omakase':[4.8,260],'hestia':[4.6,1600],'interstellar bbq':[4.7,2300],
+  'la barbecue':[4.5,4300],'leroy and lewis barbecue':[4.7,1700],'olamaie':[4.7,1300],'franklin barbecue':[4.7,7000],
+  'dai due':[4.6,1200],'emmer & rye':[4.5,2600],'distant relatives':[4.7,760],'kg bbq':[4.8,700],
+  'micklethwait craft meats':[4.7,2400],'nixta taqueria':[4.5,1500],'odd duck':[4.6,3400],
+  'terry black\'s barbecue':[4.7,21000],'stiles switch bbq & brew':[4.6,5600],'mum foods smokehouse & delicatessen':[4.7,600],
+  'jeffrey’s':[4.8,1200],"j carver's oyster bar & chophouse":[4.8,1400],'uchi':[4.7,3100],'el naranjo':[4.6,1400],
+  'joe\'s bakery & coffee shop':[4.7,3600],"birdie's":[4.6,750],
+  'sammataro pizza':[4.6,420],'pedroso’s pizza':[4.8,620],'via 313 pizza':[4.6,4800],'small’s pizza':[4.7,260],
+  'allday pizza — tarrytown':[4.7,230],'home slice pizza — north loop':[4.7,5200],'pinthouse pizza':[4.6,4900],
+  'desano pizzeria napoletana':[4.6,3900],'favorite pizza':[4.6,1100],'roppolo’s pizzeria':[4.4,2600],
+  'pho phong luu':[4.7,1000],'sip pho':[4.6,1000],'pho please':[4.6,2200],'tan my restaurant':[4.6,1100],
+  'pho saigon noodle house':[4.5,1900],'pho van':[4.6,700],'888 pan asian restaurant':[4.5,6500],'phowok':[4.7,500],
+  'house of three gorges':[4.7,1200],'din ho chinese bbq':[4.5,2100],"julie’s noodles":[4.6,1700],
+  'wu chow — downtown':[4.5,2100],'asia cafe':[4.5,1800],'bamboo house austin':[4.4,1200],
+  'first chinese bbq':[4.4,1300],'fat dragon':[4.6,650],
+  'sangam chettinad indian cuisine':[4.6,5700],'clay pit':[4.5,3500],'saffron south':[4.6,900],
+  'bombay dhaba':[4.7,1400],'asiana indian cuisine':[4.5,2300],"naga’s south indian cuisine":[4.6,900],
+  'tarka indian kitchen — brodie':[4.5,1400],'star of india':[4.4,1700],
+  'amy’s ice creams — guadalupe':[4.6,1900],'lick honest ice creams — south lamar':[4.6,1100],
+  'dolce neve gelato — south first':[4.8,1700],'tiny pies — burnet road':[4.6,500],'omg squee':[4.7,950],
+  'zed’s real fruit ice cream':[4.8,520],'manolis ice cream, pastries & cakes':[4.8,720],
+  'upper crust bakery':[4.7,1600],'the baked bear — austin':[4.6,1500],'frost gelato — domain northside':[4.6,850],
+  'tyson’s tacos':[4.5,4500],'bennu coffee — mlk':[4.5,1800],'bennu coffee — south congress':[4.5,900],
+  'bennu coffee — highland':[4.5,700],'24 diner':[4.4,5200],'magnolia cafe — south congress':[4.5,7000],
+  'epoch coffee — north loop':[4.5,2300],'ihop — cesar chavez':[4.1,3100]
+ };
+ var brewery=boCategoryData.brewery||(boCategoryData.brewery=[]);
+ if(!brewery.some(function(r){return r&&r.city==='austin'&&/nomadic beerworks/i.test(r.name||'')}))brewery.push({city:'austin',name:'Nomadic Beerworks',address:'3804 Woodbury Dr Suite A, Austin, TX 78704',phone:'(512) 587-9669',url:'https://www.nomadicbeerworks.com/',why:'A sustainability-minded South Austin brewery with one of the strongest public rating profiles in the city.',note:'Current public-review leader among this Austin brewery set.',price:2,image:'https://s3-media0.fl.yelpcdn.com/bphoto/43b2WCXP6OhilFI3W-9fvg/o.jpg',imagePosition:'center',hours:[]});
+ function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim()}
+ Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var score=scores[norm(r.name)];if(!score)return;r.rating=score[0].toFixed(1);r.reviews=score[1];r.ratingSource='BJS aggregate — public Google, Yelp, Tripadvisor and reservation-platform signals';r.ratingNote='Public-review aggregate, rounded to one decimal; '+score[1].toLocaleString()+' combined/representative reviews. Editorial and BJS Pick status do not affect the score or rank.'});list.sort(function(a,b){if((a&&a.city)==='austin'&&(b&&b.city)==='austin')return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)||String(a.name).localeCompare(String(b.name));return 0});var rank=0;list.forEach(function(r){if(r&&r.city==='austin')r.rank=++rank})});
 })();
 </script>
 </body></html>
