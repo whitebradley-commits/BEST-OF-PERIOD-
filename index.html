@@ -27744,10 +27744,21 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 (function(){
   function clickOriginal(selector){const target=document.querySelector(selector);if(target)target.click();}
   function bind(){
-    const share=document.getElementById('bopStaticShare');const near=document.getElementById('bopStaticNear');const other=document.getElementById('bopStaticOtherCities');const world=document.getElementById('bopStaticWorld');
+    const share=document.getElementById('bopStaticShare');const near=document.getElementById('bopStaticNear');const other=document.getElementById('bopStaticOtherCities');const closest=document.getElementById('bopStaticClosestFive');const world=document.getElementById('bopStaticWorld');
     if(share)share.addEventListener('click',function(){clickOriginal('#landingSharePage')});
     if(near)near.addEventListener('click',function(){clickOriginal('#bopLandingNearMeBtn')});
     if(other)other.addEventListener('click',function(){if(typeof openOtherCitiesFrom==='function')openOtherCitiesFrom(other);});
+    if(closest){
+      closest.dataset.closestWired='1';
+      closest.addEventListener('click',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        document.body.classList.add('bo-closest-five-active');
+        const original=document.querySelector('#bopLandingNearMeBtn');
+        if(original) original.click();
+        else if(typeof window.boOpenNearMap==='function') window.boOpenNearMap();
+      });
+    }
     if(world)world.addEventListener('click',function(){if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
