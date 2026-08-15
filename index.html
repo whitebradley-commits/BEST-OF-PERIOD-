@@ -7038,6 +7038,7 @@
   }
   .bo-near-closest-filter[aria-pressed="true"]{background:#F59E0B;color:#000;box-shadow:0 0 12px rgba(245,158,11,.58);}
   .bo-near-closest-status{margin:13px 3px 0;color:#d6b472;font:700 11px/1.35 'Archivo Narrow',sans-serif;letter-spacing:.03em;}
+  .bo-near-after-hours-note{margin:11px 3px 0;color:#ef233c;font:900 10px/1.25 'Archivo Black',Arial,sans-serif;letter-spacing:.055em;text-align:center;}
   .bo-near-closest-list{display:grid;gap:7px;margin-top:12px;}
   .bo-near-closest-row{
     width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;
@@ -20207,7 +20208,7 @@ function boEnsureNearMapPage(){
     const closest=document.createElement('section');
     closest.className='bo-near-closest';
     closest.setAttribute('aria-label','Closest restaurants by dining type');
-    closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">DIVE</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">CASUAL</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">FINE</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL 15</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Choose Dive, Casual, Fine, or All 15.</p><div class="bo-near-closest-list" id="boNearClosestList"></div>';
+    closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">DIVE</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">CASUAL</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">FINE</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL 15</button></div><p class="bo-near-after-hours-note">AFTER HOURS MAY RESULT IN FARTHER LOCATIONS.</p><p class="bo-near-closest-status" id="boNearClosestStatus">Choose Dive, Casual, Fine, or All 15.</p><div class="bo-near-closest-list" id="boNearClosestList"></div>';
     nearLower.insertBefore(closest,nearLower.firstChild);
     closest.querySelectorAll('[data-near-tier]').forEach(btn=>btn.addEventListener('click',()=>{
       boNearClosestTier=btn.dataset.nearTier||'';
@@ -20318,8 +20319,8 @@ function boRenderNearClosestFive(){
   const available=boNearMappedRestaurants.map(item=>{
     const rating=Number(item.restaurant&&item.restaurant.rating)||0;
     const point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)};
-    return {...item,rating,distance:boNearDistanceMiles(boNearUserLatLng,point)};
-  }).filter(item=>Number.isFinite(item.distance)).sort((a,b)=>a.distance-b.distance);
+    return {...item,rating,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:boNearHoursState(item.restaurant)};
+  }).filter(item=>Number.isFinite(item.distance)&&(item.hoursState.state==='open'||item.hoursState.state==='closing')).sort((a,b)=>a.distance-b.distance);
   let candidates=[];
   if(boNearClosestTier==='all'){
     ['dive','casual','fine'].forEach(tier=>{
@@ -20330,12 +20331,12 @@ function boRenderNearClosestFive(){
   }
   if(!candidates.length){
     list.innerHTML='';
-    status.textContent=boNearGeocodingComplete ? 'No '+boNearClosestTier+' restaurants are mapped near this location yet.' : 'Finding the closest '+boNearClosestTier+' restaurants near you…';
+    status.textContent=boNearGeocodingComplete ? 'No open '+boNearClosestTier+' restaurants are mapped near this location right now.' : 'Finding the closest open '+boNearClosestTier+' restaurants near you…';
     return;
   }
   status.textContent=boNearClosestTier==='all'
-    ? (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest restaurants across Dive, Casual, and Fine.'
-    : (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest '+boNearClosestTier+(candidates.length===1?' restaurant.':' restaurants.');
+    ? (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest open restaurants across Dive, Casual, and Fine.'
+    : (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest open '+boNearClosestTier+(candidates.length===1?' restaurant.':' restaurants.');
   list.innerHTML=candidates.map((item,index)=>{
     const r=item.restaurant, level=boNearPriceLevel(r);
     const distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';
