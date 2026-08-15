@@ -24661,7 +24661,9 @@ function openFnt(){
     const basic=new URLSearchParams();if(chosen)basic.set('team',chosen);return basic.toString();
   };
   function restoreExactItem(){
-    const query=params(),kind=query.get('kind'),item=query.get('item');if(!kind||item===null)return;
+    const query=params(),requestedTeam=query.get('team'),kind=query.get('kind'),item=query.get('item');
+    if(requestedTeam&&requestedTeam!==chosen){chosen=requestedTeam;try{sessionStorage.setItem('fnt-current-team',chosen)}catch(_error){}showShop()}
+    if(!kind||item===null)return;
     const requestedModel=query.get('model');
     if(requestedModel&&requestedModel!==modelGender){modelGender=requestedModel;showShop()}
     setTimeout(function(){
@@ -26445,7 +26447,10 @@ body footer .fine-print>span:first-child+span,
       // A bare ?fnt=1 URL is the permanent F'N homepage link and must not
       // inherit the last Yankees/James Perse selection from this device.
       if(!state&&typeof openFntHome==='function')openFntHome();
-      else if(typeof openFnt==='function')openFnt();
+      else if(typeof openFnt==='function'){
+        var frame=document.getElementById('fntFrame');if(frame){frame.dataset.loaded='';frame.srcdoc=''}
+        openFnt();
+      }
     },180);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
@@ -37640,6 +37645,21 @@ body footer.bop-approved-footer{
  new MutationObserver(function(records){if(records.some(function(r){return Array.prototype.some.call(r.addedNodes,function(n){return n.nodeType===1&&n.classList&&n.classList.contains('teen-stage-tag')})}))queue()}).observe(host,{childList:true});
  queue();
  var overlay=document.getElementById('teenOverlay');if(overlay)new MutationObserver(queue).observe(overlay,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<script id="bop-fnt-share-reseller-v165">
+(function(){
+ var frame=document.getElementById('fntFrame');if(!frame)return;
+ function titleFor(card){var n=card&&card.querySelector('.product-name,.reserve-title,h1,h2,h3,.name,.title');var s=n&&String(n.textContent||'').replace(/\s+/g,' ').trim();if(s)return s;var id=String(card&&card.dataset.rid||'').toLowerCase();if(id.indexOf('crew')>-1)return'ALO Crew Sweatshirt';if(id.indexOf('hood')>-1)return'ALO Hoodie';return'F’N Item'}
+ function install(){
+  var win=frame.contentWindow,doc=frame.contentDocument;if(!win||!doc||!doc.body)return;
+  if(!doc.getElementById('fnt-v165-style')){var st=doc.createElement('style');st.id='fnt-v165-style';st.textContent='@keyframes fntSoftPulse{0%,100%{box-shadow:2px 2px 0 #2e1065,0 0 7px rgba(124,58,237,.35)}50%{box-shadow:2px 2px 0 #2e1065,0 0 16px rgba(124,58,237,.78)}}.fnt-footer-share-page{width:min(174px,56vw)!important;min-height:38px!important;margin:22px auto 25px!important;padding:7px 12px!important;gap:7px!important;font-size:9px!important;border-width:1.5px!important;animation:fntSoftPulse 2.4s ease-in-out infinite!important}.fnt-footer-share-page svg{width:14px!important;height:14px!important}.fnt-footer-note{margin-top:0!important;padding:0 14px 24px!important;line-height:1.65!important}.fnt-reseller-link{border:0;background:none;padding:0;color:#b892ff;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.fnt-law-overlay{position:fixed;inset:0;z-index:2147483647;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.88)}.fnt-law-overlay.open{display:grid}.fnt-law-card{position:relative;width:min(560px,92vw);max-height:84vh;overflow:auto;padding:25px 22px;border:2px solid #7c3aed;background:#050505;color:#eee;box-shadow:0 0 28px rgba(124,58,237,.6);font:700 13px/1.5 Arial,sans-serif}.fnt-law-card h2{margin:0 40px 14px 0;color:#f59e0b;font:1000 24px/1 Arial,sans-serif}.fnt-law-card p{margin:10px 0}.fnt-law-card a{color:#c4a7ff}.fnt-law-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:2px solid #f59e0b;border-radius:50%;background:#050505;color:#e4002b;font:1000 21px Arial;cursor:pointer}@media(prefers-reduced-motion:reduce){.fnt-footer-share-page{animation:none!important}}';doc.head.appendChild(st)}
+  var note=doc.querySelector('.fnt-footer-note');if(note&&!note.querySelector('.fnt-reseller-link'))note.innerHTML='CREATED BY BJS CO. · F’N TEAM IS A THIRD-PARTY <button type="button" class="fnt-reseller-link">RESELLER</button> OF FINE GOODS';
+  var overlay=doc.getElementById('fntLawOverlay');if(!overlay){overlay=doc.createElement('div');overlay.id='fntLawOverlay';overlay.className='fnt-law-overlay';overlay.setAttribute('aria-hidden','true');overlay.innerHTML='<section class="fnt-law-card" role="dialog" aria-modal="true" aria-labelledby="fntLawTitle"><button class="fnt-law-close" type="button" aria-label="Close">×</button><h2 id="fntLawTitle">U.S. RESALE BASICS</h2><p>A lawfully purchased genuine item may generally be resold under the first-sale doctrine.</p><p>Customization, printing, or adding a reseller label may be lawful, but material alterations should be clearly disclosed. A reseller must not falsely imply sponsorship, approval, or affiliation with the original brand.</p><p>Required product labels and information cannot simply disappear; textile fiber content, care instructions, country of origin, and responsible-business identity are regulated.</p><p><strong>This is general information, not legal advice.</strong></p><p><a target="_blank" rel="noopener" href="https://uscode.house.gov/view.xhtml?edition=2023&amp;num=0&amp;req=granuleid%3AUSC-2023-title17-section109">17 U.S.C. §109</a> · <a target="_blank" rel="noopener" href="https://uscode.house.gov/view.xhtml?edition=prelim&amp;f=treesort&amp;jumpTo=true&amp;num=0&amp;req=%28title%3A15+section%3A1125+edition%3Aprelim%29">15 U.S.C. §1125</a> · <a target="_blank" rel="noopener" href="https://www.ftc.gov/business-guidance/resources/threading-your-way-through-labeling-requirements-under-textile-wool-acts">FTC textile-label guidance</a></p></section>';doc.body.appendChild(overlay);overlay.querySelector('.fnt-law-close').onclick=function(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true')};overlay.onclick=function(e){if(e.target===overlay)overlay.querySelector('.fnt-law-close').click()}}
+  doc.querySelectorAll('.fnt-reseller-link').forEach(function(b){if(b.dataset.ready)return;b.dataset.ready='1';b.onclick=function(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false')}});
+  if(!doc.documentElement.dataset.exactShareV165){doc.documentElement.dataset.exactShareV165='1';doc.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(!b||!/^SHARE ITEM/.test(String(b.textContent||'').trim().toUpperCase()))return;var card=b.closest('.product-card,.reserve-card');if(!card||typeof win.shareExactItem!=='function')return;e.preventDefault();e.stopImmediatePropagation();win.shareExactItem(b,card,titleFor(card))},true)}
+ }
+ frame.addEventListener('load',function(){setTimeout(install,60);setTimeout(install,320)});document.addEventListener('click',function(){setTimeout(install,40)},true);setInterval(install,1000);install();
 })();
 </script>
 </body></html>
