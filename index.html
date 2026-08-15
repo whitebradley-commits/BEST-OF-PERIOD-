@@ -22965,12 +22965,18 @@ function boRenderCategory(cat){
       if(opt.cat === 'cannabisinfused') return boCannabisCategoryAvailable(boCityContext);
       return true;
     });
-    // The featured row above stays editorial. BJS Picks gets its own doorway
-    // before the directory; the remaining tiles are split into A–J and K–Z.
+    // Preserve the original editorial group at the top. Only the categories
+    // after this group belong in the alphabetical directory. BJS Picks is the
+    // final tile in the featured group (never a detached row of its own).
+    const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','cheesesteak','bjspicks'];
+    let featuredPickerOptions = [];
     let featuredBjsOption = null;
     if(cat === 'otheroptions'){
       featuredBjsOption = pickerOptions.find(opt => opt.cat === 'bjspicks') || null;
-      pickerOptions = pickerOptions.filter(opt => opt.cat !== 'bjspicks');
+      featuredPickerOptions = featuredCategoryOrder
+        .map(category => pickerOptions.find(opt => opt.cat === category))
+        .filter(Boolean);
+      pickerOptions = pickerOptions.filter(opt => !featuredCategoryOrder.includes(opt.cat));
       pickerOptions = pickerOptions.slice().sort((a,b) => {
         const aNew = a.cat === 'newrestaurants';
         const bNew = b.cat === 'newrestaurants';
@@ -23028,7 +23034,11 @@ function boRenderCategory(cat){
       const plainLabel = opt => String(opt.label || '').replace(/<[^>]*>/g,' ').replace(/&[^;]+;/g,' ').replace(/\s+/g,' ').trim();
       const firstHalf = pickerOptions.filter(opt => /^[A-J]/i.test(plainLabel(opt)));
       const secondHalf = pickerOptions.filter(opt => !/^[A-J]/i.test(plainLabel(opt)));
-      pickerDirectoryHTML = `<div class="bo-featured-bjs-break"><button type="button" class="bo-picker-btn bo-picker-btn-bjs bo-featured-all-bjs" id="boAllBjsFeaturedBtn">${featuredBjsOption ? featuredBjsOption.label : 'BJS PICKS'}</button></div>`+
+      const featuredWithoutBjs = featuredPickerOptions.filter(opt => opt.cat !== 'bjspicks');
+      const featuredBjsHTML = featuredBjsOption
+        ? `<button type="button" class="bo-picker-btn bo-picker-btn-bjs" id="boAllBjsFeaturedBtn">${featuredBjsOption.label}</button>`
+        : '';
+      pickerDirectoryHTML = `<section class="bo-alpha-quadrant bo-featured-category-group" aria-label="Featured categories"><div class="bo-picker-grid bo-picker-grid-below-fold">${featuredWithoutBjs.map(pickerButtonHTML).join('')}${featuredBjsHTML}</div></section>`+
         `<div class="bo-search-popularity-note">IN ALPHABETICAL ORDER</div>`+
         `<section class="bo-alpha-quadrant" aria-label="Categories A through J"><div class="bo-alpha-quadrant-label">A–J</div><div class="bo-picker-grid bo-picker-grid-below-fold">${firstHalf.map(pickerButtonHTML).join('')}</div></section>`+
         `<section class="bo-alpha-quadrant bo-alpha-quadrant-second" aria-label="Categories K through Z"><div class="bo-alpha-quadrant-label">K–Z</div><div class="bo-picker-grid bo-picker-grid-below-fold">${secondHalf.map(pickerButtonHTML).join('')}</div></section>`;
