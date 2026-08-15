@@ -22346,8 +22346,9 @@ function boBuildExactPageShare(categoryKey, cityKey){
   else if(categoryLabel === categoryLabel.toUpperCase()){
     categoryLabel = categoryLabel.toLowerCase().replace(/\b\w/g, function(letter){ return letter.toUpperCase(); }).replace(/\bBbq\b/g, 'BBQ').replace(/\bNyc\b/g, 'NYC');
   }
-  const title = `Best of ${categoryLabel} Period. ${cityLabel}`;
-  return { url:url.toString(), title:title, text:`Check out ${title}.` };
+  /* Brand-first share copy: city always sits between Best of and Period. */
+  const title = `Best of ${cityLabel} Period.`;
+  return { url:url.toString(), title:title, text:title };
 }
 window.boBuildExactPageShare = boBuildExactPageShare;
 
@@ -26416,7 +26417,13 @@ body footer .fine-print>span:first-child+span,
       return {title:'Best of '+label+' Period',text:'Check out the Best of '+label+' Period page.',url:exactShareUrl()};
     }
     if(isOpen(document.getElementById('bestOfOverlay'))&&typeof window.boBuildExactPageShare==='function')return window.boBuildExactPageShare(window.boCurrentCat||boCurrentCat,window.boCityContext||boCityContext);
-    const url=new URL(location.href);url.hash='';return {title:'Best of Period',text:'Check out Best of Period.',url:url.toString()};
+    const currentCity=(window.boCityContext&&BO_CITY_CONFIG[window.boCityContext])?window.boCityContext:'';
+    if(currentCity&&currentCity!=='bestof'){
+      const cityLabel=BO_CITY_CONFIG[currentCity].displayName||BO_CITY_CONFIG[currentCity].landingName||currentCity;
+      const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('city',currentCity);
+      const branded='Best of '+cityLabel+' Period.';return {title:branded,text:branded,url:url.toString()};
+    }
+    const url=new URL(location.href);url.hash='';return {title:'Best of Period.',text:'Best of Period.',url:url.toString()};
   }
   function shouldShow(){return !isVisible(document.getElementById('bopLandingOverlay'))}
   function updateVisibility(){const button=document.getElementById('globalSharePage');if(!button)return;const next=shouldShow()?'flex':'none';if(button.style.display!==next)button.style.display=next}
@@ -37730,6 +37737,25 @@ body footer.bop-approved-footer{
  if(!brewery.some(function(r){return r&&r.city==='austin'&&/nomadic beerworks/i.test(r.name||'')}))brewery.push({city:'austin',name:'Nomadic Beerworks',address:'3804 Woodbury Dr Suite A, Austin, TX 78704',phone:'(512) 587-9669',url:'https://www.nomadicbeerworks.com/',why:'A sustainability-minded South Austin brewery with one of the strongest public rating profiles in the city.',note:'Current public-review leader among this Austin brewery set.',price:2,image:'https://s3-media0.fl.yelpcdn.com/bphoto/43b2WCXP6OhilFI3W-9fvg/o.jpg',imagePosition:'center',hours:[]});
  function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim()}
  Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var score=scores[norm(r.name)];if(!score)return;r.rating=score[0].toFixed(1);r.reviews=score[1];r.ratingSource='BJS aggregate — public Google, Yelp, Tripadvisor and reservation-platform signals';r.ratingNote='Public-review aggregate, rounded to one decimal; '+score[1].toLocaleString()+' combined/representative reviews. Editorial and BJS Pick status do not affect the score or rank.'});list.sort(function(a,b){if((a&&a.city)==='austin'&&(b&&b.city)==='austin')return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)||String(a.name).localeCompare(String(b.name));return 0});var rank=0;list.forEach(function(r){if(r&&r.city==='austin')r.rank=++rank})});
+})();
+</script>
+<!-- v169: verified brewery distinctions and brand-correct city share copy. -->
+<script id="bop-austin-brewery-accolades-v169">
+(function(){
+ if(typeof boCategoryData==='undefined')return;
+ var details={
+  'infamous brewing company':{label:'BREWED IN-HOUSE',copy:'Infamous is famous for brewing in-house uncommon, insane concoctions. BBQ, 100%. Steak Night, 100%. A more authentic menu than most breweries.'},
+  'nomadic beerworks':{label:'BEST OF AUSTIN',copy:'Named Best Family Outpost in the Austin Chronicle’s 2024 Best of Austin awards.'},
+  'st. elmo brewing company':{label:'NATIONAL GOLD',copy:'Carl Kölsch won gold and Smoke on the Lager won bronze at the 2025 International Beer and Cider Awards.'},
+  'meanwhile brewing':{label:'MULTI-AWARD WINNER',copy:'Darlin’ won silver at the 2025 Great American Beer Festival, then gold at the 2026 Texas Craft Brewers Cup; Meanwhile Pilsner also earned 2026 bronze.'},
+  'pinthouse brewing':{label:'11 GABF MEDALS',copy:'Pinthouse won 2025 Great American Beer Festival gold for Fleeting Shadows and silver for Hecho En Szechuan, bringing its reported GABF medal total to eleven.'},
+  'lazarus brewing co.':{label:'GABF GOLD',copy:'Hot Shot won gold in Smoke Beer at the 2025 Great American Beer Festival; Black Pearl previously earned GABF gold in Herb and Spice Beer.'},
+  'jester king brewery':{label:'AWARD-WINNING FARMHOUSE',copy:'One of VinePair’s 30 best U.S. breweries and a three-medal winner at the 2023 Texas Craft Brewers Cup.'},
+  'live oak brewing company':{label:'TEXAS GOLD',copy:'Fumigator won gold in Smoke and Chili Beer at the 2025 Texas Craft Brewers Cup.'},
+  'austin beerworks':{label:'WORLD-CLASS BEER',copy:'A 2023 World Beer Cup silver medalist; Lazer Salad won 2025 Texas Craft Brewers Cup gold and Heavy Machinery earned 2026 World Beer Cup silver.'},
+  'zilker brewing company':{label:'MULTI-MEDAL WINNER',copy:'Zilkerator and Heavenly Daze earned Texas Craft Brewers Cup golds, while Icy Boys took 2026 silver.'}
+ };
+ Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var d=details[String(r.name||'').toLowerCase()];if(!d)return;r.redCalloutLabel=d.label;r.redCallout=d.copy;if(/infamous brewing/i.test(r.name||'')){r.why='Infamous is famous for brewing in-house uncommon, insane concoctions.';r.note='Independent Lake Travis-area brewery, taproom and beer garden producing distinctive small-batch recipes on site.'}})});
 })();
 </script>
 </body></html>
