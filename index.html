@@ -37257,4 +37257,64 @@ body footer.bop-approved-footer{
   install();
 })();
 </script>
+<!-- v154: Teen white graffiti wall, recurring finger tags and funky music -->
+<style id="bop-teen-graffiti-wall-v154-style">
+#teenOverlay{background:#f7f3e8!important;color:#080808!important;overflow-x:hidden!important}
+#teenOverlay .teen-shell{position:relative;z-index:4}
+#teenGraffitiWall{position:absolute;z-index:1;inset:0;min-height:100%;overflow:hidden;pointer-events:none;background:#f7f3e8}
+#teenGraffitiWall:before{content:'';position:absolute;inset:0;opacity:.36;background-image:linear-gradient(90deg,rgba(0,0,0,.055) 1px,transparent 1px),linear-gradient(rgba(0,0,0,.055) 1px,transparent 1px);background-size:54px 28px}
+.teen-graffiti-doodle{position:absolute;font:900 clamp(17px,5vw,42px)/.8 'Arial Black',Impact,sans-serif;letter-spacing:-.08em;opacity:.19;transform:rotate(var(--r));color:var(--c);-webkit-text-stroke:1px rgba(0,0,0,.18);filter:drop-shadow(2px 3px 0 rgba(0,0,0,.12))}
+.teen-wall-tag{position:absolute;width:var(--tag-size,96px);height:var(--tag-size,96px);object-fit:contain;opacity:.84;transform:rotate(var(--tag-r,0deg));filter:drop-shadow(2px 3px 0 rgba(0,0,0,.18))}
+.teen-wall-tag-number{position:absolute;color:#111;font:900 8px/1 'Arial Black',Arial,sans-serif;background:#f5df27;border:1px solid #111;padding:2px 4px;transform:rotate(-5deg)}
+#teenOverlay .teen-title{color:#111!important;-webkit-text-stroke:2px #F59E0B;text-shadow:4px 4px 0 #31d158,-3px -2px 0 #ef233c!important}
+#teenOverlay .teen-kicker{color:#111!important;font-weight:900!important;background:rgba(247,243,232,.8);width:max-content;max-width:94%;padding:7px 12px;margin-left:auto;margin-right:auto;border:2px solid #111;transform:rotate(-1deg)}
+#teenOverlay .teen-orb-label,#teenOverlay .teen-fate-copy,#teenOverlay .teen-fate-label,#teenOverlay .teen-movie-choice-label{color:#111!important;text-shadow:0 1px 0 #fff}
+#teenOverlay .teen-fate,#teenOverlay .teen-movie-choices,#teenOverlay .teen-results{background:rgba(247,243,232,.88);border-color:#111!important}
+#teenTagOrb{position:fixed;z-index:2147483002;left:8px;top:48%;transform:translateY(-50%) rotate(-5deg);display:none;place-items:center;width:82px;height:82px;padding:8px;border:4px solid #0c451f;border-radius:50%;background:#31d158;color:#07150b;text-align:center;font:900 12px/.9 'Arial Black',Impact,sans-serif;letter-spacing:-.04em;cursor:pointer;box-shadow:0 0 0 3px #F59E0B,0 0 19px rgba(49,209,88,.85),inset 0 0 13px rgba(255,255,255,.58);-webkit-text-stroke:.4px #07150b}
+#teenTagOrb small{display:block;margin-top:5px;font:900 7px/1 Arial,sans-serif;letter-spacing:.08em}
+#teenOverlay.open #teenTagOrb{display:grid}
+#teenTagDialog{position:fixed;z-index:2147483600;inset:0;display:none;place-items:center;padding:15px;background:rgba(0,0,0,.86)}
+#teenTagDialog.open{display:grid}.teen-tag-card{width:min(430px,100%);padding:16px;border:4px solid #31d158;background:#f7f3e8;box-shadow:0 0 0 3px #F59E0B,0 0 28px rgba(49,209,88,.65);transform:rotate(-.7deg)}
+.teen-tag-card h2{margin:0 0 4px;color:#111;font:900 32px/.9 'Arial Black',Impact,sans-serif;text-transform:uppercase;text-shadow:3px 3px 0 #31d158}
+.teen-tag-card p{margin:5px 0 10px;color:#222;font:800 11px/1.3 Arial,sans-serif}.teen-tag-canvas-wrap{border:3px solid #111;background:#fff;touch-action:none}
+#teenTagCanvas{display:block;width:100%;height:230px;touch-action:none}.teen-tag-colors{display:flex;gap:9px;margin:10px 0}.teen-tag-color{width:31px;height:31px;border:3px solid #111;border-radius:50%;background:var(--ink);cursor:pointer}.teen-tag-color.active{box-shadow:0 0 0 3px #F59E0B}
+.teen-tag-actions{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:8px}.teen-tag-actions button{min-height:43px;border:2px solid #111;background:#fff;color:#111;font:900 10px/1 'Arial Black',Arial,sans-serif}.teen-tag-actions .save{background:#31d158}
+#teenFunkDock{position:sticky;z-index:9;bottom:8px;display:none;grid-template-columns:auto repeat(3,1fr) auto;align-items:center;gap:5px;width:min(430px,calc(100% - 14px));margin:36px auto 8px;padding:6px;border:2px solid #111;border-radius:12px;background:rgba(247,243,232,.94);box-shadow:3px 4px 0 #F59E0B}
+#teenOverlay.open #teenFunkDock{display:grid}.teen-funk-label{font:900 8px/1 'Arial Black',Arial,sans-serif}.teen-funk-btn{min-height:34px;border:2px solid #111;border-radius:7px;background:#f5df27;color:#111;font:900 8px/1 'Arial Black',Arial,sans-serif}.teen-funk-btn.active{background:#31d158;box-shadow:0 0 8px #31d158}.teen-funk-mute{min-height:34px;border:2px solid #111;border-radius:7px;background:#111;color:#fff;font:900 8px/1 Arial,sans-serif}
+@media(max-width:430px){#teenTagOrb{left:5px;width:69px;height:69px;font-size:10px;opacity:.94}.teen-tag-card{padding:12px}#teenTagCanvas{height:205px}#teenFunkDock{grid-template-columns:auto repeat(3,1fr) auto}}
+</style>
+<div id="teenTagDialog" role="dialog" aria-modal="true" aria-label="Tag the wall"><div class="teen-tag-card"><h2>TAG THE WALL</h2><p>Sign or draw with your finger. Your next wall number is assigned automatically.</p><div class="teen-tag-canvas-wrap"><canvas id="teenTagCanvas" width="760" height="430"></canvas></div><div class="teen-tag-colors" aria-label="Ink color"><button class="teen-tag-color active" style="--ink:#111" data-ink="#111" aria-label="Black"></button><button class="teen-tag-color" style="--ink:#31d158" data-ink="#31d158" aria-label="Green"></button><button class="teen-tag-color" style="--ink:#ef233c" data-ink="#ef233c" aria-label="Red"></button><button class="teen-tag-color" style="--ink:#246bfd" data-ink="#246bfd" aria-label="Blue"></button><button class="teen-tag-color" style="--ink:#F59E0B" data-ink="#F59E0B" aria-label="Gold"></button></div><div class="teen-tag-actions"><button type="button" data-tag-action="cancel">CANCEL</button><button type="button" data-tag-action="clear">CLEAR</button><button type="button" class="save" data-tag-action="save">ADD MY TAG</button></div></div></div>
+<script id="bop-teen-graffiti-wall-v154-script">
+(function(){
+  var overlay=document.getElementById('teenOverlay');if(!overlay)return;
+  var wall=document.createElement('div');wall.id='teenGraffitiWall';wall.setAttribute('aria-hidden','true');overlay.insertBefore(wall,overlay.firstChild);
+  var orb=document.createElement('button');orb.id='teenTagOrb';orb.type='button';orb.innerHTML='TAG THE<br>WALL<small>TAP HERE</small>';overlay.appendChild(orb);
+  var dock=document.createElement('div');dock.id='teenFunkDock';dock.innerHTML='<span class="teen-funk-label">FUNK:</span><button class="teen-funk-btn active" data-funk="1">STREET</button><button class="teen-funk-btn" data-funk="2">BASS</button><button class="teen-funk-btn" data-funk="3">COSMIC</button><button class="teen-funk-mute" type="button">MUTE</button>';overlay.querySelector('.teen-shell').appendChild(dock);
+  var doodles=['TEEN','YO!','118','FUNK','BOP','MAKE NOISE','SUP!','★','////','STAY WEIRD','ATX','NYC','SD','LV'];
+  function seeded(n){var x=Math.sin(n*997.13)*43758.5453;return x-Math.floor(x)}
+  function baseWall(){var html='';for(var i=0;i<54;i++){html+='<span class="teen-graffiti-doodle" style="left:'+(seeded(i)*92)+'%;top:'+(seeded(i+61)*96)+'%;--r:'+(-18+seeded(i+121)*36)+'deg;--c:'+['#31d158','#ef233c','#246bfd','#F59E0B','#111'][i%5]+'">'+doodles[i%doodles.length]+'</span>'}wall.innerHTML=html}
+  function getTags(){try{return JSON.parse(localStorage.getItem('bopTeenWallTags')||'[]')}catch(e){return []}}
+  function renderTags(){baseWall();var tags=getTags(),depth=Math.max(58,108-Math.floor(tags.length/18)*7);tags.forEach(function(t,i){var img=document.createElement('img');img.className='teen-wall-tag';img.src=t.data;img.alt='';img.style.left=(3+seeded(t.num)*88)+'%';img.style.top=(7+seeded(t.num+19)*88)+'%';img.style.setProperty('--tag-r',(-15+seeded(t.num+43)*30)+'deg');img.style.setProperty('--tag-size',depth+'px');wall.appendChild(img);var n=document.createElement('span');n.className='teen-wall-tag-number';n.textContent='#'+t.num;n.style.left=(4+seeded(t.num)*88)+'%';n.style.top=(8+seeded(t.num+19)*88)+'%';wall.appendChild(n)})}
+  renderTags();
+  var dialog=document.getElementById('teenTagDialog'),canvas=document.getElementById('teenTagCanvas'),ctx=canvas.getContext('2d'),ink='#111',drawing=false,dirty=false;
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=9;
+  function point(e){var r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+  function startDraw(e){drawing=true;dirty=true;var p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);canvas.setPointerCapture(e.pointerId)}
+  function moveDraw(e){if(!drawing)return;var p=point(e);ctx.strokeStyle=ink;ctx.lineTo(p.x,p.y);ctx.stroke()}
+  function endDraw(){drawing=false}
+  canvas.addEventListener('pointerdown',startDraw);canvas.addEventListener('pointermove',moveDraw);canvas.addEventListener('pointerup',endDraw);canvas.addEventListener('pointercancel',endDraw);
+  function clear(){ctx.clearRect(0,0,canvas.width,canvas.height);dirty=false}
+  function compactTag(){var out=document.createElement('canvas');out.width=260;out.height=147;var c=out.getContext('2d');c.drawImage(canvas,0,0,out.width,out.height);return out.toDataURL('image/webp',.72)}
+  orb.onclick=function(){clear();dialog.classList.add('open')};
+  dialog.querySelectorAll('[data-ink]').forEach(function(b){b.onclick=function(){ink=b.dataset.ink;dialog.querySelectorAll('[data-ink]').forEach(function(x){x.classList.toggle('active',x===b)})}});
+  dialog.addEventListener('click',function(e){var a=e.target.closest('[data-tag-action]');if(!a)return;var action=a.dataset.tagAction;if(action==='clear')clear();if(action==='cancel')dialog.classList.remove('open');if(action==='save'){if(!dirty)return;var tags=getTags(),last=tags.reduce(function(m,t){return Math.max(m,Number(t.num)||0)},118),num=Math.max(118,last)+1;tags.push({num:num,data:compactTag()});try{localStorage.setItem('bopTeenWallTags',JSON.stringify(tags))}catch(err){tags=tags.slice(-120);localStorage.setItem('bopTeenWallTags',JSON.stringify(tags))}dialog.classList.remove('open');renderTags()}});
+  var audio=null,timer=null,current=1,muted=false,step=0;
+  var patterns={1:[55,0,82.41,55,73.42,0,82.41,110],2:[41.2,41.2,0,61.74,41.2,82.41,0,55],3:[65.41,98,0,130.81,73.42,0,110,82.41]};
+  function hit(freq){if(!audio||muted||!freq)return;var o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=current===3?'sine':current===2?'square':'sawtooth';o.frequency.setValueAtTime(freq,now);g.gain.setValueAtTime(.045,now);g.gain.exponentialRampToValueAtTime(.001,now+.12);o.connect(g).connect(audio.destination);o.start(now);o.stop(now+.13)}
+  function play(which){current=Number(which)||1;muted=false;if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();audio.resume();clearInterval(timer);step=0;timer=setInterval(function(){hit(patterns[current][step++%8])},current===2?155:180);dock.querySelectorAll('[data-funk]').forEach(function(b){b.classList.toggle('active',Number(b.dataset.funk)===current)});dock.querySelector('.teen-funk-mute').textContent='MUTE'}
+  dock.addEventListener('click',function(e){var b=e.target.closest('[data-funk]');if(b)play(b.dataset.funk);if(e.target.closest('.teen-funk-mute')){muted=!muted;e.target.textContent=muted?'PLAY':'MUTE';if(!muted)play(current)}});
+  var oldOpen=window.openBopTeen;window.openBopTeen=function(){var result=oldOpen&&oldOpen.apply(this,arguments);play(current);return result};
+  var close=document.getElementById('teenClose');if(close)close.addEventListener('click',function(){muted=true;dock.querySelector('.teen-funk-mute').textContent='PLAY'});
+})();
+</script>
 </body></html>
