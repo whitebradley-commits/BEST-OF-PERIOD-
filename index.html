@@ -20150,7 +20150,7 @@ function boEnsureNearMapPage(){
   if(nearTitle){
     const closestTitle=document.createElement('strong');
     closestTitle.className='bo-near-closest-title';
-    closestTitle.textContent='CLOSEST FIVE';
+    closestTitle.textContent='CLOSEST 5';
     nearTitle.insertBefore(closestTitle,nearTitle.querySelector('span'));
   }
   const nearLower=page.querySelector('.bo-near-map-lower');
@@ -20416,6 +20416,7 @@ function boCloseNearMap(returnToOrigin=false){
   const page=document.getElementById('boNearMapPage');
   boHideNearRestaurantCard();
   if(page) page.classList.remove('open');
+  document.body.classList.remove('bo-near-map-active');
   document.body.style.overflow='';
   if(returnToOrigin && boNearMapReturnTarget === 'landing'){
     const landing=document.getElementById('bopLandingOverlay');
@@ -20462,7 +20463,7 @@ async function boOpenNearMap(){
   const page=boEnsureNearMapPage();
   const status=document.getElementById('boNearMapStatus');
   const loading=document.getElementById('boNearMapLoading');
-  page.classList.add('open'); document.body.style.overflow='hidden'; page.scrollTop=0;
+  page.classList.add('open'); document.body.classList.add('bo-near-map-active'); document.body.style.overflow='hidden'; page.scrollTop=0;
   const nearSearch=document.getElementById('boNearMapSearchInput');
   const nearResults=document.getElementById('boNearMapSearchResults');
   if(nearSearch) nearSearch.value='';
@@ -35464,9 +35465,9 @@ body footer.bop-approved-footer{
 .teen-result-action{width:38px;height:38px;border-radius:50%;border:1px solid #f59e0b;background:#080808;display:grid;place-items:center;color:#f59e0b;cursor:pointer}
 .teen-result-action svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .teen-coming{grid-column:1/-1;color:#777;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:.72rem;margin:0;padding:7px 0 2px}
-.teen-fate{margin:42px auto 0;padding:30px 10px 6px;border-top:1px solid #3b2a0b;text-align:center}
-.teen-fate-title{margin:0;color:#f59e0b;font:900 1.05rem/1 'Archivo Black',sans-serif;letter-spacing:.09em;text-transform:uppercase}
-.teen-fate-copy{margin:8px auto 22px;color:#8e8e8e;font:600 .74rem/1.35 'IBM Plex Sans Condensed',sans-serif}
+.teen-fate{margin:42px auto 0;padding:38px 10px 18px;border-top:1px solid #3b2a0b;text-align:center}
+.teen-fate-title{margin:0;color:#f59e0b;font:900 clamp(1.8rem,7vw,3rem)/1 'Archivo Black',sans-serif;letter-spacing:.07em;text-transform:uppercase}
+.teen-fate-copy{max-width:600px;margin:15px auto 28px;color:#e2e2e2;font:800 clamp(1.05rem,4.4vw,1.55rem)/1.28 'IBM Plex Sans Condensed',sans-serif}
 .teen-fate-motion{position:relative;display:grid;place-items:center;width:148px;height:148px;margin:0 auto 18px;overflow:hidden;border:2px solid rgba(245,158,11,.72);border-radius:50%;background:radial-gradient(circle at 38% 28%,#33220d 0,#111 48%,#030303 100%);color:#f59e0b;font:900 .66rem/1.08 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 0 18px rgba(245,158,11,.25)}
 .teen-fate-motion::before{content:'';position:absolute;inset:-5px;border:2px solid transparent;border-top-color:#f59e0b;border-right-color:rgba(245,158,11,.38);border-radius:50%;animation:teenFateOrbit 2.3s linear infinite}
 .teen-fate-motion.is-deciding::before{animation-duration:.28s}
@@ -35477,10 +35478,18 @@ body footer.bop-approved-footer{
 .teen-fate-motion.is-holding .teen-fate-count{display:grid}
 .teen-fate-fingerprint{appearance:none;display:grid;place-items:center;width:74px;height:74px;margin:0 auto;border:0;background:transparent;color:#f59e0b;cursor:pointer;filter:drop-shadow(0 0 6px rgba(245,158,11,.38))}
 .teen-fate-fingerprint svg{width:66px;height:66px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
-.teen-fate-label{display:block;margin-top:5px;color:#fff;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.teen-fate-label{display:block;margin-top:9px;color:#fff;font:900 clamp(1rem,4.4vw,1.45rem)/1 'Archivo Black',sans-serif;letter-spacing:.08em;text-transform:uppercase}
 .teen-fate-options{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:22px auto 0;max-width:420px}
 .teen-fate-options.open{display:grid}
 .teen-fate-option{display:grid;place-items:center;min-height:70px;padding:12px 8px;border:1.5px solid #f59e0b;border-radius:14px;background:#090909;color:#fff;font:900 .7rem/1.12 'Archivo Black',sans-serif;letter-spacing:.035em;text-transform:uppercase}
+.teen-fate-final{grid-column:1/-1;display:grid;gap:17px;width:100%;padding:18px;border:1.5px solid #f59e0b;border-radius:18px;background:#050505;box-sizing:border-box}
+.teen-fate-final-sentence{color:#fff;font:900 clamp(1.25rem,5.2vw,2rem)/1.18 'Archivo Black',sans-serif;text-transform:none}
+.teen-fate-final-pictures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.teen-fate-final-picture{min-height:142px;padding:14px 8px;border:1px solid rgba(245,158,11,.7);border-radius:14px;background:radial-gradient(circle at 50% 25%,rgba(245,158,11,.18),#080808 70%);display:grid;place-items:center;align-content:center;gap:8px;color:#fff;font:900 .72rem/1.12 'Archivo Black',sans-serif}
+.teen-fate-final-picture svg{width:72px;height:72px;fill:none;stroke:#f59e0b;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(245,158,11,.5))}
+.teen-fate-fun{display:grid;grid-template-columns:86px 1fr;align-items:center;gap:12px;padding:8px 12px;color:#f59e0b;text-align:left;font:900 clamp(1.75rem,7vw,2.8rem)/.95 'Archivo Black',sans-serif}
+.teen-fate-fun svg{width:86px;height:86px;fill:none;stroke:#f59e0b;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;animation:teenFunRun .72s ease-out both}
+@keyframes teenFunRun{from{transform:translateX(-70vw) rotate(-8deg)}to{transform:translateX(0) rotate(0)}}
 @keyframes teenFateOrbit{to{transform:rotate(360deg)}}
 @media(max-width:390px){.teen-shell{padding-left:12px;padding-right:12px}.teen-orbs{gap:14px 5px}.teen-orb-visual{width:61px;height:61px}.teen-orb-label{font-size:.52rem}}
 </style>
@@ -35498,12 +35507,12 @@ body footer.bop-approved-footer{
     </section>
     <section class="teen-fate" id="teenFate" aria-live="polite">
       <h2 class="teen-fate-title">Let Fate Decide</h2>
-      <p class="teen-fate-copy" id="teenFateCopy">Press and hold the fingerprint for three seconds. First, fate chooses the category.</p>
-      <div class="teen-fate-motion" id="teenFateMotion"><div class="teen-fate-picture"><span>Your move</span></div><span class="teen-fate-count" id="teenFateCount">3</span></div>
+      <p class="teen-fate-copy" id="teenFateCopy">Press and hold the fingerprint for five seconds. First, fate chooses the category.</p>
+      <div class="teen-fate-motion" id="teenFateMotion"><div class="teen-fate-picture"><span>Your move</span></div><span class="teen-fate-count" id="teenFateCount">5</span></div>
       <button class="teen-fate-fingerprint" id="teenFateButton" type="button" aria-label="Let fate decide">
         <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 58c-13-8-19-20-17-35 2-14 15-21 27-15 11 6 14 21 9 33-3 8-8 13-12 17"/><path d="M22 49c-7-9-8-23-2-31 6-9 19-8 24 1 6 10 1 24-6 32"/><path d="M27 43c-4-7-4-17 0-22 4-5 12-3 14 3 3 8-1 17-6 24"/><path d="M32 38c-2-5-1-11 2-13 4 0 5 5 3 10-1 5-3 9-5 12"/></svg>
       </button>
-      <span class="teen-fate-label" id="teenFateLabel">Hold 3 Seconds</span>
+      <span class="teen-fate-label" id="teenFateLabel">Hold 5 Seconds</span>
       <div class="teen-fate-options" id="teenFateOptions"></div>
     </section>
   </main>
@@ -35542,18 +35551,18 @@ body footer.bop-approved-footer{
   const fateLabel=document.getElementById('teenFateLabel');
   const fateOptions=document.getElementById('teenFateOptions');
   const fateIdeas={
-    'Gum & Candy':['Find a candy shop','Go get a sundae'],
-    'Poké Balls':['Visit a game shop','Take a Poké walk'],
-    'Fast Food':['Try the closest spot','Pick something new'],
-    'Movies':['See what is in theaters','Pick something at home'],
-    'Car Wash':['Get the quick wash','Get the full clean'],
-    'Gas':['Fill it up now','Find the best nearby price'],
-    '7-Eleven':['Grab a Slurpee','Build a snack run'],
-    'The Mall':['Find new sneakers','Go window shopping'],
-    'Roller Coaster':['Find the closest ride','Plan an amusement day'],
-    'Boba':['Try a classic milk tea','Try a fruit tea'],
-    'Arcades':['Find a classic arcade','Find games and prizes'],
-    'Sneakers':['Shop a new release','Find the closest sneaker store']
+    'Gum & Candy':[['have candy','a candy shop'],['get a sundae','an ice cream shop']],
+    'Poké Balls':[['hunt for Poké Balls','a game shop'],['take a Poké walk','a nearby park']],
+    'Fast Food':[['have a burger','McDonald’s'],['grab a burger','Wendy’s'],['have tacos','Taco Bell'],['get chicken','Chick-fil-A']],
+    'Movies':[['see a movie','the closest theater'],['watch a movie','at home']],
+    'Car Wash':[['get the quick wash','the closest car wash'],['get the full clean','the best nearby car wash']],
+    'Gas':[['fill it up','the closest gas station'],['find the best price','a nearby gas station']],
+    '7-Eleven':[['grab a Slurpee','7-Eleven'],['build a snack run','7-Eleven']],
+    'The Mall':[['find something new','the closest mall'],['go window shopping','the closest mall']],
+    'Roller Coaster':[['ride a roller coaster','the closest amusement park'],['plan an amusement day','the closest theme park']],
+    'Boba':[['have a milk tea','the closest boba shop'],['try a fruit tea','the closest boba shop']],
+    'Arcades':[['play classic games','the closest arcade'],['win some prizes','the closest arcade']],
+    'Sneakers':[['shop a new release','the closest sneaker store'],['find new sneakers','the closest mall']]
   };
   let returnScroll=0;
   function svg(kind){return '<svg viewBox="0 0 32 32" aria-hidden="true">'+icons[kind]+'</svg>';}
@@ -35566,24 +35575,25 @@ body footer.bop-approved-footer{
   });
   if(fateButton&&fateMotion&&fateOptions){
     let fateStage='category',chosenCategory=null,holdTimer=null,countTimers=[],spinTimer=null;
-    function picture(label,kind){return '<div class="teen-fate-picture">'+svg(kind)+'<span>'+label+'</span></div><span class="teen-fate-count" id="teenFateCount">3</span>';}
+    function picture(label,kind){return '<div class="teen-fate-picture">'+svg(kind)+'<span>'+label+'</span></div><span class="teen-fate-count" id="teenFateCount">5</span>';}
     function setCount(value){const node=fateMotion.querySelector('.teen-fate-count');if(node)node.textContent=value;}
-    function cancelHold(){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(spinTimer)clearInterval(spinTimer);spinTimer=null;fateMotion.classList.remove('is-holding','is-deciding');setCount('3');}
+    function cancelHold(){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(spinTimer)clearInterval(spinTimer);spinTimer=null;fateMotion.classList.remove('is-holding','is-deciding');setCount('5');}
     function finishCategory(){
       cancelHold();chosenCategory=categories[Math.floor(Math.random()*categories.length)];fateMotion.innerHTML=picture(chosenCategory[0],chosenCategory[1]);
-      fateStage='choice';fateCopy.textContent='Fate chose '+chosenCategory[0]+'. Hold for three more seconds to find out exactly what you’re doing.';fateLabel.textContent='Hold 3 More Seconds';
+      fateStage='choice';fateCopy.textContent='Fate chose '+chosenCategory[0]+'. Hold for five more seconds to find out exactly where you’re going.';fateLabel.textContent='Hold 5 More Seconds';
     }
     function finishChoice(){
-      cancelHold();const ideas=fateIdeas[chosenCategory[0]]||['Try the closest option','Try something new'];const selected=ideas[Math.floor(Math.random()*ideas.length)];
-      fateMotion.innerHTML=picture(selected,chosenCategory[1]);fateStage='done';fateCopy.textContent='Fate has decided. This is your move.';fateLabel.textContent='Start Over';
-      fateOptions.innerHTML='<div class="teen-fate-option" style="grid-column:1/-1">'+selected+'</div>';fateOptions.classList.add('open');fateOptions.scrollIntoView({behavior:'smooth',block:'nearest'});
+      cancelHold();const ideas=fateIdeas[chosenCategory[0]]||[['try something new','the closest option']];const selected=ideas[Math.floor(Math.random()*ideas.length)];
+      const activity=selected[0],destination=selected[1];
+      fateMotion.innerHTML=picture(destination,chosenCategory[1]);fateStage='done';fateCopy.textContent='Fate has decided. Your plan is set.';fateLabel.textContent='Start Over';
+      fateOptions.innerHTML='<div class="teen-fate-final"><div class="teen-fate-final-sentence">You’re going to '+activity+' at '+destination+'.</div><div class="teen-fate-final-pictures"><div class="teen-fate-final-picture">'+svg(chosenCategory[1])+'<span>'+chosenCategory[0]+'</span></div><div class="teen-fate-final-picture">'+svg('store')+'<span>'+destination+'</span></div></div><div class="teen-fate-fun"><svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="44" cy="27" r="16"></circle><path d="M36 24h1m14 0h1M36 32c5 5 11 5 16 0M43 44v30M43 52 25 63M43 52l21-12M25 63l-7 21m25-10-9 12M64 40l8-9m-8 9 10 4M72 31l6-2m-6 2 2 6"></path></svg><span>HAVE FUN!</span></div></div>';fateOptions.classList.add('open');fateOptions.scrollIntoView({behavior:'smooth',block:'center'});
     }
     function beginHold(event){
-      event.preventDefault();if(fateStage==='done'){fateStage='category';chosenCategory=null;fateOptions.classList.remove('open');fateMotion.innerHTML=picture('Your move','ball');fateCopy.textContent='Press and hold the fingerprint for three seconds. First, fate chooses the category.';fateLabel.textContent='Hold 3 Seconds';return;}
-      cancelHold();fateMotion.classList.add('is-holding','is-deciding');setCount('3');
-      let turn=0;spinTimer=setInterval(function(){if(fateStage==='category'){const c=categories[turn%categories.length];fateMotion.querySelector('.teen-fate-picture').outerHTML=picture(c[0],c[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}else{const ideas=fateIdeas[chosenCategory[0]]||[];const visual=fateMotion.querySelector('.teen-fate-picture');if(visual)visual.outerHTML=picture(ideas[turn%ideas.length],chosenCategory[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}turn++;},125);
-      countTimers.push(setTimeout(function(){setCount('2');},1000),setTimeout(function(){setCount('1');},2000));
-      holdTimer=setTimeout(function(){if(fateStage==='category')finishCategory();else finishChoice();},3000);
+      event.preventDefault();if(fateStage==='done'){fateStage='category';chosenCategory=null;fateOptions.classList.remove('open');fateOptions.innerHTML='';fateMotion.innerHTML=picture('Your move','ball');fateCopy.textContent='Press and hold the fingerprint for five seconds. First, fate chooses the category.';fateLabel.textContent='Hold 5 Seconds';return;}
+      cancelHold();fateMotion.classList.add('is-holding','is-deciding');setCount('5');
+      let turn=0;spinTimer=setInterval(function(){if(fateStage==='category'){const c=categories[turn%categories.length];fateMotion.querySelector('.teen-fate-picture').outerHTML=picture(c[0],c[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}else{const ideas=fateIdeas[chosenCategory[0]]||[];const visual=fateMotion.querySelector('.teen-fate-picture');if(visual){const idea=ideas[turn%ideas.length]||['your next stop','nearby'];visual.outerHTML=picture(idea[1],chosenCategory[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}}turn++;},125);
+      countTimers.push(setTimeout(function(){setCount('4');},1000),setTimeout(function(){setCount('3');},2000),setTimeout(function(){setCount('2');},3000),setTimeout(function(){setCount('1');},4000));
+      holdTimer=setTimeout(function(){if(fateStage==='category')finishCategory();else finishChoice();},5000);
     }
     fateButton.addEventListener('pointerdown',beginHold);
     ['pointerup','pointercancel','pointerleave'].forEach(function(type){fateButton.addEventListener(type,function(){if(holdTimer)cancelHold();});});
@@ -35881,6 +35891,189 @@ body footer.bop-approved-footer{
     event.stopImmediatePropagation();
     openContained(url.href);
   },true);
+})();
+</script>
+<style id="bo-near-mobile-layout-final">
+  /* Keep the Near You heading, Closest 5 heading, map, and filters in
+     separate vertical bands on phones. */
+  #boNearMapPage .bo-near-map-canvas,
+  #boNearMapPage .bo-near-map-loading{
+    top:38vh !important;
+    height:31vh !important;
+  }
+  #boNearMapPage .bo-near-map-title{
+    top:max(145px,calc(38vh - 172px)) !important;
+    left:7vw !important;
+    right:7vw !important;
+    width:auto !important;
+  }
+  #boNearMapPage .bo-near-map-title strong{
+    font-size:clamp(2.65rem,11vw,5rem) !important;
+    line-height:.92 !important;
+    white-space:nowrap !important;
+  }
+  #boNearMapPage .bo-near-map-title .bo-near-closest-title{
+    margin-top:8px !important;
+    font-size:clamp(2.15rem,9vw,4rem) !important;
+    line-height:.94 !important;
+    white-space:nowrap !important;
+  }
+  #boNearMapPage .bo-near-map-title span{margin-top:10px !important;}
+  #boNearMapPage .bo-near-map-meta{top:calc(69vh + 10px) !important;}
+  #boNearMapPage .bo-near-map-lower{
+    top:calc(69vh + 66px) !important;
+    padding-bottom:150px !important;
+  }
+  #boNearMapPage .bo-near-closest{margin-bottom:34px !important;}
+  /* The landing dock belongs to the page behind this full-screen view. */
+  body.bo-near-map-active .bop-static-landing-dock{display:none !important;}
+  @media(max-width:380px){
+    #boNearMapPage .bo-near-map-title strong{font-size:clamp(2.35rem,10.5vw,3.5rem) !important;}
+    #boNearMapPage .bo-near-map-title .bo-near-closest-title{font-size:clamp(1.95rem,8.7vw,3rem) !important;}
+  }
+</style>
+<!-- Austin launch + universal Brewery category — August 2026 -->
+<script id="bop-austin-brewery-launch-v1">
+(function(){
+  if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData==='undefined'||typeof boPickerConfig==='undefined')return;
+
+  function list(key){ return boCategoryData[key]||(boCategoryData[key]=[]); }
+  function add(key,record){
+    var target=list(key);
+    if(!target.some(function(item){return item&&item.city===record.city&&item.name===record.name;}))target.push(Object.assign({},record));
+  }
+  function item(city,name,url,address,why,note,price,extra){
+    return Object.assign({city:city,name:name,url:url||'',address:address||'',phone:'',hours:[],rating:null,reviews:null,
+      why:why||'',note:note||'',price:price||2,hue:'272, 48%, 27%',image:'',imagePosition:'center'},extra||{});
+  }
+  function rerank(key,city){
+    var rank=0; list(key).forEach(function(r){if(r&&r.city===city)r.rank=++rank;});
+  }
+
+  /* Brewery is a permanent Main-page genre in every city. */
+  if(!boPickerConfig.otheroptions.some(function(tile){return tile&&tile.cat==='brewery';})){
+    var bbqIndex=boPickerConfig.otheroptions.findIndex(function(tile){return tile&&tile.cat==='bbq';});
+    boPickerConfig.otheroptions.splice(bbqIndex<0?boPickerConfig.otheroptions.length:bbqIndex+1,0,{label:'Brewery',cat:'brewery'});
+  }
+  if(typeof boHeroCopy!=='undefined')boHeroCopy.brewery={title:'BEST BREWERIES',sub:'The strongest independent breweries and taprooms in this city.'};
+  if(typeof boParentMap!=='undefined')boParentMap.brewery='otheroptions';
+
+  /* Austin is now a first-class live city in search, globe, routing and counts. */
+  BO_CITY_CONFIG.austin={displayName:'Austin',landingName:'Austin',areaList:['Austin','Lake Travis','Greater Austin'],
+    tickerMessages:['AUSTIN IS LIVE!','KEEP AUSTIN YUMMY'],useNameCycler:true,bjsPicksCat:'bjspicksaustin',countryLabel:'Texas'};
+  if(typeof BO_MAIN_CITY_CATS!=='undefined'&&BO_MAIN_CITY_CATS.indexOf('austin')<0)BO_MAIN_CITY_CATS.push('austin');
+  if(typeof LIVE_CITIES!=='undefined'&&!LIVE_CITIES.some(function(c){return c.dest==='austin';}))LIVE_CITIES.push({name:'Austin',region:'Texas',dest:'austin',aliases:['Austin, Texas','ATX']});
+  if(typeof OC_CITIES!=='undefined'&&!OC_CITIES.some(function(c){return c.dest==='austin';}))OC_CITIES.push({n:'Austin',la:30.2672,lo:-97.7431,t:'live',dest:'austin'});
+
+  var foodPhotos=[
+    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1400&q=84',
+    'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1400&q=84'
+  ];
+
+  var michelin=[
+    ['Barley Swine','https://www.barleyswine.com/','6555 Burnet Rd Ste 400','One Michelin Star','Chef Bryce Gilmore’s Texas tasting menu built around farms, seasonality and precise technique.'],
+    ['Craft Omakase','https://www.craftomakase.com/','4400 N Lamar Blvd Ste 102','One Michelin Star','An intimate omakase counter with exacting fish work and an Austin point of view.'],
+    ['Hestia','https://hestiaaustin.com/','607 W 3rd St Ste 105','One Michelin Star','Live-fire cooking is the center of the room and the menu.'],
+    ['InterStellar BBQ','https://www.theinterstellarbbq.com/','12233 Ranch Rd 620 N Ste 105','One Michelin Star','Michelin-starred barbecue known for brisket, peach tea-glazed pork belly and creative sides.'],
+    ['la Barbecue','https://www.labarbecue.com/','2401 E Cesar Chavez St','One Michelin Star','A Mueller-family smokehouse with deeply peppered bark and destination brisket.'],
+    ['LeRoy and Lewis Barbecue','https://leroyandlewisbbq.com/','5621 Emerald Forest Dr','One Michelin Star','New-school whole-animal Texas barbecue with exceptional beef cheeks and inventive specials.'],
+    ['Olamaie','https://olamaieaustin.com/','1610 San Antonio St','One Michelin Star','Polished contemporary Southern cooking; the off-menu biscuit remains essential.'],
+    ['Franklin Barbecue','https://franklinbbq.com/','900 E 11th St','Michelin Bib Gourmand','The national brisket benchmark and an Austin institution.'],
+    ['Dai Due','https://www.daidue.com/','2406 Manor Rd','Michelin Bib Gourmand + Green Star','Texas sourcing, whole-animal cookery and one of the city’s most thoughtful kitchens.'],
+    ['Emmer & Rye','https://emmerandrye.com/','51 Rainey St Ste 110','Michelin Bib Gourmand + Green Star','Seasonal small plates, house milling and fermentation on Rainey Street.'],
+    ['Distant Relatives','https://www.distantrelativesatx.com/','3901 Promontory Point Dr','Michelin Bib Gourmand','African-diaspora flavors expressed through Central Texas smoke.'],
+    ['KG BBQ','https://www.kgbbq.com/','3108 Manor Rd','Michelin Bib Gourmand','Egyptian-Texan barbecue with pomegranate-glazed ribs and bold spice.'],
+    ['Micklethwait Craft Meats','https://www.craftmeatsaustin.com/','1309 Rosewood Ave','Michelin Bib Gourmand','Handmade sausage, superb brisket and standout scratch-made sides.'],
+    ['Nixta Taqueria','https://www.nixtataqueria.com/','2512 E 12th St','Michelin Bib Gourmand','James Beard-recognized masa cooking and wildly creative tacos.'],
+    ['Odd Duck','https://www.oddduckaustin.com/','1201 S Lamar Blvd','Michelin Bib Gourmand','A foundational Austin farm-to-table restaurant with energetic shared plates.']
+  ].map(function(r,i){return item('austin',r[0],r[1],r[2],r[3],r[4],r[3].indexOf('Star')>-1?4:3,{michelinStars:r[3]==='One Michelin Star'?1:0,image:foodPhotos[i%foodPhotos.length],ratingNote:r[3]+' in the current MICHELIN Guide Texas selection.'});});
+  michelin.forEach(function(r){add('michelin',r);});
+
+  var bbq=[
+    ['Franklin Barbecue','https://franklinbbq.com/','900 E 11th St','The Austin brisket benchmark and the launch BJS Pick for barbecue.'],
+    ['InterStellar BBQ','https://www.theinterstellarbbq.com/','12233 Ranch Rd 620 N Ste 105','Michelin-starred barbecue with inventive specials.'],
+    ['la Barbecue','https://www.labarbecue.com/','2401 E Cesar Chavez St','Michelin-starred brisket with a dark pepper-forward bark.'],
+    ['LeRoy and Lewis Barbecue','https://leroyandlewisbbq.com/','5621 Emerald Forest Dr','Michelin-starred new-school whole-animal barbecue.'],
+    ['Micklethwait Craft Meats','https://www.craftmeatsaustin.com/','1309 Rosewood Ave','A Michelin Bib Gourmand with elite sausage and scratch sides.'],
+    ['Distant Relatives','https://www.distantrelativesatx.com/','3901 Promontory Point Dr','Central Texas smoke meets African-diaspora flavor.'],
+    ['KG BBQ','https://www.kgbbq.com/','3108 Manor Rd','Egyptian-Texan barbecue and a Michelin Bib Gourmand.'],
+    ["Terry Black's Barbecue",'https://www.terryblacksbbq.com/austin','1003 Barton Springs Rd','A high-volume Austin favorite with dependable brisket and giant beef ribs.'],
+    ['Stiles Switch BBQ & Brew','https://www.stilesswitchbbq.com/','6610 N Lamar Blvd','A North Lamar staple for classic Central Texas meats.'],
+    ['Mum Foods Smokehouse & Delicatessen','https://www.mumfoodsatx.com/','5811 Manor Rd','Smokehouse technique meets a serious delicatessen.'],
+    ['Parish Barbecue','https://www.parishbarbecue.com/','Austin, TX','A newer Michelin Bib Gourmand recognized for value and quality.']
+  ].map(function(r,i){return item('austin',r[0],r[1],r[2],i===0?'BJS Pick — Best Austin Barbecue':r[3],r[3],2,i===0?{bjsPick:true,bjsPickCity:'austin',bjsPickLabel:'Best Barbecue'}:{});});
+  bbq.forEach(function(r){add('bbq',r);});
+
+  var infamousImage='https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1400&q=84';
+  var breweries=[
+    ['Infamous Brewing Company','https://infamousbrewing.com/','4602 Weletka Dr','BJS Pick — an independent Lake Travis-area brewery, taproom and beer garden.'],
+    ['Jester King Brewery','https://jesterkingbrewery.com/','13187 Fitzhugh Rd','A destination farmhouse brewery known for mixed-culture and spontaneous fermentation.'],
+    ['Austin Beerworks','https://austinbeerworks.com/','3001 Industrial Ter','A defining Austin craft brewery with two major taproom campuses.'],
+    ['Meanwhile Brewing','https://www.meanwhilebeer.com/','3901 Promontory Point Dr','World-class beer in a sprawling South Austin gathering space.'],
+    ['Live Oak Brewing Company','https://liveoakbrewing.com/','1615 Crozier Ln','A Texas lager and smoked-beer specialist with deep Central European influence.'],
+    ['Pinthouse Brewing','https://pinthouse.com/','2201 E Ben White Blvd','Award-winning hoppy beer backed by one of Austin’s strongest brewpub operations.'],
+    ['Lazarus Brewing Co.','https://www.lazarusbrewing.com/','1902 E 6th St','Neighborhood brewery, coffeehouse and kitchen with an all-day following.'],
+    ['St. Elmo Brewing Company','https://www.stelmobrewing.com/','440 E St Elmo Rd','A relaxed South Austin taproom with consistently polished lagers and ales.'],
+    ['Zilker Brewing Company','https://zilkerbeer.com/','1701 E 6th St','East Sixth taproom with approachable house beer and neighborhood energy.']
+  ].map(function(r,i){return item('austin',r[0],r[1],r[2],i===0?'BJS Pick — Best Austin Brewery':r[3],r[3],2,i===0?{bjsPick:true,bjsPickCity:'austin',bjsPickLabel:'Best Brewery',image:infamousImage,phone:'(512) 487-8786'}:{});});
+  breweries.forEach(function(r){add('brewery',r);});
+
+  var steak=[
+    ['Jeffrey’s','https://jeffreysofaustin.com/','1204 W Lynn St','A longstanding Clarksville fine-dining institution and Michelin Guide selection.'],
+    ["J Carver's Oyster Bar & Chophouse",'https://www.jcarver.com/','509 Rio Grande St','A polished downtown chophouse with prime steaks and a serious raw bar.'],
+    ['Dai Due','https://www.daidue.com/','2406 Manor Rd','Texas meat, careful sourcing and whole-animal butchery recognized by Michelin.']
+  ].map(function(r){return item('austin',r[0],r[1],r[2],r[3],r[3],4);});
+  steak.forEach(function(r){add('steakhighend',r);});
+
+  var beard=[
+    ['Franklin Barbecue','Aaron Franklin — James Beard Best Chef: Southwest winner'],
+    ['Uchi','Tyson Cole — James Beard Best Chef: Southwest winner'],
+    ['El Naranjo','Iliana de la Vega — James Beard Best Chef: Texas winner'],
+    ['Nixta Taqueria','Edgar Rico — James Beard Emerging Chef winner'],
+    ["Joe's Bakery & Coffee Shop",'James Beard America’s Classics honoree'],
+    ["Birdie's",'Arjav Ezekiel — James Beard Outstanding Professional in Beverage Service winner'],
+    ['Dai Due','Jesse Griffiths — James Beard-recognized chef and author'],
+    ['Olamaie','A leading Austin Southern restaurant with repeated James Beard recognition']
+  ].map(function(r){return item('austin',r[0],'','',r[1],r[1],3);});
+  beard.forEach(function(r){add('jamesbeard',r);});
+
+  /* Best Of Period launch page: the strongest cross-category Austin set. */
+  var bestNames=['Barley Swine','Craft Omakase','Hestia','Olamaie','Franklin Barbecue','InterStellar BBQ','LeRoy and Lewis Barbecue','la Barbecue','Dai Due','Emmer & Rye','Nixta Taqueria','Jeffrey’s'];
+  bestNames.forEach(function(name,i){
+    var source=michelin.concat(bbq,steak,beard).find(function(r){return r.name===name;});
+    if(source)add('austin',Object.assign({},source,{image:foodPhotos[i%foodPhotos.length],why:'Best Of Austin Period — '+source.why}));
+  });
+
+  var bbqPick=bbq[0],brewPick=breweries[0];
+  add('bjspicksaustin',Object.assign({},bbqPick));
+  add('bjspicksaustin',Object.assign({},brewPick));
+  add('steak',steak[0]); add('steak',steak[1]); add('steak',steak[2]);
+
+  /* At least three brewery starters for every established U.S. destination. */
+  var national={
+    bestof:['Able Baker Brewing','CraftHaus Brewery','HUDL Brewing Company'],
+    miami:['Cervecería La Tropical','Wynwood Brewing Company','Tripping Animals Brewing Co.'],
+    sandiego:['Pure Project','North Park Beer Company','AleSmith Brewing Company'],
+    siliconvalley:['Hapa’s Brewing Company','Faultline Brewing Company','Freewheel Brewing Company'],
+    losangeles:['Highland Park Brewery','Monkish Brewing Co.','Arts District Brewing Company'],
+    santabarbara:['Third Window Brewing','Institution Ale Co.','Topa Topa Brewing Co.'],
+    sanfrancisco:['Cellarmaker Brewing Company','Barebottle Brewing Company','Fort Point Beer Company'],
+    newyork:['Other Half Brewing','Grimm Artisanal Ales','Threes Brewing'],
+    chicago:['Half Acre Beer Company','Revolution Brewing','Dovetail Brewery'],
+    washingtondc:['Bluejacket','DC Brau Brewing Company','Right Proper Brewing Company'],
+    boston:['Trillium Brewing Company','Harpoon Brewery','Night Shift Brewing'],
+    philadelphia:['Human Robot Beer','Yards Brewing Company','Other Half Philadelphia'],
+    atlanta:['Halfway Crooks Beer','Monday Night Brewing','Wild Heaven Beer'],
+    neworleans:['Brieux Carré Brewing Company','Parleaux Beer Lab','Urban South Brewery'],
+    idaho:['Barbarian Brewing','Woodland Empire Ale Craft','Payette Brewing Company']
+  };
+  Object.keys(national).forEach(function(city){
+    national[city].forEach(function(name){add('brewery',item(city,name,'','',name+' is one of the city’s strongest brewery starters.','Launch entry; full brewery detail and live rating audit continues.',2));});
+  });
+
+  ['austin','michelin','jamesbeard','bbq','brewery','steakhighend','bjspicksaustin'].forEach(function(key){rerank(key,'austin');});
 })();
 </script>
 </body></html>
