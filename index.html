@@ -23379,7 +23379,12 @@ function boRenderCategory(cat){
   // rating like every other page.
   const sortedEntries = boRankedRestaurantList(boScopedCategoryList);
   if(boSectionHeadTitleEl){
-    boSectionHeadTitleEl.textContent = isBjsPicksCat(cat) ? '' : `The Top ${sortedEntries.length}, Right Now`;
+    const sectionCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+    boSectionHeadTitleEl.textContent = isBjsPicksCat(cat)
+      ? ''
+      : (cat === 'brewery'
+          ? `${sectionCityName}’s ${sortedEntries.length} Strongest Breweries and Taprooms Right Now!`
+          : `The Top ${sortedEntries.length}, Right Now`);
   }
   sortedEntries.forEach((s, i) => {
     s.rank = i + 1;
@@ -36243,7 +36248,7 @@ body footer.bop-approved-footer{
     var bbqIndex=boPickerConfig.otheroptions.findIndex(function(tile){return tile&&tile.cat==='bbq';});
     boPickerConfig.otheroptions.splice(bbqIndex<0?boPickerConfig.otheroptions.length:bbqIndex+1,0,{label:'Brewery',cat:'brewery'});
   }
-  if(typeof boHeroCopy!=='undefined')boHeroCopy.brewery={title:'BEST BREWERIES',sub:'The strongest independent breweries and taprooms in this city.'};
+  if(typeof boHeroCopy!=='undefined')boHeroCopy.brewery={title:'BEST BREWERIES',sub:''};
   if(typeof boParentMap!=='undefined')boParentMap.brewery='otheroptions';
 
   /* Austin is now a first-class live city in search, globe, routing and counts. */
