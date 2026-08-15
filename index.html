@@ -37110,4 +37110,69 @@ body footer.bop-approved-footer{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<!-- v150: verified Michelin / James Beard launch batch — Dallas + Denver -->
+<script id="bop-awards-dallas-denver-v150">
+(function(){
+  if(typeof boCategoryData==='undefined')return;
+  function list(key){return boCategoryData[key]||(boCategoryData[key]=[])}
+  function same(a,b){return String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase()}
+  function install(record,categories){
+    categories.forEach(function(key){
+      var target=list(key),found=target.find(function(r){return r&&same(r.name,record.name)&&same(r.city,record.city)});
+      if(found)Object.assign(found,record);else target.push(Object.assign({},record));
+    });
+  }
+  function award(city,name,details){
+    return Object.assign({city:city,name:name,rating:null,reviews:null,price:4,hue:'31, 48%, 25%',
+      imagePosition:'center',menuComingSoon:true,menuLabel:'MENU — COMING SOON',hours:[],
+      michelinGuide:true,michelinStars:1,why:'One Michelin Star',note:'Michelin-recognized restaurant. Menu details are coming soon; phone and directions use the verified restaurant listing.'},details||{});
+  }
+
+  var records=[
+    award('dallas','Tatsu Dallas',{
+      url:'https://www.tatsu-dallas.com/',address:'3309 Elm St, Suite 120, Dallas, TX 75226',phone:'(469) 271-7710',
+      hours:[{days:[2,3,4,5,6],open:'17:30',close:'22:00'}],
+      image:'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1400&q=86',
+      why:'One Michelin Star — an intimate Deep Ellum omakase counter.',
+      note:'Chef-driven omakase in Deep Ellum. Closed Sunday and Monday. Menu details are coming soon.'
+    }),
+    award('dallas','Mamani',{
+      url:'https://www.mamanirestaurant.com/',address:'2681 Howell St, Suite BU4, Dallas, TX 75204',phone:'(469) 455-1435',
+      hours:[{days:[1,2,3,4],open:'17:00',close:'21:30'},{days:[5,6],open:'17:00',close:'22:00'},{days:[0],open:'17:00',close:'21:00'}],
+      image:'https://diningout.com/wp-content/uploads/2025/11/Mamani-Dining-Room-high-res.jpg',qualifiedPhoto:true,
+      why:'One Michelin Star — precise French cooking in Uptown Dallas.',
+      note:'Current Michelin-starred Dallas dining room. Menu details are coming soon.'
+    }),
+    award('denver','The Wolf’s Tailor',{
+      michelinStars:2,why:'Two Michelin Stars — Denver’s highest Michelin distinction.',
+      url:'https://www.thewolfstailor.com/',address:'4058 Tejon St, Denver, CO 80211',phone:'(720) 456-6705',
+      hours:[{days:[2,3,4,5,6,0],open:'17:00',close:'21:00'}],
+      image:'https://images.squarespace-cdn.com/content/5eb02870d91ad35bdc18db45/3e651e05-f880-478b-b330-d3dc6089df97/wolfs%2BTailor.jpg?content-type=image%2Fjpeg&format=1500w',qualifiedPhoto:true,
+      note:'Two-star tasting-menu restaurant in Sunnyside. Closed Monday. Menu details are coming soon.'
+    }),
+    award('denver','Kizaki',{
+      jamesBeard:true,jamesBeardYear:2026,jamesBeardHonor:'Best New Restaurant Semifinalist',
+      url:'https://www.kizakiden.com/',address:'1551 S Pearl St, Denver, CO 80210',phone:'(720) 512-2753',
+      hours:[{days:[3,4,5,6],open:'17:00',close:'22:00'}],
+      image:'https://images.squarespace-cdn.com/content/v1/58502c60f7e0ab5dd81f935b/1761321604932-RVPXZU0C7X2KH28DN6Z7/KIZAKI_INTERIOR%2B04_STONE%2BWALL_1280x1920_LANDSCAPE_25-0705.jpg?format=1000w',qualifiedPhoto:true,
+      why:'One Michelin Star + 2026 James Beard Best New Restaurant semifinalist.',
+      note:'Omakase restaurant on South Pearl Street. Closed Sunday through Tuesday. Menu details are coming soon.'
+    }),
+    award('denver','Margot',{
+      url:'https://www.kizakiden.com/margot.html',address:'1551 S Pearl St, Denver, CO 80210',phone:'(720) 390-8785',
+      image:'https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1400&q=86',
+      why:'One Michelin Star — an intimate Denver tasting-menu experience.',
+      note:'Michelin-starred restaurant on South Pearl Street. Menu and confirmed weekly hours are coming soon.'
+    })
+  ];
+  records.forEach(function(r){
+    install(r,[r.city,'michelin']);
+    if(r.jamesBeard)install(r,['jamesbeard']);
+  });
+  ['dallas','denver','michelin','jamesbeard'].forEach(function(key){
+    list(key).sort(function(a,b){return (Number(b.michelinStars)||0)-(Number(a.michelinStars)||0)||String(a.name||'').localeCompare(String(b.name||''))});
+    list(key).forEach(function(r,i){r.rank=i+1});
+  });
+})();
+</script>
 </body></html>
