@@ -20164,6 +20164,7 @@ function boEnsureNearMapPage(){
   if(nearTitle){
     const closestTitle=document.createElement('strong');
     closestTitle.className='bo-near-closest-title';
+    closestTitle.id='boNearClosestTitle';
     closestTitle.textContent='CLOSEST 5';
     nearTitle.insertBefore(closestTitle,nearTitle.querySelector('span'));
   }
@@ -20171,12 +20172,14 @@ function boEnsureNearMapPage(){
   if(nearLower){
     const closest=document.createElement('section');
     closest.className='bo-near-closest';
-    closest.setAttribute('aria-label','Closest five restaurants');
-    closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">DIVE</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">CASUAL</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">FINE</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Choose Dive, Casual, or Fine to see the five closest high-rated restaurants.</p><div class="bo-near-closest-list" id="boNearClosestList"></div>';
+    closest.setAttribute('aria-label','Closest restaurants by dining type');
+    closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">DIVE</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">CASUAL</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">FINE</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL 15</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Choose Dive, Casual, Fine, or All 15.</p><div class="bo-near-closest-list" id="boNearClosestList"></div>';
     nearLower.insertBefore(closest,nearLower.firstChild);
     closest.querySelectorAll('[data-near-tier]').forEach(btn=>btn.addEventListener('click',()=>{
       boNearClosestTier=btn.dataset.nearTier||'';
       closest.querySelectorAll('[data-near-tier]').forEach(item=>item.setAttribute('aria-pressed',String(item===btn)));
+      const closestTitle=document.getElementById('boNearClosestTitle');
+      if(closestTitle) closestTitle.textContent=boNearClosestTier==='all'?'CLOSEST 15':'CLOSEST 5';
       boRenderNearClosestFive();
     }));
   }
@@ -20253,25 +20256,35 @@ function boRenderNearClosestFive(){
   if(!list || !status || !boNearClosestTier) return;
   if(!boNearUserLatLng){
     list.innerHTML='';
-    status.textContent='Allow location access to calculate the closest five.';
+    status.textContent='Allow location access to calculate the closest restaurants.';
     return;
   }
-  const candidates=boNearMappedRestaurants.map(item=>{
+  const available=boNearMappedRestaurants.map(item=>{
     const rating=Number(item.restaurant&&item.restaurant.rating)||0;
     const point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)};
     return {...item,rating,distance:boNearDistanceMiles(boNearUserLatLng,point)};
-  }).filter(item=>Number.isFinite(item.distance)&&item.rating>=4.4&&boNearMatchesTier(item.restaurant,boNearClosestTier))
-    .sort((a,b)=>a.distance-b.distance).slice(0,5);
+  }).filter(item=>Number.isFinite(item.distance)).sort((a,b)=>a.distance-b.distance);
+  let candidates=[];
+  if(boNearClosestTier==='all'){
+    ['dive','casual','fine'].forEach(tier=>{
+      available.filter(item=>boNearMatchesTier(item.restaurant,tier)).slice(0,5).forEach(item=>candidates.push({...item,nearTier:tier}));
+    });
+  }else{
+    candidates=available.filter(item=>boNearMatchesTier(item.restaurant,boNearClosestTier)).slice(0,5);
+  }
   if(!candidates.length){
     list.innerHTML='';
-    status.textContent=boNearGeocodingComplete ? 'No high-rated '+boNearClosestTier+' restaurants are mapped near this location yet.' : 'Finding high-rated '+boNearClosestTier+' restaurants near you…';
+    status.textContent=boNearGeocodingComplete ? 'No '+boNearClosestTier+' restaurants are mapped near this location yet.' : 'Finding the closest '+boNearClosestTier+' restaurants near you…';
     return;
   }
-  status.textContent=(boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest high-rated '+boNearClosestTier+(candidates.length===1?' restaurant.':' restaurants.');
+  status.textContent=boNearClosestTier==='all'
+    ? (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest restaurants across Dive, Casual, and Fine.'
+    : (boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest '+boNearClosestTier+(candidates.length===1?' restaurant.':' restaurants.');
   list.innerHTML=candidates.map((item,index)=>{
     const r=item.restaurant, level=boNearPriceLevel(r);
     const distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';
-    return '<button type="button" class="bo-near-closest-row" data-near-closest-index="'+index+'"><span><span class="bo-near-closest-name">'+boNearEscape(r.name)+'</span><span class="bo-near-closest-meta">'+('$'.repeat(level||1))+' · ★ '+boNearEscape(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>';
+    const tier=item.nearTier?'<span class="bo-near-closest-tier">'+boNearEscape(item.nearTier.toUpperCase())+'</span> · ':'';
+    return '<button type="button" class="bo-near-closest-row" data-near-closest-index="'+index+'"><span><span class="bo-near-closest-name">'+boNearEscape(r.name)+'</span><span class="bo-near-closest-meta">'+tier+('$'.repeat(level||1))+' · ★ '+boNearEscape(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>';
   }).join('');
   list.querySelectorAll('[data-near-closest-index]').forEach(btn=>btn.addEventListener('click',()=>{
     const item=candidates[Number(btn.dataset.nearClosestIndex)];
@@ -20507,7 +20520,9 @@ async function boOpenNearMap(){
   const closestList=document.getElementById('boNearClosestList');
   const closestStatus=document.getElementById('boNearClosestStatus');
   if(closestList) closestList.innerHTML='';
-  if(closestStatus) closestStatus.textContent='Choose Dive, Casual, or Fine to see the five closest high-rated restaurants.';
+  if(closestStatus) closestStatus.textContent='Choose Dive, Casual, Fine, or All 15.';
+  const closestTitle=document.getElementById('boNearClosestTitle');
+  if(closestTitle) closestTitle.textContent='CLOSEST 5';
   document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(btn=>btn.setAttribute('aria-pressed','false'));
   const nearRadiusCountEl=document.getElementById('boNearRadiusCount');
   if(nearRadiusCountEl) nearRadiusCountEl.textContent='0';
@@ -36341,4 +36356,40 @@ body footer.bop-approved-footer{
   });
 })();
 </script>
+<style id="bo-near-closest-layout-v2">
+  #boNearMapPage .bo-near-map-title{
+    top:max(150px,19vh)!important;
+    left:7vw!important;
+    right:7vw!important;
+    width:auto!important;
+    max-width:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+  }
+  #boNearMapPage .bo-near-map-title>strong:first-child{
+    font-size:clamp(40px,11vw,62px)!important;
+    line-height:.92!important;
+  }
+  #boNearMapPage .bo-near-map-title .bo-near-closest-title{
+    display:block!important;
+    margin:14px 0 0!important;
+    font-size:clamp(32px,8.7vw,50px)!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  #boNearMapPage .bo-near-map-title span{
+    margin-top:13px!important;
+    font-size:11px!important;
+    line-height:1.2!important;
+  }
+  #boNearMapPage .bo-near-map-canvas,
+  #boNearMapPage .bo-near-map-loading{top:40vh!important;height:30vh!important}
+  #boNearMapPage .bo-near-radius-count{top:calc(40vh + 10px)!important}
+  #boNearMapPage .bo-near-map-meta{top:calc(70vh + 9px)!important}
+  #boNearMapPage .bo-near-map-lower{top:calc(70vh + 58px)!important;padding:18px 14px 150px!important}
+  #boNearMapPage .bo-near-closest-filters{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #boNearMapPage .bo-near-closest-filter{padding-left:5px!important;padding-right:5px!important;font-size:clamp(10px,2.8vw,13px)!important}
+  #boNearMapPage .bo-near-closest-tier{color:#F59E0B;font-weight:900}
+</style>
 </body></html>
