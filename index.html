@@ -37471,4 +37471,112 @@ body footer.bop-approved-footer{
   }
 })();
 </script>
+<!-- v158: Teen wall moved into the opening view + spray-can finger drawing. -->
+<style id="bop-teen-wall-spray-preview-v158">
+#teenOverlay .teen-shell{padding-top:16px!important}
+#teenOverlay .teen-title{margin-bottom:5px!important}
+#teenOverlay .teen-kicker{margin-bottom:12px!important}
+#teenWallStage{width:calc(100% + 20px)!important;min-height:310px!important;height:310px!important;margin:10px 0 18px -10px!important;border:7px solid #111!important;border-radius:3px;transform:perspective(850px) rotateX(1.5deg) scale(.94);transform-origin:center top;box-shadow:inset 0 0 60px rgba(25,15,8,.34),0 7px 0 #F59E0B,0 14px 24px rgba(0,0,0,.25)!important}
+#teenWallStage:after{content:'';position:absolute;z-index:6;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(45,28,16,.25) 100%);box-shadow:inset 0 0 0 5px rgba(255,255,255,.18)}
+.teen-wall-mural{transform:scale(.82);transform-origin:center;filter:saturate(.9) contrast(.92);opacity:.86}
+.teen-stage-tag{opacity:.82}
+#teenTagOrb{position:absolute!important;z-index:20!important;left:50%!important;top:auto!important;bottom:14px!important;transform:translateX(-50%) rotate(-2deg)!important;display:none;width:164px!important;height:94px!important;padding:9px!important;border:5px solid #111!important;border-radius:7px!important;background:#36dc64!important;box-shadow:0 0 0 4px #F59E0B,7px 8px 0 rgba(17,17,17,.85),0 0 24px rgba(49,209,88,.8)!important;overflow:hidden}
+#teenTagOrb:before{content:'TAG  TAG  TAG';position:absolute!important;inset:5px -18px auto!important;width:auto!important;height:auto!important;background:none!important;color:#ef233c;font:900 17px/1 'Arial Black',Impact,sans-serif;letter-spacing:-.08em;opacity:.42!important;transform:rotate(-12deg)!important;text-shadow:28px 18px 0 #246bfd,54px 35px 0 #f5df27}
+#teenTagOrb:after{content:''!important;position:absolute!important;left:-18px!important;right:-18px!important;bottom:12px!important;width:auto!important;height:14px!important;background:repeating-linear-gradient(90deg,#111 0 16px,transparent 16px 23px)!important;opacity:.28!important;transform:rotate(7deg)!important}
+#teenTagOrb .teen-tag-graffiti{font-size:22px!important;line-height:.7!important;-webkit-text-stroke:1.2px #111!important;text-shadow:3px 3px 0 #f5df27,-3px -2px 0 #ef233c!important}
+#teenTagOrb small{font-size:9px!important;margin-top:8px!important;padding:4px 7px!important}
+#teenOverlay.open #teenTagOrb{display:grid!important}
+.teen-wall-empty{bottom:auto!important;top:46px!important;font-size:8px!important;opacity:.85}
+#teenTagCanvas{cursor:none!important}
+.teen-tag-canvas-wrap{position:relative;overflow:hidden;background-color:#e7e2d6!important;background-image:linear-gradient(90deg,transparent 49%,rgba(30,20,10,.13) 49% 51%,transparent 51%),linear-gradient(rgba(30,20,10,.12) 2px,transparent 2px)!important;background-size:92px 46px!important}
+#teenSprayCan{position:fixed;z-index:2147483700;display:none;width:32px;height:56px;border:3px solid #111;border-radius:4px 4px 8px 8px;background:linear-gradient(90deg,#bbb,#fff 40%,#777);pointer-events:none;transform:translate(-8px,-50px) rotate(-16deg);box-shadow:3px 4px 0 rgba(0,0,0,.22)}
+#teenSprayCan:before{content:'';position:absolute;left:7px;top:-10px;width:16px;height:10px;border:3px solid #111;border-bottom:0;background:#ef233c}
+#teenSprayCan:after{content:'';position:absolute;right:-20px;top:-7px;width:25px;height:19px;background:radial-gradient(circle at 0 50%,rgba(17,17,17,.72) 0 2px,transparent 3px),radial-gradient(circle at 45% 30%,rgba(17,17,17,.42) 0 1px,transparent 2px),radial-gradient(circle at 78% 68%,rgba(17,17,17,.3) 0 1px,transparent 2px);filter:blur(.35px)}
+#teenSprayCan.spraying{display:block}
+@media(max-width:430px){#teenWallStage{height:286px!important;min-height:286px!important;margin-top:7px!important}#teenTagOrb{width:174px!important;height:96px!important;opacity:1!important}.teen-wall-mural{transform:scale(.78)}#teenOverlay .teen-orbs{margin-top:0!important}}
+</style>
+<script id="bop-teen-wall-spray-preview-v158-script">
+(function(){
+  var overlay=document.getElementById('teenOverlay'),stage=document.getElementById('teenWallStage'),orb=document.getElementById('teenTagOrb'),kicker=overlay&&overlay.querySelector('.teen-kicker');
+  if(!overlay||!stage||!orb)return;
+  if(kicker)kicker.insertAdjacentElement('afterend',stage);
+  stage.appendChild(orb);
+  var canvas=document.getElementById('teenTagCanvas'),wrap=canvas&&canvas.parentElement,ctx=canvas&&canvas.getContext('2d');if(!canvas||!wrap||!ctx)return;
+  ctx.lineWidth=22;ctx.lineCap='round';ctx.lineJoin='round';
+  var can=document.createElement('span');can.id='teenSprayCan';document.body.appendChild(can);
+  function locate(e){can.style.left=e.clientX+'px';can.style.top=e.clientY+'px'}
+  canvas.addEventListener('pointerdown',function(e){locate(e);can.classList.add('spraying');ctx.lineWidth=22});
+  canvas.addEventListener('pointermove',function(e){locate(e);if(!can.classList.contains('spraying'))return;var r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;ctx.fillStyle=window.getComputedStyle(document.querySelector('.teen-tag-color.active')).getPropertyValue('--ink')||'#111';for(var i=0;i<4;i++){var a=Math.random()*Math.PI*2,d=Math.random()*17,s=1+Math.random()*3;ctx.beginPath();ctx.arc(x+Math.cos(a)*d,y+Math.sin(a)*d,s,0,Math.PI*2);ctx.fill()}});
+  function stop(){can.classList.remove('spraying')}canvas.addEventListener('pointerup',stop);canvas.addEventListener('pointercancel',stop);canvas.addEventListener('pointerleave',stop);
+})();
+</script>
+<!-- v159: SHARE LAW — F'N visible item buttons must use the exact-item deep link.
+     Capture phase blocks the obsolete embedded homepage-share handler before it runs. -->
+<script id="bop-share-law-fnt-exact-item-v159">
+(function(){
+  var frame=document.getElementById('fntFrame');if(!frame)return;
+  function itemTitle(card){
+    var node=card&&card.querySelector('.product-name,.reserve-title,h1,h2,h3,.name,.title');
+    var text=node&&String(node.textContent||'').replace(/\s+/g,' ').trim();
+    if(text)return text;
+    if(card&&card.classList.contains('reserve-card')){
+      var id=String(card.dataset.rid||'').toLowerCase();
+      if(id.indexOf('crew')>-1)return 'ALO Crew Sweatshirt';
+      if(id.indexOf('hood')>-1)return 'ALO Hoodie';
+      if(id.indexOf('perse')>-1)return 'James Perse Tee';
+    }
+    return 'F’N Item';
+  }
+  function install(){
+    var doc,win;try{doc=frame.contentDocument;win=frame.contentWindow}catch(error){return}
+    if(!doc||!doc.body||doc.documentElement.dataset.exactShareLaw==='159')return;
+    doc.documentElement.dataset.exactShareLaw='159';
+    doc.addEventListener('click',function(event){
+      var button=event.target&&event.target.closest&&event.target.closest('button,a');
+      if(!button||!/^SHARE\s+ITEM\b/i.test(String(button.textContent||'').trim()))return;
+      var card=button.closest('.reserve-card,.product-card');if(!card)return;
+      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+      if(typeof win.shareExactItem==='function'){
+        win.shareExactItem(button,card,itemTitle(card));
+      }else{
+        /* The injected exact-share module normally exists first. If an older
+           cached frame loads, rebuild the item state here instead of sharing home. */
+        var query=new URLSearchParams(),outer=new URL(parent.location.href);outer.search='';outer.hash='';
+        var team=String(win.chosen||'');query.set('team',team);query.set('model',String(win.modelGender||'female'));
+        if(card.classList.contains('reserve-card')){query.set('kind','reserve');query.set('item',card.dataset.rid||'');query.set('mode',card.dataset.currentMode||'front')}
+        else{query.set('kind','product');query.set('item',String(Array.from(doc.querySelectorAll('#products .product-card')).indexOf(card)));var swatch=card.querySelector('.swatch.active'),view=card.querySelector('.view-toggle button.active');if(swatch)query.set('color',swatch.dataset.name||'');if(view)query.set('view',String(view.textContent||'').trim().toLowerCase())}
+        outer.searchParams.set('fnt','1');outer.searchParams.set('fntState',query.toString());outer.hash='/concepts/fnt?'+query.toString();
+        var title=itemTitle(card),data={title:'F’N Team — '+title,text:'Check out '+title+(team?' for '+team:'')+'.',url:outer.toString()};
+        if(typeof parent.__bopShareExact==='function')parent.__bopShareExact(data);else if(navigator.share)navigator.share(data);
+      }
+    },true);
+  }
+  frame.addEventListener('load',function(){setTimeout(install,20);setTimeout(install,180)});
+  document.addEventListener('click',function(){setTimeout(install,30)},true);
+  setInterval(install,900);
+  install();
+})();
+</script>
+<!-- v160: one unobtrusive whole-page share control in the existing F'N footer. -->
+<script id="bop-fnt-footer-share-page-v160">
+(function(){
+  var frame=document.getElementById('fntFrame');if(!frame)return;
+  function install(){
+    var doc,win;try{doc=frame.contentDocument;win=frame.contentWindow}catch(error){return}
+    if(!doc||!doc.body)return;
+    var footer=doc.querySelector('.fnt-site-footer');if(!footer||footer.querySelector('.fnt-footer-share-page'))return;
+    var style=doc.createElement('style');style.textContent='.fnt-footer-share-page{display:flex;align-items:center;justify-content:center;gap:9px;width:min(250px,78vw);min-height:48px;margin:24px auto 4px;padding:10px 18px;border:2px solid #7c3aed;border-radius:5px;background:#050505;color:#c4a7ff;font:1000 12px/1 Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;box-shadow:4px 4px 0 #2e1065,0 0 12px rgba(124,58,237,.42);cursor:pointer}.fnt-footer-share-page svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.fnt-footer-share-page:active{transform:translateY(2px);box-shadow:2px 2px 0 #2e1065}.fnt-footer-share-page.is-done{color:#fff;background:#2e1065}';doc.head.appendChild(style);
+    var button=doc.createElement('button');button.type='button';button.className='fnt-footer-share-page';button.setAttribute('aria-label','Share this F apostrophe N Team page');button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"/></svg><span>SHARE PAGE</span>';
+    button.addEventListener('click',async function(event){
+      event.preventDefault();event.stopPropagation();
+      var query='',team='';try{if(typeof win.getFntShareQuery==='function')query=win.getFntShareQuery()||'';var parsed=new URLSearchParams(query);team=parsed.get('team')||'';/* Whole-page sharing intentionally drops product/item state. */var clean=new URLSearchParams();if(team)clean.set('team',team);query=clean.toString()}catch(error){}
+      var url=new URL(parent.location.href);url.search='';url.hash='';url.searchParams.set('fnt','1');url.searchParams.set('fntState',query);url.hash='/concepts/fnt'+(query?'?'+query:'');
+      var data={title:team?'F’N Team — '+team:'F’N Team',text:team?'Check out the F’N Team page for '+team+'.':'Check out F’N Team.',url:url.toString()},original=button.innerHTML;
+      try{if(typeof parent.__bopShareExact==='function')await parent.__bopShareExact(data);else if(navigator.share)await navigator.share(data);else if(navigator.clipboard)await navigator.clipboard.writeText(data.text+'\n'+data.url);button.classList.add('is-done');button.textContent='PAGE READY'}catch(error){if(error&&error.name!=='AbortError')prompt('Copy this exact F’N page link:',data.url)}finally{setTimeout(function(){button.classList.remove('is-done');button.innerHTML=original},1300)}
+    });
+    var note=footer.querySelector('.fnt-footer-note');if(note)note.insertAdjacentElement('beforebegin',button);else footer.appendChild(button);
+  }
+  frame.addEventListener('load',function(){setTimeout(install,80);setTimeout(install,350)});document.addEventListener('click',function(){setTimeout(install,40)},true);setInterval(install,1100);install();
+})();
+</script>
 </body></html>
