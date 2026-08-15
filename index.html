@@ -20167,6 +20167,11 @@ function boEnsureNearMapPage(){
     closestTitle.id='boNearClosestTitle';
     closestTitle.textContent='CLOSEST 5';
     nearTitle.insertBefore(closestTitle,nearTitle.querySelector('span'));
+    const priceKey=document.createElement('div');
+    priceKey.className='bo-near-price-key';
+    priceKey.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine three to four dollar signs');
+    priceKey.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$–$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$–$$$$</span>';
+    nearTitle.insertBefore(priceKey,nearTitle.querySelector('span'));
   }
   const nearLower=page.querySelector('.bo-near-map-lower');
   if(nearLower){
@@ -36374,12 +36379,40 @@ body footer.bop-approved-footer{
   #boNearMapPage .bo-near-map-title .bo-near-closest-title{
     display:block!important;
     margin:14px 0 0!important;
-    font-size:clamp(32px,8.7vw,50px)!important;
+    font-size:clamp(36px,9.6vw,56px)!important;
     line-height:1!important;
     white-space:nowrap!important;
   }
+  #boNearMapPage .bo-near-price-key{
+    display:flex!important;
+    align-items:center!important;
+    gap:clamp(7px,2.1vw,13px)!important;
+    margin:9px 0 0!important;
+    color:#F59E0B!important;
+    font:900 clamp(10px,2.75vw,14px)/1 'Archivo Narrow',sans-serif!important;
+    letter-spacing:.035em!important;
+    white-space:nowrap!important;
+    text-shadow:0 0 7px rgba(245,158,11,.28)!important;
+  }
+  #boNearMapPage .bo-near-price-key span{
+    display:inline!important;
+    margin:0!important;
+    color:inherit!important;
+    font:inherit!important;
+    letter-spacing:inherit!important;
+    white-space:nowrap!important;
+  }
+  #boNearMapPage .bo-near-price-key span::before,
+  #boNearMapPage .bo-near-price-key span::after{display:none!important;content:none!important}
+  #boNearMapPage .bo-near-price-key i{
+    display:block!important;
+    width:1px!important;
+    height:15px!important;
+    flex:0 0 1px!important;
+    background:rgba(245,158,11,.72)!important;
+  }
   #boNearMapPage .bo-near-map-title span{
-    margin-top:13px!important;
+    margin-top:9px!important;
     font-size:11px!important;
     line-height:1.2!important;
   }
@@ -36389,7 +36422,27 @@ body footer.bop-approved-footer{
   #boNearMapPage .bo-near-map-meta{top:calc(70vh + 9px)!important}
   #boNearMapPage .bo-near-map-lower{top:calc(70vh + 58px)!important;padding:18px 14px 150px!important}
   #boNearMapPage .bo-near-closest-filters{grid-template-columns:repeat(4,minmax(0,1fr))!important}
-  #boNearMapPage .bo-near-closest-filter{padding-left:5px!important;padding-right:5px!important;font-size:clamp(10px,2.8vw,13px)!important}
+  #boNearMapPage .bo-near-closest-filter{
+    min-height:36px!important;
+    padding:0 5px!important;
+    font-size:clamp(9px,2.45vw,12px)!important;
+    text-shadow:none!important;
+    box-shadow:0 0 5px rgba(245,158,11,.22)!important;
+    animation:boNearFilterPulse 2.2s ease-in-out infinite!important;
+  }
+  #boNearMapPage .bo-near-closest-filter:nth-child(2){animation-delay:.18s!important}
+  #boNearMapPage .bo-near-closest-filter:nth-child(3){animation-delay:.36s!important}
+  #boNearMapPage .bo-near-closest-filter:nth-child(4){animation-delay:.54s!important}
+  #boNearMapPage .bo-near-closest-filter[aria-pressed="true"]{
+    box-shadow:0 0 11px rgba(245,158,11,.58)!important;
+  }
   #boNearMapPage .bo-near-closest-tier{color:#F59E0B;font-weight:900}
+  @keyframes boNearFilterPulse{
+    0%,100%{transform:scale(.985);box-shadow:0 0 4px rgba(245,158,11,.18)}
+    50%{transform:scale(1);box-shadow:0 0 10px rgba(245,158,11,.48)}
+  }
+  @media(prefers-reduced-motion:reduce){
+    #boNearMapPage .bo-near-closest-filter{animation:none!important}
+  }
 </style>
 </body></html>
