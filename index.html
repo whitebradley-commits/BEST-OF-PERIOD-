@@ -37795,4 +37795,21 @@ body footer.bop-approved-footer{
  Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var d=details[String(r.name||'').toLowerCase()];if(!d)return;r.redCalloutLabel=d.label;r.redCallout=d.copy;if(/infamous brewing/i.test(r.name||'')){r.why='Hijack — Untraditional Cream Ale won gold at the 2026 Texas Craft Brewers Cup.';r.note='Independent Lake Travis-area brewery, taproom and beer garden producing distinctive small-batch recipes on site.'}})});
 })();
 </script>
+<!-- v171: Direct-load synchronization. Austin's brewery route can render
+     before the late venue-photo, rating, and accolade enhancements above.
+     Redraw it once after those enhancements exist so refresh/direct links
+     always show the same complete ten-card version as in-site navigation. -->
+<script id="bop-austin-brewery-direct-load-sync-v171">
+(function(){
+ function syncAustinBrewery(){
+  if(typeof boRenderCategory!=='function'||typeof boCurrentCat==='undefined'||typeof boCityContext==='undefined')return;
+  if(boCityContext==='austin'&&boCurrentCat==='brewery')boRenderCategory('brewery');
+ }
+ if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(syncAustinBrewery)},{once:true});
+ }else{
+  requestAnimationFrame(syncAustinBrewery);
+ }
+})();
+</script>
 </body></html>
