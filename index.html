@@ -36033,12 +36033,24 @@ body footer.bop-approved-footer{
       newyork:['rao’s',"rao's",'peter luger steak house'],
       sandiego:['pho hoa']
     };
-    var seen=new Set(),groups=[];
+    var groups=[];
     Object.keys(boCategoryData).filter(function(cat){return typeof isBjsPicksCat==='function'&&isBjsPicksCat(cat);}).forEach(function(cat){
-      var picks=(boCategoryData[cat]||[]).filter(function(item){
-        var city=String(item&&item.city||'bestof').toLowerCase();
+      var ownerKey=typeof BO_CITY_CONFIG==='undefined'?'bestof':(Object.keys(BO_CITY_CONFIG).find(function(k){return BO_CITY_CONFIG[k]&&BO_CITY_CONFIG[k].bjsPicksCat===cat;})||'bestof');
+      var candidates=(boCategoryData[cat]||[]).slice();
+      /* An editorial marker is authoritative wherever the record lives. This
+         lets a pick remain in its cuisine list while still appearing here. */
+      Object.keys(boCategoryData).forEach(function(sourceCat){
+        if(!Array.isArray(boCategoryData[sourceCat]))return;
+        boCategoryData[sourceCat].forEach(function(item){
+          if(item&&(item.bjsPickCity===ownerKey||(item.bjsPick===true&&String(item.city||'bestof')===ownerKey)))candidates.push(item);
+        });
+      });
+      var seen=new Set();
+      var picks=candidates.filter(function(item){
+        var city=String(ownerKey||item&&item.city||'bestof').toLowerCase();
         var name=String(item&&item.name||'').trim().toLowerCase();
-        var allow=(approved[city]||[]).indexOf(name)>-1;
+        var explicitlyChosen=!!(item&&(item.bjsPick===true||item.bjsPickCity===city));
+        var allow=explicitlyChosen||(approved[city]||[]).indexOf(name)>-1;
         if(!allow)return false;
         var key=String(item&&item.name||'').toLowerCase()+'|'+String(item&&item.address||'').toLowerCase();
         if(!item||!item.name||seen.has(key))return false;seen.add(key);return true;
@@ -37024,4 +37036,78 @@ body footer.bop-approved-footer{
 #boNearMapPage .bo-near-closest-row.is-closed .bo-near-closest-distance{color:#E4002B!important;filter:none!important;opacity:1!important}
 #boNearMapPage .bo-near-closest-row.is-closing{border-color:#E4002B!important}
 </style>
+<!-- v149: FNT no model chooser; restore the existing size/cart purchase flow -->
+<script id="bop-fnt-cart-restore-v149">
+(function(){
+  function install(){
+    var frame=document.getElementById('fntFrame');
+    if(!frame)return;
+    try{
+      var doc=frame.contentDocument,win=frame.contentWindow;
+      if(!doc||!doc.body)return;
+      var picker=doc.querySelector('.model-picker');
+      if(picker)picker.remove();
+      if(!doc.getElementById('bop-fnt-no-model-v149')){
+        var style=doc.createElement('style');style.id='bop-fnt-no-model-v149';
+        style.textContent='.model-picker{display:none!important}.products{margin-top:clamp(18px,4vw,42px)!important}';doc.head.appendChild(style);
+      }
+      if(!doc.getElementById('bop-fnt-buy-restore-v149')){
+        var script=doc.createElement('script');script.id='bop-fnt-buy-restore-v149';
+        script.textContent="const FNT_SQUARE_LINKS={'PREMIUM TEE':'https://square.link/u/K3JV8QEZ','LONG-SLEEVE SHIRT':'https://square.link/u/MuxiuIIq','HEAVYWEIGHT HOODIE':'https://square.link/u/A9dgyu83','JAMES PERSE TEE':'https://square.link/u/IFr9AAN9','ALO CREW SWEATSHIRT':'https://square.link/u/knBEcCCX','ALO HOODIE':'https://square.link/u/JXzsIUxZ'};function buy(product,color){pendingProduct=product;pendingColor=color||'BLACK';modalProduct.textContent=product[0];modalLine.textContent='$'+Number(product[1]).toFixed(2)+' · '+pendingColor;saving.hidden=!free;var checkout=modal.querySelector('.checkout');if(checkout)checkout.innerHTML='CONTINUE TO SECURE CHECKOUT '+FNT_ARROW;modal.style.display='grid'}function addToCart(){if(!pendingProduct)return;var link=FNT_SQUARE_LINKS[pendingProduct[0]];if(!link){alert('Secure checkout is not assigned to this product yet.');return}var order={team:chosen,product:pendingProduct[0],price:pendingProduct[1],color:pendingColor,size:modalSize.value};localStorage.setItem('fnt-last-checkout-v1',JSON.stringify(order));window.top.location.href=link}";
+        doc.body.appendChild(script);
+      }
+    }catch(error){}
+  }
+  function schedule(){setTimeout(install,80);setTimeout(install,300);setTimeout(install,900);setTimeout(install,1600)}
+  function start(){var frame=document.getElementById('fntFrame');if(frame)frame.addEventListener('load',schedule);schedule()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<!-- v148: nationwide starter-city infrastructure, five U.S. regions -->
+<style id="bop-nationwide-city-launch-v148-style">
+#bopCityLaunchNotice{position:fixed;inset:0;z-index:2147482500;display:none;place-items:center;padding:24px;background:rgba(0,0,0,.88);font-family:'Archivo Black',Arial,sans-serif}
+#bopCityLaunchNotice.open{display:grid}.bop-city-launch-card{width:min(430px,100%);padding:28px 22px;border:2px solid #F59E0B;border-radius:22px;background:#070707;color:#fff;text-align:center;box-shadow:0 0 28px rgba(245,158,11,.38)}
+.bop-city-launch-card h2{margin:0;color:#F59E0B;font-size:clamp(25px,7vw,40px);line-height:.98;text-transform:uppercase}.bop-city-launch-card p{margin:16px auto;color:#ddd;font:800 15px/1.45 Arial,sans-serif}.bop-city-launch-awards{display:flex;justify-content:center;gap:9px;margin:18px 0}.bop-city-launch-awards span{padding:8px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 11px/1 Arial,sans-serif;letter-spacing:.06em}.bop-city-launch-card button{min-width:190px;padding:12px 18px;border:2px solid #F59E0B;border-radius:999px;background:#F59E0B;color:#050505;font:900 13px/1 Arial,sans-serif;letter-spacing:.08em}
+#ocWorldOverlay #ocCityCard .oc-choice-state{display:block;color:#aa9368;font-size:7px;letter-spacing:.08em;margin-top:3px}
+#ocWorldOverlay #ocCityCard.oc-city-choice-card .oc-choice-list.oc-us-region-list{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:58vh;overflow:auto}
+@media(max-width:390px){#ocWorldOverlay #ocCityCard.oc-city-choice-card .oc-choice-list.oc-us-region-list{grid-template-columns:1fr 1fr!important}.bop-city-launch-card{padding:24px 16px}}
+</style>
+<section id="bopCityLaunchNotice" role="dialog" aria-modal="true" aria-label="New city launch"><div class="bop-city-launch-card"><h2></h2><p></p><div class="bop-city-launch-awards"><span>MICHELIN</span><span>JAMES BEARD</span></div><button type="button">EXPLORE THE CITY</button></div></section>
+<script id="bop-nationwide-city-launch-v148-script">
+(function(){
+  if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData==='undefined'||typeof OC_CITIES==='undefined')return;
+  /* One strong anchor market per state, plus the requested Naples and Tulsa
+     companion markets. Existing full city pages are retained, not replaced. */
+  var starters=[
+    ['birmingham','Birmingham','Alabama','south',33.5186,-86.8104],['anchorage','Anchorage','Alaska','west',61.2181,-149.9003],['phoenix','Phoenix','Arizona','southwest',33.4484,-112.074],['littlerock','Little Rock','Arkansas','south',34.7465,-92.2896],['denver','Denver','Colorado','west',39.7392,-104.9903],['newhaven','New Haven','Connecticut','northeast',41.3083,-72.9279],['wilmingtonde','Wilmington','Delaware','northeast',39.7391,-75.5398],['naplesfl','Naples','Florida','south',26.1423,-81.7948],['honolulu','Honolulu','Hawaii','west',21.3099,-157.8581],['boise','Boise','Idaho','west',43.615,-116.2023],['indianapolis','Indianapolis','Indiana','midwest',39.7684,-86.1581],['desmoines','Des Moines','Iowa','midwest',41.5868,-93.625],['kansascity','Kansas City','Kansas','midwest',39.1141,-94.6275],['louisville','Louisville','Kentucky','south',38.2527,-85.7585],['portlandme','Portland','Maine','northeast',43.6591,-70.2568],['baltimore','Baltimore','Maryland','northeast',39.2904,-76.6122],['detroit','Detroit','Michigan','midwest',42.3314,-83.0458],['minneapolis','Minneapolis','Minnesota','midwest',44.9778,-93.265],['oxfordms','Oxford','Mississippi','south',34.3665,-89.5192],['stlouis','St. Louis','Missouri','midwest',38.627,-90.1994],['bozeman','Bozeman','Montana','west',45.677,-111.0429],['omaha','Omaha','Nebraska','midwest',41.2565,-95.9345],['reno','Reno','Nevada','west',39.5296,-119.8138],['portsmouthnh','Portsmouth','New Hampshire','northeast',43.0718,-70.7626],['jerseycity','Jersey City','New Jersey','northeast',40.7178,-74.0431],['santafe','Santa Fe','New Mexico','southwest',35.687,-105.9378],['charlotte','Charlotte','North Carolina','south',35.2271,-80.8431],['fargo','Fargo','North Dakota','midwest',46.8772,-96.7898],['cleveland','Cleveland','Ohio','midwest',41.4993,-81.6944],['oklahomacity','Oklahoma City','Oklahoma','southwest',35.4676,-97.5164],['tulsa','Tulsa','Oklahoma','southwest',36.154,-95.9928],['portlandor','Portland','Oregon','west',45.5152,-122.6784],['providence','Providence','Rhode Island','northeast',41.824,-71.4128],['charleston','Charleston','South Carolina','south',32.7765,-79.9311],['siouxfalls','Sioux Falls','South Dakota','midwest',43.546,-96.7313],['nashville','Nashville','Tennessee','south',36.1627,-86.7816],['dallas','Dallas','Texas','southwest',32.7767,-96.797],['saltlakecity','Salt Lake City','Utah','west',40.7608,-111.891],['burlingtonvt','Burlington','Vermont','northeast',44.4759,-73.2121],['richmond','Richmond','Virginia','south',37.5407,-77.436],['seattle','Seattle','Washington','west',47.6062,-122.3321],['charlestonwv','Charleston','West Virginia','south',38.3498,-81.6326],['milwaukee','Milwaukee','Wisconsin','midwest',43.0389,-87.9065],['jacksonwy','Jackson','Wyoming','west',43.4799,-110.7624]
+  ];
+  var existingStates={California:1,Florida:1,Georgia:1,Illinois:1,Louisiana:1,Massachusetts:1,'New York':1,Pennsylvania:1,'District of Columbia':1,Texas:1};
+  var registry={};
+  starters.forEach(function(row){
+    var key=row[0],name=row[1],state=row[2],region=row[3];registry[key]={key:key,name:name,state:state,region:region,la:row[4],lo:row[5]};
+    if(!BO_CITY_CONFIG[key])BO_CITY_CONFIG[key]={displayName:name,areaList:[name+' and surrounding areas'],tickerMessages:[name.toUpperCase(),'MORE CATEGORIES COMING'],useNameCycler:true,bjsPicksCat:'bjspicks'+key,countryLabel:state,starterCity:true};
+    if(Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);
+    if(!Array.isArray(boCategoryData[key]))boCategoryData[key]=[];
+    if(!Array.isArray(boCategoryData['bjspicks'+key]))boCategoryData['bjspicks'+key]=[];
+    var pin=OC_CITIES.find(function(c){return c.dest===key||c.n===name&&Math.abs(c.la-row[4])<2});
+    if(pin){pin.n=name;pin.la=row[4];pin.lo=row[5];pin.t='live';pin.dest=key;pin.usRegion=region;pin.state=state}else OC_CITIES.push({n:name,la:row[4],lo:row[5],t:'live',dest:key,usRegion:region,state:state});
+  });
+  /* Existing established U.S. cities also participate in the regional menu. */
+  var established={bestof:['southwest','Nevada'],miami:['south','Florida'],sandiego:['west','California'],losangeles:['west','California'],sanfrancisco:['west','California'],siliconvalley:['west','California'],santabarbara:['west','California'],austin:['southwest','Texas'],chicago:['midwest','Illinois'],newyork:['northeast','New York'],boston:['northeast','Massachusetts'],philadelphia:['northeast','Pennsylvania'],washingtondc:['south','District of Columbia'],atlanta:['south','Georgia'],neworleans:['south','Louisiana']};
+  Object.keys(established).forEach(function(key){var pin=OC_CITIES.find(function(c){return c.dest===key});if(pin){pin.usRegion=established[key][0];pin.state=established[key][1]}});
+
+  var notice=document.getElementById('bopCityLaunchNotice'),noticeTitle=notice.querySelector('h2'),noticeCopy=notice.querySelector('p');
+  notice.querySelector('button').onclick=function(){notice.classList.remove('open')};
+  var originalRender=window.boRenderCategory;
+  if(typeof originalRender==='function')window.boRenderCategory=function(cat){var result=originalRender.apply(this,arguments);if(registry[cat])setTimeout(function(){noticeTitle.textContent='BEST OF '+registry[cat].name+', PERIOD';noticeCopy.textContent='This city is now open with Michelin Guide and James Beard recognition first. More restaurant categories are coming as the local lists are completed.';notice.classList.add('open')},450);return result};
+
+  var regions=[['northeast','NORTHEAST',42.2,-73.5],['south','SOUTH + SOUTHEAST',33.0,-84.5],['midwest','MIDWEST',42.0,-93.5],['southwest','SOUTHWEST',34.5,-104],['west','WEST + WEST COAST',42.0,-118.5]];
+  function regionCities(id){return OC_CITIES.filter(function(c){return c.t==='live'&&c.usRegion===id}).sort(function(a,b){return (a.state||'').localeCompare(b.state||'')||a.n.localeCompare(b.n)})}
+  function showRegion(region){var list=regionCities(region[0]),card=document.getElementById('ocCityCard');if(!card)return;card.className='open oc-city-choice-card';card.innerHTML='<button class="oc-choice-close" type="button" aria-label="Close">×</button><h3 class="oc-choice-title">'+region[1]+'</h3><div class="oc-choice-list oc-us-region-list"></div>';var host=card.querySelector('.oc-choice-list');list.forEach(function(city){var b=document.createElement('button');b.type='button';b.className='oc-choice-city';b.innerHTML='<strong>'+city.n+'</strong><small class="oc-choice-state">'+(city.state||'')+'</small>';b.onclick=function(){card.classList.remove('open','oc-city-choice-card');if(typeof window.ocShowDestinationChoices==='function'){window.ocShowDestinationChoices([city]);var go=card.querySelector('.oc-choice-city');if(go)go.click()}else if(typeof window.boRenderCategory==='function')window.boRenderCategory(city.dest)};host.appendChild(b)});card.querySelector('.oc-choice-close').onclick=function(){card.classList.remove('open','oc-city-choice-card')}}
+  function buildRegionalPins(){var layer=document.getElementById('ocPinLayer');if(!layer||typeof ocProject!=='function')return;layer.innerHTML='';layer.dataset.built='us-five-regions-v148';var frag=document.createDocumentFragment();regions.forEach(function(region,index){var p=ocProject(region[2],region[3]),pin=document.createElement('button'),count=regionCities(region[0]).length;pin.type='button';pin.className='oc-pin oc-pin-live oc-pin-destination-group oc-michelin-launch-cluster';pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.dataset.usRegion=index;pin.innerHTML='<span>'+count+'</span>';pin.setAttribute('aria-label',region[1]+' — '+count+' cities');frag.appendChild(pin)});OC_CITIES.forEach(function(city,index){if(city.t!=='live'||city.usRegion)return;var p=ocProject(city.la,city.lo),pin=document.createElement('button');pin.type='button';pin.className='oc-pin oc-pin-live';pin.style.left=p.xPct+'%';pin.style.top=p.yPct+'%';pin.dataset.cityIndex=index;pin.setAttribute('aria-label',city.n);frag.appendChild(pin)});layer.appendChild(frag);layer.onclick=function(e){var pin=e.target.closest('.oc-pin');if(!pin)return;if(pin.dataset.usRegion!==undefined)return showRegion(regions[Number(pin.dataset.usRegion)]);var city=OC_CITIES[Number(pin.dataset.cityIndex)];if(city&&typeof window.ocShowCity==='function')window.ocShowCity(city)}}
+  window.ocBuildPins=buildRegionalPins;
+  function start(){buildRegionalPins();document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#ocGlobeBtn,.oc-globe-btn,[data-dest="othercities"]'))setTimeout(buildRegionalPins,0)},true)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
