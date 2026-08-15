@@ -20094,9 +20094,10 @@ function boGetMapRestaurants(cityKey){
       reviews:(typeof r.reviews==='number'?r.reviews:null),
       cat:cat||'bestof',
       phone:r.phone||'',
+      hours:Array.isArray(r.hours)?r.hours:[],
       price:r.price||null,
-      lat:Number.isFinite(Number(r.lat))?Number(r.lat):null,
-      lon:Number.isFinite(Number(r.lon))?Number(r.lon):null,
+      lat:r.lat!==null&&r.lat!==undefined&&String(r.lat).trim()!==''&&Number.isFinite(Number(r.lat))?Number(r.lat):null,
+      lon:r.lon!==null&&r.lon!==undefined&&String(r.lon).trim()!==''&&Number.isFinite(Number(r.lon))?Number(r.lon):null,
       image:r.image||'',
       imagePosition:r.imagePosition||'center',
       why:r.why||'',
@@ -20123,6 +20124,7 @@ function boGetMapRestaurants(cityKey){
       ratingText:primary.ratingText||secondary.ratingText||'',
       reviews:primary.reviews!=null?primary.reviews:secondary.reviews,
       phone:primary.phone||secondary.phone||'',
+      hours:(primary.hours&&primary.hours.length?primary.hours:secondary.hours)||[],
       price:primary.price||secondary.price||null,
       lat:primary.lat||secondary.lat||null,
       lon:primary.lon||secondary.lon||null,
@@ -20282,6 +20284,28 @@ function boNearMatchesTier(r,tier){
   return false;
 }
 
+function boNearHoursState(r,now){
+  const hours=Array.isArray(r&&r.hours)?r.hours:[];
+  if(!hours.length)return {known:false,state:'unknown',label:''};
+  const current=now||new Date(),day=current.getDay(),minutes=current.getHours()*60+current.getMinutes();
+  const toMinutes=value=>{const p=String(value||'').split(':').map(Number);return Number.isFinite(p[0])&&Number.isFinite(p[1])?p[0]*60+p[1]:null;};
+  let open=false,closingSoon=false;
+  hours.forEach(slot=>{
+    const days=Array.isArray(slot.days)?slot.days:[];
+    const start=toMinutes(slot.open),end=toMinutes(slot.close);
+    if(start==null||end==null)return;
+    if(end>start){
+      if(days.includes(day)&&minutes>=start&&minutes<end){open=true;if(end-minutes<=30)closingSoon=true;}
+    }else{
+      const yesterday=(day+6)%7;
+      if((days.includes(day)&&minutes>=start)||(days.includes(yesterday)&&minutes<end)){
+        open=true;const remaining=minutes>=start?(1440-minutes+end):(end-minutes);if(remaining<=30)closingSoon=true;
+      }
+    }
+  });
+  return open?(closingSoon?{known:true,state:'closing',label:'CLOSING SOON'}:{known:true,state:'open',label:'OPEN'}):{known:true,state:'closed',label:'CLOSED'};
+}
+
 function boRenderNearClosestFive(){
   const list=document.getElementById('boNearClosestList');
   const status=document.getElementById('boNearClosestStatus');
@@ -20316,7 +20340,9 @@ function boRenderNearClosestFive(){
     const r=item.restaurant, level=boNearPriceLevel(r);
     const distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';
     const tier=item.nearTier?'<span class="bo-near-closest-tier">'+boNearEscape(item.nearTier.toUpperCase())+'</span> · ':'';
-    return '<button type="button" class="bo-near-closest-row" data-near-closest-index="'+index+'"><span><span class="bo-near-closest-name">'+boNearEscape(r.name)+'</span><span class="bo-near-closest-meta">'+tier+('$'.repeat(level||1))+' · ★ '+boNearEscape(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>';
+    const hours=boNearHoursState(r),rowClass=hours.state==='closed'?' is-closed':hours.state==='closing'?' is-closing':'';
+    const hoursLabel=hours.known?'<span class="bo-near-hours-status '+hours.state+'">'+hours.label+'</span>':'';
+    return '<button type="button" class="bo-near-closest-row'+rowClass+'" data-near-closest-index="'+index+'"><span><span class="bo-near-closest-name">'+boNearEscape(r.name)+'</span><span class="bo-near-closest-meta">'+tier+('$'.repeat(level||1))+' · ★ '+boNearEscape(r.ratingText||item.rating.toFixed(1))+'</span>'+hoursLabel+'</span><span class="bo-near-closest-distance">'+distance+'</span></button>';
   }).join('');
   list.querySelectorAll('[data-near-closest-index]').forEach(btn=>btn.addEventListener('click',()=>{
     const item=candidates[Number(btn.dataset.nearClosestIndex)];
@@ -20498,14 +20524,22 @@ function boOpenRestaurantFromMap(cat,name){
 }
 window.boOpenRestaurantFromMap=boOpenRestaurantFromMap;
 
-async function boGeocodeRestaurant(r,cityLabel){
-  if(Number.isFinite(Number(r.lat)) && Number.isFinite(Number(r.lon))){
+async function boGeocodeRestaurant(r,cityLabel,cityDefaults){
+  if(r.lat!==null&&r.lat!==undefined&&String(r.lat).trim()!==''&&r.lon!==null&&r.lon!==undefined&&String(r.lon).trim()!==''&&Number.isFinite(Number(r.lat))&&Number.isFinite(Number(r.lon))){
     return {lat:Number(r.lat),lon:Number(r.lon)};
   }
   const cacheKey='boGeo:'+r.address.toLowerCase();
   try{
     const cached=localStorage.getItem(cacheKey);
-    if(cached){ const obj=JSON.parse(cached); if(obj && obj.lat && obj.lon) return obj; }
+    if(cached){
+      const obj=JSON.parse(cached);
+      if(obj&&obj.lat&&obj.lon){
+        const center=cityDefaults&&cityDefaults.center?{lat:cityDefaults.center[0],lng:cityDefaults.center[1]}:null;
+        const point={lat:Number(obj.lat),lng:Number(obj.lon)};
+        if(!center||boNearDistanceMiles(center,point)<180)return obj;
+        localStorage.removeItem(cacheKey);
+      }
+    }
   }catch(e){}
   const q=encodeURIComponent(r.address+', '+cityLabel);
   const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json'}});
@@ -20513,6 +20547,10 @@ async function boGeocodeRestaurant(r,cityLabel){
   const data=await res.json();
   if(!data || !data[0]) return null;
   const obj={lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon)};
+  if(cityDefaults&&cityDefaults.center){
+    const center={lat:cityDefaults.center[0],lng:cityDefaults.center[1]};
+    if(boNearDistanceMiles(center,{lat:obj.lat,lng:obj.lon})>=180)return null;
+  }
   try{localStorage.setItem(cacheKey,JSON.stringify(obj));}catch(e){}
   return obj;
 }
@@ -20764,7 +20802,7 @@ async function boOpenNearMap(){
     if(property){
       geo={lat:Number(property.lat),lon:Number(property.lon)};
     }else{
-      try{geo=await boGeocodeRestaurant(r,defaults.label);}catch(e){}
+      try{geo=await boGeocodeRestaurant(r,defaults.label,defaults);}catch(e){}
     }
     if(geo){
       r.__boNearGeo=geo;
@@ -35984,9 +36022,24 @@ body footer.bop-approved-footer{
   }
   function build(){
     if(typeof boCategoryData==='undefined')return;
+    /* All BJS Picks is a strict editorial directory. A city's broader Best
+       Of Period list is never a fallback when that city has no BJS picks. */
+    var approved={
+      austin:['infamous brewing company'],
+      bestof:['il chianti italian steak and seafood','tamba','peter luger steak house','steak 48'],
+      lasvegas:['il chianti italian steak and seafood','tamba','peter luger steak house','steak 48'],
+      losangeles:["vito's pizza",'matū'],
+      miami:['komodo miami'],
+      newyork:['rao’s',"rao's",'peter luger steak house'],
+      sandiego:['pho hoa']
+    };
     var seen=new Set(),groups=[];
     Object.keys(boCategoryData).filter(function(cat){return typeof isBjsPicksCat==='function'&&isBjsPicksCat(cat);}).forEach(function(cat){
       var picks=(boCategoryData[cat]||[]).filter(function(item){
+        var city=String(item&&item.city||'bestof').toLowerCase();
+        var name=String(item&&item.name||'').trim().toLowerCase();
+        var allow=(approved[city]||[]).indexOf(name)>-1;
+        if(!allow)return false;
         var key=String(item&&item.name||'').toLowerCase()+'|'+String(item&&item.address||'').toLowerCase();
         if(!item||!item.name||seen.has(key))return false;seen.add(key);return true;
       });
@@ -36953,4 +37006,22 @@ body footer.bop-approved-footer{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+<style id="bop-all-bjs-gold-only-v146">
+/* All BJS Picks uses the core black, gold and red palette—no purple. */
+#bopAllBjsPicks .bop-all-bjs-num{color:#F59E0B!important;text-shadow:0 0 5px rgba(245,158,11,.42)!important}
+#bopAllBjsPicks .bop-all-bjs-source{color:#C9A45C!important}
+#bopAllBjsPicks .bop-all-bjs-group{border-color:rgba(245,158,11,.46)!important}
+</style>
+<style id="bop-closest-five-live-distance-hours-v147">
+/* Every Closest 5 page: live mileage is red; closed venues remain visible
+   but are unmistakably gray. */
+#boNearMapPage .bo-near-closest-distance{color:#E4002B!important;text-shadow:0 0 6px rgba(228,0,43,.5)!important}
+#boNearMapPage .bo-near-hours-status{display:block;margin-top:5px;color:#39d177;font:900 10px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em}
+#boNearMapPage .bo-near-hours-status.closed{color:#a8a8a8!important}
+#boNearMapPage .bo-near-hours-status.closing{color:#E4002B!important}
+#boNearMapPage .bo-near-closest-row.is-closed{border-color:#555!important;background:#111!important;box-shadow:none!important;filter:grayscale(1);opacity:.62}
+#boNearMapPage .bo-near-closest-row.is-closed .bo-near-closest-name,#boNearMapPage .bo-near-closest-row.is-closed .bo-near-closest-meta{color:#a8a8a8!important;text-shadow:none!important}
+#boNearMapPage .bo-near-closest-row.is-closed .bo-near-closest-distance{color:#E4002B!important;filter:none!important;opacity:1!important}
+#boNearMapPage .bo-near-closest-row.is-closing{border-color:#E4002B!important}
+</style>
 </body></html>
