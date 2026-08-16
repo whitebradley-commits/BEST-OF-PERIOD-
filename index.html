@@ -3593,12 +3593,6 @@
     font-weight:600;
   }
 
-  /* Every city name on a category/subcategory hero is exactly 3px larger
-     than the inherited hero-title size (Austin breweries and all peers). */
-  .bo-hero h1 .bo-subcategory-city{
-    font-size:calc(1em + 3px);
-  }
-
   .bo-hero h1 .bo-period{
     color:var(--gold);
   }
@@ -22352,6 +22346,12 @@ function boCityFitValue(name){
   const compactLength = String(name || '').replace(/[^A-Za-z0-9]/g,'').length;
   return compactLength >= 12 ? 'xlong' : compactLength >= 7 ? 'long' : 'normal';
 }
+function boBestOfCategoryTitle(title){
+  const source=String(title||'').trim();
+  if(/^BEST\s+OF\b/i.test(source))return source;
+  if(/^BEST\b/i.test(source))return source.replace(/^BEST\b/i,'BEST OF');
+  return 'BEST OF '+source;
+}
 const botrToLandingBtnEl = document.getElementById('botrToLandingBtn');
 const boExpandBtnTopEl = document.getElementById('boExpandBtnTopWrap');
 let boCurrentCat = 'bestof';
@@ -22973,7 +22973,7 @@ function boRenderCategory(cat){
       // city's context, so the city name underneath the logo should reflect
       // that city, not always say Vegas.
       const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-      boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2 bo-subcategory-city">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
+      boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title)}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(bjsPicksCity)}">${bjsPicksCity}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
     } else {
       // Same idea as Other Bests and BJS Picks above — every generic genre
       // page (24 Hours, Dessert, Indian, Steak, ...) was still hardcoding
@@ -22983,11 +22983,10 @@ function boRenderCategory(cat){
       // right above it kept saying Vegas regardless — which is exactly
       // what made it look like the whole page had jumped to Vegas.
       const genericCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-      const vegasClass = cat === 'dessert' ? 'bo-hero-dessert-word' : 'bo-line2';
       const ishSuffix = (cat === '24hours' && BO_24HR_ISH_CITIES.includes(boCityContext))
         ? ' <span class="bo-hero-dessert-word" style="font-size:0.65em;">ish</span>'
         : '';
-      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass} bo-subcategory-city">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
+      boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat].title)}${ishSuffix}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(genericCityName)}">${genericCityName}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
     }
     boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
     boHeroSubEl.style.whiteSpace = cat === 'nations' ? 'pre-line' : '';
@@ -34052,10 +34051,10 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
 </script>
 <!-- v253/v258: direct borough Main routing and BROOK-LYN bridge lockup -->
 <style id="bop-brooklyn-descender-v253-style">
-.bop-brooklyn-word{display:inline-block!important;width:4.08em!important;white-space:nowrap!important;position:relative!important;z-index:12!important;isolation:isolate!important;text-align:left!important}
-.bop-brooklyn-word .bop-brooklyn-fixed{display:inline-block!important;position:relative!important;z-index:16!important}
-.bop-brooklyn-word .bop-brooklyn-bridge{position:absolute!important;left:3.58em!important;top:.32em!important;width:2.05em!important;height:1.38em!important;overflow:visible!important;z-index:14!important;filter:drop-shadow(0 0 .08em rgba(228,0,43,.95))!important;pointer-events:none!important}
-.bop-brooklyn-word .bop-brooklyn-lyn{position:absolute!important;left:4.63em!important;top:.70em!important;display:inline-block!important;color:#E4002B!important;-webkit-text-stroke:.012em #F59E0B!important;font-size:.76em!important;line-height:1!important;letter-spacing:-.08em!important;z-index:18!important;text-shadow:0 0 .10em rgba(228,0,43,.8)!important}
+.bop-brooklyn-word{display:inline-flex!important;width:7.15em!important;align-items:flex-end!important;justify-content:flex-start!important;gap:.06em!important;white-space:nowrap!important;position:relative!important;z-index:12!important;isolation:isolate!important;text-align:left!important;font-size:.70em!important;line-height:1!important}
+.bop-brooklyn-word .bop-brooklyn-fixed,.bop-brooklyn-word .bop-brooklyn-lyn{display:inline-block!important;position:relative!important;z-index:16!important;color:#E4002B!important;-webkit-text-stroke:.012em #F59E0B!important;line-height:1!important;letter-spacing:-.07em!important;text-shadow:0 0 .10em rgba(228,0,43,.8)!important}
+.bop-brooklyn-word .bop-brooklyn-bridge{display:block!important;position:relative!important;flex:0 0 2.25em!important;width:2.25em!important;height:1.02em!important;margin:0 -.03em .02em!important;overflow:visible!important;z-index:14!important;filter:drop-shadow(0 0 .08em rgba(228,0,43,.95))!important;pointer-events:none!important}
+.bop-splash-line2:has(.bop-brooklyn-word){grid-template-columns:minmax(0,5.35em) 4.6em!important;font-size:clamp(1.52rem,6.7vmin,2.9rem)!important}
 #bopResultsCityText:has(.bop-brooklyn-word),#bopMainCityText:has(.bop-brooklyn-word),#boLeadBestCity:has(.bop-brooklyn-word){position:relative!important;z-index:12!important;overflow:visible!important}
 .bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-city-col{position:relative!important;z-index:12!important;overflow:visible!important}
 .bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-period,.bo-lead-best-lockup:has(.bop-brooklyn-word) .bo-lead-best-period{position:relative!important;z-index:1!important}
@@ -34068,7 +34067,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
       var el=document.getElementById(id);if(!el||el.querySelector('.bop-brooklyn-word'))return;
       if(String(el.textContent||'').trim().toLowerCase()!=='brooklyn')return;
       el.dataset.brooklynV258='1';
-      el.innerHTML='<span class="bop-brooklyn-word" aria-label="Brooklyn"><span class="bop-brooklyn-fixed">BROOK</span><svg class="bop-brooklyn-bridge" aria-hidden="true" viewBox="0 0 220 150"><g fill="none" stroke="#E4002B" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 C45 18 68 39 79 59 C104 78 139 92 199 108" stroke-width="4"/><path d="M4 34 L205 132" stroke-width="9"/><path d="M32 31 L32 45 M61 42 L61 62 M113 69 L113 90 M151 86 L151 110" stroke-width="3"/><path d="M65 22 L91 22 L91 87 L65 87 M72 22 L72 2 L84 2 L84 22" stroke-width="6"/><path d="M188 77 L214 77 L214 142 L188 142 M195 77 L195 57 L207 57 L207 77" stroke-width="6"/></g></svg><span class="bop-brooklyn-lyn">LYN</span></span>';
+      el.innerHTML='<span class="bop-brooklyn-word" aria-label="Brooklyn"><span class="bop-brooklyn-fixed">BROOK</span><svg class="bop-brooklyn-bridge" aria-hidden="true" viewBox="0 0 280 100"><g fill="none" stroke="#E4002B" stroke-linecap="round" stroke-linejoin="round"><path d="M2 82h18V72h18V62h18" stroke-width="7"/><path d="M56 62h24M200 62h24" stroke-width="7"/><path d="M80 62V20h24v42M176 62V20h24v42" stroke-width="8"/><path d="M86 20V7h12v13M182 20V7h12v13" stroke-width="6"/><path d="M80 30C108 62 148 62 176 30M80 38C109 70 147 70 176 38" stroke-width="4"/><path d="M104 43v25M122 54v17M140 58v15M158 54v17M176 43v25" stroke-width="3"/><path d="M80 68h120" stroke-width="8"/><path d="M224 62h18v10h18v10h18" stroke-width="7"/></g></svg><span class="bop-brooklyn-lyn">LYN</span></span>';
     });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',styleBrooklyn);else styleBrooklyn();
@@ -37942,6 +37941,19 @@ body footer.bop-approved-footer{
 }
 </style>
 <style id="bop-city-period-auto-fit-v175">
+/* Subcategories now reuse the same branded lockup and exact city sizing as
+   main city pages. There is no independent small-city treatment anymore. */
+#boHeroTitle .bo-subcategory-lockup{
+  display:block!important;
+  width:100%!important;
+  margin:.10em auto 0!important;
+  padding:0!important;
+  line-height:.95!important;
+}
+#boHeroTitle .bo-subcategory-lockup .bop-splash-line2{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
 /* City + Period is a real two-column lockup, not two overlapping layers.
    The half-em gap is the visual equivalent of two spaces at every size. */
 .bop-splash-line2{
@@ -37959,7 +37971,6 @@ body footer.bop-approved-footer{
   margin-left:0!important;
 }
 /* Generic category headings use inline spans rather than the grid lockup. */
-#boHeroTitle .bo-subcategory-city + .bo-period,
 #boHeroTitle .bo-line2 + .bo-period{
   margin-left:.5em!important;
 }
@@ -38054,6 +38065,41 @@ body footer.bop-approved-footer{
  }else{
   requestAnimationFrame(syncAustinBrewery);
  }
+})();
+</script>
+<script id="bop-new-york-essentials-v176">
+(function(){
+ if(typeof boCategoryData==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;
+ function add(cat,r){r.genre=cat;r.hours=r.hours||[];r.image=r.image||'';r.hue=r.hue||'24,48%,24%';r.price=r.price||2;r.url=r.url||'';r.phone=r.phone||'';r.address=r.address||'';r.note=r.note||r.why;boCategoryData[cat]=boCategoryData[cat]||[];if(!boCategoryData[cat].some(function(x){return x&&x.city===r.city&&String(x.name).toLowerCase()===String(r.name).toLowerCase()}))boCategoryData[cat].push(r);boCategoryData[r.city]=boCategoryData[r.city]||[];if(!boCategoryData[r.city].some(function(x){return x&&String(x.name).toLowerCase()===String(r.name).toLowerCase()}))boCategoryData[r.city].push(Object.assign({},r));if(r.bjsPick&&BO_CITY_CONFIG[r.city]){var k=BO_CITY_CONFIG[r.city].bjsPicksCat;boCategoryData[k]=boCategoryData[k]||[];if(!boCategoryData[k].some(function(x){return x&&x.name===r.name}))boCategoryData[k].push(Object.assign({},r))}}
+ function pizza(x){var score=x[5]!=null?x[5]:x[4];add('pizza',{city:x[0],name:x[1],address:x[2],oneBiteScore:x[4],oneBiteDaveScore:x[5],oneBiteReviews:x[6],bjsPizzaScore:score!=null?Number(score).toFixed(1):null,why:x[3],note:'Current published One Bite Dave/community figures captured for this borough pass.'})}
+ [
+ ['manhattan',"John's of Bleecker Street",'278 Bleecker St, New York, NY 10014','Historic coal-oven benchmark and essential whole-pie room.',8.9,9.3,null],
+ ['manhattan','Ceres','164 Mott St, New York, NY 10013','Little Italy sourdough shop with one of Dave’s highest New York scores.',9.0,9.2,122],
+ ['manhattan','Denino’s Greenwich Village','93 MacDougal St, New York, NY 10012','Greenwich Village branch of the Staten Island institution.',8.4,9.0,248],
+ ['manhattan','East Village Pizza','145 1st Ave, New York, NY 10003','Crisp East Village slices with a deep One Bite sample.',7.9,8.0,191],
+ ['brooklyn','Di Fara Pizza','1424 Avenue J, Brooklyn, NY 11230','Midwood institution and a defining One Bite score.',8.7,9.4,1014],
+ ['brooklyn',"Luigi's Pizza",'686 5th Ave, Brooklyn, NY 11215','Classic Brooklyn shop with elite Dave and community scores.',8.8,9.3,377],
+ ['brooklyn','Lucali','575 Henry St, Brooklyn, NY 11231','Carroll Gardens destination for handmade pies.',9.1,9.3,404],
+ ['brooklyn','Best Pizza','33 Havemeyer St, Brooklyn, NY 11211','Williamsburg old-school slice shop.',8.5,9.1,712],
+ ['queens',"Mano's Pizzeria",'62-98 Forest Ave, Queens, NY 11385','Ridgewood pizzeria with an exceptional community score.',8.8,7.8,28],
+ ['queens',"Nick's Pizza",'108-26 Ascan Ave, Queens, NY 11375','Forest Hills institution with strong Dave and community support.',8.3,8.4,102],
+ ['queens',"Philomena's Pizza",'41-16 Queens Blvd, Queens, NY 11104','Sunnyside specialist known for carefully fermented dough.',8.3,7.9,51],
+ ['queens',"Dani's House of Pizza",'81-28 Lefferts Blvd, Queens, NY 11415','Kew Gardens institution famous for its sweet sauce.',7.8,7.4,102],
+ ['bronx',"Tommy's Pizza",'4033 E Tremont Ave, Bronx, NY 10465','Throggs Neck standout with the strongest verified Dave score in this set.',8.1,8.6,144],
+ ['bronx','Pugsley Pizza','590 E 191st St, Bronx, NY 10458','Beloved Fordham shop with a powerful community result.',8.4,7.7,159],
+ ['bronx',"Dino's Pizzeria",'5660 Mosholu Ave, Bronx, NY 10471','Riverdale neighborhood shop with an excellent early score.',8.2,null,12],
+ ['hamptons',"Fierro's Pizza",'104 Park Pl, East Hampton, NY 11937','East Hampton’s clearest current One Bite benchmark.',7.3,7.4,22],
+ ['hamptons','Springs Pizza','841 Springs Fireplace Rd, East Hampton, NY 11937','Longstanding Springs neighborhood option with One Bite coverage.',6.6,5.8,7],
+ ['hamptons',"Sam's Restaurant",'36 Newtown Ln, East Hampton, NY 11937','Long-running East Hampton restaurant with active community reviews.',null,null,null],
+ ['hamptons',"Francesca's",'9 Ponquogue Ave, Hampton Bays, NY 11946','Hampton Bays shop with documented One Bite community reviews.',null,null,null]
+ ].forEach(pizza);
+ add('bagels',{city:'manhattan',name:'H&H Bagels',address:'1551 2nd Ave, New York, NY 10028',phone:'(212) 734-7441',url:'https://www.hhbagels.com/',bjsPick:true,bjsPickCity:'manhattan',bjsPickLabel:'BJS Bagel Pick',why:'BJS Pick — the iconic New York bagel name.',note:'Kettle-boiled in New York water and baked throughout the day. Use the dropdown for other Manhattan locations.',otherLocations:[{name:'H&H Bagels — Third Avenue',address:'429 3rd Ave, New York, NY 10016',url:'https://www.hhbagels.com/'},{name:'H&H Bagels — Moynihan Train Hall',address:'421 8th Ave, New York, NY 10199',url:'https://www.hhbagels.com/'},{name:'H&H Bagels — Penn Station LIRR',address:'1 LIRR Concourse, New York, NY 10119',url:'https://www.hhbagels.com/'}]});
+ [['manhattan','Absolute Bagels','2788 Broadway, New York, NY 10025'],['manhattan','Ess-a-Bagel','831 3rd Ave, New York, NY 10022'],['brooklyn','Bagel Hole','400 7th Ave, Brooklyn, NY 11215'],['brooklyn','Shelsky’s of Brooklyn','141 Court St, Brooklyn, NY 11201'],['brooklyn','Terrace Bagels','222A Prospect Park W, Brooklyn, NY 11215'],['queens','Utopia Bagels','1909 Utopia Pkwy, Whitestone, NY 11357'],['queens','Bagel Oasis','183-12 Horace Harding Expy, Fresh Meadows, NY 11365'],['queens','Between the Bagel NY','31-13 30th Ave, Astoria, NY 11102'],['bronx','Empire Bagels','3101 Westchester Ave, Bronx, NY 10461'],['bronx','Riverdale Bagels','5650 Riverdale Ave, Bronx, NY 10471'],['hamptons','Goldberg’s Famous Bagels — East Hampton','100 Pantigo Pl, East Hampton, NY 11937'],['hamptons','Hampton Bagels','2522 Montauk Hwy, Bridgehampton, NY 11932']].forEach(function(x){add('bagels',{city:x[0],name:x[1],address:x[2],why:'Essential borough bagel stop selected for this New York directory.',note:'Fresh bagels and classic spreads; additional location details are being independently verified.'})});
+ [['manhattan','Per Se','10 Columbus Circle, New York, NY 10019',3,'Three-MICHELIN-Star tasting-menu landmark.'],['brooklyn','The Four Horsemen','295 Grand St, Brooklyn, NY 11211',1,'MICHELIN-starred Williamsburg wine bar and restaurant.'],['queens','Meju','5-28 49th Ave, Queens, NY 11101',1,'Queens’ MICHELIN-starred Korean tasting counter.'],['bronx','Patricia’s of Morris Park','1082 Morris Park Ave, Bronx, NY 10461',0,'Included in the MICHELIN Guide’s Bronx selection.']].forEach(function(x){add('michelin',{city:x[0],name:x[1],address:x[2],michelinStars:x[3]||null,michelinGuide:true,why:x[4],note:'Current New York MICHELIN selection.'})});
+ add('michelin',{city:'hamptons',name:'MICHELIN Guide — Hamptons Coverage',address:'The Hamptons, NY',michelinGuide:true,why:'Restaurant-star coverage is not currently published as a standalone Hamptons selection.',note:'Coverage status only; no MICHELIN distinction is being invented.'});
+ [['manhattan','Frenchette','241 W Broadway, New York, NY 10013','2025 Outstanding Restaurateur — Lee Hanson and Riad Nasr'],['brooklyn','Sahadi’s','187 Atlantic Ave, Brooklyn, NY 11201','2017 America’s Classics honoree'],['queens','Adda Indian Canteen','31-31 Thomson Ave, Queens, NY 11101','James Beard-recognized New York restaurant']].forEach(function(x){add('jamesbeard',{city:x[0],name:x[1],address:x[2],jamesBeard:true,jamesBeardHonor:x[3],why:x[3],note:'Official recognition tracked in the New York James Beard directory.'})});
+ ['bronx','hamptons'].forEach(function(city){add('jamesbeard',{city:city,name:'James Beard Foundation — '+(city==='bronx'?'Bronx':'Hamptons')+' Watch',address:city==='bronx'?'The Bronx, NY':'The Hamptons, NY',jamesBeard:true,jamesBeardHonor:'Regional recognition tracker',why:'No borough-specific award is claimed until independently verified.',note:'Status card keeps the category available without assigning an unsupported honor.'})});
+ window.BOP_NY_ESSENTIALS_READY=true;
 })();
 </script>
 </body></html>
