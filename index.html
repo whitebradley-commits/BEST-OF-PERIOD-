@@ -35771,7 +35771,7 @@ body footer.bop-approved-footer{
       <button class="teen-fate-fingerprint" id="teenFateButton" type="button" aria-label="Let fate decide">
         <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 58c-13-8-19-20-17-35 2-14 15-21 27-15 11 6 14 21 9 33-3 8-8 13-12 17"/><path d="M22 49c-7-9-8-23-2-31 6-9 19-8 24 1 6 10 1 24-6 32"/><path d="M27 43c-4-7-4-17 0-22 4-5 12-3 14 3 3 8-1 17-6 24"/><path d="M32 38c-2-5-1-11 2-13 4 0 5 5 3 10-1 5-3 9-5 12"/></svg>
       </button>
-      <span class="teen-fate-label" id="teenFateLabel">Hold 5 Seconds</span>
+      <span class="teen-fate-label" id="teenFateLabel">Press Here · Hold 5 Seconds</span>
       <div class="teen-fate-options" id="teenFateOptions"></div>
     </section>
   </main>
@@ -35820,7 +35820,7 @@ body footer.bop-approved-footer{
     'The Mall':[['find something new','the closest mall'],['go window shopping','the closest mall']],
     'Roller Coaster':[['ride a roller coaster','the closest amusement park'],['plan an amusement day','the closest theme park']],
     'Boba':[['have a milk tea','the closest boba shop'],['try a fruit tea','the closest boba shop']],
-    'Arcades':[['play classic games','the closest arcade'],['win some prizes','the closest arcade']],
+    'Arcades':[['play games and win prizes','the closest Dave &amp; Buster’s'],['play classic games','the best nearby arcade'],['challenge your friends','Dave &amp; Buster’s']],
     'Sneakers':[['shop a new release','the closest sneaker store'],['find new sneakers','the closest mall']]
   };
   let returnScroll=0;
@@ -35839,7 +35839,7 @@ body footer.bop-approved-footer{
     function cancelHold(){if(holdTimer)clearTimeout(holdTimer);holdTimer=null;countTimers.forEach(clearTimeout);countTimers=[];if(spinTimer)clearInterval(spinTimer);spinTimer=null;fateMotion.classList.remove('is-holding','is-deciding');setCount('5');}
     function finishCategory(){
       cancelHold();chosenCategory=categories[Math.floor(Math.random()*categories.length)];fateMotion.innerHTML=picture(chosenCategory[0],chosenCategory[1]);
-      fateStage='choice';fateCopy.textContent='Fate chose '+chosenCategory[0]+'. Hold for five more seconds to find out exactly where you’re going.';fateLabel.textContent='Hold 5 More Seconds';
+      fateStage='choice';fateCopy.textContent='Fate chose '+chosenCategory[0]+'. Hold for five more seconds to find out exactly where you’re going.';fateLabel.textContent='Press Here · Hold 5 More Seconds';
     }
     function finishChoice(){
       cancelHold();const ideas=fateIdeas[chosenCategory[0]]||[['try something new','the closest option']];const selected=ideas[Math.floor(Math.random()*ideas.length)];
@@ -35849,7 +35849,7 @@ body footer.bop-approved-footer{
       if(chosenCategory[0]!=='Movies')showResults(chosenCategory[0]);
     }
     function beginHold(event){
-      event.preventDefault();if(fateStage==='done'){fateStage='category';chosenCategory=null;fateOptions.classList.remove('open');fateOptions.innerHTML='';fateMotion.innerHTML=picture('Your move','ball');fateCopy.textContent='Press and hold the fingerprint for five seconds. First, fate chooses the category.';fateLabel.textContent='Hold 5 Seconds';return;}
+      event.preventDefault();if(fateStage==='done'){fateStage='category';chosenCategory=null;fateOptions.classList.remove('open');fateOptions.innerHTML='';fateMotion.innerHTML=picture('Your move','ball');fateCopy.textContent='Press and hold the fingerprint for five seconds. First, fate chooses the category.';fateLabel.textContent='Press Here · Hold 5 Seconds';return;}
       cancelHold();fateMotion.classList.add('is-holding','is-deciding');setCount('5');
       let turn=0;spinTimer=setInterval(function(){if(fateStage==='category'){const c=categories[turn%categories.length];fateMotion.querySelector('.teen-fate-picture').outerHTML=picture(c[0],c[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}else{const ideas=fateIdeas[chosenCategory[0]]||[];const visual=fateMotion.querySelector('.teen-fate-picture');if(visual){const idea=ideas[turn%ideas.length]||['your next stop','nearby'];visual.outerHTML=picture(idea[1],chosenCategory[1]).replace(/<span class="teen-fate-count"[\s\S]*$/,'');}}turn++;},125);
       countTimers.push(setTimeout(function(){setCount('4');},1000),setTimeout(function(){setCount('3');},2000),setTimeout(function(){setCount('2');},3000),setTimeout(function(){setCount('1');},4000));
@@ -35881,7 +35881,11 @@ body footer.bop-approved-footer{
     if(!navigator.geolocation){liveFailure(label,'Location is not available on this device.');return;}
     navigator.geolocation.getCurrentPosition(function(pos){
       const lat=pos.coords.latitude,lon=pos.coords.longitude,tag=nearbyTags[label]||'[name]';
-      const query='[out:json][timeout:18];nwr(around:25000,'+lat+','+lon+')'+tag+';out center tags;';
+      const radius=label==='Arcades'?80000:25000;
+      const selector=label==='Arcades'
+        ? '(nwr(around:'+radius+','+lat+','+lon+')[leisure="amusement_arcade"];nwr(around:'+radius+','+lat+','+lon+')[name~"Dave & Buster|Dave and Buster",i];);'
+        : 'nwr(around:'+radius+','+lat+','+lon+')'+tag+';';
+      const query='[out:json][timeout:18];'+selector+'out center tags;';
       fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'data='+encodeURIComponent(query)})
         .then(function(r){if(!r.ok)throw new Error('lookup');return r.json()})
         .then(function(data){
@@ -37095,7 +37099,7 @@ body footer.bop-approved-footer{
     if(!tile){tile=document.createElement('button');tile.type='button';tile.className='bop-world-tile bop-world-all-bjs';tile.setAttribute('aria-label','Open All BJS Picks');tile.innerHTML='<span class="bop-world-red-globe" aria-hidden="true"></span>ALL BJS<br>PICKS';grid.appendChild(tile);}
     const restaurants=grid.querySelector('[data-worldwide-key="restaurants"]');if(restaurants&&restaurants.nextElementSibling!==tile)restaurants.insertAdjacentElement('afterend',tile);
   }
-  document.addEventListener('click',function(e){const tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-bjs');if(!tile)return;e.preventDefault();e.stopImmediatePropagation();const landing=document.getElementById('bopWorldwideLanding');if(landing)landing.classList.remove('open');document.body.style.overflow='';if(typeof window.boOpenAllBjsPicks==='function')window.boOpenAllBjsPicks();},true);
+  document.addEventListener('click',function(e){const tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-bjs');if(!tile)return;e.preventDefault();e.stopImmediatePropagation();if(typeof window.boOpenAllBjsPicks==='function')window.boOpenAllBjsPicks();},true);
   function start(){install();new MutationObserver(install).observe(document.body,{childList:true,subtree:true});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
@@ -38144,6 +38148,86 @@ body footer.bop-approved-footer{
     0 0 11px rgba(155,93,229,.34)!important;
 }
 </style>
+<style id="bop-final-interaction-fixes-v1">
+/* Search interiors keep the approved main-page proportions on every page. */
+#bopLandingSearchInput,#boSearchInput,#boNearMapSearchInput,#ocWorldOverlay .oc-search-input,
+.bop-landing-search-prompt,.bo-search-powered-by,#ocWorldOverlay .oc-search-powered-by{
+  font-size:.78rem!important;line-height:1.2!important;text-shadow:none!important;animation:none!important
+}
+.bo-search-wrap,.oc-search-wrap,.oc-search-wrap-clean{align-items:center!important}
+.bo-search-powered-by,#ocWorldOverlay .oc-search-powered-by{display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important}
+.bo-search-powered-by svg,#ocWorldOverlay .oc-search-powered-by svg{flex:0 0 auto!important;vertical-align:middle!important}
+/* The tiny BJS mark in the aggregate-source sentence needs one step more presence. */
+#boSectionHeadPara svg{width:19px!important;height:19px!important;margin:0 3px!important;vertical-align:-5px!important}
+
+/* Fate: the fingerprint is a distinct control below the changing result circle. */
+#teenOverlay .teen-fate-fingerprint{
+  position:relative!important;z-index:12!important;display:grid!important;place-items:center!important;
+  width:76px!important;height:76px!important;margin:8px auto 0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  color:#f59e0b!important;filter:drop-shadow(0 0 7px rgba(245,158,11,.55))!important;opacity:1!important;
+  touch-action:none!important;-webkit-tap-highlight-color:transparent!important;-webkit-touch-callout:none!important;user-select:none!important
+}
+#teenOverlay .teen-fate-fingerprint svg{display:block!important;width:70px!important;height:70px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important}
+#teenOverlay .teen-fate-fingerprint::after{content:'PRESS';position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);color:#111;background:#f59e0b;padding:2px 5px;border-radius:8px;font:900 7px/1 'Archivo Black',sans-serif;letter-spacing:.08em}
+#teenOverlay .teen-fate-fingerprint:active{transform:scale(.95)!important;filter:drop-shadow(0 0 13px rgba(245,158,11,.95))!important}
+#teenOverlay .teen-fate-count{inset:auto 7px 7px auto!important;width:38px!important;height:38px!important;border:1px solid #f59e0b!important;background:rgba(0,0,0,.9)!important;font-size:1.35rem!important}
+#teenOverlay .teen-fate-label{margin-top:10px!important}
+@media(max-width:430px){#teenOverlay .teen-fate-fingerprint{width:76px!important;height:76px!important;margin:8px auto 0!important}}
+
+/* Real worldwide restaurant map, replacing the decorative pin layer once ready. */
+#ocWorldOverlay.bop-real-map-ready .oc-world-map{display:none!important}
+#bopInteractiveWorldMapWrap{display:none;order:3;width:100%;max-width:760px;margin:8px auto 24px;padding:0 12px;box-sizing:border-box}
+#ocWorldOverlay.bop-real-map-ready #bopInteractiveWorldMapWrap{display:block}
+#bopInteractiveWorldMap{width:100%;height:min(61vh,540px);min-height:390px;border:2px solid #f59e0b;border-radius:18px;background:#090909;box-shadow:0 0 18px rgba(245,158,11,.3);overflow:hidden;touch-action:none}
+.bop-map-help{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;color:#f59e0b;font:800 .72rem/1.2 'Archivo Narrow',sans-serif;letter-spacing:.04em}
+.bop-map-locate{appearance:none;border:1px solid #f59e0b;border-radius:999px;background:#080808;color:#fff;padding:8px 11px;font:900 .68rem/1 'Archivo Black',sans-serif}
+#bopInteractiveWorldMap .leaflet-control-zoom a{background:#080808;color:#f59e0b;border-color:#f59e0b;font-weight:900}
+#bopInteractiveWorldMap .leaflet-control-attribution{background:rgba(0,0,0,.72);color:#aaa;font-size:8px}
+#bopInteractiveWorldMap .leaflet-control-attribution a{color:#f59e0b}
+.bop-map-city-icon,.bop-map-place-icon{background:transparent!important;border:0!important}
+.bop-map-city-badge{display:grid;place-items:center;width:42px;height:42px;border:3px solid #fff;border-radius:50%;background:#1167dd;color:#fff;box-shadow:0 0 4px #fff,0 0 17px #2f80ff;font:900 12px/1 'Archivo Black',sans-serif}
+.bop-map-place-dot{display:block;width:18px;height:18px;border:2px solid #fff;border-radius:50%;background:#e4002b;box-shadow:0 0 10px rgba(228,0,43,.95)}
+.bop-map-popup .leaflet-popup-content-wrapper,.bop-map-popup .leaflet-popup-tip{background:#080808;color:#fff}
+.bop-map-popup .leaflet-popup-content{margin:12px;min-width:190px;font:700 12px/1.35 Arial,sans-serif}
+.bop-map-popup strong{display:block;color:#f59e0b;font-size:14px;margin-bottom:4px}.bop-map-popup a{display:inline-block;margin:9px 7px 0 0;color:#fff;background:#e4002b;border-radius:12px;padding:6px 8px;text-decoration:none;font-weight:900}
+</style>
+<script id="bop-worldwide-real-map-v1">
+(function(){
+  var overlay=document.getElementById('ocWorldOverlay'),map=null,detailLayer=null,loading=false;
+  if(!overlay)return;
+  var oldMap=overlay.querySelector('.oc-world-map');
+  var wrap=document.createElement('div');wrap.id='bopInteractiveWorldMapWrap';
+  wrap.innerHTML='<div class="bop-map-help"><span>PINCH, DRAG OR USE + / − · TAP A CITY TO SEE EVERY LISTED RESTAURANT</span><button class="bop-map-locate" id="bopMapLocate" type="button">◎ MY LOCATION</button></div><div id="bopInteractiveWorldMap" aria-label="Interactive worldwide restaurant map"></div>';
+  (oldMap&&oldMap.parentNode?oldMap.parentNode:overlay).insertBefore(wrap,oldMap?oldMap.nextSibling:null);
+  function loadLeaflet(done){
+    if(window.L){done();return}if(loading)return;loading=true;
+    var css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);
+    var js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=done;js.onerror=function(){loading=false};document.head.appendChild(js);
+  }
+  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function placesFor(city){
+    var rows=(window.boCategoryData||boCategoryData||{})[city.dest]||[],seen={};
+    return rows.filter(function(x){var key=(x.name||'')+'|'+(x.address||'');if(!x.name||seen[key])return false;seen[key]=1;return true});
+  }
+  function showCity(city,places){
+    if(detailLayer)detailLayer.clearLayers();else detailLayer=L.layerGroup().addTo(map);
+    map.flyTo([city.la,city.lo],places.length>15?11:12,{duration:.65});
+    places.forEach(function(p,i){var angle=i*2.3999632297,ring=.0045+.0035*Math.sqrt(i+1),lat=city.la+Math.cos(angle)*ring,lon=city.lo+Math.sin(angle)*ring/Math.max(.35,Math.cos(city.la*Math.PI/180));var query=p.address||p.name+', '+city.n;var directions='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(query);var site=p.url?'<a href="'+esc(p.url)+'" target="_blank" rel="noopener">WEBSITE</a>':'';L.marker([lat,lon],{icon:L.divIcon({className:'bop-map-place-icon',html:'<span class="bop-map-place-dot"></span>',iconSize:[22,22],iconAnchor:[11,11]})}).bindPopup('<strong>'+esc(p.name)+'</strong>'+esc(p.address||city.n)+'<br>'+site+'<a href="'+directions+'" target="_blank" rel="noopener">DIRECTIONS</a>',{className:'bop-map-popup'}).addTo(detailLayer)});
+  }
+  function init(){
+    if(map){overlay.classList.add('bop-real-map-ready');setTimeout(function(){map.invalidateSize()},80);return}
+    map=L.map('bopInteractiveWorldMap',{worldCopyJump:true,minZoom:2,maxZoom:18}).setView([23,0],2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:20,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+    (window.OC_CITIES||OC_CITIES||[]).filter(function(c){return c.t==='live'&&c.dest}).forEach(function(city){var places=placesFor(city);var marker=L.marker([city.la,city.lo],{icon:L.divIcon({className:'bop-map-city-icon',html:'<span class="bop-map-city-badge">'+places.length+'</span>',iconSize:[46,46],iconAnchor:[23,23]})}).addTo(map);marker.bindTooltip(city.n+' · '+places.length+' places');marker.on('click',function(){showCity(city,places)})});
+    document.getElementById('bopMapLocate').addEventListener('click',function(){map.locate({setView:true,maxZoom:11,enableHighAccuracy:true})});
+    map.on('locationfound',function(e){L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:3,fillColor:'#2f80ff',fillOpacity:1}).addTo(map).bindPopup('You are here').openPopup()});
+    overlay.classList.add('bop-real-map-ready');setTimeout(function(){map.invalidateSize()},120);
+  }
+  new MutationObserver(function(){if(overlay.classList.contains('open'))loadLeaflet(init)}).observe(overlay,{attributes:true,attributeFilter:['class']});
+  if(overlay.classList.contains('open'))loadLeaflet(init);
+})();
+</script>
 <script id="bop-global-one-point-readability-test-v178">
 (function(){
   var POINT_IN_PX=96/72;
@@ -38160,8 +38244,13 @@ body footer.bop-approved-footer{
     '#conceptsBestMiniCity',
     '#bjsWhyRotatingCity'
   ].join(',');
+  var NO_GROW_SELECTOR=[
+    RED_CITY_SELECTOR,
+    '.bo-search-wrap','.bo-search-wrap *','.oc-search-wrap','.oc-search-wrap *','.oc-search-wrap-clean','.oc-search-wrap-clean *',
+    '.bop-landing-search-prompt','.bo-search-powered-by','#bopLandingSearchInput','#boSearchInput','#boNearMapSearchInput','#ocSearchInput'
+  ].join(',');
   var busy=false;
-  function excluded(el){return !!(el.matches(RED_CITY_SELECTOR)||el.closest(RED_CITY_SELECTOR));}
+  function excluded(el){return !!(el.matches(NO_GROW_SELECTOR)||el.closest(NO_GROW_SELECTOR));}
   function eligible(el){
     return el instanceof HTMLElement&&!excluded(el)&&!el.dataset.bopOnePoint&&
       !/^(SCRIPT|STYLE|LINK|META|HEAD|HTML|BODY|BR|HR|IMG|VIDEO|AUDIO|CANVAS|SVG|PATH)$/i.test(el.tagName);
