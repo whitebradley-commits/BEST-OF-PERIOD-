@@ -23356,6 +23356,11 @@ function boRenderCategory(cat){
       : '';
   }
 
+  if(boSectionHeadEl){
+    boSectionHeadEl.classList.remove('bo-ranked-screen');
+    const previousRankedCue = boSectionHeadEl.querySelector('.bo-ranked-scroll-cue');
+    if(previousRankedCue) previousRankedCue.style.display = 'none';
+  }
   if(boScopedCategoryList && boScopedCategoryList.length === 0){
     // Vegas's Michelin page already explains itself fully via the banner
     // above the title — the generic gray "coming soon" line underneath
@@ -23380,11 +23385,27 @@ function boRenderCategory(cat){
   const sortedEntries = boRankedRestaurantList(boScopedCategoryList);
   if(boSectionHeadTitleEl){
     const sectionCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-    boSectionHeadTitleEl.textContent = isBjsPicksCat(cat)
-      ? ''
-      : (cat === 'brewery'
-          ? `${sectionCityName}’s ${sortedEntries.length} Strongest Breweries and Taprooms Right Now!`
-          : `The Top ${sortedEntries.length}, Right Now`);
+    boSectionHeadTitleEl.classList.toggle('bo-brewery-ranking-title', cat === 'brewery');
+    if(isBjsPicksCat(cat)){
+      boSectionHeadTitleEl.textContent = '';
+    }else if(cat === 'brewery'){
+      boSectionHeadTitleEl.innerHTML = `<span>${sectionCityName}’s ${sortedEntries.length} Strongest</span><span>Breweries and Taprooms</span><span>Right Now!</span>`;
+    }else{
+      boSectionHeadTitleEl.textContent = `The Top ${sortedEntries.length}, Right Now`;
+    }
+    const rankedScreenOn = !isBjsPicksCat(cat) && !BO_CITY_CONFIG[cat] && !boPickerConfig[cat];
+    if(boSectionHeadEl){
+      boSectionHeadEl.classList.toggle('bo-ranked-screen', rankedScreenOn);
+      let rankedCue = boSectionHeadEl.querySelector('.bo-ranked-scroll-cue');
+      if(!rankedCue){
+        rankedCue = document.createElement('div');
+        rankedCue.className = 'bo-ranked-scroll-cue';
+        rankedCue.setAttribute('aria-hidden','true');
+        rankedCue.innerHTML = '<span>SCROLL</span><span class="bo-scroll-arrow">↓</span>';
+        boSectionHeadEl.appendChild(rankedCue);
+      }
+      rankedCue.style.display = rankedScreenOn ? 'flex' : 'none';
+    }
   }
   sortedEntries.forEach((s, i) => {
     s.rank = i + 1;
@@ -37795,17 +37816,74 @@ body footer.bop-approved-footer{
   position:relative!important;
   z-index:1!important;
 }
-/* Use the established specials/accolades treatment: red copy and edge with
-   the subtle purple-black depth that distinguishes it from a solid-red box. */
+/* Restore the original specials/accolades treatment used by the established
+   restaurant cards: restrained red tint, red edge and one-color headline. */
 .bo-red-callout{
   border-color:rgba(228,0,43,.88)!important;
-  background:linear-gradient(135deg,rgba(228,0,43,.09) 0%,rgba(46,16,101,.32) 54%,rgba(228,0,43,.07) 100%)!important;
+  background:rgba(228,0,43,.10)!important;
   color:#E4002B!important;
-  box-shadow:0 0 12px rgba(228,0,43,.18),inset 0 0 18px rgba(124,58,237,.13)!important;
+  box-shadow:0 0 12px rgba(228,0,43,.18)!important;
 }
 .bo-red-callout .bo-red-callout-label{
-  color:#c4a7ff!important;
-  text-shadow:0 0 8px rgba(124,58,237,.52)!important;
+  color:#E4002B!important;
+  text-shadow:0 0 8px rgba(228,0,43,.38)!important;
+}
+</style>
+<style id="bop-ranked-intro-screen-and-brewery-headline-v173">
+#bestOfOverlay #boSectionHead.bo-ranked-screen{
+  min-height:100dvh;
+  box-sizing:border-box;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  padding:clamp(54px,8vh,88px) 5vw max(112px,calc(env(safe-area-inset-bottom) + 88px))!important;
+  scroll-snap-align:start;
+}
+#bestOfOverlay #boSectionHeadTitle.bo-brewery-ranking-title{
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+  font-size:clamp(2.05rem,7.8vw,3.35rem)!important;
+  font-weight:700!important;
+  line-height:1.12!important;
+  letter-spacing:-.018em;
+  text-wrap:nowrap;
+}
+#bestOfOverlay #boSectionHeadTitle.bo-brewery-ranking-title span{
+  display:block;
+  white-space:nowrap;
+}
+#bestOfOverlay .bo-ranked-scroll-cue{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin-top:auto;
+  color:#F59E0B;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.08rem;
+  font-weight:400;
+  letter-spacing:.35em;
+  line-height:1;
+  text-transform:uppercase;
+  text-shadow:0 0 10px rgba(245,158,11,.42);
+  animation:bopMainTileScrollPulse 2.2s ease-in-out infinite;
+}
+#bestOfOverlay .bo-ranked-scroll-cue .bo-scroll-arrow{
+  display:inline-block;
+  font-size:1.12em;
+  color:#F59E0B;
+}
+#bestOfOverlay #boList{
+  scroll-margin-top:0;
+}
+@media(max-width:390px){
+  #bestOfOverlay #boSectionHeadTitle.bo-brewery-ranking-title{
+    font-size:clamp(1.92rem,8.35vw,2.05rem)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #bestOfOverlay .bo-ranked-scroll-cue{animation:none!important;}
 }
 </style>
 <style id="bop-infinite-city-stacking-final-v172">
@@ -37831,7 +37909,7 @@ body footer.bop-approved-footer{
 (function(){
  if(typeof boCategoryData==='undefined')return;
  var details={
-  'infamous brewing company':{label:'BREWED IN-HOUSE',copy:'Infamous is famous for brewing in-house uncommon, insane concoctions. BBQ, 100%. Steak Night, 100%. A more authentic menu than most breweries.'},
+  'infamous brewing company':{label:'TEXAS GOLD',copy:'Hijack — Untraditional Cream Ale won gold at the 2026 Texas Craft Brewers Cup.'},
   'nomadic beerworks':{label:'BEST OF AUSTIN',copy:'Named Best Family Outpost in the Austin Chronicle’s 2024 Best of Austin awards.'},
   'st. elmo brewing company':{label:'NATIONAL GOLD',copy:'Carl Kölsch won gold and Smoke on the Lager won bronze at the 2025 International Beer and Cider Awards.'},
   'meanwhile brewing':{label:'MULTI-AWARD WINNER',copy:'Darlin’ won silver at the 2025 Great American Beer Festival, then gold at the 2026 Texas Craft Brewers Cup; Meanwhile Pilsner also earned 2026 bronze.'},
@@ -37842,7 +37920,7 @@ body footer.bop-approved-footer{
   'austin beerworks':{label:'WORLD-CLASS BEER',copy:'A 2023 World Beer Cup silver medalist; Lazer Salad won 2025 Texas Craft Brewers Cup gold and Heavy Machinery earned 2026 World Beer Cup silver.'},
   'zilker brewing company':{label:'MULTI-MEDAL WINNER',copy:'Zilkerator and Heavenly Daze earned Texas Craft Brewers Cup golds, while Icy Boys took 2026 silver.'}
  };
- Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var d=details[String(r.name||'').toLowerCase()];if(!d)return;r.redCalloutLabel=d.label;r.redCallout=d.copy;if(/infamous brewing/i.test(r.name||'')){r.why='Hijack — Untraditional Cream Ale won gold at the 2026 Texas Craft Brewers Cup.';r.note='Independent Lake Travis-area brewery, taproom and beer garden producing distinctive small-batch recipes on site.'}})});
+ Object.keys(boCategoryData).forEach(function(key){var list=boCategoryData[key];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||r.city!=='austin')return;var d=details[String(r.name||'').toLowerCase()];if(!d)return;r.redCalloutLabel=d.label;r.redCallout=d.copy;if(/infamous brewing/i.test(r.name||'')){r.why='Infamous is famous for brewing in-house uncommon, insane concoctions.';r.note='Lake Travis-area brewery, taproom and beer garden producing distinctive small-batch recipes on site.'}})});
 })();
 </script>
 <!-- v171: Direct-load synchronization. Austin's brewery route can render
