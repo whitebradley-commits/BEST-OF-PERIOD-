@@ -38346,19 +38346,23 @@ body footer.bop-approved-footer{
     'austin|upper crust bakery':'https://s3-media0.fl.yelpcdn.com/bphoto/RuT9Ksxw5ULSYLNpkoexUA/o.jpg'
   };
   var stockSource=/(?:images\.)?unsplash\.com|pexels\.com|pixabay\.com|placehold(?:er)?\.|loremflickr|picsum\.photos/i;
-  var records=[],seenObjects=new Set();
-  Object.keys(boCategoryData).forEach(function(category){
-    var list=boCategoryData[category];if(!Array.isArray(list))return;
-    list.forEach(function(record){if(!record||seenObjects.has(record))return;seenObjects.add(record);records.push(record)});
-  });
-  /* The same URL may repeat when the same restaurant appears in two categories,
-     but never when it has been assigned to two different businesses. */
-  var imageOwners={};
-  records.forEach(function(record){
-    var image=String(record.image||'').trim();if(!image)return;
-    var owner=String(record.city||'').toLowerCase()+'|'+String(record.name||'').toLowerCase();
-    (imageOwners[image]||(imageOwners[image]=new Set())).add(owner);
-  });
+  function canonicalName(record){
+    var city=String(record&&record.city||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+    var name=String(record&&record.name||'').toLowerCase()
+      .replace(/[’']/g,'').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+    /* A city suffix is only an alias: "Gymkhana" and "Gymkhana London"
+       are the same restaurant, not two different businesses. */
+    if(city&&name.slice(-(city.length+1))===' '+city)name=name.slice(0,-(city.length+1)).trim();
+    return name
+  }
+  function collectRecords(){
+    var records=[],seenObjects=new Set();
+    Object.keys(boCategoryData).forEach(function(category){
+      var list=boCategoryData[category];if(!Array.isArray(list))return;
+      list.forEach(function(record){if(!record||seenObjects.has(record))return;seenObjects.add(record);records.push(record)});
+    });
+    return records
+  }
   function numericRating(record){
     var rating=record&&record.rating;
     if(rating&&typeof rating==='object')rating=rating.score;
@@ -38377,6 +38381,16 @@ body footer.bop-approved-footer{
     ) || /michelin|james\s*beard|bjs\s*(?:pick|choice)|best\s+of\s+period/.test(searchable) ||
       (numericRating(record)!==null&&numericRating(record)>=4.9);
   }
+  function enforcePhotoRule(){
+  var records=collectRecords(),imageOwners={};
+  /* A photo may repeat for the same restaurant across categories. The moment
+     that exact photo is attached to a different restaurant, every unsupported
+     use is removed and the affected card falls back to its blank treatment. */
+  records.forEach(function(record){
+    var image=String(record.image||'').trim();if(!image)return;
+    var owner=String(record.city||'').toLowerCase()+'|'+canonicalName(record);
+    (imageOwners[image]||(imageOwners[image]=new Set())).add(owner);
+  });
   var rejected=0,accepted=0,requiredWithPhoto=0,requiredMissingPhoto=0,ordinaryBlanked=0;
   records.forEach(function(record){
     var key=String(record.city||'').toLowerCase()+'|'+String(record.name||'').toLowerCase();
@@ -38404,6 +38418,49 @@ body footer.bop-approved-footer{
     requiredWithPhoto:requiredWithPhoto,requiredMissingPhoto:requiredMissingPhoto,
     rule:'Cleanup-only: remove known stock sources and cross-business duplicates; retain unique existing photos. Michelin, James Beard, BJS Pick, Best of Period, and 4.9/5.0 remain classified as photo-required.'
   };
+  }
+  enforcePhotoRule();
+  /* Permanent guard for restaurant records appended by later city/category
+     modules or future live updates. */
+  window.BOP_ENFORCE_NO_DUPLICATE_RESTAURANT_PHOTOS=enforcePhotoRule;
+  setInterval(enforcePhotoRule,1200);
+})();
+</script>
+<style id="bop-half-size-rating-star-v1">
+/* Rating stars are deliberately half-size. Michelin stars retain their full
+   badge size so the two systems can never be mistaken for one another. */
+.bop-rating-mark{color:#C58A22!important;-webkit-text-fill-color:#C58A22!important}
+.bop-rating-star-half{display:inline-block;font-size:.5em;line-height:1;vertical-align:.22em}
+</style>
+<script id="bop-half-size-rating-star-v1-js">
+(function(){
+  var selector='.bo-rating,.bo-near-closest-meta,.bo-search-result-rating,.bo-other-location-meta,.lvsteam-stars';
+  function mark(root){
+    var nodes=[];
+    if(root&&root.nodeType===1&&root.matches&&root.matches(selector))nodes.push(root);
+    if(root&&root.querySelectorAll)root.querySelectorAll(selector).forEach(function(node){nodes.push(node)});
+    nodes.forEach(function(node){
+      if(node.closest('.bo-michelin-badge')||node.querySelector('.bop-rating-mark'))return;
+      var walker=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),text;
+      while((text=walker.nextNode())){
+        var match=text.nodeValue.match(/★\s*\d+(?:\.\d+)?(?:\s*\/\s*5)?/);if(!match)continue;
+        var at=match.index,before=text.nodeValue.slice(0,at),after=text.nodeValue.slice(at+match[0].length);
+        var rating=document.createElement('span');rating.className='bop-rating-mark';
+        var star=document.createElement('span');star.className='bop-rating-star-half';star.textContent='★';
+        rating.appendChild(star);rating.appendChild(document.createTextNode(match[0].slice(1)));
+        if(before)text.parentNode.insertBefore(document.createTextNode(before),text);
+        text.parentNode.insertBefore(rating,text);
+        text.nodeValue=after;
+        break
+      }
+    })
+  }
+  function start(){
+    mark(document);
+    new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(mark)})})
+      .observe(document.body,{childList:true,subtree:true})
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start()
 })();
 </script>
 <style id="bop-unified-why-trigger-css-v1">
