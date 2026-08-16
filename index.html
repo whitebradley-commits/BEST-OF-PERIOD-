@@ -38912,4 +38912,24 @@ body:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title>span:last-ch
 })();
 </script>
 
+<script id="bop-city-map-subtitle-exact-v5">
+(function(){
+  var text='Searching for yummy spots near you.';
+  function apply(root){
+    var scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('.bo-near-map-title').forEach(function(title){
+      var subtitle=Array.from(title.children).find(function(el){return el.tagName==='SPAN';});
+      if(subtitle&&subtitle.textContent!==text)subtitle.textContent=text;
+    });
+  }
+  apply(document);
+  new MutationObserver(function(records){
+    records.forEach(function(record){
+      if(record.type==='childList')record.addedNodes.forEach(function(node){if(node.nodeType===1)apply(node);});
+      else apply(record.target.parentElement||document);
+    });
+  }).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+
 </body></html>
