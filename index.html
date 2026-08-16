@@ -38492,4 +38492,113 @@ body footer.bop-approved-footer{
   },true);
 })();
 </script>
+<!-- v270: worldwide place search and unsupported-territory WTF handoff -->
+<style id="bop-global-place-search-v270-style">
+#bopLandingResults .bop-global-place-result{align-items:flex-start!important;text-align:left!important}
+#bopLandingResults .bop-global-place-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+#bopLandingResults .bop-global-place-name{color:#fff;font-weight:900}
+#bopLandingResults .bop-global-place-detail{color:#aaa;font-size:.69em;letter-spacing:.035em;white-space:normal}
+#bopLandingResults .bop-global-place-result:not([data-live-dest]) .bop-landing-result-dot{background:#C58A22!important;box-shadow:0 0 8px rgba(197,138,34,.72)!important}
+#bopTerritoryWtfOverlay{position:fixed;inset:0;z-index:2147483200;display:none;place-items:center;padding:22px;background:rgba(0,0,0,.94);color:#fff;font-family:Arial,sans-serif;overflow:auto}
+#bopTerritoryWtfOverlay.open{display:grid}
+.bop-territory-card{position:relative;width:min(430px,94vw);padding:34px 24px 28px;border:2px solid #F59E0B;border-radius:24px;background:#070707;box-shadow:0 0 34px rgba(245,158,11,.34);text-align:center}
+.bop-territory-close{position:absolute;right:13px;top:12px;width:38px;height:38px;border:1px solid #F59E0B;border-radius:50%;background:#000;color:#fff;font-size:20px;cursor:pointer}
+.bop-territory-place{margin:0 38px 13px;color:#C58A22;font:900 12px/1.3 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.bop-territory-title{margin:0;color:#fff;font:900 clamp(19px,5vw,27px)/1.12 'Archivo Black',Arial,sans-serif;text-transform:uppercase}
+.bop-territory-copy{max-width:350px;margin:17px auto 22px;color:#d8d8d8;font:700 14px/1.5 Arial,sans-serif}
+.bop-wtf-wordmark{display:flex;justify-content:center;align-items:flex-end;gap:1px;margin:20px 0 5px;font:1000 clamp(58px,18vw,88px)/.8 'Archivo Black',Impact,sans-serif;letter-spacing:-.08em}
+.bop-wtf-wordmark .w{color:#4C8055}.bop-wtf-wordmark .t{color:#5C4433}.bop-wtf-wordmark .f{color:#F59E0B}
+.bop-wtf-expansion{display:flex;justify-content:center;gap:8px;margin:10px 0 23px;font:900 11px/1 Arial,sans-serif;letter-spacing:.06em}.bop-wtf-expansion .w{color:#4C8055}.bop-wtf-expansion .t{color:#8b674f}.bop-wtf-expansion .f{color:#F59E0B}
+.bop-territory-primary,.bop-territory-choice{border:2px solid #F59E0B;border-radius:999px;background:#050505;color:#fff;font:900 13px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.bop-territory-primary{min-width:190px;padding:15px 24px;color:#F59E0B}
+.bop-territory-choices{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:22px}
+.bop-territory-choice{padding:15px 10px}.bop-territory-choice[data-wtf-category="weed"]{border-color:#4C8055;color:#70ad7b}.bop-territory-choice[data-wtf-category="tobacco"]{border-color:#795b46;color:#a47b5e}.bop-territory-choice[data-wtf-category="food"]{color:#F59E0B}.bop-territory-choice[data-wtf-category="all"]{grid-column:1/-1}
+.bop-territory-back{margin:18px 0 0;border:0;background:transparent;color:#aaa;text-decoration:underline;cursor:pointer}
+</style>
+<div id="bopTerritoryWtfOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bopTerritoryTitle">
+  <div class="bop-territory-card">
+    <button type="button" class="bop-territory-close" aria-label="Close">&times;</button>
+    <p class="bop-territory-place" id="bopTerritoryPlace"></p>
+    <section id="bopTerritoryIntro">
+      <h2 class="bop-territory-title" id="bopTerritoryTitle">This territory is not fully open yet.</h2>
+      <p class="bop-territory-copy">Best Of Period is still expanding here, but WTF is available immediately. Search the closest weed, tobacco, and food options from this location.</p>
+      <div class="bop-wtf-wordmark" aria-label="WTF"><span class="w">W</span><span class="t">T</span><span class="f">F</span></div>
+      <div class="bop-wtf-expansion"><span class="w">WEED</span><span class="t">TOBACCO</span><span class="f">FOOD</span></div>
+      <button type="button" class="bop-territory-primary" id="bopTerritoryContinue">PRESS HERE</button>
+    </section>
+    <section id="bopTerritoryChoices" hidden>
+      <h2 class="bop-territory-title">What are you looking for?</h2>
+      <div class="bop-territory-choices">
+        <button type="button" class="bop-territory-choice" data-wtf-category="weed">Weed</button>
+        <button type="button" class="bop-territory-choice" data-wtf-category="tobacco">Tobacco</button>
+        <button type="button" class="bop-territory-choice" data-wtf-category="food">Food</button>
+        <button type="button" class="bop-territory-choice" data-wtf-category="all">All</button>
+      </div>
+      <button type="button" class="bop-territory-back" id="bopTerritoryBack">Back</button>
+    </section>
+  </div>
+</div>
+<script id="bop-global-place-search-v270-script">
+(function(){
+  var endpoint='https://photon.komoot.io/api/';
+  var timer=null,controller=null,selectedPlace=null;
+  var liveCities=[
+    ['Las Vegas','Nevada','lasvegas',['Vegas']],['New York','New York','newyork',['NYC','New York City']],['New Orleans','Louisiana','neworleans',[]],
+    ['Manhattan','New York','manhattan',[]],['Brooklyn','New York','brooklyn',[]],['Queens','New York','queens',[]],['The Bronx','New York','bronx',['Bronx']],['The Hamptons','New York','hamptons',['Hamptons']],
+    ['Paris','France','paris',[]],['Tokyo','Japan','tokyo',[]],['London','England','london',[]],['Hong Kong','Hong Kong','hongkong',[]],['Singapore','Singapore','singapore',[]],
+    ['Bangkok','Thailand','bangkok',[]],['Barcelona','Spain','barcelona',[]],['San Sebastián','Spain','sansebastian',['San Sebastian','Donostia']],['Madrid','Spain','madrid',[]],
+    ['Rome','Italy','rome',[]],['Milan','Italy','milan',[]],['Mexico City','Mexico','mexicocity',['CDMX']],['Los Angeles','California','losangeles',['LA']],
+    ['San Francisco','California','sanfrancisco',['SF']],['Copenhagen','Denmark','copenhagen',[]],['Seoul','South Korea','seoul',[]],['Osaka','Japan','osaka',[]],['Kyoto','Japan','kyoto',[]],['Dubai','United Arab Emirates','dubai',['UAE']]
+  ];
+  function norm(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
+  function esc(v){var d=document.createElement('div');d.textContent=String(v||'');return d.innerHTML}
+  function liveMatches(query){var q=norm(query);return liveCities.filter(function(c){return [c[0]].concat(c[3]).some(function(n){return norm(n).startsWith(q)})}).slice(0,5)}
+  function featureToPlace(feature){
+    var p=feature&&feature.properties||{},type=p.type||p.osm_value||'';
+    var name=p.name||p.city||p.state||p.country; if(!name)return null;
+    var detail=[p.city&&p.city!==name?p.city:'',p.state&&p.state!==name?p.state:'',p.country&&p.country!==name?p.country:''].filter(Boolean).filter(function(v,i,a){return a.indexOf(v)===i}).join(', ');
+    return {name:name,detail:detail,type:type,lat:feature.geometry&&feature.geometry.coordinates?feature.geometry.coordinates[1]:'',lon:feature.geometry&&feature.geometry.coordinates?feature.geometry.coordinates[0]:''};
+  }
+  function render(live,places,loading){
+    var results=document.getElementById('bopLandingResults');if(!results)return;
+    var seen={};live.forEach(function(c){seen[norm(c[0]+' '+c[1])]=1});
+    places=places.filter(function(p){var key=norm(p.name+' '+p.detail);if(seen[key])return false;seen[key]=1;return true}).slice(0,7-live.length);
+    var html='';
+    if(live.length)html+='<div class="bop-landing-results-label">Live Cities</div>'+live.map(function(c){return '<button type="button" class="bop-landing-result bop-global-place-result" data-live-dest="'+esc(c[2])+'"><span class="bop-landing-result-dot"></span><span class="bop-global-place-copy"><span class="bop-global-place-name">'+esc(c[0])+'</span><span class="bop-global-place-detail">'+esc(c[1])+' · Open now</span></span></button>'}).join('');
+    if(places.length)html+='<div class="bop-landing-results-label">Places Worldwide</div>'+places.map(function(p,i){return '<button type="button" class="bop-landing-result bop-global-place-result" data-global-index="'+i+'"><span class="bop-landing-result-dot"></span><span class="bop-global-place-copy"><span class="bop-global-place-name">'+esc(p.name)+'</span><span class="bop-global-place-detail">'+esc(p.detail||'Worldwide location')+' · WTF available</span></span></button>'}).join('');
+    if(loading&&!places.length)html+='<div class="bop-landing-results-label">Searching places worldwide…</div>';
+    if(!html)html='<div class="bop-landing-results-label">Keep typing to find a real city, state, region, or country</div>';
+    results.__globalPlaces=places;results.innerHTML=html;results.classList.remove('bop-ny-search-results');results.classList.add('open');
+  }
+  function openLive(dest){
+    var landing=document.getElementById('bopLandingOverlay'),results=document.getElementById('bopLandingResults');
+    if(dest==='newyork'&&typeof window.bopOpenNewYorkGateway==='function'){if(landing)landing.classList.remove('open');window.bopOpenNewYorkGateway();return}
+    if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
+    boCityContext=dest;if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
+    if(landing)landing.classList.remove('open');if(results){results.classList.remove('open');results.innerHTML=''}
+    var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');window.scrollTo(0,0);
+  }
+  function showTerritory(place){selectedPlace=place;var overlay=document.getElementById('bopTerritoryWtfOverlay');document.getElementById('bopTerritoryPlace').textContent=[place.name,place.detail].filter(Boolean).join(', ');document.getElementById('bopTerritoryIntro').hidden=false;document.getElementById('bopTerritoryChoices').hidden=true;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+  function closeTerritory(){var overlay=document.getElementById('bopTerritoryWtfOverlay');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+  function openWtf(category){
+    var query=new URLSearchParams({category:category,location:[selectedPlace.name,selectedPlace.detail].filter(Boolean).join(', ')});if(selectedPlace.lat)query.set('lat',selectedPlace.lat);if(selectedPlace.lon)query.set('lon',selectedPlace.lon);
+    var url='https://wtfdd.com/?'+query.toString(),overlay=document.getElementById('conceptWebPopup'),frame=document.getElementById('conceptWebFrame'),title=document.getElementById('conceptWebTitle'),direct=document.getElementById('conceptWebDirect');
+    closeTerritory();if(overlay&&frame){if(title)title.textContent='WTF · '+category.toUpperCase();if(direct)direct.href=url;frame.src=url;overlay.classList.add('is-open')}else window.location.assign(url);
+  }
+  async function lookup(value){
+    var live=liveMatches(value);render(live,[],true);if(controller)controller.abort();controller=new AbortController();
+    try{var response=await fetch(endpoint+'?limit=10&lang=en&q='+encodeURIComponent(value),{signal:controller.signal});if(!response.ok)throw new Error('lookup');var data=await response.json();var allowed=['city','town','village','hamlet','state','county','country','district','locality','borough','municipality'];var places=(data.features||[]).map(featureToPlace).filter(Boolean).filter(function(p){return !p.type||allowed.indexOf(String(p.type).toLowerCase())>-1});render(live,places,false)}catch(error){if(error.name!=='AbortError')render(live,[],false)}
+  }
+  function start(){
+    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults'),overlay=document.getElementById('bopTerritoryWtfOverlay');if(!input||!results||!overlay)return;
+    input.addEventListener('input',function(event){event.stopImmediatePropagation();clearTimeout(timer);var value=input.value.trim();if(value.length<2){results.innerHTML='';results.classList.remove('open');return}render(liveMatches(value),[],true);timer=setTimeout(function(){lookup(value)},260)},true);
+    input.addEventListener('keyup',function(event){event.stopImmediatePropagation()},true);input.addEventListener('compositionend',function(event){event.stopImmediatePropagation()},true);
+    input.addEventListener('keydown',function(event){if(event.key!=='Enter')return;var first=results.querySelector('[data-live-dest],[data-global-index]');if(first){event.preventDefault();event.stopImmediatePropagation();first.click()}},true);
+    results.addEventListener('click',function(event){var button=event.target.closest('[data-live-dest],[data-global-index]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();if(button.dataset.liveDest){openLive(button.dataset.liveDest);return}var place=(results.__globalPlaces||[])[Number(button.dataset.globalIndex)];if(place)showTerritory(place)},true);
+    overlay.querySelector('.bop-territory-close').addEventListener('click',closeTerritory);document.getElementById('bopTerritoryContinue').addEventListener('click',function(){document.getElementById('bopTerritoryIntro').hidden=true;document.getElementById('bopTerritoryChoices').hidden=false});document.getElementById('bopTerritoryBack').addEventListener('click',function(){document.getElementById('bopTerritoryChoices').hidden=true;document.getElementById('bopTerritoryIntro').hidden=false});
+    overlay.querySelectorAll('[data-wtf-category]').forEach(function(button){button.addEventListener('click',function(){openWtf(button.dataset.wtfCategory)})});overlay.addEventListener('click',function(event){if(event.target===overlay)closeTerritory()});document.addEventListener('keydown',function(event){if(event.key==='Escape'&&overlay.classList.contains('open'))closeTerritory()});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
