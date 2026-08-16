@@ -1654,7 +1654,10 @@
      popup opened at z-index:50 — underneath whatever page you were viewing —
      so it looked like the buttons did nothing at all. */
   #webPopupOverlay{ z-index:400; }
-  #phonePopupOverlay{ z-index:420; }
+  /* Phone calls must always remain actionable above a business, medical, or
+     dispensary detail popup. The call overlay is also moved to document.body
+     when opened so it cannot be trapped inside a lower stacking context. */
+  #phonePopupOverlay{ z-index:2147483646 !important; }
   #directionsPopupOverlay{ z-index:420; }
   /* bopLandingOverlay sits at z-index:900 (the highest of any page overlay
      on the site) — this has to clear that or the orb opens invisibly
@@ -9880,6 +9883,10 @@ function openDirectionsPopup(address, name){
 
   overlay.dataset.address = address;
   overlay.classList.add('open');
+  requestAnimationFrame(function(){
+    var closeButton = document.getElementById('phonePopupCloseBtn');
+    if(closeButton && closeButton.focus) closeButton.focus({preventScroll:true});
+  });
 }
 
 // ---- BJS "WHY" orb popup ----
@@ -9954,6 +9961,8 @@ function setupDirectionsPopup(){
 function openPhonePopup(digits, display){
   var overlay = document.getElementById('phonePopupOverlay');
   if(!overlay || !digits) return;
+  if(overlay.parentElement !== document.body) document.body.appendChild(overlay);
+  overlay.style.zIndex = '2147483646';
   var numEl = document.getElementById('phonePopupNumber');
   var callEl = document.getElementById('phonePopupCall');
   if(numEl){
