@@ -38658,7 +38658,10 @@ body footer.bop-approved-footer{
 .bop-city-button[data-live="true"] .bop-city-status{color:#3b9dff}
 #ocWorldOverlay .oc-world-inner.bop-directory-mode{display:block!important;width:min(100%,720px)!important;min-height:100vh!important;padding:122px 0 70px!important;box-sizing:border-box!important}
 #ocWorldOverlay .oc-world-inner.bop-directory-mode .oc-world-title{margin:0 auto 6px!important;text-align:center!important}
-.bo-near-map-title span::after{content:'SEARCHING FOR YUMMY SPOTS IN YOUR AREA'!important}
+.bo-near-map-title strong:first-child{font-size:0!important}
+.bo-near-map-title strong:first-child::after{content:'CITY MAP';font:900 clamp(2.8rem,11.75vw,5.5rem)/1 'Archivo Black',Arial,sans-serif!important}
+.bo-near-map-title span{display:flex!important;align-items:center!important;gap:6px!important;font-size:0!important;white-space:nowrap!important}
+.bo-near-map-title span::after{content:'SEARCHING FOR YUMMY SPOTS IN YOUR AREA'!important;font:800 11px/1 'Archivo Narrow',Arial,sans-serif!important}
 @media(max-width:420px){.bop-map-choices{gap:9px}.bop-map-choice{min-height:126px;padding:12px 5px}.bop-map-choice svg{height:66px}.bop-region-grid{gap:7px}.bop-region-button{font-size:10px}}
 </style>
 <script id="bop-city-map-and-region-directory-v1">
@@ -38768,6 +38771,58 @@ body footer.bop-approved-footer{
   new MutationObserver(function(records){
     records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)normalizeCityMapLabels(node)})});
   }).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<script id="bop-exact-business-sharing-v1">
+(function(){
+  function cityKey(){
+    return (typeof boCityContext!=='undefined'&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+  }
+  function cityLabel(key){
+    var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&(BO_CITY_CONFIG[key]||BO_CITY_CONFIG.bestof))||{};
+    return cfg.displayName||cfg.searchName||'Vegas';
+  }
+  function exactBusinessData(name){
+    var key=cityKey(),category=(typeof boCurrentCat!=='undefined'&&boCurrentCat)||'bestof';
+    var url=new URL(location.origin+(location.pathname.replace(/\/main\/?$/,'/')||'/'));
+    url.searchParams.set('page',category);
+    if(key!=='bestof')url.searchParams.set('city',key);
+    url.searchParams.set('restaurant',name);
+    url.hash='/'+encodeURIComponent(key)+'/'+encodeURIComponent(category)+'/'+encodeURIComponent(String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));
+    var branded='Check out '+name+' on Best of '+cityLabel(key)+' Period.';
+    return {title:name+' — Best of '+cityLabel(key)+' Period.',text:branded,url:url.toString()};
+  }
+  async function shareBusiness(name){
+    var data=exactBusinessData(name);
+    /* Keep the readable business route in the browser bar too. Because it is
+       a hash route, refreshes still load the single-file site safely. */
+    try{history.replaceState(null,'',data.url)}catch(error){}
+    if(typeof window.__bopShareExact==='function')return window.__bopShareExact(data);
+    var isiPhone=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+    if(navigator.share)return navigator.share(isiPhone?{title:data.title,text:data.text+'\n'+data.url}:{title:data.title,text:data.text,url:data.url});
+    var copy=data.text+'\n'+data.url;
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(copy);
+    prompt('Copy this exact business link:',copy);
+  }
+  window.boShareRestaurant=shareBusiness;
+  try{boShareRestaurant=shareBusiness}catch(error){}
+
+  /* If a category currently contains exactly one business, the large SHARE
+     PAGE control shares that business too. This makes one-business pages such
+     as Infamous Brewing behave like true individual pages. */
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#globalSharePage');
+    if(!button)return;
+    var overlay=document.getElementById('bestOfOverlay');
+    if(!overlay||!overlay.classList.contains('open'))return;
+    var cards=Array.from(document.querySelectorAll('#boList .bo-card')).filter(function(card){return getComputedStyle(card).display!=='none'});
+    if(cards.length!==1)return;
+    var heading=cards[0].querySelector('h3');
+    if(!heading||!heading.textContent.trim())return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';
+    shareBusiness(heading.textContent.trim()).catch(function(error){if(error&&error.name!=='AbortError')prompt('Copy this exact business link:',exactBusinessData(heading.textContent.trim()).url)}).finally(function(){button.disabled=false;button.innerHTML=original});
+  },true);
 })();
 </script>
 </body></html>
