@@ -38908,4 +38908,212 @@ body footer.bop-approved-footer{
 })();
 </script>
 
+<style id="bop-city-map-single-header-repair-v1">
+/* Normal City Map mode has exactly one visual header. Legacy child text is kept only for accessibility, never for rendering. */
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title{
+  display:block!important;
+  width:auto!important;
+  max-width:86vw!important;
+  min-height:78px!important;
+  font-size:0!important;
+  line-height:1!important;
+  white-space:normal!important;
+  overflow:visible!important;
+}
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title > strong,
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title > span,
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title > .bo-near-closest-title,
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title > .bo-near-price-key{
+  display:none!important;
+}
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title::before{
+  content:'CITY MAP'!important;
+  display:block!important;
+  color:#f3a21b!important;
+  font:900 clamp(42px,11vw,62px)/.9 'Archivo Black',Arial,sans-serif!important;
+  letter-spacing:.015em!important;
+  white-space:nowrap!important;
+}
+body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title::after{
+  content:'Searching for yummy spots near you.'!important;
+  display:block!important;
+  margin-top:13px!important;
+  color:#f3a21b!important;
+  font:800 clamp(11px,3.15vw,14px)/1.1 'Archivo Narrow',Arial,sans-serif!important;
+  letter-spacing:.035em!important;
+  text-transform:none!important;
+  white-space:nowrap!important;
+}
+@media(max-width:390px){
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title::before{font-size:42px!important}
+  body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title::after{font-size:11px!important;letter-spacing:.015em!important}
+}
+</style>
+<script id="bop-city-map-single-header-repair-v1-script">
+(function(){
+  function normalize(){
+    var title=document.querySelector('#boNearMapPage .bo-near-map-title');
+    if(!title)return;
+    title.setAttribute('aria-label','City Map. Searching for yummy spots near you.');
+    title.setAttribute('role','heading');
+    title.setAttribute('aria-level','1');
+  }
+  var original=window.boOpenNearMap;
+  if(typeof original==='function'){
+    window.boOpenNearMap=function(){normalize();return original.apply(this,arguments);};
+    try{boOpenNearMap=window.boOpenNearMap;}catch(error){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalize);else normalize();
+})();
+</script>
+
+<style id="bop-closest-five-modal-chooser-v1">
+/* Closest 5 becomes a deliberate chooser first, then a compact nearby-results grid. */
+#bopClosestFiveChooser{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:24px 18px;box-sizing:border-box;background:rgba(0,0,0,.64);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#bopClosestFiveChooser.is-open{display:flex;animation:bopClosestFade .2s cubic-bezier(.23,1,.32,1) both}
+@keyframes bopClosestFade{from{opacity:0}to{opacity:1}}
+.bop-closest-chooser-card{position:relative;width:min(100%,520px);padding:31px 22px 25px;border:1.5px solid #f3a21b;border-radius:22px;background:linear-gradient(145deg,#12100c 0%,#050505 58%,#100b05 100%);box-shadow:0 0 0 1px rgba(255,255,255,.05) inset,0 22px 80px rgba(0,0,0,.72),0 0 36px rgba(243,162,27,.24);color:#fff;text-align:center}
+.bop-closest-chooser-kicker{margin:0 0 10px;color:#ea4057;font:900 11px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.14em}
+.bop-closest-chooser-title{margin:0;color:#f3a21b;font:900 clamp(32px,9vw,48px)/.88 'Archivo Black',Arial,sans-serif;letter-spacing:.015em}
+.bop-closest-chooser-copy{max-width:330px;margin:16px auto 20px;color:#e8dcc7;font:700 13px/1.42 'Archivo Narrow',Arial,sans-serif;letter-spacing:.025em}
+.bop-closest-chooser-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.bop-closest-chooser-option{min-height:81px;padding:10px 8px;border:1.5px solid #f3a21b;border-radius:15px;background:#090909;color:#f3a21b;font:900 16px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.04em;transition:transform .16s cubic-bezier(.23,1,.32,1),background .16s,color .16s,box-shadow .16s}
+.bop-closest-chooser-option:active{transform:scale(.97)}
+.bop-closest-chooser-option:hover,.bop-closest-chooser-option:focus-visible{background:#f3a21b;color:#050505;box-shadow:0 0 18px rgba(243,162,27,.45);outline:none}
+.bop-closest-chooser-option small{display:block;margin-top:7px;font:800 9px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em}
+.bop-closest-chooser-option.is-all{grid-column:1/-1;min-height:54px}
+.bop-closest-chooser-close{position:absolute;top:11px;right:11px;width:33px;height:33px;border:1px solid rgba(243,162,27,.7);border-radius:50%;background:#090909;color:#f3a21b;font:900 20px/1 Arial,sans-serif}
+.bop-closest-chooser-note{margin:16px 0 0;color:#9f9587;font:700 10px/1.35 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em}
+body.bop-closest-tier-selected #boNearMapPage .bo-near-closest-filters,body.bop-closest-tier-selected #boNearMapPage .bo-near-after-hours-note{display:none!important}
+#bopClosestChangeTier{display:none;margin:13px auto 4px;padding:8px 13px;border:1px solid #f3a21b;border-radius:999px;background:#090909;color:#f3a21b;font:900 10px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em}
+body.bop-closest-tier-selected #bopClosestChangeTier{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}
+body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList .bo-near-closest-row{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:space-between!important;min-height:114px!important;padding:12px!important;text-align:left!important}
+body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList .bo-near-closest-name{font-size:14px!important;line-height:1.03!important}
+body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList .bo-near-closest-distance{margin-top:10px!important;font-size:13px!important}
+.bop-closest-loading-card{min-height:114px;padding:13px;border:1px solid rgba(243,162,27,.5);border-radius:11px;background:linear-gradient(110deg,#090909 15%,#1b150c 45%,#090909 75%);background-size:200% 100%;animation:bopClosestShimmer 1.25s linear infinite}
+.bop-closest-loading-card b,.bop-closest-loading-card span{display:block;border-radius:4px;background:rgba(243,162,27,.35)}
+.bop-closest-loading-card b{width:68%;height:12px;margin-bottom:11px}.bop-closest-loading-card span{width:42%;height:8px}
+@keyframes bopClosestShimmer{to{background-position:-200% 0}}
+@media(max-width:370px){.bop-closest-chooser-card{padding:28px 16px 20px}.bop-closest-chooser-option{font-size:14px}body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList{grid-template-columns:1fr}}
+</style>
+<script id="bop-closest-five-modal-chooser-v1-script">
+(function(){
+  var desiredTier='';
+  function ensureChooser(){
+    var modal=document.getElementById('bopClosestFiveChooser');
+    if(modal)return modal;
+    modal=document.createElement('div');
+    modal.id='bopClosestFiveChooser';
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    modal.setAttribute('aria-labelledby','bopClosestFiveChooserTitle');
+    modal.innerHTML='<section class="bop-closest-chooser-card"><button type="button" class="bop-closest-chooser-close" aria-label="Close Closest 5 chooser">×</button><p class="bop-closest-chooser-kicker">QUICK FIND FOR FOOD</p><h1 id="bopClosestFiveChooserTitle" class="bop-closest-chooser-title">CLOSEST 5</h1><p class="bop-closest-chooser-copy">Choose your dining mood. We’ll use your location to surface nearby picks, then keep refining the distances.</p><div class="bop-closest-chooser-grid"><button type="button" class="bop-closest-chooser-option" data-bop-closest-tier="dive">DIVE<small>$</small></button><button type="button" class="bop-closest-chooser-option" data-bop-closest-tier="casual">CASUAL<small>$$–$$$</small></button><button type="button" class="bop-closest-chooser-option" data-bop-closest-tier="fine">FINE<small>$$$–$$$$</small></button><button type="button" class="bop-closest-chooser-option is-all" data-bop-closest-tier="all">ALL 15<small>ALL DINING TYPES</small></button></div><p class="bop-closest-chooser-note">Your location is used only to calculate distance.</p></section>';
+    document.body.appendChild(modal);
+    modal.querySelector('.bop-closest-chooser-close').addEventListener('click',closeChooser);
+    modal.addEventListener('click',function(event){if(event.target===modal)closeChooser()});
+    modal.querySelectorAll('[data-bop-closest-tier]').forEach(function(button){button.addEventListener('click',function(){selectTier(button.dataset.bopClosestTier)})});
+    return modal;
+  }
+  function openChooser(){
+    var modal=ensureChooser();
+    modal.classList.add('is-open');
+    document.body.classList.add('bop-closest-chooser-open');
+    setTimeout(function(){var first=modal.querySelector('[data-bop-closest-tier]');if(first)first.focus()},0);
+  }
+  function closeChooser(){
+    var modal=document.getElementById('bopClosestFiveChooser');
+    if(modal)modal.classList.remove('is-open');
+    document.body.classList.remove('bop-closest-chooser-open');
+  }
+  function ensureChangeButton(){
+    var closest=document.querySelector('#boNearMapPage .bo-near-closest');
+    if(!closest||document.getElementById('bopClosestChangeTier'))return;
+    var change=document.createElement('button');
+    change.type='button';change.id='bopClosestChangeTier';change.textContent='CHANGE TYPE';
+    change.addEventListener('click',openChooser);
+    closest.insertBefore(change,closest.querySelector('#boNearClosestList'));
+  }
+  function showLoadingGrid(){
+    var list=document.getElementById('boNearClosestList');
+    if(!list||boNearUserLatLng||document.querySelector('[data-bop-closest-retry]'))return;
+    list.innerHTML=Array.from({length:4},function(){return '<div class="bop-closest-loading-card" aria-hidden="true"><b></b><span></span></div>'}).join('');
+  }
+  function activateTier(){
+    var buttons=document.querySelectorAll('#boNearMapPage [data-near-tier]');
+    if(!buttons.length)return false;
+    boNearClosestTier=desiredTier;
+    buttons.forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.nearTier===desiredTier))});
+    var title=document.getElementById('boNearClosestTitle');
+    if(title)title.textContent=desiredTier==='all'?'CLOSEST 15':'CLOSEST 5';
+    if(typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();
+    showLoadingGrid();
+    return true;
+  }
+  function selectTier(tier){
+    desiredTier=tier||'all';
+    closeChooser();
+    document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+    var tries=0;
+    var timer=window.setInterval(function(){
+      tries++;
+      if(activateTier()||tries>60)window.clearInterval(timer);
+    },120);
+  }
+  var priorRender=window.boRenderNearClosestFive;
+  if(typeof priorRender==='function'){
+    window.boRenderNearClosestFive=function(){
+      var result=priorRender.apply(this,arguments);
+      if(document.body.classList.contains('bop-closest-tier-selected')){
+        ensureChangeButton();
+        var list=document.getElementById('boNearClosestList');
+        if(list&&!list.querySelector('.bo-near-closest-row')&&!list.querySelector('[data-bop-closest-retry]'))showLoadingGrid();
+      }
+      return result;
+    };
+    try{boRenderNearClosestFive=window.boRenderNearClosestFive;}catch(error){}
+  }
+  window.addEventListener('click',function(event){
+    var trigger=event.target.closest&&event.target.closest('#bopStaticClosestFive');
+    if(!trigger)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    openChooser();
+  },true);
+  document.addEventListener('keydown',function(event){if(event.key==='Escape')closeChooser()});
+})();
+</script>
+
+<script id="bop-closest-five-modal-tap-priority-v1">
+/* The legacy page has document-capture listeners; handle chooser selections at window capture before they can be swallowed. */
+(function(){
+  function activate(tier){
+    var modal=document.getElementById('bopClosestFiveChooser');
+    if(modal)modal.classList.remove('is-open');
+    document.body.classList.remove('bop-closest-chooser-open');
+    document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+    var tries=0;
+    var timer=window.setInterval(function(){
+      var buttons=document.querySelectorAll('#boNearMapPage [data-near-tier]');
+      tries++;
+      if(buttons.length){
+        boNearClosestTier=tier;
+        buttons.forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.nearTier===tier))});
+        var title=document.getElementById('boNearClosestTitle');
+        if(title)title.textContent=tier==='all'?'CLOSEST 15':'CLOSEST 5';
+        if(typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();
+        window.clearInterval(timer);
+      }else if(tries>60){window.clearInterval(timer);}
+    },80);
+  }
+  window.addEventListener('click',function(event){
+    var choice=event.target.closest&&event.target.closest('#bopClosestFiveChooser [data-bop-closest-tier]');
+    if(!choice)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    activate(choice.dataset.bopClosestTier||'all');
+  },true);
+})();
+</script>
+
 </body></html>
