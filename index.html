@@ -38825,4 +38825,87 @@ body footer.bop-approved-footer{
   },true);
 })();
 </script>
+<script id="bop-closest-five-geolocation-fix-v1">
+/* Closest 5: request permission from the tap, retain the chosen tier, and do not discard venues with unverified hours. */
+(function(){
+  var pendingTier='';
+  function requestLocationFromGesture(){
+    if(!navigator.geolocation)return;
+    navigator.geolocation.getCurrentPosition(function(position){
+      window.__bopClosest5Position={lat:position.coords.latitude,lng:position.coords.longitude,accuracy:position.coords.accuracy||0};
+    },function(){}, {enableHighAccuracy:true,timeout:12000,maximumAge:300000});
+  }
+  function retryMarkup(){
+    return '<button type="button" class="bo-near-closest-filter" data-bop-closest-retry="1">ALLOW LOCATION</button>';
+  }
+  function render(){
+    var list=document.getElementById('boNearClosestList');
+    var status=document.getElementById('boNearClosestStatus');
+    if(!list||!status||!boNearClosestTier)return;
+    pendingTier=boNearClosestTier;
+    if(!boNearUserLatLng){
+      list.innerHTML=retryMarkup();
+      status.textContent='Allow location to see the closest restaurants near you.';
+      return;
+    }
+    var available=boNearMappedRestaurants.map(function(item){
+      var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)};
+      var hours=boNearHoursState(item.restaurant);
+      return Object.assign({},item,{distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
+    }).filter(function(item){return Number.isFinite(item.distance)&&item.hoursState.state!=='closed';}).sort(function(a,b){
+      var aRank=a.hoursState.state==='open'||a.hoursState.state==='closing'?0:1;
+      var bRank=b.hoursState.state==='open'||b.hoursState.state==='closing'?0:1;
+      return aRank-bRank||a.distance-b.distance;
+    });
+    var candidates=[];
+    if(boNearClosestTier==='all'){
+      ['dive','casual','fine'].forEach(function(tier){
+        available.filter(function(item){return boNearMatchesTier(item.restaurant,tier);}).slice(0,5).forEach(function(item){candidates.push(Object.assign({},item,{nearTier:tier}));});
+      });
+    }else{
+      candidates=available.filter(function(item){return boNearMatchesTier(item.restaurant,boNearClosestTier);}).slice(0,5);
+    }
+    if(!candidates.length){
+      list.innerHTML='';
+      status.textContent=boNearGeocodingComplete?'No nearby '+boNearClosestTier+' restaurants are mapped yet. Try another choice or retry location.':'Finding the closest '+boNearClosestTier+' restaurants near you…';
+      return;
+    }
+    var verified=candidates.filter(function(item){return item.hoursState.known;}).length;
+    status.textContent=(boNearGeocodingComplete?'Showing ':'Finding more — currently showing ')+candidates.length+' closest '+(boNearClosestTier==='all'?'restaurants across Dive, Casual, and Fine.':' '+boNearClosestTier+' restaurants.')+(verified<candidates.length?' Venues without verified hours remain available.':'');
+    list.innerHTML=candidates.map(function(item,index){
+      var r=item.restaurant,level=boNearPriceLevel(r),distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';
+      var tier=item.nearTier?'<span class="bo-near-closest-tier">'+boNearEscape(item.nearTier.toUpperCase())+'</span> · ':'';
+      var hours=item.hoursState;
+      var hoursLabel=hours.known?'<span class="bo-near-hours-status '+hours.state+'">'+hours.label+'</span>':'<span class="bo-near-hours-status unknown">HOURS UNVERIFIED</span>';
+      return '<button type="button" class="bo-near-closest-row" data-near-closest-index="'+index+'"><span><span class="bo-near-closest-name">'+boNearEscape(r.name)+'</span><span class="bo-near-closest-meta">'+tier+('$'.repeat(level||1))+' · ★ '+boNearEscape(r.ratingText||String(r.rating||''))+'</span>'+hoursLabel+'</span><span class="bo-near-closest-distance">'+distance+'</span></button>';
+    }).join('');
+    list.querySelectorAll('[data-near-closest-index]').forEach(function(button){button.addEventListener('click',function(){var item=candidates[Number(button.dataset.nearClosestIndex)];if(!item)return;if(boNearMap)boNearMap.setView([item.geo.lat,item.geo.lon],Math.max(boNearMap.getZoom(),16));boShowNearRestaurantCard(item.restaurant,String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||''));});});
+  }
+  var originalOpen=boOpenNearMap;
+  boOpenNearMap=async function(){
+    var result=await originalOpen.apply(this,arguments);
+    if(document.body.classList.contains('bo-closest-five-active')){
+      if(pendingTier&&boNearUserLatLng){
+        boNearClosestTier=pendingTier;
+        document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.nearTier===pendingTier));});
+        render();
+      }else if(!boNearUserLatLng){render();}
+    }
+    return result;
+  };
+  window.boOpenNearMap=boOpenNearMap;
+  boRenderNearClosestFive=render;
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticClosestFive,[data-near-tier],[data-bop-closest-retry]');
+    if(!button)return;
+    requestLocationFromGesture();
+    if(button.dataset.bopClosestRetry==='1'){
+      event.preventDefault();
+      pendingTier=boNearClosestTier||pendingTier||'all';
+      boOpenNearMap();
+    }
+  },true);
+})();
+</script>
+
 </body></html>
