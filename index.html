@@ -38542,13 +38542,39 @@ body footer.bop-approved-footer{
 (function(){
   var endpoint='https://photon.komoot.io/api/';
   var timer=null,controller=null,selectedPlace=null;
+  /* This is the authoritative list of destinations that already have real,
+     active Best Of Period pages in this build. Every city here bypasses the
+     holding pop-up and opens its existing page directly. All other worldwide
+     search results continue to the holding pop-up. */
   var liveCities=[
-    ['Las Vegas','Nevada','lasvegas',['Vegas']],['New York','New York','newyork',['NYC','New York City']],['New Orleans','Louisiana','neworleans',[]],
-    ['Manhattan','New York','manhattan',[]],['Brooklyn','New York','brooklyn',[]],['Queens','New York','queens',[]],['The Bronx','New York','bronx',['Bronx']],['The Hamptons','New York','hamptons',['Hamptons']],
-    ['Paris','France','paris',[]],['Tokyo','Japan','tokyo',[]],['London','England','london',[]],['Hong Kong','Hong Kong','hongkong',[]],['Singapore','Singapore','singapore',[]],
-    ['Bangkok','Thailand','bangkok',[]],['Barcelona','Spain','barcelona',[]],['San Sebastián','Spain','sansebastian',['San Sebastian','Donostia']],['Madrid','Spain','madrid',[]],
-    ['Rome','Italy','rome',[]],['Milan','Italy','milan',[]],['Mexico City','Mexico','mexicocity',['CDMX']],['Los Angeles','California','losangeles',['LA']],
-    ['San Francisco','California','sanfrancisco',['SF']],['Copenhagen','Denmark','copenhagen',[]],['Seoul','South Korea','seoul',[]],['Osaka','Japan','osaka',[]],['Kyoto','Japan','kyoto',[]],['Dubai','United Arab Emirates','dubai',['UAE']]
+    ['Las Vegas','Nevada','bestof',['Vegas']],
+    ['Miami','Florida','miami',[]],
+    ['London','England','london',[]],
+    ['Paris','France','paris',[]],
+    ['Zürich','Switzerland','zurich',['Zurich']],
+    ['Lucerne','Switzerland','lucerne',['Luzern']],
+    ['Geneva','Switzerland','geneva',['Genève','Geneve']],
+    ['Zermatt','Switzerland','zermatt',[]],
+    ['San Diego','California','sandiego',['S.D.','SD']],
+    ['Austin','Texas','austin',['Austin, Texas','ATX']],
+    ['Silicon Valley','California','siliconvalley',['S.V.','SV']],
+    ['Los Angeles','California','losangeles',['L.A.','LA']],
+    ['Santa Barbara','California','santabarbara',[]],
+    ['San Francisco','California','sanfrancisco',['S.F.','SF']],
+    ['New York','State Directory','newyork',['New York State']],
+    ['New York City','New York','manhattan',['NYC','N.Y.C.']],
+    ['Manhattan','New York City','manhattan',[]],
+    ['Brooklyn','New York City','brooklyn',[]],
+    ['Queens','New York City','queens',[]],
+    ['The Bronx','New York City','bronx',['Bronx']],
+    ['The Hamptons','New York','hamptons',['Hamptons']],
+    ['Chicago','Illinois','chicago',[]],
+    ['Washington, D.C.','District of Columbia','washingtondc',['Washington DC','D.C.','DC']],
+    ['Boston','Massachusetts','boston',[]],
+    ['Philadelphia','Pennsylvania','philadelphia',['Philly']],
+    ['Atlanta','Georgia','atlanta',[]],
+    ['New Orleans','Louisiana','neworleans',['NOLA']],
+    ['Idaho','Idaho','idaho',['Sun Valley','Boise','Ketchum']]
   ];
   function norm(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
   function esc(v){var d=document.createElement('div');d.textContent=String(v||'');return d.innerHTML}
