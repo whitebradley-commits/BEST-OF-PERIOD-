@@ -39274,4 +39274,105 @@ body.bo-closest-five-active #boNearMapPage .bop-closest-price-separator{opacity:
   window.bopChooseClosestTierV2=chooseTier;
 })();
 </script>
+
+<style id="bop-main-orbs-first-tap-v1">
+/* Every floating orb owns only its painted circle. The former enlarged Globe pseudo-element reached into Closest 5's space and intercepted taps. */
+#bopStaticLandingDock .bop-static-landing-button{position:relative!important;isolation:isolate!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}
+#bopStaticWorld::after,.bop-landing-world-btn::after{inset:0!important;pointer-events:none!important}
+</style>
+<script id="bop-main-orbs-first-tap-v1-script">
+(function(){
+  function hideOtherCities(){
+    var other=document.getElementById('ocWorldOverlay');if(other){other.classList.remove('open');other.setAttribute('aria-hidden','true');}
+    document.getElementById('ocCityCard')?.classList.remove('open');
+    document.body.classList.remove('oc-world-active');
+  }
+  function openClosestChooser(){
+    var modal=document.getElementById('bopClosestFiveChooser');
+    if(!modal){
+      modal=document.createElement('div');
+      modal.id='bopClosestFiveChooser';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','bopClosestFiveChooserTitle');
+      modal.innerHTML='<section class="bop-closest-chooser-card"><button type="button" class="bop-closest-chooser-close" aria-label="Close Closest 5 chooser">×</button><p class="bop-closest-chooser-kicker">QUICK FIND FOR FOOD</p><h1 id="bopClosestFiveChooserTitle" class="bop-closest-chooser-title">CLOSEST 5</h1><p class="bop-closest-chooser-copy">Choose your dining mood. We’ll use your location to surface nearby picks, then keep refining the distances.</p><div class="bop-closest-chooser-grid"><button type="button" class="bop-closest-chooser-option" data-bop-orb-tier="dive">DIVE<small>$</small></button><button type="button" class="bop-closest-chooser-option" data-bop-orb-tier="casual">CASUAL<small>$–$$</small></button><button type="button" class="bop-closest-chooser-option" data-bop-orb-tier="fine">FINE<small>$$–$$</small></button><button type="button" class="bop-closest-chooser-option is-all" data-bop-orb-tier="all">ALL 15<small>ALL DINING TYPES</small></button></div><p class="bop-closest-chooser-note">Your location is used only to calculate distance.</p></section>';
+      document.body.appendChild(modal);
+      modal.querySelector('.bop-closest-chooser-close').addEventListener('click',function(){modal.classList.remove('is-open');document.body.classList.remove('bop-closest-chooser-open');});
+      modal.addEventListener('click',function(event){if(event.target===modal){modal.classList.remove('is-open');document.body.classList.remove('bop-closest-chooser-open');}});
+      modal.querySelectorAll('[data-bop-orb-tier]').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();modal.classList.remove('is-open');document.body.classList.remove('bop-closest-chooser-open');if(typeof window.bopChooseClosestTierV2==='function')window.bopChooseClosestTierV2(button.dataset.bopOrbTier==='all'?'casual':button.dataset.bopOrbTier);else if(typeof window.bopChooseClosestTier==='function')window.bopChooseClosestTier(button.dataset.bopOrbTier==='all'?'casual':button.dataset.bopOrbTier);});});
+    }
+    modal.classList.add('is-open');document.body.classList.add('bop-closest-chooser-open');
+    setTimeout(function(){modal.querySelector('[data-bop-orb-tier]')?.focus();},0);
+  }
+  function route(target,event){
+    var button=target.closest&&target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities,#bopStaticClosestFive,#bopStaticWorld');
+    if(!button)return false;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(button.id==='bopStaticShare'){
+      var share=document.getElementById('globalSharePage')||document.getElementById('landingSharePage');share?.click();return true;
+    }
+    if(button.id==='bopStaticNear'){
+      hideOtherCities();document.getElementById('bopWorldwideLanding')?.classList.remove('open');document.getElementById('bopLandingOverlay')?.classList.remove('open');
+      try{boNearMapReturnTarget='landing';}catch(error){}
+      if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();return true;
+    }
+    if(button.id==='bopStaticOtherCities'){
+      var overlay=document.getElementById('ocWorldOverlay');if(overlay){if(typeof window.ocBuildWorld==='function')window.ocBuildWorld();else if(typeof ocBuildWorld==='function')ocBuildWorld();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;document.body.classList.add('oc-world-active');}return true;
+    }
+    if(button.id==='bopStaticClosestFive'){openClosestChooser();return true;}
+    hideOtherCities();document.getElementById('boNearMapPage')?.classList.remove('open');document.getElementById('bopLandingOverlay')?.classList.remove('open');
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();else document.getElementById('bopWorldwideLanding')?.classList.add('open');
+    return true;
+  }
+  document.addEventListener('click',function(event){route(event.target,event);},true);
+})();
+</script>
+
+<script id="bop-main-orbs-overlay-cleanup-v2-script">
+(function(){
+  function closeClosest(){
+    var chooser=document.getElementById('bopClosestFiveChooser');
+    if(chooser)chooser.classList.remove('is-open');
+    document.body.classList.remove('bop-closest-chooser-open');
+  }
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities,#bopStaticWorld');
+    if(!button)return;
+    closeClosest();
+    /* Older page listeners run in different registration order. Clean up once
+       they complete as well, preventing a stale Closest 5 chooser from being
+       visible above the feature the visitor actually selected. */
+    setTimeout(closeClosest,0);
+    setTimeout(closeClosest,120);
+  },true);
+})();
+</script>
+
+<style id="bop-main-orbs-active-state-v3">
+/* A legacy listener may restore the chooser's class, but only Closest 5 may ever display it. */
+body[data-bop-active-orb="share"] #bopClosestFiveChooser,
+body[data-bop-active-orb="near"] #bopClosestFiveChooser,
+body[data-bop-active-orb="other"] #bopClosestFiveChooser,
+body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;visibility:hidden!important;pointer-events:none!important}
+</style>
+<script id="bop-main-orbs-active-state-v3-script">
+(function(){
+  function setActive(id){document.body.dataset.bopActiveOrb=id;}
+  document.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities,#bopStaticClosestFive,#bopStaticWorld');
+    if(!button)return;
+    var id={bopStaticShare:'share',bopStaticNear:'near',bopStaticOtherCities:'other',bopStaticClosestFive:'closest',bopStaticWorld:'world'}[button.id];
+    if(id)setActive(id);
+  },true);
+})();
+</script>
+
+<script id="bop-main-orbs-window-capture-v4-script">
+(function(){
+  var names={bopStaticShare:'share',bopStaticNear:'near',bopStaticOtherCities:'other',bopStaticClosestFive:'closest',bopStaticWorld:'world'};
+  /* Window capture runs before the page's legacy document capture handlers. */
+  window.addEventListener('click',function(event){
+    var button=event.target.closest&&event.target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities,#bopStaticClosestFive,#bopStaticWorld');
+    if(!button)return;
+    document.body.dataset.bopActiveOrb=names[button.id]||'';
+  },true);
+})();
+</script>
 </body></html>
