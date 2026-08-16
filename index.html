@@ -32568,18 +32568,13 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
-    // Footer navigation belongs on full pages, never inside a transient dialog.
-    if(!page||page.classList.contains('directory-overlay')||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.matches(retired)||page.closest(retired))return false;
+    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.matches(retired)||page.closest(retired))return false;
     return true;
   }
   function addDocks(){
     document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
       if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
-      if(!eligible(page)){
-        // Clean up docks that a previous render may have injected into a dialog.
-        page.querySelectorAll(':scope > .bop-icons-only-dock').forEach(function(dock){dock.remove()});
-        return;
-      }
+      if(!eligible(page))return;
       var host=page.querySelector(':scope > .ty-content,:scope > .bo-page-inner,:scope > .tpa-scope,:scope > .concepts-content,:scope > .directory-content')||page;
       var dock=page.querySelector('.bop-icons-only-dock');
       if(!dock){dock=document.createElement('div');dock.className='bop-icons-only-dock';dock.innerHTML=row}
@@ -38830,4 +38825,91 @@ body footer.bop-approved-footer{
   },true);
 })();
 </script>
+<script id="bop-unified-send-dispatcher-v1">
+/* One authoritative send route for fixed, footer, and restaurant-card buttons. */
+(function(){
+  function visibleCards(){return Array.from(document.querySelectorAll('#boList .bo-card')).filter(function(card){var style=getComputedStyle(card);return style.display!=='none'&&style.visibility!=='hidden';});}
+  function singleRestaurantName(){var cards=visibleCards();if(cards.length!==1)return '';var heading=cards[0].querySelector('h3');return heading&&heading.textContent?heading.textContent.trim():'';}
+  function pageShareData(){return typeof window.boBuildExactPageShare==='function'?window.boBuildExactPageShare(window.boCurrentCat,window.boCityContext):{title:document.title||'Best of Period',text:'Check out this Best of Period page.',url:location.href};}
+  async function sharePage(button){var data=pageShareData(),original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';try{if(navigator.share){await navigator.share({title:data.title,text:data.text,url:data.url});}else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(data.text+'\n'+data.url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1200);});}else{prompt('Copy this page link:',data.url);}}catch(error){if(error&&error.name!=='AbortError')prompt('Copy this page link:',data.url);}finally{button.disabled=false;button.innerHTML=original;}}
+  async function shareRestaurant(name,button){var original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';try{if(typeof window.boShareRestaurant==='function'){await window.boShareRestaurant(name);}else{await sharePage(button);}}catch(error){if(error&&error.name!=='AbortError')prompt('Copy this restaurant link:',location.href);}finally{button.disabled=false;button.innerHTML=original;}}
+  function isPageSendControl(button){if(!button)return false;if(button.matches('#globalSharePage,#bopStaticShare,[data-bop-share-page]'))return true;return button.classList.contains('bo-bottom-tile-fixed')&&/SEND\s*PAGE/i.test(button.textContent||'');}
+  document.addEventListener('click',function(event){var button=event.target.closest&&event.target.closest('button');if(!button)return;var restaurantButton=button.closest('[data-send-restaurant]');if(restaurantButton){event.preventDefault();event.stopImmediatePropagation();var restaurantName=restaurantButton.dataset.sendRestaurant||'';if(restaurantName)shareRestaurant(restaurantName,restaurantButton);return;}if(!isPageSendControl(button))return;event.preventDefault();event.stopImmediatePropagation();var onlyRestaurant=singleRestaurantName();if(onlyRestaurant)shareRestaurant(onlyRestaurant,button);else sharePage(button);},true);
+})();
+</script>
+
+<style id="bop-city-map-copy-final">
+/* The map is a City Map; the former Near Me wording is not displayed. */
+.bo-near-map-title strong:first-child{font-size:0!important}
+.bo-near-map-title strong:first-child::after{content:'CITY MAP';font:900 clamp(2.8rem,11.75vw,5.5rem)/1 'Archivo Black',Arial,sans-serif!important}
+.bo-near-map-title span{font-size:0!important}
+.bo-near-map-title span::after{content:"YUMMY'S SEARCHING FOR YUMMY SPOTS NEAR YOU";font:800 11px/1 'Archivo Narrow',Arial,sans-serif!important}
+</style>
+<script id="bop-global-orb-router-v1">
+/* Window-capture routing runs before legacy document listeners so each orb has one destination. */
+(function(){
+  function buttonFrom(target){return target&&target.closest&&target.closest('button');}
+  function visibleCards(){return Array.from(document.querySelectorAll('#boList .bo-card')).filter(function(card){var s=getComputedStyle(card);return s.display!=='none'&&s.visibility!=='hidden';});}
+  function onlyRestaurant(){var cards=visibleCards();if(cards.length!==1)return '';var h=cards[0].querySelector('h3');return h&&h.textContent?h.textContent.trim():'';}
+  function mapCopy(root){var scope=root&&root.querySelectorAll?root:document;var title=scope.querySelector&&scope.querySelector('.bo-near-map-title');if(!title)return;var h=title.querySelector('strong'),sub=title.querySelector('span');if(h)h.textContent='CITY MAP';if(sub)sub.textContent="YUMMY'S SEARCHING FOR YUMMY SPOTS NEAR YOU";}
+  function cleanTransientViews(){['ocWorldOverlay','bopWorldwideLanding','bopLandingOverlay'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('open');});document.body.classList.remove('oc-world-active');}
+  function openCityMap(closest){cleanTransientViews();document.body.classList.toggle('bo-closest-five-active',!!closest);if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();setTimeout(function(){mapCopy(document);},0);}
+  function openOtherCities(){var overlay=document.getElementById('ocWorldOverlay');if(!overlay)return;var map=document.getElementById('boNearMapPage');window.bopOtherCitiesReturnPage=map&&map.classList.contains('open')?'boNearMapPage':'bopLandingOverlay';if(typeof window.ocBuildWorld==='function')window.ocBuildWorld();if(typeof window.ocBuildPins==='function')window.ocBuildPins();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.classList.add('oc-world-active');}
+  function openWorld(){cleanTransientViews();if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();else{var page=document.getElementById('bopWorldwideLanding');if(page)page.classList.add('open');}}
+  async function shareButton(button){var name=onlyRestaurant();var original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';try{if(name&&typeof window.boShareRestaurant==='function'){await window.boShareRestaurant(name);return;}var data=typeof window.boBuildExactPageShare==='function'?window.boBuildExactPageShare(window.boCurrentCat,window.boCityContext):{title:document.title,text:'Check out this Best of Period page.',url:location.href};if(navigator.share){await navigator.share({title:data.title,text:data.text,url:data.url});}else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(data.text+'\n'+data.url);button.textContent='COPIED!';await new Promise(function(resolve){setTimeout(resolve,1200);});}else{prompt('Copy this link:',data.url);}}catch(error){if(error&&error.name!=='AbortError')prompt('Copy this link:',location.href);}finally{button.disabled=false;button.innerHTML=original;}}
+  async function shareRestaurant(button){var name=button.dataset.sendRestaurant||'';if(!name)return;var original=button.innerHTML;button.disabled=true;button.textContent='OPENING…';try{if(typeof window.boShareRestaurant==='function')await window.boShareRestaurant(name);}finally{button.disabled=false;button.innerHTML=original;}}
+  function isPageSend(button){return button&&(button.matches('#bopStaticShare,#globalSharePage,[data-bop-share-page]')||(button.classList.contains('bo-bottom-tile-fixed')&&/SEND\s*PAGE/i.test(button.textContent||'')));}
+  window.addEventListener('click',function(event){var button=buttonFrom(event.target);if(!button)return;var id=button.id;var isRestaurant=button.matches('[data-send-restaurant]');var isRoute=['bopStaticShare','bopStaticNear','bopStaticOtherCities','bopStaticClosestFive','bopStaticWorld'].indexOf(id)>=0;if(!isRestaurant&&!isPageSend(button)&&!isRoute)return;event.preventDefault();event.stopImmediatePropagation();if(isRestaurant){shareRestaurant(button);return;}if(id==='bopStaticShare'||isPageSend(button)){shareButton(button);return;}if(id==='bopStaticNear'){openCityMap(false);return;}if(id==='bopStaticClosestFive'){openCityMap(true);return;}if(id==='bopStaticOtherCities'){openOtherCities();return;}if(id==='bopStaticWorld')openWorld();},true);
+  mapCopy(document);
+  new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)mapCopy(node);});});}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<style id="bop-city-map-copy-corrective-v2">
+/* Supersede earlier pseudo-label layers: render exactly one title and one status line. */
+.bo-near-map-title strong:first-child{font:900 clamp(2.8rem,11.75vw,5.5rem)/1 'Archivo Black',Arial,sans-serif!important}
+.bo-near-map-title strong:first-child::after{content:none!important}
+.bo-near-map-title span{display:block!important;font:800 11px/1.2 'Archivo Narrow',Arial,sans-serif!important;white-space:nowrap!important}
+.bo-near-map-title span::after{content:none!important}
+</style>
+
+<style id="bop-city-map-mode-separation-v3">
+/* Normal City Map is intentionally simple; Closest 5 retains the price-selector system. */
+body:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title .bo-near-price-key{display:none!important}
+body:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title>span:last-child{display:block!important;font-size:0!important;white-space:nowrap!important}
+body:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-title>span:last-child::after{content:"YUMMY'S SEARCHING FOR YUMMY SPOTS NEAR YOU"!important;display:block!important;font:800 11px/1.2 'Archivo Narrow',Arial,sans-serif!important}
+</style>
+
+<script id="bop-city-map-direct-copy-v4">
+(function(){
+  var status="YUMMY'S SEARCHING FOR YUMMY SPOTS NEAR YOU";
+  function apply(root){
+    var scope=root&&root.querySelectorAll?root:document;
+    scope.querySelectorAll('.bo-near-map-title').forEach(function(title){
+      var children=Array.from(title.children);
+      var heading=children.find(function(el){return el.tagName==='STRONG'&&!el.classList.contains('bo-near-closest-title');});
+      var subtitle=children.find(function(el){return el.tagName==='SPAN';});
+      if(heading){
+        if(heading.textContent!=='CITY MAP')heading.textContent='CITY MAP';
+        if(heading.style.fontSize!=='clamp(2.8rem, 11.75vw, 5.5rem)')heading.style.setProperty('font-size','clamp(2.8rem, 11.75vw, 5.5rem)','important');
+      }
+      if(subtitle){
+        if(subtitle.textContent!==status)subtitle.textContent=status;
+        if(subtitle.style.fontSize!=='11px')subtitle.style.setProperty('font-size','11px','important');
+        if(subtitle.style.display!=='block')subtitle.style.setProperty('display','block','important');
+      }
+      var priceKey=title.querySelector('.bo-near-price-key');
+      if(priceKey&&!document.body.classList.contains('bo-closest-five-active'))priceKey.style.setProperty('display','none','important');
+    });
+  }
+  apply(document);
+  new MutationObserver(function(records){
+    records.forEach(function(record){
+      if(record.type==='childList')record.addedNodes.forEach(function(node){if(node.nodeType===1)apply(node);});
+      else apply(record.target.parentElement||document);
+    });
+  }).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+
 </body></html>
