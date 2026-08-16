@@ -38144,4 +38144,59 @@ body footer.bop-approved-footer{
     0 0 11px rgba(155,93,229,.34)!important;
 }
 </style>
+<script id="bop-global-one-point-readability-test-v178">
+(function(){
+  var POINT_IN_PX=96/72;
+  var RED_CITY_SELECTOR=[
+    '.bop-splash-city',
+    '.hub-best-mini-city',
+    '.bo-lead-best-city',
+    '.bjs-why-city',
+    '#bopLandingCityText',
+    '#bopSplashCityText',
+    '#bopResultsCityText',
+    '#bopMainCityText',
+    '#hubBestMiniCity',
+    '#conceptsBestMiniCity',
+    '#bjsWhyRotatingCity'
+  ].join(',');
+  var busy=false;
+  function excluded(el){return !!(el.matches(RED_CITY_SELECTOR)||el.closest(RED_CITY_SELECTOR));}
+  function eligible(el){
+    return el instanceof HTMLElement&&!excluded(el)&&!el.dataset.bopOnePoint&&
+      !/^(SCRIPT|STYLE|LINK|META|HEAD|HTML|BODY|BR|HR|IMG|VIDEO|AUDIO|CANVAS|SVG|PATH)$/i.test(el.tagName);
+  }
+  function enlarge(root,initial){
+    if(busy)return;
+    busy=true;
+    var nodes=[];
+    if(root instanceof HTMLElement)nodes.push(root);
+    if(root&&root.querySelectorAll)nodes=nodes.concat(Array.from(root.querySelectorAll('*')));
+    var snapshots=nodes.filter(eligible).map(function(el){
+      var size=parseFloat(getComputedStyle(el).fontSize);
+      var parent=el.parentElement?parseFloat(getComputedStyle(el.parentElement).fontSize):NaN;
+      return {el:el,size:size,parent:parent};
+    }).filter(function(x){return isFinite(x.size)&&x.size>0;});
+    snapshots.forEach(function(x){
+      /* New text that simply inherits from an already-enlarged parent is
+         already one point larger and must not receive a second increase. */
+      if(!initial&&isFinite(x.parent)&&Math.abs(x.size-x.parent)<.08){
+        x.el.dataset.bopOnePoint='inherited';
+        return;
+      }
+      x.el.style.setProperty('font-size',(x.size+POINT_IN_PX).toFixed(3)+'px','important');
+      x.el.dataset.bopOnePoint='direct';
+    });
+    busy=false;
+  }
+  function start(){
+    enlarge(document.body,true);
+    new MutationObserver(function(records){
+      records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)enlarge(node,false);});});
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(start);},{once:true});
+  else requestAnimationFrame(start);
+})();
+</script>
 </body></html>
