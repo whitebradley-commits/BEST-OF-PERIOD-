@@ -3593,6 +3593,12 @@
     font-weight:600;
   }
 
+  /* Every city name on a category/subcategory hero is exactly 3px larger
+     than the inherited hero-title size (Austin breweries and all peers). */
+  .bo-hero h1 .bo-subcategory-city{
+    font-size:calc(1em + 3px);
+  }
+
   .bo-hero h1 .bo-period{
     color:var(--gold);
   }
@@ -21961,7 +21967,7 @@ const boPickerParent = {
   // was the bug where Back skipped past Other Bests to the main page.
   steak: 'otheroptions', sushi: 'otheroptions', italian: 'otheroptions',
   breakfast: 'otheroptions', asian: 'otheroptions', burgersbjspick: 'otheroptions',
-  dessert: 'otheroptions', '24hours': 'otheroptions',
+  dessert: 'otheroptions', '24hours': 'otheroptions', brewery: 'otheroptions',
   michelin: 'otheroptions', jamesbeard: 'otheroptions', cheesesteak: 'otheroptions',
   dogfriendly: 'otheroptions', bagels: 'otheroptions', cannabisinfused: 'otheroptions', newrestaurants: 'otheroptions', offstrip: 'otheroptions', undernewownership: 'otheroptions', nations: 'otheroptions',
   nationcanadian: 'nations', nationgerman: 'nations', nationirish: 'nations', nationbritish: 'nations',
@@ -22962,7 +22968,7 @@ function boRenderCategory(cat){
       // city's context, so the city name underneath the logo should reflect
       // that city, not always say Vegas.
       const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-      boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
+      boHeroTitleEl.innerHTML = `${boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title}<br><span class="bo-line2 bo-subcategory-city">${bjsPicksCity}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     } else {
       // Same idea as Other Bests and BJS Picks above — every generic genre
       // page (24 Hours, Dessert, Indian, Steak, ...) was still hardcoding
@@ -22976,7 +22982,7 @@ function boRenderCategory(cat){
       const ishSuffix = (cat === '24hours' && BO_24HR_ISH_CITIES.includes(boCityContext))
         ? ' <span class="bo-hero-dessert-word" style="font-size:0.65em;">ish</span>'
         : '';
-      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass}">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
+      boHeroTitleEl.innerHTML = `${boHeroCopy[cat].title}${ishSuffix}<br><span class="${vegasClass} bo-subcategory-city">${genericCityName}</span> <span class="bo-period">Period<span class="period-mark">&copy;</span></span>`;
     }
     boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
     boHeroSubEl.style.whiteSpace = cat === 'nations' ? 'pre-line' : '';
@@ -37864,10 +37870,9 @@ body footer.bop-approved-footer{
   align-items:center;
   justify-content:center;
   gap:12px;
-  position:absolute;
-  left:50%;
-  bottom:max(94px,calc(env(safe-area-inset-bottom) + 72px));
-  transform:translateX(-50%);
+  position:static;
+  margin:clamp(24px,3.5vh,38px) auto 0;
+  transform:none;
   color:#F59E0B;
   font-family:'Bebas Neue',sans-serif;
   font-size:1.08rem;
@@ -37892,8 +37897,8 @@ body footer.bop-approved-footer{
   scroll-margin-top:0;
 }
 @keyframes bopRankedScrollPulse{
-  0%,100%{transform:translateX(-50%) translateY(0);opacity:1;}
-  50%{transform:translateX(-50%) translateY(5px);opacity:.62;}
+  0%,100%{transform:translateY(0);opacity:1;}
+  50%{transform:translateY(5px);opacity:.62;}
 }
 @media(max-width:390px){
   #bestOfOverlay #boSectionHeadTitle.bo-brewery-ranking-title{
@@ -37902,6 +37907,29 @@ body footer.bop-approved-footer{
 }
 @media(prefers-reduced-motion:reduce){
   #bestOfOverlay .bo-ranked-scroll-cue{animation:none!important;}
+}
+</style>
+<style id="bop-subpage-brand-scale-and-nav-v174">
+/* Landed category/subpage lockups are deliberately larger than the moving
+   landing-page reel. The city remains above Best Of / Period if it overlaps. */
+#bestOfOverlay .bop-splash-city{
+  position:relative!important;
+  z-index:7!important;
+  font-size:calc(1.15em + 7pt)!important;
+}
+#bestOfOverlay .bop-splash-hero-nocircle .bop-splash-city,
+#bestOfOverlay .bop-splash-hero-san-diego .bop-splash-city{
+  font-size:calc(1.38em + 7pt)!important;
+}
+/* Make the BJS mark legible in category-page search bars without enlarging
+   or disturbing the search field itself. */
+#bestOfOverlay .bo-search-powered-by svg:last-child{
+  width:20px!important;
+  height:20px!important;
+  flex:0 0 20px!important;
+}
+#bestOfOverlay .bo-search-powered-by svg:last-child text{
+  font-size:13px!important;
 }
 </style>
 <style id="bop-infinite-city-stacking-final-v172">
