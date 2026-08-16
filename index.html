@@ -32568,13 +32568,18 @@ img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!i
     if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
   }
   function eligible(page){
-    if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.matches(retired)||page.closest(retired))return false;
+    // Footer navigation belongs on full pages, never inside a transient dialog.
+    if(!page||page.classList.contains('directory-overlay')||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.matches(retired)||page.closest(retired))return false;
     return true;
   }
   function addDocks(){
     document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
       if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
-      if(!eligible(page))return;
+      if(!eligible(page)){
+        // Clean up docks that a previous render may have injected into a dialog.
+        page.querySelectorAll(':scope > .bop-icons-only-dock').forEach(function(dock){dock.remove()});
+        return;
+      }
       var host=page.querySelector(':scope > .ty-content,:scope > .bo-page-inner,:scope > .tpa-scope,:scope > .concepts-content,:scope > .directory-content')||page;
       var dock=page.querySelector('.bop-icons-only-dock');
       if(!dock){dock=document.createElement('div');dock.className='bop-icons-only-dock';dock.innerHTML=row}
