@@ -22347,6 +22347,31 @@ const boHeroTitleEl = document.getElementById('boHeroTitle');
 const boHeroSubEl = document.getElementById('boHeroSub');
 const boCircles = document.querySelectorAll('.bo-nav-circle');
 const boBackBtnEl = document.getElementById('boBackBtn');
+
+function boCityFitValue(name){
+  const compactLength = String(name || '').replace(/[^A-Za-z0-9]/g,'').length;
+  return compactLength >= 12 ? 'xlong' : compactLength >= 7 ? 'long' : 'normal';
+}
+function boRefreshCityFit(root){
+  const scope = root && root.querySelectorAll ? root : document;
+  scope.querySelectorAll('.bop-splash-city').forEach(function(city){
+    city.dataset.fit = boCityFitValue(city.textContent);
+  });
+}
+function boStartCityFitObserver(){
+  boRefreshCityFit(document);
+  new MutationObserver(function(records){
+    records.forEach(function(record){
+      const city = record.target.nodeType === 1 && record.target.matches && record.target.matches('.bop-splash-city')
+        ? record.target
+        : record.target.parentElement && record.target.parentElement.closest('.bop-splash-city');
+      if(city) city.dataset.fit = boCityFitValue(city.textContent);
+      record.addedNodes.forEach(function(node){ if(node.nodeType === 1) boRefreshCityFit(node); });
+    });
+  }).observe(document.body,{subtree:true,childList:true,characterData:true});
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boStartCityFitObserver,{once:true});
+else boStartCityFitObserver();
 const botrToLandingBtnEl = document.getElementById('botrToLandingBtn');
 const boExpandBtnTopEl = document.getElementById('boExpandBtnTopWrap');
 let boCurrentCat = 'bestof';
@@ -22879,7 +22904,7 @@ function boRenderCategory(cat){
     boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
       <div class="bop-splash-line1">Best Of</div>
       <div class="bop-splash-line2">
-        <span class="bop-splash-city-col"><span class="bop-splash-city is-active">${immediateCity}</span></span>
+        <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(immediateCity)}">${immediateCity}</span></span>
         <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
       </div>
     </div>`;
@@ -22912,7 +22937,7 @@ function boRenderCategory(cat){
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2">
-          <span class="bop-splash-city-col"><span class="bop-splash-city is-active"${cityElId}>${startingName}</span></span>
+          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(heroDisplayName)}"${cityElId}>${startingName}</span></span>
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
@@ -22958,7 +22983,7 @@ function boRenderCategory(cat){
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2">
-          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" id="bopMainCityText">${mainStartingName}</span></span>
+          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${mainStartingName}</span></span>
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
@@ -37837,19 +37862,23 @@ body footer.bop-approved-footer{
 </style>
 <style id="bop-ranked-intro-screen-and-brewery-headline-v173">
 #bestOfOverlay{
-  scroll-snap-type:y proximity;
+  scroll-snap-type:none;
   scroll-padding-top:0;
 }
+#bestOfOverlay #boBackBtn.bo-visible{
+  top:max(14px,env(safe-area-inset-top))!important;
+  left:max(14px,env(safe-area-inset-left))!important;
+}
 #bestOfOverlay #boSectionHead.bo-ranked-screen{
-  min-height:calc(100dvh - 1px);
+  min-height:0;
   box-sizing:border-box;
   display:flex!important;
   flex-direction:column;
   align-items:center;
   position:relative;
-  padding:clamp(42px,6.5vh,70px) 5vw max(104px,calc(env(safe-area-inset-bottom) + 80px))!important;
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
+  padding:clamp(42px,6.5vh,70px) 5vw 2rem!important;
+  scroll-snap-align:none;
+  scroll-snap-stop:normal;
 }
 #bestOfOverlay #boSectionHeadTitle.bo-brewery-ranking-title{
   width:100%;
@@ -37931,6 +37960,33 @@ body footer.bop-approved-footer{
 #bestOfOverlay .bo-search-powered-by svg:last-child text{
   font-size:13px!important;
 }
+</style>
+<style id="bop-city-period-auto-fit-v175">
+/* City + Period is a real two-column lockup, not two overlapping layers.
+   The half-em gap is the visual equivalent of two spaces at every size. */
+.bop-splash-line2{
+  grid-template-columns:auto auto!important;
+  column-gap:.5em!important;
+  left:0!important;
+  max-width:calc(100vw - 28px)!important;
+}
+.bop-splash-city-col{
+  width:auto!important;
+  max-width:none!important;
+  text-align:right!important;
+}
+.bop-splash-period{
+  margin-left:0!important;
+}
+/* Generic category headings use inline spans rather than the grid lockup. */
+#boHeroTitle .bo-subcategory-city + .bo-period,
+#boHeroTitle .bo-line2 + .bo-period{
+  margin-left:.5em!important;
+}
+/* Only genuinely long names tighten automatically; ordinary names such as
+   Austin keep their requested size. No city-by-city maintenance required. */
+.bop-splash-line2:has(.bop-splash-city[data-fit="long"]){font-size:clamp(1.72rem,7.65vmin,3.25rem)!important;}
+.bop-splash-line2:has(.bop-splash-city[data-fit="xlong"]){font-size:clamp(1.48rem,6.7vmin,2.9rem)!important;}
 </style>
 <style id="bop-infinite-city-stacking-final-v172">
 /* Infinite reels sit behind Period; landed and fixed city names retain the
