@@ -39120,9 +39120,158 @@ body.bo-closest-five-active.bop-closest-tier-selected #boNearClosestList .bo-nea
     var choice=event.target.closest&&event.target.closest('#bopClosestFiveChooser [data-bop-closest-tier]');
     if(!choice)return;
     event.preventDefault();event.stopImmediatePropagation();
+    if(typeof window.bopChooseClosestTierV2==='function'){
+      window.bopChooseClosestTierV2(choice.dataset.bopClosestTier||'casual');
+      return;
+    }
     activate(choice.dataset.bopClosestTier||'all');
   },true);
 })();
 </script>
 
+
+<style id="bop-closest-five-price-hotlinks-v2">
+/* Closest 5 keeps its existing price-key appearance, but every visible tier is now a true touch target. */
+body.bo-closest-five-active #boNearMapPage .bo-near-price-key{display:flex!important;align-items:center!important;justify-content:center!important;gap:0!important;flex-wrap:wrap!important}
+body.bo-closest-five-active #boNearMapPage .bop-closest-price-link{appearance:none;border:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;padding:7px 8px;cursor:pointer;text-shadow:inherit;white-space:nowrap}
+body.bo-closest-five-active #boNearMapPage .bop-closest-price-link[aria-pressed="true"]{color:#fff;background:rgba(243,162,27,.16);box-shadow:inset 0 -2px 0 #f3a21b}
+body.bo-closest-five-active #boNearMapPage .bop-closest-price-link:focus-visible{outline:2px solid #f3a21b;outline-offset:2px;border-radius:3px}
+body.bo-closest-five-active #boNearMapPage .bop-closest-price-separator{opacity:.8;pointer-events:none}
+</style>
+<script id="bop-closest-five-price-hotlinks-v2-script">
+(function(){
+  var tiers=['dive','casual','fine'];
+  function validTier(tier){return tiers.indexOf(tier)!==-1?tier:'casual'}
+  function refreshPriceLinks(tier){
+    document.querySelectorAll('.bop-closest-price-link').forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.bopClosestPrice===tier));
+    });
+  }
+  function renderTier(tier){
+    tier=validTier(tier);
+    try{window.boNearClosestTier=tier;}catch(error){}
+    try{boNearClosestTier=tier;}catch(error){}
+    document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(button.dataset.nearTier===tier));
+    });
+    var title=document.getElementById('boNearClosestTitle');
+    if(title)title.textContent='CLOSEST 5';
+    refreshPriceLinks(tier);
+    if(typeof window.boRenderNearClosestFive==='function'){
+      try{window.boRenderNearClosestFive();}catch(error){}
+    }
+  }
+  function chooseTier(tier){
+    tier=validTier(tier);
+    var chooser=document.getElementById('bopClosestFiveChooser');
+    if(chooser)chooser.classList.remove('is-open');
+    document.body.classList.remove('bop-closest-chooser-open');
+    renderTier(tier);
+    if(typeof window.boOpenNearMap==='function'){
+      Promise.resolve(window.boOpenNearMap()).catch(function(){}).finally(function(){
+        var tries=0;
+        var retry=window.setInterval(function(){
+          tries++;
+          renderTier(tier);
+          if(document.getElementById('boNearClosestList')||tries>25)window.clearInterval(retry);
+        },120);
+      });
+    }
+  }
+  function installPriceLinks(){
+    var key=document.querySelector('#boNearMapPage .bo-near-price-key');
+    if(!key||key.dataset.bopClosestPriceLinks==='true')return;
+    key.dataset.bopClosestPriceLinks='true';
+    key.setAttribute('aria-label','Choose closest restaurant price level');
+    key.innerHTML='<button type="button" class="bop-closest-price-link" data-bop-closest-price="dive">DIVE&nbsp; $</button><span class="bop-closest-price-separator" aria-hidden="true">|</span><button type="button" class="bop-closest-price-link" data-bop-closest-price="casual">CASUAL&nbsp; $–$$</button><span class="bop-closest-price-separator" aria-hidden="true">|</span><button type="button" class="bop-closest-price-link" data-bop-closest-price="fine">FINE&nbsp; $$–$$</button>';
+    key.querySelectorAll('[data-bop-closest-price]').forEach(function(button){
+      button.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();chooseTier(button.dataset.bopClosestPrice);
+      });
+    });
+    refreshPriceLinks(validTier(window.boNearClosestTier||'casual'));
+  }
+  var priorOpen=window.boOpenNearMap;
+  if(typeof priorOpen==='function'){
+    window.boOpenNearMap=function(){
+      var result=priorOpen.apply(this,arguments);
+      Promise.resolve(result).catch(function(){}).finally(function(){
+        if(document.body.classList.contains('bo-closest-five-active')){
+          installPriceLinks();
+          renderTier(validTier(window.boNearClosestTier||'casual'));
+        }
+      });
+      return result;
+    };
+    try{boOpenNearMap=window.boOpenNearMap;}catch(error){}
+  }
+  window.bopChooseClosestTier=chooseTier;
+  window.addEventListener('click',function(event){
+    var chooserChoice=event.target.closest&&event.target.closest('#bopClosestFiveChooser [data-bop-closest-tier]');
+    if(!chooserChoice)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    chooseTier(chooserChoice.dataset.bopClosestTier);
+  },true);
+  document.addEventListener('bop:closest5-ready',function(){installPriceLinks();});
+  window.setInterval(function(){
+    if(document.body.classList.contains('bo-closest-five-active'))installPriceLinks();
+  },500);
+})();
+</script>
+
+<script id="bop-closest-five-price-hotlinks-v3-script">
+(function(){
+  var tiers=['dive','casual','fine'];
+  function validTier(tier){return tiers.indexOf(tier)!==-1?tier:'casual'}
+  function closeLanding(){
+    var landing=document.getElementById('bestOfOverlay');
+    if(landing)landing.classList.remove('open');
+  }
+  function chooseTier(tier){
+    tier=validTier(tier);
+    closeLanding();
+    var chooser=document.getElementById('bopClosestFiveChooser');
+    if(chooser)chooser.classList.remove('is-open');
+    document.body.classList.remove('bop-closest-chooser-open');
+    document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+    var title=document.getElementById('boNearClosestTitle');
+    if(title)title.textContent='CLOSEST 5';
+    if(typeof window.boOpenNearMap==='function'){
+      Promise.resolve(window.boOpenNearMap()).catch(function(){}).finally(function(){
+        var tries=0;
+        var retry=window.setInterval(function(){
+          tries++;
+          try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+          document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.nearTier===tier))});
+          if(typeof window.boRenderNearClosestFive==='function'){try{window.boRenderNearClosestFive()}catch(error){}}
+          if(document.getElementById('boNearClosestList')||tries>30)window.clearInterval(retry);
+        },110);
+      });
+    }
+  }
+  function replaceChooserChoices(){
+    var chooser=document.getElementById('bopClosestFiveChooser');
+    if(!chooser||chooser.dataset.bopClosestHotlinks==='true')return;
+    var oldChoices=chooser.querySelectorAll('[data-bop-closest-tier]');
+    if(!oldChoices.length)return;
+    oldChoices.forEach(function(oldButton){
+      var tier=oldButton.dataset.bopClosestTier;
+      var button=oldButton.cloneNode(true);
+      button.removeAttribute('data-bop-closest-tier');
+      button.dataset.bopClosestHotTier=tier;
+      button.setAttribute('aria-label','Show closest '+tier+' restaurants');
+      oldButton.replaceWith(button);
+      button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();chooseTier(tier)});
+    });
+    chooser.dataset.bopClosestHotlinks='true';
+  }
+  var observer=new MutationObserver(function(){replaceChooserChoices()});
+  observer.observe(document.body,{childList:true,subtree:true});
+  replaceChooserChoices();
+  window.bopChooseClosestTier=chooseTier;
+  window.bopChooseClosestTierV2=chooseTier;
+})();
+</script>
 </body></html>
