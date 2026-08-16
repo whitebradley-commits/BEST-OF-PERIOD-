@@ -38288,4 +38288,79 @@ body footer.bop-approved-footer{
   else requestAnimationFrame(start);
 })();
 </script>
+<style id="bop-restaurant-card-two-point-readability-css-v1">
+/* Restaurant-card readability lock: cards grow with their copy instead of
+   compressing or clipping larger text. */
+#bestOfOverlay .bo-card{height:auto!important;min-height:0!important;overflow:visible!important}
+#bestOfOverlay .bo-card-body{min-width:0!important;overflow:visible!important}
+#bestOfOverlay .bo-card-body h3{height:auto!important;min-height:0!important;flex-wrap:wrap!important;line-height:1.2!important}
+#bestOfOverlay .bo-card-body .bo-why,#bestOfOverlay .bo-card-body .bo-note,
+#bestOfOverlay .bo-red-callout,#bestOfOverlay .bo-bjs-tip{height:auto!important;max-height:none!important;line-height:1.55!important}
+#bestOfOverlay .bo-icon-row{height:auto!important;flex-wrap:wrap!important;row-gap:9px!important}
+#bestOfOverlay .bo-other-locations-open .bo-other-locations-panel{max-height:none!important;overflow:visible!important}
+</style>
+<script id="bop-restaurant-card-two-point-readability-js-v1">
+(function(){
+  var TWO_POINTS_PX=2*(96/72),busy=false;
+  function eligible(el){
+    return el instanceof HTMLElement&&!el.dataset.bopCardTwoPoint&&
+      !/^(SCRIPT|STYLE|LINK|META|BR|HR|IMG|VIDEO|AUDIO|CANVAS|SVG|PATH|CIRCLE|LINE|RECT|POLYGON)$/i.test(el.tagName);
+  }
+  function enlargeCard(card){
+    if(!card||busy)return;busy=true;
+    var nodes=[card].concat(Array.from(card.querySelectorAll('*'))).filter(eligible);
+    var sizes=nodes.map(function(el){return {el:el,size:parseFloat(getComputedStyle(el).fontSize)}});
+    sizes.forEach(function(item){
+      var el=item.el,size=item.size;
+      if(isFinite(size)&&size>0){
+        el.style.setProperty('font-size',(size+TWO_POINTS_PX).toFixed(3)+'px','important');
+        el.dataset.bopCardTwoPoint='true';
+      }
+    });
+    card.dataset.bopCardTextVerified='plus-2pt';
+    busy=false;
+  }
+  function scan(root){
+    if(root instanceof HTMLElement&&root.matches('.bo-card'))enlargeCard(root);
+    if(root&&root.querySelectorAll)root.querySelectorAll('.bo-card').forEach(enlargeCard);
+  }
+  function start(){
+    scan(document);
+    new MutationObserver(function(records){
+      records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})});
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(start)},{once:true});
+  else requestAnimationFrame(start);
+})();
+</script>
+<style id="bop-unified-why-trigger-css-v1">
+/* Every WHY uses the main-page treatment, without changing its surrounding text. */
+.bjs-why-trigger{
+  color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important;
+  text-shadow:0 0 7px rgba(255,255,255,.38),0 0 13px rgba(245,158,11,.92),0 0 25px rgba(245,158,11,.58)!important;
+  filter:drop-shadow(0 0 4px rgba(245,158,11,.72))!important;
+  animation:bjsWhyPulseUnified 1.8s ease-in-out infinite!important
+}
+.bjs-why-trigger .bjs-why-arrow{
+  color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important;
+  text-shadow:0 0 7px rgba(245,158,11,.9)!important;animation:bjsWhyPulseUnified 1.8s ease-in-out infinite!important
+}
+@keyframes bjsWhyPulseUnified{
+  0%,100%{opacity:.78;filter:brightness(.9)}
+  50%{opacity:1;filter:brightness(1.28)}
+}
+@media(prefers-reduced-motion:reduce){.bjs-why-trigger,.bjs-why-trigger .bjs-why-arrow{animation:none!important;opacity:1!important}}
+</style>
+<script id="bop-unified-why-trigger-js-v1">
+(function(){
+  document.addEventListener('click',function(event){
+    var trigger=event.target.closest&&event.target.closest('.bjs-why-trigger');
+    if(!trigger)return;
+    var overlay=document.getElementById('bjsWhyOverlay');
+    if(!overlay)return;
+    event.preventDefault();event.stopPropagation();overlay.classList.add('open');
+  },true);
+})();
+</script>
 </body></html>
