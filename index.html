@@ -22352,26 +22352,6 @@ function boCityFitValue(name){
   const compactLength = String(name || '').replace(/[^A-Za-z0-9]/g,'').length;
   return compactLength >= 12 ? 'xlong' : compactLength >= 7 ? 'long' : 'normal';
 }
-function boRefreshCityFit(root){
-  const scope = root && root.querySelectorAll ? root : document;
-  scope.querySelectorAll('.bop-splash-city').forEach(function(city){
-    city.dataset.fit = boCityFitValue(city.textContent);
-  });
-}
-function boStartCityFitObserver(){
-  boRefreshCityFit(document);
-  new MutationObserver(function(records){
-    records.forEach(function(record){
-      const city = record.target.nodeType === 1 && record.target.matches && record.target.matches('.bop-splash-city')
-        ? record.target
-        : record.target.parentElement && record.target.parentElement.closest('.bop-splash-city');
-      if(city) city.dataset.fit = boCityFitValue(city.textContent);
-      record.addedNodes.forEach(function(node){ if(node.nodeType === 1) boRefreshCityFit(node); });
-    });
-  }).observe(document.body,{subtree:true,childList:true,characterData:true});
-}
-if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boStartCityFitObserver,{once:true});
-else boStartCityFitObserver();
 const botrToLandingBtnEl = document.getElementById('botrToLandingBtn');
 const boExpandBtnTopEl = document.getElementById('boExpandBtnTopWrap');
 let boCurrentCat = 'bestof';
@@ -37987,6 +37967,39 @@ body footer.bop-approved-footer{
    Austin keep their requested size. No city-by-city maintenance required. */
 .bop-splash-line2:has(.bop-splash-city[data-fit="long"]){font-size:clamp(1.72rem,7.65vmin,3.25rem)!important;}
 .bop-splash-line2:has(.bop-splash-city[data-fit="xlong"]){font-size:clamp(1.48rem,6.7vmin,2.9rem)!important;}
+/* During every city reel, Period is anchored to a destination-sized column.
+   The incoming red names may grow and pass behind it, but cannot push it. */
+.bop-splash-line2:has(#bopLandingCityText),
+.bop-splash-line2:has(#bopSplashCityText){
+  grid-template-columns:minmax(0,4.1em) 4.6em!important;
+  column-gap:.25em!important;
+}
+.bop-splash-line2:has(#bopResultsCityText),
+.bop-splash-line2:has(#bopMainCityText){
+  grid-template-columns:minmax(0,4.1em) 4.6em!important;
+  column-gap:.5em!important;
+}
+.bop-splash-line2:has(#bopResultsCityText[data-fit="long"]),
+.bop-splash-line2:has(#bopMainCityText[data-fit="long"]){
+  grid-template-columns:minmax(0,4.9em) 4.6em!important;
+}
+.bop-splash-line2:has(#bopResultsCityText[data-fit="xlong"]),
+.bop-splash-line2:has(#bopMainCityText[data-fit="xlong"]){
+  grid-template-columns:minmax(0,5.7em) 4.6em!important;
+}
+.bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,
+.bop-splash-line2:has(#bopSplashCityText) .bop-splash-city-col,
+.bop-splash-line2:has(#bopResultsCityText) .bop-splash-city-col,
+.bop-splash-line2:has(#bopMainCityText) .bop-splash-city-col{
+  z-index:0!important;
+}
+.bop-splash-line2:has(#bopLandingCityText) .bop-splash-period,
+.bop-splash-line2:has(#bopSplashCityText) .bop-splash-period,
+.bop-splash-line2:has(#bopResultsCityText) .bop-splash-period,
+.bop-splash-line2:has(#bopMainCityText) .bop-splash-period{
+  position:relative!important;
+  z-index:8!important;
+}
 </style>
 <style id="bop-infinite-city-stacking-final-v172">
 /* Infinite reels sit behind Period; landed and fixed city names retain the
