@@ -42566,6 +42566,8 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
 
 
+
+
 <!-- Final orb stability and legibility patch -->
 <script id="bop-orb-stability-and-legibility-v2">
 (function () {
@@ -42637,21 +42639,21 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
       /* Labels sit above the line-art, with red fill and a high-contrast gold outline. */
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-glyph{
-        top:19px !important;
-        right:4px !important;
-        bottom:3px !important;
-        left:4px !important;
-        width:auto !important;
-        height:auto !important;
+        top:25px !important;
+        right:auto !important;
+        bottom:auto !important;
+        left:10px !important;
+        width:calc(100% - 20px) !important;
+        height:calc(100% - 34px) !important;
         z-index:1 !important;
       }
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-label,
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-label *{
         position:absolute !important;
-        top:3px !important;
-        right:2px !important;
+        top:7px !important;
+        right:4px !important;
         bottom:auto !important;
-        left:2px !important;
+        left:4px !important;
         z-index:4 !important;
         display:block !important;
         padding:0 !important;
@@ -42662,22 +42664,30 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
         paint-order:stroke fill !important;
         text-shadow:0 1px 2px #000,0 0 2px #000 !important;
         text-align:center !important;
-        line-height:.88 !important;
+        font-size:7.5px !important;
+        line-height:.86 !important;
       }
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-label--closest{
-        font-size:8px !important;
+        font-size:7.2px !important;
         transform:none !important;
       }
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-label--closest b{
         position:static !important;
         display:block !important;
-        font-size:25px !important;
-        line-height:.72 !important;
+        font-size:23px !important;
+        line-height:.70 !important;
         -webkit-text-stroke:0.9px #F59E0B !important;
       }
       body.${MAIN_CLASS} #${DOCK_ID} .bop-orb-label--world{
-        display:block !important;
-        font-size:7px !important;
+        display:none !important;
+      }
+      body.${MAIN_CLASS} #${DOCK_ID} [data-clean-orb="world"] .bop-orb-glyph{
+        top:14px !important;
+        right:auto !important;
+        bottom:auto !important;
+        left:12px !important;
+        width:calc(100% - 24px) !important;
+        height:calc(100% - 24px) !important;
       }
     `;
     document.head.appendChild(style);
@@ -42715,6 +42725,11 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     }
     applying = true;
     const main = isStrictMainPage();
+    const worldLabel = dock.querySelector('[data-clean-orb="world"] .bop-orb-label--world');
+    if (worldLabel && worldLabel.textContent.trim()) {
+      worldLabel.textContent = '';
+      worldLabel.setAttribute('aria-hidden', 'true');
+    }
     document.body.classList.toggle(MAIN_CLASS, main);
     document.body.classList.toggle(NON_MAIN_CLASS, !main);
     if (main) {
