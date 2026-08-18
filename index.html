@@ -41089,6 +41089,9 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
 
 
+
+
+
 <!-- Manhattan Michelin territory router -->
 <script>
 /* Manhattan Michelin territory router — verified addresses only; unverified records remain visible in a separate work queue. */
@@ -41882,6 +41885,473 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 }());
 
 </script>
+<!-- New York Michelin borough router -->
+<script>
+(function () {
+  'use strict';
+  const CATEGORY = 'michelin';
+  const CITY = 'newyork';
+  const THRESHOLD = 16;
+  const MAX_RANKED = 11;
+  const ZONES = {
+    manhattan: 'Manhattan',
+    brooklyn: 'Brooklyn',
+    staten_island: 'Staten Island',
+    bronx: 'Bronx',
+    verification: 'Address Verification Queue'
+  };
+  let isOpeningNewYorkTerritory = false;
+
+  function normalized(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+  function scoreOf(record) {
+    const value = Number.parseFloat(record && record.rating);
+    return Number.isFinite(value) ? value : null;
+  }
+  function zoneOf(record) {
+    const address = String((record && record.address) || '').toLowerCase();
+    if (!address) return 'verification';
+    if (address.includes('brooklyn')) return 'brooklyn';
+    if (address.includes('staten island')) return 'staten_island';
+    if (address.includes('bronx')) return 'bronx';
+    if (address.includes('new york')) return 'manhattan';
+    return 'verification';
+  }
+  function scopedRecords() {
+    const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const unique = new Map();
+    records.filter(record => normalized(record && record.city) === CITY).forEach(record => {
+      const key = normalized(record && record.name).replace(/[^a-z0-9]/g, '');
+      if (!key) return;
+      const existing = unique.get(key);
+      if (!existing) { unique.set(key, Object.assign({}, record)); return; }
+      if (!existing.address && record.address) existing.address = record.address;
+      if (scoreOf(existing) === null && scoreOf(record) !== null) existing.rating = record.rating;
+      existing.bjsPick = Boolean(existing.bjsPick || record.bjsPick);
+      if (!existing.image && record.image) existing.image = record.image;
+    });
+    return Array.from(unique.values());
+  }
+  function curated(records) {
+    const rated = records.filter(record => scoreOf(record) !== null)
+      .sort((a,b) => scoreOf(b) - scoreOf(a) || String(a.name).localeCompare(String(b.name)));
+    const higher = rated.filter(record => scoreOf(record) >= 4);
+    const threes = rated.filter(record => scoreOf(record) >= 3 && scoreOf(record) < 4);
+    const selected = higher.slice(0, MAX_RANKED);
+    if (selected.length < MAX_RANKED) selected.push(...threes.slice(0, Math.min(2, MAX_RANKED - selected.length)));
+    if (selected.length < MAX_RANKED) {
+      const existing = new Set(selected.map(record => normalized(record.name)));
+      const bjs = threes.find(record => record.bjsPick && !existing.has(normalized(record.name)));
+      if (bjs) selected.push(bjs);
+    }
+    return selected;
+  }
+  function escape(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+  function setHero(label, rankedCount, unratedCount, overview) {
+    window.setTimeout(() => {
+      if (boHeroTitleEl) {
+        boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escape(label.toUpperCase())}</div><div class="bo-territory-city">NEW YORK</div>`;
+        boHeroTitleEl.style.opacity = 1;
+      }
+      if (boHeroSubEl) {
+        boHeroSubEl.textContent = overview
+          ? `${unratedCount} records remain visible for exact-address and review-score verification.`
+          : `${rankedCount} ranked restaurant${rankedCount === 1 ? '' : 's'} shown. ${unratedCount} visible in the verification queue below.`;
+        boHeroSubEl.style.display = '';
+        boHeroSubEl.style.opacity = 1;
+      }
+      if (boSectionHeadTitleEl) boSectionHeadTitleEl.textContent = overview ? 'Choose a New York Borough' : `The Top ${rankedCount}, Right Now`;
+      if (boSectionHeadParaEl) boSectionHeadParaEl.innerHTML = overview
+        ? '⭐ This oversized category is divided by area. Choose a territory to see its short high-rated list and its separate visible not-yet-rated work queue.'
+        : '⭐ Ranked restaurants appear first. “Not yet rated” restaurants remain visible below while public-source averages and exact locations are verified.';
+    }, 210);
+  }
+  function renderQueue(records) {
+    if (!records.length) return;
+    const section = document.createElement('section');
+    section.className = 'bo-territory-work-queue';
+    section.innerHTML = `<div class="bo-territory-queue-head"><span>NOT YET RATED</span><strong>${records.length} restaurant${records.length === 1 ? '' : 's'} remain visible for score and address verification</strong></div><div class="bo-territory-queue-list">${records.map(record => `<div class="bo-territory-queue-row"><span class="bo-territory-queue-name">${escape(record.name)}</span><span class="bo-territory-queue-status">Not yet rated</span></div>`).join('')}</div>`;
+    boListEl.appendChild(section);
+  }
+  function openZone(key) {
+    window.__bopNewYorkMichelinTerritoryDepth = 1;
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedRecords().filter(record => zoneOf(record) === key);
+    const ranked = key === 'verification' ? [] : curated(records);
+    const unrated = key === 'verification' ? records : records.filter(record => scoreOf(record) === null);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
+    isOpeningNewYorkTerritory = true;
+    boCategoryData[CATEGORY] = ranked;
+    try { baseRender(CATEGORY); }
+    finally { boCategoryData[CATEGORY] = all; boCityContext = CITY; isOpeningNewYorkTerritory = false; }
+    window.setTimeout(() => {
+      if (key === 'verification') boListEl.innerHTML = '';
+      renderQueue(unrated);
+      setHero(ZONES[key], ranked.length, unrated.length, false);
+    }, 50);
+  }
+  function showPicker() {
+    window.__bopNewYorkMichelinTerritoryDepth = 0;
+    const records = scopedRecords();
+    const counts = Object.fromEntries(Object.keys(ZONES).map(key => [key, records.filter(record => zoneOf(record) === key).length]));
+    boListEl.innerHTML = `<section class="bo-territory-picker" aria-label="Choose a New York Michelin borough"><p class="bo-territory-picker-kicker">THIS CATEGORY HAS ${records.length} RESTAURANTS</p><h2>CHOOSE A NEW YORK BOROUGH</h2><p>To keep the Michelin list short and local, choose a territory. Each area uses the high-rating rule: up to 11 ranked restaurants, ending after the second 3.x score, plus a visible not-yet-rated work queue.</p><div class="bo-territory-grid">${Object.keys(ZONES).map(key => `<button type="button" class="bo-territory-choice" data-newyork-territory="${key}"><span>${escape(ZONES[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small></button>`).join('')}</div></section>`;
+    boListEl.querySelectorAll('[data-newyork-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY; openZone(button.dataset.newyorkTerritory);
+    }));
+    setHero('Michelin by Area', 0, counts.verification, true);
+  }
+  if (typeof window.boRenderCategory !== 'function') return;
+  const baseRender = window.boRenderCategory;
+  window.boRenderCategory = function newYorkTerritoryAwareRender(category) {
+    const result = baseRender.apply(this, arguments);
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningNewYorkTerritory && !window.__bopNewYorkMichelinTerritoryDepth) {
+      window.setTimeout(() => { if (scopedRecords().length > THRESHOLD) showPicker(); }, 230);
+    }
+    return result;
+  };
+
+  window.boShowNewYorkMichelinTerritoryPicker = showPicker;
+  function syncChrome() {
+    const active = typeof boCurrentCat !== 'undefined' && boCurrentCat === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY;
+    document.body.classList.toggle('bo-newyork-michelin-subcategory', active);
+    const dock = document.getElementById('bopCleanOrbDock');
+    const back = document.getElementById('boBackBtn');
+    const search = document.querySelector('.bop-search-shell');
+    const cue = document.getElementById('boScrollCue');
+    if (active && dock) {
+      dock.hidden = true; dock.setAttribute('aria-hidden', 'true');
+      ['display:none','visibility:hidden','opacity:0','pointer-events:none'].forEach(rule => { const [property,value] = rule.split(':'); dock.style.setProperty(property,value,'important'); });
+    } else if (dock) {
+      dock.hidden = false; dock.removeAttribute('aria-hidden');
+      ['display','visibility','opacity','pointer-events'].forEach(property => dock.style.removeProperty(property));
+    }
+    if (active) {
+      if (back) { back.classList.add('bo-visible'); back.removeAttribute('aria-hidden'); }
+      if (search && cue) { if (cue.previousElementSibling !== search) search.insertAdjacentElement('afterend', cue); cue.style.setProperty('display','flex','important'); }
+    }
+  }
+  document.addEventListener('click', () => window.setTimeout(syncChrome, 25), true);
+  window.setInterval(syncChrome, 35);
+  window.setTimeout(syncChrome, 220);
+}());
+
+</script>
+<!-- San Diego Michelin territory router -->
+<script>
+(function () {
+  'use strict';
+  const CATEGORY = 'michelin';
+  const CITY = 'sandiego';
+  const THRESHOLD = 16;
+  const MAX_RANKED = 11;
+  const ZONES = {
+    north_county: 'North County',
+    coastal_north: 'Coastal North',
+    downtown_south: 'Downtown / South',
+    central_north_park: 'Central / North Park',
+    verification: 'Address Verification Queue'
+  };
+  let isOpeningSanDiegoTerritory = false;
+
+  function normalized(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+  function scoreOf(record) {
+    const value = Number.parseFloat(record && record.rating);
+    return Number.isFinite(value) ? value : null;
+  }
+  function zoneOf(record) {
+    const address = String((record && record.address) || '').toLowerCase();
+    if (!address) return 'verification';
+    if (/encinitas|carlsbad|oceanside/.test(address)) return 'north_county';
+    if (/la jolla|92107|92130/.test(address)) return 'coastal_north';
+    if (/92101|92113/.test(address)) return 'downtown_south';
+    if (/92104|92116/.test(address)) return 'central_north_park';
+    return 'verification';
+  }
+  function scopedRecords() {
+    const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const unique = new Map();
+    records.filter(record => normalized(record && record.city) === CITY).forEach(record => {
+      const key = normalized(record && record.name).replace(/[^a-z0-9]/g, '');
+      if (!key) return;
+      const existing = unique.get(key);
+      if (!existing) { unique.set(key, Object.assign({}, record)); return; }
+      if (!existing.address && record.address) existing.address = record.address;
+      if (scoreOf(existing) === null && scoreOf(record) !== null) existing.rating = record.rating;
+      existing.bjsPick = Boolean(existing.bjsPick || record.bjsPick);
+      if (!existing.image && record.image) existing.image = record.image;
+    });
+    return Array.from(unique.values());
+  }
+  function curated(records) {
+    const rated = records.filter(record => scoreOf(record) !== null)
+      .sort((a,b) => scoreOf(b) - scoreOf(a) || String(a.name).localeCompare(String(b.name)));
+    const higher = rated.filter(record => scoreOf(record) >= 4);
+    const threes = rated.filter(record => scoreOf(record) >= 3 && scoreOf(record) < 4);
+    const selected = higher.slice(0, MAX_RANKED);
+    if (selected.length < MAX_RANKED) selected.push(...threes.slice(0, Math.min(2, MAX_RANKED - selected.length)));
+    if (selected.length < MAX_RANKED) {
+      const existing = new Set(selected.map(record => normalized(record.name)));
+      const bjs = threes.find(record => record.bjsPick && !existing.has(normalized(record.name)));
+      if (bjs) selected.push(bjs);
+    }
+    return selected;
+  }
+  function escape(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+  function setHero(label, rankedCount, unratedCount, overview) {
+    window.setTimeout(() => {
+      if (boHeroTitleEl) {
+        boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escape(label.toUpperCase())}</div><div class="bo-territory-city">SAN DIEGO</div>`;
+        boHeroTitleEl.style.opacity = 1;
+      }
+      if (boHeroSubEl) {
+        boHeroSubEl.textContent = overview
+          ? `${unratedCount} records remain visible for exact-address and review-score verification.`
+          : `${rankedCount} ranked restaurant${rankedCount === 1 ? '' : 's'} shown. ${unratedCount} visible in the verification queue below.`;
+        boHeroSubEl.style.display = '';
+        boHeroSubEl.style.opacity = 1;
+      }
+      if (boSectionHeadTitleEl) boSectionHeadTitleEl.textContent = overview ? 'Choose a San Diego Area' : `The Top ${rankedCount}, Right Now`;
+      if (boSectionHeadParaEl) boSectionHeadParaEl.innerHTML = overview
+        ? '⭐ This oversized category is divided by area. Choose a territory to see its short high-rated list and its separate visible not-yet-rated work queue.'
+        : '⭐ Ranked restaurants appear first. “Not yet rated” restaurants remain visible below while public-source averages and exact locations are verified.';
+    }, 210);
+  }
+  function renderQueue(records) {
+    if (!records.length) return;
+    const section = document.createElement('section');
+    section.className = 'bo-territory-work-queue';
+    section.innerHTML = `<div class="bo-territory-queue-head"><span>NOT YET RATED</span><strong>${records.length} restaurant${records.length === 1 ? '' : 's'} remain visible for score and address verification</strong></div><div class="bo-territory-queue-list">${records.map(record => `<div class="bo-territory-queue-row"><span class="bo-territory-queue-name">${escape(record.name)}</span><span class="bo-territory-queue-status">Not yet rated</span></div>`).join('')}</div>`;
+    boListEl.appendChild(section);
+  }
+  function openZone(key) {
+    window.__bopSanDiegoMichelinTerritoryDepth = 1;
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedRecords().filter(record => zoneOf(record) === key);
+    const ranked = key === 'verification' ? [] : curated(records);
+    const unrated = key === 'verification' ? records : records.filter(record => scoreOf(record) === null);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
+    isOpeningSanDiegoTerritory = true;
+    boCategoryData[CATEGORY] = ranked;
+    try { baseRender(CATEGORY); }
+    finally { boCategoryData[CATEGORY] = all; boCityContext = CITY; isOpeningSanDiegoTerritory = false; }
+    window.setTimeout(() => {
+      if (key === 'verification') boListEl.innerHTML = '';
+      renderQueue(unrated);
+      setHero(ZONES[key], ranked.length, unrated.length, false);
+    }, 50);
+  }
+  function showPicker() {
+    window.__bopSanDiegoMichelinTerritoryDepth = 0;
+    const records = scopedRecords();
+    const counts = Object.fromEntries(Object.keys(ZONES).map(key => [key, records.filter(record => zoneOf(record) === key).length]));
+    boListEl.innerHTML = `<section class="bo-territory-picker" aria-label="Choose a San Diego Michelin area"><p class="bo-territory-picker-kicker">THIS CATEGORY HAS ${records.length} RESTAURANTS</p><h2>CHOOSE A SAN DIEGO AREA</h2><p>To keep the Michelin list short and local, choose a territory. Each area uses the high-rating rule: up to 11 ranked restaurants, ending after the second 3.x score, plus a visible not-yet-rated work queue.</p><div class="bo-territory-grid">${Object.keys(ZONES).map(key => `<button type="button" class="bo-territory-choice" data-sandiego-territory="${key}"><span>${escape(ZONES[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small></button>`).join('')}</div></section>`;
+    boListEl.querySelectorAll('[data-sandiego-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY; openZone(button.dataset.sandiegoTerritory);
+    }));
+    setHero('Michelin by Area', 0, counts.verification, true);
+  }
+  if (typeof window.boRenderCategory !== 'function') return;
+  const baseRender = window.boRenderCategory;
+  window.boRenderCategory = function sanDiegoTerritoryAwareRender(category) {
+    const result = baseRender.apply(this, arguments);
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningSanDiegoTerritory && !window.__bopSanDiegoMichelinTerritoryDepth) {
+      window.setTimeout(() => { if (scopedRecords().length > THRESHOLD) showPicker(); }, 230);
+    }
+    return result;
+  };
+
+  window.boShowSanDiegoMichelinTerritoryPicker = showPicker;
+  function syncChrome() {
+    const active = typeof boCurrentCat !== 'undefined' && boCurrentCat === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY;
+    document.body.classList.toggle('bo-sandiego-michelin-subcategory', active);
+    const dock = document.getElementById('bopCleanOrbDock');
+    const back = document.getElementById('boBackBtn');
+    const search = document.querySelector('.bop-search-shell');
+    const cue = document.getElementById('boScrollCue');
+    if (active && dock) {
+      dock.hidden = true; dock.setAttribute('aria-hidden', 'true');
+      ['display:none','visibility:hidden','opacity:0','pointer-events:none'].forEach(rule => { const [property,value] = rule.split(':'); dock.style.setProperty(property,value,'important'); });
+    } else if (dock) {
+      dock.hidden = false; dock.removeAttribute('aria-hidden');
+      ['display','visibility','opacity','pointer-events'].forEach(property => dock.style.removeProperty(property));
+    }
+    if (active) {
+      if (back) { back.classList.add('bo-visible'); back.removeAttribute('aria-hidden'); }
+      if (search && cue) { if (cue.previousElementSibling !== search) search.insertAdjacentElement('afterend', cue); cue.style.setProperty('display','flex','important'); }
+    }
+  }
+  document.addEventListener('click', () => window.setTimeout(syncChrome, 25), true);
+  window.setInterval(syncChrome, 35);
+  window.setTimeout(syncChrome, 220);
+}());
+
+</script>
+<!-- London Michelin territory router -->
+<script>
+(function () {
+  'use strict';
+  const CATEGORY = 'michelin';
+  const CITY = 'london';
+  const THRESHOLD = 16;
+  const MAX_RANKED = 11;
+  const ZONES = {
+    west_london: 'West London',
+    west_end: 'West End',
+    westminster_victoria: 'Westminster / Victoria',
+    city_clerkenwell: 'City / Clerkenwell',
+    south_bank: 'South Bank',
+    verification: 'Address Verification Queue'
+  };
+  let isOpeningLondonTerritory = false;
+
+  function normalized(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+  function scoreOf(record) {
+    const value = Number.parseFloat(record && record.rating);
+    return Number.isFinite(value) ? value : null;
+  }
+  function zoneOf(record) {
+    const address = String((record && record.address) || '').toLowerCase();
+    if (!address) return 'verification';
+    if (/w12/.test(address)) return 'west_london';
+    if (/(w1j|w1u|w1d|w1s|w1k|w1h|w1b)/.test(address)) return 'west_end';
+    if (/(sw1v|sw1e)/.test(address)) return 'westminster_victoria';
+    if (/(ec1m|ec1v)/.test(address)) return 'city_clerkenwell';
+    if (/se1/.test(address)) return 'south_bank';
+    return 'verification';
+  }
+  function scopedRecords() {
+    const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const unique = new Map();
+    records.filter(record => normalized(record && record.city) === CITY).forEach(record => {
+      const key = normalized(record && record.name).replace(/[^a-z0-9]/g, '');
+      if (!key) return;
+      const existing = unique.get(key);
+      if (!existing) { unique.set(key, Object.assign({}, record)); return; }
+      if (!existing.address && record.address) existing.address = record.address;
+      if (scoreOf(existing) === null && scoreOf(record) !== null) existing.rating = record.rating;
+      existing.bjsPick = Boolean(existing.bjsPick || record.bjsPick);
+      if (!existing.image && record.image) existing.image = record.image;
+    });
+    return Array.from(unique.values());
+  }
+  function curated(records) {
+    const rated = records.filter(record => scoreOf(record) !== null)
+      .sort((a,b) => scoreOf(b) - scoreOf(a) || String(a.name).localeCompare(String(b.name)));
+    const higher = rated.filter(record => scoreOf(record) >= 4);
+    const threes = rated.filter(record => scoreOf(record) >= 3 && scoreOf(record) < 4);
+    const selected = higher.slice(0, MAX_RANKED);
+    if (selected.length < MAX_RANKED) selected.push(...threes.slice(0, Math.min(2, MAX_RANKED - selected.length)));
+    if (selected.length < MAX_RANKED) {
+      const existing = new Set(selected.map(record => normalized(record.name)));
+      const bjs = threes.find(record => record.bjsPick && !existing.has(normalized(record.name)));
+      if (bjs) selected.push(bjs);
+    }
+    return selected;
+  }
+  function escape(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+  function setHero(label, rankedCount, unratedCount, overview) {
+    window.setTimeout(() => {
+      if (boHeroTitleEl) {
+        boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escape(label.toUpperCase())}</div><div class="bo-territory-city">LONDON</div>`;
+        boHeroTitleEl.style.opacity = 1;
+      }
+      if (boHeroSubEl) {
+        boHeroSubEl.textContent = overview
+          ? `${unratedCount} records remain visible for exact-address and review-score verification.`
+          : `${rankedCount} ranked restaurant${rankedCount === 1 ? '' : 's'} shown. ${unratedCount} visible in the verification queue below.`;
+        boHeroSubEl.style.display = '';
+        boHeroSubEl.style.opacity = 1;
+      }
+      if (boSectionHeadTitleEl) boSectionHeadTitleEl.textContent = overview ? 'Choose a London Area' : `The Top ${rankedCount}, Right Now`;
+      if (boSectionHeadParaEl) boSectionHeadParaEl.innerHTML = overview
+        ? '⭐ This oversized category is divided by area. Choose a territory to see its short high-rated list and its separate visible not-yet-rated work queue.'
+        : '⭐ Ranked restaurants appear first. “Not yet rated” restaurants remain visible below while public-source averages and exact locations are verified.';
+    }, 210);
+  }
+  function renderQueue(records) {
+    if (!records.length) return;
+    const section = document.createElement('section');
+    section.className = 'bo-territory-work-queue';
+    section.innerHTML = `<div class="bo-territory-queue-head"><span>NOT YET RATED</span><strong>${records.length} restaurant${records.length === 1 ? '' : 's'} remain visible for score and address verification</strong></div><div class="bo-territory-queue-list">${records.map(record => `<div class="bo-territory-queue-row"><span class="bo-territory-queue-name">${escape(record.name)}</span><span class="bo-territory-queue-status">Not yet rated</span></div>`).join('')}</div>`;
+    boListEl.appendChild(section);
+  }
+  function openZone(key) {
+    window.__bopLondonMichelinTerritoryDepth = 1;
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedRecords().filter(record => zoneOf(record) === key);
+    const ranked = key === 'verification' ? [] : curated(records);
+    const unrated = key === 'verification' ? records : records.filter(record => scoreOf(record) === null);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
+    isOpeningLondonTerritory = true;
+    boCategoryData[CATEGORY] = ranked;
+    try { baseRender(CATEGORY); }
+    finally { boCategoryData[CATEGORY] = all; boCityContext = CITY; isOpeningLondonTerritory = false; }
+    window.setTimeout(() => {
+      if (key === 'verification') boListEl.innerHTML = '';
+      renderQueue(unrated);
+      setHero(ZONES[key], ranked.length, unrated.length, false);
+    }, 50);
+  }
+  function showPicker() {
+    window.__bopLondonMichelinTerritoryDepth = 0;
+    const records = scopedRecords();
+    const counts = Object.fromEntries(Object.keys(ZONES).map(key => [key, records.filter(record => zoneOf(record) === key).length]));
+    boListEl.innerHTML = `<section class="bo-territory-picker" aria-label="Choose a London Michelin area"><p class="bo-territory-picker-kicker">THIS CATEGORY HAS ${records.length} RESTAURANTS</p><h2>CHOOSE A LONDON AREA</h2><p>To keep the Michelin list short and local, choose a territory. Each area uses the high-rating rule: up to 11 ranked restaurants, ending after the second 3.x score, plus a visible not-yet-rated work queue.</p><div class="bo-territory-grid">${Object.keys(ZONES).map(key => `<button type="button" class="bo-territory-choice" data-london-territory="${key}"><span>${escape(ZONES[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small></button>`).join('')}</div></section>`;
+    boListEl.querySelectorAll('[data-london-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY; openZone(button.dataset.londonTerritory);
+    }));
+    setHero('Michelin by Area', 0, counts.verification, true);
+  }
+  if (typeof window.boRenderCategory !== 'function') return;
+  const baseRender = window.boRenderCategory;
+  window.boRenderCategory = function londonTerritoryAwareRender(category) {
+    const result = baseRender.apply(this, arguments);
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningLondonTerritory && !window.__bopLondonMichelinTerritoryDepth) {
+      window.setTimeout(() => { if (scopedRecords().length > THRESHOLD) showPicker(); }, 230);
+    }
+    return result;
+  };
+
+  window.boShowLondonMichelinTerritoryPicker = showPicker;
+  function syncChrome() {
+    const active = typeof boCurrentCat !== 'undefined' && boCurrentCat === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY;
+    document.body.classList.toggle('bo-london-michelin-subcategory', active);
+    const dock = document.getElementById('bopCleanOrbDock');
+    const back = document.getElementById('boBackBtn');
+    const search = document.querySelector('.bop-search-shell');
+    const cue = document.getElementById('boScrollCue');
+    if (active && dock) {
+      dock.hidden = true; dock.setAttribute('aria-hidden', 'true');
+      ['display:none','visibility:hidden','opacity:0','pointer-events:none'].forEach(rule => { const [property,value] = rule.split(':'); dock.style.setProperty(property,value,'important'); });
+    } else if (dock) {
+      dock.hidden = false; dock.removeAttribute('aria-hidden');
+      ['display','visibility','opacity','pointer-events'].forEach(property => dock.style.removeProperty(property));
+    }
+    if (active) {
+      if (back) { back.classList.add('bo-visible'); back.removeAttribute('aria-hidden'); }
+      if (search && cue) { if (cue.previousElementSibling !== search) search.insertAdjacentElement('afterend', cue); cue.style.setProperty('display','flex','important'); }
+    }
+  }
+  document.addEventListener('click', () => window.setTimeout(syncChrome, 25), true);
+  window.setInterval(syncChrome, 35);
+  window.setTimeout(syncChrome, 220);
+}());
+
+</script>
 <!-- Michelin route supervisor -->
 <script>
 (function () {
@@ -41894,6 +42364,9 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     if (boCityContext === 'manhattan') window.__bopManhattanMichelinTerritoryDepth = 0;
     if (boCityContext === 'miami') window.__bopMiamiMichelinTerritoryDepth = 0;
     if (boCityContext === 'siliconvalley') window.__bopSiliconValleyMichelinTerritoryDepth = 0;
+    if (boCityContext === 'newyork') window.__bopNewYorkMichelinTerritoryDepth = 0;
+    if (boCityContext === 'sandiego') window.__bopSanDiegoMichelinTerritoryDepth = 0;
+    if (boCityContext === 'london') window.__bopLondonMichelinTerritoryDepth = 0;
   }
 
   function mountPicker(category) {
@@ -41907,6 +42380,15 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     if (boCityContext === 'siliconvalley' && !window.__bopSiliconValleyMichelinTerritoryDepth && typeof window.boShowSiliconValleyMichelinTerritoryPicker === 'function') {
       window.boShowSiliconValleyMichelinTerritoryPicker();
     }
+    if (boCityContext === 'newyork' && !window.__bopNewYorkMichelinTerritoryDepth && typeof window.boShowNewYorkMichelinTerritoryPicker === 'function') {
+      window.boShowNewYorkMichelinTerritoryPicker();
+    }
+    if (boCityContext === 'sandiego' && !window.__bopSanDiegoMichelinTerritoryDepth && typeof window.boShowSanDiegoMichelinTerritoryPicker === 'function') {
+      window.boShowSanDiegoMichelinTerritoryPicker();
+    }
+    if (boCityContext === 'london' && !window.__bopLondonMichelinTerritoryDepth && typeof window.boShowLondonMichelinTerritoryPicker === 'function') {
+      window.boShowLondonMichelinTerritoryPicker();
+    }
   }
 
   window.boRenderCategory = function territorySupervisedRender(category) {
@@ -41915,6 +42397,108 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     window.setTimeout(() => mountPicker(category), 420);
     return result;
   };
+}());
+
+</script>
+
+
+
+
+<!-- Global main-page title and dock policy -->
+<script>
+(function () {
+  'use strict';
+
+  const DOCK_ID = 'bopCleanOrbDock';
+  const STYLE_ID = 'bop-global-main-page-chrome-v1';
+
+  function routeIsMainPage() {
+    const params = new URLSearchParams(window.location.search);
+    const page = (params.get('page') || 'bestof').toLowerCase();
+    const currentCategory = typeof window.boCurrentCat === 'string' ? window.boCurrentCat.toLowerCase() : '';
+    return page === 'bestof' && (!currentCategory || currentCategory === 'bestof');
+  }
+
+  function enforceDockVisibility() {
+    const dock = document.getElementById(DOCK_ID);
+    if (!dock) return;
+    const main = routeIsMainPage();
+    document.body.classList.toggle('bop-main-page-only', main);
+    document.body.classList.toggle('bop-nonmain-page', !main);
+    if (main) {
+      dock.hidden = false;
+      dock.removeAttribute('aria-hidden');
+      ['display', 'visibility', 'opacity', 'pointer-events'].forEach(property => dock.style.removeProperty(property));
+    } else {
+      dock.hidden = true;
+      dock.setAttribute('aria-hidden', 'true');
+      dock.style.setProperty('display', 'none', 'important');
+      dock.style.setProperty('visibility', 'hidden', 'important');
+      dock.style.setProperty('opacity', '0', 'important');
+      dock.style.setProperty('pointer-events', 'none', 'important');
+    }
+  }
+
+  function installStyle() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      /* One stable six-point visual separation between the city word and Period. */
+      #bopLandingOverlay .bop-splash-hero .bop-splash-line2 {
+        display: grid !important;
+        grid-template-columns: max-content max-content !important;
+        justify-content: center !important;
+        align-items: baseline !important;
+        column-gap: 6px !important;
+        white-space: nowrap !important;
+      }
+      #bopLandingOverlay .bop-splash-line2 .bop-splash-city-col {
+        display: block !important;
+        width: max-content !important;
+        min-width: max-content !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      #bopLandingOverlay .bop-splash-line2 .bop-splash-city,
+      #bopLandingOverlay .bop-splash-line2 .bop-splash-period {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      #bopLandingOverlay .bop-splash-line2 .bop-splash-period { margin-left: 0 !important; }
+
+      /* Keep the dock exclusive to the main page; late legacy scripts cannot restore it elsewhere. */
+      body.bop-nonmain-page #${DOCK_ID} {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      /* Main-page only: enlarge each of the five orbs by exactly two CSS pixels, without changing the gap. */
+      body.bop-main-page-only #${DOCK_ID} .bop-static-landing-button {
+        flex-basis: 64px !important;
+        width: 64px !important;
+        height: 64px !important;
+        min-width: 64px !important;
+        min-height: 64px !important;
+      }
+      body.bop-main-page-only #${DOCK_ID} { gap: 2px !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function sync() {
+    installStyle();
+    enforceDockVisibility();
+  }
+
+  document.addEventListener('click', () => window.setTimeout(sync, 40), true);
+  window.addEventListener('popstate', () => window.setTimeout(sync, 40));
+  const observer = new MutationObserver(() => window.setTimeout(sync, 0));
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  window.setInterval(sync, 120);
+  window.setTimeout(sync, 50);
 }());
 
 </script>
