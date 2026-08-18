@@ -40170,4 +40170,270 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 })();
 </script>
 
+<!-- Clean floating-orb dock: one visible dock, one explicit route per orb -->
+<style id="bop-clean-orb-dock-style">
+  #bopStaticLandingDock{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #bopClosestFiveDirectPageHitTarget,
+  #bopStaticNearDirectHitTarget,
+  #bopStaticWorldDirectHitTarget{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #bopCleanOrbDock{
+    position:fixed!important;
+    left:28px!important;
+    right:auto!important;
+    bottom:12px!important;
+    top:auto!important;
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    align-items:flex-end!important;
+    gap:8px!important;
+    pointer-events:auto!important;
+    z-index:2147483000!important;
+  }
+  #bopCleanOrbDock[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #bopCleanOrbDock .bop-static-landing-button{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
+  @media(max-width:520px){#bopCleanOrbDock{left:12px!important;bottom:10px!important;gap:5px!important;}}
+</style>
+<script id="bop-clean-orb-dock-v1">
+(function(){
+  var primaryIds=['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay'];
+  var modalIds=['conceptsOverlay','bopVegasSpadeCallPopup','legendOverlay','vendorOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay'];
+  function byId(id){return document.getElementById(id);}
+  function open(id){var node=byId(id);if(node){node.classList.add('open');node.setAttribute('aria-hidden','false');node.scrollTop=0;}return node;}
+  function close(id){var node=byId(id);if(node){node.classList.remove('open','is-open','active','tg-open');if(node.hasAttribute('aria-hidden'))node.setAttribute('aria-hidden','true');}}
+  function isOpen(id){var node=byId(id);return !!node&&(node.classList.contains('open')||node.classList.contains('is-open'));}
+  function closePrimary(){['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','bopWorldwideLanding','boNearMapPage','boWorldwidePage'].forEach(close);document.body.classList.remove('bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active','bop-closest-chooser-open');}
+  function clearModal(){modalIds.forEach(close);document.body.classList.remove('bop-concepts-call-popup-open');document.documentElement.classList.remove('bop-concepts-call-popup-open');}
+  function showDock(){
+    var dock=byId('bopCleanOrbDock');if(!dock)return;
+    var blocked=modalIds.some(isOpen)||isOpen('boNearMapPage')||isOpen('ocWorldOverlay')||isOpen('bopWorldwideLanding')||isOpen('boWorldwidePage');
+    dock.hidden=blocked;
+  }
+  function restoreLanding(){
+    clearModal();closePrimary();open('bopLandingOverlay');window.scrollTo(0,0);showDock();
+  }
+  function openNear(closest){
+    clearModal();closePrimary();
+    if(closest){
+      var tier=['dive','casual','fine'].indexOf(window.boNearClosestTier)!==-1?window.boNearClosestTier:'casual';
+      try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+      document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    }
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();else open('boNearMapPage');
+    window.setTimeout(function(){if(closest&&typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();showDock();},0);
+  }
+  function openOther(){
+    clearModal();closePrimary();
+    if(typeof window.ocBuildWorld==='function')window.ocBuildWorld();
+    if(typeof window.ocBuildPins==='function')window.ocBuildPins();
+    open('ocWorldOverlay');document.body.classList.add('oc-world-active');showDock();
+  }
+  function openWorld(){
+    clearModal();closePrimary();
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();else open('bopWorldwideLanding');showDock();
+  }
+  function openShare(){
+    var trigger=byId('globalSharePage')||byId('landingSharePage');
+    if(trigger&&typeof trigger.click==='function'){trigger.click();return;}
+    if(navigator.share)navigator.share({title:document.title,url:location.href}).catch(function(){});
+  }
+  function createDock(){
+    var dock=byId('bopCleanOrbDock');if(dock)return dock;
+    var source=byId('bopStaticLandingDock');if(!source)return null;
+    dock=document.createElement('nav');dock.id='bopCleanOrbDock';dock.className='bop-static-landing-dock bop-main-landing-visible';dock.setAttribute('aria-label','Quick navigation');
+    var definitions=[
+      ['bopStaticShare','share','Share page'],
+      ['bopStaticNear','near','Open City Map'],
+      ['bopStaticOtherCities','other','Open Other Cities'],
+      ['bopStaticClosestFive','closest','Open Closest 5'],
+      ['bopStaticWorld','world','Open Worldwide Bests']
+    ];
+    definitions.forEach(function(item){
+      var original=byId(item[0]);if(!original)return;
+      var button=original.cloneNode(true);button.removeAttribute('id');button.dataset.cleanOrb=item[1];button.setAttribute('aria-label',item[2]);button.removeAttribute('title');
+      button.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();
+        if(item[1]==='share')openShare();
+        else if(item[1]==='near')openNear(false);
+        else if(item[1]==='other')openOther();
+        else if(item[1]==='closest')openNear(true);
+        else if(item[1]==='world')openWorld();
+      });
+      dock.appendChild(button);
+    });
+    document.body.appendChild(dock);return dock;
+  }
+  function mainBack(event){
+    var button=event.target&&event.target.closest&&event.target.closest('#bopReturnToLandingBtn');if(!button)return;
+    event.preventDefault();event.stopImmediatePropagation();restoreLanding();
+  }
+  createDock();
+  document.addEventListener('click',mainBack,true);
+  var observer=new MutationObserver(function(){window.requestAnimationFrame(showDock)});
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-hidden']});
+  window.setTimeout(function(){
+    if(!primaryIds.some(isOpen))restoreLanding();
+    else showDock();
+  },120);
+  window.addEventListener('popstate',function(){window.setTimeout(showDock,0)});
+  showDock();
+})();
+</script>
+
+<!-- Fresh-open default: main landing is the first visible page -->
+<script id="bop-default-main-landing-reset-v1">
+(function(){
+  function byId(id){return document.getElementById(id);}
+  function close(id){var node=byId(id);if(node){node.classList.remove('open','is-open','active','tg-open');if(node.hasAttribute('aria-hidden'))node.setAttribute('aria-hidden','true');}}
+  function showLanding(){
+    ['bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','boNearMapPage','bopWorldwideLanding','boWorldwidePage'].forEach(close);
+    document.body.classList.remove('bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active','bop-closest-chooser-open','bop-ui-near','bop-ui-bestof');
+    var landing=byId('bopLandingOverlay');if(landing){landing.classList.add('open');landing.setAttribute('aria-hidden','false');landing.scrollTop=0;}
+    document.body.classList.add('bop-ui-primary');
+    window.scrollTo(0,0);
+  }
+  window.setTimeout(showLanding,260);
+})();
+</script>
+
+<!-- Keep legacy orb handlers and visuals out of the live hit area -->
+<script id="bop-legacy-dock-runtime-guard-v1">
+(function(){
+  function hideLegacy(){
+    var dock=document.getElementById('bopStaticLandingDock');
+    if(!dock)return;
+    dock.style.setProperty('display','none','important');
+    dock.style.setProperty('visibility','hidden','important');
+    dock.style.setProperty('opacity','0','important');
+    dock.style.setProperty('pointer-events','none','important');
+    dock.setAttribute('aria-hidden','true');
+    dock.setAttribute('inert','');
+  }
+  hideLegacy();
+  var dock=document.getElementById('bopStaticLandingDock');
+  if(dock)new MutationObserver(hideLegacy).observe(dock,{attributes:true,attributeFilter:['class','style','aria-hidden']});
+  window.setInterval(hideLegacy,90);
+})();
+</script>
+
+<!-- Recover clean orb visibility after legacy Back handlers change page state -->
+<script id="bop-clean-dock-visibility-recovery-v1">
+(function(){
+  var modalIds=['conceptsOverlay','bopVegasSpadeCallPopup','legendOverlay','vendorOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay'];
+  function open(id){var node=document.getElementById(id);return !!node&&(node.classList.contains('open')||node.classList.contains('is-open'));}
+  function sync(){
+    var dock=document.getElementById('bopCleanOrbDock');if(!dock)return;
+    var blocked=modalIds.some(open)||open('boNearMapPage')||open('ocWorldOverlay')||open('bopWorldwideLanding')||open('boWorldwidePage');
+    dock.hidden=blocked;
+  }
+  document.addEventListener('click',function(event){
+    if(event.target&&event.target.closest&&event.target.closest('#boNearMapBack,#ocWorldClose,#bopWorldwideLanding .bop-world-back,#boWorldwideBack'))window.setTimeout(sync,40);
+  },true);
+  window.setInterval(sync,120);
+  sync();
+})();
+</script>
+
+<!-- Mobile-safe floating orbs: deliberately lifted above Safari/Chrome controls -->
+<style id="bop-mobile-safe-orb-dock-v1">
+  @media (max-width:600px), (pointer:coarse){
+    #bopCleanOrbDock{
+      position:fixed!important;
+      left:50%!important;
+      right:auto!important;
+      top:auto!important;
+      bottom:max(148px,calc(env(safe-area-inset-bottom) + 118px))!important;
+      transform:translateX(-50%)!important;
+      width:min(calc(100vw - 22px),390px)!important;
+      min-height:64px!important;
+      display:flex!important;
+      visibility:visible!important;
+      opacity:1!important;
+      align-items:center!important;
+      justify-content:space-between!important;
+      gap:0!important;
+      padding:4px 5px!important;
+      box-sizing:border-box!important;
+      pointer-events:auto!important;
+      touch-action:manipulation!important;
+      z-index:2147483647!important;
+    }
+    #bopCleanOrbDock[hidden]{
+      display:none!important;
+      visibility:hidden!important;
+      pointer-events:none!important;
+    }
+    #bopCleanOrbDock .bop-static-landing-button{
+      flex:0 0 58px!important;
+      width:58px!important;
+      height:58px!important;
+      min-width:58px!important;
+      min-height:58px!important;
+      display:flex!important;
+      visibility:visible!important;
+      opacity:1!important;
+      pointer-events:auto!important;
+      font-size:10px!important;
+      line-height:.98!important;
+      -webkit-tap-highlight-color:transparent!important;
+    }
+  }
+  @media (max-width:360px){
+    #bopCleanOrbDock{bottom:max(136px,calc(env(safe-area-inset-bottom) + 108px))!important;width:calc(100vw - 12px)!important;padding:3px!important}
+    #bopCleanOrbDock .bop-static-landing-button{flex-basis:54px!important;width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;font-size:9px!important}
+  }
+</style>
+<script id="bop-mobile-safe-orb-dock-v1-script">
+(function(){
+  function forceMobileDock(){
+    var dock=document.getElementById('bopCleanOrbDock');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(!dock||!landing)return;
+    var isLanding=landing.classList.contains('open');
+    if(isLanding){
+      dock.hidden=false;
+      dock.style.setProperty('display','flex','important');
+      dock.style.setProperty('visibility','visible','important');
+      dock.style.setProperty('opacity','1','important');
+      dock.style.setProperty('pointer-events','auto','important');
+    }
+  }
+  window.setInterval(forceMobileDock,100);
+  window.addEventListener('resize',forceMobileDock,{passive:true});
+  window.addEventListener('orientationchange',function(){window.setTimeout(forceMobileDock,120)});
+  window.setTimeout(forceMobileDock,280);
+})();
+</script>
+
+<!-- Preserve a readable Closest 5 label in the cloned clean dock -->
+<style id="bop-mobile-closest-five-label-v1">
+  #bopCleanOrbDock [data-clean-orb="closest"]{position:relative!important;overflow:hidden!important;isolation:isolate!important;}
+  #bopCleanOrbDock [data-clean-orb="closest"] .bop-closest-five-mark{display:none!important;}
+  #bopCleanOrbDock [data-clean-orb="closest"]::before{
+    content:"CLOSEST";
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    top:10px!important;
+    z-index:2!important;
+    color:#E4002B!important;
+    font:900 9px/1 Arial Black,Impact,sans-serif!important;
+    letter-spacing:.2px!important;
+    text-align:center!important;
+    text-shadow:0 0 2px #F59E0B!important;
+  }
+  #bopCleanOrbDock [data-clean-orb="closest"]::after{
+    content:"5";
+    position:absolute!important;
+    left:0!important;
+    right:0!important;
+    top:19px!important;
+    z-index:2!important;
+    color:#E4002B!important;
+    font:900 31px/.9 Arial Black,Impact,sans-serif!important;
+    text-align:center!important;
+    text-shadow:0 0 3px #F59E0B!important;
+  }
+</style>
+
 </body></html>
