@@ -39856,4 +39856,318 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 })();
 </script>
 
+<!-- Unified control and Back-navigation recovery -->
+<style id="bop-unified-control-recovery-style">
+  body.bop-ui-primary #bopStaticLandingDock.bop-static-landing-dock{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    z-index:2147482500!important;
+  }
+  body.bop-ui-primary #bopStaticLandingDock .bop-static-landing-button{
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+  body.bop-ui-modal #bopStaticLandingDock.bop-static-landing-dock,
+  body.bop-ui-modal #bopVegasSpadeCallHitTarget,
+  body.bop-ui-modal #bopClosestFiveDirectPageHitTarget{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  body.bop-ui-near #bopClosestFiveDirectPageHitTarget,
+  body:not(.bop-ui-bestof) #bopVegasSpadeCallHitTarget{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+</style>
+<script id="bop-unified-control-recovery-v1">
+(function(){
+  var dockIds=['bopStaticShare','bopStaticNear','bopStaticOtherCities','bopStaticClosestFive','bopStaticWorld'];
+  var primaryIds=['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','boNearMapPage','bopWorldwideLanding'];
+  var modalIds=['conceptsOverlay','wppConceptViewer','wtfLandingOverlay','directoryOverlay','companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay','lvSteamOverlay','tpaOverlay','hhOverlay','thc24Overlay','bopVegasSpadeCallPopup','bopClosestFiveChooser','bopTicketOverlay','bopIshOverlay'];
+  function byId(id){return document.getElementById(id);}
+  function isOpen(id){var node=byId(id);return !!node&&(node.classList.contains('open')||node.classList.contains('is-open')||node.getAttribute('aria-hidden')==='false'&&id==='bopTicketOverlay');}
+  function stop(event){event.preventDefault();event.stopImmediatePropagation();}
+  function close(id){var node=byId(id);if(node){node.classList.remove('open','is-open','active','tg-open');if(node.hasAttribute('aria-hidden'))node.setAttribute('aria-hidden','true');}}
+  function pageSource(){
+    if(isOpen('bestOfOverlay'))return 'bestof';
+    if(isOpen('tbotrLandingOverlay'))return 'tbotr';
+    return 'landing';
+  }
+  function setSource(source){document.body.dataset.bopReturnSource=source||'landing';}
+  function closePrimary(){
+    ['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','bopWorldwideLanding'].forEach(close);
+    close('ocWorldOverlay');
+    document.body.classList.remove('oc-world-active');
+  }
+  function clearTransient(){
+    ['bopClosestFiveChooser','bopVegasSpadeCallPopup','bopTicketOverlay','bopIshOverlay'].forEach(close);
+    document.body.classList.remove('bop-closest-chooser-open','bop-concepts-call-popup-open');
+    document.documentElement.classList.remove('bop-concepts-call-popup-open');
+  }
+  function sync(){
+    var near=isOpen('boNearMapPage');
+    var primary=primaryIds.some(isOpen)&&!near||near;
+    var modal=modalIds.some(isOpen);
+    document.body.classList.toggle('bop-ui-primary',primary&&!modal);
+    document.body.classList.toggle('bop-ui-modal',modal);
+    document.body.classList.toggle('bop-ui-near',near);
+    document.body.classList.toggle('bop-ui-bestof',isOpen('bestOfOverlay'));
+    var dock=byId('bopStaticLandingDock');
+    if(dock&&primary&&!modal){dock.style.removeProperty('display');dock.style.removeProperty('visibility');dock.style.removeProperty('pointer-events');}
+    if(!isOpen('bestOfOverlay'))byId('bopVegasSpadeCallHitTarget')?.classList.remove('is-visible');
+    if(near)byId('bopClosestFiveDirectPageHitTarget')?.classList.remove('is-visible');
+  }
+  function openNear(closest){
+    setSource(pageSource());
+    clearTransient();
+    closePrimary();
+    if(closest){
+      var tier=['dive','casual','fine'].indexOf(window.boNearClosestTier)!==-1?window.boNearClosestTier:'casual';
+      try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+      document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected');
+    }else{
+      document.body.classList.remove('bo-closest-five-active','bop-closest-tier-selected');
+    }
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+    else byId('boNearMapPage')?.classList.add('open');
+    window.setTimeout(function(){
+      if(closest&&typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();
+      sync();
+    },0);
+  }
+  function openOther(){
+    setSource(isOpen('boNearMapPage')?'near':pageSource());
+    clearTransient();
+    if(isOpen('boNearMapPage')){close('boNearMapPage');document.body.classList.remove('bo-near-map-active');}
+    closePrimary();
+    var overlay=byId('ocWorldOverlay');
+    if(!overlay)return;
+    if(typeof window.ocBuildWorld==='function')window.ocBuildWorld();
+    if(typeof window.ocBuildPins==='function')window.ocBuildPins();
+    overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;
+    document.body.classList.add('oc-world-active');
+    sync();
+  }
+  function openWorld(){
+    setSource(pageSource());
+    clearTransient();
+    closePrimary();
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
+    else byId('bopWorldwideLanding')?.classList.add('open');
+    sync();
+  }
+  function openShare(){
+    var button=byId('globalSharePage')||byId('landingSharePage');
+    if(button&&typeof button.click==='function')button.click();
+  }
+  function restoreFromNear(){
+    close('boNearMapPage');
+    document.body.classList.remove('bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected');
+    clearTransient();
+    var source=document.body.dataset.bopReturnSource||'landing';
+    if(source==='bestof'){
+      byId('bestOfOverlay')?.classList.add('open');
+      close('bopLandingOverlay');
+    }else if(source==='tbotr'){
+      byId('tbotrLandingOverlay')?.classList.add('open');
+      close('bopLandingOverlay');
+    }else{
+      byId('bopLandingOverlay')?.classList.add('open');
+    }
+    window.scrollTo(0,0);
+    sync();
+  }
+  function routeDock(event,target){
+    var id=target.id;
+    if(id==='bopStaticShare'){stop(event);openShare();return true;}
+    if(id==='bopStaticNear'){stop(event);openNear(false);return true;}
+    if(id==='bopStaticOtherCities'){stop(event);openOther();return true;}
+    if(id==='bopStaticClosestFive'||id==='bopClosestFiveDirectPageHitTarget'){stop(event);openNear(true);return true;}
+    if(id==='bopStaticWorld'){stop(event);openWorld();return true;}
+    return false;
+  }
+  window.addEventListener('click',function(event){
+    var target=event.target&&event.target.closest&&event.target.closest('#bopStaticShare,#bopStaticNear,#bopStaticOtherCities,#bopStaticClosestFive,#bopStaticWorld,#bopClosestFiveDirectPageHitTarget');
+    if(target){routeDock(event,target);return;}
+    var back=event.target&&event.target.closest&&event.target.closest('#boNearMapBack');
+    if(back){stop(event);restoreFromNear();}
+  },true);
+  var observer=new MutationObserver(function(){window.requestAnimationFrame(sync)});
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-hidden']});
+  window.addEventListener('popstate',function(){window.setTimeout(sync,0)});
+  sync();
+})();
+</script>
+
+<!-- Active-map surface recovery: never leave the map behind the landing layer -->
+<style id="bop-active-map-surface-recovery-style">
+  #boNearMapPage.open{
+    z-index:2147482000!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+  body.bop-ui-near #bopLandingOverlay,
+  body.bop-ui-near #bestOfOverlay,
+  body.bop-ui-near #tbotrLandingOverlay{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+</style>
+<script id="bop-active-map-surface-recovery-v1">
+(function(){
+  function byId(id){return document.getElementById(id);}
+  function mapIsOpen(){return !!byId('boNearMapPage')?.classList.contains('open');}
+  function restoreMapSurface(){
+    if(!mapIsOpen())return;
+    ['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','bopWorldwideLanding'].forEach(function(id){
+      var layer=byId(id);if(layer)layer.classList.remove('open');
+    });
+    var other=byId('ocWorldOverlay');
+    if(other)other.classList.remove('open');
+    document.body.classList.remove('oc-world-active');
+    document.body.classList.add('bo-near-map-active','bop-ui-near','bop-ui-primary');
+    document.body.classList.remove('bop-ui-bestof');
+  }
+  var observer=new MutationObserver(function(){window.requestAnimationFrame(restoreMapSurface)});
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  var attempts=0, timer=window.setInterval(function(){restoreMapSurface();if(++attempts>360)window.clearInterval(timer);},100);
+  restoreMapSurface();
+})();
+</script>
+
+<!-- Dedicated City Map route: bypass competing legacy click handlers -->
+<style id="bop-city-map-direct-hit-target-style">
+  #bopStaticNearDirectHitTarget{
+    position:fixed!important;
+    display:none!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    cursor:pointer!important;
+    z-index:2147483500!important;
+  }
+  #bopStaticNearDirectHitTarget.is-visible{display:block!important;}
+  body.bop-ui-near #bopStaticNearDirectHitTarget,
+  body.bop-ui-modal #bopStaticNearDirectHitTarget{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+</style>
+<script id="bop-city-map-direct-hit-target-v1">
+(function(){
+  function byId(id){return document.getElementById(id);}
+  function hide(id){var node=byId(id);if(node)node.classList.remove('open','is-open','active','tg-open');}
+  function openCityMap(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    var best=byId('bestOfOverlay');
+    var source=best&&best.classList.contains('open')?'bestof':'landing';
+    document.body.dataset.bopReturnSource=source;
+    ['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','bopWorldwideLanding','ocWorldOverlay','bopClosestFiveChooser'].forEach(hide);
+    document.body.classList.remove('oc-world-active','bo-closest-five-active','bop-closest-tier-selected','bop-closest-chooser-open');
+    if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+    else byId('boNearMapPage')?.classList.add('open');
+    window.setTimeout(function(){
+      ['bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','bopWorldwideLanding'].forEach(hide);
+      document.body.classList.add('bo-near-map-active','bop-ui-near','bop-ui-primary');
+      document.body.classList.remove('bop-ui-bestof');
+      sync();
+    },0);
+  }
+  function ensureTarget(){
+    var target=byId('bopStaticNearDirectHitTarget');
+    if(target)return target;
+    target=document.createElement('button');
+    target.id='bopStaticNearDirectHitTarget';
+    target.type='button';
+    target.setAttribute('aria-label','Open City Map');
+    target.setAttribute('title','Open City Map');
+    target.addEventListener('pointerdown',function(event){event.preventDefault();event.stopPropagation();});
+    target.addEventListener('click',openCityMap);
+    document.body.appendChild(target);
+    return target;
+  }
+  function sync(){
+    var target=ensureTarget(),orb=byId('bopStaticNear');
+    var blocked=!orb||byId('boNearMapPage')?.classList.contains('open')||document.body.classList.contains('bop-ui-modal')||document.body.classList.contains('bop-concepts-call-popup-open');
+    if(blocked){target.classList.remove('is-visible');return;}
+    var rect=orb.getBoundingClientRect();
+    if(rect.width<2||rect.height<2){target.classList.remove('is-visible');return;}
+    target.style.left=Math.max(0,rect.left-4)+'px';
+    target.style.top=Math.max(0,rect.top-4)+'px';
+    target.style.width=(rect.width+8)+'px';
+    target.style.height=(rect.height+8)+'px';
+    target.classList.add('is-visible');
+  }
+  var attempts=0,timer=window.setInterval(function(){sync();if(++attempts>420)window.clearInterval(timer);},100);
+  window.addEventListener('resize',sync,{passive:true});
+  window.addEventListener('scroll',sync,{passive:true});
+  sync();
+})();
+</script>
+
+<!-- Dedicated Worldwide Bests route: clear stale map and preserve the real source page for Back -->
+<style id="bop-world-direct-hit-target-style">
+  #bopStaticWorldDirectHitTarget{
+    position:fixed!important;
+    display:none!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    cursor:pointer!important;
+    z-index:2147483500!important;
+  }
+  #bopStaticWorldDirectHitTarget.is-visible{display:block!important;}
+  body.bop-ui-modal #bopStaticWorldDirectHitTarget{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+</style>
+<script id="bop-world-direct-hit-target-v1">
+(function(){
+  function byId(id){return document.getElementById(id);}
+  function close(id){var node=byId(id);if(node)node.classList.remove('open','is-open','active','tg-open');}
+  function currentSource(){
+    if(byId('boNearMapPage')?.classList.contains('open'))return byId('boNearMapPage');
+    if(byId('bestOfOverlay')?.classList.contains('open'))return byId('bestOfOverlay');
+    if(byId('tbotrLandingOverlay')?.classList.contains('open'))return byId('tbotrLandingOverlay');
+    return byId('bopLandingOverlay');
+  }
+  function openWorld(event){
+    if(event){event.preventDefault();event.stopPropagation();}
+    var source=currentSource();
+    if(source){
+      try{source.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));}catch(error){source.dispatchEvent(new Event('pointerdown',{bubbles:true}));}
+      document.body.dataset.bopWorldReturnSource=source.id;
+    }
+    ['boNearMapPage','bopLandingOverlay','bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','bopClosestFiveChooser','boWorldwidePage'].forEach(close);
+    document.body.classList.remove('bo-near-map-active','bop-ui-near','bo-closest-five-active','bop-closest-tier-selected','oc-world-active','bop-closest-chooser-open');
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
+    else byId('bopWorldwideLanding')?.classList.add('open');
+    window.setTimeout(sync,0);
+  }
+  function ensureTarget(){
+    var target=byId('bopStaticWorldDirectHitTarget');
+    if(target)return target;
+    target=document.createElement('button');
+    target.id='bopStaticWorldDirectHitTarget';target.type='button';
+    target.setAttribute('aria-label','Open Worldwide Bests');target.setAttribute('title','Worldwide Bests');
+    target.addEventListener('pointerdown',function(event){event.preventDefault();event.stopPropagation();});
+    target.addEventListener('click',openWorld);document.body.appendChild(target);return target;
+  }
+  function sync(){
+    var target=ensureTarget(),orb=byId('bopStaticWorld');
+    var blocked=!orb||document.body.classList.contains('bop-ui-modal')||byId('bopWorldwideLanding')?.classList.contains('open');
+    if(blocked){target.classList.remove('is-visible');return;}
+    var rect=orb.getBoundingClientRect();
+    if(rect.width<2||rect.height<2){target.classList.remove('is-visible');return;}
+    target.style.left=Math.max(0,rect.left-4)+'px';target.style.top=Math.max(0,rect.top-4)+'px';
+    target.style.width=(rect.width+8)+'px';target.style.height=(rect.height+8)+'px';target.classList.add('is-visible');
+  }
+  var attempts=0,timer=window.setInterval(function(){sync();if(++attempts>420)window.clearInterval(timer);},100);
+  window.addEventListener('resize',sync,{passive:true});window.addEventListener('scroll',sync,{passive:true});sync();
+})();
+</script>
+
 </body></html>
