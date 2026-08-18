@@ -40732,4 +40732,38 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   }
 
 </style>
+<style id="bop-closest-five-live-status-v1">
+  #bopClosestLiveStatus{display:none;align-items:center;justify-content:center;gap:8px;width:min(88vw,620px);margin:16px auto 10px;color:#f3a21b;font:900 clamp(10px,2.8vw,13px)/1 'Archivo Black',Arial,sans-serif;letter-spacing:.075em;text-transform:uppercase}
+  body.bo-closest-five-active #bopClosestLiveStatus{display:flex}
+  #bopClosestLiveStatus .bop-closest-live-star{color:#fff0b3;font-size:17px;line-height:1;text-shadow:0 0 8px rgba(243,162,27,.9),0 0 17px rgba(243,162,27,.55);animation:bopClosestLivePulse 1.1s ease-in-out infinite alternate}
+  #bopClosestLiveStatus .bop-closest-live-spinner{width:11px;height:11px;border:2px solid rgba(243,162,27,.25);border-top-color:#f3a21b;border-right-color:#fff0b3;border-radius:50%;animation:bopClosestLiveSpin .8s linear infinite}
+  #bopClosestLiveStatus .bop-closest-live-copy{white-space:nowrap}
+  @keyframes bopClosestLiveSpin{to{transform:rotate(360deg)}}
+  @keyframes bopClosestLivePulse{to{transform:scale(1.18);opacity:.72}}
+  @media(max-width:390px){#bopClosestLiveStatus{gap:6px;margin-top:12px;font-size:9px;letter-spacing:.055em}#bopClosestLiveStatus .bop-closest-live-star{font-size:15px}}
+</style>
+<script id="bop-closest-five-control-repair-v1">
+(function(){
+  var tierLabels={dive:'DIVE',casual:'CASUAL',fine:'FINE'};
+  function closestPage(){return document.getElementById('boNearMapPage');}
+  function mountLiveStatus(){
+    var page=closestPage();if(!page)return null;
+    var live=document.getElementById('bopClosestLiveStatus');if(live)return live;
+    live=document.createElement('div');live.id='bopClosestLiveStatus';live.setAttribute('role','status');live.setAttribute('aria-live','polite');
+    live.innerHTML='<span class="bop-closest-live-star" aria-hidden="true">✦</span><span class="bop-closest-live-copy">CONSTANTLY LOADING</span><span class="bop-closest-live-spinner" aria-hidden="true"></span>';
+    var panel=page.querySelector('.bo-near-closest');if(panel&&panel.parentNode)panel.parentNode.insertBefore(live,panel);else page.appendChild(live);return live;
+  }
+  function updateLiveStatus(tier){var live=mountLiveStatus();var copy=live&&live.querySelector('.bop-closest-live-copy');if(copy)copy.textContent='CONSTANTLY LOADING '+(tierLabels[tier]||'RESTAURANTS');}
+  function updateTierButtons(tier){document.querySelectorAll('[data-near-tier],[data-bop-closest-price],[data-bop-simple-tier]').forEach(function(button){var value=button.dataset.nearTier||button.dataset.bopClosestPrice||button.dataset.bopSimpleTier;var selected=value===tier;button.setAttribute('aria-pressed',String(selected));button.classList.toggle('is-active',selected);});}
+  function runClosestRender(){try{if(typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();else if(typeof window.boRenderNearClosest==='function')window.boRenderNearClosest();}catch(error){}}
+  function switchTier(tier,event){
+    if(!tierLabels[tier])return;if(event){event.preventDefault();event.stopImmediatePropagation();}
+    try{boNearClosestTier=tier;}catch(error){}try{window.boNearClosestTier=tier;}catch(error){}
+    updateTierButtons(tier);updateLiveStatus(tier);
+    if(!document.body.classList.contains('bo-closest-five-active')&&typeof window.boOpenNearMap==='function')Promise.resolve(window.boOpenNearMap()).then(runClosestRender).catch(runClosestRender);else runClosestRender();
+  }
+  document.addEventListener('click',function(event){var button=event.target&&event.target.closest&&event.target.closest('[data-near-tier],[data-bop-closest-price],[data-bop-simple-tier]');if(!button)return;switchTier(button.dataset.nearTier||button.dataset.bopClosestPrice||button.dataset.bopSimpleTier,event);},true);
+  window.setInterval(function(){if(document.body.classList.contains('bo-closest-five-active'))mountLiveStatus();},700);
+})();
+</script>
 </body></html>
