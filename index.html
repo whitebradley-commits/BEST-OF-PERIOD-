@@ -40436,4 +40436,95 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   }
 </style>
 
+<!-- Compact lower-left mobile orbs with restored gold line-art diagrams -->
+<style id="bop-compact-gold-orb-art-v1">
+  #bopCleanOrbDock .bop-static-landing-button{position:relative!important;overflow:hidden!important;isolation:isolate!important;}
+  #bopCleanOrbDock .bop-orb-glyph{
+    position:absolute!important;
+    inset:5px!important;
+    width:calc(100% - 10px)!important;
+    height:calc(100% - 10px)!important;
+    z-index:1!important;
+    display:block!important;
+    fill:none!important;
+    stroke:#F59E0B!important;
+    stroke-width:2.2!important;
+    stroke-linecap:round!important;
+    stroke-linejoin:round!important;
+    opacity:.84!important;
+    pointer-events:none!important;
+    filter:drop-shadow(0 0 2px rgba(245,158,11,.42))!important;
+  }
+  #bopCleanOrbDock .bop-orb-label{
+    position:absolute!important;
+    inset:0!important;
+    z-index:2!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    color:#E4002B!important;
+    font:900 8.5px/.9 Arial Black,Impact,sans-serif!important;
+    letter-spacing:.1px!important;
+    text-align:center!important;
+    text-shadow:0 1px 1px #000,0 0 2px #000!important;
+    pointer-events:none!important;
+  }
+  #bopCleanOrbDock .bop-orb-label--closest{font-size:8px!important;align-items:flex-start!important;padding-top:8px!important;}
+  #bopCleanOrbDock .bop-orb-label--closest b{display:block!important;font-size:26px!important;line-height:.8!important;letter-spacing:0!important;}
+  #bopCleanOrbDock .bop-orb-label--world{font-size:7px!important;align-items:flex-end!important;padding-bottom:5px!important;}
+  #bopCleanOrbDock [data-clean-orb="closest"]::before,
+  #bopCleanOrbDock [data-clean-orb="closest"]::after{display:none!important;content:none!important;}
+  @media (max-width:600px), (pointer:coarse){
+    #bopCleanOrbDock{
+      left:10px!important;
+      right:auto!important;
+      bottom:max(78px,calc(env(safe-area-inset-bottom) + 58px))!important;
+      transform:none!important;
+      width:auto!important;
+      min-height:60px!important;
+      justify-content:flex-start!important;
+      gap:3px!important;
+      padding:2px!important;
+    }
+    #bopCleanOrbDock .bop-static-landing-button{
+      flex:0 0 58px!important;
+      width:58px!important;
+      height:58px!important;
+      min-width:58px!important;
+      min-height:58px!important;
+    }
+  }
+  @media (max-width:360px){
+    #bopCleanOrbDock{left:6px!important;bottom:max(72px,calc(env(safe-area-inset-bottom) + 52px))!important;gap:2px!important;}
+    #bopCleanOrbDock .bop-static-landing-button{flex-basis:54px!important;width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;}
+  }
+</style>
+<script id="bop-compact-gold-orb-art-v1-script">
+(function(){
+  var glyphs={
+    share:'<svg class="bop-orb-glyph" viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="24" r="4"/><circle cx="33" cy="13" r="4"/><circle cx="33" cy="35" r="4"/><path d="M18 22l11-7M18 26l11 7"/></svg>',
+    near:'<svg class="bop-orb-glyph" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 14h28M10 24h28M10 34h28M16 9v29M26 9v29M36 9v29"/><path d="M24 14c-4 0-7 3-7 7 0 5 7 12 7 12s7-7 7-12c0-4-3-7-7-7z"/><circle cx="24" cy="21" r="2"/></svg>',
+    other:'<svg class="bop-orb-glyph" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 37h34M10 37V23h8v14M19 37V15h9v22M29 37V20h9v17M13 27h2M13 31h2M22 20h2M22 25h2M22 30h2M32 24h2M32 29h2"/><path d="M21 15l2.5-5 2.5 5"/></svg>',
+    closest:'<svg class="bop-orb-glyph" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 37h32M12 31l4-6 4 6 4-10 4 10 4-6 4 6"/><circle cx="12" cy="14" r="2"/><circle cx="20" cy="11" r="2"/><circle cx="28" cy="11" r="2"/><circle cx="36" cy="14" r="2"/></svg>',
+    world:'<svg class="bop-orb-glyph" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M8 24h32M24 8c6 5 9 11 9 16s-3 11-9 16M24 8c-6 5-9 11-9 16s3 11 9 16M11 16c4 2 9 3 13 3s9-1 13-3M11 32c4-2 9-3 13-3s9 1 13 3"/></svg>'
+  };
+  var labels={
+    share:'SHARE<br>PAGE',
+    near:'CITY<br>MAP',
+    other:'OTHER<br>CITIES',
+    closest:'CLOSEST<br><b>5</b>',
+    world:'WORLD'
+  };
+  function refine(){
+    document.querySelectorAll('#bopCleanOrbDock [data-clean-orb]').forEach(function(button){
+      var key=button.dataset.cleanOrb;if(!glyphs[key]||button.dataset.goldArt==='1')return;
+      button.innerHTML=glyphs[key]+'<span class="bop-orb-label bop-orb-label--'+key+'">'+labels[key]+'</span>';
+      button.dataset.goldArt='1';
+    });
+  }
+  refine();
+  window.setInterval(refine,160);
+})();
+</script>
+
 </body></html>
