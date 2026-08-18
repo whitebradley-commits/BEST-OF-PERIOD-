@@ -41078,6 +41078,17 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 <!-- Manhattan Michelin territory router -->
 <script>
 /* Manhattan Michelin territory router — verified addresses only; unverified records remain visible in a separate work queue. */
@@ -41138,9 +41149,20 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     'torien': '292 Elizabeth Street, New York, NY 10012',
     'yingtao': '805 9th Ave, New York, NY 10019',
     'essential by christophe': '103 W 77th St, New York, NY 10024',
+    'atomix': '104 East 30th St, New York, NY 10016',
+    'gabriel kreuther': '41 W 42nd Street, New York, NY 10036',
+    'jean-georges': '1 Central Park West, New York, NY 10023',
     'jungsik': '2 Harrison St, New York, NY 10013',
     'aquavit': '65 E 55th St, New York, NY 10022',
-    'atera': '77 Worth Street, New York, NY 10013'
+    'atera': '77 Worth Street, New York, NY 10013',
+    'kappo sono': '135 West 42nd St, New York, NY 10036',
+    'l\'abeille': '412 Greenwich Street, New York, NY 10013',
+    'le coucou': '138 Lafayette Street, New York, NY 10013',
+    'yoshino': '342 Bowery, New York, NY 10012',
+    'zou zou’s': '385 Ninth Avenue, Suite 85, New York, NY 10001',
+    'zou zou\'s': '385 Ninth Avenue, Suite 85, New York, NY 10001',
+    'jua': '36 E 22nd St, New York, NY 10010',
+    'frevo': '48 W 8th St, New York, NY 10011'
   };
 
   const excludedFromManhattanRoute = new Set([
@@ -41148,7 +41170,8 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     'la bastide by andrea calstier',
     'oxomoco',
     'sushi ginza onodera',
-    'sushi ichimura'
+    'sushi ichimura',
+    'vestry'
   ]);
 
   const territoryLabels = {
@@ -41289,6 +41312,7 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   }
 
   function openTerritory(key) {
+    window.__bopManhattanMichelinTerritoryDepth = 1;
     const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
     const manhattan = scopedManhattanRecords();
     const territoryRecords = manhattan.filter(record => territoryOf(record) === key);
@@ -41307,51 +41331,52 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
     // Use the established card renderer for ranked restaurants, but temporarily
     // substitute only this exact subcategory so no unrelated city record appears.
-    const outsideManhattan = all.filter(record => !record || String(record.city || '').toLowerCase() !== CITY);
+    // Render only the selected Manhattan records while the base card renderer runs.
+    // Keeping non-Manhattan records in this temporary array allowed stale routes to
+    // surface another city’s Michelin state on mobile.
     const displayed = key === 'verification' ? [] : ranked;
+    // Lock the city context before the base renderer runs. Without this guard,
+    // a stale global context can make a Manhattan territory inherit another city's
+    // Michelin hero and route during mobile navigation.
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
     isOpeningTerritory = true;
-    boCategoryData[CATEGORY] = outsideManhattan.concat(displayed);
+    boCategoryData[CATEGORY] = displayed;
     try {
       baseRender(CATEGORY);
     } finally {
       boCategoryData[CATEGORY] = all;
+      boCityContext = CITY;
       isOpeningTerritory = false;
     }
     setTimeout(() => {
       if (key === 'verification') boListEl.innerHTML = '';
       if (unrated.length) renderQueue(unrated);
-      const back = document.createElement('button');
-      back.type = 'button';
-      back.className = 'bo-territory-back';
-      back.textContent = '← All Manhattan Michelin Areas';
-      back.addEventListener('click', showTerritoryPicker);
-      boListEl.insertBefore(back, boListEl.firstChild);
+      // The page-standard top-left circular Back button remains the single return control.
       updateHero(territoryLabels[key], ranked.length, unrated.length);
     }, 40);
   }
 
   function openDowntownNeighborhood(key) {
+    window.__bopManhattanMichelinTerritoryDepth = 2;
     const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
     const records = scopedManhattanRecords().filter(record => territoryOf(record) === 'downtown' && downtownNeighborhoodOf(record) === key);
     const ranked = curated(records);
     const unrated = records.filter(record => scoreOf(record) === null);
-    const outsideManhattan = all.filter(record => !record || String(record.city || '').toLowerCase() !== CITY);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
     isOpeningTerritory = true;
-    boCategoryData[CATEGORY] = outsideManhattan.concat(ranked);
+    boCategoryData[CATEGORY] = ranked;
     try {
       baseRender(CATEGORY);
     } finally {
       boCategoryData[CATEGORY] = all;
+      boCityContext = CITY;
       isOpeningTerritory = false;
     }
     setTimeout(() => {
       if (unrated.length) renderQueue(unrated);
-      const back = document.createElement('button');
-      back.type = 'button';
-      back.className = 'bo-territory-back';
-      back.textContent = '← All Downtown Neighborhoods';
-      back.addEventListener('click', () => showDowntownPicker(scopedManhattanRecords().filter(record => territoryOf(record) === 'downtown')));
-      boListEl.insertBefore(back, boListEl.firstChild);
+      // Use only the page-standard top-left circular Back button.
       updateHero(`Downtown · ${downtownNeighborhoodLabels[key]}`, ranked.length, unrated.length);
     }, 40);
   }
@@ -41369,32 +41394,33 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
           </button>`).join('')}
         </div>
       </section>`;
-    boListEl.querySelectorAll('[data-downtown-neighborhood]').forEach(button => button.addEventListener('click', () => openDowntownNeighborhood(button.dataset.downtownNeighborhood)));
+    boListEl.querySelectorAll('[data-downtown-neighborhood]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY;
+      openDowntownNeighborhood(button.dataset.downtownNeighborhood);
+    }));
     updateHero('Downtown by Neighborhood', 0, 0);
   }
 
   function openMidtownNeighborhood(key) {
+    window.__bopManhattanMichelinTerritoryDepth = 2;
     const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
     const records = scopedManhattanRecords().filter(record => territoryOf(record) === 'midtown' && midtownNeighborhoodOf(record) === key);
     const ranked = curated(records);
     const unrated = records.filter(record => scoreOf(record) === null);
-    const outsideManhattan = all.filter(record => !record || String(record.city || '').toLowerCase() !== CITY);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
     isOpeningTerritory = true;
-    boCategoryData[CATEGORY] = outsideManhattan.concat(ranked);
+    boCategoryData[CATEGORY] = ranked;
     try {
       baseRender(CATEGORY);
     } finally {
       boCategoryData[CATEGORY] = all;
+      boCityContext = CITY;
       isOpeningTerritory = false;
     }
     setTimeout(() => {
       if (unrated.length) renderQueue(unrated);
-      const back = document.createElement('button');
-      back.type = 'button';
-      back.className = 'bo-territory-back';
-      back.textContent = '← All Midtown Neighborhoods';
-      back.addEventListener('click', () => showMidtownPicker(scopedManhattanRecords().filter(record => territoryOf(record) === 'midtown')));
-      boListEl.insertBefore(back, boListEl.firstChild);
+      // Use only the page-standard top-left circular Back button.
       updateHero(`Midtown · ${midtownNeighborhoodLabels[key]}`, ranked.length, unrated.length);
     }, 40);
   }
@@ -41412,11 +41438,15 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
           </button>`).join('')}
         </div>
       </section>`;
-    boListEl.querySelectorAll('[data-midtown-neighborhood]').forEach(button => button.addEventListener('click', () => openMidtownNeighborhood(button.dataset.midtownNeighborhood)));
+    boListEl.querySelectorAll('[data-midtown-neighborhood]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY;
+      openMidtownNeighborhood(button.dataset.midtownNeighborhood);
+    }));
     updateHero('Midtown by Neighborhood', 0, 0);
   }
 
   function showTerritoryPicker() {
+    window.__bopManhattanMichelinTerritoryDepth = 0;
     const records = scopedManhattanRecords();
     const counts = Object.fromEntries(Object.keys(territoryLabels).map(key => [key, records.filter(record => territoryOf(record) === key).length]));
     boListEl.innerHTML = `
@@ -41430,7 +41460,10 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
           </button>`).join('')}
         </div>
       </section>`;
-    boListEl.querySelectorAll('[data-territory]').forEach(button => button.addEventListener('click', () => openTerritory(button.dataset.territory)));
+    boListEl.querySelectorAll('[data-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY;
+      openTerritory(button.dataset.territory);
+    }));
     updateHero('Michelin by Area', 0, counts.verification);
   }
 
@@ -41438,7 +41471,7 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   const baseRender = window.boRenderCategory;
   window.boRenderCategory = function territoryAwareRender(category) {
     const result = baseRender.apply(this, arguments);
-    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningTerritory) {
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningTerritory && !window.__bopManhattanMichelinTerritoryDepth) {
       setTimeout(() => {
         if (scopedManhattanRecords().length > OVERSIZE_THRESHOLD) showTerritoryPicker();
       }, 230);
@@ -41447,178 +41480,441 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   };
 
   window.boOpenManhattanMichelinTerritory = openTerritory;
+  window.boShowManhattanMichelinTerritoryPicker = showTerritoryPicker;
 }());
 </script>
 <style id="bo-manhattan-michelin-territory-styles">
 .bo-territory-title{font-family:'Archivo Black',sans-serif;color:#F59E0B;text-align:center;font-size:clamp(1.25rem,6vw,2.1rem);letter-spacing:.04em;line-height:1.05;margin:0 auto 5px}.bo-territory-title span{color:#E4002B}.bo-territory-city{font-family:'IBM Plex Sans Condensed',sans-serif;text-align:center;color:#f2f2f2;font-weight:800;letter-spacing:.28em;font-size:.75rem}.bo-territory-picker{max-width:720px;margin:12px auto 28px;padding:22px 18px;border:1px solid rgba(245,158,11,.6);border-radius:12px;background:linear-gradient(150deg,rgba(245,158,11,.09),rgba(0,0,0,.75))}.bo-territory-picker-kicker{margin:0 0 6px;color:#E4002B;text-align:center;font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:800;letter-spacing:.1em;font-size:.74rem}.bo-territory-picker h2{margin:0;color:#F59E0B;text-align:center;font-family:'Archivo Black',sans-serif;font-size:1.25rem}.bo-territory-picker p:not(.bo-territory-picker-kicker){color:#ddd;text-align:center;line-height:1.5;font-size:.9rem;max-width:560px;margin:12px auto 20px}.bo-territory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bo-territory-choice{min-height:90px;padding:12px 10px;border:1px solid #F59E0B;border-radius:9px;background:#0a0a0a;color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:.84rem;cursor:pointer}.bo-territory-choice:hover,.bo-territory-choice:focus-visible{background:#241909;outline:2px solid #fff;outline-offset:2px}.bo-territory-choice small{display:block;color:#ddd;font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin-top:8px}.bo-territory-work-queue{margin:28px 0 12px;border-top:2px solid #E4002B;padding-top:14px}.bo-territory-queue-head{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.bo-territory-queue-head span{font-family:'Archivo Black',sans-serif;color:#E4002B;letter-spacing:.06em}.bo-territory-queue-head strong{color:#ddd;font-size:.82rem;font-weight:500}.bo-territory-queue-list{display:grid;gap:6px}.bo-territory-queue-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.18);background:#111;border-radius:6px}.bo-territory-queue-name{color:#f4f4f4;font-weight:700}.bo-territory-queue-status{flex:none;color:#E4002B;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:.72rem;font-weight:800}.bo-territory-back{display:block;margin:0 0 18px;border:0;background:none;color:#F59E0B;text-decoration:underline;font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer}@media(max-width:440px){.bo-territory-grid{grid-template-columns:1fr}.bo-territory-queue-row{align-items:flex-start;flex-direction:column;gap:4px}}
 </style>
 
-<!-- Simplified subcategory navigation and dock visibility -->
-<style id="bop-subcategory-chrome-style">
-  #bopCompactSubcategoryReturn{
-    display:block;
-    width:min(88%,390px);
-    margin:10px auto 14px;
-    min-height:38px;
-    padding:9px 14px;
-    border:1px solid rgba(245,158,11,.82);
-    border-radius:999px;
-    background:rgba(10,8,5,.92);
-    color:#F59E0B;
-    font-family:'IBM Plex Sans Condensed',Arial,sans-serif;
-    font-weight:900;
-    font-size:12px;
-    letter-spacing:.1em;
-    text-align:center;
-    cursor:pointer;
-    box-shadow:0 0 12px rgba(245,158,11,.16);
+
+<!-- Manhattan Michelin subcategory control cleanup -->
+<style id="bo-manhattan-michelin-subcategory-style">
+  body.bo-manhattan-michelin-subcategory #bopCleanOrbDock{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
   }
-  #bopCompactSubcategoryReturn:hover,#bopCompactSubcategoryReturn:focus-visible{
-    background:#F59E0B;
-    color:#080808;
-    outline:2px solid #fff;
-    outline-offset:2px;
+  body.bo-manhattan-michelin-subcategory #boScrollCue{
+    position:static!important;
+    display:flex!important;
+    width:fit-content!important;
+    margin:8px auto 12px!important;
+    min-height:auto!important;
+    padding:0!important;
+    color:#F59E0B!important;
+    font:900 12px/1 'IBM Plex Sans Condensed',Arial,sans-serif!important;
+    letter-spacing:.20em!important;
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
   }
-  #bopCompactSubcategoryReturn[hidden]{display:none!important;}
-  body.bop-subcategory-active #bopCleanOrbDock{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  body.bo-manhattan-michelin-subcategory #boBackBtn.bo-visible{
+    display:flex!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+  #bopCompactSubcategoryReturn{display:none!important;}
   @media(max-width:600px),(pointer:coarse){
-    #bopCompactSubcategoryReturn{width:min(calc(100% - 32px),390px);margin:9px auto 12px;font-size:11px;min-height:36px;}
+    body.bo-manhattan-michelin-subcategory #boScrollCue{margin:7px auto 10px!important;font-size:11px!important;}
   }
 </style>
-<script id="bop-subcategory-chrome-v1">
+<script id="bo-manhattan-michelin-subcategory-controls">
+(function(){
+  'use strict';
+  function active(){
+    return typeof boCurrentCat !== 'undefined' && boCurrentCat === 'michelin' &&
+      typeof boCityContext !== 'undefined' && boCityContext === 'manhattan';
+  }
+  function sync(){
+    const enabled=active();
+    document.body.classList.toggle('bo-manhattan-michelin-subcategory',enabled);
+    const old=document.getElementById('bopCompactSubcategoryReturn');
+    if(old) old.remove();
+    document.querySelectorAll('.bo-territory-back').forEach(node=>node.remove());
+    const back=document.getElementById('boBackBtn');
+    const search=document.querySelector('.bop-search-shell');
+    const cue=document.getElementById('boScrollCue');
+    const dock=document.getElementById('bopCleanOrbDock');
+    if(enabled && dock){
+      dock.hidden=true;
+      dock.setAttribute('aria-hidden','true');
+      dock.style.setProperty('display','none','important');
+      dock.style.setProperty('visibility','hidden','important');
+      dock.style.setProperty('opacity','0','important');
+      dock.style.setProperty('pointer-events','none','important');
+    } else if(dock){
+      dock.removeAttribute('aria-hidden');
+      dock.style.removeProperty('display');
+      dock.style.removeProperty('visibility');
+      dock.style.removeProperty('opacity');
+      dock.style.removeProperty('pointer-events');
+      dock.hidden=false;
+    }
+    if(enabled){
+      if(back){back.classList.add('bo-visible');back.removeAttribute('aria-hidden');}
+      if(search&&cue){
+        if(cue.previousElementSibling!==search)search.insertAdjacentElement('afterend',cue);
+        cue.style.setProperty('display','flex','important');
+      }
+    }
+  }
+  document.addEventListener('click',function(){window.setTimeout(sync,25);},true);
+  new MutationObserver(()=>window.requestAnimationFrame(sync)).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-hidden']});
+  window.setInterval(sync,35);
+  window.addEventListener('popstate',()=>window.setTimeout(sync,0));
+  window.setTimeout(sync,220);
+}());
+</script>
+
+<!-- Miami Michelin territory router -->
+<script>
 (function () {
   'use strict';
+  const CATEGORY = 'michelin';
+  const CITY = 'miami';
+  const THRESHOLD = 16;
+  const MAX_RANKED = 11;
+  const ZONES = {
+    design_district: 'Design District',
+    wynwood_north: 'Wynwood / North Miami',
+    downtown_brickell: 'Downtown / Brickell',
+    gables_grove: 'Coral Gables / Coconut Grove',
+    beach_surfside: 'Miami Beach / Surfside',
+    verification: 'Address Verification Queue'
+  };
+  let isOpeningMiamiTerritory = false;
 
-  const SUBCATEGORY_CONTROL_ID = 'bopCompactSubcategoryReturn';
-  const dock = () => document.getElementById('bopCleanOrbDock');
-  const landing = () => document.getElementById('bopLandingOverlay');
-  const categoryBack = () => document.getElementById('boBackBtn');
-  const heroTitle = () => String(document.getElementById('boHeroTitle')?.textContent || '').replace(/\s+/g, ' ').trim();
-
-  function isSubcategoryView() {
-    const currentCategory = typeof boCurrentCat !== 'undefined' ? boCurrentCat : '';
-    const isMainCityPage = currentCategory === 'otheroptions' || (typeof BO_CITY_CONFIG !== 'undefined' && Boolean(BO_CITY_CONFIG[currentCategory]));
-    if (isMainCityPage) return false;
-    const visibleCategoryBack = categoryBack()?.classList.contains('bo-visible');
-    const territoryView = Boolean(document.querySelector('.bo-territory-picker, .bo-territory-back, .bo-territory-work-queue'));
-    return Boolean(visibleCategoryBack || territoryView);
+  function normalized(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
   }
-
-  function returnLabel() {
-    const title = heroTitle().toUpperCase();
-    if (title.includes('DOWNTOWN')) return '← BACK TO DOWNTOWN';
-    if (title.includes('MIDTOWN')) return '← BACK TO MIDTOWN';
-    if (title.includes('MICHELIN')) return '← BACK TO MANHATTAN';
-    return '← BACK TO CITY';
+  function scoreOf(record) {
+    const value = Number.parseFloat(record && record.rating);
+    return Number.isFinite(value) ? value : null;
   }
-
-  function directReturn() {
-    const title = heroTitle().toUpperCase();
-    const openTerritory = window.boOpenManhattanMichelinTerritory;
-
-    if (typeof openTerritory === 'function' && title.includes('DOWNTOWN')) {
-      openTerritory('downtown');
-      return;
-    }
-    if (typeof openTerritory === 'function' && title.includes('MIDTOWN')) {
-      openTerritory('midtown');
-      return;
-    }
-
-    const territoryBack = document.querySelector('.bo-territory-back');
-    if (territoryBack) {
-      territoryBack.click();
-      return;
-    }
-
-    const back = categoryBack();
-    if (back && back.classList.contains('bo-visible')) {
-      back.click();
-      return;
-    }
-
-    const mainReturn = document.getElementById('bopReturnToLandingBtn');
-    if (mainReturn) mainReturn.click();
+  function zoneOf(record) {
+    const address = String((record && record.address) || '');
+    const zipMatch = address.match(/\b(33\d{3})\b/);
+    const zip = zipMatch ? Number(zipMatch[1]) : null;
+    if (!zip) return 'verification';
+    if (zip === 33137) return 'design_district';
+    if ([33127, 33138, 33150, 33181].includes(zip)) return 'wynwood_north';
+    if ([33130, 33131, 33132].includes(zip)) return 'downtown_brickell';
+    if ([33133, 33134].includes(zip)) return 'gables_grove';
+    if ([33139, 33140, 33141, 33154].includes(zip)) return 'beach_surfside';
+    return 'verification';
   }
-
-  function ensureReturnControl() {
-    const searchShell = document.querySelector('.bop-search-shell');
-    let control = document.getElementById(SUBCATEGORY_CONTROL_ID);
-    if (!searchShell) return control;
-
-    if (!control) {
-      control = document.createElement('button');
-      control.id = SUBCATEGORY_CONTROL_ID;
-      control.type = 'button';
-      control.setAttribute('aria-label', 'Return to the previous category level');
-      control.addEventListener('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        directReturn();
-        window.setTimeout(syncSubcategoryChrome, 70);
-      });
-    }
-
-    if (control.parentElement !== searchShell.parentElement || control.previousElementSibling !== searchShell) {
-      searchShell.insertAdjacentElement('afterend', control);
-    }
-    return control;
+  function scopedRecords() {
+    const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const unique = new Map();
+    records.filter(record => normalized(record && record.city) === CITY).forEach(record => {
+      const key = normalized(record && record.name).replace(/[^a-z0-9]/g, '');
+      if (!key) return;
+      const existing = unique.get(key);
+      if (!existing) { unique.set(key, Object.assign({}, record)); return; }
+      if (!existing.address && record.address) existing.address = record.address;
+      if (scoreOf(existing) === null && scoreOf(record) !== null) existing.rating = record.rating;
+      existing.bjsPick = Boolean(existing.bjsPick || record.bjsPick);
+      if (!existing.image && record.image) existing.image = record.image;
+    });
+    return Array.from(unique.values());
   }
-
-  function setDockVisibility(isSubcategory) {
-    const currentDock = dock();
-    if (!currentDock) return;
-
-    if (isSubcategory) {
-      currentDock.hidden = true;
-      currentDock.setAttribute('aria-hidden', 'true');
-      currentDock.style.setProperty('display', 'none', 'important');
-      currentDock.style.setProperty('visibility', 'hidden', 'important');
-      currentDock.style.setProperty('opacity', '0', 'important');
-      currentDock.style.setProperty('pointer-events', 'none', 'important');
-      return;
+  function curated(records) {
+    const rated = records.filter(record => scoreOf(record) !== null)
+      .sort((a,b) => scoreOf(b) - scoreOf(a) || String(a.name).localeCompare(String(b.name)));
+    const higher = rated.filter(record => scoreOf(record) >= 4);
+    const threes = rated.filter(record => scoreOf(record) >= 3 && scoreOf(record) < 4);
+    const selected = higher.slice(0, MAX_RANKED);
+    if (selected.length < MAX_RANKED) selected.push(...threes.slice(0, Math.min(2, MAX_RANKED - selected.length)));
+    if (selected.length < MAX_RANKED) {
+      const existing = new Set(selected.map(record => normalized(record.name)));
+      const bjs = threes.find(record => record.bjsPick && !existing.has(normalized(record.name)));
+      if (bjs) selected.push(bjs);
     }
-
-    currentDock.removeAttribute('aria-hidden');
-    currentDock.style.removeProperty('display');
-    currentDock.style.removeProperty('visibility');
-    currentDock.style.removeProperty('opacity');
-    currentDock.style.removeProperty('pointer-events');
-    currentDock.hidden = false;
+    return selected;
   }
-
-  function syncSubcategoryChrome() {
-    const subcategory = isSubcategoryView();
-    document.body.classList.toggle('bop-subcategory-active', subcategory);
-    const control = ensureReturnControl();
-    const originalBack = categoryBack();
-
-    if (control) {
-      control.hidden = !subcategory;
-      control.textContent = returnLabel();
-      control.setAttribute('aria-hidden', subcategory ? 'false' : 'true');
-    }
-
-    if (originalBack) {
-      originalBack.style.setProperty('display', subcategory ? 'none' : '', subcategory ? 'important' : '');
-      originalBack.setAttribute('aria-hidden', subcategory ? 'true' : 'false');
-    }
-
-    setDockVisibility(subcategory);
+  function escape(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   }
+  function setHero(label, rankedCount, unratedCount, overview) {
+    window.setTimeout(() => {
+      if (boHeroTitleEl) {
+        boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escape(label.toUpperCase())}</div><div class="bo-territory-city">MIAMI</div>`;
+        boHeroTitleEl.style.opacity = 1;
+      }
+      if (boHeroSubEl) {
+        boHeroSubEl.textContent = overview
+          ? `${unratedCount} records remain visible for exact-address and review-score verification.`
+          : `${rankedCount} ranked restaurant${rankedCount === 1 ? '' : 's'} shown. ${unratedCount} visible in the verification queue below.`;
+        boHeroSubEl.style.display = '';
+        boHeroSubEl.style.opacity = 1;
+      }
+      if (boSectionHeadTitleEl) boSectionHeadTitleEl.textContent = overview ? 'Choose a Miami Area' : `The Top ${rankedCount}, Right Now`;
+      if (boSectionHeadParaEl) boSectionHeadParaEl.innerHTML = overview
+        ? '⭐ This oversized category is divided by area. Choose a territory to see its short high-rated list and its separate visible not-yet-rated work queue.'
+        : '⭐ Ranked restaurants appear first. “Not yet rated” restaurants remain visible below while public-source averages and exact locations are verified.';
+    }, 210);
+  }
+  function renderQueue(records) {
+    if (!records.length) return;
+    const section = document.createElement('section');
+    section.className = 'bo-territory-work-queue';
+    section.innerHTML = `<div class="bo-territory-queue-head"><span>NOT YET RATED</span><strong>${records.length} restaurant${records.length === 1 ? '' : 's'} remain visible for score and address verification</strong></div><div class="bo-territory-queue-list">${records.map(record => `<div class="bo-territory-queue-row"><span class="bo-territory-queue-name">${escape(record.name)}</span><span class="bo-territory-queue-status">Not yet rated</span></div>`).join('')}</div>`;
+    boListEl.appendChild(section);
+  }
+  function openZone(key) {
+    window.__bopMiamiMichelinTerritoryDepth = 1;
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedRecords().filter(record => zoneOf(record) === key);
+    const ranked = key === 'verification' ? [] : curated(records);
+    const unrated = key === 'verification' ? records : records.filter(record => scoreOf(record) === null);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
+    isOpeningMiamiTerritory = true;
+    boCategoryData[CATEGORY] = ranked;
+    try { baseRender(CATEGORY); }
+    finally { boCategoryData[CATEGORY] = all; boCityContext = CITY; isOpeningMiamiTerritory = false; }
+    window.setTimeout(() => {
+      if (key === 'verification') boListEl.innerHTML = '';
+      renderQueue(unrated);
+      setHero(ZONES[key], ranked.length, unrated.length, false);
+    }, 50);
+  }
+  function showPicker() {
+    window.__bopMiamiMichelinTerritoryDepth = 0;
+    const records = scopedRecords();
+    const counts = Object.fromEntries(Object.keys(ZONES).map(key => [key, records.filter(record => zoneOf(record) === key).length]));
+    boListEl.innerHTML = `<section class="bo-territory-picker" aria-label="Choose a Miami Michelin area"><p class="bo-territory-picker-kicker">THIS CATEGORY HAS ${records.length} RESTAURANTS</p><h2>CHOOSE A MIAMI AREA</h2><p>To keep the Michelin list short and local, choose a territory. Each area uses the high-rating rule: up to 11 ranked restaurants, ending after the second 3.x score, plus a visible not-yet-rated work queue.</p><div class="bo-territory-grid">${Object.keys(ZONES).map(key => `<button type="button" class="bo-territory-choice" data-miami-territory="${key}"><span>${escape(ZONES[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small></button>`).join('')}</div></section>`;
+    boListEl.querySelectorAll('[data-miami-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY; openZone(button.dataset.miamiTerritory);
+    }));
+    setHero('Michelin by Area', 0, counts.verification, true);
+  }
+  if (typeof window.boRenderCategory !== 'function') return;
+  const baseRender = window.boRenderCategory;
+  window.boRenderCategory = function miamiTerritoryAwareRender(category) {
+    const result = baseRender.apply(this, arguments);
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningMiamiTerritory && !window.__bopMiamiMichelinTerritoryDepth) {
+      window.setTimeout(() => { if (scopedRecords().length > THRESHOLD) showPicker(); }, 230);
+    }
+    return result;
+  };
 
-  document.addEventListener('click', function () {
-    window.setTimeout(syncSubcategoryChrome, 45);
-  }, true);
-
-  const observer = new MutationObserver(function () {
-    window.requestAnimationFrame(syncSubcategoryChrome);
-  });
-  observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'aria-hidden', 'hidden'] });
-
-  window.setInterval(syncSubcategoryChrome, 55);
-  window.addEventListener('popstate', function () { window.setTimeout(syncSubcategoryChrome, 0); });
-  window.addEventListener('resize', syncSubcategoryChrome, { passive: true });
-  window.setTimeout(syncSubcategoryChrome, 180);
+  window.boShowMiamiMichelinTerritoryPicker = showPicker;
+  function syncChrome() {
+    const active = typeof boCurrentCat !== 'undefined' && boCurrentCat === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY;
+    document.body.classList.toggle('bo-miami-michelin-subcategory', active);
+    const dock = document.getElementById('bopCleanOrbDock');
+    const back = document.getElementById('boBackBtn');
+    const search = document.querySelector('.bop-search-shell');
+    const cue = document.getElementById('boScrollCue');
+    if (active && dock) {
+      dock.hidden = true; dock.setAttribute('aria-hidden', 'true');
+      ['display:none','visibility:hidden','opacity:0','pointer-events:none'].forEach(rule => { const [property,value] = rule.split(':'); dock.style.setProperty(property,value,'important'); });
+    } else if (dock) {
+      dock.hidden = false; dock.removeAttribute('aria-hidden');
+      ['display','visibility','opacity','pointer-events'].forEach(property => dock.style.removeProperty(property));
+    }
+    if (active) {
+      if (back) { back.classList.add('bo-visible'); back.removeAttribute('aria-hidden'); }
+      if (search && cue) { if (cue.previousElementSibling !== search) search.insertAdjacentElement('afterend', cue); cue.style.setProperty('display','flex','important'); }
+    }
+  }
+  document.addEventListener('click', () => window.setTimeout(syncChrome, 25), true);
+  window.setInterval(syncChrome, 35);
+  window.setTimeout(syncChrome, 220);
 }());
+
+</script>
+<!-- Silicon Valley Michelin territory router -->
+<script>
+(function () {
+  'use strict';
+  const CATEGORY = 'michelin';
+  const CITY = 'siliconvalley';
+  const THRESHOLD = 16;
+  const MAX_RANKED = 11;
+  const ZONES = {
+    north_peninsula: 'North Peninsula',
+    mid_peninsula: 'Mid-Peninsula',
+    south_bay: 'South Bay',
+    east_bay: 'East Bay',
+    verification: 'Address Verification Queue'
+  };
+  let isOpeningSiliconValleyTerritory = false;
+
+  function normalized(value) {
+    return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+  function scoreOf(record) {
+    const value = Number.parseFloat(record && record.rating);
+    return Number.isFinite(value) ? value : null;
+  }
+  function zoneOf(record) {
+    const address = String((record && record.address) || '').toLowerCase();
+    if (!address) return 'verification';
+    if (/san mateo|san carlos|redwood city|woodside/.test(address)) return 'north_peninsula';
+    if (/palo alto|menlo park|los altos|mountain view/.test(address)) return 'mid_peninsula';
+    if (/san jose|campbell|los gatos|saratoga/.test(address)) return 'south_bay';
+    if (/hayward/.test(address)) return 'east_bay';
+    return 'verification';
+  }
+  function scopedRecords() {
+    const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const unique = new Map();
+    records.filter(record => normalized(record && record.city) === CITY).forEach(record => {
+      const key = normalized(record && record.name).replace(/[^a-z0-9]/g, '');
+      if (!key) return;
+      const existing = unique.get(key);
+      if (!existing) { unique.set(key, Object.assign({}, record)); return; }
+      if (!existing.address && record.address) existing.address = record.address;
+      if (scoreOf(existing) === null && scoreOf(record) !== null) existing.rating = record.rating;
+      existing.bjsPick = Boolean(existing.bjsPick || record.bjsPick);
+      if (!existing.image && record.image) existing.image = record.image;
+    });
+    return Array.from(unique.values());
+  }
+  function curated(records) {
+    const rated = records.filter(record => scoreOf(record) !== null)
+      .sort((a,b) => scoreOf(b) - scoreOf(a) || String(a.name).localeCompare(String(b.name)));
+    const higher = rated.filter(record => scoreOf(record) >= 4);
+    const threes = rated.filter(record => scoreOf(record) >= 3 && scoreOf(record) < 4);
+    const selected = higher.slice(0, MAX_RANKED);
+    if (selected.length < MAX_RANKED) selected.push(...threes.slice(0, Math.min(2, MAX_RANKED - selected.length)));
+    if (selected.length < MAX_RANKED) {
+      const existing = new Set(selected.map(record => normalized(record.name)));
+      const bjs = threes.find(record => record.bjsPick && !existing.has(normalized(record.name)));
+      if (bjs) selected.push(bjs);
+    }
+    return selected;
+  }
+  function escape(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+  function setHero(label, rankedCount, unratedCount, overview) {
+    window.setTimeout(() => {
+      if (boHeroTitleEl) {
+        boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escape(label.toUpperCase())}</div><div class="bo-territory-city">SILICON VALLEY</div>`;
+        boHeroTitleEl.style.opacity = 1;
+      }
+      if (boHeroSubEl) {
+        boHeroSubEl.textContent = overview
+          ? `${unratedCount} records remain visible for exact-address and review-score verification.`
+          : `${rankedCount} ranked restaurant${rankedCount === 1 ? '' : 's'} shown. ${unratedCount} visible in the verification queue below.`;
+        boHeroSubEl.style.display = '';
+        boHeroSubEl.style.opacity = 1;
+      }
+      if (boSectionHeadTitleEl) boSectionHeadTitleEl.textContent = overview ? 'Choose a Silicon Valley Area' : `The Top ${rankedCount}, Right Now`;
+      if (boSectionHeadParaEl) boSectionHeadParaEl.innerHTML = overview
+        ? '⭐ This oversized category is divided by area. Choose a territory to see its short high-rated list and its separate visible not-yet-rated work queue.'
+        : '⭐ Ranked restaurants appear first. “Not yet rated” restaurants remain visible below while public-source averages and exact locations are verified.';
+    }, 210);
+  }
+  function renderQueue(records) {
+    if (!records.length) return;
+    const section = document.createElement('section');
+    section.className = 'bo-territory-work-queue';
+    section.innerHTML = `<div class="bo-territory-queue-head"><span>NOT YET RATED</span><strong>${records.length} restaurant${records.length === 1 ? '' : 's'} remain visible for score and address verification</strong></div><div class="bo-territory-queue-list">${records.map(record => `<div class="bo-territory-queue-row"><span class="bo-territory-queue-name">${escape(record.name)}</span><span class="bo-territory-queue-status">Not yet rated</span></div>`).join('')}</div>`;
+    boListEl.appendChild(section);
+  }
+  function openZone(key) {
+    window.__bopSiliconValleyMichelinTerritoryDepth = 1;
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedRecords().filter(record => zoneOf(record) === key);
+    const ranked = key === 'verification' ? [] : curated(records);
+    const unrated = key === 'verification' ? records : records.filter(record => scoreOf(record) === null);
+    boCityContext = CITY;
+    if (typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute(CATEGORY, CITY);
+    isOpeningSiliconValleyTerritory = true;
+    boCategoryData[CATEGORY] = ranked;
+    try { baseRender(CATEGORY); }
+    finally { boCategoryData[CATEGORY] = all; boCityContext = CITY; isOpeningSiliconValleyTerritory = false; }
+    window.setTimeout(() => {
+      if (key === 'verification') boListEl.innerHTML = '';
+      renderQueue(unrated);
+      setHero(ZONES[key], ranked.length, unrated.length, false);
+    }, 50);
+  }
+  function showPicker() {
+    window.__bopSiliconValleyMichelinTerritoryDepth = 0;
+    const records = scopedRecords();
+    const counts = Object.fromEntries(Object.keys(ZONES).map(key => [key, records.filter(record => zoneOf(record) === key).length]));
+    boListEl.innerHTML = `<section class="bo-territory-picker" aria-label="Choose a Silicon Valley Michelin area"><p class="bo-territory-picker-kicker">THIS CATEGORY HAS ${records.length} RESTAURANTS</p><h2>CHOOSE A SILICON VALLEY AREA</h2><p>To keep the Michelin list short and local, choose a territory. Each area uses the high-rating rule: up to 11 ranked restaurants, ending after the second 3.x score, plus a visible not-yet-rated work queue.</p><div class="bo-territory-grid">${Object.keys(ZONES).map(key => `<button type="button" class="bo-territory-choice" data-siliconvalley-territory="${key}"><span>${escape(ZONES[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small></button>`).join('')}</div></section>`;
+    boListEl.querySelectorAll('[data-siliconvalley-territory]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation(); boCityContext = CITY; openZone(button.dataset.siliconvalleyTerritory);
+    }));
+    setHero('Michelin by Area', 0, counts.verification, true);
+  }
+  if (typeof window.boRenderCategory !== 'function') return;
+  const baseRender = window.boRenderCategory;
+  window.boRenderCategory = function siliconValleyTerritoryAwareRender(category) {
+    const result = baseRender.apply(this, arguments);
+    if (category === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY && !isOpeningSiliconValleyTerritory && !window.__bopSiliconValleyMichelinTerritoryDepth) {
+      window.setTimeout(() => { if (scopedRecords().length > THRESHOLD) showPicker(); }, 230);
+    }
+    return result;
+  };
+
+  window.boShowSiliconValleyMichelinTerritoryPicker = showPicker;
+  function syncChrome() {
+    const active = typeof boCurrentCat !== 'undefined' && boCurrentCat === CATEGORY && typeof boCityContext !== 'undefined' && boCityContext === CITY;
+    document.body.classList.toggle('bo-siliconvalley-michelin-subcategory', active);
+    const dock = document.getElementById('bopCleanOrbDock');
+    const back = document.getElementById('boBackBtn');
+    const search = document.querySelector('.bop-search-shell');
+    const cue = document.getElementById('boScrollCue');
+    if (active && dock) {
+      dock.hidden = true; dock.setAttribute('aria-hidden', 'true');
+      ['display:none','visibility:hidden','opacity:0','pointer-events:none'].forEach(rule => { const [property,value] = rule.split(':'); dock.style.setProperty(property,value,'important'); });
+    } else if (dock) {
+      dock.hidden = false; dock.removeAttribute('aria-hidden');
+      ['display','visibility','opacity','pointer-events'].forEach(property => dock.style.removeProperty(property));
+    }
+    if (active) {
+      if (back) { back.classList.add('bo-visible'); back.removeAttribute('aria-hidden'); }
+      if (search && cue) { if (cue.previousElementSibling !== search) search.insertAdjacentElement('afterend', cue); cue.style.setProperty('display','flex','important'); }
+    }
+  }
+  document.addEventListener('click', () => window.setTimeout(syncChrome, 25), true);
+  window.setInterval(syncChrome, 35);
+  window.setTimeout(syncChrome, 220);
+}());
+
+</script>
+<!-- Michelin route supervisor -->
+<script>
+(function () {
+  'use strict';
+  const original = window.boRenderCategory;
+  if (typeof original !== 'function') return;
+
+  function resetDepth(category) {
+    if (category !== 'michelin' || typeof boCityContext === 'undefined') return;
+    if (boCityContext === 'manhattan') window.__bopManhattanMichelinTerritoryDepth = 0;
+    if (boCityContext === 'miami') window.__bopMiamiMichelinTerritoryDepth = 0;
+    if (boCityContext === 'siliconvalley') window.__bopSiliconValleyMichelinTerritoryDepth = 0;
+  }
+
+  function mountPicker(category) {
+    if (category !== 'michelin' || typeof boCityContext === 'undefined') return;
+    if (boCityContext === 'manhattan' && !window.__bopManhattanMichelinTerritoryDepth && typeof window.boShowManhattanMichelinTerritoryPicker === 'function') {
+      window.boShowManhattanMichelinTerritoryPicker();
+    }
+    if (boCityContext === 'miami' && !window.__bopMiamiMichelinTerritoryDepth && typeof window.boShowMiamiMichelinTerritoryPicker === 'function') {
+      window.boShowMiamiMichelinTerritoryPicker();
+    }
+    if (boCityContext === 'siliconvalley' && !window.__bopSiliconValleyMichelinTerritoryDepth && typeof window.boShowSiliconValleyMichelinTerritoryPicker === 'function') {
+      window.boShowSiliconValleyMichelinTerritoryPicker();
+    }
+  }
+
+  window.boRenderCategory = function territorySupervisedRender(category) {
+    resetDepth(category);
+    const result = original.apply(this, arguments);
+    window.setTimeout(() => mountPicker(category), 420);
+    return result;
+  };
+}());
+
 </script>
