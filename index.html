@@ -40750,10 +40750,10 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     var page=closestPage();if(!page)return null;
     var live=document.getElementById('bopClosestLiveStatus');if(live)return live;
     live=document.createElement('div');live.id='bopClosestLiveStatus';live.setAttribute('role','status');live.setAttribute('aria-live','polite');
-    live.innerHTML='<span class="bop-closest-live-star" aria-hidden="true">✦</span><span class="bop-closest-live-copy">CONSTANTLY LOADING</span><span class="bop-closest-live-spinner" aria-hidden="true"></span>';
+    live.innerHTML='<span class="bop-closest-live-star" aria-hidden="true">✦</span><span class="bop-closest-live-copy">CONSTANTLY LOCATING</span><span class="bop-closest-live-spinner" aria-hidden="true"></span>';
     var panel=page.querySelector('.bo-near-closest');if(panel&&panel.parentNode)panel.parentNode.insertBefore(live,panel);else page.appendChild(live);return live;
   }
-  function updateLiveStatus(tier){var live=mountLiveStatus();var copy=live&&live.querySelector('.bop-closest-live-copy');if(copy)copy.textContent='CONSTANTLY LOADING '+(tierLabels[tier]||'RESTAURANTS');}
+  function updateLiveStatus(tier){var live=mountLiveStatus();var copy=live&&live.querySelector('.bop-closest-live-copy');if(copy)copy.textContent='CONSTANTLY LOCATING '+(tierLabels[tier]||'RESTAURANTS');}
   function updateTierButtons(tier){document.querySelectorAll('[data-near-tier],[data-bop-closest-price],[data-bop-simple-tier]').forEach(function(button){var value=button.dataset.nearTier||button.dataset.bopClosestPrice||button.dataset.bopSimpleTier;var selected=value===tier;button.setAttribute('aria-pressed',String(selected));button.classList.toggle('is-active',selected);});}
   function runClosestRender(){try{if(typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();else if(typeof window.boRenderNearClosest==='function')window.boRenderNearClosest();}catch(error){}}
   function switchTier(tier,event){
@@ -40762,7 +40762,7 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     updateTierButtons(tier);updateLiveStatus(tier);
     if(!document.body.classList.contains('bo-closest-five-active')&&typeof window.boOpenNearMap==='function')Promise.resolve(window.boOpenNearMap()).then(runClosestRender).catch(runClosestRender);else runClosestRender();
   }
-  document.addEventListener('click',function(event){var button=event.target&&event.target.closest&&event.target.closest('[data-near-tier],[data-bop-closest-price],[data-bop-simple-tier]');if(!button)return;switchTier(button.dataset.nearTier||button.dataset.bopClosestPrice||button.dataset.bopSimpleTier,event);},true);
+  document.addEventListener('click',function(event){var button=event.target&&event.target.closest&&event.target.closest('[data-bop-closest-price],[data-bop-simple-tier]');if(!button)return;switchTier(button.dataset.bopClosestPrice||button.dataset.bopSimpleTier,event);},true);
   window.setInterval(function(){if(document.body.classList.contains('bo-closest-five-active'))mountLiveStatus();},700);
 })();
 </script>
