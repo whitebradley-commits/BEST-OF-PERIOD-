@@ -41058,6 +41058,26 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Manhattan Michelin territory router -->
 <script>
 /* Manhattan Michelin territory router — verified addresses only; unverified records remain visible in a separate work queue. */
@@ -41083,14 +41103,70 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     'cafe boulud': '100 E. 63rd Street, New York, NY 10065',
     'cafe carmellini': '250 Fifth Avenue, New York, NY 10001',
     'cesar': '333 Hudson St, New York, NY 10013',
-    'corima': '3 Allen St, New York, NY 10002'
+    'corima': '3 Allen St, New York, NY 10002',
+    'cote': '16 West 22nd St, New York, NY 10010',
+    'dirt candy': '86 Allen Street, New York, NY 10002',
+    'estela': '47 East Houston Street, New York, NY 10012',
+    'icca': '20 Warren Street, New York, NY 10007',
+    'jeju noodle bar': '679 Greenwich St, New York, NY 10014',
+    'joo ok': '22 W 32nd St, 16th Fl, New York, NY 10001',
+    'kochi': '652 10th Ave, New York, NY 10036',
+    'kono': '46 Bowery, New York, NY 10013',
+    'kosaka': '220 W 13th St, New York, NY 10011',
+    'le bernardin': '155 W 51st St, New York, NY 10019',
+    'le jardinier': '610 Lexington Ave, Ground Fl, New York, NY 10022',
+    'mari': '679 9th Ave, New York, NY 10036',
+    'noksu': '49 W 32nd St, New York, NY 10001',
+    'oiji mi': '17 W 19th Street, New York, NY 10011',
+    'odo': '17 West 20th Street, New York, NY 10011',
+    'one white street': '1 White St, New York, NY 10013',
+    'sushi sho': '3 East 41st Street, New York, NY 10017',
+    'sushi yasuda': '204 East 43rd Street, New York, NY 10017',
+    'shion 69 leonard': '69 Leonard Street, New York, NY 10013',
+    '69 leonard street': '69 Leonard Street, New York, NY 10013',
+    'torrisi': '275 Mulberry St, New York, NY 10012',
+    'the musket room': '265 Elizabeth Street, New York, NY 10012',
+    'tuome': '536 East 5th Street, New York, NY 10009',
+    'wayan': '20 Spring Street, New York, NY 10012',
+    'naro': '610 5th Ave, Rockefeller Center, New York, NY 10020',
+    'red paper clip': '120 Christopher Street, New York, NY 10014',
+    'saga': '70 Pine Street, 63rd Floor, New York, NY 10005',
+    'semma': '60 Greenwich Avenue, New York, NY 10011',
+    'shmone': '61 W 8th Street, New York, NY 10011',
+    'sushi amane': '245 E 44th Street, New York, NY 10017',
+    'tempura matsui': '222 East 39th St, New York, NY 10016',
+    'torien': '292 Elizabeth Street, New York, NY 10012',
+    'yingtao': '805 9th Ave, New York, NY 10019',
+    'essential by christophe': '103 W 77th St, New York, NY 10024',
+    'jungsik': '2 Harrison St, New York, NY 10013',
+    'aquavit': '65 E 55th St, New York, NY 10022',
+    'atera': '77 Worth Street, New York, NY 10013'
   };
+
+  const excludedFromManhattanRoute = new Set([
+    'meju',
+    'la bastide by andrea calstier',
+    'oxomoco',
+    'sushi ginza onodera',
+    'sushi ichimura'
+  ]);
 
   const territoryLabels = {
     downtown: 'Downtown',
     midtown: 'Midtown / Flatiron / Chelsea',
     uptown: 'Uptown',
     verification: 'Address Verification Queue'
+  };
+
+  const downtownNeighborhoodLabels = {
+    financial: 'Financial District',
+    tribeca: 'Tribeca / SoHo',
+    village: 'Village / Lower East Side'
+  };
+
+  const midtownNeighborhoodLabels = {
+    west: 'Flatiron / Chelsea / West Village',
+    east: 'Midtown / East Side'
   };
 
   function scoreOf(record) {
@@ -41109,12 +41185,31 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     return 'verification';
   }
 
+  function downtownNeighborhoodOf(record) {
+    const address = String((record && record.address) || '');
+    const zipMatch = address.match(/\b(10\d{3})\b/);
+    const zip = zipMatch ? Number(zipMatch[1]) : null;
+    if ([10004, 10005, 10006].includes(zip)) return 'financial';
+    if ([10007, 10012, 10013].includes(zip)) return 'tribeca';
+    if ([10002, 10003, 10009, 10014].includes(zip)) return 'village';
+    return 'village';
+  }
+
+  function midtownNeighborhoodOf(record) {
+    const address = String((record && record.address) || '');
+    const zipMatch = address.match(/\b(10\d{3})\b/);
+    const zip = zipMatch ? Number(zipMatch[1]) : null;
+    if ([10001, 10010, 10011, 10016].includes(zip)) return 'west';
+    if ([10017, 10018, 10019, 10020, 10022, 10036].includes(zip)) return 'east';
+    return 'east';
+  }
+
   function scopedManhattanRecords() {
     const records = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
     const seen = new Map();
     records.filter(record => record && String(record.city || '').toLowerCase() === CITY).forEach(record => {
       const key = String(record.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
-      if (!key) return;
+      if (!key || excludedFromManhattanRoute.has(key)) return;
       const existing = seen.get(key);
       if (!existing) {
         const cloned = Object.assign({}, record);
@@ -41174,7 +41269,7 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
         boHeroTitleEl.innerHTML = `<div class="bo-territory-title">MICHELIN <span>·</span> ${escaped(label.toUpperCase())}</div><div class="bo-territory-city">MANHATTAN</div>`;
         boHeroTitleEl.style.opacity = 1;
       }
-      const isOverview = label === 'Michelin by Area';
+      const isOverview = label === 'Michelin by Area' || label === 'Downtown by Neighborhood' || label === 'Midtown by Neighborhood';
       if (typeof boHeroSubEl !== 'undefined' && boHeroSubEl) {
         boHeroSubEl.textContent = isOverview
           ? `${unratedCount} records still need exact-address verification before territory routing.`
@@ -41197,6 +41292,14 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
     const manhattan = scopedManhattanRecords();
     const territoryRecords = manhattan.filter(record => territoryOf(record) === key);
+    if (key === 'downtown' && territoryRecords.length > OVERSIZE_THRESHOLD) {
+      showDowntownPicker(territoryRecords);
+      return;
+    }
+    if (key === 'midtown' && territoryRecords.length > OVERSIZE_THRESHOLD) {
+      showMidtownPicker(territoryRecords);
+      return;
+    }
     const ranked = key === 'verification' ? [] : curated(territoryRecords);
     const unrated = key === 'verification'
       ? territoryRecords
@@ -41225,6 +41328,92 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
       boListEl.insertBefore(back, boListEl.firstChild);
       updateHero(territoryLabels[key], ranked.length, unrated.length);
     }, 40);
+  }
+
+  function openDowntownNeighborhood(key) {
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedManhattanRecords().filter(record => territoryOf(record) === 'downtown' && downtownNeighborhoodOf(record) === key);
+    const ranked = curated(records);
+    const unrated = records.filter(record => scoreOf(record) === null);
+    const outsideManhattan = all.filter(record => !record || String(record.city || '').toLowerCase() !== CITY);
+    isOpeningTerritory = true;
+    boCategoryData[CATEGORY] = outsideManhattan.concat(ranked);
+    try {
+      baseRender(CATEGORY);
+    } finally {
+      boCategoryData[CATEGORY] = all;
+      isOpeningTerritory = false;
+    }
+    setTimeout(() => {
+      if (unrated.length) renderQueue(unrated);
+      const back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'bo-territory-back';
+      back.textContent = '← All Downtown Neighborhoods';
+      back.addEventListener('click', () => showDowntownPicker(scopedManhattanRecords().filter(record => territoryOf(record) === 'downtown')));
+      boListEl.insertBefore(back, boListEl.firstChild);
+      updateHero(`Downtown · ${downtownNeighborhoodLabels[key]}`, ranked.length, unrated.length);
+    }, 40);
+  }
+
+  function showDowntownPicker(downtownRecords) {
+    const counts = Object.fromEntries(Object.keys(downtownNeighborhoodLabels).map(key => [key, downtownRecords.filter(record => downtownNeighborhoodOf(record) === key).length]));
+    boListEl.innerHTML = `
+      <section class="bo-territory-picker" aria-label="Choose a Downtown Manhattan Michelin neighborhood">
+        <p class="bo-territory-picker-kicker">DOWNTOWN HAS ${downtownRecords.length} RESTAURANTS</p>
+        <h2>CHOOSE A DOWNTOWN NEIGHBORHOOD</h2>
+        <p>This territory exceeds 16 restaurants, so it is divided again by neighborhood. Each neighborhood keeps its short ranked list and visible not-yet-rated work queue.</p>
+        <div class="bo-territory-grid">
+          ${Object.keys(downtownNeighborhoodLabels).map(key => `<button type="button" class="bo-territory-choice" data-downtown-neighborhood="${key}">
+            <span>${escaped(downtownNeighborhoodLabels[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small>
+          </button>`).join('')}
+        </div>
+      </section>`;
+    boListEl.querySelectorAll('[data-downtown-neighborhood]').forEach(button => button.addEventListener('click', () => openDowntownNeighborhood(button.dataset.downtownNeighborhood)));
+    updateHero('Downtown by Neighborhood', 0, 0);
+  }
+
+  function openMidtownNeighborhood(key) {
+    const all = Array.isArray(boCategoryData && boCategoryData[CATEGORY]) ? boCategoryData[CATEGORY] : [];
+    const records = scopedManhattanRecords().filter(record => territoryOf(record) === 'midtown' && midtownNeighborhoodOf(record) === key);
+    const ranked = curated(records);
+    const unrated = records.filter(record => scoreOf(record) === null);
+    const outsideManhattan = all.filter(record => !record || String(record.city || '').toLowerCase() !== CITY);
+    isOpeningTerritory = true;
+    boCategoryData[CATEGORY] = outsideManhattan.concat(ranked);
+    try {
+      baseRender(CATEGORY);
+    } finally {
+      boCategoryData[CATEGORY] = all;
+      isOpeningTerritory = false;
+    }
+    setTimeout(() => {
+      if (unrated.length) renderQueue(unrated);
+      const back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'bo-territory-back';
+      back.textContent = '← All Midtown Neighborhoods';
+      back.addEventListener('click', () => showMidtownPicker(scopedManhattanRecords().filter(record => territoryOf(record) === 'midtown')));
+      boListEl.insertBefore(back, boListEl.firstChild);
+      updateHero(`Midtown · ${midtownNeighborhoodLabels[key]}`, ranked.length, unrated.length);
+    }, 40);
+  }
+
+  function showMidtownPicker(midtownRecords) {
+    const counts = Object.fromEntries(Object.keys(midtownNeighborhoodLabels).map(key => [key, midtownRecords.filter(record => midtownNeighborhoodOf(record) === key).length]));
+    boListEl.innerHTML = `
+      <section class="bo-territory-picker" aria-label="Choose a Midtown Manhattan Michelin neighborhood">
+        <p class="bo-territory-picker-kicker">MIDTOWN HAS ${midtownRecords.length} RESTAURANTS</p>
+        <h2>CHOOSE A MIDTOWN NEIGHBORHOOD</h2>
+        <p>This territory exceeds 16 restaurants, so it is divided again by neighborhood. Each neighborhood keeps its short ranked list and visible not-yet-rated work queue.</p>
+        <div class="bo-territory-grid">
+          ${Object.keys(midtownNeighborhoodLabels).map(key => `<button type="button" class="bo-territory-choice" data-midtown-neighborhood="${key}">
+            <span>${escaped(midtownNeighborhoodLabels[key])}</span><small>${counts[key]} current record${counts[key] === 1 ? '' : 's'}</small>
+          </button>`).join('')}
+        </div>
+      </section>`;
+    boListEl.querySelectorAll('[data-midtown-neighborhood]').forEach(button => button.addEventListener('click', () => openMidtownNeighborhood(button.dataset.midtownNeighborhood)));
+    updateHero('Midtown by Neighborhood', 0, 0);
   }
 
   function showTerritoryPicker() {
@@ -41263,3 +41452,173 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 <style id="bo-manhattan-michelin-territory-styles">
 .bo-territory-title{font-family:'Archivo Black',sans-serif;color:#F59E0B;text-align:center;font-size:clamp(1.25rem,6vw,2.1rem);letter-spacing:.04em;line-height:1.05;margin:0 auto 5px}.bo-territory-title span{color:#E4002B}.bo-territory-city{font-family:'IBM Plex Sans Condensed',sans-serif;text-align:center;color:#f2f2f2;font-weight:800;letter-spacing:.28em;font-size:.75rem}.bo-territory-picker{max-width:720px;margin:12px auto 28px;padding:22px 18px;border:1px solid rgba(245,158,11,.6);border-radius:12px;background:linear-gradient(150deg,rgba(245,158,11,.09),rgba(0,0,0,.75))}.bo-territory-picker-kicker{margin:0 0 6px;color:#E4002B;text-align:center;font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:800;letter-spacing:.1em;font-size:.74rem}.bo-territory-picker h2{margin:0;color:#F59E0B;text-align:center;font-family:'Archivo Black',sans-serif;font-size:1.25rem}.bo-territory-picker p:not(.bo-territory-picker-kicker){color:#ddd;text-align:center;line-height:1.5;font-size:.9rem;max-width:560px;margin:12px auto 20px}.bo-territory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bo-territory-choice{min-height:90px;padding:12px 10px;border:1px solid #F59E0B;border-radius:9px;background:#0a0a0a;color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:.84rem;cursor:pointer}.bo-territory-choice:hover,.bo-territory-choice:focus-visible{background:#241909;outline:2px solid #fff;outline-offset:2px}.bo-territory-choice small{display:block;color:#ddd;font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin-top:8px}.bo-territory-work-queue{margin:28px 0 12px;border-top:2px solid #E4002B;padding-top:14px}.bo-territory-queue-head{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.bo-territory-queue-head span{font-family:'Archivo Black',sans-serif;color:#E4002B;letter-spacing:.06em}.bo-territory-queue-head strong{color:#ddd;font-size:.82rem;font-weight:500}.bo-territory-queue-list{display:grid;gap:6px}.bo-territory-queue-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.18);background:#111;border-radius:6px}.bo-territory-queue-name{color:#f4f4f4;font-weight:700}.bo-territory-queue-status{flex:none;color:#E4002B;text-transform:uppercase;letter-spacing:.05em;font-family:'IBM Plex Sans Condensed',sans-serif;font-size:.72rem;font-weight:800}.bo-territory-back{display:block;margin:0 0 18px;border:0;background:none;color:#F59E0B;text-decoration:underline;font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer}@media(max-width:440px){.bo-territory-grid{grid-template-columns:1fr}.bo-territory-queue-row{align-items:flex-start;flex-direction:column;gap:4px}}
 </style>
+
+<!-- Simplified subcategory navigation and dock visibility -->
+<style id="bop-subcategory-chrome-style">
+  #bopCompactSubcategoryReturn{
+    display:block;
+    width:min(88%,390px);
+    margin:10px auto 14px;
+    min-height:38px;
+    padding:9px 14px;
+    border:1px solid rgba(245,158,11,.82);
+    border-radius:999px;
+    background:rgba(10,8,5,.92);
+    color:#F59E0B;
+    font-family:'IBM Plex Sans Condensed',Arial,sans-serif;
+    font-weight:900;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:0 0 12px rgba(245,158,11,.16);
+  }
+  #bopCompactSubcategoryReturn:hover,#bopCompactSubcategoryReturn:focus-visible{
+    background:#F59E0B;
+    color:#080808;
+    outline:2px solid #fff;
+    outline-offset:2px;
+  }
+  #bopCompactSubcategoryReturn[hidden]{display:none!important;}
+  body.bop-subcategory-active #bopCleanOrbDock{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  @media(max-width:600px),(pointer:coarse){
+    #bopCompactSubcategoryReturn{width:min(calc(100% - 32px),390px);margin:9px auto 12px;font-size:11px;min-height:36px;}
+  }
+</style>
+<script id="bop-subcategory-chrome-v1">
+(function () {
+  'use strict';
+
+  const SUBCATEGORY_CONTROL_ID = 'bopCompactSubcategoryReturn';
+  const dock = () => document.getElementById('bopCleanOrbDock');
+  const landing = () => document.getElementById('bopLandingOverlay');
+  const categoryBack = () => document.getElementById('boBackBtn');
+  const heroTitle = () => String(document.getElementById('boHeroTitle')?.textContent || '').replace(/\s+/g, ' ').trim();
+
+  function isSubcategoryView() {
+    const currentCategory = typeof boCurrentCat !== 'undefined' ? boCurrentCat : '';
+    const isMainCityPage = currentCategory === 'otheroptions' || (typeof BO_CITY_CONFIG !== 'undefined' && Boolean(BO_CITY_CONFIG[currentCategory]));
+    if (isMainCityPage) return false;
+    const visibleCategoryBack = categoryBack()?.classList.contains('bo-visible');
+    const territoryView = Boolean(document.querySelector('.bo-territory-picker, .bo-territory-back, .bo-territory-work-queue'));
+    return Boolean(visibleCategoryBack || territoryView);
+  }
+
+  function returnLabel() {
+    const title = heroTitle().toUpperCase();
+    if (title.includes('DOWNTOWN')) return '← BACK TO DOWNTOWN';
+    if (title.includes('MIDTOWN')) return '← BACK TO MIDTOWN';
+    if (title.includes('MICHELIN')) return '← BACK TO MANHATTAN';
+    return '← BACK TO CITY';
+  }
+
+  function directReturn() {
+    const title = heroTitle().toUpperCase();
+    const openTerritory = window.boOpenManhattanMichelinTerritory;
+
+    if (typeof openTerritory === 'function' && title.includes('DOWNTOWN')) {
+      openTerritory('downtown');
+      return;
+    }
+    if (typeof openTerritory === 'function' && title.includes('MIDTOWN')) {
+      openTerritory('midtown');
+      return;
+    }
+
+    const territoryBack = document.querySelector('.bo-territory-back');
+    if (territoryBack) {
+      territoryBack.click();
+      return;
+    }
+
+    const back = categoryBack();
+    if (back && back.classList.contains('bo-visible')) {
+      back.click();
+      return;
+    }
+
+    const mainReturn = document.getElementById('bopReturnToLandingBtn');
+    if (mainReturn) mainReturn.click();
+  }
+
+  function ensureReturnControl() {
+    const searchShell = document.querySelector('.bop-search-shell');
+    let control = document.getElementById(SUBCATEGORY_CONTROL_ID);
+    if (!searchShell) return control;
+
+    if (!control) {
+      control = document.createElement('button');
+      control.id = SUBCATEGORY_CONTROL_ID;
+      control.type = 'button';
+      control.setAttribute('aria-label', 'Return to the previous category level');
+      control.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        directReturn();
+        window.setTimeout(syncSubcategoryChrome, 70);
+      });
+    }
+
+    if (control.parentElement !== searchShell.parentElement || control.previousElementSibling !== searchShell) {
+      searchShell.insertAdjacentElement('afterend', control);
+    }
+    return control;
+  }
+
+  function setDockVisibility(isSubcategory) {
+    const currentDock = dock();
+    if (!currentDock) return;
+
+    if (isSubcategory) {
+      currentDock.hidden = true;
+      currentDock.setAttribute('aria-hidden', 'true');
+      currentDock.style.setProperty('display', 'none', 'important');
+      currentDock.style.setProperty('visibility', 'hidden', 'important');
+      currentDock.style.setProperty('opacity', '0', 'important');
+      currentDock.style.setProperty('pointer-events', 'none', 'important');
+      return;
+    }
+
+    currentDock.removeAttribute('aria-hidden');
+    currentDock.style.removeProperty('display');
+    currentDock.style.removeProperty('visibility');
+    currentDock.style.removeProperty('opacity');
+    currentDock.style.removeProperty('pointer-events');
+    currentDock.hidden = false;
+  }
+
+  function syncSubcategoryChrome() {
+    const subcategory = isSubcategoryView();
+    document.body.classList.toggle('bop-subcategory-active', subcategory);
+    const control = ensureReturnControl();
+    const originalBack = categoryBack();
+
+    if (control) {
+      control.hidden = !subcategory;
+      control.textContent = returnLabel();
+      control.setAttribute('aria-hidden', subcategory ? 'false' : 'true');
+    }
+
+    if (originalBack) {
+      originalBack.style.setProperty('display', subcategory ? 'none' : '', subcategory ? 'important' : '');
+      originalBack.setAttribute('aria-hidden', subcategory ? 'true' : 'false');
+    }
+
+    setDockVisibility(subcategory);
+  }
+
+  document.addEventListener('click', function () {
+    window.setTimeout(syncSubcategoryChrome, 45);
+  }, true);
+
+  const observer = new MutationObserver(function () {
+    window.requestAnimationFrame(syncSubcategoryChrome);
+  });
+  observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'aria-hidden', 'hidden'] });
+
+  window.setInterval(syncSubcategoryChrome, 55);
+  window.addEventListener('popstate', function () { window.setTimeout(syncSubcategoryChrome, 0); });
+  window.addEventListener('resize', syncSubcategoryChrome, { passive: true });
+  window.setTimeout(syncSubcategoryChrome, 180);
+}());
+</script>
