@@ -42419,229 +42419,11 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 <!-- v283: city-title italic column metric lock -->
 
 <!-- v285: single stable controller for city titles and return-to-main search -->
-<style id="bop-stable-title-navigation-controller-v1">
-  .bop-splash-line2:has(#bopLandingCityText),
-  .bop-splash-line2:has(#bopSplashCityText),
-  .bop-splash-line2:has(#bopResultsCityText),
-  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText){
-    display:inline-flex!important;
-    width:auto!important;
-    max-width:calc(100vw - 32px)!important;
-    grid-template-columns:none!important;
-    align-items:baseline!important;
-    justify-content:center!important;
-    row-gap:0!important;
-    column-gap:6px!important;
-    gap:0 6px!important;
-    white-space:nowrap!important;
-    overflow:visible!important;
-  }
-  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,
-  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-city-col,
-  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-city-col,
-  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-city-col{
-    display:inline-block!important;
-    flex:0 0 auto!important;
-    min-width:0!important;
-    width:auto!important;
-    max-width:none!important;
-    margin:0!important;
-    padding:0!important;
-    letter-spacing:normal!important;
-    word-spacing:normal!important;
-    text-align:right!important;
-    overflow:visible!important;
-  }
-  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city,
-  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-city,
-  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-city,
-  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-city{
-    position:relative!important;
-    display:inline-block!important;
-    scale:1!important;
-    transform:none!important;
-    margin:0!important;
-    padding:0!important;
-    letter-spacing:normal!important;
-    white-space:nowrap!important;
-    z-index:9!important;
-  }
-  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period,
-  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-period,
-  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-period,
-  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-period{
-    display:inline-block!important;
-    flex:0 0 auto!important;
-    position:relative!important;
-    scale:1!important;
-    transform:none!important;
-    margin:0!important;
-    padding:0!important;
-    white-space:nowrap!important;
-    z-index:9!important;
-  }
-  #bopLandingOverlay.open, #bopLandingOverlay.open *{pointer-events:auto!important;}
-  #bopLandingOverlay.open #bopLandingSearchInput{cursor:text!important;user-select:text!important;-webkit-user-select:text!important;opacity:1!important;}
-</style>
-<script id="bop-stable-title-navigation-controller-v1-script">
-(function(){
-  var cityIds=['bopSplashCityText','bopResultsCityText','bopMainCityText'];
-  var controlling=false, titleTimer=0, returnTimer=0;
-  var labels={
-    lasvegas:'Las Vegas',santabarbara:'S. B.',sandiego:'San Diego',sanfrancisco:'San Francisco',losangeles:'Los Angeles',
-    newyork:'New York',washingtondc:'Washington, D.C.',siliconvalley:'Silicon Valley',neworleans:'New Orleans',
-    portland:'Portland',miami:'Miami',chicago:'Chicago',boston:'Boston',philadelphia:'Philadelphia',atlanta:'Atlanta',
-    austin:'Austin',dallas:'Dallas',houston:'Houston',seattle:'Seattle',denver:'Denver',phoenix:'Phoenix',
-    santafe:'Santa Fe',nashville:'Nashville',orlando:'Orlando',manhattan:'Manhattan',brooklyn:'Brooklyn',queens:'Queens',bronx:'The Bronx'
-  };
-  function params(){try{return new URLSearchParams(location.search);}catch(error){return new URLSearchParams();}}
-  function pageCityKey(){return String(params().get('city')||'').toLowerCase();}
-  function trim(value){return String(value||'').replace(/\s+/g,' ').trim();}
-  function selectedName(){
-    var key=pageCityKey();
-    if(labels[key])return labels[key];
-    var lead=document.getElementById('boLeadBestCity');
-    var leadText=trim(lead&&lead.textContent);
-    if(leadText)return leadText;
-    return '';
-  }
-  function setTitle(city){
-    if(!city)return;
-    var line=city.closest('.bop-splash-line2');
-    var col=city.closest('.bop-splash-city-col');
-    var period=line&&line.querySelector('.bop-splash-period');
-    if(!line||!col||!period)return;
-    var isMain=city.id==='bopMainCityText';
-    var wanted=isMain&&selectedName();
-    controlling=true;
-    if(wanted && trim(city.textContent)!==wanted)city.textContent=wanted;
-    city.removeAttribute('data-fit');
-    city.style.setProperty('scale','1','important');
-    city.style.setProperty('transform','none','important');
-    city.style.setProperty('letter-spacing','normal','important');
-    period.style.setProperty('scale','1','important');
-    period.style.setProperty('transform','none','important');
-    period.style.setProperty('margin-left','0','important');
-    line.style.setProperty('display','inline-flex','important');
-    line.style.setProperty('grid-template-columns','none','important');
-    line.style.setProperty('row-gap','0','important');
-    line.style.setProperty('column-gap','6px','important');
-    line.style.setProperty('gap','0 6px','important');
-    col.style.setProperty('font-family',getComputedStyle(city).fontFamily,'important');
-    col.style.setProperty('font-size',getComputedStyle(city).fontSize,'important');
-    col.style.setProperty('font-style',getComputedStyle(city).fontStyle,'important');
-    col.style.setProperty('font-weight',getComputedStyle(city).fontWeight,'important');
-    col.style.setProperty('letter-spacing','normal','important');
-    col.style.setProperty('word-spacing','normal','important');
-    col.style.setProperty('width','auto','important');
-    col.style.setProperty('min-width','0','important');
-    col.style.setProperty('flex','0 0 auto','important');
-    requestAnimationFrame(function(){
-      var c=city.getBoundingClientRect(),p=period.getBoundingClientRect();
-      var current=parseFloat(getComputedStyle(line).columnGap)||0;
-      var actual=p.left-c.right;
-      var next=Math.max(0,current+(6-actual));
-      if(Math.abs(actual-6)>.35){
-        line.style.setProperty('column-gap',next.toFixed(2)+'px','important');
-        line.style.setProperty('gap','0 '+next.toFixed(2)+'px','important');
-      }
-      requestAnimationFrame(function(){
-        var c2=city.getBoundingClientRect(),p2=period.getBoundingClientRect();
-        line.setAttribute('data-bop-stable-gap',String(Math.round(p2.left-c2.right))+'px');
-        line.setAttribute('data-bop-title-city',trim(city.textContent));
-        controlling=false;
-      });
-    });
-  }
-  function updateTitles(){cityIds.forEach(function(id){setTitle(document.getElementById(id));});}
-  function scheduleTitles(){clearTimeout(titleTimer);titleTimer=setTimeout(updateTitles,18);}
-  function restoreLanding(){
-    var landing=document.getElementById('bopLandingOverlay');
-    var best=document.getElementById('bestOfOverlay');
-    if(!landing||!landing.classList.contains('open')||(best&&best.classList.contains('open')))return;
-    var input=document.getElementById('bopLandingSearchInput');
-    var results=document.getElementById('bopLandingResults');
-    document.body.style.removeProperty('overflow');document.documentElement.style.removeProperty('overflow');
-    landing.style.setProperty('pointer-events','auto','important');
-    if(input){input.disabled=false;input.readOnly=false;input.tabIndex=0;input.removeAttribute('aria-disabled');input.style.setProperty('pointer-events','auto','important');input.style.setProperty('user-select','text','important');}
-    if(results){results.style.setProperty('pointer-events','auto','important');results.removeAttribute('aria-disabled');}
-  }
-  function scheduleReturn(){clearTimeout(returnTimer);[0,80,250,700].forEach(function(delay){setTimeout(restoreLanding,delay);});}
-  function closeAndReturn(){
-    var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
-    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');
-    if(best){best.classList.remove('open','is-open','active','tg-open');best.setAttribute('aria-hidden','true');best.style.setProperty('display','none','important');best.style.setProperty('visibility','hidden','important');best.style.setProperty('pointer-events','none','important');}
-    if(landing){landing.classList.add('open');landing.setAttribute('aria-hidden','false');landing.style.removeProperty('display');landing.style.removeProperty('visibility');landing.style.setProperty('pointer-events','auto','important');}
-    if(input){input.value='';input.disabled=false;input.readOnly=false;input.style.setProperty('pointer-events','auto','important');}
-    if(results){results.innerHTML='';results.classList.remove('open','is-open','bop-ny-search-results');results.setAttribute('aria-hidden','true');results.style.setProperty('pointer-events','auto','important');}
-    document.body.classList.remove('bop-ui-bestof','bop-ui-near','bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active');document.body.classList.add('bop-ui-primary');
-    try{history.replaceState(null,'',location.pathname+(location.hash||''));}catch(error){}
-    window.scrollTo(0,0);scheduleReturn();
-  }
-  document.addEventListener('click',function(event){
-    var back=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
-    if(!back)return;
-    event.preventDefault();event.stopImmediatePropagation();closeAndReturn();
-  },true);
-  new MutationObserver(function(){if(!controlling)scheduleTitles();scheduleReturn();}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
-  window.addEventListener('popstate',function(){setTimeout(function(){restoreLanding();updateTitles();},0);});
-  window.addEventListener('resize',scheduleTitles);
-  setInterval(function(){updateTitles();restoreLanding();},350);
-  [0,100,300,800,1500].forEach(function(delay){setTimeout(function(){updateTitles();restoreLanding();},delay);});
-})();
-</script>
+
+
 
 <!-- v286: explicit city-title font scale lock -->
-<script id="bop-city-title-font-scale-lock-v1">
-(function(){
-  var ids=['bopSplashCityText','bopResultsCityText','bopMainCityText'];
-  function sizeFor(text){
-    var n=String(text||'').trim().length;
-    if(n>=20)return 54;
-    if(n>=15)return 62;
-    if(n>=12)return 70;
-    return 88;
-  }
-  function fix(city){
-    if(!city)return;
-    var line=city.closest('.bop-splash-line2');
-    var col=city.closest('.bop-splash-city-col');
-    var period=line&&line.querySelector('.bop-splash-period');
-    if(!line||!col||!period)return;
-    var px=sizeFor(city.textContent);
-    city.style.setProperty('font-size',px+'px','important');
-    city.style.setProperty('line-height','0.95','important');
-    city.style.setProperty('scale','1','important');
-    city.style.setProperty('transform','none','important');
-    period.style.setProperty('font-size',Math.round(px*.88)+'px','important');
-    period.style.setProperty('line-height','0.95','important');
-    period.style.setProperty('scale','1','important');
-    period.style.setProperty('transform','none','important');
-    col.style.setProperty('font-size',px+'px','important');
-    col.style.setProperty('line-height','0.95','important');
-    col.style.setProperty('font-style','italic','important');
-    col.style.setProperty('width','auto','important');
-    col.style.setProperty('min-width','0','important');
-    line.style.setProperty('font-size','initial','important');
-    line.style.setProperty('line-height','0.95','important');
-    line.style.setProperty('display','inline-flex','important');
-    line.style.setProperty('column-gap','6px','important');
-    line.style.setProperty('gap','0 6px','important');
-    requestAnimationFrame(function(){
-      var c=city.getBoundingClientRect(),p=period.getBoundingClientRect();
-      var current=parseFloat(getComputedStyle(line).columnGap)||0;
-      var actual=p.left-c.right;
-      var next=Math.max(0,current+(6-actual));
-      if(Math.abs(actual-6)>.5){line.style.setProperty('column-gap',next.toFixed(1)+'px','important');line.style.setProperty('gap','0 '+next.toFixed(1)+'px','important');}
-      requestAnimationFrame(function(){var a=city.getBoundingClientRect(),b=period.getBoundingClientRect();line.setAttribute('data-bop-font-lock-gap',String(Math.round(b.left-a.right))+'px');});
-    });
-  }
-  function run(){ids.forEach(function(id){fix(document.getElementById(id));});}
-  [0,40,120,250,500,900,1500,2500].forEach(function(delay){setTimeout(run,delay);});
-  setInterval(run,250);
-  window.addEventListener('resize',run);
-})();
-</script>
+
 
 <!-- v287: direct city-title and Back-route repair -->
 <script id="bop-direct-city-title-back-repair-v1">
@@ -42772,138 +42554,12 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 </script>
 
 <!-- v291: main-page fixed Period column; only the city name rotates -->
-<style id="bop-main-period-fixed-position-v1">
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
-    display:grid!important;
-    grid-template-columns:var(--bop-city-slot,270px) max-content!important;
-    grid-template-rows:auto!important;
-    align-items:baseline!important;
-    column-gap:6px!important;
-    row-gap:0!important;
-    gap:0 6px!important;
-    justify-content:center!important;
-    width:auto!important;
-    max-width:calc(100vw - 24px)!important;
-    overflow:visible!important;
-  }
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{
-    grid-column:1!important;
-    grid-row:1!important;
-    display:block!important;
-    width:var(--bop-city-slot,270px)!important;
-    min-width:var(--bop-city-slot,270px)!important;
-    max-width:var(--bop-city-slot,270px)!important;
-    text-align:right!important;
-    overflow:visible!important;
-    z-index:8!important;
-  }
-  #bopLandingOverlay #bopLandingCityText{
-    display:inline-block!important;
-    position:relative!important;
-    z-index:8!important;
-    margin:0!important;
-    white-space:nowrap!important;
-  }
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{
-    grid-column:2!important;
-    grid-row:1!important;
-    display:inline-block!important;
-    position:relative!important;
-    left:0!important;
-    right:auto!important;
-    transform:none!important;
-    animation:none!important;
-    transition:none!important;
-    margin:0!important;
-    padding:0!important;
-    z-index:9!important;
-    white-space:nowrap!important;
-  }
-  @media(max-width:600px){
-    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){grid-template-columns:var(--bop-city-slot,158px) max-content!important;}
-    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{width:var(--bop-city-slot,158px)!important;min-width:var(--bop-city-slot,158px)!important;max-width:var(--bop-city-slot,158px)!important;}
-  }
-</style>
-<script id="bop-main-period-fixed-position-v1-script">
-(function(){
-  var lastPeriodLeft=null;
-  function apply(){
-    var city=document.getElementById('bopLandingCityText');
-    var line=city&&city.closest('.bop-splash-line2');
-    var col=city&&city.closest('.bop-splash-city-col');
-    var period=line&&line.querySelector('.bop-splash-period');
-    if(!city||!line||!col||!period)return;
-    var width=window.innerWidth||document.documentElement.clientWidth||960;
-    var slot=Math.round(Math.max(152,Math.min(270,width*.32)));
-    var name=(city.textContent||'').trim();
-    var size=Math.max(28,Math.min(86,Math.floor(slot/Math.max(2.7,name.length*.47))));
-    line.style.setProperty('--bop-city-slot',slot+'px','important');
-    line.style.setProperty('display','grid','important');
-    line.style.setProperty('grid-template-columns',slot+'px max-content','important');
-    line.style.setProperty('column-gap','6px','important');
-    line.style.setProperty('gap','0 6px','important');
-    col.style.setProperty('width',slot+'px','important');
-    col.style.setProperty('min-width',slot+'px','important');
-    col.style.setProperty('max-width',slot+'px','important');
-    city.style.setProperty('font-size',size+'px','important');
-    city.style.setProperty('line-height','.95','important');
-    city.style.setProperty('transform','none','important');
-    city.style.setProperty('scale','1','important');
-    period.style.setProperty('font-size','77px','important');
-    period.style.setProperty('line-height','.95','important');
-    period.style.setProperty('transform','none','important');
-    period.style.setProperty('scale','1','important');
-    period.style.setProperty('animation','none','important');
-    period.style.setProperty('transition','none','important');
-    var r=period.getBoundingClientRect();
-    if(lastPeriodLeft===null)lastPeriodLeft=Math.round(r.left);
-    line.setAttribute('data-bop-period-fixed','true');
-    line.setAttribute('data-bop-period-left',String(Math.round(r.left)));
-  }
-  var scheduled=false;
-  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;apply();});}
-  new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style']});
-  [0,50,150,400,900,1600].forEach(function(delay){setTimeout(apply,delay);});
-  window.addEventListener('resize',apply);
-  setInterval(apply,180);
-})();
-</script>
+
+
 
 <!-- v292: fixed vertical baseline for main-page Period during city rotation -->
-<style id="bop-main-period-vertical-lock-v1">
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
-    height:92px!important;
-    min-height:92px!important;
-    max-height:92px!important;
-    align-items:center!important;
-  }
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,
-  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{
-    align-self:center!important;
-  }
-</style>
-<script id="bop-main-period-vertical-lock-v1-script">
-(function(){
-  function lock(){
-    var city=document.getElementById('bopLandingCityText');
-    var line=city&&city.closest('.bop-splash-line2');
-    var col=city&&city.closest('.bop-splash-city-col');
-    var period=line&&line.querySelector('.bop-splash-period');
-    if(!city||!line||!col||!period)return;
-    line.style.setProperty('height','92px','important');
-    line.style.setProperty('min-height','92px','important');
-    line.style.setProperty('max-height','92px','important');
-    line.style.setProperty('align-items','center','important');
-    col.style.setProperty('align-self','center','important');
-    period.style.setProperty('align-self','center','important');
-    period.style.setProperty('top','0','important');
-    line.setAttribute('data-bop-period-vertical-fixed','true');
-  }
-  [0,50,180,400,900].forEach(function(delay){setTimeout(lock,delay);});
-  new MutationObserver(function(){requestAnimationFrame(lock);}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style']});
-  setInterval(lock,180);
-})();
-</script>
+
+
 
 <!-- v293: authoritative orb routes, closest-tier controls, and unobstructed landing results -->
 <style id="bop-routes-dropdown-repair-v1">
@@ -43075,6 +42731,184 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
   function enforce(){wireTiers();wireOrbs();}
   [0,60,180,450,1000,1800].forEach(function(delay){setTimeout(enforce,delay);});
   new MutationObserver(function(){setTimeout(enforce,0);}).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
+<!-- v294: single mobile title layout and active-search dock guard -->
+<style id="bop-mobile-title-stability-v1">
+  /* One main-page title layout. Period is a fixed independent column; city names grow only to the left. */
+  #bopLandingOverlay .bop-splash-line1{
+    font-size:calc(73.653px + 2px)!important;
+    line-height:1!important;
+    position:relative!important;
+    transform:none!important;
+    animation:none!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
+    display:grid!important;
+    grid-template-columns:minmax(0, var(--bop-main-city-slot, 200px)) max-content!important;
+    grid-template-rows:1fr!important;
+    column-gap:6px!important;
+    row-gap:0!important;
+    justify-content:center!important;
+    align-items:center!important;
+    width:fit-content!important;
+    max-width:calc(100vw - 20px)!important;
+    height:78px!important;
+    min-height:78px!important;
+    max-height:78px!important;
+    overflow:visible!important;
+    position:relative!important;
+    transform:none!important;
+    animation:none!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:block!important;
+    width:var(--bop-main-city-slot, 200px)!important;
+    min-width:0!important;
+    max-width:var(--bop-main-city-slot, 200px)!important;
+    text-align:right!important;
+    align-self:center!important;
+    overflow:visible!important;
+    transform:none!important;
+    animation:none!important;
+  }
+  #bopLandingOverlay #bopLandingCityText{
+    display:inline-block!important;
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:calc(var(--bop-main-city-size, 57px) + 2px)!important;
+    line-height:.95!important;
+    letter-spacing:normal!important;
+    white-space:nowrap!important;
+    transform:none!important;
+    scale:1!important;
+    animation:none!important;
+    transition:none!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{
+    grid-column:2!important;
+    grid-row:1!important;
+    display:inline-block!important;
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    margin:0!important;
+    padding:0!important;
+    align-self:center!important;
+    font-size:calc(var(--bop-main-period-size, 77px) - 2px)!important;
+    line-height:.95!important;
+    letter-spacing:normal!important;
+    white-space:nowrap!important;
+    transform:none!important;
+    scale:1!important;
+    animation:none!important;
+    transition:none!important;
+    z-index:2!important;
+  }
+  /* A typed query alone is an active search state: never allow fixed orbs over the keyboard or results. */
+  #bopLandingOverlay:has(#bopLandingSearchInput:not(:placeholder-shown)) ~ #bopCleanOrbDock,
+  body:has(#bopLandingOverlay #bopLandingSearchInput:not(:placeholder-shown)) #bopCleanOrbDock,
+  body.bop-search-active #bopCleanOrbDock{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  #bopLandingOverlay:has(#bopLandingSearchInput:not(:placeholder-shown)) #bopLandingResults{
+    position:relative!important;
+    z-index:2147483640!important;
+    pointer-events:auto!important;
+    touch-action:pan-y!important;
+    overflow-y:auto!important;
+    max-height:min(43dvh,420px)!important;
+  }
+  @media (max-width:600px), (pointer:coarse){
+    #bopLandingOverlay .bop-splash-line1{font-size:calc(52px + 2px)!important;}
+    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
+      grid-template-columns:minmax(0, var(--bop-main-city-slot, 148px)) max-content!important;
+      height:68px!important;min-height:68px!important;max-height:68px!important;
+      max-width:calc(100vw - 12px)!important;
+    }
+    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{width:var(--bop-main-city-slot,148px)!important;max-width:var(--bop-main-city-slot,148px)!important;}
+    #bopLandingOverlay #bopLandingCityText{font-size:calc(var(--bop-main-city-size,42px) + 2px)!important;}
+    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{font-size:calc(var(--bop-main-period-size,57px) - 2px)!important;}
+  }
+</style>
+<script id="bop-mobile-title-stability-v1-script">
+(function(){
+  function number(value,fallback){var n=parseFloat(value);return Number.isFinite(n)?n:fallback;}
+  function setSearchState(){
+    var input=document.getElementById('bopLandingSearchInput');
+    document.body.classList.toggle('bop-search-active',!!(input&&input.value.trim()));
+  }
+  function citySize(name,width){
+    var n=String(name||'').trim().length;
+    var base=width<=600?42:57;
+    if(n>=18)return Math.max(width<=600?27:38,base-14);
+    if(n>=14)return Math.max(width<=600?31:44,base-8);
+    if(n>=11)return Math.max(width<=600?35:49,base-4);
+    return base;
+  }
+  function stabilizeMain(){
+    var city=document.getElementById('bopLandingCityText');
+    if(!city)return;
+    var line=city.closest('.bop-splash-line2');
+    var col=city.closest('.bop-splash-city-col');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!line||!col||!period)return;
+    var width=window.innerWidth||document.documentElement.clientWidth||1280;
+    var mobile=width<=600;
+    var slot=Math.round(mobile?Math.max(132,Math.min(168,width*.40)):Math.max(186,Math.min(290,width*.30)));
+    var text=(city.textContent||'').replace(/\s+/g,' ').trim();
+    var size=citySize(text,width);
+    line.style.setProperty('--bop-main-city-slot',slot+'px','important');
+    line.style.setProperty('--bop-main-city-size',size+'px','important');
+    line.style.setProperty('--bop-main-period-size',(mobile?57:77)+'px','important');
+    line.style.setProperty('display','grid','important');
+    line.style.setProperty('grid-template-columns',slot+'px max-content','important');
+    line.style.setProperty('column-gap','6px','important');
+    line.style.setProperty('gap','0 6px','important');
+    line.style.setProperty('transform','none','important');
+    line.style.setProperty('animation','none','important');
+    col.style.setProperty('width',slot+'px','important');
+    col.style.setProperty('max-width',slot+'px','important');
+    col.style.setProperty('transform','none','important');
+    col.style.setProperty('animation','none','important');
+    city.style.setProperty('transform','none','important');
+    city.style.setProperty('animation','none','important');
+    city.style.setProperty('transition','none','important');
+    period.style.setProperty('transform','none','important');
+    period.style.setProperty('animation','none','important');
+    period.style.setProperty('transition','none','important');
+    line.setAttribute('data-bop-single-title-controller','true');
+  }
+  function stabilizeCity(){
+    var city=document.getElementById('bopMainCityText');
+    if(!city)return;
+    var line=city.closest('.bop-splash-line2');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!line||!period)return;
+    city.style.setProperty('transform','none','important');city.style.setProperty('animation','none','important');city.style.setProperty('transition','none','important');
+    period.style.setProperty('transform','none','important');period.style.setProperty('animation','none','important');period.style.setProperty('transition','none','important');
+    line.style.setProperty('column-gap','6px','important');line.style.setProperty('gap','0 6px','important');
+  }
+  function apply(){stabilizeMain();stabilizeCity();setSearchState();}
+  var input=document.getElementById('bopLandingSearchInput');
+  if(input){input.addEventListener('input',setSearchState,{passive:true});input.addEventListener('focus',setSearchState,{passive:true});input.addEventListener('blur',function(){setTimeout(setSearchState,120);},{passive:true});}
+  new MutationObserver(function(){requestAnimationFrame(apply);}).observe(document.documentElement,{subtree:true,characterData:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
+  [0,40,100,250,500,900].forEach(function(delay){setTimeout(apply,delay);});
+  setInterval(apply,500);
+  window.addEventListener('resize',apply);
 })();
 </script>
 
