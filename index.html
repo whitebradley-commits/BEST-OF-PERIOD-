@@ -40214,7 +40214,10 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   }
   function forceReturnLanding(){
     document.body.dataset.bopForceLandingDock='1';
-    function finish(){clearModal();closePrimary();open('bopLandingOverlay');window.scrollTo(0,0);showDock();}
+    function finish(){
+      try{var url=new URL(location.href);url.searchParams.set('page','bestof');url.searchParams.delete('city');history.replaceState(null,'',url.pathname+'?'+url.searchParams.toString()+url.hash);}catch(error){}
+      clearModal();closePrimary();open('bopLandingOverlay');window.scrollTo(0,0);showDock();
+    }
     finish();[80,220,480].forEach(function(delay){window.setTimeout(finish,delay);});
   }
   function openNear(closest){
@@ -43102,5 +43105,70 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     if(leaveLanding)delete document.body.dataset.bopForceLandingDock;
   },true);
   window.setInterval(sync,80);sync();
+})();
+</script>
+<!-- Authoritative mobile main page: only the five intended orbs may render on Best Of. -->
+<style id="bop-mobile-five-orb-authority-v1">
+  @media (max-width:600px), (pointer:coarse){
+    body.bop-five-orb-main #landingSharePage,
+    body.bop-five-orb-main #globalSharePage,
+    body.bop-five-orb-main #bopStaticLandingDock,
+    body.bop-five-orb-main #bopStaticNear,
+    body.bop-five-orb-main .bop-static-landing-dock:not(#bopCleanOrbDock){
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+      animation:none !important;
+      transition:none !important;
+    }
+    body.bop-five-orb-main #bopCleanOrbDock{
+      position:fixed !important;
+      left:10px !important;
+      right:auto !important;
+      top:auto !important;
+      bottom:max(58px,calc(env(safe-area-inset-bottom) + 48px)) !important;
+      width:auto !important;
+      min-height:68px !important;
+      display:flex !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      pointer-events:auto !important;
+      gap:3px !important;
+      padding:2px !important;
+      z-index:2147483647 !important;
+    }
+    body.bop-five-orb-main #bopCleanOrbDock .bop-static-landing-button{
+      flex:0 0 66px !important;
+      width:66px !important;
+      height:66px !important;
+      min-width:66px !important;
+      min-height:66px !important;
+      animation:none !important;
+      transition:none !important;
+    }
+  }
+</style>
+<script id="bop-mobile-five-orb-authority-v1">
+(function(){
+  function onMainPage(){
+    if((new URLSearchParams(location.search).get('page')||'bestof').toLowerCase()==='bestof')return true;
+    var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');
+    return !!landing&&landing.classList.contains('open')&&getComputedStyle(landing).display!=='none'&&(!best||getComputedStyle(best).display==='none');
+  }
+  function sync(){
+    var main=onMainPage();
+    document.body.classList.toggle('bop-five-orb-main',main);
+    if(!main)return;
+    var legacy=['landingSharePage','globalSharePage','bopStaticLandingDock','bopStaticNear'];
+    legacy.forEach(function(id){var el=document.getElementById(id);if(el){el.hidden=true;el.style.setProperty('display','none','important');el.style.setProperty('visibility','hidden','important');el.style.setProperty('pointer-events','none','important');}});
+    var dock=document.getElementById('bopCleanOrbDock');if(!dock)return;
+    var seen={};Array.prototype.slice.call(dock.querySelectorAll('[data-clean-orb]')).forEach(function(orb){var key=orb.dataset.cleanOrb;if(!key)return;if(seen[key])orb.remove();else seen[key]=orb;});
+    dock.hidden=false;dock.setAttribute('aria-hidden','false');
+    dock.style.setProperty('display','flex','important');dock.style.setProperty('visibility','visible','important');dock.style.setProperty('opacity','1','important');dock.style.setProperty('pointer-events','auto','important');
+  }
+  ['pageshow','popstate','resize','orientationchange'].forEach(function(name){window.addEventListener(name,sync,{passive:true});});
+  document.addEventListener('click',function(){window.setTimeout(sync,0);},true);
+  window.setInterval(sync,60);sync();
 })();
 </script>
