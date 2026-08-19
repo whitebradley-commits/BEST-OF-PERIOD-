@@ -42905,3 +42905,176 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 })();
 </script>
 
+<!-- v293: authoritative orb routes, closest-tier controls, and unobstructed landing results -->
+<style id="bop-routes-dropdown-repair-v1">
+  /* Search results always sit above ordinary landing content and scroll within their own panel. */
+  #bopLandingOverlay.open #bopLandingResults{
+    z-index:2147483600!important;
+    pointer-events:auto!important;
+    touch-action:pan-y!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    max-height:min(46dvh,420px)!important;
+  }
+  #bopLandingOverlay.open:has(#bopLandingResults:not([aria-hidden="true"]):not(:empty)){
+    overflow-y:auto!important;
+    overscroll-behavior-y:contain!important;
+    touch-action:pan-y!important;
+  }
+  /* While live search results are present, remove the fixed dock instead of allowing it to cover the list. */
+  body:has(#bopLandingOverlay.open #bopLandingResults:not([aria-hidden="true"]):not(:empty)) #bopCleanOrbDock{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  #bopLandingOverlay.open #bopLandingResults button,
+  #bopLandingOverlay.open #bopLandingResults [role="button"]{
+    position:relative!important;
+    z-index:1!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+  }
+</style>
+<script id="bop-routes-dropdown-repair-v1-script">
+(function(){
+  var lastTierAction=0,lastOrbAction=0;
+  var valid={dive:true,casual:true,fine:true};
+  function close(id){var node=document.getElementById(id);if(node){node.classList.remove('open','is-open','active','tg-open');node.setAttribute('aria-hidden','true');}}
+  function clearSecondary(){['bestOfOverlay','tbotrLandingOverlay','ocWorldOverlay','bopWorldwideLanding','boWorldwidePage'].forEach(close);}
+  function main(){return document.getElementById('bopLandingOverlay');}
+  function near(){return document.getElementById('boNearMapPage');}
+  function setTier(tier){
+    if(!valid[tier])return;
+    /* Use the native chooser when available: it sets the site’s internal tier state,
+       updates the active button, and retries rendering once location data resolves. */
+    if(typeof window.bopChooseClosestTierV2==='function'){
+      try{window.bopChooseClosestTierV2(tier);return;}catch(error){}
+    }
+    window.boNearClosestTier=tier;
+    try{boNearClosestTier=tier;}catch(error){}
+    document.body.classList.add('bo-closest-five-active','bo-near-map-active','bop-ui-near');
+    document.body.classList.remove('bop-ui-primary');
+    document.querySelectorAll('[data-bop-closest-price],[data-near-tier],[data-bop-simple-tier]').forEach(function(button){
+      var value=button.dataset.bopClosestPrice||button.dataset.nearTier||button.dataset.bopSimpleTier;
+      var selected=value===tier;
+      button.classList.toggle('is-active',selected);
+      button.setAttribute('aria-pressed',String(selected));
+    });
+    var page=near();
+    if(page){page.classList.add('open');page.setAttribute('aria-hidden','false');}
+    var render=window.boRenderNearClosestFive||window.boRenderNearClosest;
+    if(typeof render==='function'){try{render();}catch(error){setTimeout(function(){try{render();}catch(ignore){}},0);}}
+    setTimeout(function(){
+      document.querySelectorAll('[data-bop-closest-price],[data-near-tier],[data-bop-simple-tier]').forEach(function(button){
+        var value=button.dataset.bopClosestPrice||button.dataset.nearTier||button.dataset.bopSimpleTier;
+        button.classList.toggle('is-active',value===tier);button.setAttribute('aria-pressed',String(value===tier));
+      });
+    },0);
+  }
+  function openClosest(tier){
+    close('ocWorldOverlay');close('bopWorldwideLanding');close('boWorldwidePage');
+    var landing=main();if(landing)landing.classList.remove('open');
+    if(typeof window.boOpenNearMap==='function'){try{window.boOpenNearMap();}catch(error){}}
+    setTier(tier||'fine');
+  }
+  function routeOrb(kind){
+    var landing=main();
+    if(kind==='share'){
+      var share=document.getElementById('globalSharePage')||document.getElementById('landingSharePage');
+      if(share){share.click();return;}
+      if(navigator.share)navigator.share({title:document.title,url:location.href}).catch(function(){});
+      return;
+    }
+    if(kind==='near'){
+      ['ocWorldOverlay','bopWorldwideLanding','boWorldwidePage'].forEach(close);
+      if(landing)landing.classList.remove('open');
+      try{window.boNearMapReturnTarget='landing';}catch(error){}
+      if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();
+      return;
+    }
+    if(kind==='other'){
+      close('boNearMapPage');close('bopWorldwideLanding');close('boWorldwidePage');
+      if(landing)landing.classList.remove('open');
+      var other=document.getElementById('ocWorldOverlay');
+      if(typeof window.ocBuildWorld==='function'){try{window.ocBuildWorld();}catch(error){}}
+      if(other){other.classList.add('open');other.setAttribute('aria-hidden','false');other.scrollTop=0;}
+      document.body.classList.add('oc-world-active');
+      return;
+    }
+    if(kind==='closest'){openClosest('fine');return;}
+    close('boNearMapPage');close('ocWorldOverlay');
+    if(landing)landing.classList.remove('open');
+    var world=document.getElementById('bopWorldwideLanding');
+    if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
+    else if(world){world.classList.add('open');world.setAttribute('aria-hidden','false');}
+  }
+  function wireTiers(){
+    document.querySelectorAll('[data-bop-closest-price],[data-near-tier],[data-bop-simple-tier]').forEach(function(old){
+      if(old.dataset.bopAuthoritativeTier==='1')return;
+      var button=old.cloneNode(true);
+      button.dataset.bopAuthoritativeTier='1';
+      old.replaceWith(button);
+      button.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        setTier(button.dataset.bopClosestPrice||button.dataset.nearTier||button.dataset.bopSimpleTier);
+      },true);
+    });
+  }
+  function wireOrbs(){
+    document.querySelectorAll('#bopCleanOrbDock button[data-clean-orb]').forEach(function(old){
+      if(old.dataset.bopAuthoritativeOrb==='1')return;
+      var button=old.cloneNode(true);
+      button.dataset.bopAuthoritativeOrb='1';
+      old.replaceWith(button);
+      button.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+        routeOrb(button.dataset.cleanOrb);
+      },true);
+    });
+  }
+  function forceTierFromPointer(tier){
+    if(!valid[tier])return;
+    document.body.classList.add('bo-closest-five-active','bop-closest-tier-selected','bop-simple-closest-selected','bo-near-map-active','bop-ui-near');
+    document.body.classList.remove('bop-ui-primary');
+    try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+    var page=near();if(page){page.classList.add('open');page.setAttribute('aria-hidden','false');}
+    document.querySelectorAll('[data-bop-closest-price],[data-near-tier],[data-bop-simple-tier]').forEach(function(button){
+      var value=button.dataset.bopClosestPrice||button.dataset.nearTier||button.dataset.bopSimpleTier;
+      button.classList.toggle('is-active',value===tier);button.setAttribute('aria-pressed',String(value===tier));
+    });
+    var title=document.getElementById('boNearClosestTitle');if(title)title.textContent='CLOSEST 5';
+    var retry=function(){
+      try{window.boNearClosestTier=tier;boNearClosestTier=tier;}catch(error){}
+      if(typeof window.boRenderNearClosestFive==='function'){try{window.boRenderNearClosestFive();}catch(error){}}
+    };
+    if(typeof window.boOpenNearMap==='function'){try{Promise.resolve(window.boOpenNearMap()).catch(function(){}).finally(function(){[0,100,260,500,900].forEach(function(delay){setTimeout(retry,delay);});});}catch(error){retry();}}else{retry();}
+  }
+  /* Pointer capture happens before legacy click listeners can consume a mobile tap. */
+  window.addEventListener('pointerdown',function(event){
+    var tier=event.target&&event.target.closest&&event.target.closest('[data-bop-authoritative-tier="1"]');
+    if(!tier)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    forceTierFromPointer(tier.dataset.bopClosestPrice||tier.dataset.nearTier||tier.dataset.bopSimpleTier);
+  },true);
+  /* Window capture runs before the page's accumulated document-level click handlers. */
+  window.addEventListener('click',function(event){
+    var tier=event.target&&event.target.closest&&event.target.closest('[data-bop-authoritative-tier="1"]');
+    if(tier){
+      var now=Date.now();if(now-lastTierAction<30)return;lastTierAction=now;
+      event.preventDefault();event.stopImmediatePropagation();setTier(tier.dataset.bopClosestPrice||tier.dataset.nearTier||tier.dataset.bopSimpleTier);return;
+    }
+    var orb=event.target&&event.target.closest&&event.target.closest('#bopCleanOrbDock [data-bop-authoritative-orb="1"]');
+    if(orb){
+      var stamp=Date.now();if(stamp-lastOrbAction<30)return;lastOrbAction=stamp;
+      event.preventDefault();event.stopImmediatePropagation();routeOrb(orb.dataset.cleanOrb);
+    }
+  },true);
+  function enforce(){wireTiers();wireOrbs();}
+  [0,60,180,450,1000,1800].forEach(function(delay){setTimeout(enforce,delay);});
+  new MutationObserver(function(){setTimeout(enforce,0);}).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
