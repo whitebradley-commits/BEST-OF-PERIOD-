@@ -22968,15 +22968,16 @@ function boRenderCategory(cat){
       const mainCyclerCities = [otherBestsCity].concat(
         BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
       );
-      const mainStartingName = mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
+      const isSantaBarbaraMain = boCityContext === 'santabarbara';
+      const mainStartingName = isSantaBarbaraMain ? 'S. B.' : mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
-        <div class="bop-splash-line2">
-          <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${mainStartingName}</span></span>
+        <div class="bop-splash-line2${isSantaBarbaraMain ? ' bop-sb-compact-title' : ''}">
+          <span class="bop-splash-city-col"><span class="bop-splash-city is-active${isSantaBarbaraMain ? ' bop-sb-compact-city' : ''}" data-fit="${isSantaBarbaraMain ? 'short' : boCityFitValue(otherBestsCity)}" id="bopMainCityText">${mainStartingName}</span></span>
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
-      startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 30, 5000, 15, 15, 0, true);
+      if(!isSantaBarbaraMain) startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 30, 5000, 15, 15, 0, true);
     } else if(isBjsPicksCat(cat)){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
@@ -42131,7 +42132,23 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     node.style.setProperty('visibility','hidden','important');
     node.style.setProperty('pointer-events','none','important');
   }
+  function clearLandingSearch(){
+    var input=document.getElementById('bopLandingSearchInput');
+    var results=document.getElementById('bopLandingResults');
+    if(input){
+      input.value='';
+      input.blur();
+      try{input.dispatchEvent(new Event('input',{bubbles:true}));}catch(error){}
+    }
+    if(results){
+      results.innerHTML='';
+      results.classList.remove('open','is-open','bop-ny-search-results');
+      results.setAttribute('aria-hidden','true');
+    }
+    try{window.history.replaceState(null,'',window.location.pathname+(window.location.hash||''));}catch(error){}
+  }
   function restoreMain(){
+    clearLandingSearch();
     close('bestOfOverlay');
     close('boNearMapPage');
     close('ocWorldOverlay');
@@ -42219,4 +42236,77 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     outline-offset:3px !important;
   }
 </style>
+
+<style id="bop-santa-barbara-compact-title-v1">
+  /* Keep the shortened Santa Barbara city mark precisely 6pt from Period. */
+  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title {
+    display:inline-flex !important;
+    width:auto !important;
+    max-width:100% !important;
+    grid-template-columns:none !important;
+    column-gap:12px !important;
+    align-items:baseline !important;
+    justify-content:center !important;
+  }
+  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title .bop-splash-city-col {
+    display:inline-block !important;
+    min-width:auto !important;
+    text-align:right !important;
+  }
+  #bestOfOverlay #bopMainCityText.bop-sb-compact-city {
+    white-space:nowrap !important;
+    word-spacing:0 !important;
+    letter-spacing:.035em !important;
+  }
+  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title .bop-splash-period {
+    margin:0 !important;
+    padding:0 !important;
+  }
+</style>
+<script id="bop-santa-barbara-compact-title-v1-script">
+(function(){
+  function cityIsSantaBarbara(){
+    try{
+      return String(window.boCityContext||'').toLowerCase()==='santabarbara' ||
+        new URLSearchParams(window.location.search).get('city')==='santabarbara';
+    }catch(error){return false;}
+  }
+  function applyTitle(){
+    if(!cityIsSantaBarbara())return;
+    var best=document.getElementById('bestOfOverlay');
+    if(!best || !best.classList.contains('open'))return;
+    var city=best.querySelector('#bopMainCityText');
+    var line=city&&city.closest('.bop-splash-line2');
+    if(!city || !line)return;
+    if(city.textContent!=='S. B.')city.textContent='S. B.';
+    city.classList.add('bop-sb-compact-city');
+    city.removeAttribute('data-fit');
+    line.classList.add('bop-sb-compact-title');
+  }
+  var observer=new MutationObserver(applyTitle);
+  observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
+  document.addEventListener('click',function(){window.setTimeout(applyTitle,0);},true);
+  window.setInterval(applyTitle,40);
+  applyTitle();
+}());
+</script>
+<script id="bop-landing-search-return-cleanup-v1">
+(function(){
+  var input=document.getElementById('bopLandingSearchInput');
+  var results=document.getElementById('bopLandingResults');
+  var landing=document.getElementById('bopLandingOverlay');
+  if(!input || !results || !landing)return;
+  function clearWhenEmpty(){
+    if(!landing.classList.contains('open') || input.value)return;
+    if(results.innerHTML || results.classList.contains('open') || results.classList.contains('is-open')){
+      results.innerHTML='';
+      results.classList.remove('open','is-open','bop-ny-search-results');
+      results.setAttribute('aria-hidden','true');
+    }
+  }
+  new MutationObserver(function(){window.requestAnimationFrame(clearWhenEmpty);}).observe(results,{subtree:true,childList:true,attributes:true,characterData:true});
+  input.addEventListener('input',function(){window.setTimeout(clearWhenEmpty,0);});
+  clearWhenEmpty();
+}());
+</script>
 
