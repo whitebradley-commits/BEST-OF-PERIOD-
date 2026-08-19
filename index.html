@@ -8989,7 +8989,7 @@ function setupBopLanding(){
     // Match the readable 0.4-second cadence used by the BJS Why orb.
     // Midpoint between the original near-instant spin and the later 400ms
     // readable pace. The popup/orb remains at its existing 400ms speed.
-    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 200);
+    startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 400);
   }
 
   // The cities that actually go somewhere when picked — reads straight from
@@ -43170,5 +43170,155 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   ['pageshow','popstate','resize','orientationchange'].forEach(function(name){window.addEventListener(name,sync,{passive:true});});
   document.addEventListener('click',function(){window.setTimeout(sync,0);},true);
   window.setInterval(sync,60);sync();
+})();
+</script>
+<!-- Final landing authority: one independent, stable five-orb control set. -->
+<style id="bop-stable-five-orb-style-v2">
+  /* Older dock managers may continue running, but they are never painted. */
+  #bopCleanOrbDock,
+  #bopStaticLandingDock,
+  #bopStaticNear,
+  #landingSharePage,
+  #globalSharePage{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+    animation:none !important;
+    transition:none !important;
+  }
+  #bopStableFiveOrbDock{
+    position:fixed;
+    left:10px;
+    bottom:max(58px,calc(env(safe-area-inset-bottom) + 48px));
+    display:none;
+    align-items:center;
+    gap:3px;
+    padding:2px;
+    margin:0;
+    z-index:2147483647;
+    pointer-events:auto;
+    isolation:isolate;
+    contain:layout paint style;
+  }
+  #bopStableFiveOrbDock.is-visible{display:flex;}
+  #bopStableFiveOrbDock .bop-stable-orb{
+    position:relative;
+    flex:0 0 66px;
+    width:66px;
+    height:66px;
+    min-width:66px;
+    min-height:66px;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    border:2px solid #F59E0B;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 45%,rgba(245,158,11,.19),rgba(18,12,3,.6) 62%,#080808 100%);
+    color:#E4002B;
+    box-shadow:0 0 10px rgba(245,158,11,.48),inset 0 0 12px rgba(245,158,11,.18);
+    font:900 9px/.94 'Arial Black',Impact,sans-serif;
+    letter-spacing:.05em;
+    text-align:center;
+    -webkit-tap-highlight-color:transparent;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+    animation:none;
+    transition:none;
+  }
+  #bopStableFiveOrbDock .bop-stable-orb:active{transform:translateZ(0) scale(.97);}
+  #bopStableFiveOrbDock .bop-stable-orb-label{
+    position:absolute;
+    left:3px;
+    right:3px;
+    top:50%;
+    z-index:2;
+    display:block;
+    margin:0;
+    padding:0;
+    color:#E4002B;
+    -webkit-text-fill-color:#E4002B;
+    -webkit-text-stroke:.8px #F59E0B;
+    paint-order:stroke fill;
+    text-shadow:0 1px 2px #000,0 0 3px #000;
+    line-height:.9;
+    transform:translateY(-50%);
+    pointer-events:none;
+    animation:none;
+    transition:none;
+  }
+  #bopStableFiveOrbDock .bop-stable-orb-label b{
+    display:block;
+    margin-top:1px;
+    font-size:25px;
+    line-height:.72;
+  }
+  #bopStableFiveOrbDock [data-stable-orb="closest"] .bop-stable-orb-label{top:calc(50% + 5px);}
+  #bopStableFiveOrbDock .bop-stable-orb-icon{
+    position:absolute;
+    inset:5px;
+    z-index:1;
+    width:calc(100% - 10px);
+    height:calc(100% - 10px);
+    fill:none;
+    stroke:#F59E0B;
+    stroke-width:2.25;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    opacity:.9;
+    pointer-events:none;
+    transform-origin:50% 50%;
+    animation:none;
+  }
+  #bopStableFiveOrbDock [data-stable-orb="world"] .bop-stable-orb-icon{animation:bopStableGlobeSpin 8s linear infinite;}
+  @keyframes bopStableGlobeSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @media(max-width:360px){
+    #bopStableFiveOrbDock{left:6px;bottom:max(52px,calc(env(safe-area-inset-bottom) + 42px));gap:2px;}
+    #bopStableFiveOrbDock .bop-stable-orb{flex-basis:60px;width:60px;height:60px;min-width:60px;min-height:60px;font-size:8px;}
+  }
+  @media(prefers-reduced-motion:reduce){#bopStableFiveOrbDock [data-stable-orb="world"] .bop-stable-orb-icon{animation:none;}}
+</style>
+<script id="bop-stable-five-orb-v2">
+(function(){
+  'use strict';
+  if(window.__bopStableFiveOrbV2)return;
+  window.__bopStableFiveOrbV2=true;
+  function mainVisible(){
+    var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');
+    if(!landing||!landing.classList.contains('open')||getComputedStyle(landing).display==='none')return false;
+    return !best||getComputedStyle(best).display==='none';
+  }
+  function glyph(key){
+    var icons={
+      share:'<svg class="bop-stable-orb-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="14" cy="24" r="4"/><circle cx="33" cy="13" r="4"/><circle cx="33" cy="35" r="4"/><path d="M18 22l11-7M18 26l11 7"/></svg>',
+      near:'<svg class="bop-stable-orb-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 14h28M10 24h28M10 34h28M16 9v29M26 9v29M36 9v29"/><path d="M24 14c-4 0-7 3-7 7 0 5 7 12 7 12s7-7 7-12c0-4-3-7-7-7z"/><circle cx="24" cy="21" r="2"/></svg>',
+      other:'<svg class="bop-stable-orb-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 37h34M10 37V23h8v14M19 37V15h9v22M29 37V20h9v17M13 27h2M13 31h2M22 20h2M22 25h2M22 30h2M32 24h2M32 29h2"/><path d="M21 15l2.5-5 2.5 5"/></svg>',
+      closest:'<svg class="bop-stable-orb-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 37h32M12 31l4-6 4 6 4-10 4 10 4-6 4 6"/><circle cx="12" cy="14" r="2"/><circle cx="20" cy="11" r="2"/><circle cx="28" cy="11" r="2"/><circle cx="36" cy="14" r="2"/></svg>',
+      world:'<svg class="bop-stable-orb-icon" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M8 24h32M24 8c6 5 9 11 9 16s-3 11-9 16M24 8c-6 5-9 11-9 16s3 11 9 16M11 16c4 2 9 3 13 3s9-1 13-3M11 32c4-2 9-3 13-3s9 1 13 3"/></svg>'
+    };return icons[key];
+  }
+  function openAction(key){
+    if(key==='share'){var share=document.getElementById('landingSharePage')||document.getElementById('globalSharePage');if(share){share.click();return;}if(navigator.share)navigator.share({title:document.title,url:location.href}).catch(function(){});return;}
+    if(key==='near'){if(typeof window.boOpenNearMap==='function'){window.boOpenNearMap();return;}document.getElementById('boNearMapPage')?.classList.add('open');return;}
+    if(key==='other'){if(typeof window.ocBuildWorld==='function')window.ocBuildWorld();if(typeof window.ocBuildPins==='function')window.ocBuildPins();document.getElementById('ocWorldOverlay')?.classList.add('open');return;}
+    if(key==='closest'){if(typeof window.bopSimpleClosestShowChoices==='function'){window.bopSimpleClosestShowChoices();return;}if(typeof window.boOpenNearMap==='function')window.boOpenNearMap();return;}
+    if(key==='world'){if(typeof window.bopOpenWorldwideLanding==='function'){window.bopOpenWorldwideLanding();return;}document.getElementById('bopWorldwideLanding')?.classList.add('open');}
+  }
+  function create(){
+    var dock=document.getElementById('bopStableFiveOrbDock');if(dock)return dock;
+    dock=document.createElement('nav');dock.id='bopStableFiveOrbDock';dock.setAttribute('aria-label','Main page navigation');
+    var items=[['share','SHARE<br>PAGE','Share page'],['near','CITY<br>MAP','Open City Map'],['other','OTHER<br>CITIES','Open Other Cities'],['closest','CLOSEST<br><b>5</b>','Open Closest 5'],['world','','Open Worldwide Bests']];
+    items.forEach(function(item){var button=document.createElement('button');button.type='button';button.className='bop-stable-orb';button.dataset.stableOrb=item[0];button.setAttribute('aria-label',item[2]);button.innerHTML=glyph(item[0])+(item[1]?'<span class="bop-stable-orb-label">'+item[1]+'</span>':'');button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();openAction(item[0]);});dock.appendChild(button);});
+    document.body.appendChild(dock);return dock;
+  }
+  function retireLegacy(){
+    ['bopCleanOrbDock','bopStaticLandingDock','bopStaticNear','landingSharePage','globalSharePage'].forEach(function(id){
+      var node=document.getElementById(id);if(node&&node.parentNode)node.parentNode.removeChild(node);
+    });
+  }
+  function sync(){retireLegacy();var dock=create();dock.classList.toggle('is-visible',mainVisible());}
+  ['pageshow','popstate','resize','orientationchange'].forEach(function(eventName){window.addEventListener(eventName,sync,{passive:true});});
+  document.addEventListener('click',function(){window.setTimeout(sync,40);},true);
+  window.setInterval(sync,320);sync();
 })();
 </script>
