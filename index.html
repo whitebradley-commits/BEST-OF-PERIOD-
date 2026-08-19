@@ -42871,3 +42871,51 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   window.setInterval(injectLink,1200);
 })();
 </script>
+
+<!-- Bottom-right BJS CO. one-ring visual update; preserves the live FNT hot-link -->
+<style id="bop-bjs-one-ring-logo-style-v1">
+  #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."]{
+    width:54px!important;
+    height:54px!important;
+    border:2px solid #F59E0B!important;
+    border-radius:50%!important;
+    background:#080808!important;
+    box-shadow:0 0 10px rgba(245,158,11,.34),0 0 22px rgba(245,158,11,.16)!important;
+    overflow:hidden!important;
+  }
+  #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."] svg{
+    width:42px!important;
+    height:42px!important;
+    overflow:visible!important;
+  }
+  #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."] .bop-bjs-one-ring-word{
+    fill:#E4002B;
+    stroke:#F59E0B;
+    stroke-width:.78px;
+    paint-order:stroke fill;
+    stroke-linejoin:round;
+    letter-spacing:.1px;
+  }
+  #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."]:hover,
+  #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."]:focus-visible{
+    border-color:#ffd166!important;
+    box-shadow:0 0 14px rgba(245,158,11,.64),0 0 30px rgba(245,158,11,.33)!important;
+    outline:none!important;
+  }
+  @media(max-width:520px){
+    #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."]{width:50px!important;height:50px!important;bottom:14px!important;right:14px!important;}
+    #bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."] svg{width:39px!important;height:39px!important;}
+  }
+</style>
+<script id="bop-bjs-one-ring-logo-v1">
+(function(){
+  function apply(){
+    var link=document.querySelector('#bopLandingOverlay > a.footer-hotlink[aria-label="Open FNT Co."]');
+    if(!link || link.dataset.bopBjsOneRing==='true')return;
+    link.dataset.bopBjsOneRing='true';
+    link.innerHTML='<svg aria-hidden="true" viewBox="0 0 44 44" role="img"><title>BJS CO.</title><text class="bop-bjs-one-ring-word" x="22" y="20" text-anchor="middle" font-family="Archivo Black, Arial Black, sans-serif" font-size="13" font-weight="900">BJS</text><text class="bop-bjs-one-ring-word" x="22" y="32" text-anchor="middle" font-family="Archivo Black, Arial Black, sans-serif" font-size="9.4" font-weight="900">CO.</text></svg>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+  window.setInterval(apply,1600);
+})();
+</script>
