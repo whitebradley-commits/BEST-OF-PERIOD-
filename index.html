@@ -34054,7 +34054,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
       }
       results.innerHTML=html;results.classList.add('open','bop-ny-search-results');
     }
-    input.addEventListener('input',paint);
+    /* input.addEventListener('input',paint); -- disabled: superseded by bop-global-place-search-v271, which was firing on every keystroke alongside this and racing for control of the results dropdown */
     results.addEventListener('click',function(event){
       var btn=event.target.closest('[data-ny-search-dest]');if(!btn)return;
       event.preventDefault();event.stopPropagation();var dest=btn.dataset.nySearchDest;
@@ -34601,7 +34601,8 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   }
   function start(){
     var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');if(!input||!results)return;
-    input.addEventListener('input',function(){
+    /* input.addEventListener('input',function(){ -- disabled: superseded by bop-global-place-search-v271, which was firing on every keystroke alongside this and racing for control of the results dropdown */
+    function disabledV265Search(){
       var q=normalize(input.value);if(!q)return;
       var found=launchCities.filter(function(city){return matches(city,q)}).slice(0,3);if(!found.length)return;
       /* Preserve the specialized New York chooser, which owns New York and borough queries. */
@@ -34609,7 +34610,7 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
       results.classList.remove('bop-ny-search-results');
       results.innerHTML='<div class="bop-landing-results-label">Live Cities</div>'+found.map(function(city){return '<button type="button" class="bop-landing-result" data-launch-city="'+city.dest+'"><span class="bop-landing-result-dot"></span> '+city.name+', '+city.region+'</button>'}).join('');
       results.classList.add('open');
-    });
+    }
     results.addEventListener('click',function(event){var button=event.target.closest('[data-launch-city]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();openCity(button.dataset.launchCity)},true);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
@@ -35400,7 +35401,7 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
       results.classList.add('open');
     }
     function repaintLast(){setTimeout(paint,0)}
-    input.addEventListener('input',repaintLast);
+    /* input.addEventListener('input',repaintLast); -- disabled: superseded by bop-global-place-search-v271, which was firing on every keystroke alongside this and racing for control of the results dropdown */
     input.addEventListener('compositionend',repaintLast);
     input.addEventListener('keyup',repaintLast);
     results.addEventListener('click',function(event){var button=event.target.closest('[data-authoritative-city]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();openCity(button.dataset.authoritativeCity)},true);
