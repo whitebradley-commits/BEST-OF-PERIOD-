@@ -22969,7 +22969,7 @@ function boRenderCategory(cat){
         BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
       );
       const isSantaBarbaraMain = boCityContext === 'santabarbara';
-      const mainStartingName = isSantaBarbaraMain ? 'S. B.' : mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
+      const mainStartingName = isSantaBarbaraMain ? 'S. B.' : otherBestsCity;
       boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
         <div class="bop-splash-line1">Best Of</div>
         <div class="bop-splash-line2${isSantaBarbaraMain ? ' bop-sb-compact-title' : ''}">
@@ -22977,7 +22977,7 @@ function boRenderCategory(cat){
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
-      if(!isSantaBarbaraMain) startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 30, 5000, 15, 15, 0, true);
+      /* City pages deliberately remain on their selected full city name; no title cycler runs here. */
     } else if(isBjsPicksCat(cat)){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
@@ -23720,6 +23720,10 @@ boBackBtnEl.addEventListener('click', (e) => {
   // button must return to the original fast-rotating city-search landing page,
   // not to the old city Best Of listings page.
   if(boCurrentCat === 'otheroptions'){
+    if(typeof window.bopSafeReturnToLanding === 'function'){
+      window.bopSafeReturnToLanding();
+      return;
+    }
     const landing = document.getElementById('bopLandingOverlay');
     const input = document.getElementById('bopLandingSearchInput');
     const results = document.getElementById('bopLandingResults');
@@ -40695,6 +40699,15 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 })();
 </script>
 
+
+<!-- v276: restore missing lookup helper before restaurant expansion executes -->
+<script id="bop-keyfor-recovery-v1">
+function keyFor(name,city){
+  function clean(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
+  return clean(city)+'::'+clean(name);
+}
+</script>
+
 <script id="bop-restaurant-data-expansion">
 /* DATA ONLY: final post-initialization restaurant expansion. No CSS, markup, card layout, or interaction code is changed. */
 (function(){
@@ -40756,6 +40769,14 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     #bopCleanOrbDock .bop-orb-label--closest b{font-size:31px!important;}
   }
 </style>
+
+<!-- v289: prevent optional score-refresh data from blocking city-page rendering -->
+<script id="bop-score-refresh-safety-fallback-v1">
+var scoreByKey = window.scoreByKey || new Map();
+var scoreByName = window.scoreByName || new Map();
+function normalize(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');}
+</script>
+
 <script id="bop-final-orb-tier-rating-patch-v1-script">
 (function(){
   'use strict';
@@ -42003,115 +42024,6 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
     pointer-events:none !important;
   }
 </style>
-<script id="bop-stable-city-return-v1-script">
-(function(){
-  function byId(id){return document.getElementById(id);}
-  function closeCity(){
-    var city=byId('bestOfOverlay');
-    if(!city)return;
-    city.classList.remove('open','is-open','active','tg-open');
-    city.setAttribute('aria-hidden','true');
-    city.style.setProperty('display','none','important');
-    city.style.setProperty('visibility','hidden','important');
-    city.style.setProperty('pointer-events','none','important');
-  }
-  function showLanding(){
-    var landing=byId('bopLandingOverlay');
-    if(!landing)return;
-    landing.classList.add('open');
-    landing.setAttribute('aria-hidden','false');
-    landing.style.removeProperty('display');
-    landing.style.removeProperty('visibility');
-    landing.style.removeProperty('pointer-events');
-    document.body.classList.remove('bop-ui-bestof','bo-near-map-active','bop-ui-near','bo-closest-five-active','bop-closest-tier-selected');
-    document.body.classList.add('bop-ui-primary');
-  }
-  function restoreLanding(event){
-    var back=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
-    if(!back)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    closeCity();
-    showLanding();
-    window.setTimeout(function(){
-      var dock=byId('bopCleanOrbDock');
-      if(!dock)return;
-      dock.hidden=false;
-      dock.setAttribute('aria-hidden','false');
-      dock.style.removeProperty('display');
-      dock.style.removeProperty('visibility');
-      dock.style.removeProperty('opacity');
-      dock.style.removeProperty('pointer-events');
-    },0);
-  }
-  document.addEventListener('click',restoreLanding,true);
-}());
-</script>
-
-<script id="bop-window-capture-city-return-v1">
-(function(){
-  function close(id){
-    var node=document.getElementById(id);
-    if(!node)return;
-    node.classList.remove('open','is-open','active','tg-open');
-    node.setAttribute('aria-hidden','true');
-    node.style.setProperty('display','none','important');
-    node.style.setProperty('visibility','hidden','important');
-    node.style.setProperty('pointer-events','none','important');
-  }
-  function clearLandingSearch(){
-    var input=document.getElementById('bopLandingSearchInput');
-    var results=document.getElementById('bopLandingResults');
-    if(input){
-      input.value='';
-      input.blur();
-      try{input.dispatchEvent(new Event('input',{bubbles:true}));}catch(error){}
-    }
-    if(results){
-      results.innerHTML='';
-      results.classList.remove('open','is-open','bop-ny-search-results');
-      results.setAttribute('aria-hidden','true');
-    }
-    try{window.history.replaceState(null,'',window.location.pathname+(window.location.hash||''));}catch(error){}
-  }
-  function restoreMain(){
-    clearLandingSearch();
-    close('bestOfOverlay');
-    close('boNearMapPage');
-    close('ocWorldOverlay');
-    close('bopWorldwideLanding');
-    close('boWorldwidePage');
-    var landing=document.getElementById('bopLandingOverlay');
-    if(landing){
-      landing.classList.add('open');
-      landing.setAttribute('aria-hidden','false');
-      landing.style.removeProperty('display');
-      landing.style.removeProperty('visibility');
-      landing.style.removeProperty('pointer-events');
-    }
-    document.body.classList.remove('bop-ui-bestof','bop-ui-near','bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active');
-    document.body.classList.add('bop-ui-primary');
-    var dock=document.getElementById('bopCleanOrbDock');
-    if(dock){
-      dock.hidden=false;
-      dock.setAttribute('aria-hidden','false');
-      dock.style.removeProperty('display');
-      dock.style.removeProperty('visibility');
-      dock.style.removeProperty('opacity');
-      dock.style.removeProperty('pointer-events');
-    }
-    window.scrollTo(0,0);
-  }
-  window.addEventListener('click',function(event){
-    var back=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
-    if(!back)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    restoreMain();
-  },true);
-}());
-</script>
-
 <style id="bop-main-bjs-co-badge-v1">
   /* Bottom-right BJS Co. mark: circular black badge, gold ring, and red lettering. */
   #bopLandingOverlay.open > a.footer-hotlink[aria-label="Open FNT Co."] {
@@ -42164,59 +42076,6 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   }
 </style>
 
-<style id="bop-santa-barbara-compact-title-v1">
-  /* Keep the shortened Santa Barbara city mark precisely 6pt from Period. */
-  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title {
-    display:inline-flex !important;
-    width:auto !important;
-    max-width:100% !important;
-    grid-template-columns:none !important;
-    column-gap:12px !important;
-    align-items:baseline !important;
-    justify-content:center !important;
-  }
-  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title .bop-splash-city-col {
-    display:inline-block !important;
-    min-width:auto !important;
-    text-align:right !important;
-  }
-  #bestOfOverlay #bopMainCityText.bop-sb-compact-city {
-    white-space:nowrap !important;
-    word-spacing:0 !important;
-    letter-spacing:.035em !important;
-  }
-  #bestOfOverlay .bop-splash-line2.bop-sb-compact-title .bop-splash-period {
-    margin:0 !important;
-    padding:0 !important;
-  }
-</style>
-<script id="bop-santa-barbara-compact-title-v1-script">
-(function(){
-  function cityIsSantaBarbara(){
-    try{
-      return String(window.boCityContext||'').toLowerCase()==='santabarbara' ||
-        new URLSearchParams(window.location.search).get('city')==='santabarbara';
-    }catch(error){return false;}
-  }
-  function applyTitle(){
-    if(!cityIsSantaBarbara())return;
-    var best=document.getElementById('bestOfOverlay');
-    if(!best || !best.classList.contains('open'))return;
-    var city=best.querySelector('#bopMainCityText');
-    var line=city&&city.closest('.bop-splash-line2');
-    if(!city || !line)return;
-    if(city.textContent!=='S. B.')city.textContent='S. B.';
-    city.classList.add('bop-sb-compact-city');
-    city.removeAttribute('data-fit');
-    line.classList.add('bop-sb-compact-title');
-  }
-  var observer=new MutationObserver(applyTitle);
-  observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-  document.addEventListener('click',function(){window.setTimeout(applyTitle,0);},true);
-  window.setInterval(applyTitle,40);
-  applyTitle();
-}());
-</script>
 <script id="bop-landing-search-return-cleanup-v1">
 (function(){
   var input=document.getElementById('bopLandingSearchInput');
@@ -42548,6 +42407,367 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   window.setTimeout(apply,300);
   window.setTimeout(apply,1250);
+})();
+</script>
+
+<!-- v277: stable city-page return and fixed city / Period title lockup -->
+<!-- v278: city-title geometry lock — full-width city column + exact 6px Period gap -->
+<!-- v279: unified city / Period lockups — landing, results, and city pages -->
+<!-- v280: visible six-pixel city / Period gap -->
+<!-- v281: stable six-pixel visible title gap after legacy observers initialize -->
+<!-- v282: city-title column width lock — prevent inherited tracking from collapsing the city column -->
+<!-- v283: city-title italic column metric lock -->
+
+<!-- v285: single stable controller for city titles and return-to-main search -->
+<style id="bop-stable-title-navigation-controller-v1">
+  .bop-splash-line2:has(#bopLandingCityText),
+  .bop-splash-line2:has(#bopSplashCityText),
+  .bop-splash-line2:has(#bopResultsCityText),
+  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText){
+    display:inline-flex!important;
+    width:auto!important;
+    max-width:calc(100vw - 32px)!important;
+    grid-template-columns:none!important;
+    align-items:baseline!important;
+    justify-content:center!important;
+    row-gap:0!important;
+    column-gap:6px!important;
+    gap:0 6px!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,
+  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-city-col,
+  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-city-col,
+  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-city-col{
+    display:inline-block!important;
+    flex:0 0 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    letter-spacing:normal!important;
+    word-spacing:normal!important;
+    text-align:right!important;
+    overflow:visible!important;
+  }
+  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city,
+  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-city,
+  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-city,
+  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-city{
+    position:relative!important;
+    display:inline-block!important;
+    scale:1!important;
+    transform:none!important;
+    margin:0!important;
+    padding:0!important;
+    letter-spacing:normal!important;
+    white-space:nowrap!important;
+    z-index:9!important;
+  }
+  .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period,
+  .bop-splash-line2:has(#bopSplashCityText) .bop-splash-period,
+  .bop-splash-line2:has(#bopResultsCityText) .bop-splash-period,
+  #bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-period{
+    display:inline-block!important;
+    flex:0 0 auto!important;
+    position:relative!important;
+    scale:1!important;
+    transform:none!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+    z-index:9!important;
+  }
+  #bopLandingOverlay.open, #bopLandingOverlay.open *{pointer-events:auto!important;}
+  #bopLandingOverlay.open #bopLandingSearchInput{cursor:text!important;user-select:text!important;-webkit-user-select:text!important;opacity:1!important;}
+</style>
+<script id="bop-stable-title-navigation-controller-v1-script">
+(function(){
+  var cityIds=['bopLandingCityText','bopSplashCityText','bopResultsCityText','bopMainCityText'];
+  var controlling=false, titleTimer=0, returnTimer=0;
+  var labels={
+    lasvegas:'Las Vegas',santabarbara:'S. B.',sandiego:'San Diego',sanfrancisco:'San Francisco',losangeles:'Los Angeles',
+    newyork:'New York',washingtondc:'Washington, D.C.',siliconvalley:'Silicon Valley',neworleans:'New Orleans',
+    portland:'Portland',miami:'Miami',chicago:'Chicago',boston:'Boston',philadelphia:'Philadelphia',atlanta:'Atlanta',
+    austin:'Austin',dallas:'Dallas',houston:'Houston',seattle:'Seattle',denver:'Denver',phoenix:'Phoenix',
+    santafe:'Santa Fe',nashville:'Nashville',orlando:'Orlando',manhattan:'Manhattan',brooklyn:'Brooklyn',queens:'Queens',bronx:'The Bronx'
+  };
+  function params(){try{return new URLSearchParams(location.search);}catch(error){return new URLSearchParams();}}
+  function pageCityKey(){return String(params().get('city')||'').toLowerCase();}
+  function trim(value){return String(value||'').replace(/\s+/g,' ').trim();}
+  function selectedName(){
+    var key=pageCityKey();
+    if(labels[key])return labels[key];
+    var lead=document.getElementById('boLeadBestCity');
+    var leadText=trim(lead&&lead.textContent);
+    if(leadText)return leadText;
+    return '';
+  }
+  function setTitle(city){
+    if(!city)return;
+    var line=city.closest('.bop-splash-line2');
+    var col=city.closest('.bop-splash-city-col');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!line||!col||!period)return;
+    var isMain=city.id==='bopMainCityText';
+    var wanted=isMain&&selectedName();
+    controlling=true;
+    if(wanted && trim(city.textContent)!==wanted)city.textContent=wanted;
+    city.removeAttribute('data-fit');
+    city.style.setProperty('scale','1','important');
+    city.style.setProperty('transform','none','important');
+    city.style.setProperty('letter-spacing','normal','important');
+    period.style.setProperty('scale','1','important');
+    period.style.setProperty('transform','none','important');
+    period.style.setProperty('margin-left','0','important');
+    line.style.setProperty('display','inline-flex','important');
+    line.style.setProperty('grid-template-columns','none','important');
+    line.style.setProperty('row-gap','0','important');
+    line.style.setProperty('column-gap','6px','important');
+    line.style.setProperty('gap','0 6px','important');
+    col.style.setProperty('font-family',getComputedStyle(city).fontFamily,'important');
+    col.style.setProperty('font-size',getComputedStyle(city).fontSize,'important');
+    col.style.setProperty('font-style',getComputedStyle(city).fontStyle,'important');
+    col.style.setProperty('font-weight',getComputedStyle(city).fontWeight,'important');
+    col.style.setProperty('letter-spacing','normal','important');
+    col.style.setProperty('word-spacing','normal','important');
+    col.style.setProperty('width','auto','important');
+    col.style.setProperty('min-width','0','important');
+    col.style.setProperty('flex','0 0 auto','important');
+    requestAnimationFrame(function(){
+      var c=city.getBoundingClientRect(),p=period.getBoundingClientRect();
+      var current=parseFloat(getComputedStyle(line).columnGap)||0;
+      var actual=p.left-c.right;
+      var next=Math.max(0,current+(6-actual));
+      if(Math.abs(actual-6)>.35){
+        line.style.setProperty('column-gap',next.toFixed(2)+'px','important');
+        line.style.setProperty('gap','0 '+next.toFixed(2)+'px','important');
+      }
+      requestAnimationFrame(function(){
+        var c2=city.getBoundingClientRect(),p2=period.getBoundingClientRect();
+        line.setAttribute('data-bop-stable-gap',String(Math.round(p2.left-c2.right))+'px');
+        line.setAttribute('data-bop-title-city',trim(city.textContent));
+        controlling=false;
+      });
+    });
+  }
+  function updateTitles(){cityIds.forEach(function(id){setTitle(document.getElementById(id));});}
+  function scheduleTitles(){clearTimeout(titleTimer);titleTimer=setTimeout(updateTitles,18);}
+  function restoreLanding(){
+    var landing=document.getElementById('bopLandingOverlay');
+    var best=document.getElementById('bestOfOverlay');
+    if(!landing||!landing.classList.contains('open')||(best&&best.classList.contains('open')))return;
+    var input=document.getElementById('bopLandingSearchInput');
+    var results=document.getElementById('bopLandingResults');
+    document.body.style.removeProperty('overflow');document.documentElement.style.removeProperty('overflow');
+    landing.style.setProperty('pointer-events','auto','important');
+    if(input){input.disabled=false;input.readOnly=false;input.tabIndex=0;input.removeAttribute('aria-disabled');input.style.setProperty('pointer-events','auto','important');input.style.setProperty('user-select','text','important');}
+    if(results){results.style.setProperty('pointer-events','auto','important');results.removeAttribute('aria-disabled');}
+  }
+  function scheduleReturn(){clearTimeout(returnTimer);[0,80,250,700].forEach(function(delay){setTimeout(restoreLanding,delay);});}
+  function closeAndReturn(){
+    var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');
+    if(best){best.classList.remove('open','is-open','active','tg-open');best.setAttribute('aria-hidden','true');best.style.setProperty('display','none','important');best.style.setProperty('visibility','hidden','important');best.style.setProperty('pointer-events','none','important');}
+    if(landing){landing.classList.add('open');landing.setAttribute('aria-hidden','false');landing.style.removeProperty('display');landing.style.removeProperty('visibility');landing.style.setProperty('pointer-events','auto','important');}
+    if(input){input.value='';input.disabled=false;input.readOnly=false;input.style.setProperty('pointer-events','auto','important');}
+    if(results){results.innerHTML='';results.classList.remove('open','is-open','bop-ny-search-results');results.setAttribute('aria-hidden','true');results.style.setProperty('pointer-events','auto','important');}
+    document.body.classList.remove('bop-ui-bestof','bop-ui-near','bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active');document.body.classList.add('bop-ui-primary');
+    try{history.replaceState(null,'',location.pathname+(location.hash||''));}catch(error){}
+    window.scrollTo(0,0);scheduleReturn();
+  }
+  document.addEventListener('click',function(event){
+    var back=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
+    if(!back)return;
+    event.preventDefault();event.stopImmediatePropagation();closeAndReturn();
+  },true);
+  new MutationObserver(function(){if(!controlling)scheduleTitles();scheduleReturn();}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style','aria-hidden']});
+  window.addEventListener('popstate',function(){setTimeout(function(){restoreLanding();updateTitles();},0);});
+  window.addEventListener('resize',scheduleTitles);
+  setInterval(function(){updateTitles();restoreLanding();},350);
+  [0,100,300,800,1500].forEach(function(delay){setTimeout(function(){updateTitles();restoreLanding();},delay);});
+})();
+</script>
+
+<!-- v286: explicit city-title font scale lock -->
+<script id="bop-city-title-font-scale-lock-v1">
+(function(){
+  var ids=['bopLandingCityText','bopSplashCityText','bopResultsCityText','bopMainCityText'];
+  function sizeFor(text){
+    var n=String(text||'').trim().length;
+    if(n>=20)return 54;
+    if(n>=15)return 62;
+    if(n>=12)return 70;
+    return 88;
+  }
+  function fix(city){
+    if(!city)return;
+    var line=city.closest('.bop-splash-line2');
+    var col=city.closest('.bop-splash-city-col');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!line||!col||!period)return;
+    var px=sizeFor(city.textContent);
+    city.style.setProperty('font-size',px+'px','important');
+    city.style.setProperty('line-height','0.95','important');
+    city.style.setProperty('scale','1','important');
+    city.style.setProperty('transform','none','important');
+    period.style.setProperty('font-size',Math.round(px*.88)+'px','important');
+    period.style.setProperty('line-height','0.95','important');
+    period.style.setProperty('scale','1','important');
+    period.style.setProperty('transform','none','important');
+    col.style.setProperty('font-size',px+'px','important');
+    col.style.setProperty('line-height','0.95','important');
+    col.style.setProperty('font-style','italic','important');
+    col.style.setProperty('width','auto','important');
+    col.style.setProperty('min-width','0','important');
+    line.style.setProperty('font-size','initial','important');
+    line.style.setProperty('line-height','0.95','important');
+    line.style.setProperty('display','inline-flex','important');
+    line.style.setProperty('column-gap','6px','important');
+    line.style.setProperty('gap','0 6px','important');
+    requestAnimationFrame(function(){
+      var c=city.getBoundingClientRect(),p=period.getBoundingClientRect();
+      var current=parseFloat(getComputedStyle(line).columnGap)||0;
+      var actual=p.left-c.right;
+      var next=Math.max(0,current+(6-actual));
+      if(Math.abs(actual-6)>.5){line.style.setProperty('column-gap',next.toFixed(1)+'px','important');line.style.setProperty('gap','0 '+next.toFixed(1)+'px','important');}
+      requestAnimationFrame(function(){var a=city.getBoundingClientRect(),b=period.getBoundingClientRect();line.setAttribute('data-bop-font-lock-gap',String(Math.round(b.left-a.right))+'px');});
+    });
+  }
+  function run(){ids.forEach(function(id){fix(document.getElementById(id));});}
+  [0,40,120,250,500,900,1500,2500].forEach(function(delay){setTimeout(run,delay);});
+  setInterval(run,250);
+  window.addEventListener('resize',run);
+})();
+</script>
+
+<!-- v287: direct city-title and Back-route repair -->
+<script id="bop-direct-city-title-back-repair-v1">
+(function(){
+  function safeReturn(){
+    var best=document.getElementById('bestOfOverlay');
+    var landing=document.getElementById('bopLandingOverlay');
+    var input=document.getElementById('bopLandingSearchInput');
+    var results=document.getElementById('bopLandingResults');
+    var dock=document.getElementById('bopCleanOrbDock');
+    ['otherCitiesOverlay','ocWorldOverlay','boNearMapPage','bopWorldwideLanding','boWorldwidePage'].forEach(function(id){
+      var node=document.getElementById(id);if(node){node.classList.remove('open','is-open','active','tg-open');node.setAttribute('aria-hidden','true');}
+    });
+    if(best){
+      best.classList.remove('open','is-open','active','tg-open');
+      best.setAttribute('aria-hidden','true');
+      best.style.removeProperty('display');
+      best.style.removeProperty('visibility');
+      best.style.removeProperty('pointer-events');
+    }
+    if(landing){
+      landing.classList.add('open');
+      landing.setAttribute('aria-hidden','false');
+      landing.style.removeProperty('display');
+      landing.style.removeProperty('visibility');
+      landing.style.setProperty('pointer-events','auto','important');
+    }
+    if(input){
+      input.value='';input.disabled=false;input.readOnly=false;input.tabIndex=0;
+      input.removeAttribute('aria-disabled');input.style.setProperty('pointer-events','auto','important');
+      input.style.setProperty('user-select','text','important');input.style.setProperty('opacity','1','important');
+    }
+    if(results){
+      results.innerHTML='';results.classList.remove('open','is-open','bop-ny-search-results');
+      results.setAttribute('aria-hidden','true');results.style.setProperty('pointer-events','auto','important');
+    }
+    if(dock){dock.hidden=false;dock.setAttribute('aria-hidden','false');dock.style.removeProperty('display');dock.style.removeProperty('visibility');dock.style.setProperty('pointer-events','auto','important');}
+    document.body.classList.remove('bop-ui-bestof','bop-ui-near','bo-near-map-active','bo-closest-five-active','bop-closest-tier-selected','oc-world-active');
+    document.body.classList.add('bop-ui-primary');
+    document.body.style.removeProperty('overflow');document.documentElement.style.removeProperty('overflow');
+    try{history.replaceState(null,'',location.pathname+(location.hash||''));}catch(error){}
+    window.scrollTo(0,0);
+    [0,60,180,500].forEach(function(delay){setTimeout(function(){
+      if(best&&!best.classList.contains('open')){best.style.removeProperty('display');best.style.removeProperty('visibility');best.style.removeProperty('pointer-events');}
+      if(input){input.disabled=false;input.readOnly=false;input.style.setProperty('pointer-events','auto','important');}
+      if(landing){landing.classList.add('open');landing.style.setProperty('pointer-events','auto','important');}
+    },delay);});
+  }
+  window.bopSafeReturnToLanding=safeReturn;
+  document.addEventListener('click',function(event){
+    var back=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
+    if(!back)return;
+    event.preventDefault();event.stopImmediatePropagation();safeReturn();
+  },true);
+})();
+</script>
+
+<!-- v288: replace legacy city Back control with single landing-return action -->
+<style id="bop-back-button-final-hide-v1">
+  #bestOfOverlay:not(.open){display:none!important;visibility:hidden!important;pointer-events:none!important;}
+</style>
+<script id="bop-back-button-final-replacement-v1">
+(function(){
+  function safe(){if(typeof window.bopSafeReturnToLanding==='function')window.bopSafeReturnToLanding();}
+  function replace(){
+    var old=document.getElementById('boBackBtn');
+    if(!old || old.dataset.bopBackFinal==='1')return;
+    var button=old.cloneNode(true);
+    button.dataset.bopBackFinal='1';
+    old.replaceWith(button);
+    button.addEventListener('click',function(event){
+      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();safe();
+    },true);
+    button.addEventListener('pointerup',function(event){
+      event.preventDefault();event.stopPropagation();safe();
+    },true);
+  }
+  function enforce(){
+    replace();
+    var best=document.getElementById('bestOfOverlay');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(best && !best.classList.contains('open')){
+      best.style.removeProperty('display');
+      best.style.removeProperty('visibility');
+      best.style.removeProperty('pointer-events');
+    }
+    if(landing&&landing.classList.contains('open'))landing.style.setProperty('pointer-events','auto','important');
+  }
+  [0,100,350,800,1600].forEach(function(delay){setTimeout(enforce,delay);});
+  new MutationObserver(function(){setTimeout(enforce,0);}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+})();
+</script>
+
+<!-- v290: visible single-action city Back control -->
+<style id="bop-city-back-visible-v1">
+  #bestOfOverlay.open #boBackBtn[data-bop-back-final="1"]{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    z-index:9999!important;
+  }
+</style>
+<script id="bop-city-back-visible-v1-script">
+(function(){
+  function wire(){
+    var best=document.getElementById('bestOfOverlay');
+    var button=document.getElementById('boBackBtn');
+    if(!best||!best.classList.contains('open')||!button)return;
+    if(button.dataset.bopBackFinal!=='1'){
+      var fresh=button.cloneNode(true);
+      fresh.dataset.bopBackFinal='1';
+      button.replaceWith(fresh);
+      button=fresh;
+      button.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();if(typeof window.bopSafeReturnToLanding==='function')window.bopSafeReturnToLanding();},true);
+      button.addEventListener('pointerup',function(event){event.preventDefault();event.stopPropagation();if(typeof window.bopSafeReturnToLanding==='function')window.bopSafeReturnToLanding();},true);
+    }
+    button.classList.add('bo-visible');
+    button.style.setProperty('display','flex','important');
+    button.style.setProperty('visibility','visible','important');
+    button.style.setProperty('opacity','1','important');
+    button.style.setProperty('pointer-events','auto','important');
+    button.style.setProperty('z-index','9999','important');
+  }
+  [0,40,120,300,700,1300].forEach(function(delay){setTimeout(wire,delay);});
+  new MutationObserver(function(){setTimeout(wire,0);}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
 })();
 </script>
 
