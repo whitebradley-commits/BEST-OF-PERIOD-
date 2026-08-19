@@ -42912,3 +42912,338 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 })();
 </script>
 
+<!-- v295: isolated landing title lockup; legacy title row is data-only -->
+<style id="bop-isolated-landing-lockup-v1">
+  /* The original rotating row remains in the DOM only as a source of city text. */
+  #bopLandingOverlay .bop-splash-line2,
+  #tbotrLandingOverlay .bop-splash-line2{
+    display:none!important;
+  }
+  .bop-isolated-title-lockup{
+    display:grid!important;
+    grid-template-columns:minmax(0,var(--bop-isolated-city-slot,270px)) max-content!important;
+    column-gap:6px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:fit-content!important;
+    max-width:calc(100vw - 20px)!important;
+    height:78px!important;
+    min-height:78px!important;
+    margin:0 auto!important;
+    padding:0!important;
+    position:relative!important;
+    overflow:visible!important;
+    pointer-events:none!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+  }
+  .bop-isolated-city-wrap{
+    display:block!important;
+    width:var(--bop-isolated-city-slot,270px)!important;
+    min-width:0!important;
+    max-width:var(--bop-isolated-city-slot,270px)!important;
+    text-align:right!important;
+    overflow:visible!important;
+  }
+  #bopIsolatedLandingCity{
+    display:inline-block!important;
+    color:#E4002B!important;
+    font-family:Georgia,'Times New Roman',serif!important;
+    font-style:italic!important;
+    font-weight:700!important;
+    font-size:var(--bop-isolated-city-size,57px)!important;
+    line-height:.95!important;
+    letter-spacing:normal!important;
+    white-space:nowrap!important;
+    margin:0!important;
+    padding:0!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    text-shadow:0 1px 2px #000,0 0 12px rgba(228,0,43,.6)!important;
+  }
+  #bopIsolatedLandingPeriod{
+    display:inline-block!important;
+    color:#f59e0b!important;
+    font-family:Georgia,'Times New Roman',serif!important;
+    font-style:normal!important;
+    font-weight:700!important;
+    font-size:var(--bop-isolated-period-size,75px)!important;
+    line-height:.95!important;
+    letter-spacing:normal!important;
+    white-space:nowrap!important;
+    margin:0!important;
+    padding:0!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    text-shadow:0 1px 2px #000,0 0 12px rgba(245,158,11,.6)!important;
+  }
+  #bopLandingOverlay .bop-splash-line1, #tbotrLandingOverlay .bop-splash-line1{
+    font-size:calc(73.653px + 2px)!important;
+    transform:none!important;
+    animation:none!important;
+  }
+  @media(max-width:600px),(pointer:coarse){
+    #bopLandingOverlay .bop-splash-line1, #tbotrLandingOverlay .bop-splash-line1{font-size:54px!important;}
+    .bop-isolated-title-lockup{
+      grid-template-columns:minmax(0,var(--bop-isolated-city-slot,150px)) max-content!important;
+      width:fit-content!important;
+      max-width:calc(100vw - 12px)!important;
+      height:68px!important;
+      min-height:68px!important;
+    }
+    .bop-isolated-city-wrap{width:var(--bop-isolated-city-slot,150px)!important;max-width:var(--bop-isolated-city-slot,150px)!important;}
+    #bopIsolatedLandingCity{font-size:var(--bop-isolated-city-size,44px)!important;}
+    #bopIsolatedLandingPeriod{font-size:var(--bop-isolated-period-size,55px)!important;}
+  }
+</style>
+<script id="bop-isolated-landing-lockup-v1-script">
+(function(){
+  function clamp(value,min,max){return Math.max(min,Math.min(max,value));}
+  function install(){
+    var source=document.getElementById('bopSplashCityText')||document.getElementById('bopLandingCityText')||document.getElementById('bopResultsCityText');
+    var legacy=source&&source.closest('.bop-splash-line2');
+    var hero=legacy&&legacy.parentElement;
+    if(!source||!legacy||!hero)return;
+    var lockup=document.getElementById('bopIsolatedLandingLockup');
+    if(!lockup){
+      lockup=document.createElement('div');
+      lockup.id='bopIsolatedLandingLockup';
+      lockup.className='bop-isolated-title-lockup';
+      lockup.setAttribute('aria-live','polite');
+      lockup.innerHTML='<span class="bop-isolated-city-wrap"><span id="bopIsolatedLandingCity"></span></span><span id="bopIsolatedLandingPeriod">Period</span>';
+      legacy.insertAdjacentElement('afterend',lockup);
+    }
+    return {source:source,lockup:lockup,city:lockup.querySelector('#bopIsolatedLandingCity')};
+  }
+  function scaleCity(name,width){
+    var n=String(name||'').trim().length;
+    var mobile=width<=600;
+    var base=mobile?44:59; /* red city text: original baseline + 2 px */
+    if(n>=19)return mobile?25:36;
+    if(n>=15)return mobile?29:42;
+    if(n>=12)return mobile?34:48;
+    if(n>=10)return mobile?39:54;
+    return base;
+  }
+  function update(){
+    var bits=install();if(!bits)return;
+    var width=window.innerWidth||document.documentElement.clientWidth||1280;
+    var mobile=width<=600;
+    var text=(bits.source.textContent||'').replace(/\s+/g,' ').trim()||'Las Vegas';
+    var slot=Math.round(mobile?clamp(width*.40,132,164):clamp(width*.30,190,290));
+    var citySize=scaleCity(text,width);
+    bits.lockup.style.setProperty('--bop-isolated-city-slot',slot+'px','important');
+    bits.lockup.style.setProperty('--bop-isolated-city-size',citySize+'px','important');
+    bits.lockup.style.setProperty('--bop-isolated-period-size',(mobile?55:75)+'px','important'); /* Period: original baseline - 2 px */
+    if(bits.city.textContent!==text)bits.city.textContent=text;
+    bits.lockup.setAttribute('data-bop-isolated-city',text);
+  }
+  function observeSource(){
+    var source=document.getElementById('bopSplashCityText')||document.getElementById('bopLandingCityText')||document.getElementById('bopResultsCityText');
+    if(!source)return;
+    new MutationObserver(function(){requestAnimationFrame(update);}).observe(source,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['style','class']});
+  }
+  [0,30,100,250,600,1200].forEach(function(delay){setTimeout(update,delay);});
+  observeSource();
+  new MutationObserver(function(){requestAnimationFrame(function(){update();observeSource();});}).observe(document.documentElement,{subtree:true,childList:true});
+  window.addEventListener('resize',update);
+  setInterval(update,300);
+})();
+</script>
+
+<!-- v296: single capture-level landing city search; freeze title while typing -->
+<style id="bop-mobile-search-stability-v1">
+  body.bop-search-active #bopIsolatedLandingCity{
+    color:transparent!important;
+    text-shadow:none!important;
+    position:relative!important;
+  }
+  body.bop-search-active #bopIsolatedLandingCity::after{
+    content:attr(data-bop-frozen-city)!important;
+    position:absolute!important;
+    inset:0!important;
+    display:inline-block!important;
+    color:#E4002B!important;
+    font:inherit!important;
+    font-style:italic!important;
+    text-shadow:0 1px 2px #000,0 0 12px rgba(228,0,43,.6)!important;
+    white-space:nowrap!important;
+  }
+  #bopLandingResults.bop-clean-city-results{
+    display:block!important;
+    position:relative!important;
+    z-index:2147483645!important;
+    pointer-events:auto!important;
+    touch-action:pan-y!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    max-height:min(46dvh,430px)!important;
+  }
+  #bopLandingResults.bop-clean-city-results .bop-clean-city-row{
+    display:block!important;
+    width:100%!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+  }
+</style>
+<script id="bop-mobile-search-stability-v1-script">
+(function(){
+  function normal(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+  function label(key,cfg){
+    if(cfg&&cfg.displayName)return String(cfg.displayName);
+    var names={bestof:'Las Vegas',sandiego:'San Diego',santabarbara:'Santa Barbara',sanfrancisco:'San Francisco',siliconvalley:'Silicon Valley',losangeles:'Los Angeles',newyork:'New York',neworleans:'New Orleans',washingtondc:'Washington, D.C.'};
+    return names[key]||String(key||'').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/(^|[_-])(\w)/g,function(_,s,c){return ' '+c.toUpperCase()}).trim();
+  }
+  function region(name){
+    var r={'San Diego':'California','Santa Barbara':'California','San Francisco':'California','Las Vegas':'Nevada','Miami':'Florida','New York':'New York','London':'England','Paris':'France'};
+    return r[name]||'Open now';
+  }
+  function openCity(dest){
+    if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
+    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');
+    var landing=input&&input.closest('#bopLandingOverlay, #tbotrLandingOverlay');
+    if(input)input.value='';
+    if(results){results.innerHTML='';results.classList.remove('open','bop-clean-city-results');}
+    document.body.classList.remove('bop-search-active');
+    if(landing)landing.classList.remove('open');
+    try{boCityContext=dest;}catch(error){}
+    try{if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);}catch(error){}
+    var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+    if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');
+    window.scrollTo(0,0);
+  }
+  function freeze(active){
+    document.body.classList.toggle('bop-search-active',active);
+    var city=document.getElementById('bopIsolatedLandingCity');
+    if(!city)return;
+    if(active){
+      if(!city.dataset.bopFrozenCity)city.dataset.bopFrozenCity=(city.textContent||'').trim()||'Las Vegas';
+    }else{delete city.dataset.bopFrozenCity;}
+  }
+  function render(input,results){
+    var raw=input.value.trim();
+    freeze(!!raw);
+    if(!raw){results.innerHTML='';results.classList.remove('open','bop-clean-city-results');return;}
+    var q=normal(raw),configs=(typeof BO_CITY_CONFIG==='undefined'?{}:BO_CITY_CONFIG);
+    var cities=Object.keys(configs).filter(function(key){return key!=='bestof'||true;}).map(function(key){return {key:key,name:label(key,configs[key])};});
+    var matches=cities.filter(function(city){return normal(city.name).startsWith(q)||normal(city.key).startsWith(q);}).slice(0,8);
+    if(!matches.length){
+      matches=cities.slice().sort(function(a,b){return normal(a.name).localeCompare(normal(b.name));}).filter(function(city){return normal(city.name).includes(q);}).slice(0,6);
+    }
+    var html='<div class="bop-landing-results-label">Live Cities</div>';
+    html+=matches.map(function(city){return '<button type="button" class="bop-landing-result bop-clean-city-row" data-bop-clean-dest="'+city.key+'"><span class="bop-landing-result-dot"></span><span>'+city.name+'</span><small>'+region(city.name)+' · Open now</small></button>';}).join('');
+    if(!matches.length)html+='<div class="bo-search-no-results">No matching live city yet.</div>';
+    results.innerHTML=html;
+    results.classList.add('open','bop-clean-city-results');
+    results.setAttribute('aria-hidden','false');
+  }
+  function wire(){
+    var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');
+    if(!input||!results||input.dataset.bopCleanSearchV296==='1')return;
+    input.dataset.bopCleanSearchV296='1';
+    /* Window capture precedes all accumulated input handlers on the target element. */
+    window.addEventListener('input',function(event){
+      if(event.target!==input)return;
+      event.stopImmediatePropagation();
+      render(input,results);
+    },true);
+    window.addEventListener('click',function(event){
+      var button=event.target&&event.target.closest&&event.target.closest('[data-bop-clean-dest]');
+      if(!button)return;
+      event.preventDefault();event.stopImmediatePropagation();openCity(button.dataset.bopCleanDest);
+    },true);
+    input.addEventListener('focus',function(){freeze(!!input.value.trim());},{passive:true});
+    input.addEventListener('blur',function(){setTimeout(function(){if(!input.value.trim())freeze(false);},120);},{passive:true});
+  }
+  [0,50,180,500,1000].forEach(function(delay){setTimeout(wire,delay);});
+})();
+</script>
+
+<!-- v297: replace the actual BOP mobile hero title row with one static lockup -->
+<style id="bop-actual-mobile-static-title-v1">
+  #bopActualMobileLockup{
+    display:grid!important;
+    grid-template-columns:minmax(0,160px) max-content!important;
+    column-gap:6px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:fit-content!important;
+    max-width:calc(100vw - 14px)!important;
+    height:70px!important;
+    min-height:70px!important;
+    margin:0 auto!important;
+    padding:0!important;
+    pointer-events:none!important;
+    overflow:visible!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+  }
+  #bopActualMobileCityWrap{width:160px!important;max-width:160px!important;min-width:0!important;text-align:right!important;overflow:visible!important;}
+  #bopActualMobileCity{
+    display:inline-block!important;
+    color:#E4002B!important;
+    font-family:Georgia,'Times New Roman',serif!important;
+    font-style:italic!important;
+    font-weight:700!important;
+    font-size:46px!important; /* red city treatment: +2 px */
+    line-height:.95!important;
+    white-space:nowrap!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    text-shadow:0 1px 2px #000,0 0 12px rgba(228,0,43,.62)!important;
+  }
+  #bopActualMobilePeriod{
+    display:inline-block!important;
+    color:#F59E0B!important;
+    font-family:Georgia,'Times New Roman',serif!important;
+    font-style:normal!important;
+    font-weight:700!important;
+    font-size:55px!important; /* Period treatment: -2 px */
+    line-height:.95!important;
+    white-space:nowrap!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    text-shadow:0 1px 2px #000,0 0 12px rgba(245,158,11,.62)!important;
+  }
+  #bopLandingOverlay .bop-splash-line1{font-size:54px!important;transform:none!important;animation:none!important;}
+  @media(min-width:601px) and (pointer:fine){
+    #bopActualMobileLockup{grid-template-columns:minmax(0,270px) max-content!important;height:78px!important;min-height:78px!important;}
+    #bopActualMobileCityWrap{width:270px!important;max-width:270px!important;}
+    #bopActualMobileCity{font-size:59px!important;}
+    #bopActualMobilePeriod{font-size:75px!important;}
+    #bopLandingOverlay .bop-splash-line1{font-size:76px!important;}
+  }
+</style>
+<script id="bop-actual-mobile-static-title-v1-script">
+(function(){
+  function install(){
+    var source=document.getElementById('bopLandingCityText');
+    var legacy=source&&source.closest('.bop-splash-line2');
+    var hero=legacy&&legacy.parentElement;
+    if(!source||!legacy||!hero)return false;
+    var lockup=document.getElementById('bopActualMobileLockup');
+    if(!lockup){
+      var name=(source.textContent||'').replace(/\s+/g,' ').trim()||'Las Vegas';
+      lockup=document.createElement('div');
+      lockup.id='bopActualMobileLockup';
+      lockup.innerHTML='<span id="bopActualMobileCityWrap"><span id="bopActualMobileCity"></span></span><span id="bopActualMobilePeriod">Period</span>';
+      lockup.querySelector('#bopActualMobileCity').textContent=name;
+      var line1=hero.querySelector('.bop-splash-line1');
+      if(line1)line1.insertAdjacentElement('afterend',lockup);else hero.insertBefore(lockup,hero.firstChild);
+      /* Detach the legacy animated row completely; its stored cycler reference can continue off-DOM without affecting the visual page. */
+      legacy.remove();
+    }
+    return true;
+  }
+  [0,30,100,300,800].forEach(function(delay){setTimeout(install,delay);});
+  window.addEventListener('resize',install);
+})();
+</script>
+
