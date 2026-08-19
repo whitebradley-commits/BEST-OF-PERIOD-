@@ -41918,3 +41918,152 @@ body[data-bop-active-orb="world"] #bopClosestFiveChooser{display:none!important;
 }());
 
 </script>
+
+<style id="bop-main-page-orb-only-and-sizing-v1">
+  /* The five navigation orbs belong exclusively to the main landing page. */
+  body:not(:has(#bopLandingOverlay.open)) #bopCleanOrbDock,
+  body:has(#bestOfOverlay.open) #bopCleanOrbDock,
+  body:has(#tbotrLandingOverlay.open) #bopCleanOrbDock,
+  body:has(#boNearMapPage.open) #bopCleanOrbDock,
+  body:has(#ocWorldOverlay.open) #bopCleanOrbDock,
+  body:has(#bopWorldwideLanding.open) #bopCleanOrbDock,
+  body:has(#boWorldwidePage.open) #bopCleanOrbDock {
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  body:has(#bopLandingOverlay.open):not(:has(#bestOfOverlay.open, #tbotrLandingOverlay.open, #boNearMapPage.open, #ocWorldOverlay.open, #bopWorldwideLanding.open, #boWorldwidePage.open)) #bopCleanOrbDock {
+    display:flex !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+  }
+
+  /* Larger, tightly padded desktop orbs and labels. */
+  #bopCleanOrbDock { gap:10px !important; }
+  #bopCleanOrbDock .bop-static-landing-button {
+    flex:0 0 86px !important;
+    width:86px !important;
+    height:86px !important;
+    min-width:86px !important;
+    min-height:86px !important;
+    padding:7px !important;
+    font-size:15px !important;
+    line-height:.96 !important;
+  }
+  #bopCleanOrbDock .bop-static-near-label,
+  #bopCleanOrbDock .bop-static-city-label,
+  #bopCleanOrbDock .bop-orb-label {
+    font-size:15px !important;
+    line-height:.96 !important;
+  }
+  #bopCleanOrbDock .bop-orb-label--closest {
+    font-size:12px !important;
+    line-height:.86 !important;
+    padding:0 !important;
+  }
+  #bopCleanOrbDock .bop-orb-label--closest b {
+    font-size:35px !important;
+    line-height:.74 !important;
+  }
+
+  /* Every red orb label is edged in gold for a crisp, consistent treatment. */
+  #bopCleanOrbDock .bop-static-landing-button,
+  #bopCleanOrbDock .bop-static-landing-button span,
+  #bopCleanOrbDock .bop-static-landing-button strong,
+  #bopCleanOrbDock .bop-static-landing-button b,
+  #bopCleanOrbDock .bop-static-landing-button small {
+    color:#E4002B !important;
+    -webkit-text-stroke:1px #F59E0B !important;
+    paint-order:stroke fill !important;
+    text-shadow:0 1px 2px #000, 0 0 3px rgba(245,158,11,.55) !important;
+  }
+
+  /* Preserve comfortable, edge-safe fit for five enlarged controls on phones. */
+  @media (max-width:600px), (pointer:coarse) {
+    #bopCleanOrbDock {
+      width:min(calc(100vw - 12px), 420px) !important;
+      gap:2px !important;
+      padding:3px !important;
+    }
+    #bopCleanOrbDock .bop-static-landing-button {
+      flex:0 0 72px !important;
+      width:72px !important;
+      height:72px !important;
+      min-width:72px !important;
+      min-height:72px !important;
+      padding:5px !important;
+      font-size:14px !important;
+      line-height:.94 !important;
+    }
+    #bopCleanOrbDock .bop-static-near-label,
+    #bopCleanOrbDock .bop-static-city-label,
+    #bopCleanOrbDock .bop-orb-label {
+      font-size:14px !important;
+      line-height:.94 !important;
+    }
+    #bopCleanOrbDock .bop-orb-label--closest { font-size:11px !important; }
+    #bopCleanOrbDock .bop-orb-label--closest b { font-size:31px !important; }
+  }
+  @media (max-width:380px) {
+    #bopCleanOrbDock .bop-static-landing-button {
+      flex-basis:68px !important;
+      width:68px !important;
+      height:68px !important;
+      min-width:68px !important;
+      min-height:68px !important;
+      font-size:14px !important;
+    }
+  }
+  @media (max-width:340px) {
+    #bopCleanOrbDock .bop-static-landing-button {
+      flex-basis:64px !important;
+      width:64px !important;
+      height:64px !important;
+      min-width:64px !important;
+      min-height:64px !important;
+      font-size:13px !important;
+    }
+    #bopCleanOrbDock .bop-static-near-label,
+    #bopCleanOrbDock .bop-static-city-label,
+    #bopCleanOrbDock .bop-orb-label { font-size:13px !important; }
+  }
+</style>
+<script id="bop-main-page-orb-visibility-enforcer-v1">
+(function(){
+  function isMainLanding(){
+    var main=document.getElementById('bopLandingOverlay');
+    if(!main || !main.classList.contains('open')) return false;
+    return !['bestOfOverlay','tbotrLandingOverlay','boNearMapPage','ocWorldOverlay','bopWorldwideLanding','boWorldwidePage'].some(function(id){
+      var page=document.getElementById(id);
+      return page && page.classList.contains('open');
+    });
+  }
+  function sync(){
+    var dock=document.getElementById('bopCleanOrbDock');
+    if(!dock) return;
+    var show=isMainLanding();
+    dock.hidden=!show;
+    dock.setAttribute('aria-hidden', String(!show));
+    if(show){
+      dock.style.removeProperty('display');
+      dock.style.removeProperty('visibility');
+      dock.style.removeProperty('opacity');
+      dock.style.removeProperty('pointer-events');
+    } else {
+      dock.style.setProperty('display','none','important');
+      dock.style.setProperty('visibility','hidden','important');
+      dock.style.setProperty('opacity','0','important');
+      dock.style.setProperty('pointer-events','none','important');
+    }
+  }
+  var observer=new MutationObserver(function(){window.requestAnimationFrame(sync);});
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
+  document.addEventListener('click',function(){window.setTimeout(sync,0);},true);
+  window.setInterval(sync,90);
+  sync();
+}());
+</script>
+
