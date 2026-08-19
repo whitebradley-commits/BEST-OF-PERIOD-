@@ -42485,7 +42485,7 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 </style>
 <script id="bop-stable-title-navigation-controller-v1-script">
 (function(){
-  var cityIds=['bopLandingCityText','bopSplashCityText','bopResultsCityText','bopMainCityText'];
+  var cityIds=['bopSplashCityText','bopResultsCityText','bopMainCityText'];
   var controlling=false, titleTimer=0, returnTimer=0;
   var labels={
     lasvegas:'Las Vegas',santabarbara:'S. B.',sandiego:'San Diego',sanfrancisco:'San Francisco',losangeles:'Los Angeles',
@@ -42594,7 +42594,7 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
 <!-- v286: explicit city-title font scale lock -->
 <script id="bop-city-title-font-scale-lock-v1">
 (function(){
-  var ids=['bopLandingCityText','bopSplashCityText','bopResultsCityText','bopMainCityText'];
+  var ids=['bopSplashCityText','bopResultsCityText','bopMainCityText'];
   function sizeFor(text){
     var n=String(text||'').trim().length;
     if(n>=20)return 54;
@@ -42768,6 +42768,140 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
   }
   [0,40,120,300,700,1300].forEach(function(delay){setTimeout(wire,delay);});
   new MutationObserver(function(){setTimeout(wire,0);}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+})();
+</script>
+
+<!-- v291: main-page fixed Period column; only the city name rotates -->
+<style id="bop-main-period-fixed-position-v1">
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
+    display:grid!important;
+    grid-template-columns:var(--bop-city-slot,270px) max-content!important;
+    grid-template-rows:auto!important;
+    align-items:baseline!important;
+    column-gap:6px!important;
+    row-gap:0!important;
+    gap:0 6px!important;
+    justify-content:center!important;
+    width:auto!important;
+    max-width:calc(100vw - 24px)!important;
+    overflow:visible!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{
+    grid-column:1!important;
+    grid-row:1!important;
+    display:block!important;
+    width:var(--bop-city-slot,270px)!important;
+    min-width:var(--bop-city-slot,270px)!important;
+    max-width:var(--bop-city-slot,270px)!important;
+    text-align:right!important;
+    overflow:visible!important;
+    z-index:8!important;
+  }
+  #bopLandingOverlay #bopLandingCityText{
+    display:inline-block!important;
+    position:relative!important;
+    z-index:8!important;
+    margin:0!important;
+    white-space:nowrap!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{
+    grid-column:2!important;
+    grid-row:1!important;
+    display:inline-block!important;
+    position:relative!important;
+    left:0!important;
+    right:auto!important;
+    transform:none!important;
+    animation:none!important;
+    transition:none!important;
+    margin:0!important;
+    padding:0!important;
+    z-index:9!important;
+    white-space:nowrap!important;
+  }
+  @media(max-width:600px){
+    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){grid-template-columns:var(--bop-city-slot,158px) max-content!important;}
+    #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col{width:var(--bop-city-slot,158px)!important;min-width:var(--bop-city-slot,158px)!important;max-width:var(--bop-city-slot,158px)!important;}
+  }
+</style>
+<script id="bop-main-period-fixed-position-v1-script">
+(function(){
+  var lastPeriodLeft=null;
+  function apply(){
+    var city=document.getElementById('bopLandingCityText');
+    var line=city&&city.closest('.bop-splash-line2');
+    var col=city&&city.closest('.bop-splash-city-col');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!city||!line||!col||!period)return;
+    var width=window.innerWidth||document.documentElement.clientWidth||960;
+    var slot=Math.round(Math.max(152,Math.min(270,width*.32)));
+    var name=(city.textContent||'').trim();
+    var size=Math.max(28,Math.min(86,Math.floor(slot/Math.max(2.7,name.length*.47))));
+    line.style.setProperty('--bop-city-slot',slot+'px','important');
+    line.style.setProperty('display','grid','important');
+    line.style.setProperty('grid-template-columns',slot+'px max-content','important');
+    line.style.setProperty('column-gap','6px','important');
+    line.style.setProperty('gap','0 6px','important');
+    col.style.setProperty('width',slot+'px','important');
+    col.style.setProperty('min-width',slot+'px','important');
+    col.style.setProperty('max-width',slot+'px','important');
+    city.style.setProperty('font-size',size+'px','important');
+    city.style.setProperty('line-height','.95','important');
+    city.style.setProperty('transform','none','important');
+    city.style.setProperty('scale','1','important');
+    period.style.setProperty('font-size','77px','important');
+    period.style.setProperty('line-height','.95','important');
+    period.style.setProperty('transform','none','important');
+    period.style.setProperty('scale','1','important');
+    period.style.setProperty('animation','none','important');
+    period.style.setProperty('transition','none','important');
+    var r=period.getBoundingClientRect();
+    if(lastPeriodLeft===null)lastPeriodLeft=Math.round(r.left);
+    line.setAttribute('data-bop-period-fixed','true');
+    line.setAttribute('data-bop-period-left',String(Math.round(r.left)));
+  }
+  var scheduled=false;
+  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;apply();});}
+  new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style']});
+  [0,50,150,400,900,1600].forEach(function(delay){setTimeout(apply,delay);});
+  window.addEventListener('resize',apply);
+  setInterval(apply,180);
+})();
+</script>
+
+<!-- v292: fixed vertical baseline for main-page Period during city rotation -->
+<style id="bop-main-period-vertical-lock-v1">
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText){
+    height:92px!important;
+    min-height:92px!important;
+    max-height:92px!important;
+    align-items:center!important;
+  }
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,
+  #bopLandingOverlay .bop-splash-line2:has(#bopLandingCityText) .bop-splash-period{
+    align-self:center!important;
+  }
+</style>
+<script id="bop-main-period-vertical-lock-v1-script">
+(function(){
+  function lock(){
+    var city=document.getElementById('bopLandingCityText');
+    var line=city&&city.closest('.bop-splash-line2');
+    var col=city&&city.closest('.bop-splash-city-col');
+    var period=line&&line.querySelector('.bop-splash-period');
+    if(!city||!line||!col||!period)return;
+    line.style.setProperty('height','92px','important');
+    line.style.setProperty('min-height','92px','important');
+    line.style.setProperty('max-height','92px','important');
+    line.style.setProperty('align-items','center','important');
+    col.style.setProperty('align-self','center','important');
+    period.style.setProperty('align-self','center','important');
+    period.style.setProperty('top','0','important');
+    line.setAttribute('data-bop-period-vertical-fixed','true');
+  }
+  [0,50,180,400,900].forEach(function(delay){setTimeout(lock,delay);});
+  new MutationObserver(function(){requestAnimationFrame(lock);}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style']});
+  setInterval(lock,180);
 })();
 </script>
 
