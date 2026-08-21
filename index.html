@@ -22989,7 +22989,18 @@ function boRenderCategory(cat){
         : '';
       boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat].title)}${ishSuffix}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(genericCityName)}">${genericCityName}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
     }
-    boHeroSubEl.textContent = (boHeroCopy[cat] || {sub:''}).sub || '';
+    // Several Austin category packs extend the shared hero-copy object.  The
+    // category page itself is shared by every city, so city-leading copy must
+    // follow the city that the visitor actually entered from rather than leak
+    // "Austin" onto Santa Barbara, San Diego, or another city's page.
+    const activeHeroCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
+    let activeHeroSub = (boHeroCopy[cat] || {sub:''}).sub || '';
+    if(boCityContext !== 'austin'){
+      activeHeroSub = activeHeroSub
+        .replace(/^Austin’s\b/, activeHeroCity + '’s')
+        .replace(/^Austin\b/, activeHeroCity);
+    }
+    boHeroSubEl.textContent = activeHeroSub;
     boHeroSubEl.style.whiteSpace = cat === 'nations' ? 'pre-line' : '';
     if(boSectionHeadParaEl){
       boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
@@ -39234,6 +39245,16 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     var list=document.getElementById('boNearClosestList'),status=document.getElementById('boNearClosestStatus');
     if(!list||!status||!boNearClosestTier)return;
     if(!boNearUserLatLng){list.innerHTML='';status.textContent='LOCATING YOUR POSITION…';status.classList.add('is-locating');return;}
+    // A partially geocoded list is not a valid nearest-neighbor result.  It
+    // previously exposed whichever address happened to resolve first (often
+    // Trust Restaurant) even when that restaurant was 30+ miles away.  Wait
+    // for the complete city pool, then rank the finished coordinate set.
+    if(!boNearGeocodingComplete){
+      list.innerHTML='';
+      status.textContent='LOCATING AND MAPPING THE CLOSEST '+(boNearClosestTier==='all'?'RESTAURANTS':boNearClosestTier.toUpperCase()+' RESTAURANTS')+'…';
+      status.classList.add('is-locating');
+      return;
+    }
     var available=boNearMappedRestaurants.map(function(item){
       var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)},hours=boNearHoursState(item.restaurant);
       return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
@@ -39262,6 +39283,53 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalize);else normalize();
   new MutationObserver(function(){requestAnimationFrame(normalize)}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- v260: the bottom-right BOP sound orb is a repeatable one-shot brand sting -->
+<script id="bop-repeatable-brand-sound-orb-v260">
+(function(){
+  var current=null,resetTimer=0;
+  function button(){return document.querySelector('#bestOfOverlay>.site-sound-toggle')}
+  function normalize(){
+    var b=button();if(!b)return;
+    b.textContent='🔊';
+    b.setAttribute('aria-pressed','false');
+    b.setAttribute('aria-label','Play Best of Period');
+    b.title='Play Best of Period';
+  }
+  function play(b){
+    clearTimeout(resetTimer);
+    if(current){try{current.pause();current.currentTime=0}catch(_e){}}
+    if(window.BOP_APPROVED_VOICE_SOURCE){
+      try{
+        current=new Audio(window.BOP_APPROVED_VOICE_SOURCE);
+        current.volume=.96;
+        current.addEventListener('ended',function(){b.classList.remove('bop-brand-sound-playing');normalize()},{once:true});
+        current.play().catch(function(){fallback(b)});
+      }catch(_e){fallback(b)}
+    }else fallback(b);
+    b.classList.add('bop-brand-sound-playing');
+    b.textContent='🔉';
+    b.setAttribute('aria-label','Playing Best of Period');
+    resetTimer=setTimeout(function(){b.classList.remove('bop-brand-sound-playing');normalize()},2600);
+  }
+  function fallback(b){
+    if(!('speechSynthesis' in window))return;
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance('Best of Period');u.rate=.82;u.pitch=.78;u.volume=.95;
+    speechSynthesis.speak(u);
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest&&e.target.closest('#bestOfOverlay>.site-sound-toggle');
+    if(!b)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    play(b);
+  },true);
+  function install(){
+    function ensure(){var b=button();if(b&&!b.dataset.bopBrandSound){b.dataset.bopBrandSound='1';normalize()}}
+    ensure();new MutationObserver(ensure).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html>
