@@ -39354,7 +39354,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 <!-- v260: the bottom-right BOP sound orb is a repeatable one-shot brand sting -->
 <script id="bop-repeatable-brand-sound-orb-v260">
 (function(){
-  var current=null,resetTimer=0;
+  var current=null,resetTimer=0,voiceTimer=0;
   function button(){return document.querySelector('#bestOfOverlay>.site-sound-toggle')}
   function normalize(){
     var b=button();if(!b)return;
@@ -39364,20 +39364,24 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     b.title='Play Best of Period';
   }
   function play(b){
-    clearTimeout(resetTimer);
+    clearTimeout(resetTimer);clearTimeout(voiceTimer);
     if(current){try{current.pause();current.currentTime=0}catch(_e){}}
-    if(window.BOP_APPROVED_VOICE_SOURCE){
-      try{
-        current=new Audio(window.BOP_APPROVED_VOICE_SOURCE);
-        current.volume=.96;
-        current.addEventListener('ended',function(){b.classList.remove('bop-brand-sound-playing');normalize()},{once:true});
-        current.play().catch(function(){fallback(b)});
-      }catch(_e){fallback(b)}
-    }else fallback(b);
+    try{localStorage.setItem('bop-sound-muted-v1','no')}catch(_e){}
+    var hasJingle=typeof window.bopPlayUnifiedTone==='function'&&window.bopPlayUnifiedTone();
+    voiceTimer=setTimeout(function(){
+      if(window.BOP_APPROVED_VOICE_SOURCE){
+        try{
+          current=new Audio(window.BOP_APPROVED_VOICE_SOURCE);
+          current.volume=.96;
+          current.addEventListener('ended',function(){b.classList.remove('bop-brand-sound-playing');normalize()},{once:true});
+          current.play().catch(function(){fallback(b)});
+        }catch(_e){fallback(b)}
+      }else fallback(b);
+    },hasJingle?2925:0);
     b.classList.add('bop-brand-sound-playing');
     b.textContent='🔉';
     b.setAttribute('aria-label','Playing Best of Period');
-    resetTimer=setTimeout(function(){b.classList.remove('bop-brand-sound-playing');normalize()},2600);
+    resetTimer=setTimeout(function(){b.classList.remove('bop-brand-sound-playing');normalize()},4800);
   }
   function fallback(b){
     if(!('speechSynthesis' in window))return;
