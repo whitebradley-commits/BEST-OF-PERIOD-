@@ -7967,7 +7967,8 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
   section.querySelectorAll('[data-bop-recovered-cat]').forEach(function(button){button.addEventListener('click',function(){if(typeof window.boRenderCategory==='function')window.boRenderCategory(button.dataset.bopRecoveredCat)})});
  }
  document.addEventListener('click',function(){setTimeout(restore,80);setTimeout(restore,350)},true);
- new MutationObserver(function(){setTimeout(restore,0)}).observe(document.documentElement,{subtree:true,childList:true});
+ /* Do not watch the entire document continuously. Click/page timers below are
+    sufficient and avoid re-running this repair during every card mutation. */
  setTimeout(restore,400);setTimeout(restore,1200);
 })();
 </script>
@@ -8067,7 +8068,8 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
  }
  document.addEventListener('click',function(){setTimeout(restore,60);setTimeout(restore,260);},true);
  window.addEventListener('pageshow',function(){setTimeout(restore,50);});
- new MutationObserver(function(){restore();}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden']});
+ /* A previous version watched every class/style/hidden mutation sitewide,
+    which caused the sluggish scrolling and tapping reported on mobile. */
  setTimeout(restore,300);setTimeout(restore,1000);
 })();
 </script>
