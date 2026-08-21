@@ -20225,8 +20225,8 @@ function boEnsureNearMapPage(){
     nearTitle.insertBefore(closestTitle,nearTitle.querySelector('span'));
     const priceKey=document.createElement('div');
     priceKey.className='bo-near-price-key';
-    priceKey.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine three to four dollar signs');
-    priceKey.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$–$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$–$$$$</span>';
+    priceKey.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine four dollar signs');
+    priceKey.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$–$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$$</span>';
     nearTitle.insertBefore(priceKey,nearTitle.querySelector('span'));
   }
   const nearLower=page.querySelector('.bo-near-map-lower');
@@ -23065,7 +23065,7 @@ function boRenderCategory(cat){
     // Compact spacing restored for picker/hub pages specifically — title,
     // tagline, search bar, then straight into the buttons.
     if(boHeroSectionEl) boHeroSectionEl.classList.add('bo-hero-picker-mode');
-    const showTierLegend = ['steak','italian','breakfast','mexican'].includes(cat);
+    const showTierLegend = ['sushi','steak','italian','breakfast','mexican'].includes(cat);
     const moneyLegendHTML = showTierLegend ? `
       <div class="bo-price-legend" style="display:flex;margin-top:8px;margin-bottom:2px;">
         <span class="bo-price-legend-item"><span class="bo-price-legend-sign">$</span> Dive</span>
@@ -38531,12 +38531,111 @@ body footer.bop-approved-footer{
   var asian=[V.samasama,V.bibiji,V.secretbao,V.yoichis,V.oku,V.silvers,V.ama,V.scratch,V.emptybowl,V.arigato];
   var sushi=[V.silvers,V.ama,V.scratch,V.yoichis,V.arigato,V.oku,V.edomasa,V.kyoto,V.bibiji,V.secretbao];
   install('santabarbara',best);install('michelin',michelin);install('steakhighend',steak);
-  install('asianbestofrest',asian);install('sushihighend',sushi);install('sushi',sushi);
-  install('bjspickssantabarbara',[V.stonehouse,V.winecask,V.lark,V.rare]);
+  /* Price tiers are contractual UI behavior: Casual is $$–$$$ only;
+     Fine is $$$$ only. Keep the parent Sushi list complete, while each
+     destination contains only restaurants that qualify for that tier. */
+  var sushiCasual=sushi.filter(function(r){return Number(r.price)===2||Number(r.price)===3});
+  var sushiFine=sushi.filter(function(r){return Number(r.price)===4});
+  install('asianbestofrest',asian);install('sushicasual',sushiCasual);install('sushihighend',sushiFine);install('sushi',sushi);
+  /* Affiliate text selections: Yoichi's, Wine Cask, The Lark, Rare Society. */
+  install('bjspickssantabarbara',[V.yoichis,V.winecask,V.lark,V.rare]);
   /* Only documented local James Beard connections; never pad this category. */
   install('jamesbeard',[V.bibiji,Object.assign({},V.lark,{jamesBeardConnection:'Executive Chef Jason Paluska represented The Lark in a James Beard Foundation Friends of James Beard Benefit.'})]);
   install('jamesbeardverified',[V.bibiji,Object.assign({},V.lark,{jamesBeardConnection:'Executive Chef Jason Paluska represented The Lark in a James Beard Foundation Friends of James Beard Benefit.'})]);
-  window.BOP_SANTA_BARBARA_AUDIT={bestOf:best.length,michelin:michelin.length,steak:steak.length,asian:asian.length,sushi:sushi.length,bjsPicks:4,jamesBeardVerifiedConnections:2,allPhotos:'exact restaurant interiors'};
+  window.BOP_SANTA_BARBARA_AUDIT={bestOf:best.length,michelin:michelin.length,steak:steak.length,asian:asian.length,sushi:sushi.length,sushiCasual:sushiCasual.length,sushiFine:sushiFine.length,bjsPicks:4,jamesBeardVerifiedConnections:2,priceRules:{casual:'$$–$$$',fine:'$$$$'},allPhotos:'exact restaurant interiors'};
+})();
+</script>
+<style id="bop-orb-search-finish-v202">
+/* Cleaner fixed-size dock orbs: no exterior gold trim, one larger type step. */
+#bopStaticLandingDock .bop-static-landing-button,
+#bopLandingOverlay .bop-landing-control-row>.bop-landing-control-btn{
+  border:0!important;border-color:transparent!important;
+  box-shadow:none!important;
+  font-size:.75rem!important;
+  padding:2px!important
+}
+#bopStaticLandingDock .bop-static-near,
+#bopStaticLandingDock #bopStaticShare,
+#bopStaticLandingDock .bop-static-share{
+  border:0!important;border-color:transparent!important;box-shadow:none!important
+}
+#bopStaticLandingDock .bop-static-near-label,
+#bopStaticLandingDock .bop-static-city-label{
+  font-size:.66rem!important;line-height:1.02!important
+}
+#bopStaticLandingDock .bop-static-bjs-lockup{
+  border:0!important;box-shadow:none!important
+}
+#bopStaticLandingDock .bop-static-bjs-lockup strong{font-size:18px!important}
+#bopStaticLandingDock .bop-static-bjs-lockup small{font-size:10px!important}
+/* All search prompts use the brand gold and the same clean readable face. */
+.bo-search-input,.bo-search-input-big,#ocWorldOverlay .oc-search-input,
+.bo-search-input::placeholder,.bo-search-input-big::placeholder,#ocWorldOverlay .oc-search-input::placeholder,
+.bop-landing-search-prompt{
+  font-family:'Archivo Narrow',Arial,sans-serif!important;
+  color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important;
+  text-shadow:none!important;filter:none!important;animation:none!important;opacity:1!important
+}
+</style>
+<script id="bop-search-copy-lowercase-v202">
+(function(){
+  function updateCopy(root){
+    root=root||document;
+    var home=root.querySelector&&root.querySelector('#bopLandingSearchPrompt');
+    if(home)home.textContent='search the world';
+    var homeInput=root.querySelector&&root.querySelector('#bopLandingSearchInput');
+    if(homeInput)homeInput.setAttribute('aria-label','search the world');
+    if(root.querySelectorAll){
+      root.querySelectorAll('input[placeholder]').forEach(function(input){
+        if(/search all restaurants/i.test(input.placeholder))input.placeholder='search all restaurants';
+      });
+      root.querySelectorAll('.bo-search-powered-by,.oc-search-powered-by,.vendor-powered-by').forEach(function(mark){
+        Array.from(mark.childNodes).forEach(function(node){
+          if(node.nodeType===3&&/Powered by/i.test(node.nodeValue))node.nodeValue=node.nodeValue.replace(/Powered by/ig,'powered by');
+        });
+      });
+    }
+  }
+  function install(){
+    updateCopy(document);
+    var observer=new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)updateCopy(node)})})});
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<!-- v203: authoritative Santa Barbara tier navigation and Back routing -->
+<script id="bop-santa-barbara-tier-navigation-v203">
+(function(){
+  function isSantaBarbara(){return typeof boCityContext!=='undefined'&&boCityContext==='santabarbara';}
+  function render(category){
+    var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open');
+    if(best){best.classList.add('open');best.scrollTop=0;}
+    if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(category,'santabarbara');
+    if(typeof boRenderCategory==='function')boRenderCategory(category);
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('click',function(event){
+    if(!isSantaBarbara())return;
+    var target=event.target&&event.target.closest?event.target.closest('#boBackBtn'):null;
+    if(!target&&event.composedPath)target=event.composedPath().find(function(node){return node&&node.id==='boBackBtn';});
+    if(!target)return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    var category=typeof boCurrentCat!=='undefined'?boCurrentCat:'otheroptions';
+    if(category==='sushicasual'||category==='sushihighend'){render('sushi');return;}
+    if(category==='sushi'){render('asian');return;}
+    if(category==='asian'){render('otheroptions');return;}
+    if(category==='otheroptions'){
+      var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+      if(best)best.classList.remove('open');
+      if(landing)landing.classList.add('open');
+      if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
+      window.scrollTo(0,0);return;
+    }
+    var parent=(typeof boPickerParent!=='undefined'&&boPickerParent[category])?boPickerParent[category]:'otheroptions';
+    render(parent);
+  },true);
 })();
 </script>
 </body></html>
