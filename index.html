@@ -38537,8 +38537,14 @@ body footer.bop-approved-footer{
   var sushiCasual=sushi.filter(function(r){return Number(r.price)===2||Number(r.price)===3});
   var sushiFine=sushi.filter(function(r){return Number(r.price)===4});
   install('asianbestofrest',asian);install('sushicasual',sushiCasual);install('sushihighend',sushiFine);install('sushi',sushi);
-  /* Affiliate text selections: Yoichi's, Wine Cask, The Lark, Rare Society. */
-  install('bjspickssantabarbara',[V.yoichis,V.winecask,V.lark,V.rare]);
+  /* Affiliate text selections, each with a stable home category for the
+     Return to Category link on the BJS Picks page. */
+  install('bjspickssantabarbara',[
+    Object.assign({},V.yoichis,{bjsPick:true,bjsFromCat:'sushihighend'}),
+    Object.assign({},V.winecask,{bjsPick:true,bjsFromCat:'santabarbara'}),
+    Object.assign({},V.lark,{bjsPick:true,bjsFromCat:'santabarbara'}),
+    Object.assign({},V.rare,{bjsPick:true,bjsFromCat:'steakhighend'})
+  ]);
   /* Only documented local James Beard connections; never pad this category. */
   install('jamesbeard',[V.bibiji,Object.assign({},V.lark,{jamesBeardConnection:'Executive Chef Jason Paluska represented The Lark in a James Beard Foundation Friends of James Beard Benefit.'})]);
   install('jamesbeardverified',[V.bibiji,Object.assign({},V.lark,{jamesBeardConnection:'Executive Chef Jason Paluska represented The Lark in a James Beard Foundation Friends of James Beard Benefit.'})]);
@@ -38636,6 +38642,137 @@ body footer.bop-approved-footer{
     var parent=(typeof boPickerParent!=='undefined'&&boPickerParent[category])?boPickerParent[category]:'otheroptions';
     render(parent);
   },true);
+})();
+</script>
+<style id="bop-orb-outline-and-bjs-return-v204">
+/* Keep the gold orb circles; remove only the gold stroke hugging red type. */
+#bopStaticLandingDock .bop-static-landing-button,
+#bopStaticLandingDock .bop-static-near,
+#bopStaticLandingDock #bopStaticShare,
+#bopStaticLandingDock .bop-static-share{
+  border:2px solid #F59E0B!important;
+  border-color:#F59E0B!important;
+  box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 11px rgba(245,158,11,.06)!important
+}
+#bopStaticLandingDock .bop-static-bjs-lockup{
+  border:2px solid #F59E0B!important;
+  box-shadow:0 0 7px rgba(245,158,11,.5)!important
+}
+#bopStaticLandingDock #bopStaticShare,
+#bopStaticLandingDock .bop-static-near-label,
+#bopStaticLandingDock .bop-static-city-label,
+#bopStaticLandingDock .bop-closest-five-word,
+#bopStaticLandingDock .bop-closest-five-number,
+#bopStaticLandingDock .bop-static-bjs-lockup strong,
+#bopStaticLandingDock .bop-static-bjs-lockup small{
+  -webkit-text-stroke:0 transparent!important;
+  text-stroke:0 transparent!important;
+  paint-order:normal!important
+}
+.bo-bjs-return-category{
+  all:unset;display:inline-block;margin:3px 0 9px;color:#F59E0B!important;
+  font:700 .66rem/1.1 'Archivo Narrow',Arial,sans-serif!important;
+  letter-spacing:.035em;text-decoration:underline;text-underline-offset:2px;
+  cursor:pointer
+}
+.bo-bjs-return-category:focus-visible{outline:1px dotted #F59E0B;outline-offset:3px}
+.bo-card.bo-return-target{animation:boReturnTargetPulse 1.35s ease-in-out 2}
+@keyframes boReturnTargetPulse{0%,100%{box-shadow:inherit}50%{box-shadow:0 0 0 2px #F59E0B,0 0 24px rgba(245,158,11,.82)}}
+</style>
+<script id="bop-bjs-return-category-v204">
+(function(){
+  var excluded={bjspicks:1,bestof:1,otheroptions:1,asianbestofrest:1,michelin:1,jamesbeard:1,jamesbeardverified:1};
+  var priority=['sushihighend','sushicasual','steakhighend','steakcasual','steakdive','italianhighend','italiancasual','italiandive','breakfasthighend','breakfastcasual','breakfastdive','mexicanhighend','mexicancasual','mexicandive','sushi','steak','italian','breakfast','mexican','korean','chinese','thai','vietnamese','pho','indian','asianfusion','seafood','pizza','burgers','bbq','vegan','french','greek'];
+  function slug(value){return String(value||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+  function cityOf(record){return String((record&&record.city)||((typeof boCityContext!=='undefined'&&boCityContext)||'bestof')).toLowerCase();}
+  function sameRestaurant(record,name,city){return record&&String(record.name||'').toLowerCase()===String(name||'').toLowerCase()&&String(record.city||'bestof').toLowerCase()===city;}
+  function recordFor(name){
+    if(typeof boCategoryData==='undefined'||typeof boCurrentCat==='undefined')return null;
+    var list=boCategoryData[boCurrentCat]||[],city=(typeof boCityContext!=='undefined'&&boCityContext)||'bestof';
+    return list.find(function(record){return sameRestaurant(record,name,city);})||list.find(function(record){return record&&String(record.name||'').toLowerCase()===String(name||'').toLowerCase();})||null;
+  }
+  function homeCategory(record){
+    if(!record||typeof boCategoryData==='undefined')return null;
+    if(record.bjsFromCat&&Array.isArray(boCategoryData[record.bjsFromCat]))return record.bjsFromCat;
+    var name=record.name,city=cityOf(record),matches=[];
+    Object.keys(boCategoryData).forEach(function(key){
+      if(excluded[key]||/bjspick/i.test(key)||!Array.isArray(boCategoryData[key]))return;
+      if(boCategoryData[key].some(function(candidate){return sameRestaurant(candidate,name,city);}))matches.push(key);
+    });
+    for(var i=0;i<priority.length;i++)if(matches.indexOf(priority[i])>-1)return priority[i];
+    var cityRoot=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[city])?city:null;
+    return cityRoot&&matches.indexOf(cityRoot)>-1?cityRoot:(matches[0]||cityRoot);
+  }
+  function openAt(category,name){
+    if(!category||typeof boRenderCategory!=='function')return;
+    boRenderCategory(category);
+    var reveal=function(){
+      var card=document.getElementById('bo-card-'+slug(name));
+      if(!card)return false;
+      card.classList.add('bo-return-target');
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(function(){card.classList.remove('bo-return-target');},3000);
+      return true;
+    };
+    requestAnimationFrame(function(){if(!reveal())setTimeout(reveal,240);});
+  }
+  function enhance(){
+    if(typeof boCurrentCat==='undefined'||typeof isBjsPicksCat!=='function'||!isBjsPicksCat(boCurrentCat))return;
+    document.querySelectorAll('#boList .bo-card').forEach(function(card){
+      if(card.querySelector('.bo-bjs-return-category'))return;
+      var heading=card.querySelector('.bo-card-body h3'),name=heading&&heading.childNodes.length?heading.childNodes[0].nodeValue:heading&&heading.textContent;
+      name=String(name||'').trim();
+      var record=recordFor(name),category=homeCategory(record);
+      if(!record||!category)return;
+      var link=document.createElement('button');
+      link.type='button';link.className='bo-bjs-return-category';link.textContent='Return to Category';
+      link.setAttribute('aria-label','Return to '+name+' in its ranked category');
+      link.addEventListener('click',function(event){event.preventDefault();event.stopPropagation();openAt(category,name);});
+      heading.insertAdjacentElement('afterend',link);
+    });
+  }
+  /* Make every BJS Picks doorway repeatable, including after Back. */
+  window.addEventListener('click',function(event){
+    var button=event.target&&event.target.closest?event.target.closest('[data-picker-cat="bjspicks"],#boAllBjsFeaturedBtn,.bo-picker-btn-bjs'):null;
+    if(!button||button.classList.contains('bo-bjs-return-category'))return;
+    if(button.classList.contains('bo-picker-btn-bjs')&&!button.matches('[data-picker-cat="bjspicks"],#boAllBjsFeaturedBtn')&&!/BJS\s*PICK/i.test(button.textContent||''))return;
+    if(typeof boCityContext==='undefined'||typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[boCityContext])return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');
+    requestAnimationFrame(enhance);
+  },true);
+  new MutationObserver(function(){requestAnimationFrame(enhance);}).observe(document.body,{childList:true,subtree:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enhance);else enhance();
+})();
+</script>
+<style id="bop-main-page-orbs-only-v205">
+/* The five navigation orbs belong exclusively to the opening landing page. */
+body:not(.bop-main-landing-visible) #bopStaticLandingDock{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+</style>
+<script id="bop-main-page-orbs-only-v205-script">
+(function(){
+  function syncMainPageOrbs(){
+    var landing=document.getElementById('bopLandingOverlay');
+    var isMain=!!(landing&&landing.classList.contains('open'));
+    document.body.classList.toggle('bop-main-landing-visible',isMain);
+    var dock=document.getElementById('bopStaticLandingDock');
+    if(dock){
+      dock.setAttribute('aria-hidden',String(!isMain));
+      if(!isMain)dock.querySelectorAll('button,a').forEach(function(control){control.setAttribute('tabindex','-1');});
+      else dock.querySelectorAll('button,a').forEach(function(control){
+        if(control.id!=='bopStaticFounders')control.removeAttribute('tabindex');
+      });
+    }
+  }
+  function install(){
+    syncMainPageOrbs();
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing)new MutationObserver(syncMainPageOrbs).observe(landing,{attributes:true,attributeFilter:['class']});
+    document.addEventListener('click',function(){requestAnimationFrame(syncMainPageOrbs);},true);
+    window.addEventListener('popstate',function(){requestAnimationFrame(syncMainPageOrbs);});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html>
