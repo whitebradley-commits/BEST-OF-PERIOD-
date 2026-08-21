@@ -39126,4 +39126,88 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   window.bopSetClosestTier=setTier;
 })();
 </script>
+<style id="bop-city-search-final-fit-v211">
+/* Phone-safe city/category search: one thin, centered gold row. */
+#bestOfOverlay .bo-search-wrap:has(#boSearchInput),
+#bestOfOverlay .bo-search-wrap:has(.bo-search-input){
+  display:block!important;position:relative!important;
+  width:min(calc(100vw - 52px),360px)!important;max-width:360px!important;
+  min-width:0!important;height:34px!important;margin-left:auto!important;margin-right:auto!important;
+  padding:0!important;box-sizing:border-box!important;overflow:visible!important
+}
+#bestOfOverlay #boSearchInput,
+#bestOfOverlay .bo-search-wrap .bo-search-input,
+#bestOfOverlay .bo-search-wrap .bo-search-input-big{
+  display:block!important;width:100%!important;max-width:100%!important;height:34px!important;
+  min-height:34px!important;margin:0!important;padding:0 116px 0 37px!important;
+  box-sizing:border-box!important;border:1.25px solid #F59E0B!important;border-radius:999px!important;
+  background:#080808!important;color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important;
+  caret-color:#F59E0B!important;font:700 11px/34px 'Archivo Narrow',Arial,sans-serif!important;
+  letter-spacing:0!important;text-shadow:none!important;filter:none!important;opacity:1!important
+}
+#bestOfOverlay #boSearchInput::placeholder,
+#bestOfOverlay .bo-search-wrap .bo-search-input::placeholder,
+#bestOfOverlay .bo-search-wrap .bo-search-input-big::placeholder{
+  color:#F59E0B!important;-webkit-text-fill-color:#F59E0B!important;opacity:1!important;
+  font:700 11px/34px 'Archivo Narrow',Arial,sans-serif!important;text-shadow:none!important;filter:none!important
+}
+#bestOfOverlay .bo-search-wrap .bo-search-icon,
+#bestOfOverlay .bo-search-wrap>svg:first-of-type{
+  position:absolute!important;left:14px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:15px!important;height:15px!important;color:#F59E0B!important;stroke:#F59E0B!important;z-index:3!important
+}
+#bestOfOverlay .bo-search-powered-by{
+  position:absolute!important;right:9px!important;top:50%!important;transform:translateY(-50%)!important;
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:3px!important;
+  height:18px!important;margin:0!important;white-space:nowrap!important;color:#F59E0B!important;
+  -webkit-text-fill-color:#F59E0B!important;font:700 9px/18px 'Archivo Narrow',Arial,sans-serif!important;
+  letter-spacing:0!important;text-transform:lowercase!important;text-shadow:none!important;filter:none!important;z-index:4!important
+}
+#bestOfOverlay .bo-search-powered-by svg:first-child{width:9px!important;height:9px!important}
+#bestOfOverlay .bo-search-powered-by svg:last-child{width:15px!important;height:15px!important}
+@media(max-width:360px){
+  #bestOfOverlay .bo-search-wrap:has(#boSearchInput),#bestOfOverlay .bo-search-wrap:has(.bo-search-input){width:calc(100vw - 38px)!important}
+  #bestOfOverlay #boSearchInput,#bestOfOverlay .bo-search-wrap .bo-search-input,#bestOfOverlay .bo-search-wrap .bo-search-input-big{padding-left:34px!important;padding-right:106px!important;font-size:10px!important}
+  #bestOfOverlay .bo-search-powered-by{font-size:8px!important;right:7px!important}
+}
+/* Every price label and panel filter is visibly interactive. */
+#boNearMapPage .bo-near-price-key span[data-near-tier],#boNearMapPage .bo-near-closest-filter{cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important}
+</style>
+<script id="bop-closest-five-functional-v211">
+(function(){
+  function esc(v){return typeof boNearEscape==='function'?boNearEscape(v):String(v==null?'':v).replace(/[&<>"']/g,'')}
+  function render(){
+    var list=document.getElementById('boNearClosestList'),status=document.getElementById('boNearClosestStatus');
+    if(!list||!status||!boNearClosestTier)return;
+    if(!boNearUserLatLng){list.innerHTML='';status.textContent='LOCATING YOUR POSITION…';status.classList.add('is-locating');return;}
+    var available=boNearMappedRestaurants.map(function(item){
+      var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)},hours=boNearHoursState(item.restaurant);
+      return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
+    }).filter(function(item){return Number.isFinite(item.distance)&&item.hoursState.state!=='closed'}).sort(function(a,b){return a.distance-b.distance});
+    var candidates=[];
+    if(boNearClosestTier==='all'){
+      ['dive','casual','fine'].forEach(function(tier){available.filter(function(item){return boNearMatchesTier(item.restaurant,tier)}).slice(0,5).forEach(function(item){candidates.push(Object.assign({},item,{nearTier:tier}))})});
+    }else candidates=available.filter(function(item){return boNearMatchesTier(item.restaurant,boNearClosestTier)}).slice(0,5);
+    if(!candidates.length){list.innerHTML='';status.textContent=boNearGeocodingComplete?'No '+boNearClosestTier+' restaurants are mapped near this location yet.':'LOCATING AND MAPPING THE CLOSEST '+boNearClosestTier.toUpperCase()+' RESTAURANTS…';status.classList.toggle('is-locating',!boNearGeocodingComplete);return;}
+    status.classList.remove('is-locating');
+    status.textContent=(boNearGeocodingComplete?'Showing ':'Still mapping — currently showing ')+candidates.length+(boNearClosestTier==='all'?' closest restaurants.':' closest '+boNearClosestTier+' restaurants.');
+    list.innerHTML=candidates.map(function(item,index){var r=item.restaurant,level=boNearPriceLevel(r),distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi',tier=item.nearTier?'<span class="bo-near-closest-tier">'+esc(item.nearTier.toUpperCase())+'</span> · ':'',hours=item.hoursState,hoursLabel=hours.known?'<span class="bo-near-hours-status '+hours.state+'">'+hours.label+'</span>':'<span class="bo-near-hours-status">HOURS: CONFIRM DIRECTLY</span>';return '<button type="button" class="bo-near-closest-row'+(hours.state==='closing'?' is-closing':'')+'" data-near-v211="'+index+'"><span><span class="bo-near-closest-name">'+esc(r.name)+'</span><span class="bo-near-closest-meta">'+tier+'$'.repeat(level||1)+' · ★ '+esc(r.ratingText||item.rating.toFixed(1))+'</span>'+hoursLabel+'</span><span class="bo-near-closest-distance">'+distance+'</span></button>'}).join('');
+    list.querySelectorAll('[data-near-v211]').forEach(function(btn){btn.addEventListener('click',function(){var item=candidates[Number(btn.dataset.nearV211)];if(!item)return;if(boNearMap)boNearMap.setView([item.geo.lat,item.geo.lon],Math.max(boNearMap.getZoom(),16));boShowNearRestaurantCard(item.restaurant,String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||''))})});
+  }
+  window.boRenderNearClosestFive=render;
+  document.addEventListener('click',function(event){
+    var closest=event.target&&event.target.closest&&event.target.closest('#bopStaticClosestFive');if(!closest)return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    document.body.classList.add('bo-closest-five-active');
+    Promise.resolve(boOpenNearMap()).finally(function(){if(!boNearClosestTier&&window.bopSetClosestTier)window.bopSetClosestTier('dive')});
+    var attempts=0,starter=setInterval(function(){attempts++;if(!boNearClosestTier&&window.bopSetClosestTier)window.bopSetClosestTier('dive');if(attempts>=20)clearInterval(starter)},400);
+  },true);
+  function normalize(){
+    var input=document.getElementById('boSearchInput');if(input)input.placeholder='Search all restaurants…';
+    document.querySelectorAll('#boNearMapPage .bo-near-price-key span').forEach(function(node,index){var tier=['dive','casual','fine'][index];if(tier){node.dataset.nearTier=tier;node.setAttribute('role','button');node.setAttribute('tabindex','0')}});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalize);else normalize();
+  new MutationObserver(function(){requestAnimationFrame(normalize)}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </body></html>
