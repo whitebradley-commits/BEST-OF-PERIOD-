@@ -37443,8 +37443,14 @@ body footer.bop-approved-footer{
   function hit(freq){if(!audio||muted||!freq)return;var o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=current===3?'triangle':current===2?'square':'sawtooth';o.frequency.setValueAtTime(freq,now);if(current===3)o.frequency.exponentialRampToValueAtTime(freq*.72,now+.1);g.gain.setValueAtTime(current===3?.065:.045,now);g.gain.exponentialRampToValueAtTime(.001,now+(current===3?.18:.12));o.connect(g).connect(audio.destination);o.start(now);o.stop(now+.2)}
   function play(which){current=Number(which)||1;muted=false;if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();audio.resume();clearInterval(timer);step=0;timer=setInterval(function(){hit(patterns[current][step++%8])},current===2?155:180);dock.querySelectorAll('[data-funk]').forEach(function(b){b.classList.toggle('active',Number(b.dataset.funk)===current)});dock.querySelector('.teen-funk-mute').textContent='MUTE'}
   dock.addEventListener('click',function(e){var b=e.target.closest('[data-funk]');if(b)play(b.dataset.funk);if(e.target.closest('.teen-funk-mute')){muted=!muted;e.target.textContent=muted?'PLAY':'MUTE';if(!muted)play(current)}});
+  function stop(){
+    muted=true;clearInterval(timer);timer=null;step=0;
+    if(audio&&audio.state==='running')audio.suspend().catch(function(){});
+    dock.querySelector('.teen-funk-mute').textContent='PLAY';
+  }
   var oldOpen=window.openBopTeen;window.openBopTeen=function(){var result=oldOpen&&oldOpen.apply(this,arguments);play(current);return result};
-  var close=document.getElementById('teenClose');if(close)close.addEventListener('click',function(){muted=true;dock.querySelector('.teen-funk-mute').textContent='PLAY'});
+  var close=document.getElementById('teenClose');if(close)close.addEventListener('click',stop);
+  new MutationObserver(function(){if(!overlay.classList.contains('open'))stop()}).observe(overlay,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 <!-- v156: Austin priority-section image coverage — brewery, Michelin, James Beard,
@@ -39283,6 +39289,66 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalize);else normalize();
   new MutationObserver(function(){requestAnimationFrame(normalize)}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- v261: Teen opening alignment and fail-safe Santa Barbara Back navigation -->
+<style id="bop-teen-top-and-santa-barbara-back-v261-style">
+#teenOverlay .teen-shell{
+  padding-top:max(2px,env(safe-area-inset-top))!important;
+  background:transparent!important;
+}
+#teenOverlay .teen-close{
+  position:fixed!important;
+  top:max(8px,env(safe-area-inset-top))!important;
+  right:max(10px,env(safe-area-inset-right))!important;
+  float:none!important;
+  z-index:2147483500!important;
+}
+#teenOverlay .teen-title{
+  clear:none!important;
+  margin:0 auto 1px!important;
+  padding-top:0!important;
+}
+#teenOverlay .teen-kicker{margin-top:5px!important;margin-bottom:5px!important}
+</style>
+<script id="bop-teen-top-and-santa-barbara-back-v261-script">
+(function(){
+  function santaBarbaraVisible(){
+    if(typeof boCityContext!=='undefined'&&boCityContext==='santabarbara')return true;
+    if(/santa[-_ ]?barbara/i.test(location.pathname+location.search+location.hash))return true;
+    var title=document.getElementById('boHeroTitle');
+    return !!(title&&/Santa Barbara/i.test(title.textContent||''));
+  }
+  function show(category){
+    var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open');
+    if(best){best.classList.add('open');best.scrollTop=0}
+    if(typeof boCityContext!=='undefined')boCityContext='santabarbara';
+    if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(category,'santabarbara');
+    if(typeof boRenderCategory==='function')boRenderCategory(category);
+    window.scrollTo(0,0);
+  }
+  function goBack(){
+    var category=typeof boCurrentCat!=='undefined'?boCurrentCat:'otheroptions';
+    if(category==='sushicasual'||category==='sushihighend'){show('sushi');return}
+    if(category==='sushi'){show('asian');return}
+    if(category==='asian'){show('otheroptions');return}
+    if(category==='otheroptions'){
+      var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+      if(best)best.classList.remove('open');
+      if(landing)landing.classList.add('open');
+      if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
+      window.scrollTo(0,0);return;
+    }
+    var parent=(typeof boParentMap!=='undefined'&&boParentMap[category])?boParentMap[category]:'otheroptions';
+    show(parent);
+  }
+  window.addEventListener('pointerdown',function(event){
+    var target=event.target&&event.target.closest&&event.target.closest('#boBackBtn');
+    if(!target||!santaBarbaraVisible())return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    target.disabled=true;goBack();setTimeout(function(){target.disabled=false},450);
+  },true);
 })();
 </script>
 <!-- v260: the bottom-right BOP sound orb is a repeatable one-shot brand sting -->
