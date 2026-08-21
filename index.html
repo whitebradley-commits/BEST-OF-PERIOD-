@@ -8615,10 +8615,11 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
  function start(){
   var el=elements();if(!el||!el.overlay.classList.contains('open'))return;
   var key=cityKey(),target=cityName(key);if(!target)return;
-  clearInterval(timer);clearTimeout(finishTimer);var token=++runToken,names=reelNames(target),i=0;
-  el.hero.classList.remove('bop-city-reel-settled-v298');el.hero.classList.add('bop-city-reel-spinning-v298');
-  timer=setInterval(function(){var now=elements();if(!now||token!==runToken)return;now.city.textContent=names[i++%names.length]},115);
-  finishTimer=setTimeout(function(){settle(target,token)},4200);
+  clearInterval(timer);clearTimeout(finishTimer);var token=++runToken;
+  /* City and sub-city pages no longer run an entry reel. Show the selected
+     destination immediately; the continuous landing-page/icon reels remain. */
+  el.hero.classList.remove('bop-city-reel-spinning-v298');
+  settle(target,token);
  }
  function monitor(){
   var el=elements(),open=!!(el&&el.overlay.classList.contains('open')),key=cityKey(),target=cityName(key);
@@ -44826,7 +44827,7 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
     var currentIndex=CITIES.map(function(c){return c.toLowerCase()}).indexOf(String(current).trim().toLowerCase());
     index=currentIndex>=0?(currentIndex+1)%CITIES.length:0;
     tick();
-    timer=setInterval(tick,900);
+    timer=setInterval(tick,3000);
   }
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function boot(){start();}
@@ -44975,7 +44976,7 @@ function normalize(value){return String(value||'').toLowerCase().normalize('NFD'
         city.textContent=cities[cityIndex]; city.style.opacity='1'; cityIndex=(cityIndex+1)%cities.length;
       },55);
     }
-    function startReel(){if(!reelFrozen&&!cityTimer)cityTimer=window.setInterval(drawCity,275);}
+    function startReel(){if(!reelFrozen&&!cityTimer)cityTimer=window.setInterval(drawCity,3000);}
     function freezeReel(name){
       reelFrozen=true; if(cityTimer){window.clearInterval(cityTimer);cityTimer=null;}
       if(name)city.textContent=name; city.style.opacity='1';
@@ -47089,5 +47090,22 @@ html.bop-clean-route #bestOfOverlay #boSearchInput::placeholder{color:#f59e0b!im
 #tbotrLandingOverlay img{
   max-width:100%!important;
   height:auto!important;
+}
+</style>
+<!-- Final lock: selected city pages display immediately with a true six-point gap. -->
+<style id="bop-static-selected-city-final-lock">
+#bestOfOverlay .bop-splash-hero.bop-city-reel-spinning-v298{
+  animation:none!important;transition:none!important;
+}
+#bestOfOverlay .bop-splash-hero.bop-city-reel-settled-v298 .bop-splash-line2,
+#bestOfOverlay .bop-splash-hero .bop-splash-line2{
+  display:flex!important;flex-wrap:nowrap!important;align-items:baseline!important;
+  justify-content:center!important;gap:6pt!important;column-gap:6pt!important;
+}
+#bestOfOverlay .bop-splash-hero .bop-splash-city,
+#bestOfOverlay .bop-splash-hero #bopMainCityText,
+#bestOfOverlay .bop-splash-hero #bopResultsCityText,
+#bestOfOverlay .bop-splash-hero .bop-splash-period{
+  animation:none!important;transition:none!important;transform:none!important;
 }
 </style>
