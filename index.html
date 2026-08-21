@@ -22928,10 +22928,10 @@ function boRenderCategory(cat){
       if(cityCfg.useNameCycler){
         // San Diego uses the same readable cadence as the main rotating-city
         // treatment, then stops permanently on the short landed-page label.
-        const resultSpinHold = cat === 'sandiego' ? 310 : 2;
-        const resultOutMs = cat === 'sandiego' ? 45 : 1;
-        const resultInMs = cat === 'sandiego' ? 45 : 1;
-        const resultSpinCount = cat === 'sandiego' ? 6 : 0;
+        const resultSpinHold = 260;
+        const resultOutMs = 45;
+        const resultInMs = 45;
+        const resultSpinCount = 6;
         startBopVegasSlotCycler('bopResultsCityText', cyclerCities, resultSpinHold, 5000, resultOutMs, resultInMs, resultSpinCount, true);
         if(cat === 'sandiego'){
           const sdHeroText = document.getElementById('bopResultsCityText');
@@ -22967,7 +22967,7 @@ function boRenderCategory(cat){
           <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
         </div>
       </div>`;
-      startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 30, 5000, 15, 15, 0, true);
+      startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 260, 5000, 45, 45, 6, true);
     } else if(isBjsPicksCat(cat)){
       // Same idea as Other Bests — BJS Picks is reached from a specific
       // city's context, so the city name underneath the logo should reflect
@@ -23706,6 +23706,22 @@ boCircles.forEach(c => {
 boBackBtnEl.addEventListener('click', (e) => {
   e.preventDefault();
 
+  // A restaurant reached through "Return to Category" must return to the
+  // exact BJS Picks page it came from, rather than losing that history.
+  if(window.boReturnBackCategory){
+    const returnDestination = window.boReturnBackCategory;
+    window.boReturnBackCategory = '';
+    boRenderCategory(returnDestination);
+    return;
+  }
+
+  // BJS Picks is entered from a city's Main tile page. Back always returns
+  // to that Main page, never to a generic Best Of listing or a dead end.
+  if(typeof isBjsPicksCat === 'function' && isBjsPicksCat(boCurrentCat)){
+    boRenderCategory('otheroptions');
+    return;
+  }
+
   // The former Other Bests tile grid is now each city's MAIN page. Its Back
   // button must return to the original fast-rotating city-search landing page,
   // not to the old city Best Of listings page.
@@ -23961,7 +23977,10 @@ function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs,
         el.classList.remove('animating-in');
         el.classList.add('is-active');
         if(isLastInSpin){
-          if(oneShot) return;
+          if(oneShot){
+            el.classList.add('bop-city-landed');
+            return;
+          }
           setTimeout(() => {
             if(!isCurrent()) return;
             queue = buildSpinQueue();
@@ -38055,6 +38074,31 @@ body footer.bop-approved-footer{
   z-index:8!important;
 }
 </style>
+<style id="bop-landed-city-separation-v302">
+/* While the reel is moving, names may pass behind Period. Once it lands,
+   switch to a true two-column lockup so the final city and Period can never
+   overlap. The visible gap is exactly six points. */
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed),
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed){
+  grid-template-columns:auto auto!important;
+  column-gap:6pt!important;
+  width:max-content!important;
+  max-width:calc(100vw - 32px)!important;
+}
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-period,
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-period{
+  margin-left:0!important;
+}
+#bopResultsCityText.bop-city-landed[data-fit="xlong"],
+#bopMainCityText.bop-city-landed[data-fit="xlong"]{
+  font-size:clamp(1.42rem,7.4vw,1.78rem)!important;
+  word-spacing:-.12em!important;
+}
+#bopResultsCityText.bop-city-landed[data-fit="long"],
+#bopMainCityText.bop-city-landed[data-fit="long"]{
+  font-size:clamp(1.58rem,8.1vw,2rem)!important;
+}
+</style>
 <script id="bop-austin-brewery-accolades-v169">
 (function(){
  if(typeof boCategoryData==='undefined')return;
@@ -38565,7 +38609,7 @@ body footer.bop-approved-footer{
   install('bjspickssantabarbara',[
     Object.assign({},V.yoichis,{bjsPick:true,bjsFromCat:'sushihighend'}),
     Object.assign({},V.winecask,{bjsPick:true,bjsFromCat:'santabarbara'}),
-    Object.assign({},V.lark,{bjsPick:true,bjsFromCat:'santabarbara'}),
+    Object.assign({},V.lark,{bjsPick:true,bjsFromCat:'jamesbeard'}),
     Object.assign({},V.rare,{bjsPick:true,bjsFromCat:'steakhighend'})
   ]);
   /* Only documented local James Beard connections; never pad this category. */
@@ -38728,6 +38772,7 @@ body footer.bop-approved-footer{
   }
   function openAt(category,name){
     if(!category||typeof boRenderCategory!=='function')return;
+    window.boReturnBackCategory = (typeof boCurrentCat!=='undefined' ? boCurrentCat : '');
     boRenderCategory(category);
     var reveal=function(){
       var card=document.getElementById('bo-card-'+slug(name));
