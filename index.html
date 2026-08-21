@@ -47055,3 +47055,39 @@ html.bop-clean-route #bestOfOverlay #boSearchInput::placeholder{color:#f59e0b!im
  background:transparent!important;box-shadow:none!important
 }
 </style>
+<style id="bop-hero-period-final-gap-fix">
+/* Root cause: several later, higher-specificity ".bop-city-reel-settled-v298
+   .bop-splash-period" rules zero out margin on the landed hero title, which
+   silently cancels the intended 6pt gap between the city name and "Period"
+   no matter which city (San Diego included) is showing. Restoring the gap
+   here as flexbox `gap` (the layout mode that actually wins the cascade)
+   instead of margin, and placed last so it is not itself overridden. */
+#tbotrLandingOverlay .bop-splash-line2,
+#bopLandingOverlay .bop-splash-line2,
+#bestOfOverlay .bop-splash-line2{
+  gap:6pt!important;column-gap:6pt!important;
+}
+#bestOfOverlay .bop-splash-hero.bop-city-reel-settled-v298 .bop-splash-period,
+#bestOfOverlay .bop-splash-hero.bop-city-reel-spinning-v298 .bop-splash-period,
+#bestOfOverlay .bop-splash-hero .bop-splash-period,
+#bestOfOverlay .bop-splash-period,
+#bopLandingOverlay .bop-splash-period,
+#tbotrLandingOverlay .bop-splash-period{
+  margin-left:0!important;
+}
+</style>
+<style id="bop-image-max-size-safety-net">
+/* This file never set a baseline size limit on images anywhere in the app
+   (only one unrelated popup had its own img rule). Any <img> tag that
+   doesn't have its own specific sizing renders at full native pixel size,
+   which for a real photo can be thousands of pixels tall -- ballooning the
+   whole page's scroll height with nothing visible to explain it. This is
+   the standard safety net every site should have; scoped to the app's
+   overlays so it can't touch anything outside them. */
+#bestOfOverlay img,
+#bopLandingOverlay img,
+#tbotrLandingOverlay img{
+  max-width:100%!important;
+  height:auto!important;
+}
+</style>
