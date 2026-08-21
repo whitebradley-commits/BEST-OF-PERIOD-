@@ -7876,6 +7876,106 @@
 html.bop-route-booting body{visibility:hidden!important;opacity:0!important}
 html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacity .12s ease}
 </style>
+<!-- Screenshot-driven landing and San Diego repair. -->
+<style id="bop-landing-sd-screenshot-repair-final">
+/* Every rotating landing city ends exactly 6pt before Period. Short names no
+   longer float away, and long names expand left without colliding. */
+#bopLandingOverlay #bopStableMobileLockup{
+  position:relative!important;overflow:visible!important;
+}
+#bopLandingOverlay #bopStableMobileCity{
+  position:absolute!important;left:auto!important;right:calc(46% + 6pt)!important;top:0!important;
+  width:max-content!important;min-width:0!important;max-width:none!important;
+  margin:0!important;padding:0!important;text-align:right!important;white-space:nowrap!important;
+  transform:none!important;transform-origin:right center!important;
+}
+#bopLandingOverlay #bopStableMobilePeriod{
+  position:absolute!important;left:54%!important;right:auto!important;top:0!important;
+  margin:0!important;padding:0!important;transform:none!important;
+}
+
+/* Never let the retired clean-route skin hide a city's actual tile directory. */
+#bestOfOverlay.open #boList,
+#bestOfOverlay.open #boList .bo-alpha-quadrant,
+#bestOfOverlay.open #boList .bo-featured-category-group,
+#bestOfOverlay.open #boList .bo-picker-grid,
+#bestOfOverlay.open #boList .bo-picker-grid-below-fold{
+  visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;
+}
+#bestOfOverlay.open #boList .bo-alpha-quadrant,
+#bestOfOverlay.open #boList .bo-featured-category-group{display:block!important;}
+#bestOfOverlay.open #boList .bo-picker-grid,
+#bestOfOverlay.open #boList .bo-picker-grid-below-fold{display:flex!important;}
+
+/* San Diego coast: labels/shoreline on the left; all tappable cities on the right. */
+#bestOfOverlay #bopSdCityHubCoast{
+  min-height:700px!important;height:auto!important;padding:38px 10px 24px!important;
+  transform:none!important;overflow:visible!important;
+}
+#bestOfOverlay #bopSdCityHubCoast:before{
+  left:14%!important;width:32%!important;top:190px!important;bottom:26px!important;
+  background-size:100% 100%!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-sub{
+  margin:10px auto 42px!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-coastline{
+  position:relative!important;min-height:505px!important;margin:0 auto!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-coastline::before{
+  content:'TAP A CITY'!important;position:absolute!important;top:-23px!important;right:7%!important;
+  color:#ffd078!important;font:900 11px/1 'Archivo Black',Arial,sans-serif!important;
+  letter-spacing:.18em!important;text-shadow:0 0 8px rgba(245,158,11,.9)!important;
+  animation:bopSdTapCuePulse 1.7s ease-in-out infinite!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-areas{
+  display:grid!important;width:56%!important;margin:0 1% 0 43%!important;padding:0!important;
+  gap:9px!important;position:relative!important;z-index:8!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-area{
+  display:flex!important;width:100%!important;min-height:57px!important;padding:9px 4px!important;
+  align-items:center!important;justify-content:flex-start!important;text-align:left!important;
+  white-space:normal!important;color:#ffc15a!important;-webkit-text-fill-color:#ffc15a!important;
+  text-shadow:0 0 7px rgba(245,158,11,.92),0 0 16px rgba(245,158,11,.48)!important;
+  animation:bopSdCityPulse 2.2s ease-in-out infinite!important;
+}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-ocean-label{left:2%!important;top:235px!important;z-index:7!important;}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-coastal-label{left:23%!important;top:210px!important;z-index:7!important;}
+@keyframes bopSdTapCuePulse{0%,100%{opacity:.58;filter:brightness(.9)}50%{opacity:1;filter:brightness(1.25)}}
+@keyframes bopSdCityPulse{0%,100%{opacity:.72;filter:brightness(.92)}50%{opacity:1;filter:brightness(1.23)}}
+@media(max-width:430px){
+  #bestOfOverlay #bopSdCityHubCoast{min-height:690px!important;padding-inline:6px!important;}
+  #bestOfOverlay #bopSdCityHubCoast:before{left:12%!important;width:33%!important;}
+  #bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-areas{width:58%!important;margin-left:41%!important;margin-right:1%!important;}
+  #bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-area{font-size:clamp(10px,2.8vw,13px)!important;letter-spacing:.035em!important;}
+  #bestOfOverlay #bopSdCityHubCoast .bop-sd-coastal-label{left:20%!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  #bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-area,
+  #bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-coastline::before{animation:none!important;opacity:1!important;}
+}
+</style>
+<script id="bop-restore-native-city-tiles-final">
+(function(){
+ function restore(){
+  var best=document.getElementById('bestOfOverlay');
+  if(!best||!best.classList.contains('open'))return;
+  /* This class belongs to a retired renderer and is the source of the blank
+     San Diego directory shown in the screenshots. */
+  document.documentElement.classList.remove('bop-clean-route');
+  best.classList.remove('bop-clean-route');
+  var list=document.getElementById('boList');
+  if(list){list.hidden=false;list.style.removeProperty('display');list.style.removeProperty('visibility');list.style.removeProperty('opacity');}
+  list&&list.querySelectorAll('.bo-alpha-quadrant,.bo-featured-category-group,.bo-picker-grid,.bo-picker-grid-below-fold').forEach(function(node){
+   node.hidden=false;node.style.removeProperty('display');node.style.removeProperty('visibility');node.style.removeProperty('opacity');
+  });
+ }
+ document.addEventListener('click',function(){setTimeout(restore,60);setTimeout(restore,260);},true);
+ window.addEventListener('pageshow',function(){setTimeout(restore,50);});
+ new MutationObserver(function(){restore();}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden']});
+ setTimeout(restore,300);setTimeout(restore,1000);
+})();
+</script>
 <!-- v314: visible city suggestions, stable bright reel, and permanent High & Hungry directory -->
 <style id="bop-visible-search-hh-v314-style">
 /* Suggestions must be allowed to extend below the search ring. */
@@ -47108,4 +47208,21 @@ html.bop-clean-route #bestOfOverlay #boSearchInput::placeholder{color:#f59e0b!im
 #bestOfOverlay .bop-splash-hero .bop-splash-period{
   animation:none!important;transition:none!important;transform:none!important;
 }
+</style>
+<style id="bop-landing-sd-screenshot-repair-last-lock">
+#bopLandingOverlay #bopStableMobileCity{position:absolute!important;left:auto!important;right:calc(46% + 6pt)!important;top:0!important;width:max-content!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;text-align:right!important;white-space:nowrap!important;transform:none!important;transform-origin:right center!important}
+#bopLandingOverlay #bopStableMobilePeriod{position:absolute!important;left:54%!important;right:auto!important;top:0!important;margin:0!important;padding:0!important;transform:none!important}
+#bestOfOverlay.open #boList,#bestOfOverlay.open #boList .bo-alpha-quadrant,#bestOfOverlay.open #boList .bo-featured-category-group,#bestOfOverlay.open #boList .bo-picker-grid,#bestOfOverlay.open #boList .bo-picker-grid-below-fold{visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important}
+#bestOfOverlay.open #boList .bo-alpha-quadrant,#bestOfOverlay.open #boList .bo-featured-category-group{display:block!important}
+#bestOfOverlay.open #boList .bo-picker-grid,#bestOfOverlay.open #boList .bo-picker-grid-below-fold{display:flex!important}
+#bestOfOverlay #bopSdCityHubCoast{min-height:700px!important;height:auto!important;padding:38px 10px 24px!important;transform:none!important;overflow:visible!important}
+#bestOfOverlay #bopSdCityHubCoast:before{left:14%!important;width:32%!important;top:190px!important;bottom:26px!important;background-size:100% 100%!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-sub{margin:10px auto 42px!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-coastline{position:relative!important;min-height:505px!important;margin:0 auto!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-coastline::before{content:'TAP A CITY'!important;position:absolute!important;top:-23px!important;right:7%!important;color:#ffd078!important;font:900 11px/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:.18em!important;text-shadow:0 0 8px rgba(245,158,11,.9)!important;animation:bopSdTapCuePulse 1.7s ease-in-out infinite!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-areas{display:grid!important;width:56%!important;margin:0 1% 0 43%!important;padding:0!important;gap:9px!important;position:relative!important;z-index:8!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-area{display:flex!important;width:100%!important;min-height:57px!important;padding:9px 4px!important;align-items:center!important;justify-content:flex-start!important;text-align:left!important;white-space:normal!important;color:#ffc15a!important;-webkit-text-fill-color:#ffc15a!important;text-shadow:0 0 7px rgba(245,158,11,.92),0 0 16px rgba(245,158,11,.48)!important;animation:bopSdCityPulse 2.2s ease-in-out infinite!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-ocean-label{left:2%!important;top:235px!important;z-index:7!important}
+#bestOfOverlay #bopSdCityHubCoast .bop-sd-coastal-label{left:23%!important;top:210px!important;z-index:7!important}
+@media(max-width:430px){#bestOfOverlay #bopSdCityHubCoast{min-height:690px!important;padding-inline:6px!important}#bestOfOverlay #bopSdCityHubCoast:before{left:12%!important;width:33%!important}#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-areas{width:58%!important;margin-left:41%!important;margin-right:1%!important}#bestOfOverlay #bopSdCityHubCoast .bop-sd-hub-area{font-size:clamp(10px,2.8vw,13px)!important;letter-spacing:.035em!important}#bestOfOverlay #bopSdCityHubCoast .bop-sd-coastal-label{left:20%!important}}
 </style>
