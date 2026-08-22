@@ -6433,6 +6433,27 @@
   .bo-24-clock-minute{animation:none;transform:rotate(300deg);}
 }
 
+/* Featured Food Trucks tile — same gold border/glow language as Near Me,
+   but the icon area is truck-shaped (clipped tile silhouette) instead of a
+   plain rounded square, so it visually reads as "a little truck." */
+.bo-foodtruck-tile{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  border-color:#F59E0B !important;
+  color:#F59E0B !important;
+  box-shadow:0 0 12px rgba(245,158,11,.72),0 0 27px rgba(245,158,11,.34),inset 0 0 15px rgba(245,158,11,.08) !important;
+  animation:boNearMeGlow 2.1s ease-in-out infinite;
+  clip-path:polygon(0% 14%,62% 14%,62% 0%,88% 0%,100% 30%,100% 100%,0% 100%);
+}
+.bo-foodtruck-icon{
+  position:absolute;inset:5px;z-index:0;opacity:.34;pointer-events:none;
+  background-repeat:no-repeat;background-position:center 42%;background-size:62%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23F59E0B' stroke-width='4' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z'/%3E%3Cline x1='54' y1='36' x2='54' y2='62'/%3E%3Crect x='60' y='36' width='11' height='10'/%3E%3C/g%3E%3Ccircle cx='25' cy='66' r='9' fill='%23000' stroke='%23F59E0B' stroke-width='4'/%3E%3Ccircle cx='76' cy='66' r='9' fill='%23000' stroke='%23F59E0B' stroke-width='4'/%3E%3C/svg%3E");
+}
+.bo-foodtruck-label{position:relative;z-index:1;text-shadow:0 0 7px #000,0 0 12px #000;}
+@media (prefers-reduced-motion:reduce){.bo-foodtruck-tile{animation:none;}}
+
 /* Hotel */
 .bo-icon-hotel{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cg fill='none' stroke='%239FE2FF' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 68V22h46v46M64 34h38v34M9 68h102'/%3E%3Cpath d='M28 32h8M45 32h8M28 44h8M45 44h8M28 56h8M45 56h8M75 44h8M90 44h8M75 56h8M90 56h8'/%3E%3C/g%3E%3C/svg%3E");
@@ -23128,6 +23149,7 @@ function boRenderCategory(cat){
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label">24 Hours</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
+          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-foodtruck-tile" id="boFoodTrucksPreviewBtn" aria-label="Locate Food Trucks"><span class="bo-foodtruck-icon" aria-hidden="true"></span><span class="bo-foodtruck-label">Locate Food Trucks</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof" aria-label="Best Of current city Period"><span class="bo-lead-best-lockup"><span class="bo-lead-best-top">BEST OF</span><span class="bo-lead-best-city is-active" id="boLeadBestCity">${(BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName}</span><span class="bo-picker-period bo-lead-best-period">Period<span class="period-mark">&copy;</span></span></span></button>
         </div>
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
@@ -23273,6 +23295,14 @@ function boRenderCategory(cat){
         nearMePreviewBtn.blur();
         boNearMapReturnTarget = 'city';
         boOpenNearMap();
+      });
+    }
+    const foodTrucksPreviewBtn = document.getElementById('boFoodTrucksPreviewBtn');
+    if(foodTrucksPreviewBtn){
+      foodTrucksPreviewBtn.addEventListener('click', () => {
+        foodTrucksPreviewBtn.blur();
+        if(typeof boOpenFoodTruckMap === 'function') boOpenFoodTruckMap();
+        else alert('Food Truck Map — coming soon.');
       });
     }
 
