@@ -20697,7 +20697,7 @@ async function boOpenNearMap(){
           : 'We could not locate you. Tap Near Me again to retry.';
       }
       resolve(false);
-    },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+    },{enableHighAccuracy:true,timeout:45000,maximumAge:0});
   });
 
   const icon=L.divIcon({className:'',html:'<div class="bo-orange-pin"></div>',iconSize:[24,34],iconAnchor:[12,31],popupAnchor:[0,-29]});
@@ -28016,7 +28016,6 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <nav class="bop-static-landing-dock" id="bopStaticLandingDock" aria-label="Landing page controls">
   <button class="bop-static-landing-button" id="bopStaticShare" type="button" aria-label="Share this page">SHARE<br>PAGE</button>
-  <button class="bop-static-landing-button bop-static-near" id="bopStaticNear" type="button" aria-label="Near Me"><span class="bop-static-near-label">NEAR<br>ME</span></button>
   <button class="bop-static-landing-button bop-static-other-cities" id="bopStaticOtherCities" type="button" aria-label="Other Cities"><span class="bop-static-city-skyline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="bop-static-city-label">OTHER<br>CITIES</span></button>
   <button class="bop-static-landing-button bop-static-closest-five" id="bopStaticClosestFive" type="button" aria-label="Closest Five"><svg class="bop-closest-five-mark" viewBox="0 0 58 58" aria-hidden="true"><defs><path id="bopClosestFiveArc" d="M 8 31 A 21 21 0 0 1 50 31"></path></defs><text class="bop-closest-five-word"><textPath href="#bopClosestFiveArc" startOffset="50%" text-anchor="middle">CLOSEST</textPath></text><text class="bop-closest-five-number" x="29" y="47" text-anchor="middle">5</text></svg></button>
   <button class="bop-static-landing-button bop-static-world" id="bopStaticWorld" type="button" aria-label="Worldwide bests"><svg aria-hidden="true" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg></button>
@@ -39698,6 +39697,100 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       r.note = bits.join(' \u00b7 ');
     });
   });
+})();
+</script>
+
+<style id="bop-closest-five-load-notice-v1">
+  /* Closest Five only: keep the wait notice directly above the filter box while the current-location list is being prepared. */
+  #boClosestFiveLoadNotice{
+    position:fixed;
+    top:calc(max(315px,36vh) - 46px);
+    left:22px;
+    right:22px;
+    z-index:10025;
+    display:none;
+    margin:0;
+    color:#F59E0B;
+    text-align:center;
+    font:900 clamp(10px,2.9vw,14px)/1.12 'Archivo Narrow',Arial,sans-serif;
+    letter-spacing:.075em;
+    text-transform:uppercase;
+    pointer-events:none;
+  }
+  #boClosestFiveLoadNotice.is-visible{display:block;}
+  #boClosestFiveLoadNotice.is-wait-complete .bop-closest-five-wait{display:none;}
+  #boClosestFiveLoadNotice .bop-closest-five-wait,
+  #boClosestFiveLoadNotice .bop-closest-five-locating{display:block;animation:bopClosestFiveLoadFlash 1s ease-in-out infinite;}
+  #boClosestFiveLoadNotice .bop-closest-five-locating{margin-top:4px;color:#E4002B;font-size:.9em;animation-delay:.18s;}
+  @keyframes bopClosestFiveLoadFlash{
+    0%,100%{opacity:.5;text-shadow:0 0 4px rgba(245,158,11,.42);}
+    50%{opacity:1;text-shadow:0 0 10px rgba(245,158,11,.95),0 0 22px rgba(245,158,11,.48);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #boClosestFiveLoadNotice .bop-closest-five-wait,
+    #boClosestFiveLoadNotice .bop-closest-five-locating{animation:none;}
+  }
+</style>
+<script id="bop-closest-five-load-notice-v1-script">
+(function(){
+  var noticeTimer=null, resultObserver=null, retryTimer=null;
+  function isClosestFiveOpen(){return document.body.classList.contains('bo-closest-five-active');}
+  function notice(){
+    var page=document.getElementById('boNearMapPage');
+    var lower=page&&page.querySelector('.bo-near-map-lower');
+    if(!page||!lower)return null;
+    var el=document.getElementById('boClosestFiveLoadNotice');
+    if(!el){
+      el=document.createElement('p');
+      el.id='boClosestFiveLoadNotice';
+      el.setAttribute('role','status');
+      el.setAttribute('aria-live','polite');
+      el.innerHTML='<span class="bop-closest-five-wait">Please allow up to 60 seconds to load</span><span class="bop-closest-five-locating">Locating…</span>';
+      lower.parentNode.insertBefore(el,lower);
+    }
+    return el;
+  }
+  function hide(){
+    var el=document.getElementById('boClosestFiveLoadNotice');
+    if(el)el.classList.remove('is-visible');
+    if(noticeTimer){clearTimeout(noticeTimer);noticeTimer=null;}
+    if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
+    if(resultObserver){resultObserver.disconnect();resultObserver=null;}
+  }
+  function resultsStarted(){
+    var list=document.getElementById('boNearClosestList');
+    return !!(list&&list.children.length);
+  }
+  function monitorResults(){
+    if(resultsStarted()){hide();return;}
+    var list=document.getElementById('boNearClosestList');
+    if(!list){retryTimer=setTimeout(show,120);return;}
+    if(resultObserver)resultObserver.disconnect();
+    resultObserver=new MutationObserver(function(){if(resultsStarted())hide();});
+    resultObserver.observe(list,{childList:true});
+  }
+  function show(){
+    if(!isClosestFiveOpen()){hide();return;}
+    var el=notice();
+    if(!el){retryTimer=setTimeout(show,120);return;}
+    if(resultsStarted()){hide();return;}
+    if(el.classList.contains('is-visible')){monitorResults();return;}
+    el.classList.add('is-visible');
+    el.classList.remove('is-wait-complete');
+    if(noticeTimer)clearTimeout(noticeTimer);
+    noticeTimer=setTimeout(function(){
+      el.classList.add('is-wait-complete');
+      noticeTimer=null;
+    },45000);
+    monitorResults();
+  }
+  function sync(){if(isClosestFiveOpen())show();else hide();}
+  function install(){
+    new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['class']});
+    new MutationObserver(function(){if(isClosestFiveOpen())show();}).observe(document.body,{childList:true,subtree:true});
+    sync();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html>
