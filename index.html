@@ -39793,4 +39793,121 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+
+<style id="bop-landing-orb-refinements-v1">
+  /* Landing dock only: a small size increase after the front-page Near Me orb was removed. */
+  #bopStaticLandingDock.bop-static-landing-dock{
+    gap:clamp(4px,1vw,7px)!important;
+  }
+  #bopStaticLandingDock .bop-static-landing-button:not(.bop-static-bjs){
+    flex:0 0 68px!important;
+    width:68px!important;
+    height:68px!important;
+    min-width:68px!important;
+    min-height:68px!important;
+  }
+  @media(max-width:370px){
+    #bopStaticLandingDock.bop-static-landing-dock{left:3px!important;gap:3px!important;}
+    #bopStaticLandingDock .bop-static-landing-button:not(.bop-static-bjs){
+      flex-basis:62px!important;
+      width:62px!important;
+      height:62px!important;
+      min-width:62px!important;
+      min-height:62px!important;
+    }
+  }
+
+  /* Share Page: a small gold share-mark sits underneath the approved lettering. */
+  #bopStaticShare{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:1px!important;
+    padding:5px 1px 3px!important;
+  }
+  #bopStaticShare .bop-share-orb-copy{
+    display:block;
+    color:#E4002B;
+    font:900 .67rem/.94 'Archivo Black',sans-serif;
+    letter-spacing:.025em;
+    text-align:center;
+    text-shadow:0 0 6px rgba(228,0,43,.72);
+  }
+  #bopStaticShare .bop-share-orb-mark{
+    display:block;
+    width:15px;
+    height:15px;
+    margin-top:1px;
+    fill:none;
+    stroke:#F59E0B;
+    stroke-width:2.5;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    filter:drop-shadow(0 0 3px rgba(245,158,11,.85));
+  }
+  #bopStaticShare .bop-share-orb-mark circle{fill:#F59E0B;stroke:none;}
+
+  /* Closest Five: a subdued gold location pin remains behind the existing red lettering. */
+  #bopStaticClosestFive{position:relative!important;overflow:hidden!important;}
+  #bopStaticClosestFive .bop-closest-five-pin{
+    position:absolute;
+    z-index:1;
+    top:12px;
+    left:13px;
+    width:42px;
+    height:42px;
+    fill:none;
+    stroke:#F59E0B;
+    stroke-width:2.6;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    opacity:.24;
+    filter:drop-shadow(0 0 4px rgba(245,158,11,.72));
+  }
+  #bopStaticClosestFive .bop-closest-five-mark{position:relative!important;z-index:2!important;}
+
+  /* Other Cities: keep the skyline in a small band beneath the words, not behind them. */
+  #bopStaticOtherCities{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    padding-top:14px!important;
+    overflow:hidden!important;
+  }
+  #bopStaticOtherCities .bop-static-city-label{
+    position:relative!important;
+    z-index:2!important;
+    margin:0!important;
+    transform:translateY(-1px)!important;
+  }
+  #bopStaticOtherCities .bop-static-city-skyline{
+    left:10px!important;
+    right:10px!important;
+    bottom:5px!important;
+    height:52px!important;
+    z-index:1!important;
+    opacity:.52!important;
+    transform:scaleY(.34) skewX(-2deg)!important;
+    transform-origin:center bottom!important;
+  }
+</style>
+<script id="bop-landing-orb-refinements-v1-script">
+(function(){
+  function ensureOrbDetails(){
+    var share=document.getElementById('bopStaticShare');
+    if(share&&!share.querySelector('.bop-share-orb-mark')){
+      share.innerHTML='<span class="bop-share-orb-copy">SHARE<br>PAGE</span><svg class="bop-share-orb-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12 16 7M8 12l8 5"></path><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="6" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle></svg>';
+    }
+    var closest=document.getElementById('bopStaticClosestFive');
+    if(closest&&!closest.querySelector('.bop-closest-five-pin')){
+      closest.insertAdjacentHTML('afterbegin','<svg class="bop-closest-five-pin" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 56S14 39.5 14 25.5A18 18 0 1 1 50 25.5C50 39.5 32 56 32 56Z"></path><circle cx="32" cy="25" r="5.5"></circle></svg>');
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureOrbDetails);else ensureOrbDetails();
+})();
+</script>
 </body></html>
