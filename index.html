@@ -40114,4 +40114,74 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   },true);
 })();
 </script>
+
+<script id="bop-santa-barbara-indian-category-v1">
+(function(){
+  if(!window.boCategoryData)return;
+  var city='santabarbara',bibiName='Bibi Ji';
+  function sameName(record,name){return record&&String(record.name||'').toLowerCase()===String(name||'').toLowerCase();}
+  function byCityName(record,name){return record&&record.city===city&&sameName(record,name);}
+  function strip(list,name){return (Array.isArray(list)?list:[]).filter(function(record){return !byCityName(record,name);});}
+  function firstRecord(name){
+    var keys=['santabarbara','michelin','jamesbeard','asianbestofrest','sushi'];
+    for(var i=0;i<keys.length;i++){
+      var found=(boCategoryData[keys[i]]||[]).find(function(record){return byCityName(record,name);});
+      if(found)return Object.assign({},found);
+    }
+    return null;
+  }
+  function maps(address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);}
+  function entry(name,address,phone,url,rating,reviews,why,price){
+    return {city:city,name:name,address:address,phone:phone,url:url,directionsUrl:maps(address),
+      rating:rating,reviews:reviews,ratingSource:'Yelp',ratingAsOf:'2026-08-21',why:why,note:why,
+      price:price||2,hue:'28, 38%, 24%',image:'',imagePosition:'center',hours:[]};
+  }
+  var bibi=firstRecord(bibiName);
+  if(!bibi)return;
+  ['sushi','sushicasual','sushihighend','asianbestofrest'].forEach(function(key){boCategoryData[key]=strip(boCategoryData[key],bibiName);});
+  var indian=[
+    bibi,
+    entry('Flavor of India','3026 State Street, Santa Barbara, CA 93105','(805) 682-6561','https://flavorofindiasb.com/',3.8,632,'A long-running Santa Barbara North Indian favorite for traditional curries, tandoor dishes and an especially broad vegan selection.',2),
+    entry('Indian Tandoori Kingdom','1026 State Street, Santa Barbara, CA 93101','(805) 869-6440','https://indiantandoorikingdom.com/',4.8,418,'A downtown choice for halal tandoori specialties, curries and clearly marked vegetarian Indian dishes.',2),
+    entry('Masala Spice Indian Cuisine','1919 Cliff Drive, Santa Barbara, CA 93109','(805) 869-2924','https://masalaspicesb.com/',4.3,29,'Regional Indian cooking on Cliff Drive with curries, tandoor plates, dosas and strong vegetarian options.',2),
+    entry('Apna Indian Kitchen','718 State Street, Santa Barbara, CA 93101','(805) 770-8479','https://apnasb.com/',4.6,557,'A family-run State Street Indian kitchen for North Indian and Mughlai specialties, curries, tandoor dishes and fresh naan.',2)
+  ];
+  var prior=boCategoryData.indian||[];
+  var localNames=new Set(indian.map(function(record){return record.name.toLowerCase();}));
+  boCategoryData.indian=prior.filter(function(record){return !(record&&record.city===city&&localNames.has(String(record.name||'').toLowerCase()));}).concat(indian.map(function(record,index){return Object.assign({},record,{rank:index+1});}));
+  if(window.BOP_SANTA_BARBARA_AUDIT){
+    window.BOP_SANTA_BARBARA_AUDIT.indian=indian.length;
+    window.BOP_SANTA_BARBARA_AUDIT.asian=(boCategoryData.asianbestofrest||[]).filter(function(record){return record&&record.city===city;}).length;
+    window.BOP_SANTA_BARBARA_AUDIT.sushi=(boCategoryData.sushi||[]).filter(function(record){return record&&record.city===city;}).length;
+  }
+})();
+</script>
+
+<style id="bop-movie-ticket-route-removal-v1">
+  /* Streaming-only Fate Has Decided: remove ticket/ZIP entry points without changing the movie picker or movie result card. */
+  #boMoviesPage .bop-home-orb,
+  #boMoviesPage .bop-side-right:has(.bop-home-orb),
+  #boMoviesPage .bop-ticket-launch,
+  #bopTicketOverlay{display:none!important;}
+</style>
+<script id="bop-movie-ticket-route-removal-v1-script">
+(function(){
+  function disableTicketRoute(root){
+    root=root||document;
+    var controls=root.querySelectorAll?root.querySelectorAll('#boMoviesPage .bop-home-orb,#boMoviesPage .bop-ticket-launch'):[];
+    controls.forEach(function(control){
+      control.setAttribute('aria-hidden','true');
+      control.setAttribute('tabindex','-1');
+      if('disabled' in control)control.disabled=true;
+    });
+    var overlay=document.getElementById('bopTicketOverlay');
+    if(overlay){overlay.setAttribute('aria-hidden','true');overlay.classList.remove('open');}
+  }
+  function install(){
+    disableTicketRoute(document);
+    new MutationObserver(function(records){records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)disableTicketRoute(node);});});}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 </body></html>
