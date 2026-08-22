@@ -40269,4 +40269,283 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+
+<!-- ===== Food Truck Map + Check-In ===== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script id="bop-foodtruck-firebase-init">
+(function(){
+  var bopFirebaseConfig = {
+    apiKey: "AIzaSyCfyTi1MtABID3n-ivLModltn1LyMfIhC0",
+    authDomain: "bop-food-trucks.firebaseapp.com",
+    projectId: "bop-food-trucks",
+    storageBucket: "bop-food-trucks.firebasestorage.app",
+    messagingSenderId: "448387989317",
+    appId: "1:448387989317:web:1123cd337684185764882c",
+    measurementId: "G-D96DCK1RZ9"
+  };
+  try{
+    if(typeof firebase!=='undefined' && !firebase.apps.length) firebase.initializeApp(bopFirebaseConfig);
+    window.bopFtDb = typeof firebase!=='undefined' ? firebase.firestore() : null;
+  }catch(e){ window.bopFtDb = null; }
+})();
+</script>
+<style id="bop-foodtruck-styles">
+.bo-ft-overlay{position:fixed;inset:0;z-index:100600;display:none;overflow-y:auto;background:#000;color:#fff;-webkit-overflow-scrolling:touch;}
+.bo-ft-overlay.open{display:block;}
+.bo-ft-shell{position:relative;width:min(720px,calc(100% - 24px));margin:0 auto;padding:34px 18px 90px;}
+.bo-ft-back{position:absolute;top:34px;left:18px;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 .68rem/1.05 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer;}
+.bo-ft-hero{padding:92px 0 20px;text-align:center;}
+.bo-ft-best{color:#fff;font:900 clamp(2.2rem,10vw,4.2rem)/.86 'Cormorant Garamond',serif;letter-spacing:.015em;text-transform:uppercase;}
+.bo-ft-title-line{display:flex;align-items:center;justify-content:center;gap:0;margin-top:-15px;flex-wrap:wrap;}
+.bo-ft-globe{width:clamp(90px,26vw,150px);height:clamp(90px,26vw,150px);margin-right:-4px;filter:drop-shadow(0 0 14px rgba(245,158,11,.72));animation:bopLandingGlobeTurn 18s linear infinite;}
+.bo-ft-globe *{fill:none;stroke:#F59E0B;stroke-width:2.25;stroke-linecap:round;}
+.bo-ft-trucks-word{margin-left:-4px;color:#F59E0B;font:700 clamp(1.6rem,7vw,3rem)/.92 'Cormorant Garamond',serif;}
+.bo-ft-divider{height:2px;margin:14px 0 8px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8);}
+.bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1rem/1 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
+#bopFoodTruckMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.42);overflow:hidden;}
+.bo-ft-checkin-cta{display:block;width:min(340px,90%);margin:22px auto 0;padding:14px 16px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
+.bo-ft-empty-note{text-align:center;color:#9A9A9A;font:600 .85rem/1.5 Arial,sans-serif;margin-top:14px;}
+.bo-ftc-shell{position:relative;width:min(480px,calc(100% - 24px));margin:0 auto;padding:110px 18px 90px;text-align:center;}
+.bo-ftc-title{color:#F59E0B;font:900 clamp(1.8rem,7vw,2.6rem)/1 'Archivo Black',sans-serif;margin-bottom:6px;}
+.bo-ftc-sub{color:#ccc;font:600 .9rem/1.5 Arial,sans-serif;margin-bottom:28px;}
+.bo-ftc-field{display:block;width:100%;margin-bottom:14px;padding:14px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#fff;font:600 1rem/1.2 Arial,sans-serif;box-sizing:border-box;}
+.bo-ftc-btn{width:100%;padding:16px;border:2px solid #F59E0B;border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#F59E0B;font:900 1.05rem/1 'Archivo Black',sans-serif;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 12px rgba(245,158,11,.5);}
+.bo-ftc-status{margin-top:16px;color:#F59E0B;font:700 .85rem/1.4 Arial,sans-serif;min-height:20px;}
+</style>
+<script id="bop-foodtruck-map-script">
+(function(){
+  var truckIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><circle cx="25" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/><circle cx="76" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/></svg></div>';
+
+  window.boOpenFoodTruckMap = function(){
+    var page = document.getElementById('bopFoodTruckOverlay');
+    if(!page){
+      page = document.createElement('section');
+      page.id = 'bopFoodTruckOverlay';
+      page.className = 'bo-ft-overlay';
+      page.setAttribute('aria-label','Best Of Food Trucks');
+      page.innerHTML =
+        '<div class="bo-ft-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<header class="bo-ft-hero">'+
+            '<div class="bo-ft-best">BEST OF</div>'+
+            '<div class="bo-ft-title-line">'+
+              '<svg class="bo-ft-globe" aria-label="Worldwide" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg>'+
+              '<div class="bo-ft-trucks-word">Food Trucks</div>'+
+            '</div>'+
+          '</header>'+
+          '<div class="bo-ft-divider"></div>'+
+          '<div class="bo-ft-sub">Pick Your Location</div>'+
+          '<div id="bopFoodTruckMapEl"></div>'+
+          '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">No vendors have checked in yet today — but permanent spots (like Project BBQ and The Chef Truck) are always on the map. Scan a vendor QR code to add the next one.</div>'+
+          '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta">Are you a food truck? Check in here</button>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+        if(window.bopFtMapInstance){ window.bopFtMapInstance.remove(); window.bopFtMapInstance=null; }
+        if(window.bopFtUnsub){ window.bopFtUnsub(); window.bopFtUnsub=null; }
+      });
+      document.getElementById('bopFtCheckinCta').addEventListener('click', function(){ window.boOpenFoodTruckCheckin(); });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+    setTimeout(boInitFoodTruckMap, 30);
+  };
+
+  function boInitFoodTruckMap(){
+    if(typeof L==='undefined'){ setTimeout(boInitFoodTruckMap,150); return; }
+    var el = document.getElementById('bopFoodTruckMapEl');
+    if(!el) return;
+    if(window.bopFtMapInstance){ window.bopFtMapInstance.remove(); }
+    var map = L.map(el,{worldCopyJump:true}).setView([20,0],2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+      attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
+    }).addTo(map);
+    window.bopFtMapInstance = map;
+    window.bopFtMarkers = {};
+    var truckIcon = L.divIcon({className:'bo-ft-marker', html:truckIconHTML, iconSize:[34,34], iconAnchor:[17,17]});
+
+    // Seed pins: real, verified permanent food-truck locations (not check-ins,
+    // don't expire) so the map has something on it before vendors join in.
+    var bopFtSeedTrucks = [
+      {
+        name: 'Project BBQ',
+        lat: 36.1699, lng: -115.1440,
+        phone: '(702) 726-5491',
+        website: 'https://www.circalasvegas.com/drink-dine/project-bbq/',
+        description: "Fremont Street Experience's only permanent food truck — Carolina-style BBQ, brisket, and the signature Garbage Bowl, parked outside Circa Resort."
+      },
+      {
+        name: 'The Chef Truck',
+        lat: 36.1024, lng: -115.1730,
+        website: 'https://www.parkmgm.com/',
+        description: "The real truck from Jon Favreau's film 'Chef,' parked permanently inside Park MGM — Cuban-inspired sandwiches from Roy Choi."
+      }
+    ];
+    bopFtSeedTrucks.forEach(function(t){
+      var marker = L.marker([t.lat,t.lng],{icon:truckIcon}).addTo(map);
+      var links = [];
+      if(t.phone) links.push('<a href="tel:'+t.phone+'" style="color:#F59E0B;">'+t.phone+'</a>');
+      if(t.website) links.push('<a href="'+t.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website</a>');
+      marker.bindPopup('<div style="width:190px;"><div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+t.name+'</div><div style="font:700 .68rem Arial;color:#8fbf6f;margin-bottom:4px;">📍 Permanent location</div><div style="font:600 .78rem/1.4 Arial;color:#bbb;margin:4px 0 6px;">'+t.description+'</div><div style="font:600 .8rem Arial;color:#ddd;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+    });
+
+    if(window.bopFtDb){
+      if(window.bopFtUnsub) window.bopFtUnsub();
+      window.bopFtUnsub = window.bopFtDb.collection('foodtrucks').onSnapshot(function(snap){
+        Object.keys(window.bopFtMarkers).forEach(function(id){ map.removeLayer(window.bopFtMarkers[id]); });
+        window.bopFtMarkers = {};
+        var liveWindowMs = 8*60*60*1000, now = Date.now(), liveCount = 0;
+        snap.forEach(function(doc){
+          var d = doc.data();
+          if(!d.checkedInAt || typeof d.lat!=='number' || typeof d.lng!=='number') return;
+          var ts = d.checkedInAt.toMillis ? d.checkedInAt.toMillis() : 0;
+          if(now - ts > liveWindowMs) return;
+          liveCount++;
+          var marker = L.marker([d.lat,d.lng],{icon:truckIcon}).addTo(map);
+          var links = [];
+          if(d.phone) links.push('<a href="tel:'+d.phone+'" style="color:#F59E0B;">'+d.phone+'</a>');
+          if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website / Order</a>');
+          if(d.instagram) links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#F59E0B;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
+          var photoHTML = d.photo ? '<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">' : '';
+          var descHTML = d.description ? '<div style="font:600 .78rem/1.4 Arial;color:#bbb;margin:4px 0 6px;">'+d.description+'</div>' : '';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Food Truck')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#ddd;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+          window.bopFtMarkers[doc.id] = marker;
+        });
+        var note = document.getElementById('bopFtEmptyNote');
+        if(note) note.style.display = liveCount===0 ? 'block':'none';
+      });
+    }
+    setTimeout(function(){ map.invalidateSize(); },200);
+  }
+
+  window.boOpenFoodTruckCheckin = function(){
+    var page = document.getElementById('bopFoodTruckCheckin');
+    if(!page){
+      page = document.createElement('section');
+      page.id = 'bopFoodTruckCheckin';
+      page.className = 'bo-ft-overlay';
+      page.setAttribute('aria-label','Food Truck Check-In');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Check In Your Truck</div>'+
+          '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 10 seconds.</div>'+
+          '<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+          '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
+          '<input class="bo-ftc-field" id="bopFtWebsite" type="text" placeholder="Website or ordering link (optional)" />'+
+          '<div class="bo-ftc-status" id="bopFtPreviewStatus" style="display:none;"></div>'+
+          '<div id="bopFtPreviewCard" style="display:none;text-align:left;border:1.5px solid #F59E0B;border-radius:10px;padding:12px;margin-bottom:14px;background:#0a0a0a;">'+
+            '<img id="bopFtPreviewImg" src="" alt="" style="display:none;width:100%;max-height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;">'+
+          '</div>'+
+          '<textarea class="bo-ftc-field" id="bopFtDescription" rows="3" placeholder="Short description (auto-filled from your website, or write your own)" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
+          '<input class="bo-ftc-field" id="bopFtInstagram" type="text" placeholder="Instagram handle (optional)" />'+
+          '<button type="button" class="bo-ftc-btn" id="bopFtCheckinSubmit">I\'m Here — Check In</button>'+
+          '<div class="bo-ftc-status" id="bopFtCheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      window.bopFtPhotoUrl = '';
+      var phoneEl = document.getElementById('bopFtPhone');
+      var nameEl = document.getElementById('bopFtName');
+      var websiteEl = document.getElementById('bopFtWebsite');
+      var descEl = document.getElementById('bopFtDescription');
+      var instaEl = document.getElementById('bopFtInstagram');
+      var previewImg = document.getElementById('bopFtPreviewImg');
+      var subEl = document.getElementById('bopFtCheckinSub');
+
+      function phoneKey(){ return phoneEl.value.replace(/\D/g,''); }
+
+      // Returning-truck lookup: prefill everything from their last check-in.
+      phoneEl.addEventListener('blur', function(){
+        var key = phoneKey();
+        if(key.length < 7 || !window.bopFtDb) return;
+        window.bopFtDb.collection('foodtrucks').doc(key).get().then(function(doc){
+          if(doc.exists){
+            var d = doc.data();
+            nameEl.value = d.name || '';
+            websiteEl.value = d.website || '';
+            descEl.value = d.description || '';
+            instaEl.value = d.instagram || '';
+            window.bopFtPhotoUrl = d.photo || '';
+            if(window.bopFtPhotoUrl){ previewImg.src = window.bopFtPhotoUrl; previewImg.style.display='block'; }
+            subEl.textContent = 'Welcome back, '+(d.name||'friend')+' — confirm the details and check in.';
+          }
+        }).catch(function(){});
+      });
+
+      // Auto-pull a preview (title/description/photo) from their website.
+      websiteEl.addEventListener('blur', function(){
+        var url = websiteEl.value.trim();
+        if(!url) return;
+        if(!/^https?:\/\//i.test(url)) url = 'https://'+url;
+        websiteEl.value = url;
+        var statusEl = document.getElementById('bopFtPreviewStatus');
+        statusEl.style.display = 'block';
+        statusEl.textContent = 'Pulling a preview from your site…';
+        fetch('https://api.microlink.io/?url='+encodeURIComponent(url)+'&meta=true')
+          .then(function(r){ return r.json(); })
+          .then(function(json){
+            statusEl.style.display = 'none';
+            if(json && json.status === 'success' && json.data){
+              if(!nameEl.value && json.data.title) nameEl.value = json.data.title;
+              if(!descEl.value && json.data.description) descEl.value = json.data.description;
+              if(json.data.image && json.data.image.url){
+                window.bopFtPhotoUrl = json.data.image.url;
+                previewImg.src = window.bopFtPhotoUrl;
+                previewImg.style.display = 'block';
+              }
+            }
+          })
+          .catch(function(){ statusEl.style.display = 'none'; });
+      });
+
+      document.getElementById('bopFtCheckinSubmit').addEventListener('click', function(){
+        var status = document.getElementById('bopFtCheckinStatus');
+        var name = nameEl.value.trim();
+        var key = phoneKey();
+        if(!key || key.length < 7){ status.textContent = 'Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
+        if(!name){ status.textContent = 'Please enter your truck name.'; return; }
+        if(!navigator.geolocation){ status.textContent = "Location isn't available on this device/browser."; return; }
+        status.textContent = 'Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent = 'Connection error — try again.'; return; }
+          status.textContent = 'Checking in…';
+          window.bopFtDb.collection('foodtrucks').doc(key).set({
+            name: name,
+            phone: phoneEl.value.trim(),
+            website: websiteEl.value.trim(),
+            instagram: instaEl.value.trim(),
+            description: descEl.value.trim(),
+            photo: window.bopFtPhotoUrl || '',
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            checkedInAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, {merge:true}).then(function(){
+            status.textContent = "You're live! Tap Back to see yourself on the map.";
+          }).catch(function(){
+            status.textContent = 'Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent = 'Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+
+  function checkCheckinParam(){
+    try{
+      var p = new URLSearchParams(location.search);
+      if(p.get('checkin')==='1'){ setTimeout(function(){ window.boOpenFoodTruckCheckin(); }, 400); }
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', checkCheckinParam); else checkCheckinParam();
+})();
+</script>
 </body></html>
