@@ -3240,6 +3240,22 @@
     0%,100%{ text-shadow:0 0 4px rgba(245,158,11,.45); }
     50%{ text-shadow:0 0 11px rgba(245,158,11,.95), 0 0 18px rgba(245,158,11,.5); }
   }
+  .bo-ft-smoke{
+    transform-box:fill-box;
+    transform-origin:center;
+    animation:bopFtTileSmoke 2.4s ease-in infinite;
+  }
+  .bo-ft-smoke-1{ animation-delay:0s; }
+  .bo-ft-smoke-2{ animation-delay:.6s; }
+  .bo-ft-smoke-3{ animation-delay:1.2s; }
+  @keyframes bopFtTileSmoke{
+    0%{ transform:translate(0,0) scale(.6); opacity:0; }
+    15%{ opacity:.6; }
+    100%{ transform:translate(-6px,-16px) scale(1.4); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bo-ft-smoke{ animation:none; opacity:.35; }
+  }
   @media (prefers-reduced-motion: reduce){
     .bo-ft-tile-glow-text{ animation:none; }
   }
@@ -21695,7 +21711,7 @@ const boPickerConfig = {
   otheroptions: [
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: '<svg viewBox="0 0 100 100" width="58" height="58" style="display:block;margin:0 auto 2px;" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/></svg><span class="bo-ft-tile-glow-text">Food Trucks</span>', cat: 'foodtrucks' },
+    { label: '<svg viewBox="0 0 100 100" width="58" height="58" style="display:block;margin:0 auto 2px;overflow:visible;" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg><circle class="bo-ft-smoke bo-ft-smoke-1" cx="6" cy="30" r="3" fill="#F59E0B" opacity="0.55"/><circle class="bo-ft-smoke bo-ft-smoke-2" cx="4" cy="24" r="2.2" fill="#F59E0B" opacity="0.4"/><circle class="bo-ft-smoke bo-ft-smoke-3" cx="8" cy="18" r="1.6" fill="#F59E0B" opacity="0.3"/></svg><span class="bo-ft-tile-glow-text">Food Trucks</span>', cat: 'foodtrucks' },
     { label: '<span style="display:inline-block;font-size:1.08em;line-height:1;color:#F59E0B;">M&#9733;&#9733;&#9733;</span><br><span style="display:inline-block;margin-top:3px;font-size:calc(1em + 2px);line-height:1;color:#F59E0B;">Michelin</span>', cat: 'michelin' },
     { label: '<span class="bo-jb-tile-label"><span class="bo-jb-badge" aria-hidden="true">JB</span><span>James Beard</span></span>', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
@@ -40373,8 +40389,9 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1.2rem/1.15 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
 .bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;transform:translateX(22%);color:#F59E0B;font:900 clamp(1.6rem,7vw,2.6rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
 .bo-ft-drive-truck{width:clamp(30px,9vw,46px);height:clamp(30px,9vw,46px);margin:0 -4px 0 -8px;filter:drop-shadow(0 0 6px rgba(245,158,11,.6));}
-.bo-ft-drive-truck-row{text-align:center;transform:translateX(16%);margin:-2px 0 -8px;}
-.bo-ft-drive-truck-big{width:clamp(60px,18vw,92px);height:clamp(60px,18vw,92px);margin:0;filter:drop-shadow(0 0 9px rgba(245,158,11,.7));}
+.bo-ft-drive-truck-row{text-align:center;transform:translateX(16%);margin:-6px 0 -18px;}
+.bo-ft-drive-truck-big{width:clamp(72px,20vw,108px);height:clamp(72px,20vw,108px);margin:0;filter:drop-shadow(0 0 9px rgba(245,158,11,.7));}
+#bopFoodTruckOverlay .bop-world-hero-globe{transform:scale(1.05);}
 .bo-ft-wheel{transform-box:fill-box;transform-origin:center;animation:bopFtWheelSpin .6s linear infinite;}
 @keyframes bopFtWheelSpin{to{transform:rotate(360deg);}}
 @media(prefers-reduced-motion:reduce){.bo-ft-wheel{animation:none;}}
@@ -40434,7 +40451,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 </style>
 <script id="bop-foodtruck-map-script">
 (function(){
-  var truckIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><circle cx="25" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/><circle cx="76" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/></svg></div>';
+  var truckIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#050505" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>';
 
   window.boOpenFoodTruckMap = function(){
     var page = document.getElementById('bopFoodTruckOverlay');
@@ -40587,6 +40604,12 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         lat: 47.6510, lng: -122.3493,
         website: 'https://www.smashthatburgers.com/',
         description: "Permanently parked in Seattle's Fremont neighborhood — a local favorite for smash burgers."
+      },
+      {
+        name: 'Bad Luck Burger Club',
+        lat: 36.175187, lng: -86.755233,
+        website: 'https://honeytreemeadery.com/',
+        description: "Permanently parked out front of Honeytree Meadery in East Nashville — stacked smash burgers paired with local mead."
       }
     ];
     window.bopFtSeedTrucks.forEach(function(t){
