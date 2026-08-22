@@ -39931,7 +39931,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     padding-top:18px!important;
   }
   #bopStaticOtherCities .bop-static-city-label{
-    transform:translateY(2px)!important;
+    transform:translateY(6px)!important;
   }
   #bopStaticOtherCities .bop-static-city-skyline{
     left:8px!important;
@@ -39981,6 +39981,35 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     closest.insertAdjacentHTML('afterbegin','<svg class="bop-closest-five-sonar" viewBox="0 0 100 100" aria-hidden="true"><circle class="bop-sonar-ring-one" cx="50" cy="50" r="20"></circle><circle class="bop-sonar-ring-two" cx="50" cy="50" r="31"></circle><circle class="bop-sonar-ring-three" cx="50" cy="50" r="42"></circle></svg>');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureSonar);else ensureSonar();
+})();
+</script>
+
+<style id="bop-search-world-pulse-v1">
+  /* Landing search prompt only: a light pulse invites typing without affecting the powered-by mark. */
+  #bopLandingSearchPrompt{
+    animation:bopSearchWorldPromptPulse 2.4s ease-in-out infinite!important;
+    text-shadow:0 0 2px rgba(245,158,11,.12)!important;
+    will-change:opacity,text-shadow;
+  }
+  @keyframes bopSearchWorldPromptPulse{
+    0%,100%{opacity:.78;text-shadow:0 0 2px rgba(245,158,11,.12);}
+    50%{opacity:1;text-shadow:0 0 6px rgba(245,158,11,.38);}
+  }
+  @media(prefers-reduced-motion:reduce){
+    #bopLandingSearchPrompt{animation:none!important;}
+  }
+</style>
+<script id="bop-search-world-pulse-v1-script">
+(function(){
+  function setSearchWorldPrompt(){
+    var prompt=document.getElementById('bopLandingSearchPrompt');
+    if(prompt&&prompt.textContent!=='search the world...')prompt.textContent='search the world...';
+  }
+  function install(){
+    setSearchWorldPrompt();
+    new MutationObserver(setSearchWorldPrompt).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 </body></html>
