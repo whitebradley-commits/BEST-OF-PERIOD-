@@ -40074,4 +40074,44 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     #bopExclusiveInvitation .bop-exclusive-enter{width:42px;height:42px;margin-top:13px;}
   }
 </style>
+
+<style id="bop-active-contact-icons-v1">
+  /* Interaction-only repair: preserves the approved pop-up visual design. */
+  #boNearInfoCard .bo-near-info-phone,
+  #boNearInfoCard .bo-near-info-actions a[href],
+  .teen-result-action[href^="tel:"],
+  .teen-result-action[href*="google.com/maps"],
+  .bop-map-popup a[href*="google.com/maps"]{
+    position:relative!important;
+    z-index:4!important;
+    pointer-events:auto!important;
+    touch-action:manipulation;
+  }
+</style>
+<script id="bop-active-contact-icons-v1-script">
+(function(){
+  var activeSelector=[
+    '#boNearInfoCard .bo-near-info-phone[href^="tel:"]',
+    '#boNearInfoCard .bo-near-info-actions a[href*="google.com/maps"]',
+    '.teen-result-action[href^="tel:"]',
+    '.teen-result-action[href*="google.com/maps"]',
+    '.bop-map-popup a[href*="google.com/maps"]'
+  ].join(',');
+  document.addEventListener('click',function(event){
+    var target=event.target&&event.target.closest?event.target.closest(activeSelector):null;
+    if(!target)return;
+    var href=target.getAttribute('href');
+    if(!href)return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    if(/^tel:/i.test(href)){
+      window.location.href=href;
+      return;
+    }
+    var opened=window.open(href,'_blank','noopener');
+    if(!opened)window.location.href=href;
+  },true);
+})();
+</script>
 </body></html>
