@@ -39457,4 +39457,63 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   setTimeout(function(){try{enter.focus({preventScroll:true})}catch(_e){enter.focus()}},80);
 })();
 </script>
+<!-- v262: every SEND shares the exact page or exact item, never the homepage -->
+<script id="bop-authoritative-exact-item-share-v262">
+(function(){
+  function slug(value){
+    return String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+      .replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  }
+  function cityLabel(city){
+    var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[city])||null;
+    return cfg&&(cfg.displayName||cfg.searchName||cfg.landingName)||String(city||'').replace(/([a-z])([A-Z])/g,'$1 $2')||'Best Of';
+  }
+  function exactRestaurantData(name){
+    var category=(typeof boCurrentCat!=='undefined'&&boCurrentCat)||'bestof';
+    var city=(typeof boCityContext!=='undefined'&&boCityContext)||'bestof';
+    var path=location.pathname.replace(/\/main\/?$/,'/')||'/';
+    var url=new URL(location.origin+path);url.search='';url.hash='';
+    url.searchParams.set('page',category);
+    if(city!=='bestof')url.searchParams.set('city',city);
+    url.searchParams.set('restaurant',name);
+    url.hash='/'+slug(cityLabel(city))+'/'+slug(category)+'/'+slug(name);
+    var place=cityLabel(city),brand='Best of '+place+' Period.';
+    return {title:name+' — '+brand,text:'Check out '+name+' on '+brand,url:url.toString()};
+  }
+  function exactMovieData(name){
+    var path=location.pathname.replace(/\/main\/?$/,'/')||'/';
+    var url=new URL(location.origin+path);url.search='';url.hash='';
+    url.searchParams.set('page','movies');url.searchParams.set('movie',name);
+    url.hash='/movies/'+slug(name);
+    return {title:name+' — Best of Movies Period.',text:'Check out '+name+' on Best of Movies Period.',url:url.toString()};
+  }
+  async function send(data){
+    if(typeof window.__bopShareExact==='function')return window.__bopShareExact(data);
+    var copy=data.text+'\n'+data.url;
+    if(navigator.share){
+      /* Keeping the deep link in text protects it when iOS Messages or another
+         share target discards the Web Share API's separate URL field. */
+      return navigator.share({title:data.title,text:copy,url:data.url});
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(copy);
+    prompt('Copy this exact item link:',copy);
+  }
+  window.bopBuildExactRestaurantShare=exactRestaurantData;
+  window.bopBuildExactMovieShare=exactMovieData;
+  window.boShareRestaurant=async function(name){return send(exactRestaurantData(name));};
+
+  document.addEventListener('click',function(event){
+    var restaurant=event.target&&event.target.closest&&event.target.closest('[data-send-restaurant]');
+    var movie=event.target&&event.target.closest&&event.target.closest('.bo-send-movie-btn[data-send-movie]');
+    if(!restaurant&&!movie)return;
+    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+    var button=restaurant||movie,original=button.innerHTML;
+    button.disabled=true;button.textContent='OPENING…';
+    var data=restaurant?exactRestaurantData(restaurant.dataset.sendRestaurant):exactMovieData(movie.dataset.sendMovie);
+    send(data).catch(function(error){
+      if(error&&error.name!=='AbortError')prompt('Copy this exact item link:',data.text+'\n'+data.url);
+    }).finally(function(){button.disabled=false;button.innerHTML=original;});
+  },true);
+})();
+</script>
 </body></html>
