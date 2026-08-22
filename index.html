@@ -5007,6 +5007,38 @@
     height:100%;
     object-fit:cover;
   }
+  .bo-chef-line{
+    margin-top:8px;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .bo-chef-badge{
+    font-family:'Archivo Black',sans-serif;
+    font-size:.66rem;
+    font-weight:900;
+    letter-spacing:.06em;
+    color:#F59E0B;
+    text-shadow:0 0 8px rgba(245,158,11,.75),0 0 2px rgba(245,158,11,.5);
+  }
+  .bo-chef-name-link{
+    background:none;
+    border:none;
+    padding:0;
+    margin:0;
+    font-family:'Archivo Narrow',sans-serif;
+    font-size:.78rem;
+    font-weight:700;
+    color:#F59E0B;
+    text-decoration:underline;
+    text-underline-offset:2px;
+    cursor:pointer;
+  }
+  .bo-chef-name-link:focus-visible{
+    outline:2px solid #F59E0B;
+    outline-offset:2px;
+  }
   .bo-red-callout-photo.is-expanded{
     z-index:40;
     transform:scale(2.65);
@@ -16312,7 +16344,7 @@ boCategoryData.pizza.push(
     {city:'london',name:'50 Kalò',bjs:8.5,ob:8.3,reviews:9,dave:null,address:'7 Northumberland Ave, London WC2N 5BY, United Kingdom',phone:'+44 20 7930 9955',price:3,why:'A London branch of the celebrated Naples pizzeria with strong international recognition',note:'Light Neapolitan pies and a strong One Bite community score anchor London’s initial Pizza listing.'},
     {city:'sandiego',name:'Bronx Pizza',bjs:8.6,ob:8.0,reviews:348,dave:8.1,address:'111 Washington St, San Diego, CA 92103',phone:'(619) 291-3341',price:2,why:'San Diego’s most proven One Bite-backed New York-style slice institution',note:'A deep 348-review One Bite sample supports the 8.0 community score; Dave scored it 8.1.'},
     {city:'siliconvalley',name:'A Slice of New York — Sunnyvale',bjs:8.4,ob:7.9,reviews:18,dave:null,address:'1253 W El Camino Real, Sunnyvale, CA 94087',phone:'(650) 938-6969',price:2,why:'A worker-owned New York-style pizzeria with a loyal South Bay following',note:'The Sunnyvale shop leads the initial Silicon Valley Pizza page with a 7.9 One Bite community score.'},
-    {city:'santabarbara',name:'Saint Bibiana',bjs:8.6,ob:8.7,reviews:6,dave:null,address:'17 W Ortega St, Santa Barbara, CA 93101',phone:'',price:3,why:'A high-scoring downtown Santa Barbara pizza destination with excellent early response',note:'One Bite’s 8.7 is based on a small early sample, so BOF balances it with broader aggregate signals.'},
+    {city:'santabarbara',name:'Saint Bibiana',bjs:8.6,ob:8.7,reviews:6,dave:null,address:'17 W Ortega St, Santa Barbara, CA 93101',phone:'(805) 679-9511',price:3,why:'A high-scoring downtown Santa Barbara pizza destination with excellent early response',note:'One Bite’s 8.7 is based on a small early sample, so BOF balances it with broader aggregate signals.'},
     {city:'sanfrancisco',name:'Outta Sight Pizza',bjs:8.7,ob:8.4,reviews:14,dave:7.6,address:'422 Larkin St, San Francisco, CA 94102',phone:'(415) 829-3108',price:2,why:'A modern San Francisco slice shop with the city’s strongest current One Bite community signal',note:'One Bite lists an 8.4 community score; Dave’s separate personal score is 7.6.'},
     {city:'newyork',name:"John's of Bleecker Street",bjs:9.3,ob:8.9,reviews:null,dave:9.3,address:'278 Bleecker St, New York, NY 10014',phone:'(212) 243-1680',price:2,why:'A historic coal-oven New York benchmark with elite pizza-review recognition',note:'Whole pies only; Dave’s 9.3 score and One Bite’s top-tier community standing make it the NYC starter.'},
     {city:'newyork',name:'Ceres',bjs:9.3,ob:null,reviews:null,dave:9.2,address:'164 Mott St, New York, NY 10013',phone:'',price:4,why:'A Little Italy sourdough slice shop from two Eleven Madison Park alums, with one of Dave’s highest-ever scores',note:'Thin, well-charred sourdough pies; Dave called it as good a slice as you can get, period. One Bite community score not yet published.'},
@@ -19834,7 +19866,10 @@ function boCloseWorldwidePage(){
     "A. Wong": { label: "UK FIRST", text: "The first Chinese restaurant in the United Kingdom to earn two Michelin Stars." },
     "Gymkhana London": { label: "TWO MICHELIN STARS", text: "A two-Michelin-star London standard inspired by the elite clubs of colonial India." },
     "Addison": { label: "THREE MICHELIN STARS", text: "Chef William Bradley has led Addison since 2006; it now holds Michelin's highest distinction." },
-    "Soichi": { label: "MICHELIN STAR", text: "Named for chef Soichi Kadoya, this intimate omakase counter holds one Michelin Star." }
+    "Soichi": { label: "MICHELIN STAR", text: "Named for chef Soichi Kadoya, this intimate omakase counter holds one Michelin Star." },
+    "Golden Steer Steakhouse": { label: "FILMED HERE", text: "The mob-era booths and back-room dinners at the Golden Steer inspired real scenes in Scorsese's 1995 film Casino." },
+    "Peppermill Restaurant & Fireside Lounge": { label: "FILMED HERE", text: "The fire pit in the Fireside Lounge is where Casino filmed its famous scene between Robert De Niro and Sharon Stone." },
+    "Canter's Deli — Fairfax": { label: "FILMED HERE", text: "This Fairfax Avenue landmark hosted the Mad Men finale-season scene between Don Draper and Pete Campbell, plus turns in Enemy of the State and Curb Your Enthusiasm." }
   };
 
   Object.values(boCategoryData).forEach(list => {
@@ -23500,6 +23535,7 @@ function boRenderCategory(cat){
         <div class="bo-why">${s.why}</div>
         <button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button>
         <div class="bo-note bo-note-collapsed">${s.note}</div>
+        ${s.chefName ? `<div class="bo-chef-line"><span class="bo-chef-badge">CHEF</span><button type="button" class="bo-chef-name-link" data-chef-url="${(s.chefUrl || '').replace(/"/g,'&quot;')}" data-chef-name="${String(s.chefName).replace(/"/g,'&quot;')}">${s.chefName}</button></div>` : ''}
         ${s.bjsTip ? `<div class="bo-bjs-tip"><span class="bo-bjs-tip-label"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#ff9a3c" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#ff9a3c">BJS</text></svg>TIP</span> ${s.bjsTip}</div>` : ''}
         ${s.redCallout
           ? `<div class="bo-red-callout${s.redCalloutImage ? ' bo-red-callout-with-photo' : ''}">${s.redCalloutImage ? `<button type="button" class="bo-red-callout-photo" aria-label="Enlarge reservation photo" aria-expanded="false"><img src="${s.redCalloutImage}" alt="${s.redCalloutImageAlt || 'Special restaurant note photo'}"></button>` : ''}<span class="bo-red-callout-copy"><span class="bo-red-callout-label">${s.redCalloutLabel || 'FEATURED'}</span>${s.redCallout}${s.redCalloutCaption ? `<small class="bo-red-callout-caption">${s.redCalloutCaption}</small>` : ''}</span></div>`
@@ -23548,6 +23584,15 @@ function boRenderCategory(cat){
     }
     const pizzaVoteWidget = card.querySelector('.bo-pizza-vote');
     if(pizzaVoteWidget) boInitPizzaVote(pizzaVoteWidget, s.name);
+    const chefLink = card.querySelector('.bo-chef-name-link[data-chef-url]');
+    if(chefLink){
+      chefLink.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const url = chefLink.dataset.chefUrl;
+        if(url && window.bopOpenExternal) window.bopOpenExternal(url, chefLink.dataset.chefName || 'Chef info');
+      });
+    }
     const michelinBadge = card.querySelector('.bo-michelin-badge[data-michelin-city]');
     const jamesBeardBadge = card.querySelector('.bo-jb-badge[data-jb-city]');
     card.querySelectorAll('[data-info-badge]').forEach(infoBadge => {
@@ -38604,6 +38649,22 @@ body footer.bop-approved-footer{
     V[k].ratingSource='BJS aggregate · Google · OpenTable · Tripadvisor · Yelp';
     V[k].ratingAsOf='2026-08-21';
   });
+  /* Verified phone numbers — filled in as confirmed against the restaurant's
+     own site or primary listings. Any key not listed here still needs a
+     verified number before it can be added. */
+  var phones={
+    lark:'(805) 284-0370',winecask:'(805) 966-9463',stonehouse:'(805) 565-1720',
+    rare:'(805) 335-2088',carusos:'(805) 900-8388',littlemountain:'(805) 679-5857',
+    bettina:'(805) 770-2383',loquita:'(805) 880-3380',barbareno:'(805) 963-9591',
+    samasama:'(805) 965-4566',bibiji:'(805) 560-6845',yoichis:'(805) 962-6627',
+    corazon:'(805) 845-0282',losagaves:'(805) 564-2626',ama:'(805) 900-8388',
+    arigato:'(805) 965-6074',oku:'(805) 690-1650',scratch:'(805) 321-0005',
+    edomasa:'(805) 687-0210',kyoto:'(805) 687-1252',secretbao:'(805) 259-3226',
+    emptybowl:'(805) 335-2426',lucky:'(805) 565-7540',holdrens:'(805) 965-3363',
+    willows:'(805) 686-0855',angeloak:'(844) 436-2089',sykitchen:'(805) 691-9794',
+    tavern:'(888) 218-4941',mcconnells:'(805) 324-4402'
+  };
+  Object.keys(phones).forEach(function(k){ if(V[k]) V[k].phone=phones[k]; });
   function install(key,items){
     var list=boCategoryData[key]||(boCategoryData[key]=[]),names=new Set(items.map(function(r){return r.name.toLowerCase()}));
     list=list.filter(function(r){return !(r&&r.city===city&&names.has(String(r.name||'').toLowerCase()))});
@@ -39575,6 +39636,48 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(restore,40)});
   else setTimeout(restore,40);
+})();
+</script>
+<script>
+/* Generic filler content for listings with no editorial "note" yet.
+   Vague, simple, non-committal by design — just enough that the MORE
+   section isn't empty. Real editorial content should replace these
+   over time; this only fills a gap, it never overwrites existing notes. */
+(function boFillGenericNotes(){
+  if(typeof boCategoryData==='undefined')return;
+  function cityLabel(cityKey){
+    if(!cityKey) return '';
+    if(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[cityKey]&&BO_CITY_CONFIG[cityKey].displayName) return BO_CITY_CONFIG[cityKey].displayName;
+    return String(cityKey).replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,function(c){return c.toUpperCase();});
+  }
+  function catLabel(catKey){
+    if(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[catKey]) return 'Local pick';
+    var s = String(catKey||'').replace(/highend|casual|dive|nation|bjspicks/gi,'').replace(/([a-z])([A-Z])/g,'$1 $2').trim();
+    if(!s) return 'Dining';
+    return s.charAt(0).toUpperCase()+s.slice(1);
+  }
+  function priceLabel(price){
+    var p = Number(price);
+    if(p===1) return 'Budget-friendly';
+    if(p===2) return 'Casual';
+    if(p===3) return 'Upscale';
+    if(p===4) return 'Fine dining';
+    return 'Local favorite';
+  }
+  Object.keys(boCategoryData).forEach(function(catKey){
+    var list = boCategoryData[catKey];
+    if(!Array.isArray(list)) return;
+    list.forEach(function(r){
+      if(!r || (r.note && String(r.note).trim())) return;
+      var city = cityLabel(r.city);
+      var cat = catLabel(catKey);
+      var price = priceLabel(r.price);
+      var bits = [cat];
+      if(city) bits.push(city);
+      bits.push(price);
+      r.note = bits.join(' \u00b7 ');
+    });
+  });
 })();
 </script>
 </body></html>
