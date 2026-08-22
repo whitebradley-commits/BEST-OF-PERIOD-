@@ -39516,4 +39516,65 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   },true);
 })();
 </script>
+<!-- v263: restore exact shared destinations after late-loaded city data exists -->
+<script id="bop-late-exact-link-restorer-v263">
+(function(){
+  function openRestaurant(params){
+    var category=params.get('page'),city=params.get('city'),restaurant=params.get('restaurant');
+    if(!category||!restaurant||typeof boCategoryData==='undefined')return false;
+    var categoryExists=Object.prototype.hasOwnProperty.call(boCategoryData,category)
+      ||(typeof boPickerConfig!=='undefined'&&Object.prototype.hasOwnProperty.call(boPickerConfig,category));
+    if(!categoryExists)return false;
+    if(city&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[city])window.boCityContext=boCityContext=city;
+    var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');
+    if(landing)landing.classList.remove('open');
+    if(best){best.classList.add('open');best.setAttribute('aria-hidden','false');}
+    if(typeof boRenderCategory==='function')boRenderCategory(category);
+    function locate(attempt){
+      var list=document.getElementById('boList'),cards=list?list.querySelectorAll('.bo-card'):[];
+      var wanted=restaurant.trim().toLowerCase(),match=null;
+      for(var i=0;i<cards.length;i++){
+        var heading=cards[i].querySelector('.bo-card-body h3');
+        if(heading&&heading.textContent.trim().toLowerCase().indexOf(wanted)===0){match=cards[i];break;}
+      }
+      if(match){
+        match.setAttribute('data-shared-destination','true');
+        match.scrollIntoView({behavior:attempt>1?'auto':'smooth',block:'center'});
+        match.style.transition='box-shadow .35s ease';
+        match.style.boxShadow='0 0 0 3px #F59E0B,0 0 30px rgba(245,158,11,.92),0 0 48px rgba(228,0,43,.42)';
+        setTimeout(function(){match.style.boxShadow=''},4200);return;
+      }
+      if(attempt<12)setTimeout(function(){locate(attempt+1)},180);
+    }
+    setTimeout(function(){locate(0)},80);return true;
+  }
+  function openMovie(params){
+    var movie=params.get('movie');if(params.get('page')!=='movies'||!movie||typeof boOpenMoviesPage!=='function')return false;
+    if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');
+    setTimeout(function(){boOpenMoviesPage()},80);return true;
+  }
+  function openPage(params){
+    var category=params.get('page'),city=params.get('city');
+    if(!category||category==='movies'||category.indexOf('worldwide-')===0||typeof boCategoryData==='undefined')return false;
+    var exists=Object.prototype.hasOwnProperty.call(boCategoryData,category)
+      ||(typeof boPickerConfig!=='undefined'&&Object.prototype.hasOwnProperty.call(boPickerConfig,category));
+    if(!exists)return false;
+    if(city&&typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[city])window.boCityContext=boCityContext=city;
+    var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');
+    if(landing)landing.classList.remove('open');
+    if(best){best.classList.add('open');best.setAttribute('aria-hidden','false');}
+    if(typeof boRenderCategory==='function')boRenderCategory(category);
+    setTimeout(function(){window.scrollTo(0,0)},60);return true;
+  }
+  function restore(){
+    var params=new URLSearchParams(location.search);
+    if(!params.get('page'))return;
+    if(openRestaurant(params)||openMovie(params)||openPage(params))return;
+    /* A city package can finish a beat after DOMContentLoaded on older phones. */
+    setTimeout(function(){openRestaurant(params)||openMovie(params)||openPage(params)},500);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(restore,40)});
+  else setTimeout(restore,40);
+})();
+</script>
 </body></html>
