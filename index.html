@@ -40307,9 +40307,9 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1.2rem/1.15 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
 .bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;transform:translateX(22%);color:#F59E0B;font:900 clamp(1.6rem,7vw,2.6rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
 .bo-ft-drive-truck{width:clamp(30px,9vw,46px);height:clamp(30px,9vw,46px);margin:0 -4px 0 -8px;filter:drop-shadow(0 0 6px rgba(245,158,11,.6));}
-.bo-ft-drive-truck .bo-ft-wheel{transform-box:fill-box;transform-origin:center;animation:bopFtWheelSpin .6s linear infinite;}
+.bo-ft-wheel{transform-box:fill-box;transform-origin:center;animation:bopFtWheelSpin .6s linear infinite;}
 @keyframes bopFtWheelSpin{to{transform:rotate(360deg);}}
-@media(prefers-reduced-motion:reduce){.bo-ft-drive-truck .bo-ft-wheel{animation:none;}}
+@media(prefers-reduced-motion:reduce){.bo-ft-wheel{animation:none;}}
 #bopFoodTruckMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.42);overflow:hidden;}
 .bo-ft-map-wrap{position:relative;}
 .bo-ft-pinch-hint{position:absolute;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.5);border-radius:14px;pointer-events:none;transition:opacity .5s ease;color:#F59E0B;font:900 .8rem/1.3 'Archivo Black',sans-serif;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.85);}
@@ -40341,7 +40341,16 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 #bopFoodTruckMapEl .leaflet-popup-content{margin:22px 22px 20px 18px;}
 #bopFoodTruckMapEl .leaflet-popup-tip{background:rgba(255,255,255,.92);border:2px solid #F59E0B;}
 #bopFoodTruckMapEl .leaflet-popup-close-button{color:#333 !important;}
-.bo-ft-checkin-cta{display:block;width:min(340px,90%);margin:22px auto 0;padding:14px 16px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
+.bo-ft-checkin-cta{display:block;width:min(260px,74%);margin:18px auto 0;padding:8px 10px;border:2px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.25 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
+.bo-ft-cta-line1{display:block;}
+.bo-ft-cta-line2{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:2px;}
+.bo-ft-cta-truck{width:22px;height:22px;flex:0 0 auto;animation:bopFtCtaPulse 1.3s ease-in-out infinite;}
+@keyframes bopFtCtaPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 3px rgba(245,158,11,.6));}50%{opacity:.55;filter:drop-shadow(0 0 9px rgba(245,158,11,1));}}
+@media(prefers-reduced-motion:reduce){.bo-ft-cta-truck{animation:none;}}
+.bo-ft-qr-wrap{display:block;width:min(140px,40%);margin:16px auto 0;text-align:center;cursor:pointer;}
+.bo-ft-qr-img{display:block;width:100%;height:auto;border:2px solid #F59E0B;border-radius:8px;background:#fff;padding:4px;box-shadow:0 0 8px rgba(245,158,11,.4);}
+.bo-ft-qr-label{margin-top:4px;color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+.bo-ft-qr-zoom-img{display:block;width:min(280px,80vw);margin:0 auto;border:3px solid #F59E0B;border-radius:12px;background:#fff;padding:10px;box-shadow:0 0 16px rgba(245,158,11,.5);}
 .bo-ft-live-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-shadow:0 0 8px rgba(228,0,43,.7);animation:bopFtLivePulse 1.3s ease-in-out infinite;}
 @keyframes bopFtLivePulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 @media (prefers-reduced-motion:reduce){.bo-ft-live-badge{animation:none;}}
@@ -40381,7 +40390,8 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
-          '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta">Do you have a food truck? Click here to go live</button>'+
+          '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta"><span class="bo-ft-cta-line1">Do you have a food truck?</span><span class="bo-ft-cta-line2">Click here to go live <svg class="bo-ft-cta-truck" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></span></button>'+
+          '<div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Check-in QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div>'+
         '</div>';
       document.body.appendChild(page);
       page.querySelector('.bo-ft-back').addEventListener('click', function(){
@@ -40390,9 +40400,39 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         if(window.bopFtUnsub){ window.bopFtUnsub(); window.bopFtUnsub=null; }
       });
       document.getElementById('bopFtCheckinCta').addEventListener('click', function(){ window.boOpenFoodTruckCheckin(); });
+
+      var checkinUrl = location.origin + location.pathname + '?checkin=1';
+      var qrImg = document.getElementById('bopFtQrImg');
+      if(qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(checkinUrl);
+      var qrWrap = document.getElementById('bopFtQrWrap');
+      if(qrWrap) qrWrap.addEventListener('click', function(){ window.boOpenFoodTruckQrZoom(checkinUrl); });
     }
     page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
     setTimeout(boInitFoodTruckMap, 30);
+  };
+
+  window.boOpenFoodTruckQrZoom = function(checkinUrl){
+    var page = document.getElementById('bopFoodTruckQrZoom');
+    if(!page){
+      page = document.createElement('section');
+      page.id = 'bopFoodTruckQrZoom';
+      page.className = 'bo-ft-overlay';
+      page.setAttribute('aria-label','Food Truck Check-In QR Code');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Scan To Go Live</div>'+
+          '<div class="bo-ftc-sub">Hand your phone to any food truck — they scan this and check themselves in.</div>'+
+          '<img class="bo-ft-qr-zoom-img" id="bopFtQrZoomImg" alt="Check-in QR code" />'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+    }
+    var zoomImg = document.getElementById('bopFtQrZoomImg');
+    if(zoomImg) zoomImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=' + encodeURIComponent(checkinUrl);
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
   };
 
   function boInitFoodTruckMap(){
