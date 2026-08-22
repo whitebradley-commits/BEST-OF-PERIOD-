@@ -26406,7 +26406,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       return;
     }
     if(location.search.includes('page='))return;
-    if(saved)restoreSnapshot(saved);
+    /* Only restore a saved page on a true browser refresh of this same tab.
+       A brand-new visit (new tab, typed URL, closed-and-reopened app) must
+       always land on the home/orb page, never wherever the last session
+       happened to leave off. */
+    let isReload=false;
+    try{
+      const nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
+      if(nav)isReload=nav.type==='reload';
+      else if(performance.navigation)isReload=performance.navigation.type===1;
+    }catch(e){}
+    if(saved&&isReload)restoreSnapshot(saved);
   }
   function installCategoryRouting(){
     if(typeof window.boRenderCategory!=='function'||window.boRenderCategory.__refreshSafe)return;
@@ -29954,7 +29964,16 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
     else if(isFreshNavigation){showTrueLanding(false);setTimeout(function(){showTrueLanding(false)},240);setTimeout(function(){showTrueLanding(false);releaseGate();},540);}
     else setTimeout(releaseGate,300);
   }
-  window.addEventListener('pageshow',function(event){if(event.persisted)return;showTrueLanding(isReloadNavigation);setTimeout(function(){showTrueLanding(isReloadNavigation)},120);});
+  window.addEventListener('pageshow',function(event){
+    /* A bfcache restore (event.persisted) fires no DOMContentLoaded and skips
+       every other check on this page — including the reload/clean-entry
+       logic above. Without forcing the landing page here too, reopening a
+       tab the browser kept in memory can silently drop someone back into
+       whatever city page they'd left open last time. The rotating landing
+       page must always be what a person sees when they arrive, no exceptions. */
+    showTrueLanding(true);
+    setTimeout(function(){showTrueLanding(true)},120);
+  });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
