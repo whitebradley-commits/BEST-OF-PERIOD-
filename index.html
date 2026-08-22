@@ -3148,17 +3148,9 @@
     white-space:nowrap;
     max-width:none;
   }
-  /* Tighter, closer-to-square footprint — the base button's min-width:100px
-     plus generous side padding left a lot of empty space around the small
-     logo+PICK content. */
-  /* Compact: no forced min-width, tight padding, so the button hugs its
-     content (logo+PICK on the left, small text lockup on the right) instead
-     of standing oversized like the other genre buttons. */
+  /* Sized to match every other genre tile — standard min/max width and
+     padding, inherited from the base .bo-picker-btn rule. */
   .bo-picker-btn-bjs{
-    min-width:0;
-    max-width:none;
-    width:auto;
-    padding:8px 12px;
   }
   .bjs-pick-row{
     display:flex;
@@ -21634,6 +21626,7 @@ const boPickerConfig = {
   otheroptions: [
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
+    { label: '<svg viewBox="0 0 100 100" width="28" height="28" style="display:block;margin:0 auto 6px;" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/></svg>Food Trucks', cat: 'foodtrucks' },
     { label: '<span style="display:inline-block;font-size:1.08em;line-height:1;color:#F59E0B;">M&#9733;&#9733;&#9733;</span><br><span style="display:inline-block;margin-top:3px;font-size:calc(1em + 2px);line-height:1;color:#F59E0B;">Michelin</span>', cat: 'michelin' },
     { label: '<span class="bo-jb-tile-label"><span class="bo-jb-badge" aria-hidden="true">JB</span><span>James Beard</span></span>', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
@@ -23149,7 +23142,6 @@ function boRenderCategory(cat){
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label">24 Hours</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
-          <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-foodtruck-tile" id="boFoodTrucksPreviewBtn" aria-label="Locate Food Trucks"><span class="bo-foodtruck-icon" aria-hidden="true"></span><span class="bo-foodtruck-label">Locate Food Trucks</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof" aria-label="Best Of current city Period"><span class="bo-lead-best-lockup"><span class="bo-lead-best-top">BEST OF</span><span class="bo-lead-best-city is-active" id="boLeadBestCity">${(BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName}</span><span class="bo-picker-period bo-lead-best-period">Period<span class="period-mark">&copy;</span></span></span></button>
         </div>
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
@@ -23163,7 +23155,7 @@ function boRenderCategory(cat){
     // Preserve the original editorial group at the top. Only the categories
     // after this group belong in the alphabetical directory. BJS Picks is the
     // final tile in the featured group (never a detached row of its own).
-    const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','cheesesteak','bjspicks'];
+    const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','cheesesteak','foodtrucks','bjspicks'];
     let featuredPickerOptions = [];
     let featuredBjsOption = null;
     if(cat === 'otheroptions'){
@@ -23260,6 +23252,10 @@ function boRenderCategory(cat){
           boRenderCategory(boCityContext);
           return;
         }
+        if(requestedCat === 'foodtrucks'){
+          if(typeof boOpenFoodTruckMap === 'function') boOpenFoodTruckMap();
+          return;
+        }
         boRenderCategory(requestedCat);
       });
     });
@@ -23295,14 +23291,6 @@ function boRenderCategory(cat){
         nearMePreviewBtn.blur();
         boNearMapReturnTarget = 'city';
         boOpenNearMap();
-      });
-    }
-    const foodTrucksPreviewBtn = document.getElementById('boFoodTrucksPreviewBtn');
-    if(foodTrucksPreviewBtn){
-      foodTrucksPreviewBtn.addEventListener('click', () => {
-        foodTrucksPreviewBtn.blur();
-        if(typeof boOpenFoodTruckMap === 'function') boOpenFoodTruckMap();
-        else alert('Food Truck Map — coming soon.');
       });
     }
 
@@ -40306,7 +40294,12 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-divider{height:2px;margin:14px 0 8px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8);}
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1rem/1 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
 #bopFoodTruckMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.42);overflow:hidden;}
+#bopFoodTruckMapEl .leaflet-control-zoom a{background:#0a0a0a;color:#F59E0B;border-color:#F59E0B;}
+#bopFoodTruckMapEl .leaflet-control-zoom a:hover{background:#1a1a1a;}
 .bo-ft-checkin-cta{display:block;width:min(340px,90%);margin:22px auto 0;padding:14px 16px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
+.bo-ft-live-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-shadow:0 0 8px rgba(228,0,43,.7);animation:bopFtLivePulse 1.3s ease-in-out infinite;}
+@keyframes bopFtLivePulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+@media (prefers-reduced-motion:reduce){.bo-ft-live-badge{animation:none;}}
 .bo-ft-empty-note{text-align:center;color:#9A9A9A;font:600 .85rem/1.5 Arial,sans-serif;margin-top:14px;}
 .bo-ftc-shell{position:relative;width:min(480px,calc(100% - 24px));margin:0 auto;padding:110px 18px 90px;text-align:center;}
 .bo-ftc-title{color:#F59E0B;font:900 clamp(1.8rem,7vw,2.6rem)/1 'Archivo Black',sans-serif;margin-bottom:6px;}
@@ -40329,18 +40322,19 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       page.innerHTML =
         '<div class="bo-ft-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<header class="bo-ft-hero">'+
-            '<div class="bo-ft-best">BEST OF</div>'+
-            '<div class="bo-ft-title-line">'+
-              '<svg class="bo-ft-globe" aria-label="Worldwide" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg>'+
-              '<div class="bo-ft-trucks-word">Food Trucks</div>'+
+          '<header class="bop-world-hero">'+
+            '<div class="bop-world-best">BEST OF</div>'+
+            '<div class="bop-world-title-line">'+
+              '<svg class="bop-world-hero-globe" aria-label="Worldwide" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg>'+
+              '<div class="bop-world-period">Period<sup>&copy;</sup></div>'+
             '</div>'+
           '</header>'+
-          '<div class="bo-ft-divider"></div>'+
-          '<div class="bo-ft-sub">Pick Your Location</div>'+
+          '<div class="bop-world-divider"></div>'+
+          '<div class="bo-ft-sub">Food Trucks — Pick Your Location</div>'+
+          '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div id="bopFoodTruckMapEl"></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">No vendors have checked in yet today — but permanent spots (like Project BBQ and The Chef Truck) are always on the map. Scan a vendor QR code to add the next one.</div>'+
-          '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta">Are you a food truck? Check in here</button>'+
+          '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta">Do you have a food truck? Click here to go live</button>'+
         '</div>';
       document.body.appendChild(page);
       page.querySelector('.bo-ft-back').addEventListener('click', function(){
@@ -40359,7 +40353,8 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     var el = document.getElementById('bopFoodTruckMapEl');
     if(!el) return;
     if(window.bopFtMapInstance){ window.bopFtMapInstance.remove(); }
-    var map = L.map(el,{worldCopyJump:true}).setView([20,0],2);
+    var map = L.map(el,{worldCopyJump:true, zoomControl:false}).setView([39,-98],4);
+    L.control.zoom({position:'topleft'}).addTo(map);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
       attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
     }).addTo(map);
