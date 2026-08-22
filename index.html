@@ -19933,6 +19933,9 @@ function boBuildExpandedLegend(){
       <h3>HOW RANKINGS WORK</h3>
       <p class="bo-ranking-method"><strong>Ratings are never manipulated.</strong> However, our rankings favor review quantity and time-tested performance when two competitors are extremely close. If a restaurant has at least 20 times as many verified reviews as a competitor within 0.1 points, the larger proven history may rank first.<span class="bo-ranking-example">That is why you may see a 4.6 ranked ahead of a 4.7.</span></p>
     </section>
+    <section class="bo-legend-section" style="text-align:center;">
+      <button type="button" class="footer-hotlink" data-dest="about" style="color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:.85rem;letter-spacing:.08em;background:none;border:none;cursor:pointer;padding:6px 0;">FOUNDERS</button>
+    </section>
     <section class="bo-legend-section bo-source-ack">
       <p class="bo-source-ack-title">Once again, we'd like to acknowledge the following industry leaders.</p>
       <div class="bo-source-leaders"><span class="bo-source-name">Google Menu</span><span class="bo-source-diamond">◆</span><span>Tripadvisor</span><span class="bo-source-diamond">◆</span><span>OpenTable</span><span class="bo-source-diamond">◆</span><span>Yelp</span><span class="bo-source-diamond">◆</span><span>Sirved</span><span class="bo-source-diamond">◆</span><span>Resy</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">One Bite</span><span class="bo-source-diamond">◆</span><span>Uber Eats</span><span class="bo-source-diamond">◆</span><span>DoorDash</span><span class="bo-source-diamond">◆</span><span>Grubhub</span><span class="bo-source-diamond">◆</span><span>Slice</span><span class="bo-source-diamond">◆</span><span>Restaurant Guru</span><span class="bo-source-diamond">◆</span><span>Facebook</span> <span class="bo-plus-more">+ MORE</span></div>
@@ -33154,7 +33157,7 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
 (function(){
   function makeO(){
     var button=document.createElement('button');
-    button.type='button';button.className='bop-concepts-o';button.setAttribute('aria-label','Open Concepts');button.setAttribute('title','Concepts');
+    button.type='button';button.className='bop-concepts-o';button.setAttribute('aria-label','Open WTFDD');button.setAttribute('title','WTFDD');
     button.innerHTML='<svg class="bop-concepts-o-mark" aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="bop-o-body" cx="41" cy="50" rx="39" ry="49"/><path class="bop-o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
     return button;
   }
@@ -33188,10 +33191,8 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
   function openConcepts(event){
     var button=event.target.closest&&event.target.closest('.bop-concepts-o');if(!button)return;
     event.preventDefault();event.stopPropagation();
-    var existing=document.querySelector('[data-dest="concepts"]');
-    if(existing){existing.click();return;}
-    document.querySelectorAll('.open').forEach(function(node){node.classList.remove('open')});
-    var concepts=document.getElementById('conceptsOverlay');if(concepts){concepts.classList.add('open');concepts.scrollTop=0;window.scrollTo(0,0)}
+    if(window.bopOpenExternal){window.bopOpenExternal('https://wtfdd.com','WTFDD');return;}
+    window.open('https://wtfdd.com','bopExternalViewer');
   }
   function start(){
     repair();
@@ -33374,15 +33375,15 @@ body.bop-content-open #bopStaticLandingDock{display:none!important;visibility:hi
     Array.from(line.childNodes).some(function(node){
       if(node.nodeType!==3)return false;var match=node.nodeValue.match(/\bBest Of\b/i);if(!match)return false;
       var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
-      var button=document.createElement('button');button.type='button';button.className='bop-vegas-concepts-o';button.setAttribute('aria-label','Open Concepts');button.innerHTML=svg;
+      var button=document.createElement('button');button.type='button';button.className='bop-vegas-concepts-o';button.setAttribute('aria-label','Open WTFDD');button.innerHTML=svg;
       node.replaceWith(document.createTextNode(value.slice(0,oIndex)),button,document.createTextNode(value.slice(oIndex+1)));return true;
     });
   }
   function openConcepts(event){
     var hit=event.target.closest&&event.target.closest('.bop-vegas-concepts-o');if(!hit)return;
     event.preventDefault();event.stopImmediatePropagation();
-    document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(page){if(page.id&&(/Overlay$|Page$/.test(page.id)||page.id==='bopWorldwideLanding'))page.classList.remove('open','active','is-open','tg-open')});
-    var concepts=document.getElementById('conceptsOverlay');if(concepts){concepts.classList.add('open');concepts.setAttribute('aria-hidden','false');concepts.scrollTop=0;window.scrollTo(0,0);}
+    if(window.bopOpenExternal){window.bopOpenExternal('https://wtfdd.com','WTFDD');return;}
+    window.open('https://wtfdd.com','bopExternalViewer');
   }
   document.addEventListener('click',openConcepts,true);
   function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
