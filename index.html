@@ -40184,4 +40184,59 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+
+<style id="bop-bjs-reference-logo-v1">
+  /* Main-page founder badge only: reference lockup from the supplied BJS CO. image. */
+  #bopStaticFounders .bop-static-bjs-lockup{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:52px!important;
+    height:52px!important;
+    box-sizing:border-box!important;
+    border:2.5px solid #F59E0B!important;
+    border-radius:50%!important;
+    background:#050505!important;
+    box-shadow:0 0 8px rgba(245,158,11,.56),inset 0 0 8px rgba(245,158,11,.08)!important;
+    line-height:1!important;
+    text-align:center!important;
+  }
+  #bopStaticFounders .bop-bjs-reference-main{
+    display:block!important;
+    margin:0 0 1px!important;
+    color:#E4002B!important;
+    -webkit-text-fill-color:#E4002B!important;
+    font:900 16px/.86 'Archivo Black',Arial,sans-serif!important;
+    letter-spacing:-.075em!important;
+    text-shadow:none!important;
+  }
+  #bopStaticFounders .bop-bjs-reference-sub{
+    display:block!important;
+    color:#f3eee5!important;
+    -webkit-text-fill-color:#f3eee5!important;
+    font:900 8px/1 'Archivo Black',Arial,sans-serif!important;
+    letter-spacing:.06em!important;
+    text-shadow:none!important;
+  }
+</style>
+<script id="bop-bjs-reference-logo-v1-script">
+(function(){
+  function applyReferenceLogo(){
+    var button=document.getElementById('bopStaticFounders');
+    var lockup=button&&button.querySelector('.bop-static-bjs-lockup');
+    if(!lockup)return;
+    if(lockup.dataset.referenceLogoV1==='1')return;
+    lockup.dataset.referenceLogoV1='1';
+    lockup.setAttribute('aria-hidden','true');
+    lockup.innerHTML='<span class="bop-bjs-reference-main">BJS</span><span class="bop-bjs-reference-sub">CO.</span>';
+    button.setAttribute('aria-label','BJS Co.');
+  }
+  function install(){
+    applyReferenceLogo();
+    new MutationObserver(applyReferenceLogo).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 </body></html>
