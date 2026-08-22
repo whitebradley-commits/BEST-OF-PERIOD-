@@ -40306,6 +40306,10 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-divider{height:2px;margin:14px 0 8px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8);}
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1.2rem/1.15 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
 .bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;transform:translateX(22%);color:#F59E0B;font:900 clamp(1.6rem,7vw,2.6rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
+.bo-ft-drive-truck{width:clamp(30px,9vw,46px);height:clamp(30px,9vw,46px);margin:0 -4px 0 -8px;filter:drop-shadow(0 0 6px rgba(245,158,11,.6));}
+.bo-ft-drive-truck .bo-ft-wheel{transform-box:fill-box;transform-origin:center;animation:bopFtWheelSpin .6s linear infinite;}
+@keyframes bopFtWheelSpin{to{transform:rotate(360deg);}}
+@media(prefers-reduced-motion:reduce){.bo-ft-drive-truck .bo-ft-wheel{animation:none;}}
 #bopFoodTruckMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.42);overflow:hidden;}
 .bo-ft-map-wrap{position:relative;}
 .bo-ft-pinch-hint{position:absolute;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.5);border-radius:14px;pointer-events:none;transition:opacity .5s ease;color:#F59E0B;font:900 .8rem/1.3 'Archivo Black',sans-serif;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.85);}
@@ -40313,16 +40317,29 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 #bopFoodTruckMapEl .leaflet-control-zoom a{background:#0a0a0a;color:#F59E0B;border-color:#F59E0B;}
 #bopFoodTruckMapEl .leaflet-control-zoom a:hover{background:#1a1a1a;}
 #bopFoodTruckMapEl .leaflet-popup-content-wrapper{
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.92);
   -webkit-backdrop-filter:blur(3px);
   backdrop-filter:blur(3px);
   border:2px solid #F59E0B;
-  border-radius:14px;
-  clip-path:polygon(0% 0%, 88% 0%, 100% 22%, 100% 100%, 12% 100%, 0% 78%);
+  border-radius:8px 8px 3px 3px;
+  clip-path:polygon(0% 20%, 58% 20%, 58% 0%, 84% 0%, 100% 28%, 100% 100%, 0% 100%);
   box-shadow:0 0 14px rgba(245,158,11,.5);
+  position:relative;
 }
-#bopFoodTruckMapEl .leaflet-popup-content{margin:16px 20px 16px 18px;}
-#bopFoodTruckMapEl .leaflet-popup-tip{background:rgba(255,255,255,.9);border:2px solid #F59E0B;}
+#bopFoodTruckMapEl .leaflet-popup-content-wrapper::before,
+#bopFoodTruckMapEl .leaflet-popup-content-wrapper::after{
+  content:'';
+  position:absolute;
+  bottom:2px;
+  width:12px;height:12px;
+  border-radius:50%;
+  background:#0a0a0a;
+  border:2px solid #F59E0B;
+}
+#bopFoodTruckMapEl .leaflet-popup-content-wrapper::before{left:16px;}
+#bopFoodTruckMapEl .leaflet-popup-content-wrapper::after{right:16px;}
+#bopFoodTruckMapEl .leaflet-popup-content{margin:22px 22px 20px 18px;}
+#bopFoodTruckMapEl .leaflet-popup-tip{background:rgba(255,255,255,.92);border:2px solid #F59E0B;}
 #bopFoodTruckMapEl .leaflet-popup-close-button{color:#333 !important;}
 .bo-ft-checkin-cta{display:block;width:min(340px,90%);margin:22px auto 0;padding:14px 16px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
 .bo-ft-live-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-shadow:0 0 8px rgba(228,0,43,.7);animation:bopFtLivePulse 1.3s ease-in-out infinite;}
@@ -40355,6 +40372,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
             '<div class="bo-ft-hero-word">FOOD TRUCKS</div>'+
             '<div class="bop-world-title-line">'+
               '<svg class="bop-world-hero-globe" aria-label="Worldwide" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg>'+
+              '<svg class="bo-ft-drive-truck" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg>'+
               '<div class="bop-world-period">Period<sup>&copy;</sup></div>'+
             '</div>'+
           '</header>'+
