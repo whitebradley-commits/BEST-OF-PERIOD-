@@ -40305,13 +40305,25 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-trucks-word{margin-left:-4px;color:#F59E0B;font:700 clamp(1.6rem,7vw,3rem)/.92 'Cormorant Garamond',serif;}
 .bo-ft-divider{height:2px;margin:14px 0 8px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8);}
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1.2rem/1.15 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
-.bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;color:#F59E0B;font:900 clamp(1.1rem,4.6vw,1.7rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
+.bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;transform:translateX(22%);color:#F59E0B;font:900 clamp(1.6rem,7vw,2.6rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
 #bopFoodTruckMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.42);overflow:hidden;}
 .bo-ft-map-wrap{position:relative;}
 .bo-ft-pinch-hint{position:absolute;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.5);border-radius:14px;pointer-events:none;transition:opacity .5s ease;color:#F59E0B;font:900 .8rem/1.3 'Archivo Black',sans-serif;text-align:center;text-shadow:0 0 8px rgba(0,0,0,.85);}
 .bo-ft-pinch-hint.bo-ft-hide{opacity:0;}
 #bopFoodTruckMapEl .leaflet-control-zoom a{background:#0a0a0a;color:#F59E0B;border-color:#F59E0B;}
 #bopFoodTruckMapEl .leaflet-control-zoom a:hover{background:#1a1a1a;}
+#bopFoodTruckMapEl .leaflet-popup-content-wrapper{
+  background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
+  border:2px solid #F59E0B;
+  border-radius:14px;
+  clip-path:polygon(0% 0%, 88% 0%, 100% 22%, 100% 100%, 12% 100%, 0% 78%);
+  box-shadow:0 0 14px rgba(245,158,11,.5);
+}
+#bopFoodTruckMapEl .leaflet-popup-content{margin:16px 20px 16px 18px;}
+#bopFoodTruckMapEl .leaflet-popup-tip{background:rgba(255,255,255,.9);border:2px solid #F59E0B;}
+#bopFoodTruckMapEl .leaflet-popup-close-button{color:#333 !important;}
 .bo-ft-checkin-cta{display:block;width:min(340px,90%);margin:22px auto 0;padding:14px 16px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 .95rem/1.1 'Archivo Black',sans-serif;text-align:center;letter-spacing:.03em;box-shadow:0 0 10px rgba(245,158,11,.4);cursor:pointer;}
 .bo-ft-live-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-shadow:0 0 8px rgba(228,0,43,.7);animation:bopFtLivePulse 1.3s ease-in-out infinite;}
 @keyframes bopFtLivePulse{0%,100%{opacity:1;}50%{opacity:.35;}}
@@ -40350,7 +40362,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<div class="bo-ft-sub">Food Trucks — Pick Your Location</div>'+
           '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
-          '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">No vendors have checked in yet today — but permanent spots (like Project BBQ and The Chef Truck) are always on the map. Scan a vendor QR code to add the next one.</div>'+
+          '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
           '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta">Do you have a food truck? Click here to go live</button>'+
         '</div>';
       document.body.appendChild(page);
@@ -40420,9 +40432,9 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     bopFtSeedTrucks.forEach(function(t){
       var marker = L.marker([t.lat,t.lng],{icon:truckIcon}).addTo(map);
       var links = [];
-      if(t.phone) links.push('<a href="tel:'+t.phone+'" style="color:#F59E0B;">'+t.phone+'</a>');
-      if(t.website) links.push('<a href="'+t.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website</a>');
-      marker.bindPopup('<div style="width:190px;"><div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+t.name+'</div><div style="font:700 .68rem Arial;color:#8fbf6f;margin-bottom:4px;">📍 Permanent location</div><div style="font:600 .78rem/1.4 Arial;color:#bbb;margin:4px 0 6px;">'+t.description+'</div><div style="font:600 .8rem Arial;color:#ddd;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+      if(t.phone) links.push('<a href="tel:'+t.phone+'" style="color:#B8460E;">'+t.phone+'</a>');
+      if(t.website) links.push('<a href="'+t.website+'" target="_blank" rel="noopener" style="color:#B8460E;">Website</a>');
+      marker.bindPopup('<div style="width:190px;"><div style="font:800 .95rem Arial;color:#B8460E;margin-bottom:2px;">'+t.name+'</div><div style="font:700 .68rem Arial;color:#3f7d2c;margin-bottom:4px;">📍 Permanent location</div><div style="font:600 .78rem/1.4 Arial;color:#444;margin:4px 0 6px;">'+t.description+'</div><div style="font:600 .8rem Arial;color:#333;line-height:1.5;">'+links.join('<br>')+'</div></div>');
     });
 
     if(window.bopFtDb){
@@ -40439,16 +40451,16 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           liveCount++;
           var marker = L.marker([d.lat,d.lng],{icon:truckIcon}).addTo(map);
           var links = [];
-          if(d.phone) links.push('<a href="tel:'+d.phone+'" style="color:#F59E0B;">'+d.phone+'</a>');
-          if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website / Order</a>');
-          if(d.instagram) links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#F59E0B;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
+          if(d.phone) links.push('<a href="tel:'+d.phone+'" style="color:#B8460E;">'+d.phone+'</a>');
+          if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#B8460E;">Website / Order</a>');
+          if(d.instagram) links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#B8460E;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
           var photoHTML = d.photo ? '<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">' : '';
-          var descHTML = d.description ? '<div style="font:600 .78rem/1.4 Arial;color:#bbb;margin:4px 0 6px;">'+d.description+'</div>' : '';
-          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Food Truck')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#ddd;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+          var descHTML = d.description ? '<div style="font:600 .78rem/1.4 Arial;color:#444;margin:4px 0 6px;">'+d.description+'</div>' : '';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#B8460E;margin-bottom:2px;">'+(d.name||'Food Truck')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#333;line-height:1.5;">'+links.join('<br>')+'</div></div>');
           window.bopFtMarkers[doc.id] = marker;
         });
         var note = document.getElementById('bopFtEmptyNote');
-        if(note) note.style.display = liveCount===0 ? 'block':'none';
+        if(note) note.style.display = 'block';
       });
     }
     setTimeout(function(){ map.invalidateSize(); },200);
