@@ -40915,7 +40915,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     if(!orb || !modal || !promoBtn) return;
 
     var dismissed = false;
-    var AUTO_KEY = 'bop-lv-promo-autoshown-v1';
+    var autoOpenedForThisContext = false;
 
     function isOnLasVegas(){
       // This app's default / home context is Las Vegas ('bestof').
@@ -40955,19 +40955,24 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       video.addEventListener('ended', closeModal);
     }
 
-    // Auto-open the promo once per session when landing on the Las Vegas page.
-    function maybeAutoOpen(){
-      if(!isOnLasVegas()) return;
-      try{
-        if(sessionStorage.getItem(AUTO_KEY) === '1') return;
-        sessionStorage.setItem(AUTO_KEY, '1');
-      }catch(e){}
-      openModal();
+    // Auto-open the promo every time the Las Vegas context becomes active —
+    // both on the very first page load AND when reached via in-app
+    // navigation (since this is a single-page app that doesn't reload).
+    function checkAutoOpen(){
+      if(isOnLasVegas()){
+        if(!autoOpenedForThisContext){
+          autoOpenedForThisContext = true;
+          openModal();
+        }
+      } else {
+        autoOpenedForThisContext = false;
+      }
     }
 
     refreshOrb();
     setInterval(refreshOrb, 700);
-    setTimeout(maybeAutoOpen, 500);
+    setInterval(checkAutoOpen, 500);
+    setTimeout(checkAutoOpen, 150);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
