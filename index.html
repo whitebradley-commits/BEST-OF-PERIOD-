@@ -21711,7 +21711,7 @@ const boPickerConfig = {
   otheroptions: [
     // The first row is deliberately fixed by priority/search popularity.
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
-    { label: '<svg viewBox="0 0 100 100" width="58" height="58" style="display:block;margin:0 auto 2px;overflow:visible;" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg><circle class="bo-ft-smoke bo-ft-smoke-1" cx="6" cy="30" r="3" fill="#F59E0B" opacity="0.55"/><circle class="bo-ft-smoke bo-ft-smoke-2" cx="4" cy="24" r="2.2" fill="#F59E0B" opacity="0.4"/><circle class="bo-ft-smoke bo-ft-smoke-3" cx="8" cy="18" r="1.6" fill="#F59E0B" opacity="0.3"/></svg><span class="bo-ft-tile-glow-text">Food Trucks</span>', cat: 'foodtrucks' },
+    { label: '<svg viewBox="0 0 100 100" width="46" height="46" style="display:block;margin:0 auto 2px;" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><circle class="bo-ft-smoke bo-ft-smoke-1" cx="6" cy="30" r="3" fill="#F59E0B" opacity="0.55"/><circle class="bo-ft-smoke bo-ft-smoke-2" cx="4" cy="24" r="2.2" fill="#F59E0B" opacity="0.4"/><circle class="bo-ft-smoke bo-ft-smoke-3" cx="8" cy="18" r="1.6" fill="#F59E0B" opacity="0.3"/></svg><span class="bo-ft-tile-glow-text">Food Trucks</span>', cat: 'foodtrucks' },
     { label: '<span style="display:inline-block;font-size:1.08em;line-height:1;color:#F59E0B;">M&#9733;&#9733;&#9733;</span><br><span style="display:inline-block;margin-top:3px;font-size:calc(1em + 2px);line-height:1;color:#F59E0B;">Michelin</span>', cat: 'michelin' },
     { label: '<span class="bo-jb-tile-label"><span class="bo-jb-badge" aria-hidden="true">JB</span><span>James Beard</span></span>', cat: 'jamesbeard' },
     { label: 'Steak', cat: 'steak' },
@@ -22883,6 +22883,9 @@ function boTileRestaurantCount(cat, cityKey){
 }
 
 function boTileCountBadgeHTML(cat, cityKey){
+  if(cat==='foodtrucks'){
+    return `<span class="bo-tile-count bo-ft-tile-count" aria-label="Live food trucks checked in">&hellip;</span>`;
+  }
   const count=boTileRestaurantCount(cat,cityKey);
   const pending=count===0;
   return `<span class="bo-tile-count" aria-label="${pending?'Category count pending':count+' restaurants'}">${pending?'?':count}</span>`;
@@ -30024,7 +30027,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   const navigationType=navigationEntry&&navigationEntry.type?navigationEntry.type:(legacyNavigation&&legacyNavigation.type===1?'reload':legacyNavigation&&legacyNavigation.type===2?'back_forward':'navigate');
   const isFreshNavigation=navigationType==='navigate';
   const isReloadNavigation=navigationType==='reload';
-  const routedKeys=['page','tag','fnt','retry','rescue','t','n','founder'];
+  const routedKeys=['page','tag','fnt','retry','rescue','t','n','founder','checkin'];
   const restorablePages=[
     'bestOfOverlay','tbotrLandingOverlay','wtfLandingOverlay','directoryOverlay',
     'companyHubOverlay','aboutUsOverlay','legendOverlay','promotionsOverlay',
@@ -40372,6 +40375,33 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     if(typeof firebase!=='undefined' && !firebase.apps.length) firebase.initializeApp(bopFirebaseConfig);
     window.bopFtDb = typeof firebase!=='undefined' ? firebase.firestore() : null;
   }catch(e){ window.bopFtDb = null; }
+
+  function boApplyFtTileCount(){
+    if(typeof window.__bopFtLiveCount!=='number') return;
+    document.querySelectorAll('.bo-ft-tile-count').forEach(function(el){
+      el.textContent = String(window.__bopFtLiveCount);
+      el.setAttribute('aria-label', window.__bopFtLiveCount+' food trucks live now');
+    });
+  }
+  function boFetchFtLiveCount(){
+    if(!window.bopFtDb || !window.bopFtDb.collection) return;
+    var cutoff = Date.now() - (8*60*60*1000);
+    window.bopFtDb.collection('foodtrucks').get().then(function(snap){
+      var live = 0;
+      snap.forEach(function(doc){
+        var d = doc.data();
+        var t = d && d.checkedInAt && d.checkedInAt.toMillis ? d.checkedInAt.toMillis() : 0;
+        if(t >= cutoff) live++;
+      });
+      window.__bopFtLiveCount = live;
+      boApplyFtTileCount();
+    }).catch(function(){});
+  }
+  setTimeout(boFetchFtLiveCount, 600);
+  setInterval(boFetchFtLiveCount, 90000);
+  if(typeof MutationObserver!=='undefined'){
+    new MutationObserver(function(){ boApplyFtTileCount(); }).observe(document.body, {childList:true, subtree:true});
+  }
 })();
 </script>
 <style id="bop-foodtruck-styles">
@@ -40402,28 +40432,23 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 #bopFoodTruckMapEl .leaflet-control-zoom a{background:#0a0a0a;color:#F59E0B;border-color:#F59E0B;}
 #bopFoodTruckMapEl .leaflet-control-zoom a:hover{background:#1a1a1a;}
 #bopFoodTruckMapEl .leaflet-popup-content-wrapper{
-  background:rgba(10,10,10,.82);
+  background-color:rgba(10,10,10,.9);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23F59E0B'%3E%3Cpath d='M5 34h47v-8h20l20 20v14h-87z'/%3E%3Ccircle cx='25' cy='66' r='10'/%3E%3Ccircle cx='76' cy='66' r='10'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23F59E0B'%3E%3Cpath d='M5 34h47v-8h20l20 20v14h-87z'/%3E%3Ccircle cx='25' cy='66' r='10'/%3E%3Ccircle cx='76' cy='66' r='10'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23F59E0B'%3E%3Cpath d='M5 34h47v-8h20l20 20v14h-87z'/%3E%3Ccircle cx='25' cy='66' r='10'/%3E%3Ccircle cx='76' cy='66' r='10'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23F59E0B'%3E%3Cpath d='M5 34h47v-8h20l20 20v14h-87z'/%3E%3Ccircle cx='25' cy='66' r='10'/%3E%3Ccircle cx='76' cy='66' r='10'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat;
+  background-position:7px 7px, calc(100% - 7px) 7px, 7px calc(100% - 7px), calc(100% - 7px) calc(100% - 7px);
+  background-size:13px 13px,13px 13px,13px 13px,13px 13px;
   -webkit-backdrop-filter:blur(4px);
   backdrop-filter:blur(4px);
   border:2.5px solid #F59E0B;
-  border-radius:8px 8px 3px 3px;
-  clip-path:polygon(0% 20%, 58% 20%, 58% 0%, 84% 0%, 100% 28%, 100% 100%, 0% 100%);
+  border-radius:12px;
   box-shadow:0 0 18px rgba(245,158,11,.6);
   position:relative;
   min-width:210px;
 }
-#bopFoodTruckMapEl .leaflet-popup-content-wrapper::before,
-#bopFoodTruckMapEl .leaflet-popup-content-wrapper::after{
-  content:'';
-  position:absolute;
-  bottom:2px;
-  width:14px;height:14px;
-  border-radius:50%;
-  background:rgba(10,10,10,.9);
-  border:2.5px solid #F59E0B;
-}
-#bopFoodTruckMapEl .leaflet-popup-content-wrapper::before{left:18px;}
-#bopFoodTruckMapEl .leaflet-popup-content-wrapper::after{right:18px;}
 #bopFoodTruckMapEl .leaflet-popup-content{margin:24px 24px 22px 20px;}
 #bopFoodTruckMapEl .leaflet-popup-tip{background:rgba(10,10,10,.9);border:2.5px solid #F59E0B;}
 #bopFoodTruckMapEl .leaflet-popup-close-button{color:#F59E0B !important;}
@@ -40610,6 +40635,30 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         lat: 36.175187, lng: -86.755233,
         website: 'https://honeytreemeadery.com/',
         description: "Permanently parked out front of Honeytree Meadery in East Nashville — stacked smash burgers paired with local mead."
+      },
+      {
+        name: 'Tacos My Blessing',
+        lat: 29.8945, lng: -81.3172,
+        website: 'https://www.drinkbogbeer.com/',
+        description: "Permanently parked behind Bog Brewing Company in St. Augustine — tacos Monday through Saturday, 11:30am–7pm (closed Sunday)."
+      },
+      {
+        name: 'Slow River Coffee',
+        lat: 43.6202, lng: -116.2043,
+        website: '',
+        description: "Parked at the corner of 6th & State in Boise for 13+ years — one of the city's original food trucks, still serving walk-up coffee most mornings."
+      },
+      {
+        name: "Captain Billy's Seafood",
+        lat: 38.8776, lng: -78.5126,
+        website: '',
+        description: "A Woodstock, VA fixture since 1983 — wild-caught seafood steamed fresh to order, on South Main Street through three generations of owners."
+      },
+      {
+        name: 'Blue Sparrow — Pizza Alley Bus',
+        lat: 40.493874, lng: -79.9315458,
+        website: 'https://dancinggnomebeer.com/',
+        description: "A vintage Greyhound bus turned wood-fired pizza kitchen, semi-permanently stationed behind Dancing Gnome Brewery in Sharpsburg, PA — Wednesday through Saturday."
       }
     ];
     window.bopFtSeedTrucks.forEach(function(t){
