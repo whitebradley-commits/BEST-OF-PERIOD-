@@ -8010,9 +8010,80 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
   position: relative !important;
   z-index: 8 !important;
 }
+
+/* ===== LV Special Update orb + promo video modal ===== */
+.bop-special-orb{
+  position:fixed; right:18px; bottom:22px; z-index:130;
+  display:none; flex-direction:column; align-items:center; gap:6px;
+  padding:16px 20px 14px; min-width:150px;
+  background:rgba(255,255,255,0.14);
+  border:1.5px solid rgba(255,255,255,0.55);
+  border-radius:20px;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 8px 28px rgba(0,0,0,0.45), 0 0 22px rgba(255,255,255,0.12);
+  font-family:inherit;
+}
+.bop-special-orb.open{ display:flex; }
+.bop-special-orb-close{
+  position:absolute; top:-10px; right:-10px; width:26px; height:26px;
+  border-radius:50%; border:1.5px solid rgba(255,255,255,0.7);
+  background:#050505; color:#fff; font:800 15px/1 Arial; cursor:pointer;
+  display:grid; place-items:center; padding:0;
+}
+.bop-special-orb-label{
+  color:#fff; font-weight:800; font-size:11px; letter-spacing:0.09em;
+  text-transform:uppercase; text-shadow:0 1px 3px rgba(0,0,0,0.6);
+}
+.bop-special-orb-btn{
+  border:none; cursor:pointer; padding:9px 22px; border-radius:999px;
+  font:900 13px Arial; letter-spacing:0.06em; color:#050505;
+  background:#F3AB19;
+  box-shadow:0 0 0 rgba(243,171,25,0.6);
+  animation:bopOrbBlink 1.6s ease-in-out infinite;
+}
+@keyframes bopOrbBlink{
+  0%,100%{ box-shadow:0 0 6px rgba(243,171,25,0.5), 0 0 0px rgba(243,171,25,0.0); opacity:1; }
+  50%{ box-shadow:0 0 22px rgba(243,171,25,1), 0 0 40px rgba(243,171,25,0.55); opacity:0.86; }
+}
+@media(prefers-reduced-motion:reduce){ .bop-special-orb-btn{ animation:none; } }
+
+.bop-promo-modal{
+  position:fixed; inset:0; z-index:140; display:none;
+  place-items:center; padding:26px;
+  background:rgba(5,5,5,0.72); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+}
+.bop-promo-modal.open{ display:grid; }
+.bop-promo-modal-inner{
+  position:relative; width:min(720px,92vw); max-height:88vh;
+  background:#000; border-radius:16px; overflow:hidden;
+  border:2px solid #F3AB19; box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.bop-promo-video{ display:block; width:100%; height:auto; max-height:88vh; background:#000; }
+.bop-promo-modal-close{
+  position:absolute; top:12px; right:12px; z-index:2;
+  width:36px; height:36px; border-radius:50%;
+  border:2px solid #F3AB19; background:rgba(5,5,5,0.85); color:#F3AB19;
+  font:900 20px/1 Arial; cursor:pointer; display:grid; place-items:center;
+}
+@media(max-width:480px){
+  .bop-special-orb{ right:12px; bottom:16px; min-width:132px; padding:14px 16px 12px; }
+  .bop-special-orb-btn{ padding:8px 18px; font-size:12px; }
+}
 </style>
 </head>
-<body><script id="bop-legend-arrange-and-vendor-clean-v301">
+<body>
+<div id="bopSpecialOrb" class="bop-special-orb">
+  <button id="bopSpecialOrbClose" class="bop-special-orb-close" type="button" aria-label="Dismiss">&times;</button>
+  <div class="bop-special-orb-label">Special Update</div>
+  <button id="bopSpecialOrbPromoBtn" class="bop-special-orb-btn" type="button">LV PROMO</button>
+</div>
+<div id="bopPromoModal" class="bop-promo-modal" role="dialog" aria-modal="true" aria-label="Las Vegas promo video">
+  <div class="bop-promo-modal-inner">
+    <button id="bopPromoModalClose" class="bop-promo-modal-close" type="button" aria-label="Close video">&times;</button>
+    <video id="bopPromoVideo" class="bop-promo-video" playsinline controls preload="none" data-src="lv-promo-video.mp4"></video>
+  </div>
+</div>
+<script id="bop-legend-arrange-and-vendor-clean-v301">
 /* Restores two things: (1) the legend page's badge section gets moved to
    sit right after the "independent listing service" disclaimer, and the
    verified/processing/unverified shields get moved to the top of that
@@ -40829,6 +40900,60 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     }catch(e){}
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', checkCheckinParam); else checkCheckinParam();
+})();
+</script>
+<script id="bop-special-orb-lv-promo">
+(function(){
+  function init(){
+    var orb = document.getElementById('bopSpecialOrb');
+    var closeBtn = document.getElementById('bopSpecialOrbClose');
+    var promoBtn = document.getElementById('bopSpecialOrbPromoBtn');
+    var modal = document.getElementById('bopPromoModal');
+    var modalClose = document.getElementById('bopPromoModalClose');
+    var video = document.getElementById('bopPromoVideo');
+    if(!orb || !modal || !promoBtn) return;
+
+    var dismissed = false;
+
+    function isOnLasVegas(){
+      // This app's default / home context is Las Vegas ('bestof').
+      return (typeof boCityContext === 'undefined') || boCityContext === 'bestof';
+    }
+    function refreshOrb(){
+      if(dismissed) return;
+      if(isOnLasVegas()) orb.classList.add('open');
+      else orb.classList.remove('open');
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      if(video){ video.pause(); }
+      document.body.style.overflow = '';
+    }
+    function openModal(){
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if(video){
+        if(!video.src){ video.src = video.getAttribute('data-src'); }
+        video.currentTime = 0;
+        video.play().catch(function(){});
+      }
+    }
+
+    closeBtn.addEventListener('click', function(){
+      dismissed = true;
+      orb.classList.remove('open');
+    });
+    promoBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    });
+
+    refreshOrb();
+    setInterval(refreshOrb, 700);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
 </body></html>
