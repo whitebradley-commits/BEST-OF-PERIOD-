@@ -8066,17 +8066,18 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
   border:2px solid #F3AB19; background:rgba(5,5,5,0.85); color:#F3AB19;
   font:900 20px/1 Arial; cursor:pointer; display:grid; place-items:center;
 }
-@media(max-width:480px){
-  .bop-special-orb{ left:12px; bottom:16px; width:74px; height:74px; }
-  .bop-special-orb-btn{ font-size:11px; }
+.bop-special-orb{ display:none !important; }
+.bop-lv-promo-inline{
+  position:relative; display:block; margin:-10px auto 6px; z-index:5;
+  width:56px; height:56px; border-radius:50%;
+  background:#0a0a0a; border:2px solid #F3AB19; cursor:pointer; padding:0;
+  box-shadow:0 4px 14px rgba(0,0,0,0.5), 0 0 10px rgba(243,171,25,0.3);
+  color:#E4002B; font:900 10px/1.15 Arial; letter-spacing:0.03em;
+  text-shadow:0 0 5px rgba(228,0,43,0.35);
 }
 </style>
 </head>
 <body>
-<div id="bopSpecialOrb" class="bop-special-orb">
-  <button id="bopSpecialOrbClose" class="bop-special-orb-close" type="button" aria-label="Dismiss">&times;</button>
-  <button id="bopSpecialOrbPromoBtn" class="bop-special-orb-btn" type="button">LV<br>PROMO</button>
-</div>
 <div id="bopPromoModal" class="bop-promo-modal" role="dialog" aria-modal="true" aria-label="Las Vegas promo video">
   <div class="bop-promo-modal-inner">
     <div class="bop-promo-headline">LV Special Update</div>
@@ -23297,13 +23298,14 @@ function boRenderCategory(cat){
         <span class="bo-price-legend-item"><span class="bo-price-legend-sign">$$$$</span> Fine</span>
       </div>` : '';
     const specialCirclesHTML = cat === 'otheroptions' ? `
-      <div class="bo-main-picker-lead">
+      <div class="bo-main-picker-lead" style="position:relative;">
         <div class="bo-picker-grid" style="margin-bottom:0;flex-wrap:nowrap;gap:0.5rem;" id="boOtherTastesCircles">
           <button type="button" class="bo-picker-btn bo-picker-btn-rainbow bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="dessert">Dessert</button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-24-clock-tile" data-picker-cat="24hours" aria-label="24 Hours"><span class="bo-24-clock-face" aria-hidden="true"><span class="bo-24-clock-hour"></span><span class="bo-24-clock-minute"></span><span class="bo-24-clock-center"></span></span><span class="bo-24-clock-label">24 Hours</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small bo-near-me-tile" id="boNearMePreviewBtn" aria-label="Near Me map preview"><span class="bo-near-me-map" aria-hidden="true"></span><span class="bo-near-me-label">Near Me</span></button>
           <button type="button" class="bo-picker-btn bo-picker-btn-glow bo-picker-btn-small" data-picker-cat="bestof" aria-label="Best Of current city Period"><span class="bo-lead-best-lockup"><span class="bo-lead-best-top">BEST OF</span><span class="bo-lead-best-city is-active" id="boLeadBestCity">${(BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName}</span><span class="bo-picker-period bo-lead-best-period">Period<span class="period-mark">&copy;</span></span></span></button>
         </div>
+        ${boCityContext === 'bestof' ? '<button type="button" id="bopLvPromoInlineBtn" class="bop-lv-promo-inline" aria-label="Play LV promo video">LV<br>PROMO</button>' : ''}
         <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
       </div>
     ` : '';
@@ -40906,25 +40908,16 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 <script id="bop-special-orb-lv-promo">
 (function(){
   function init(){
-    var orb = document.getElementById('bopSpecialOrb');
-    var closeBtn = document.getElementById('bopSpecialOrbClose');
-    var promoBtn = document.getElementById('bopSpecialOrbPromoBtn');
     var modal = document.getElementById('bopPromoModal');
     var modalClose = document.getElementById('bopPromoModalClose');
     var video = document.getElementById('bopPromoVideo');
-    if(!orb || !modal || !promoBtn) return;
+    if(!modal) return;
 
-    var dismissed = false;
     var autoOpenedForThisContext = false;
 
     function isOnLasVegas(){
       // This app's default / home context is Las Vegas ('bestof').
       return (typeof boCityContext === 'undefined') || boCityContext === 'bestof';
-    }
-    function refreshOrb(){
-      if(dismissed) return;
-      if(isOnLasVegas()) orb.classList.add('open');
-      else orb.classList.remove('open');
     }
     function closeModal(){
       modal.classList.remove('open');
@@ -40941,11 +40934,11 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       }
     }
 
-    closeBtn.addEventListener('click', function(){
-      dismissed = true;
-      orb.classList.remove('open');
+    // Event delegation — #bopLvPromoInlineBtn is re-rendered by the app's
+    // own templating, so we listen on document instead of binding directly.
+    document.addEventListener('click', function(e){
+      if(e.target.closest('#bopLvPromoInlineBtn')) openModal();
     });
-    promoBtn.addEventListener('click', openModal);
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
     document.addEventListener('keydown', function(e){
@@ -40969,8 +40962,6 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       }
     }
 
-    refreshOrb();
-    setInterval(refreshOrb, 700);
     setInterval(checkAutoOpen, 500);
     setTimeout(checkAutoOpen, 150);
   }
