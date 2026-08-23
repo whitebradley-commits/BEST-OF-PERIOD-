@@ -8050,7 +8050,8 @@ html:not(.bop-route-booting) body{visibility:visible;opacity:1;transition:opacit
 .bop-promo-modal{
   position:fixed; inset:0; z-index:1200011; display:none;
   place-items:center; padding:26px;
-  background:rgba(5,5,5,0.72); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  background:rgba(5,5,5,0.55);
+  backdrop-filter:blur(18px) brightness(0.55); -webkit-backdrop-filter:blur(18px) brightness(0.55);
 }
 .bop-promo-modal.open{ display:grid; }
 .bop-promo-modal-inner{
@@ -40914,6 +40915,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     if(!orb || !modal || !promoBtn) return;
 
     var dismissed = false;
+    var AUTO_KEY = 'bop-lv-promo-autoshown-v1';
 
     function isOnLasVegas(){
       // This app's default / home context is Las Vegas ('bestof').
@@ -40949,9 +40951,23 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
     });
+    if(video){
+      video.addEventListener('ended', closeModal);
+    }
+
+    // Auto-open the promo once per session when landing on the Las Vegas page.
+    function maybeAutoOpen(){
+      if(!isOnLasVegas()) return;
+      try{
+        if(sessionStorage.getItem(AUTO_KEY) === '1') return;
+        sessionStorage.setItem(AUTO_KEY, '1');
+      }catch(e){}
+      openModal();
+    }
 
     refreshOrb();
     setInterval(refreshOrb, 700);
+    setTimeout(maybeAutoOpen, 500);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
