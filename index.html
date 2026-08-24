@@ -41753,4 +41753,80 @@ if(promoBtn){
 .bop-exclusive-btn-row .bop-exclusive-enter:focus-visible{outline:none!important}
 
 </style>
+
+<style id="bop-topdown-ny-map-and-sd-zones-v268">
+/* v268: SD zones fully right of the coastline + top-down NY quadrant map */
+
+/* San Diego: coastline swerves down the middle-left, ocean on the left,
+   every zone button clear of the line on the right side. */
+.bo-sd-coastline{left:4%!important;width:30%!important}
+.bo-sd-zones{inset:20px 8px 20px 48%!important}
+
+/* NY top-down map stage */
+.bop-nyli-stage{min-height:0!important;height:auto!important;padding:8px 4px;background:linear-gradient(180deg,#07101a,#020409)!important;overflow:visible!important}
+.bop-nymap{display:block;width:100%;height:auto}
+.bop-nymap-compass{fill:#d5a654;font:800 11px Arial,sans-serif;letter-spacing:.1em}
+.bop-nymap-sea{fill:#8aa4bd;font:800 8px Arial,sans-serif;letter-spacing:.34em;opacity:.55;pointer-events:none}
+.bop-nymap-zone polygon,.bop-nymap-zone path{fill:rgba(246,160,20,.10);stroke:#f6a014;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(246,160,20,.5));cursor:pointer}
+.bop-nymap-zone text{fill:#f6a014;font:900 10px Arial,sans-serif;letter-spacing:.06em;cursor:pointer;text-shadow:0 0 6px rgba(246,160,20,.4)}
+.bop-nymap-zone:active polygon,.bop-nymap-zone:active path{fill:rgba(246,160,20,.28)}
+.bop-nymap-strong polygon{stroke:#ff3048!important;fill:rgba(255,48,72,.10)!important;filter:drop-shadow(0 0 6px rgba(255,48,72,.45))!important}
+.bop-nymap-strong text{fill:#ff3048!important;font-size:12px!important;text-shadow:0 0 6px rgba(255,48,72,.5)!important}
+.bop-nymap-strong:active polygon{fill:rgba(255,48,72,.26)!important}
+
+</style>
+<script id="bop-topdown-ny-map-and-sd-zones-v268-script">
+(function(){
+/* v268: top-down NY/Long Island quadrant map (replaces the v265 diagonal
+   stage) + keeps the Strong Island panel and hidden-tile routing intact. */
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+
+var MAP=''+
+'<svg class="bop-nymap" viewBox="0 0 400 252" role="img" aria-label="Map of New York City and Long Island, looking straight down">'+
+  '<text class="bop-nymap-compass" x="14" y="24">N \u2191</text>'+
+  '<text class="bop-nymap-sea" x="212" y="66">LONG ISLAND SOUND</text>'+
+  '<text class="bop-nymap-sea" x="196" y="236">ATLANTIC OCEAN</text>'+
+  '<g class="bop-nymap-zone" data-dest="bronx"><polygon points="66,44 116,40 120,78 70,84"/><text x="74" y="64">THE BRONX</text></g>'+
+  '<g class="bop-nymap-zone" data-dest="manhattan"><polygon points="52,70 64,66 68,132 56,138"/><text x="60" y="104" transform="rotate(-90 60 104)" text-anchor="middle">MANHATTAN</text></g>'+
+  '<g class="bop-nymap-zone" data-dest="brooklyn"><polygon points="70,150 126,144 130,200 74,206"/><text x="78" y="178">BROOKLYN</text></g>'+
+  '<g class="bop-nymap-zone" data-dest="queens"><polygon points="124,94 184,90 188,190 130,198"/><text x="136" y="146">QUEENS</text></g>'+
+  '<g class="bop-nymap-zone bop-nymap-strong" data-dest="__strong__"><polygon points="188,92 300,100 302,182 190,190"/><text x="204" y="145">STRONG ISLAND</text></g>'+
+  '<g class="bop-nymap-zone" data-dest="hamptons"><path d="M302,102 L358,92 L392,70 L396,78 L356,106 L346,118 L360,122 L394,142 L398,152 L352,146 L306,180 Z"/><text x="316" y="172">THE HAMPTONS</text></g>'+
+'</svg>';
+
+function rebuild(){
+  var p=document.querySelector('.bop-nyli-picker');
+  if(!p)return;
+  var stage=p.querySelector('.bop-nyli-stage');
+  if(!stage||stage.dataset.bopTopdown==='1')return;
+  stage.dataset.bopTopdown='1';
+  stage.innerHTML=MAP;
+  var intro=p.querySelector('.bop-nyli-intro');
+  if(intro)intro.textContent='Tap a territory \u00b7 looking straight down';
+  stage.querySelectorAll('.bop-nymap-zone').forEach(function(g){
+    g.addEventListener('click',function(){
+      var d=g.getAttribute('data-dest');
+      if(d==='__strong__'){
+        stage.style.display='none';
+        if(intro)intro.style.display='none';
+        var sp=p.querySelector('.bop-nyli-strong');
+        if(sp)sp.hidden=false;
+        p.scrollIntoView({behavior:'smooth',block:'start'});
+        return;
+      }
+      var gw=document.getElementById('bopNewYorkGateway');
+      var tile=gw&&gw.querySelector('.bop-ny-gateway-tile[data-ny-destination="'+d+'"]');
+      if(tile)tile.click();
+    });
+  });
+}
+ready(function(){
+  rebuild();
+  setTimeout(rebuild,900);
+  document.addEventListener('click',function(){setTimeout(rebuild,200);},true);
+  setInterval(rebuild,1000);
+});
+})();
+
+</script>
 </body></html>
