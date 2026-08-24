@@ -41374,4 +41374,170 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   }
 })();
 </script>
+
+<style id="bop-ny-coast-map-and-fixes-v265">
+/* v265: NY/LI coastal map gateway, SD picker guard, founders label */
+/* San Diego coast picker: force visible over any stacked older rule */
+.bo-sd-coast-picker{display:block!important;visibility:visible!important;opacity:1!important}
+#boNearMapPage .bo-near-map-lower{overflow:visible!important}
+
+/* Hide the five-box grid only once the map is actually installed */
+#bopNewYorkGateway.bop-ny-map-installed .bop-ny-gateway-grid{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+.bop-nyli-picker{margin:0 0 22px;padding:15px 12px 18px;border:2px solid #8a570d;border-radius:24px;background:#030507;color:#fff;box-shadow:0 0 22px rgba(246,160,20,.18);width:100%}
+.bop-nyli-intro{text-align:center;color:#d5a654;font:800 11px/1.3 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.bop-nyli-stage{position:relative;min-height:620px;margin-top:13px;overflow:hidden;border-radius:18px;background:linear-gradient(90deg,#07101a,#020202 42%)}
+.bop-nyli-coast{position:absolute;inset:24px auto 30px 16%;width:38%;height:90%;overflow:visible}
+.bop-nyli-coast path{fill:none;stroke:#f6a014;stroke-width:9;filter:drop-shadow(0 0 7px #f6a014)}
+.bop-nyli-coast .bop-nyli-coast-faint{stroke-width:4;opacity:.35;filter:none}
+.bop-nyli-zones{position:absolute;inset:20px 8px 20px 38%;display:flex;flex-direction:column;justify-content:space-between}
+.bop-nyli-zone{width:100%;text-align:left;background:rgba(8,8,10,.82);border:1px solid rgba(246,160,20,.45);border-radius:14px;padding:10px 12px;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bop-nyli-zone strong{display:block;font:1000 15px/1.1 Arial,sans-serif;letter-spacing:.05em;color:#f6a014;text-shadow:0 0 8px rgba(246,160,20,.5)}
+.bop-nyli-zone span{display:block;margin-top:3px;font:700 10px/1.25 Arial,sans-serif;letter-spacing:.06em;color:#d5a654}
+.bop-nyli-zone:active{background:rgba(246,160,20,.16)}
+.bop-nyli-zone-strong{border-color:#ff3048;box-shadow:0 0 14px rgba(255,48,72,.35)}
+.bop-nyli-zone-strong strong{color:#ff3048;text-shadow:0 0 8px rgba(255,48,72,.5)}
+.bop-nyli-strong{margin-top:14px;padding:14px 12px 18px;border:1px solid rgba(255,48,72,.5);border-radius:16px;background:#050506}
+.bop-nyli-strong h3{margin:2px 0 8px;text-align:center;color:#ff3048;font:1000 22px/1 Arial,sans-serif;letter-spacing:.08em;text-shadow:0 0 10px rgba(255,48,72,.45)}
+.bop-nyli-strong-copy{margin:0 0 14px;color:#e8d8bd;font:600 12.5px/1.65 Arial,sans-serif;text-align:center}
+.bop-nyli-strong-row{padding:9px 4px;border-bottom:1px solid rgba(246,160,20,.18)}
+.bop-nyli-strong-row strong{display:block;color:#fff;font:900 13px/1.2 Arial,sans-serif}
+.bop-nyli-strong-row em{display:block;color:#f6a014;font:800 10px/1.3 Arial,sans-serif;font-style:normal;letter-spacing:.08em;text-transform:uppercase;margin:2px 0}
+.bop-nyli-strong-row span{display:block;color:#bfae90;font:600 11px/1.4 Arial,sans-serif}
+.bop-nyli-strong-full,.bop-nyli-strong-back{display:block;width:100%;margin-top:12px;padding:11px 10px;border-radius:12px;font:900 11px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer}
+.bop-nyli-strong-full{background:#f6a014;border:none;color:#000}
+.bop-nyli-strong-back{background:transparent;border:1px solid rgba(246,160,20,.45);color:#f6a014}
+
+/* Founders row label: small, not bold, gold on black with gold border + icon */
+#bopFoundersRowLabel{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px auto 0;padding:5px 14px;width:max-content;max-width:90%;background:#000;border:1px solid #F59E0B;border-radius:8px}
+#bopFoundersRowLabel svg{width:14px;height:14px;flex:none}
+#bopFoundersRowLabel span{color:#F59E0B;font-family:Arial,sans-serif;font-weight:400;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+
+</style>
+<script id="bop-ny-coast-map-and-fixes-v265-script">
+(function(){
+/* v265: NY/Long Island coastal map gateway + Strong Island, SD picker guard,
+   Founders label + story. Proxies clicks to the original gateway tiles so all
+   existing routing and back-button behavior is untouched. */
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+
+/* ---------- 1. NEW YORK COASTAL MAP ---------- */
+var NY_ZONES=[
+  {label:'MANHATTAN', dest:'manhattan', sub:'The city core'},
+  {label:'THE BRONX', dest:'bronx', sub:'Uptown &amp; beyond'},
+  {label:'BROOKLYN', dest:'brooklyn', sub:'Kings County'},
+  {label:'QUEENS', dest:'queens', sub:'The world\u2019s borough'},
+  {label:'STRONG ISLAND', dest:'__strong__', sub:'The whole island \u00b7 one list'},
+  {label:'THE HAMPTONS', dest:'hamptons', sub:'The East End'}
+];
+var STRONG_PICKS=[
+  ['Nick \u0026 Toni\u2019s','East Hampton','Seasonal Italian institution'],
+  ['The 1770 House','East Hampton','Historic fine-dining inn'],
+  ['Topping Rose House','Bridgehampton','Luxury-hotel dining room'],
+  ['Durye\u0061\u2019s Montauk','Montauk','Waterfront seafood destination'],
+  ['Il Buco al Mare','Amagansett','Coastal Italian dining'],
+  ['S\u00ed S\u00ed','East Hampton','Waterfront Mediterranean'],
+  ['Dopo La Spiaggia','Sag Harbor','Italian on the wharf'],
+  ['The Crow\u2019s Nest','Montauk','Waterside dining and gathering place'],
+  ['Almond','Bridgehampton','Neighborhood institution'],
+  ['Harvest on Fort Pond','Montauk','Family-style Montauk landmark']
+];
+function buildNYMap(){
+  var gateway=document.getElementById('bopNewYorkGateway');
+  if(!gateway||gateway.querySelector('.bop-nyli-picker'))return;
+  var grid=gateway.querySelector('.bop-ny-gateway-grid');
+  if(!grid)return;
+  var p=document.createElement('section');
+  p.className='bop-nyli-picker';
+  p.innerHTML=''+
+  '<div class="bop-nyli-intro">Tap a territory \u00b7 New York \u0026 the Island</div>'+
+  '<div class="bop-nyli-stage">'+
+    '<svg class="bop-nyli-coast" viewBox="0 0 200 700" aria-hidden="true">'+
+      '<path d="M15 690 C60 640 30 590 80 545 C120 510 70 470 115 425 C150 390 95 345 140 300 C175 265 120 215 160 170 C190 135 150 90 185 15"/>'+
+      '<path class="bop-nyli-coast-faint" d="M60 688 C95 640 75 600 118 560 C150 528 115 490 152 452"/>'+
+    '</svg>'+
+    '<div class="bop-nyli-zones"></div>'+
+  '</div>'+
+  '<div class="bop-nyli-strong" hidden>'+
+    '<h3>STRONG ISLAND</h3>'+
+    '<p class="bop-nyli-strong-copy">Strong Island is a big, big place. Rather than slice it up and make you wait, we did one large list \u2014 the best of the whole island, all the way around. These restaurants are worth the drive no matter where you are on Strong Island.</p>'+
+    '<div class="bop-nyli-strong-list"></div>'+
+    '<button type="button" class="bop-nyli-strong-full">SEE THE FULL EAST END DIRECTORY \u2192</button>'+
+    '<button type="button" class="bop-nyli-strong-back">\u2190 BACK TO THE MAP</button>'+
+  '</div>';
+  grid.parentNode.insertBefore(p,grid);
+  gateway.classList.add('bop-ny-map-installed');
+  var prompt=gateway.querySelector('.bop-ny-gateway-prompt');
+  if(prompt)prompt.textContent='Six dining worlds. Pick one.';
+  var zwrap=p.querySelector('.bop-nyli-zones');
+  NY_ZONES.forEach(function(z){
+    var b=document.createElement('button');
+    b.type='button';b.className='bop-nyli-zone';
+    if(z.dest==='__strong__')b.classList.add('bop-nyli-zone-strong');
+    b.innerHTML='<strong>'+z.label+'</strong><span>'+z.sub+'</span>';
+    b.addEventListener('click',function(){
+      if(z.dest==='__strong__'){openStrong(p);return;}
+      var tile=gateway.querySelector('.bop-ny-gateway-tile[data-ny-destination="'+z.dest+'"]');
+      if(tile)tile.click();
+    });
+    zwrap.appendChild(b);
+  });
+  var list=p.querySelector('.bop-nyli-strong-list');
+  STRONG_PICKS.forEach(function(r){
+    var row=document.createElement('div');
+    row.className='bop-nyli-strong-row';
+    row.innerHTML='<strong>'+r[0]+'</strong><em>'+r[1]+'</em><span>'+r[2]+'</span>';
+    list.appendChild(row);
+  });
+  p.querySelector('.bop-nyli-strong-back').addEventListener('click',function(){closeStrong(p);});
+  p.querySelector('.bop-nyli-strong-full').addEventListener('click',function(){
+    var tile=gateway.querySelector('.bop-ny-gateway-tile[data-ny-destination="hamptons"]');
+    if(tile)tile.click();
+  });
+}
+function openStrong(p){
+  p.querySelector('.bop-nyli-stage').style.display='none';
+  p.querySelector('.bop-nyli-intro').style.display='none';
+  p.querySelector('.bop-nyli-strong').hidden=false;
+  p.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeStrong(p){
+  p.querySelector('.bop-nyli-strong').hidden=true;
+  p.querySelector('.bop-nyli-stage').style.display='';
+  p.querySelector('.bop-nyli-intro').style.display='';
+}
+
+/* ---------- 2. FOUNDERS LABEL + STORY ---------- */
+function foundersTouch(){
+  var brad=document.getElementById('founderPhotoBrad');
+  if(brad&&!document.getElementById('bopFoundersRowLabel')){
+    var row=brad.parentNode&&brad.parentNode.parentNode; /* flex row holding all three columns */
+    if(row&&row.parentNode){
+      var lab=document.createElement('div');
+      lab.id='bopFoundersRowLabel';
+      lab.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.3l5-.7z" fill="none" stroke="#F59E0B" stroke-width="1.4" stroke-linejoin="round"/></svg><span>Founders</span>';
+      row.parentNode.insertBefore(lab,row.nextSibling);
+    }
+  }
+  var overlay=document.getElementById('aboutUsOverlay');
+  if(overlay&&!overlay.dataset.bopStoryV265){
+    var paras=overlay.querySelectorAll('p');
+    for(var i=0;i<paras.length;i++){
+      if(paras[i].textContent.indexOf('Julius Caesar was a Roman general')!==-1){
+        paras[i].textContent='More than ten years ago, three guys from three very different corners of the world crossed paths in Las Vegas. Different backgrounds, different accents, different everything \u2014 except one thing: food. It became the common ground, then the mission. Eat everywhere. The $2 counter and the Michelin star. The best meals of our lives and a few of the worst. Every list on this site was earned one plate at a time.';
+        overlay.dataset.bopStoryV265='1';
+        break;
+      }
+    }
+  }
+}
+
+ready(function(){
+  buildNYMap();foundersTouch();
+  setTimeout(function(){buildNYMap();foundersTouch();},900);
+  document.addEventListener('click',function(){setTimeout(function(){buildNYMap();foundersTouch();},150);},true);
+});
+})();
+
+</script>
 </body></html>
