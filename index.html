@@ -41540,4 +41540,199 @@ ready(function(){
 })();
 
 </script>
+
+<style id="bop-music-corner-and-promo-race-v266">
+/* v266: corner music toggle + promo race fix */
+#bopMusicCorner{
+  position:fixed;bottom:14px;right:14px;z-index:2147482000;
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:50%;
+  border:1.5px solid #F59E0B;background:#0a0a0a;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  animation:bjsFaintPulse 4s ease-in-out infinite;
+}
+#bopMusicCorner svg{width:26px;height:26px;display:block}
+#bopMusicCorner .bop-music-slash{display:none}
+#bopMusicCorner.bop-music-muted .bop-music-note{opacity:.38}
+#bopMusicCorner.bop-music-muted .bop-music-slash{display:block}
+/* On the home page the BJS mark owns the corner — music sits just beside it */
+body.bop-on-landing #bopMusicCorner{right:66px}
+/* Never show it on the invitation gate */
+html.bop-invite-active #bopMusicCorner{display:none}
+/* The old in-page toggle stays in the DOM as the wiring target, but the
+   corner button is now the one visible control */
+#bestOfOverlay>.site-sound-toggle{opacity:0!important;pointer-events:none!important}
+
+</style>
+<script id="bop-music-corner-and-promo-race-v266-script">
+(function(){
+/* v266: corner music toggle on every page (beside BJS on the home page,
+   alone everywhere else) + PROMO VIDEO race fix. The corner button proxies
+   clicks to the existing #bestOfOverlay sound toggle so the v263 music
+   controller stays the single source of truth. */
+function muted(){try{return localStorage.getItem('bop-music-muted-v1')==='yes'}catch(_e){return false}}
+function proxyToggle(){
+  var best=document.getElementById('bestOfOverlay');
+  if(!best)return;
+  var t=best.querySelector(':scope > .site-sound-toggle');
+  if(!t){t=document.createElement('button');t.type='button';t.className='site-sound-toggle';best.appendChild(t);}
+  t.click();
+}
+function render(){
+  var b=document.getElementById('bopMusicCorner');
+  if(!b)return;
+  b.classList.toggle('bop-music-muted',muted());
+  b.setAttribute('aria-pressed',muted()?'true':'false');
+  b.setAttribute('aria-label',muted()?'Turn music on':'Turn music off');
+  b.title=muted()?'Turn music on':'Turn music off';
+}
+function landingOpen(){
+  var l=document.getElementById('bopLandingOverlay');
+  return !!(l&&l.classList.contains('open'));
+}
+function place(){
+  document.body.classList.toggle('bop-on-landing',landingOpen());
+}
+function install(){
+  if(document.getElementById('bopMusicCorner')){place();render();return;}
+  if(!document.body)return;
+  var b=document.createElement('button');
+  b.type='button';b.id='bopMusicCorner';
+  b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+
+    '<path class="bop-music-note" d="M9 18.5V6.2l9-2v10.8" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle class="bop-music-note" cx="6.8" cy="18.5" r="2.4" fill="#F59E0B"/>'+
+    '<circle class="bop-music-note" cx="15.8" cy="15" r="2.4" fill="#F59E0B"/>'+
+    '<line class="bop-music-slash" x1="4" y1="4" x2="20" y2="20" stroke="#E4002B" stroke-width="2.2" stroke-linecap="round"/>'+
+  '</svg>';
+  b.addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();
+    proxyToggle();
+    setTimeout(render,60);
+  });
+  document.body.appendChild(b);
+  var landing=document.getElementById('bopLandingOverlay');
+  if(landing){new MutationObserver(place).observe(landing,{attributes:true,attributeFilter:['class']});}
+  place();render();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+document.addEventListener('click',function(){setTimeout(function(){install();place();render();},120);},true);
+
+/* ---- PROMO VIDEO race fix: if the video controller isn't awake yet when
+   the gate button is tapped, wait for it and open the video the moment it
+   exists instead of stranding the visitor on the city splash. ---- */
+(function(){
+  function arm(){
+    var pb=document.getElementById('bopExclusivePromo');
+    if(!pb||pb.dataset.bopPromoRaceFix)return;
+    pb.dataset.bopPromoRaceFix='1';
+    pb.addEventListener('click',function(){
+      if(typeof window.bopOpenLVPromo==='function')return; /* normal path already handles it */
+      var tries=0;
+      var t=setInterval(function(){
+        tries++;
+        if(typeof window.bopOpenLVPromo==='function'){clearInterval(t);window.bopOpenLVPromo();}
+        else if(tries>150){clearInterval(t);}
+      },100);
+    });
+  }
+  arm();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',arm);
+})();
+})();
+
+</script>
+
+<style id="bop-corner-music-and-promo-fix-v266">
+/* v266: corner music toggle + hide the old inner-page toggle it replaces */
+#bestOfOverlay>.site-sound-toggle{display:none!important}
+#bopMusicCorner{position:fixed;right:18px;bottom:18px;z-index:2147483612;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1.5px solid #F59E0B;background:rgba(6,6,8,.9);color:#F59E0B;font-size:17px;line-height:1;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.55);-webkit-tap-highlight-color:transparent;transition:right .25s ease,bottom .25s ease,opacity .2s ease}
+#bopMusicCorner.bop-on-landing{right:66px;bottom:14px}
+#bopMusicCorner[aria-pressed="true"]{opacity:.55;box-shadow:none}
+#bopMusicCorner.bop-hidden{opacity:0;pointer-events:none}
+
+</style>
+<script id="bop-corner-music-and-promo-fix-v266-script">
+(function(){
+/* v266: universal corner music toggle (beside BJS on the landing page, alone
+   everywhere else) + PROMO VIDEO click resilience on the invitation gate. */
+
+/* ---------- 1. CORNER MUSIC TOGGLE ---------- */
+function isMuted(){try{return localStorage.getItem('bop-music-muted-v1')==='yes'}catch(_e){return false}}
+function sourceToggle(){return document.querySelector('#bestOfOverlay>.site-sound-toggle');}
+function makeBtn(){
+  if(document.getElementById('bopMusicCorner'))return document.getElementById('bopMusicCorner');
+  var b=document.createElement('button');
+  b.type='button';b.id='bopMusicCorner';
+  b.addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();
+    var src=sourceToggle();
+    if(src){src.click();}
+    else{
+      /* fallback: drive the audio directly with the same storage key */
+      var muted=!isMuted();
+      try{localStorage.setItem('bop-music-muted-v1',muted?'yes':'no')}catch(_e){}
+      var a=document.getElementById('bopBgMusic');
+      if(a){if(muted)a.pause();else a.play().catch(function(){});}
+    }
+    setTimeout(sync,60);
+  });
+  document.body.appendChild(b);
+  return b;
+}
+function landingVisible(){
+  var landing=document.getElementById('bopLandingOverlay');
+  var best=document.getElementById('bestOfOverlay');
+  if(!landing)return false;
+  var bestOpen=best&&best.classList.contains('open');
+  var landingShown=landing.classList.contains('open')||(landing.offsetParent!==null&&getComputedStyle(landing).display!=='none');
+  return landingShown&&!bestOpen;
+}
+function gateOpen(){
+  var g=document.getElementById('bopExclusiveInvitation');
+  return !!(g&&!g.classList.contains('bop-invite-closed'));
+}
+function promoOpen(){
+  var m=document.getElementById('bopPromoModal');
+  return !!(m&&m.classList.contains('open'));
+}
+function sync(){
+  var b=makeBtn();
+  var muted=isMuted();
+  b.setAttribute('aria-pressed',muted?'true':'false');
+  b.textContent=muted?'\u2715':'\u266A';
+  b.setAttribute('aria-label',muted?'Turn music on':'Turn music off');
+  b.title=muted?'Turn music on':'Turn music off';
+  b.classList.toggle('bop-on-landing',landingVisible());
+  b.classList.toggle('bop-hidden',gateOpen()||promoOpen());
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();
+document.addEventListener('click',function(){setTimeout(sync,200);},true);
+setInterval(sync,1000);
+
+/* ---------- 2. PROMO VIDEO CLICK RESILIENCE ---------- */
+/* On this heavy page the promo player is defined late. If PROMO VIDEO is
+   tapped before window.bopOpenLVPromo exists, the gate just closes and the
+   visitor lands on the rotating city splash. Wait for the player instead. */
+var promoBtn=document.getElementById('bopExclusivePromo');
+var waiting=false;
+if(promoBtn){
+  promoBtn.addEventListener('click',function(){
+    if(typeof window.bopOpenLVPromo==='function')return; /* normal path handles it */
+    if(waiting)return;
+    waiting=true;
+    var tries=0;
+    var t=setInterval(function(){
+      tries++;
+      if(typeof window.bopOpenLVPromo==='function'){
+        clearInterval(t);waiting=false;
+        window.bopOpenLVPromo();
+      }else if(tries>150){ /* ~15s cap */
+        clearInterval(t);waiting=false;
+      }
+    },100);
+  },true);
+}
+})();
+
+</script>
 </body></html>
