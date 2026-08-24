@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);if(p.get('checkin')==='1'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}}catch(e){}})();</script><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
+<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);if(p.get('checkin')==='1'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}}catch(e){}})();</script><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
     --bg:#000000;
     --surface:#000000;
     --field:#000000;
@@ -28388,8 +28388,21 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   }
 
   function install(){
-    const share=document.getElementById('bopStaticShare');
-    if(share)share.addEventListener('click',shareWorldwideLanding,true);
+    // Route every page-embedded "SHARE PAGE" orb (there are several across
+    // different page templates, each historically wired to its own narrow
+    // handler) through the same exact-page share logic as the global
+    // button below. Delegated on document so it keeps working even when a
+    // page's orb gets recreated by that page's own render logic.
+    document.addEventListener('click', function(event){
+      const btn = event.target.closest('#bopStaticShare');
+      if(!btn) return;
+      const globalBtn = document.getElementById('globalSharePage');
+      if(globalBtn && globalBtn !== btn){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        globalBtn.click();
+      }
+    }, true);
     addZoomGuide(document);
     new MutationObserver(function(records){
       records.forEach(function(record){
@@ -40541,11 +40554,14 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-trucks-word{margin-left:-4px;color:#F59E0B;font:700 clamp(1.6rem,7vw,3rem)/.92 'Cormorant Garamond',serif;}
 .bo-ft-divider{height:2px;margin:14px 0 8px;background:#F59E0B;box-shadow:0 0 9px rgba(245,158,11,.8);}
 .bo-ft-sub{text-align:center;margin:0 0 20px;color:#F59E0B;font:900 1.2rem/1.15 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase;}
-.bo-ft-hero-word{text-align:center;margin:-6px 0 -4px;transform:translateX(22%);color:#F59E0B;font:900 clamp(1.6rem,7vw,2.6rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
+.bo-ft-hero-word{text-align:center;margin:-14px 0 -4px;color:#F59E0B;font:900 clamp(2.3rem,9.5vw,3.8rem)/1.1 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 8px rgba(245,158,11,.5);}
 .bo-ft-drive-truck{width:clamp(30px,9vw,46px);height:clamp(30px,9vw,46px);margin:0 -4px 0 -8px;filter:drop-shadow(0 0 6px rgba(245,158,11,.6));}
 .bo-ft-drive-truck-row{text-align:center;transform:translateX(16%);margin:-6px 0 -18px;}
 .bo-ft-drive-truck-big{width:clamp(76px,21vw,113px);height:clamp(76px,21vw,113px);margin:0;filter:drop-shadow(0 0 9px rgba(245,158,11,.7));}
-#bopFoodTruckOverlay .bop-world-hero-globe{transform:scale(1.05);}
+#bopFoodTruckOverlay .bop-world-hero-globe{transform:scale(1.4);}
+#bopFoodTruckOverlay .bo-ft-drive-truck-big{width:clamp(228px,63vw,339px);height:clamp(228px,63vw,339px);margin:0 0 -6px;}
+#bopFoodTruckOverlay .bop-world-period{font-size:clamp(3.3rem,14vw,6.3rem);margin-left:-2px;}
+#bopFoodTruckOverlay .bop-world-title-line{margin-top:-14px;}
 .bo-ft-wheel{transform-box:fill-box;transform-origin:center;animation:bopFtWheelSpin .6s linear infinite;}
 @keyframes bopFtWheelSpin{to{transform:rotate(360deg);}}
 @media(prefers-reduced-motion:reduce){.bo-ft-wheel{animation:none;}}
@@ -40582,9 +40598,13 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-cta-truck{width:22px;height:22px;flex:0 0 auto;animation:bopFtCtaPulse 1.3s ease-in-out infinite;}
 @keyframes bopFtCtaPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 3px rgba(245,158,11,.6));}50%{opacity:.55;filter:drop-shadow(0 0 9px rgba(245,158,11,1));}}
 @media(prefers-reduced-motion:reduce){.bo-ft-cta-truck{animation:none;}}
-.bo-ft-qr-wrap{display:block;width:min(140px,40%);margin:16px auto 0;text-align:center;cursor:pointer;}
+.bo-ft-qr-row{display:flex;align-items:flex-start;justify-content:center;gap:18px;margin:16px auto 0;}
+.bo-ft-qr-wrap{display:block;width:min(140px,40%);margin:0;text-align:center;cursor:pointer;}
 .bo-ft-qr-img{display:block;width:100%;height:auto;border:2px solid #F59E0B;border-radius:8px;background:#fff;padding:4px;box-shadow:0 0 8px rgba(245,158,11,.4);}
 .bo-ft-qr-label{margin-top:4px;color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+.bo-ft-qr-share{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:0;margin-top:10px;}
+.bo-ft-qr-share svg{width:34px;height:34px;stroke:#F59E0B;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(245,158,11,.5));}
+.bo-ft-qr-share span{color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
 .bo-ft-permanent-link{display:block;width:auto;margin:16px auto 8px;padding:6px 4px;background:none;border:none;color:#F59E0B;font:800 .8rem/1 'Archivo Narrow',sans-serif;letter-spacing:.03em;text-decoration:underline;text-align:center;cursor:pointer;}
 .bo-ft-qr-zoom-img{display:block;width:min(280px,80vw);margin:0 auto;border:3px solid #F59E0B;border-radius:12px;background:#fff;padding:10px;box-shadow:0 0 16px rgba(245,158,11,.5);}
 .bo-ft-live-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 8px;color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-shadow:0 0 8px rgba(228,0,43,.7);animation:bopFtLivePulse 1.3s ease-in-out infinite;}
@@ -40627,7 +40647,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
           '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta"><span class="bo-ft-cta-line1">Do you have a food truck?</span><span class="bo-ft-cta-line2">Click here to go live <svg class="bo-ft-cta-truck" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></span></button>'+
-          '<div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Check-in QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div>'+
+          '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Check-in QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopFtQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
           '<button type="button" class="bo-ft-permanent-link" id="bopFtPermanentLink">View All Permanent Locations &rarr;</button>'+
         '</div>';
       document.body.appendChild(page);
@@ -40638,11 +40658,26 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       });
       document.getElementById('bopFtCheckinCta').addEventListener('click', function(){ window.boOpenFoodTruckCheckin(); });
 
-      var checkinUrl = location.origin + location.pathname + '?checkin=1';
+      var vendorSignupUrl = location.origin + location.pathname + '?vendorsignup=1';
       var qrImg = document.getElementById('bopFtQrImg');
-      if(qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(checkinUrl);
+      if(qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(vendorSignupUrl);
       var qrWrap = document.getElementById('bopFtQrWrap');
-      if(qrWrap) qrWrap.addEventListener('click', function(){ window.boOpenFoodTruckQrZoom(checkinUrl); });
+      if(qrWrap) qrWrap.addEventListener('click', function(){ window.boOpenFoodTruckQrZoom(vendorSignupUrl); });
+      var qrShare = document.getElementById('bopFtQrShare');
+      if(qrShare) qrShare.addEventListener('click', async function(){
+        var data = { title: 'Become a Food Truck Vendor', text: 'Sign up your food truck on Best of Period.', url: vendorSignupUrl };
+        try{
+          if(navigator.share){ await navigator.share(data); }
+          else if(navigator.clipboard && navigator.clipboard.writeText){
+            await navigator.clipboard.writeText(vendorSignupUrl);
+            var span = qrShare.querySelector('span'); var original = span.innerHTML;
+            span.innerHTML = 'Copied!';
+            setTimeout(function(){ span.innerHTML = original; }, 1600);
+          } else {
+            prompt('Copy this link to share:', vendorSignupUrl);
+          }
+        }catch(e){ if(e && e.name !== 'AbortError') prompt('Copy this link to share:', vendorSignupUrl); }
+      });
       var permLink = document.getElementById('bopFtPermanentLink');
       if(permLink) permLink.addEventListener('click', function(){ window.boOpenFoodTruckPermanentList(); });
     }
@@ -40690,7 +40725,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<div class="bo-ftc-title">Scan To Go Live</div>'+
+          '<div class="bo-ftc-title">Scan To Sign Up</div>'+
           '<img class="bo-ft-qr-zoom-img" id="bopFtQrZoomImg" alt="Check-in QR code" />'+
         '</div>';
       document.body.appendChild(page);
@@ -40950,6 +40985,19 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         try{ sessionStorage.removeItem('bop-checkin-pass'); }catch(e2){}
         setTimeout(function(){ window.boOpenFoodTruckCheckin(); }, 250);
       }
+      var vendorRequested = window.__BOP_VENDORSIGNUP_REQUESTED === true
+        || p.get('vendorsignup')==='1'
+        || sessionStorage.getItem('bop-vendorsignup-pass')==='1';
+      if(vendorRequested){
+        try{ sessionStorage.removeItem('bop-vendorsignup-pass'); }catch(e3){}
+        setTimeout(function(){
+          if(typeof openOverlay === 'function'){
+            openOverlay('vendorOverlay');
+            var field = document.querySelector('#vendorOverlay .vendor-email');
+            if(field) setTimeout(function(){ field.focus(); }, 80);
+          }
+        }, 250);
+      }
     }catch(e){}
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', checkCheckinParam); else checkCheckinParam();
@@ -40966,8 +41014,14 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     var autoOpenedForThisContext = false;
 
     function isOnLasVegas(){
-      // This app's default / home context is Las Vegas ('bestof').
-      return (typeof boCityContext === 'undefined') || boCityContext === 'bestof';
+      // Vegas is this app's default city, so boCityContext alone reads
+      // 'bestof' even on the general landing page before anyone has
+      // actually opened the Vegas page. Require the Vegas page itself to
+      // be visibly open, not just selected in the background.
+      var isVegasContext = (typeof boCityContext === 'undefined') || boCityContext === 'bestof';
+      if(!isVegasContext) return false;
+      var bestOf = document.getElementById('bestOfOverlay');
+      return !!(bestOf && bestOf.classList.contains('open'));
     }
     function closeModal(){
       modal.classList.remove('open');
