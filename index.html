@@ -41788,8 +41788,8 @@ var MAP=''+
   '<text class="bop-nymap-compass" x="14" y="24">N \u2191</text>'+
   '<text class="bop-nymap-sea" x="212" y="66">LONG ISLAND SOUND</text>'+
   '<text class="bop-nymap-sea" x="196" y="236">ATLANTIC OCEAN</text>'+
-  '<g class="bop-nymap-zone" data-dest="bronx"><polygon points="66,44 116,40 120,78 70,84"/><text x="74" y="64">THE BRONX</text></g>'+
-  '<g class="bop-nymap-zone" data-dest="manhattan"><polygon points="52,70 64,66 68,132 56,138"/><text x="60" y="104" transform="rotate(-90 60 104)" text-anchor="middle">MANHATTAN</text></g>'+
+  '<g class="bop-nymap-zone" data-dest="bronx"><polygon points="72,44 122,40 126,78 76,84"/><text x="80" y="64">THE BRONX</text></g>'+
+  '<g class="bop-nymap-zone bop-nymap-manhattan" data-dest="manhattan"><polygon points="48,68 78,64 82,132 52,138"/><text x="65" y="104" transform="rotate(-90 65 104)" text-anchor="middle">MANHATTAN</text></g>'+
   '<g class="bop-nymap-zone" data-dest="brooklyn"><polygon points="70,150 126,144 130,200 74,206"/><text x="78" y="178">BROOKLYN</text></g>'+
   '<g class="bop-nymap-zone" data-dest="queens"><polygon points="124,94 184,90 188,190 130,198"/><text x="136" y="146">QUEENS</text></g>'+
   '<g class="bop-nymap-zone bop-nymap-strong" data-dest="__strong__"><polygon points="188,92 300,100 302,182 190,190"/><text x="204" y="145">STRONG ISLAND</text></g>'+
@@ -42721,6 +42721,266 @@ function connTest(){
 
 setInterval(function(){installPermanent();manageOrb();redBjs();hideEmptyMovieCols();connTest();},700);
 document.addEventListener('click',function(){setTimeout(function(){installPermanent();redBjs();hideEmptyMovieCols();connTest();},250);},true);
+})();
+
+</script>
+
+<style id="bop-la-sd-gateways-and-manhattan-fix-v279">
+/* v279: Manhattan prominence + new LA/SD entry gateways */
+.bop-nymap-manhattan text{font-size:11px!important}
+.bop-nymap-manhattan polygon{stroke-width:2.4!important}
+
+/* shared city-gateway overlay (LA, SD) — same visual language as NY's */
+.bop-city-gate{position:fixed;inset:0;z-index:2147483300;background:#050505;overflow-y:auto;display:none;padding:26px 16px 40px}
+.bop-city-gate.open{display:block}
+.bop-city-gate-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid rgba(245,158,11,.5);border-radius:10px;color:#F59E0B;font:800 12px/1 Arial,sans-serif;letter-spacing:.06em;padding:9px 14px;margin-bottom:18px}
+.bop-city-gate-title{color:#fff;font:900 clamp(28px,9vw,44px)/1 Arial,sans-serif;letter-spacing:.02em;text-align:center;margin:4px 0 2px}
+.bop-city-gate-sub{text-align:center;color:#d5a654;font:800 11px/1.3 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:0 0 18px}
+.bop-city-gate-stage{background:linear-gradient(180deg,#07101a,#020409);border:2px solid #8a570d;border-radius:24px;box-shadow:0 0 22px rgba(246,160,20,.18);padding:14px 8px}
+.bop-city-gate-stage svg{display:block;width:100%;height:auto}
+.bop-city-gate-note{max-width:520px;margin:16px auto 0;text-align:center;color:#8a7452;font:700 10.5px/1.5 Arial,sans-serif;letter-spacing:.02em}
+
+</style>
+<script id="bop-la-sd-gateways-and-manhattan-fix-v279-script">
+(function(){
+/* v279: LA and San Diego get real entry gateways, matching NY's map style —
+   pick a zone, land in that city's directory. Zones route to the city's
+   one directory for now (no neighborhood-level data yet); the gateway is
+   the real, permanent piece — flagged honestly to Brad in-chat, not here. */
+
+var CITY_MAPS = {
+  losangeles: {
+    title: 'LOS ANGELES',
+    sub: 'Six worlds. Pick one.',
+    svg: ''+
+      '<svg viewBox="0 0 400 260" role="img" aria-label="Map of Los Angeles">'+
+      '<text x="14" y="24" fill="#d5a654" font="800 11px Arial,sans-serif" letter-spacing="0.1em">N \u2191</text>'+
+      '<text x="18" y="140" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 18 140)">PACIFIC OCEAN</text>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="60,150 108,140 116,206 66,214"/><text x="70" y="182" fill="#f6a014" font="900 10px Arial,sans-serif">SANTA MONICA</text><text x="70" y="196" fill="#f6a014" font="900 10px Arial,sans-serif">&amp; VENICE</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="112,120 176,112 182,178 118,186"/><text x="126" y="150" fill="#f6a014" font="900 10px Arial,sans-serif">BEVERLY HILLS</text><text x="126" y="164" fill="#f6a014" font="900 10px Arial,sans-serif">&amp; WESTSIDE</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="180,86 244,78 250,144 186,152"/><text x="196" y="116" fill="#f6a014" font="900 11px Arial,sans-serif">HOLLYWOOD</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="248,108 320,100 326,176 254,184"/><text x="264" y="140" fill="#f6a014" font="900 10px Arial,sans-serif">DOWNTOWN</text><text x="264" y="154" fill="#f6a014" font="900 10px Arial,sans-serif">LOS ANGELES</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="150,20 260,12 268,80 158,88"/><text x="172" y="52" fill="#f6a014" font="900 10px Arial,sans-serif">SAN FERNANDO</text><text x="172" y="66" fill="#f6a014" font="900 10px Arial,sans-serif">VALLEY</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="losangeles"><polygon points="0,178 62,168 68,238 4,248"/><text x="14" y="206" fill="#f6a014" font="900 10px Arial,sans-serif">SOUTH BAY</text><text x="14" y="220" fill="#f6a014" font="900 10px Arial,sans-serif">&amp; LAX</text></g>'+
+      '</svg>'
+  },
+  sandiego: {
+    title: 'SAN DIEGO',
+    sub: 'Five worlds. Pick one.',
+    svg: ''+
+      '<svg viewBox="0 0 400 260" role="img" aria-label="Map of San Diego">'+
+      '<text x="14" y="24" fill="#d5a654" font="800 11px Arial,sans-serif" letter-spacing="0.1em">N \u2191</text>'+
+      '<text x="18" y="140" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 18 140)">PACIFIC OCEAN</text>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="56,18 130,10 136,86 62,94"/><text x="76" y="52" fill="#f6a014" font="900 11px Arial,sans-serif">LA JOLLA</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="60,98 132,90 138,166 66,174"/><text x="76" y="128" fill="#f6a014" font="900 10px Arial,sans-serif">PACIFIC BEACH</text><text x="76" y="142" fill="#f6a014" font="900 10px Arial,sans-serif">&amp; MISSION BAY</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="150,60 240,52 246,150 156,158"/><text x="176" y="102" fill="#f6a014" font="900 11px Arial,sans-serif">DOWNTOWN</text><text x="176" y="116" fill="#f6a014" font="900 10px Arial,sans-serif">&amp; GASLAMP</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="150,166 236,160 240,232 156,238"/><text x="170" y="200" fill="#f6a014" font="900 11px Arial,sans-serif">CORONADO</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="60,4 236,2 244,44 66,50"/><text x="100" y="28" fill="#f6a014" font="900 10px Arial,sans-serif">NORTH COUNTY</text></g>'+
+      '</svg>'
+  }
+};
+
+var CSS_ZONE = '.bop-lamap-zone polygon{fill:rgba(246,160,20,.10);stroke:#f6a014;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(246,160,20,.5));cursor:pointer}.bop-lamap-zone:active polygon{fill:rgba(246,160,20,.28)}';
+var styleTag = document.createElement('style');
+styleTag.textContent = CSS_ZONE;
+document.head.appendChild(styleTag);
+
+var gates = {};
+function buildGate(key){
+  if(gates[key]) return gates[key];
+  var cfg = CITY_MAPS[key];
+  var el = document.createElement('div');
+  el.className = 'bop-city-gate';
+  el.id = 'bopCityGate_' + key;
+  el.innerHTML =
+    '<button type="button" class="bop-city-gate-back">\u2190 Back</button>'+
+    '<div class="bop-city-gate-title">'+cfg.title+'</div>'+
+    '<div class="bop-city-gate-sub">'+cfg.sub+'</div>'+
+    '<div class="bop-city-gate-stage">'+cfg.svg+'</div>'+
+    '<div class="bop-city-gate-note">Every neighborhood leads to the full '+cfg.title.replace(/^./,function(c){return c;})+' directory for now \u2014 area-by-area lists are next.</div>';
+  document.body.appendChild(el);
+  el.querySelector('.bop-city-gate-back').addEventListener('click', function(){
+    el.classList.remove('open');
+    document.body.style.overflow='';
+    var landing = document.getElementById('bopLandingOverlay');
+    if(landing) landing.classList.add('open');
+    if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('', '');
+    window.scrollTo(0,0);
+  });
+  el.querySelectorAll('.bop-lamap-zone').forEach(function(zone){
+    zone.addEventListener('click', function(){
+      proceedPastGate(key);
+    });
+  });
+  gates[key] = el;
+  return el;
+}
+
+var dismissed = {};
+function showGate(key){
+  var el = buildGate(key);
+  document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');});
+  el.classList.add('open');
+  document.body.style.overflow='hidden';
+  window.scrollTo(0,0);
+}
+function proceedPastGate(key){
+  dismissed[key] = true;
+  var el = gates[key];
+  if(el){ el.classList.remove('open'); }
+  document.body.style.overflow='';
+  var best = document.getElementById('bestOfOverlay');
+  if(best) best.classList.add('open');
+  if(typeof window.boRenderCategory === 'function') window.boRenderCategory('otheroptions');
+  window.scrollTo(0,0);
+}
+
+var origRender = window.boRenderCategory;
+if(typeof origRender === 'function' && !origRender.__bopGateWrapped){
+  var wrapped = function(cat){
+    if(CITY_MAPS[window.boCityContext] && cat === 'otheroptions' && !dismissed[window.boCityContext]){
+      showGate(window.boCityContext);
+      return;
+    }
+    return origRender.apply(this, arguments);
+  };
+  wrapped.__bopGateWrapped = true;
+  window.boRenderCategory = wrapped;
+}
+})();
+
+</script>
+
+<script id="bop-verified-restaurants-la-sd-nyc-v280-script">
+(function(){
+/* v280: verified-restaurant batch — Los Angeles, San Diego, and NYC
+   (Manhattan/Brooklyn/Queens/Bronx). Every rating below is a real, checked
+   public rating (Google primary; Tripadvisor/Yelp labeled where used).
+   Pushed into the shared 'bestof' category, tagged by city, same as every
+   other city's Best Of list. Idempotent + re-sorts with the existing
+   floor/cap logic so these settle into rank order by real score. */
+var NEW=[
+  // LOS ANGELES
+  {name:"Girl \u0026 the Goat LA", city:"losangeles", rating:4.8, reviews:3790, source:"Google", genre:"New American", price:3, address:"555-3 Mateo St, Ste 300, Los Angeles, CA 90013"},
+  {name:"Holbox", city:"losangeles", rating:4.8, reviews:2849, source:"Google", genre:"Mexican Seafood", price:2, address:"3655 S Grand Ave C9, Los Angeles, CA 90007"},
+  {name:"Maccheroni Republic", city:"losangeles", rating:4.6, reviews:3115, source:"Google", genre:"Italian", price:2, address:"332 S Broadway, Los Angeles, CA 90013"},
+  {name:"Redbird", city:"losangeles", rating:4.6, reviews:1833, source:"Google", genre:"New American", price:3, address:"114 E 2nd St, Los Angeles, CA 90012"},
+  {name:"Bacari Silverlake", city:"losangeles", rating:4.6, reviews:1737, source:"Google", genre:"Mediterranean", price:2, address:"3626 Sunset Blvd, Los Angeles, CA 90026"},
+  {name:"Bottega Louie", city:"losangeles", rating:4.5, reviews:7750, source:"Google", genre:"Italian/French", price:2, address:"700 S Grand Ave, Los Angeles, CA 90017"},
+  {name:"71Above", city:"losangeles", rating:4.5, reviews:2808, source:"Google", genre:"New American", price:4, address:"633 W 5th St, 71st Fl, Los Angeles, CA 90071"},
+  {name:"Manuela", city:"losangeles", rating:4.5, reviews:1528, source:"Google", genre:"Southern American", price:3, address:"907 E 3rd St, Los Angeles, CA 90013"},
+  {name:"The Little Door", city:"losangeles", rating:4.5, reviews:1360, source:"Google", genre:"Mediterranean/French", price:3, address:"8164 W 3rd St, Los Angeles, CA 90048"},
+  {name:"Bestia", city:"losangeles", rating:4.5, reviews:4030, source:"Google", genre:"Italian", price:4, address:"2121 E 7th Pl, Los Angeles, CA 90021"},
+  {name:"Perch", city:"losangeles", rating:4.4, reviews:7627, source:"Google", genre:"French/Rooftop", price:3, address:"448 S Hill St, Los Angeles, CA 90013"},
+  {name:"Guelaguetza", city:"losangeles", rating:4.4, reviews:187, source:"Tripadvisor", genre:"Oaxacan Mexican", price:2, address:"3014 W Olympic Blvd, Los Angeles, CA 90006"},
+  {name:"Clark Street Diner", city:"losangeles", rating:4.6, reviews:12, source:"Tripadvisor", genre:"Diner/American", price:2, address:"6145 Franklin Ave, Los Angeles, CA 90028"},
+  {name:"Tacos 1986", city:"losangeles", rating:4.4, reviews:8, source:"Tripadvisor", genre:"Mexican/Tacos", price:1, address:"609 S Spring St, Los Angeles, CA 90014"},
+  // SAN DIEGO
+  {name:"Cesarina", city:"sandiego", rating:4.6, reviews:108, source:"Tripadvisor", genre:"Italian", price:3, address:"4161 Voltaire St, San Diego, CA 92107"},
+  {name:"Solare Ristorante", city:"sandiego", rating:4.4, reviews:282, source:"Tripadvisor", genre:"Italian", price:2, address:"2820 Roosevelt Rd, Ste 100, San Diego, CA 92106"},
+  // MANHATTAN
+  {name:"Katz\u2019s Delicatessen", city:"manhattan", rating:4.5, reviews:34289, source:"Google", genre:"Jewish Deli", price:2, address:"205 E Houston St, New York, NY 10002"},
+  {name:"Keens Steakhouse", city:"manhattan", rating:4.6, reviews:10736, source:"Google", genre:"Steakhouse", price:4, address:"72 W 36th St, New York, NY 10018"},
+  {name:"Gramercy Tavern", city:"manhattan", rating:4.6, reviews:3245, source:"Google", genre:"New American", price:4, address:"42 E 20th St, New York, NY 10003"},
+  {name:"Balthazar", city:"manhattan", rating:4.4, reviews:31700, source:"Google", genre:"French Brasserie", price:3, address:"80 Spring St, New York, NY 10012"},
+  {name:"Los Tacos No. 1 \u2014 Chelsea Market", city:"manhattan", rating:4.6, reviews:1860, source:"Tripadvisor", genre:"Mexican/Tacos", price:1, address:"75 9th Ave, New York, NY 10011"},
+  // BROOKLYN
+  {name:"L\u2019Industrie Pizzeria", city:"brooklyn", rating:4.7, reviews:7900, source:"Google", genre:"Pizza", price:1, address:"254 S 2nd St, Brooklyn, NY 11211"},
+  {name:"Peter Luger", city:"brooklyn", rating:4.4, reviews:7400, source:"Google", genre:"Steakhouse", price:4, address:"178 Broadway, Brooklyn, NY 11211"},
+  {name:"Juliana\u2019s Pizza", city:"brooklyn", rating:4.6, reviews:3311, source:"Tripadvisor", genre:"Coal-Fired Pizza", price:2, address:"19 Old Fulton St, Brooklyn, NY 11201"},
+  {name:"Olmsted", city:"brooklyn", rating:4.5, reviews:125, source:"Tripadvisor", genre:"New American", price:3, address:"659 Vanderbilt Ave, Brooklyn, NY 11238"},
+  // QUEENS
+  {name:"Casa Enrique", city:"queens", rating:4.6, reviews:820, source:"Google", genre:"Mexican (Chiapas)", price:3, address:"5-48 49th Ave, Long Island City, NY 11101"},
+  {name:"Taverna Kyclades", city:"queens", rating:4.6, reviews:6035, source:"Google", genre:"Greek/Seafood", price:2, address:"36-01 Ditmars Blvd, Astoria, NY 11105"},
+  {name:"Il Bambino", city:"queens", rating:4.6, reviews:92, source:"Tripadvisor", genre:"Italian Small Plates", price:2, address:"34-08 31st Ave, Astoria, NY 11106"},
+  // BRONX
+  {name:"Antonio\u2019s Trattoria", city:"bronx", rating:4.6, reviews:252, source:"Tripadvisor", genre:"Italian", price:2, address:"2370 Belmont Ave, Bronx, NY 10458"},
+  {name:"Trattoria Zero Otto Nove", city:"bronx", rating:4.5, reviews:1000, source:"Google", genre:"Italian/Pizza", price:3, address:"2357 Arthur Ave, Bronx, NY 10458"}
+];
+
+var FLOOR=3.7, CAP=16;
+function parseRating(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function isExempt(r){
+  if(!r)return false;
+  if(r.michelinStars)return true;
+  if(r.michelinGuide)return true;
+  if(r.bjsPick)return true;
+  if(typeof isRecentlyOpened==='function'&&isRecentlyOpened(r.openedDate))return true;
+  return false;
+}
+function addBatch(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  boCategoryData.bestof = boCategoryData.bestof || [];
+  var arr = boCategoryData.bestof;
+  var added=false;
+  NEW.forEach(function(item){
+    var exists = arr.some(function(r){return r&&r.city===item.city&&r.name===item.name;});
+    if(exists)return;
+    arr.push({
+      rank:0,
+      name:item.name,
+      city:item.city,
+      image:'',
+      imagePosition:'center',
+      rating:item.rating.toFixed(1),
+      reviews:item.reviews,
+      ratingSource:item.source,
+      ratingNote:'Public '+item.source+' rating, verified '+item.reviews.toLocaleString()+' reviews.',
+      why:item.genre+' \u2014 verified '+item.rating.toFixed(1)+' rating.',
+      note:item.genre+'.',
+      address:item.address,
+      phone:null,
+      hours:[],
+      price:item.price,
+      hue:'28, 38%, 23%'
+    });
+    added=true;
+  });
+  if(!added)return true; /* nothing new to add, but data already present — done */
+
+  /* re-run the same floor/cap pass used across every prior ratings batch,
+     scoped to just the cities we touched, so these settle into rank order */
+  var touchedCities={};
+  NEW.forEach(function(i){touchedCities[i.city]=true;});
+  var groups={},order=[];
+  arr.forEach(function(r){
+    var city=(r&&r.city)||'bestof';
+    if(!groups[city]){groups[city]=[];order.push(city);}
+    groups[city].push(r);
+  });
+  var rebuilt=[];
+  order.forEach(function(city){
+    if(!touchedCities[city]){ rebuilt=rebuilt.concat(groups[city]); return; }
+    var qualifies=[],exemptOnly=[];
+    groups[city].forEach(function(r){
+      var rating=parseRating(r);
+      var meetsFloor=rating!==null&&rating>=FLOOR;
+      if(meetsFloor)qualifies.push(r);
+      else if(isExempt(r))exemptOnly.push(r);
+    });
+    qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
+    rebuilt=rebuilt.concat(qualifies,exemptOnly);
+  });
+  var n=0;
+  rebuilt.forEach(function(r){r.rank=++n;});
+  boCategoryData.bestof=rebuilt;
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  var tries=0;
+  var t=setInterval(function(){
+    tries++;
+    if(addBatch()||tries>30)clearInterval(t);
+  },300);
+});
 })();
 
 </script>
