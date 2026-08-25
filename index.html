@@ -42102,4 +42102,224 @@ ready(function(){
 })();
 
 </script>
+
+<script id="bop-verified-ratings-batch3-v272-script">
+(function(){
+/* v272: real verified ratings, batch 3. Same idempotent pattern as v270/v271. */
+var VERIFIED=[
+  {name:"Rubirosa", rating:4.6, reviews:6254, source:"Google"}
+];
+var FLOOR=3.7, CAP=16;
+function parseRating(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function isExempt(r){
+  if(!r)return false;
+  if(r.michelinStars)return true;
+  if(r.michelinGuide)return true;
+  if(r.bjsPick)return true;
+  if(typeof isRecentlyOpened==='function'&&isRecentlyOpened(r.openedDate))return true;
+  return false;
+}
+function applyVerified(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  var applied=false;
+  var byLower={};
+  VERIFIED.forEach(function(v){byLower[v.name.toLowerCase()]=v;});
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr))return;
+    arr.forEach(function(r){
+      if(!r||!r.name)return;
+      var hit=byLower[String(r.name).toLowerCase()];
+      if(!hit)return;
+      if(r.rating===hit.rating+'')return;
+      r.rating=hit.rating.toFixed(1);
+      r.reviews=hit.reviews;
+      r.ratingSource=hit.source;
+      r.ratingNote='Public '+hit.source+' rating, verified '+hit.reviews.toLocaleString()+' reviews.';
+      if(r.note&&/score pending|hasn.t claimed/i.test(r.note)){
+        r.note=r.note.replace(/Aggregate public rating is not displayed until independently verified at 4\.8 or 4\.9\.?/i,'').trim();
+      }
+      applied=true;
+    });
+  });
+  if(!applied)return false;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr)||!arr.length)return;
+    var isAwardPage=(cat==='michelin'||cat==='jamesbeard');
+    var groups={},order=[];
+    arr.forEach(function(r){
+      var city=(r&&r.city)||'bestof';
+      if(!groups[city]){groups[city]=[];order.push(city);}
+      groups[city].push(r);
+    });
+    var rebuilt=[];
+    order.forEach(function(city){
+      var qualifies=[],exemptOnly=[];
+      groups[city].forEach(function(r){
+        var rating=parseRating(r);
+        var meetsFloor=rating!==null&&rating>=FLOOR;
+        if(meetsFloor)qualifies.push(r);
+        else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+      });
+      qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
+      rebuilt=rebuilt.concat(qualifies,exemptOnly);
+    });
+    var n=0;
+    rebuilt.forEach(function(r){r.rank=++n;});
+    boCategoryData[cat]=rebuilt;
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  var tries=0;
+  var t=setInterval(function(){
+    tries++;
+    if(applyVerified()||tries>30)clearInterval(t);
+  },300);
+});
+})();
+
+</script>
+
+<script id="bop-verified-ratings-batch4-v273-script">
+(function(){
+/* v273: verified ratings batch (pizza/bagel, multi-city research pass) +
+   data hygiene: remove a confirmed-closed listing and a listing whose
+   address does not correspond to a real business. Same idempotent
+   floor/cap re-sort pattern as v270-v272. */
+var VERIFIED=[
+  {name:"Firewall Food Stop", city:"atlanta", rating:4.8, reviews:200, source:"Google"},
+  {name:"Empire Bagels", city:"bronx", rating:4.1, reviews:269, source:"Google"},
+  {name:"Pugsley Pizza", city:"bronx", rating:4.6, reviews:231, source:"Google"},
+  {name:"Di Fara Pizza", city:"brooklyn", rating:4.0, reviews:455, source:"Tripadvisor"},
+  {name:"Lucali", city:"brooklyn", rating:4.2, reviews:235, source:"Tripadvisor"},
+  {name:"Shelsky\u2019s of Brooklyn", city:"brooklyn", rating:4.5, reviews:309, source:"Google"},
+  {name:"Spacca Napoli Pizzeria", city:"chicago", rating:4.7, reviews:2021, source:"Google"},
+  {name:"Goldberg\u2019s Famous Bagels \u2014 East Hampton", city:"hamptons", rating:4.2, reviews:98, source:"Tripadvisor"},
+  {name:"Lulu\u2019s Fine Pizza & Sushi", city:"idaho", rating:4.4, reviews:147, source:"Google"},
+  {name:"L\u2019Antica Pizzeria da Michele \u2014 Baker Street", city:"london", rating:4.1, reviews:9175, source:"Google"},
+  {name:"Denino\u2019s Greenwich Village", city:"manhattan", rating:4.5, reviews:662, source:"Google"},
+  {name:"East Village Pizza", city:"manhattan", rating:4.6, reviews:2044, source:"Google"},
+  {name:"Ess-a-Bagel", city:"manhattan", rating:4.5, reviews:4500, source:"Google"},
+  {name:"Frenchette", city:"manhattan", rating:4.3, reviews:2238, source:"Google"},
+  {name:"Margot\u2019s Pizza", city:"neworleans", rating:4.7, reviews:277, source:"Google"},
+  {name:"Utopia Bagels", city:"queens", rating:4.5, reviews:4424, source:"Google"},
+  {name:"Pizza Port Ocean Beach", city:"sandiego", rating:4.6, reviews:314, source:"Google"},
+  {name:"Pizzeria Delfina \u2014 Mission", city:"sanfrancisco", rating:4.2, reviews:2340, source:"Yelp"},
+  {name:"Pupatella \u2014 Capitol Hill", city:"washingtondc", rating:4.1, reviews:58, source:"Yelp"},
+  {name:"Bagel Oasis", city:"queens", rating:4.5, reviews:61, source:"Tripadvisor"},
+  {name:"Bagel Hole", city:"brooklyn", rating:4.5, reviews:37, source:"Tripadvisor"}
+];
+/* Confirmed closed (Dec 2024, DOH closure) — pull from listings entirely. */
+var CLOSED=[{name:"Absolute Bagels", city:"manhattan"}];
+/* Address verified not to correspond to a real business at that location —
+   pull rather than publish a bad listing. */
+var INVALID=[{name:"Hampton Bagels", city:"hamptons"}];
+
+var FLOOR=3.7, CAP=16;
+function parseRating(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function isExempt(r){
+  if(!r)return false;
+  if(r.michelinStars)return true;
+  if(r.michelinGuide)return true;
+  if(r.bjsPick)return true;
+  if(typeof isRecentlyOpened==='function'&&isRecentlyOpened(r.openedDate))return true;
+  return false;
+}
+function nameMatch(r,name){return r&&r.name&&String(r.name).toLowerCase()===name.toLowerCase();}
+
+function applyBatch(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  var applied=false;
+  var byKey={};
+  VERIFIED.forEach(function(v){byKey[v.city+'|'+v.name.toLowerCase()]=v;});
+
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr))return;
+
+    /* removals first */
+    for(var i=arr.length-1;i>=0;i--){
+      var r=arr[i];
+      if(!r)continue;
+      var isClosed=CLOSED.some(function(c){return nameMatch(r,c.name)&&(!c.city||r.city===c.city);});
+      var isInvalid=INVALID.some(function(c){return nameMatch(r,c.name)&&(!c.city||r.city===c.city);});
+      if(isClosed||isInvalid){arr.splice(i,1);applied=true;}
+    }
+
+    /* apply verified ratings */
+    arr.forEach(function(r){
+      if(!r||!r.name)return;
+      var key=(r.city||'')+'|'+String(r.name).toLowerCase();
+      var hit=byKey[key];
+      if(!hit)return;
+      if(r.rating===hit.rating+'')return;
+      r.rating=hit.rating.toFixed(1);
+      r.reviews=hit.reviews;
+      r.ratingSource=hit.source;
+      r.ratingNote='Public '+hit.source+' rating, verified '+hit.reviews.toLocaleString()+' reviews.';
+      if(r.note&&/score pending|hasn.t claimed/i.test(r.note)){
+        r.note=r.note.replace(/Aggregate public rating is not displayed until independently verified at 4\.8 or 4\.9\.?/i,'').trim();
+      }
+      applied=true;
+    });
+  });
+  if(!applied)return false;
+
+  /* re-run floor/cap so newly-rated and newly-removed records settle */
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr)||!arr.length)return;
+    var isAwardPage=(cat==='michelin'||cat==='jamesbeard');
+    var groups={},order=[];
+    arr.forEach(function(r){
+      var city=(r&&r.city)||'bestof';
+      if(!groups[city]){groups[city]=[];order.push(city);}
+      groups[city].push(r);
+    });
+    var rebuilt=[];
+    order.forEach(function(city){
+      var qualifies=[],exemptOnly=[];
+      groups[city].forEach(function(r){
+        var rating=parseRating(r);
+        var meetsFloor=rating!==null&&rating>=FLOOR;
+        if(meetsFloor)qualifies.push(r);
+        else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+      });
+      qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
+      rebuilt=rebuilt.concat(qualifies,exemptOnly);
+    });
+    var n=0;
+    rebuilt.forEach(function(r){r.rank=++n;});
+    boCategoryData[cat]=rebuilt;
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  var tries=0;
+  var t=setInterval(function(){
+    tries++;
+    if(applyBatch()||tries>30)clearInterval(t);
+  },300);
+});
+})();
+
+</script>
 </body></html>
