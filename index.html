@@ -42527,4 +42527,65 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 
 </script>
+
+<style id="bop-closest5-cleanup-and-wait-orb-v277">
+/* v277: Closest 5 cleanup, entry wait-orb, trucks hero tune */
+
+/* kill the floating 60-seconds + LOCATING lines on Closest 5 */
+#boClosestFiveLoadNotice{display:none!important}
+
+/* trucks hero: globe -10%, nudge globe/truck/Period right */
+@keyframes bopFoodTruckGlobeTurn{from{transform:scale(1.44) rotate(0deg)}to{transform:scale(1.44) rotate(360deg)}}
+#bopFoodTruckOverlay .bop-world-hero-globe{margin-left:18px}
+#bopFoodTruckOverlay .bop-world-title-line{transform:translateX(12px)}
+.bo-ft-drive-truck-row{transform:translateX(calc(12% + 12px)) translateY(-16px)!important;margin:-6px 0 -4px!important;}
+
+/* BJS seal inside the Closest 5 heading */
+#bopClosest5Heading svg{width:26px;height:26px;vertical-align:-7px;margin:0 2px;filter:drop-shadow(0 0 5px rgba(245,158,11,.5))}
+
+/* one-time entry wait orb */
+#bopWaitOrb{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:2147483620;width:200px;height:200px;border-radius:50%;background:#050505;border:2.5px solid #F59E0B;display:flex;align-items:center;justify-content:center;text-align:center;padding:26px;box-sizing:border-box;color:#F59E0B;font:900 13px/1.45 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 0 24px rgba(245,158,11,.55);animation:bopWaitPulse 1.1s ease-in-out infinite;pointer-events:none}
+@keyframes bopWaitPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 20px rgba(245,158,11,.45)}50%{transform:translate(-50%,-50%) scale(1.06);box-shadow:0 0 34px rgba(245,158,11,.8)}}
+#bopWaitOrb.bop-wait-fade{opacity:0;transition:opacity .45s ease}
+
+</style>
+<script id="bop-closest5-cleanup-and-wait-orb-v277-script">
+(function(){
+/* v277: Closest 5 heading tweaks + one-time entry wait orb */
+var SEAL='<svg viewBox="0 0 40 40" aria-label="BJS CO."><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="18" text-anchor="middle" fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11">BJS</text><text x="20" y="28" text-anchor="middle" fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8">CO.</text></svg>';
+
+function tweakHeadings(){
+  var top=document.getElementById('bopClosest5Heading');
+  if(top&&!top.dataset.bopSeal){
+    top.dataset.bopSeal='1';
+    top.innerHTML='CLOSEST 5 \u2014 '+SEAL+' DIRECTORY';
+  }
+  document.querySelectorAll('.bo-near-osm-heading').forEach(function(h){
+    if(/any restaurant/i.test(h.textContent||'')){
+      h.textContent='CLOSEST NEARBY \u2014 ALL';
+    }
+  });
+}
+
+var orbShown=false;
+function entryOrb(){
+  if(orbShown)return;
+  var gate=document.getElementById('bopExclusiveInvitation');
+  var landing=document.getElementById('bopLandingOverlay');
+  var entered=(gate&&gate.classList.contains('bop-invite-closed'))||(landing&&landing.classList.contains('open'));
+  if(!entered)return;
+  orbShown=true;
+  var orb=document.createElement('div');
+  orb.id='bopWaitOrb';
+  orb.textContent='Please allow up to 60 seconds to load';
+  document.body.appendChild(orb);
+  setTimeout(function(){orb.classList.add('bop-wait-fade');},2700);
+  setTimeout(function(){if(orb.parentNode)orb.parentNode.removeChild(orb);},3200);
+}
+
+setInterval(function(){tweakHeadings();entryOrb();},700);
+document.addEventListener('click',function(){setTimeout(function(){tweakHeadings();entryOrb();},250);},true);
+})();
+
+</script>
 </body></html>
