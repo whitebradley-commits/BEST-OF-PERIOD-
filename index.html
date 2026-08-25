@@ -42398,4 +42398,107 @@ ready(function(){
 })();
 
 </script>
+
+<style id="bop-foodtruck-qr-checkin-takedown-v275">
+/* v275: raise the food-truck icon so it floats centered between
+   FOOD TRUCKS and Period instead of sitting on the word */
+.bo-ft-drive-truck-row{transform:translateX(12%) translateY(-16px)!important;margin:-6px 0 -4px!important;}
+
+/* Take-down button on the check-in sheet */
+#bopFtTakedownBtn{display:block;width:100%;margin:14px 0 4px;padding:13px 10px;background:transparent;border:1.5px solid rgba(245,158,11,.55);border-radius:12px;color:#F59E0B;font:800 13px/1 Arial,sans-serif;letter-spacing:.08em;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#bopFtTakedownBtn:active{background:rgba(245,158,11,.15)}
+
+</style>
+<script id="bop-foodtruck-qr-checkin-takedown-v275-script">
+(function(){
+/* v275: food-truck flow fixes.
+   1. The DISPLAYED QR encoded '#vendorsignup' (email overlay, which opens
+      buried under the landing layer) while the zoomed QR already used
+      '#checkin'. Both now point at the Check In Your Truck page.
+   2. QR arrivals skip the invitation gate and the landing layer so the
+      check-in sheet actually shows on top.
+   3. Check-in watchdog: if the live-map write stalls, the vendor gets an
+      honest status instead of 'Checking in…' forever.
+   4. New: Take My Truck Down — clears the live pin (checkedInAt) while
+      keeping the saved profile. */
+var CHECKIN_URL = location.origin + location.pathname + '#checkin';
+
+function fixQr(){
+  var img = document.getElementById('bopFtQrImg');
+  if(img && img.src && img.src.indexOf('vendorsignup') !== -1){
+    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(CHECKIN_URL);
+  }
+  var share = document.getElementById('bopFtQrShare');
+  if(share && !share.dataset.bopCheckinShare){
+    var clone = share.cloneNode(true);
+    clone.dataset.bopCheckinShare = '1';
+    share.parentNode.replaceChild(clone, share);
+    clone.addEventListener('click', function(){
+      var payload = { title:'Check In Your Truck', text:'Go live on the Best of Period food-truck map.', url: CHECKIN_URL };
+      if(navigator.share){ navigator.share(payload).catch(function(){}); }
+      else if(navigator.clipboard){ navigator.clipboard.writeText(CHECKIN_URL); }
+    });
+  }
+}
+
+function qrArrival(){
+  var h=(location.hash||'').replace(/^#/,'');
+  var p=new URLSearchParams(location.search);
+  var want = window.__BOP_CHECKIN_REQUESTED===true || h==='checkin' || p.get('checkin')==='1';
+  if(!want) return;
+  var open = function(){
+    var gate=document.getElementById('bopExclusiveInvitation');
+    if(gate) gate.classList.add('bop-invite-closed');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing) landing.classList.remove('open');
+    if(typeof window.boOpenFoodTruckCheckin==='function') window.boOpenFoodTruckCheckin();
+  };
+  [800,2200,4200].forEach(function(ms){ setTimeout(open, ms); });
+}
+
+function enhanceCheckin(){
+  var submit=document.getElementById('bopFtCheckinSubmit');
+  if(!submit || submit.dataset.bopEnhanced) return;
+  submit.dataset.bopEnhanced='1';
+  var status=document.getElementById('bopFtCheckinStatus');
+  submit.addEventListener('click', function(){
+    setTimeout(function(){
+      if(status && /Checking in/i.test(status.textContent||'')){
+        status.textContent = 'Still trying \u2014 weak signal or the live map service is unreachable right now. Please try again in a minute.';
+      }
+    }, 14000);
+  });
+  var btn=document.createElement('button');
+  btn.type='button'; btn.id='bopFtTakedownBtn';
+  btn.textContent='Take My Truck Down \u2014 Go Offline';
+  var statusEl=document.getElementById('bopFtCheckinStatus');
+  if(statusEl && statusEl.parentNode){
+    statusEl.parentNode.insertBefore(btn, statusEl);
+  } else {
+    submit.parentNode.insertBefore(btn, submit.nextSibling);
+  }
+  btn.addEventListener('click', function(){
+    var phoneEl=document.getElementById('bopFtPhone');
+    var key=(phoneEl&&phoneEl.value||'').replace(/\D/g,'');
+    if(!key || key.length<7){ if(status) status.textContent='Enter the phone number you checked in with, then tap Take Down.'; return; }
+    if(!window.bopFtDb){ if(status) status.textContent='Connection error \u2014 try again.'; return; }
+    if(status) status.textContent='Taking your truck off the map\u2026';
+    var done=false;
+    window.bopFtDb.collection('foodtrucks').doc(key).set({checkedInAt:null},{merge:true}).then(function(){
+      done=true;
+      if(status) status.textContent="You're off the map. Check in again anytime.";
+    }).catch(function(err){
+      done=true;
+      if(status) status.textContent='Could not take you down ('+((err&&err.code)||'error')+') \u2014 try again.';
+    });
+    setTimeout(function(){ if(!done && status) status.textContent='Still trying \u2014 check your signal and try again in a minute.'; }, 14000);
+  });
+}
+
+setInterval(function(){ fixQr(); enhanceCheckin(); }, 900);
+document.addEventListener('click', function(){ setTimeout(function(){ fixQr(); enhanceCheckin(); },250); }, true);
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', qrArrival); else qrArrival();
+})();
+
+</script>
 </body></html>
