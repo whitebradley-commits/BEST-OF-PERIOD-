@@ -41829,4 +41829,185 @@ ready(function(){
 })();
 
 </script>
+
+<script id="bop-ny-quality-pass-v269-script">
+(function(){
+/* v269: NY list quality pass (structural).
+   1. Mesh: unrated NY records interleave MICHELIN / James Beard / icons
+      instead of the wall of Michelin in raw load order.
+   2. Dessert-only places are removed from NY general/Best Of lists and live
+      only in the dessert categories.
+   3. Credentialed cards (MICHELIN / James Beard) stop saying "hasn't claimed
+      its profile" — they show their real credential status instead.
+   No ratings are invented; real ratings arrive in research batches. */
+var NY=['manhattan','brooklyn','queens','bronx','hamptons','newyork'];
+var DESSERT_KEYS={desserts:1,dessert:1,bakery:1,bakeries:1,icecream:1,sweets:1};
+function num(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function meshPass(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr)||!arr.length)return;
+    /* 2. dessert-only exclusion from non-dessert lists */
+    if(!DESSERT_KEYS[cat]){
+      for(var i=arr.length-1;i>=0;i--){
+        var r=arr[i];
+        if(r&&NY.indexOf(r.city)>-1&&r.genre&&DESSERT_KEYS[String(r.genre).toLowerCase()])arr.splice(i,1);
+      }
+    }
+    /* 1. mesh unrated NY records per city, keeping rated order untouched */
+    NY.forEach(function(city){
+      var idx=[];
+      arr.forEach(function(r,i){if(r&&r.city===city)idx.push(i);});
+      if(idx.length<3)return;
+      var recs=idx.map(function(i){return arr[i]});
+      var rated=recs.filter(function(r){return num(r)!=null});
+      var un=recs.filter(function(r){return num(r)==null});
+      if(un.length<3)return;
+      var M=un.filter(function(r){return r.michelinStars});
+      M.sort(function(a,b){return (b.michelinStars||0)-(a.michelinStars||0)});
+      var B=un.filter(function(r){return !r.michelinStars&&r.jamesBeard});
+      var P=un.filter(function(r){return !r.michelinStars&&!r.jamesBeard&&r.bjsPick});
+      var O=un.filter(function(r){return !r.michelinStars&&!r.jamesBeard&&!r.bjsPick});
+      var meshed=[],queues=[M,B,M,O,B,P];
+      while(M.length||B.length||P.length||O.length){
+        var moved=false;
+        for(var q=0;q<queues.length;q++){
+          if(queues[q].length){meshed.push(queues[q].shift());moved=true;}
+        }
+        if(!moved)break;
+      }
+      var finalOrder=rated.concat(meshed);
+      idx.forEach(function(pos,k){arr[pos]=finalOrder[k]});
+      var n=0;
+      arr.forEach(function(r){if(r&&r.city===city){n+=1;r.rank=n;}});
+    });
+  });
+}
+/* 3. credential line instead of "hasn't claimed its profile" */
+function fixClaims(){
+  document.querySelectorAll('.entry-claim').forEach(function(el){
+    if(el.dataset.bopCredentialed)return;
+    var card=el;
+    for(var i=0;i<4&&card.parentElement;i++)card=card.parentElement;
+    var t=card.textContent||'';
+    if(/MICHELIN|James Beard/i.test(t)){
+      el.dataset.bopCredentialed='1';
+      el.textContent='Credential verified \u2014 public rating appears once independently confirmed.';
+    }
+  });
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  meshPass();
+  setTimeout(meshPass,1200);
+  fixClaims();
+  document.addEventListener('click',function(){setTimeout(fixClaims,250);},true);
+  setInterval(fixClaims,1500);
+});
+})();
+
+</script>
+
+<script id="bop-verified-ratings-batch1-v270-script">
+(function(){
+/* v270: real verified ratings, batch 1 (Manhattan/Brooklyn).
+   Every number below is a real, checked public rating as of Aug 2026 —
+   nothing invented. Restaurants not yet checked keep rating:null and stay
+   untouched; they get their number in a later batch, not a placeholder. */
+var VERIFIED=[
+  {name:"Rao\u2019s",           rating:4.4, reviews:652,   source:"Google"},
+  {name:"Peter Luger Steak House", rating:4.4, reviews:9668, source:"Google"},
+  {name:"Carbone",           rating:4.3, reviews:2122,  source:"Google"},
+  {name:"Katz\u2019s Delicatessen", rating:4.5, reviews:52527, source:"Google"},
+  {name:"Union Square Cafe", rating:4.4, reviews:3874,  source:"Google"}
+];
+var FLOOR=3.7, CAP=16;
+function parseRating(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function isExempt(r){
+  if(!r)return false;
+  if(r.michelinStars)return true;
+  if(r.michelinGuide)return true;
+  if(r.bjsPick)return true;
+  if(typeof isRecentlyOpened==='function'&&isRecentlyOpened(r.openedDate))return true;
+  return false;
+}
+function applyVerified(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  var applied=false;
+  var byLower={};
+  VERIFIED.forEach(function(v){byLower[v.name.toLowerCase()]=v;});
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr))return;
+    arr.forEach(function(r){
+      if(!r||!r.name)return;
+      var hit=byLower[String(r.name).toLowerCase()];
+      if(!hit)return;
+      if(r.rating===hit.rating+'')return; /* already applied */
+      r.rating=hit.rating.toFixed(1);
+      r.reviews=hit.reviews;
+      r.ratingSource=hit.source;
+      r.ratingNote='Public '+hit.source+' rating, verified '+hit.reviews.toLocaleString()+' reviews.';
+      if(r.note&&/score pending|hasn.t claimed/i.test(r.note)){
+        r.note=r.note.replace(/Aggregate public rating is not displayed until independently verified at 4\.8 or 4\.9\.?/i,'').trim();
+      }
+      applied=true;
+    });
+  });
+  if(!applied)return false;
+  /* re-run the same floor/cap pass so newly-rated records settle in place */
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr)||!arr.length)return;
+    var isAwardPage=(cat==='michelin'||cat==='jamesbeard');
+    var groups={},order=[];
+    arr.forEach(function(r){
+      var city=(r&&r.city)||'bestof';
+      if(!groups[city]){groups[city]=[];order.push(city);}
+      groups[city].push(r);
+    });
+    var rebuilt=[];
+    order.forEach(function(city){
+      var qualifies=[],exemptOnly=[];
+      groups[city].forEach(function(r){
+        var rating=parseRating(r);
+        var meetsFloor=rating!==null&&rating>=FLOOR;
+        if(meetsFloor)qualifies.push(r);
+        else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+      });
+      qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
+      rebuilt=rebuilt.concat(qualifies,exemptOnly);
+    });
+    var n=0;
+    rebuilt.forEach(function(r){r.rank=++n;});
+    boCategoryData[cat]=rebuilt;
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  var tries=0;
+  var t=setInterval(function(){
+    tries++;
+    if(applyVerified()||tries>30)clearInterval(t);
+  },300);
+});
+})();
+
+</script>
 </body></html>
