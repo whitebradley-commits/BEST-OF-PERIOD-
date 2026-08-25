@@ -42010,4 +42010,96 @@ ready(function(){
 })();
 
 </script>
+
+<script id="bop-verified-ratings-batch2-v271-script">
+(function(){
+/* v271: real verified ratings, batch 2. Same idempotent approach as v270 —
+   only adds numbers actually checked, then lets the existing floor/cap sort
+   everything into place. Skipped this round for having no clean, single
+   verifiable public score (multi-location chains, no Google consensus):
+   Lilia, Grand Central Oyster Bar, Gramercy Tavern (already exempt via its
+   Michelin star), Xi'an Famous Foods (chain, ambiguous location). */
+var VERIFIED=[
+  {name:"Marea", rating:4.5, reviews:3039, source:"Google"}
+];
+var FLOOR=3.7, CAP=16;
+function parseRating(r){
+  var v=r&&r.rating;
+  if(v==null)return null;
+  if(typeof v==='object'&&typeof v.score==='number')return v.score;
+  if(typeof v==='number')return v;
+  if(typeof v==='string'){var m=v.match(/(\d+(\.\d+)?)/);return m?parseFloat(m[1]):null;}
+  return null;
+}
+function isExempt(r){
+  if(!r)return false;
+  if(r.michelinStars)return true;
+  if(r.michelinGuide)return true;
+  if(r.bjsPick)return true;
+  if(typeof isRecentlyOpened==='function'&&isRecentlyOpened(r.openedDate))return true;
+  return false;
+}
+function applyVerified(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  var applied=false;
+  var byLower={};
+  VERIFIED.forEach(function(v){byLower[v.name.toLowerCase()]=v;});
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr))return;
+    arr.forEach(function(r){
+      if(!r||!r.name)return;
+      var hit=byLower[String(r.name).toLowerCase()];
+      if(!hit)return;
+      if(r.rating===hit.rating+'')return;
+      r.rating=hit.rating.toFixed(1);
+      r.reviews=hit.reviews;
+      r.ratingSource=hit.source;
+      r.ratingNote='Public '+hit.source+' rating, verified '+hit.reviews.toLocaleString()+' reviews.';
+      if(r.note&&/score pending|hasn.t claimed/i.test(r.note)){
+        r.note=r.note.replace(/Aggregate public rating is not displayed until independently verified at 4\.8 or 4\.9\.?/i,'').trim();
+      }
+      applied=true;
+    });
+  });
+  if(!applied)return false;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];
+    if(!Array.isArray(arr)||!arr.length)return;
+    var isAwardPage=(cat==='michelin'||cat==='jamesbeard');
+    var groups={},order=[];
+    arr.forEach(function(r){
+      var city=(r&&r.city)||'bestof';
+      if(!groups[city]){groups[city]=[];order.push(city);}
+      groups[city].push(r);
+    });
+    var rebuilt=[];
+    order.forEach(function(city){
+      var qualifies=[],exemptOnly=[];
+      groups[city].forEach(function(r){
+        var rating=parseRating(r);
+        var meetsFloor=rating!==null&&rating>=FLOOR;
+        if(meetsFloor)qualifies.push(r);
+        else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+      });
+      qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
+      rebuilt=rebuilt.concat(qualifies,exemptOnly);
+    });
+    var n=0;
+    rebuilt.forEach(function(r){r.rank=++n;});
+    boCategoryData[cat]=rebuilt;
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+  var tries=0;
+  var t=setInterval(function(){
+    tries++;
+    if(applyVerified()||tries>30)clearInterval(t);
+  },300);
+});
+})();
+
+</script>
 </body></html>
