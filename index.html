@@ -43182,4 +43182,44 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 })();
 
 </script>
+
+<style id="bop-why-close-and-zoom-fix-v287">
+/* v287: keep the WHY popup's X visible no matter how tall the text gets —
+   the orb scrolls internally now (v284), which was dragging the close
+   button out of view along with the content since it was absolutely
+   positioned inside that same scrolling box. Pin it to the screen instead. */
+.bjs-why-close{
+  position:fixed!important;
+  top:max(26px, env(safe-area-inset-top))!important;
+  right:20px!important;
+  z-index:2147483647!important;
+}
+
+</style>
+<script id="bop-why-close-and-zoom-fix-v287-script">
+(function(){
+/* v287: reset any lingering pinch-zoom on every navigation. Because this
+   site never does a real page reload — every "page" is just a div being
+   shown/hidden inside one document — iOS Safari's pinch-zoom level and
+   scroll position from whatever you were just looking at carries straight
+   over onto the next thing you open. This forces the viewport back to
+   1.0 zoom on every tap, so each page always opens clean. */
+var viewportMeta = document.querySelector('meta[name="viewport"]');
+var baseContent = viewportMeta ? viewportMeta.getAttribute('content') : null;
+
+function resetZoom(){
+  if(!viewportMeta || !baseContent) return;
+  viewportMeta.setAttribute('content', baseContent + ', maximum-scale=1.0');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      viewportMeta.setAttribute('content', baseContent);
+    });
+  });
+}
+
+document.addEventListener('click', function(){ setTimeout(resetZoom, 30); }, true);
+window.addEventListener('pageshow', resetZoom);
+})();
+
+</script>
 </body></html>
