@@ -42984,4 +42984,63 @@ ready(function(){
 })();
 
 </script>
+
+<script id="bop-foodtruck-website-autofill-v281-script">
+(function(){
+/* v281: auto-fill the truck's description (and photo, if the site has a
+   good image) from the website/ordering link they enter at check-in — the
+   field already promised this, this makes it actually happen. Browsers
+   can't read another site's HTML directly (CORS), so this uses a public
+   link-preview API (microlink.io, no key required) to pull the page's
+   title/description/image, the same technique Slack/iMessage use for link
+   previews. If that service is unreachable, check-in still works fine —
+   the vendor just types their own description like before. */
+function attachAutofill(){
+  var websiteEl = document.getElementById('bopFtWebsite');
+  var descEl = document.getElementById('bopFtDescription');
+  if(!websiteEl || !descEl || websiteEl.dataset.bopAutofill) return;
+  websiteEl.dataset.bopAutofill = '1';
+
+  var hint = document.createElement('div');
+  hint.id = 'bopFtAutofillHint';
+  hint.style.cssText = 'display:none;margin:-6px 0 10px;font:700 11px/1.4 Arial,sans-serif;color:#8fbf6f;';
+  descEl.parentNode.insertBefore(hint, descEl.nextSibling);
+
+  websiteEl.addEventListener('blur', function(){
+    var url = websiteEl.value.trim();
+    if(!url) return;
+    if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    if(descEl.value.trim()) return; /* never overwrite what they already typed */
+    hint.style.display = 'block';
+    hint.textContent = 'Looking up your site\u2026';
+    fetch('https://api.microlink.io/?url=' + encodeURIComponent(url) + '&meta=true')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || data.status !== 'success' || !data.data) throw new Error('no data');
+        var d = data.data;
+        var text = (d.description || d.title || '').trim();
+        if(text){
+          descEl.value = text.length > 160 ? text.slice(0,157) + '\u2026' : text;
+          hint.textContent = 'Pulled from your website \u2014 feel free to edit it.';
+        } else {
+          hint.textContent = '';
+          hint.style.display = 'none';
+        }
+        if(d.image && d.image.url && !window.bopFtPhotoUrl){
+          window.bopFtPhotoUrl = d.image.url;
+        } else if(d.logo && d.logo.url && !window.bopFtPhotoUrl){
+          window.bopFtPhotoUrl = d.logo.url;
+        }
+      })
+      .catch(function(){
+        hint.textContent = '';
+        hint.style.display = 'none';
+      });
+  });
+}
+setInterval(attachAutofill, 900);
+document.addEventListener('click', function(){ setTimeout(attachAutofill, 250); }, true);
+})();
+
+</script>
 </body></html>
