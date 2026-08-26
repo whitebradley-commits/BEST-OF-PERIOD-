@@ -20136,6 +20136,7 @@ function boBuildExpandedLegend(){
     <section class="bo-legend-section">
       <h3>HOW RANKINGS WORK</h3>
       <p class="bo-ranking-method"><strong>Ratings are never manipulated.</strong> However, our rankings favor review quantity and time-tested performance when two competitors are extremely close. If a restaurant has at least 20 times as many verified reviews as a competitor within 0.1 points, the larger proven history may rank first.<span class="bo-ranking-example">That is why you may see a 4.6 ranked ahead of a 4.7.</span></p>
+      <p style="text-align:center;margin:14px 0 0;"><span style="color:#F59E0B;text-shadow:0 0 6px rgba(245,158,11,.6);">—</span> <button type="button" aria-label="Why BJS" class="bjs-why-trigger" style="margin-left:6px;margin-right:6px;">WHY</button> <span style="color:#F59E0B;text-shadow:0 0 6px rgba(245,158,11,.6);">—</span></p>
     </section>
     <section class="bo-legend-section" id="boLegendBadges">
       <h3>BADGES</h3>
@@ -42339,10 +42340,8 @@ ready(function(){
 }
 #bopFoundersToggle .bop-founders-seal svg{width:100%;height:100%}
 #bopFoundersToggle.bop-founders-open .bop-founders-seal{transform:scale(.92) rotate(-6deg)}
-#bopFoundersToggle .bop-founders-toggle-label{
-  color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:.72rem;
-  letter-spacing:.1em;text-shadow:0 0 6px rgba(245,158,11,.5);
-}
+#bopFoundersToggle .bop-founders-toggle-label{display:none;}
+#bopFoundersToggle #bopFoundersRowLabel{margin:4px auto 0;pointer-events:none;}
 .bop-founders-row{transition:opacity .2s ease}
 
 </style>
@@ -43040,6 +43039,54 @@ function attachAutofill(){
 }
 setInterval(attachAutofill, 900);
 document.addEventListener('click', function(){ setTimeout(attachAutofill, 250); }, true);
+})();
+
+</script>
+
+<script id="bop-why-popup-final-override-v282-script">
+(function(){
+/* v282: two legacy scripts (setCopy/upgradeWhy, pre-dating this session)
+   hard-overwrite the WHY popup's opening line back to old default text
+   every time they run — silently undoing the confirmed sentence. Keeps
+   re-asserting the correct line indefinitely (not just once) since the
+   legacy scripts' own timers could re-fire and re-overwrite it later. */
+var CORRECT_HTML = '<span style="display:inline-flex;align-items:center;justify-content:center;gap:3px;padding:0 8px;text-align:center;">'+
+  '<svg aria-label="BJS" height="19" viewBox="0 0 40 40" width="19" style="flex:none;">'+
+  '<circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle>'+
+  '<text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text>'+
+  '</svg>'+
+  '<span>By digging in, and eating the world, between the founders and affiliates, we\u2019re building the world\u2019s most direct directory.</span>'+
+  '</span>';
+
+function enforce(){
+  var p = document.querySelector('#bjsWhyOverlay .bjs-why-orb-text > p:nth-of-type(2)');
+  if(!p) return;
+  if(p.innerHTML.indexOf('By digging in') !== -1) return; /* already correct, nothing to do */
+  p.innerHTML = CORRECT_HTML;
+}
+setInterval(enforce, 400);
+document.addEventListener('click', function(){ setTimeout(enforce, 60); setTimeout(enforce, 300); setTimeout(enforce, 700); }, true);
+})();
+
+</script>
+
+<script id="bop-founders-badge-relocate-v283-script">
+(function(){
+/* v283: move the gold "\u2605 FOUNDERS" badge from under the photo row up
+   into the BJS Co. toggle itself, right under the seal, and keep it always
+   visible there (it lives inside the toggle button now, so tapping it
+   triggers the same expand/collapse as tapping the seal — no separate
+   handler needed). */
+function moveBadge(){
+  var toggle = document.getElementById('bopFoundersToggle');
+  var label = document.getElementById('bopFoundersRowLabel');
+  if(!toggle || !label) return;
+  if(label.parentNode === toggle) return; /* already moved */
+  label.hidden = false;
+  toggle.appendChild(label);
+}
+setInterval(moveBadge, 700);
+document.addEventListener('click', function(){ setTimeout(moveBadge, 250); }, true);
 })();
 
 </script>
