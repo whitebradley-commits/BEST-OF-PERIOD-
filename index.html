@@ -9200,6 +9200,18 @@ function setupBopLanding(){
       return;
     }
 
+    // Los Angeles and San Diego are too large for one flat list — same
+    // pattern as New York above: open the zone-picker gateway instead of
+    // going straight to the Main/Hub page.
+    if((dest === 'losangeles' || dest === 'sandiego') && typeof window.bopShowCityGate === 'function'){
+      overlay.classList.remove('open');
+      const zResults = document.getElementById('bopLandingResults');
+      if(zResults){zResults.classList.remove('open');zResults.innerHTML='';}
+      boCityContext = dest;
+      window.bopShowCityGate(dest);
+      return;
+    }
+
     boCityContext = dest;
     // A city picked from the landing search always starts at that city's
     // Main tile page. It must never inherit the category visited previously.
@@ -42446,15 +42458,33 @@ function qrArrival(){
   var h=(location.hash||'').replace(/^#/,'');
   var p=new URLSearchParams(location.search);
   var want = window.__BOP_CHECKIN_REQUESTED===true || h==='checkin' || p.get('checkin')==='1';
+
+  var badge=document.createElement('div');
+  badge.id='bopQrDebugBadge';
+  badge.style.cssText='position:fixed;top:8px;left:8px;z-index:2147483647;background:#000;color:'+(want?'#7ddb7d':'#FF2D3F')+';border:1px solid '+(want?'#7ddb7d':'#FF2D3F')+';border-radius:8px;padding:5px 9px;font:800 10px/1.3 Arial,sans-serif;letter-spacing:.04em;';
+  badge.textContent='QR CHECK-IN LINK DETECTED: '+(want?'YES':'NO \u2014 hash was "'+h+'"');
+  document.body.appendChild(badge);
+  setTimeout(function(){ if(badge.parentNode) badge.parentNode.removeChild(badge); }, 9000);
+
   if(!want) return;
-  var open = function(){
+  var opened=false;
+  var tryOpen = function(){
+    if(opened) return;
     var gate=document.getElementById('bopExclusiveInvitation');
-    if(gate) gate.classList.add('bop-invite-closed');
     var landing=document.getElementById('bopLandingOverlay');
+    if(gate){
+      gate.classList.add('bop-invite-closed');
+      document.documentElement.classList.remove('bop-invite-active');
+    }
     if(landing) landing.classList.remove('open');
-    if(typeof window.boOpenFoodTruckCheckin==='function') window.boOpenFoodTruckCheckin();
+    if(typeof window.boOpenFoodTruckCheckin==='function'){
+      window.boOpenFoodTruckCheckin();
+      opened=true;
+    }
   };
-  [800,2200,4200].forEach(function(ms){ setTimeout(open, ms); });
+  tryOpen();
+  var iv=setInterval(function(){ tryOpen(); if(opened) clearInterval(iv); }, 60);
+  setTimeout(function(){ clearInterval(iv); }, 8000);
 }
 
 function enhanceCheckin(){
@@ -42823,6 +42853,7 @@ function showGate(key){
   document.body.style.overflow='hidden';
   window.scrollTo(0,0);
 }
+window.bopShowCityGate = showGate;
 function proceedPastGate(key){
   dismissed[key] = true;
   var el = gates[key];
@@ -43247,6 +43278,38 @@ function fix(){
 }
 setInterval(fix, 500);
 document.addEventListener('click', function(){ setTimeout(fix, 60); }, true);
+})();
+
+</script>
+
+<script id="bop-dantanas-bjs-pick-v289-script">
+(function(){
+/* v289: Dan Tana's — BJS Pick, Fine Italian, Los Angeles (Hollywood). */
+function addPick(){
+  if(typeof boCategoryData !== 'object' || !boCategoryData) return false;
+  boCategoryData.bestof = boCategoryData.bestof || [];
+  var arr = boCategoryData.bestof;
+  var exists = arr.some(function(r){ return r && r.city === 'losangeles' && r.name === "Dan Tana's"; });
+  if(exists) return true;
+  arr.unshift({
+    rank: 0,
+    name: "Dan Tana's",
+    city: 'losangeles',
+    image: '',
+    imagePosition: 'center',
+    bjsPick: true,
+    genre: 'Fine Italian',
+    why: 'BJS Pick \u2014 Fine Italian, Hollywood.',
+    note: 'Hollywood institution since 1964. Fine Italian.',
+    address: '9071 Santa Monica Blvd, West Hollywood, CA 90069',
+    phone: null,
+    hours: [],
+    price: 3,
+    hue: '28, 38%, 23%'
+  });
+  return true;
+}
+var t=setInterval(function(){ if(addPick()) clearInterval(t); }, 300);
 })();
 
 </script>
