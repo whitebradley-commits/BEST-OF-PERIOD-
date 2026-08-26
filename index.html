@@ -43222,4 +43222,32 @@ window.addEventListener('pageshow', resetZoom);
 })();
 
 </script>
+
+<script id="bop-static-founders-badge-final-v288-script">
+(function(){
+/* v288: the bottom-right landing badge (#bopStaticFounders) has been
+   patched several times before this session and those patches are now
+   layered on top of each other — this is the one that wins for good.
+   One ring only, clearly reads BJS CO., not clickable. */
+function fix(){
+  var btn = document.getElementById('bopStaticFounders');
+  if(!btn) return;
+  var lockup = btn.querySelector('.bop-static-bjs-lockup');
+  if(!lockup) return;
+  btn.style.border = 'none';
+  btn.style.boxShadow = 'none';
+  btn.style.background = 'transparent';
+  btn.style.pointerEvents = 'none';
+  btn.style.cursor = 'default';
+  btn.removeAttribute('href');
+  btn.tabIndex = -1;
+  lockup.innerHTML = '<strong>BJS</strong><small>CO.</small>';
+  lockup.style.border = '2px solid #F59E0B';
+  lockup.style.boxShadow = '0 0 7px rgba(245,158,11,.5)';
+}
+setInterval(fix, 500);
+document.addEventListener('click', function(){ setTimeout(fix, 60); }, true);
+})();
+
+</script>
 </body></html>
