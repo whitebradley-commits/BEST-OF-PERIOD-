@@ -19874,6 +19874,22 @@ function boEnsureMoviesPage(){
   return page;
 }
 function boOpenMoviesPage(){
+  // Remember whichever page was actually showing right before Movies opens,
+  // so the Movies back button can return to the real previous page instead
+  // of a single hardcoded destination — this is what was causing the
+  // Movies <-> World Globe ping-pong loop.
+  (function(){
+    var found = null;
+    if(document.body.classList.contains('oc-world-active')){
+      found = 'ocWorldOverlay';
+    } else {
+      var openPages = document.querySelectorAll('.directory-overlay.open, .bo-ft-overlay.open, .bop-city-gate.open');
+      for(var i=0;i<openPages.length;i++){
+        if(openPages[i].id && openPages[i].id !== 'boMoviesPage'){ found = openPages[i].id; break; }
+      }
+    }
+    window.__bopMoviesReturnPage = found;
+  })();
   const page=boEnsureMoviesPage();page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;
   const requestedMovie=new URLSearchParams(window.location.search).get('movie');
   try{const p=new URLSearchParams();p.set('page','movies');if(requestedMovie)p.set('movie',requestedMovie);history.replaceState(null,'',window.location.pathname+'?'+p.toString());}catch(e){}
@@ -19883,6 +19899,20 @@ function boOpenMoviesPage(){
 }
 function boCloseMoviesPage(){
   const page=document.getElementById('boMoviesPage');if(page)page.classList.remove('open');document.body.style.overflow='';clearInterval(boMoviesRotatorTimer);clearInterval(boWorldwideRotatorTimer);
+  var returnId = window.__bopMoviesReturnPage;
+  if(returnId === 'ocWorldOverlay' && document.getElementById('ocWorldOverlay')){
+    try{history.replaceState(null,'',window.location.pathname);}catch(e){}
+    document.body.classList.add('oc-world-active');
+    document.body.style.overflow='hidden';
+    return;
+  }
+  var returnEl = returnId ? document.getElementById(returnId) : null;
+  if(returnEl){
+    try{history.replaceState(null,'',window.location.pathname);}catch(e){}
+    returnEl.classList.add('open');
+    document.body.style.overflow='hidden';
+    return;
+  }
   try{history.replaceState(null,'',window.location.pathname+'#/page/worldwide');}catch(e){}
   if(typeof window.bopOpenWorldwideLanding==='function')window.bopOpenWorldwideLanding();
 }
