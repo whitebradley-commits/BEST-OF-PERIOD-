@@ -40845,7 +40845,6 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<header class="bop-world-hero">'+
             '<div class="bop-world-best">BEST OF</div>'+
             '<div class="bo-ft-hero-word">FOOD TRUCKS</div>'+
-            '<div class="bo-ft-drive-truck-row"><svg class="bo-ft-drive-truck bo-ft-drive-truck-big" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
             '<div class="bop-world-title-line">'+
               '<svg class="bop-world-hero-globe" aria-label="Worldwide" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg>'+
               '<div class="bop-world-period">Period<sup>&copy;</sup></div>'+
@@ -40853,6 +40852,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '</header>'+
           '<div class="bop-world-divider"></div>'+
           '<div class="bo-ft-sub">Pick Your Location</div>'+
+          '<div class="bo-ft-road-row"><div class="bo-ft-road-line"></div><svg class="bo-ft-drive-truck bo-ft-drive-truck-road" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
           '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
@@ -43709,4 +43709,36 @@ var t=setInterval(function(){ if(addGiordanos()) clearInterval(t); }, 300);
 })();
 
 </script>
+
+<style id="bop-truck-masthead-and-road-v302">
+/* v302: food trucks page — masthead now matches Worldwide Bests exactly
+   (globe + Period, no truck). Truck relocated below "Pick Your Location",
+   enlarged, sitting on its own road line like it's driving toward the map. */
+#bopFoodTruckOverlay .bo-ft-road-row{
+  position:relative;
+  height:clamp(52px,15vw,78px);
+  margin:4px 0 18px;
+  display:flex;
+  align-items:center;
+}
+#bopFoodTruckOverlay .bo-ft-road-line{
+  position:absolute;
+  left:0;right:0;top:50%;
+  height:2px;
+  background:#F59E0B;
+  box-shadow:0 0 9px rgba(245,158,11,.8);
+  transform:translateY(-1px);
+}
+#bopFoodTruckOverlay .bo-ft-drive-truck-road{
+  position:relative;
+  z-index:1;
+  width:clamp(70px,20vw,104px);
+  height:clamp(70px,20vw,104px);
+  margin:0 auto;
+  display:block;
+  filter:drop-shadow(0 0 9px rgba(245,158,11,.75));
+  background:#000;
+}
+
+</style>
 </body></html>
