@@ -42518,9 +42518,16 @@ function qrArrival(){
     if(opened) return;
     var gate=document.getElementById('bopExclusiveInvitation');
     var landing=document.getElementById('bopLandingOverlay');
+    var promo=document.getElementById('bopPromoModal');
     if(gate){
       gate.classList.add('bop-invite-closed');
       document.documentElement.classList.remove('bop-invite-active');
+    }
+    if(promo && promo.classList.contains('open')){
+      promo.classList.remove('open');
+      var promoVideo=document.getElementById('bopPromoVideo');
+      if(promoVideo) promoVideo.pause();
+      document.body.style.overflow='';
     }
     if(landing) landing.classList.remove('open');
     if(typeof window.boOpenFoodTruckCheckin==='function'){
