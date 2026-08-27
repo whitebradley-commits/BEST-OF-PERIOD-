@@ -44462,4 +44462,27 @@ window.__bopTick(wire, 500);
 })();
 
 </script>
+
+<script id="bop-music-corner-dedupe-v331-script">
+(function(){
+/* v331: two separate legacy scripts each independently create a
+   #bopMusicCorner button, both checking "does one exist yet" first --
+   but under certain timing, both checks can pass before either has
+   actually inserted its button, producing duplicate/triplicate buttons
+   with the same id. Rather than risk rewriting either intertwined
+   system to fix the race at its root, this periodically finds and
+   removes any extras, keeping only the first (which both scripts treat
+   as "the" button via getElementById, so removing the rest is safe --
+   whichever one survives is functionally identical to the others). */
+function dedupeMusicCorner(){
+  var all = document.querySelectorAll('#bopMusicCorner, [id="bopMusicCorner"]');
+  if(all.length <= 1) return;
+  for(var i = 1; i < all.length; i++){
+    all[i].remove();
+  }
+}
+window.__bopTick(dedupeMusicCorner, 400);
+})();
+
+</script>
 </body></html>
