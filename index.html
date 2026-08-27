@@ -40947,8 +40947,8 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
               '<div class="bop-world-period">Period<sup>&copy;</sup></div>'+
             '</div>'+
           '</header>'+
-          '<div class="bop-world-divider"></div>'+
-          '<div class="bo-ft-sub-road-row"><div class="bo-ft-sub">Pick Your Location</div><svg class="bo-ft-drive-truck bo-ft-drive-truck-inline" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
+          '<div class="bop-world-divider bo-ft-divider-with-truck"><svg class="bo-ft-drive-truck bo-ft-drive-truck-ondivider" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
+          '<div class="bo-ft-sub">Pick Your Location</div>'+
           '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
@@ -43806,44 +43806,36 @@ var t=setInterval(function(){ if(addGiordanos()) clearInterval(t); }, 300);
 
 </script>
 
-<style id="bop-truck-masthead-and-road-v302">
-/* v302: food trucks page — masthead now matches Worldwide Bests exactly
-   (globe + Period, no truck). Truck relocated below "Pick Your Location",
-   enlarged, sitting on its own road line like it's driving toward the map. */
-/* Extra clearance between "FOOD TRUCKS" and the globe+Period line below
-   it -- the base -25px pull-up was tuned for the plain Worldwide Bests
-   page, which has no hero word in between, so it was dragging the globe
-   up into the text here. */
+<style id="bop-truck-masthead-and-road-v312">
+/* v312: masthead spacing tightened (globe closer to Period), Pick Your
+   Location back to plain single-line text with no road-line under it,
+   and the truck now sits directly on the existing divider line between
+   the masthead and Pick Your Location -- enlarged, straddling the line. */
 #bopFoodTruckOverlay .bop-world-title-line{
   margin-top:6px;
+  gap:0;
+}
+#bopFoodTruckOverlay .bop-world-hero-globe{
+  margin-right:-14px;
 }
 #bopFoodTruckOverlay .bo-ft-hero-word{
   margin-bottom:8px;
 }
 
-/* Pick Your Location + truck, inline on one row, wheels sitting right on
-   a road line under the whole row -- no boxed background on the truck,
-   it's a clean isolated icon now. */
-#bopFoodTruckOverlay .bo-ft-sub-road-row{
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  gap:10px;
-  border-bottom:2px solid #F59E0B;
-  box-shadow:0 2px 9px -2px rgba(245,158,11,.8);
-  padding-bottom:6px;
-  margin:0 auto 20px;
-  width:fit-content;
-  max-width:92%;
+#bopFoodTruckOverlay .bo-ft-divider-with-truck{
+  position:relative;
+  overflow:visible;
+  margin:10px 0 22px;
 }
-#bopFoodTruckOverlay .bo-ft-sub-road-row .bo-ft-sub{
-  margin:0;
-}
-#bopFoodTruckOverlay .bo-ft-drive-truck-inline{
-  width:clamp(46px,13vw,66px);
-  height:clamp(46px,13vw,66px);
+#bopFoodTruckOverlay .bo-ft-drive-truck-ondivider{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translate(-50%, 18%);
+  width:clamp(92px,26vw,132px);
+  height:clamp(92px,26vw,132px);
   display:block;
-  filter:drop-shadow(0 0 6px rgba(245,158,11,.65));
+  filter:drop-shadow(0 0 10px rgba(245,158,11,.7));
 }
 
 </style>
