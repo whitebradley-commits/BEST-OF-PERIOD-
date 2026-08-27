@@ -25780,7 +25780,7 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
         // gateway. Back from Manhattan/Brooklyn/Queens/Bronx/Hamptons Main
         // must return to that chooser, not reopen the same borough or skip
         // all the way past New York to the global city search.
-        const nySubcities = ['manhattan','brooklyn','queens','bronx','hamptons'];
+        const nySubcities = ['manhattan','brooklyn','queens','bronx','hamptons','northshoreli','southshoreli'];
         if(nySubcities.includes(boCityContext) && typeof window.bopOpenNewYorkGateway === 'function'){
           const bestOverlay = document.getElementById('bestOfOverlay');
           if(bestOverlay) bestOverlay.classList.remove('open');
@@ -34756,7 +34756,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
 <!-- v254: authoritative Back router for every New York grouped directory -->
 <script id="bop-new-york-authoritative-back-v254-script">
 (function(){
-  var nyCities=['manhattan','brooklyn','queens','bronx','hamptons'];
+  var nyCities=['manhattan','brooklyn','queens','bronx','hamptons','northshoreli','southshoreli'];
   function isNy(){return typeof boCityContext!=='undefined'&&nyCities.indexOf(boCityContext)>-1}
   function showBest(){var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open')}
   function render(cat){showBest();if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(cat,boCityContext);if(typeof boRenderCategory==='function')boRenderCategory(cat);window.scrollTo(0,0)}
@@ -44906,6 +44906,20 @@ var NY_INTERIORS={
  ,'brooklyn|aska':'https://resizer.otstatic.com/v4/photos/65505769-2?height=720&width=1280'
  ,'manhattan|atera':'https://eatingreallywell.com/application/files/3417/5048/0314/2021-10-05_11-41_581.webp'
  ,'manhattan|themodern':'https://www.yonder.fr/sites/default/files/cityguides/rubriques/restaurants/CGF-NYC-THEMODERN-1.jpg'
+ ,'northshoreli|stellinaristorante':'https://resizer.otstatic.com/v2/photos/xlarge/3/47308320.webp'
+ ,'southshoreli|pantry':'https://resizer.otstatic.com/v2/photos/xlarge/3/46837129.webp'
+ ,'southshoreli|primiitaliansteakhouse':'https://resizer.otstatic.com/v2/photos/wide-xlarge/2/58155975.jpg'
+};
+/* Official contact details for the controlled North/South Shore test set. */
+var NY_CONTACTS={
+ 'northshoreli|thefarmitalyhuntington':{phone:'(631) 824-6000',url:'https://www.thefarmitaly.com/huntingtonny'},
+ 'northshoreli|stellinaristorante':{phone:'(516) 757-4989',url:'https://stellinany.com/'},
+ 'northshoreli|laptiteframboise':{phone:'(516) 767-7164',url:'https://laptiteframboise.com/'},
+ 'northshoreli|2spring':{phone:'(516) 624-2411',url:'https://www.2springstreet.com/'},
+ 'southshoreli|pantry':{phone:'(516) 766-8848',url:'https://www.pantrydiner.com/'},
+ 'southshoreli|primiitaliansteakhouse':{phone:'(631) 526-9779',url:'https://www.primiitalian.com/'},
+ 'southshoreli|salt':{phone:'(516) 442-7470',url:'https://www.saltonthewater.com/'},
+ 'southshoreli|kingumberto':{phone:'(516) 352-3232',url:'https://www.kingumberto.com/'}
 };
 function key(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
 function addTo(cat,r){boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];if(!boCategoryData[cat].some(function(x){return x&&x.city===r.city&&key(x.name)===key(r.name)}))boCategoryData[cat].push(Object.assign({},r))}
@@ -44920,7 +44934,7 @@ function apply(){
   if(!boCategoryData.bestof.some(function(y){return y&&y.city===r.city&&key(y.name)===key(r.name)}))boCategoryData.bestof.push(r);
   x.cats.forEach(function(cat){addTo(cat,r)});
   });
- Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r)return;var src=NY_INTERIORS[String(r.city||'')+'|'+key(r.name)]||IMAGES[key(r.name)];if(!src)return;r.image=src;r.imagePosition='center';r.photoPolicy='verified-interior';r.photoVerified='2026-08-27'})});
+ Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r)return;var ck=String(r.city||'')+'|'+key(r.name),contact=NY_CONTACTS[ck],src=NY_INTERIORS[ck]||IMAGES[key(r.name)];if(contact){r.phone=contact.phone;r.url=contact.url}if(src){r.image=src;r.imagePosition='center';r.photoPolicy='verified-interior';r.photoVerified='2026-08-27';if(typeof BUSINESS_PHOTOS==='object'){BUSINESS_PHOTOS[r.name]=BUSINESS_PHOTOS[r.name]||[];if(BUSINESS_PHOTOS[r.name].indexOf(src)<0)BUSINESS_PHOTOS[r.name].push(src)}}})});
  ['bronx','queens'].forEach(function(city){
   var seen={},pool=[];Object.keys(boCategoryData).forEach(function(cat){if(cat===city)return;(boCategoryData[cat]||[]).forEach(function(r){if(!r||r.city!==city||parseFloat(r.rating)<3.8)return;var k=key(r.name);if(!seen[k]){seen[k]=1;pool.push(r)}})});
   pool.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
@@ -44994,4 +45008,40 @@ body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge{
   transform:none!important;
 }
 </style>
+<script id="bop-mobile-contact-navigation-testpass-v340">
+(function(){
+  /* Mobile-safe directions: use the restaurant address in the native Google
+     Maps directions endpoint. This avoids the embedded-map overlay that was
+     swallowing taps in several iPhone browsers. */
+  document.addEventListener('click',function(event){
+    var btn=event.target&&event.target.closest&&event.target.closest('[data-directions-popup]');
+    if(!btn)return;
+    var address=btn.getAttribute('data-directions-popup');
+    if(!address)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    var url='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address);
+    var opened=window.open(url,'_blank','noopener');
+    if(!opened)window.location.href=url;
+  },true);
+
+  /* Keep late-added card images and the PICS gallery in sync. Earlier builds
+     populated the gallery before the New York data patches ran. */
+  function syncPhotos(){
+    if(typeof boCategoryData!=='object'||typeof BUSINESS_PHOTOS!=='object')return false;
+    Object.keys(boCategoryData).forEach(function(cat){
+      (boCategoryData[cat]||[]).forEach(function(r){
+        if(!r||!r.name||!r.image)return;
+        BUSINESS_PHOTOS[r.name]=BUSINESS_PHOTOS[r.name]||[];
+        if(BUSINESS_PHOTOS[r.name].indexOf(r.image)<0)BUSINESS_PHOTOS[r.name].push(r.image);
+      });
+    });
+    return true;
+  }
+  var attempts=0,photoTimer=setInterval(function(){
+    attempts++;
+    if(syncPhotos()&&attempts>=6||attempts>30)clearInterval(photoTimer);
+  },250);
+})();
+</script>
 </body></html>
