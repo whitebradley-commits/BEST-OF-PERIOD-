@@ -23395,6 +23395,14 @@ function boRenderCategory(cat){
   // before the older route-sync block at the bottom of this function, which
   // left Safari's address pointed at the landing page and made Refresh jump
   // home. The visible screen and reloadable URL now change together first.
+  // A main-city render must establish its city BEFORE building any category
+  // tiles below. Previously this assignment happened inside the delayed hero
+  // animation callback, after the tile badges had already read the old city's
+  // context. That made every city appear to have the same category totals.
+  if(BO_CITY_CONFIG[cat]){
+    boCityContext = cat;
+    window.boCityContext = cat;
+  }
   const boImmediateRouteCity = BO_CITY_CONFIG[cat] ? cat : boCityContext;
   boReplaceBestOfRoute(cat, boImmediateRouteCity);
   const titleCityKey = BO_CITY_CONFIG[cat] ? cat : boCityContext;
@@ -40103,7 +40111,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 <div id="bopExclusiveInvitation" role="dialog" aria-modal="true" aria-labelledby="bopExclusiveInvitationTitle">
   <section class="bop-exclusive-orb">
     <h2 class="bop-exclusive-copy" id="bopExclusiveInvitationTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Best of Period</h2>
-    <header class="bop-world-hero bop-exclusive-world-hero" aria-hidden="true"><div class="bop-world-best">Best of</div><div class="bop-world-title-line bop-exclusive-title-line"><div class="bop-world-period">Period<sup>&copy;</sup></div></div></header>
+    <header class="bop-world-hero bop-exclusive-world-hero" aria-hidden="true"><div class="bop-world-best">Best of</div><div class="bop-world-title-line bop-exclusive-title-line"><div class="bop-world-period">Perıod<span class="bop-opening-static-apple" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke="#F59E0B" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg></span><sup>&copy;</sup></div></div></header>
     <div class="bop-exclusive-btn-row">
       <button class="bop-exclusive-enter" id="bopExclusivePromo" type="button">PROMO<br/>VIDEO</button>
       <button class="bop-exclusive-enter" id="bopExclusiveEnter" type="button"><span class="bop-bjs-co-stack"><span class="bop-bjs-thick">BJS</span><span class="bop-bjs-co-light">CO.</span></span></button>
@@ -44274,6 +44282,7 @@ function isLeafPeriodNode(node){
      invitation popup used hardcoded all-caps "PERIOD", which the
      original case-sensitive check silently missed entirely. */
   if(node.nodeType !== 3) return false;
+  if(node.parentElement && node.parentElement.querySelector(':scope > .bop-opening-static-apple')) return false;
   return node.nodeValue.trim().toLowerCase() === 'period';
 }
 
@@ -45123,4 +45132,237 @@ body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge{
   var tries=0,t=setInterval(function(){tries++;if(apply()||tries>35)clearInterval(t)},250);
 })();
 </script>
+<script id="bop-la-sd-real-area-pages-v343">
+(function(){
+  var AREAS={
+    lavalley:{parent:'losangeles',displayName:'San Fernando Valley',landingName:'The Valley',areas:['Sherman Oaks','Encino','Studio City','Tarzana','Woodland Hills'],bjs:'bjspickslavalley'},
+    lanorthhollywood:{parent:'losangeles',displayName:'North Hollywood & Burbank',landingName:'NoHo & Burbank',areas:['North Hollywood','Burbank','Toluca Lake'],bjs:'bjspickslanorthhollywood'},
+    laweho:{parent:'losangeles',displayName:'West Hollywood',landingName:'West Hollywood',areas:['West Hollywood','Sunset Strip'],bjs:'bjspickslaweho'},
+    lahollywood:{parent:'losangeles',displayName:'Hollywood',landingName:'Hollywood',areas:['Hollywood','Thai Town','Fairfax'],bjs:'bjspickslahollywood'},
+    lalosfelizsilverlake:{parent:'losangeles',displayName:'Los Feliz & Silver Lake',landingName:'Los Feliz',areas:['Los Feliz','Silver Lake','Echo Park','Atwater Village'],bjs:'bjspickslalosfelizsilverlake'},
+    lasantamonicavenice:{parent:'losangeles',displayName:'Santa Monica & Venice',landingName:'Santa Monica',areas:['Santa Monica','Venice','Marina del Rey','Malibu'],bjs:'bjspickslasantamonicavenice'},
+    labeveryhillswestside:{parent:'losangeles',displayName:'Beverly Hills & Westside',landingName:'Beverly Hills',areas:['Beverly Hills','Westwood','Brentwood','Century City'],bjs:'bjspickslabeveryhillswestside'},
+    ladowntown:{parent:'losangeles',displayName:'Downtown Los Angeles',landingName:'Downtown L.A.',areas:['Downtown','Arts District','Little Tokyo'],bjs:'bjspicksladowntown'},
+    laculvercity:{parent:'losangeles',displayName:'Culver City',landingName:'Culver City',areas:['Culver City','Palms'],bjs:'bjspickslaculvercity'},
+    lasouthbaylax:{parent:'losangeles',displayName:'South Bay & LAX',landingName:'South Bay',areas:['Manhattan Beach','Hermosa Beach','Redondo Beach','Hawthorne','LAX'],bjs:'bjspickslasouthbaylax'},
+    sdoceanside:{parent:'sandiego',displayName:'Oceanside',landingName:'Oceanside',areas:['Oceanside','Oceanside Harbor'],bjs:'bjspickssdoceanside'},
+    sdcarlsbad:{parent:'sandiego',displayName:'Carlsbad',landingName:'Carlsbad',areas:['Carlsbad','Carlsbad Village'],bjs:'bjspickssdcarlsbad'},
+    sdencinitas:{parent:'sandiego',displayName:'Encinitas & Cardiff',landingName:'Encinitas',areas:['Encinitas','Cardiff-by-the-Sea'],bjs:'bjspickssdencinitas'},
+    sddelmar:{parent:'sandiego',displayName:'Del Mar & Solana Beach',landingName:'Del Mar',areas:['Del Mar','Solana Beach'],bjs:'bjspickssddelmar'},
+    sdlajolla:{parent:'sandiego',displayName:'La Jolla',landingName:'La Jolla',areas:['La Jolla','University City'],bjs:'bjspickssdlajolla'},
+    sdpacificbeach:{parent:'sandiego',displayName:'Pacific Beach & Mission Bay',landingName:'Pacific Beach',areas:['Pacific Beach','Mission Beach','Mission Bay'],bjs:'bjspickssdpacificbeach'},
+    sddowntown:{parent:'sandiego',displayName:'Downtown San Diego & Gaslamp',landingName:'Downtown S.D.',areas:['Downtown','Gaslamp Quarter','Little Italy','East Village'],bjs:'bjspickssddowntown'},
+    sdcoronado:{parent:'sandiego',displayName:'Coronado',landingName:'Coronado',areas:['Coronado','Coronado Island'],bjs:'bjspickssdcoronado'}
+  };
+  var LA_ORDER=['lavalley','lanorthhollywood','laweho','lahollywood','lalosfelizsilverlake','lasantamonicavenice','labeveryhillswestside','ladowntown','laculvercity','lasouthbaylax'];
+  var SD_ORDER=['sdoceanside','sdcarlsbad','sdencinitas','sddelmar','sdlajolla','sdpacificbeach','sddowntown','sdcoronado'];
+  function text(r){return [r&&r.territory,r&&r.area,r&&r.neighborhood,r&&r.name,r&&r.address].filter(Boolean).join(' ').toLowerCase()}
+  function classify(r,parent){
+    var t=text(r);
+    if(parent==='sandiego'){
+      if(/oceanside/.test(t))return'sdoceanside';
+      if(/carlsbad/.test(t))return'sdcarlsbad';
+      if(/encinitas|cardiff/.test(t))return'sdencinitas';
+      if(/del mar|solana beach/.test(t))return'sddelmar';
+      if(/la jolla|university city|utc\b/.test(t))return'sdlajolla';
+      if(/pacific beach|mission beach|mission bay|\bpb\b/.test(t))return'sdpacificbeach';
+      if(/coronado/.test(t))return'sdcoronado';
+      if(/downtown san diego|gaslamp|little italy|east village|92101/.test(t))return'sddowntown';
+      return'';
+    }
+    if(/san fernando|sherman oaks|encino|studio city|tarzana|woodland hills|van nuys|northridge|reseda/.test(t))return'lavalley';
+    if(/north hollywood|\bnoho\b|burbank|toluca lake/.test(t))return'lanorthhollywood';
+    if(/west hollywood|weho|sunset strip/.test(t))return'laweho';
+    if(/los feliz|silver lake|echo park|atwater village/.test(t))return'lalosfelizsilverlake';
+    if(/santa monica|venice|marina del rey|malibu/.test(t))return'lasantamonicavenice';
+    if(/beverly hills|westwood|brentwood|century city|sawtelle|90024|90025|90049|90067/.test(t))return'labeveryhillswestside';
+    if(/culver city|\bpalms\b|90034/.test(t))return'laculvercity';
+    if(/manhattan beach|hermosa beach|redondo beach|hawthorne|el segundo|inglewood|\blax\b/.test(t))return'lasouthbaylax';
+    if(/downtown los angeles|arts district|little tokyo|\bdtla\b|90012|90013|90014|90015|90017|90021|90071/.test(t))return'ladowntown';
+    if(/hollywood|fairfax|thai town|90028|90036|90038|90046/.test(t))return'lahollywood';
+    return'';
+  }
+  function same(a,b){return String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase()}
+  function installConfigs(){
+    Object.keys(AREAS).forEach(function(key){var a=AREAS[key];BO_CITY_CONFIG[key]={displayName:a.displayName,landingName:a.landingName,areaList:a.areas,tickerMessages:['BEST OF '+a.displayName.toUpperCase(),a.parent==='sandiego'?'SAN DIEGO':'LOS ANGELES'],useNameCycler:true,bjsPicksCat:a.bjs,areaSubpage:true,parentCity:a.parent};if(BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);boCategoryData[a.bjs]=Array.isArray(boCategoryData[a.bjs])?boCategoryData[a.bjs]:[]});
+  }
+  function distribute(){
+    if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+    var cats=Object.keys(boCategoryData),pools={};Object.keys(AREAS).forEach(function(k){pools[k]=new Map()});
+    cats.forEach(function(cat){
+      var list=boCategoryData[cat];if(!Array.isArray(list)||AREAS[cat])return;
+      var additions=[];
+      list.forEach(function(r){if(!r||!r.name||(r.city!=='losangeles'&&r.city!=='sandiego'))return;var area=classify(r,r.city);if(!area)return;var clone=Object.assign({},r,{city:area,parentCity:r.city,areaPage:area});if(r.bjsPickCity===r.city)clone.bjsPickCity=area;var exists=list.some(function(x){return x&&x.city===area&&same(x.name,r.name)&&same(x.address,r.address)});if(!exists)additions.push(clone);var id=String(r.name).toLowerCase()+'|'+String(r.address||'').toLowerCase(),old=pools[area].get(id);if(!old||parseFloat(r.rating)>parseFloat(old.rating))pools[area].set(id,clone)});
+      if(additions.length)Array.prototype.push.apply(list,additions);
+    });
+    Object.keys(AREAS).forEach(function(area){var rows=Array.from(pools[area].values()).filter(function(r){var n=parseFloat(r.rating);return (Number.isFinite(n)&&n>=3.8)||r.bjsPick===true||Number(r.michelinStars)>0||r.jamesBeard===true});rows.sort(typeof boCompareRestaurants==='function'?boCompareRestaurants:function(a,b){return(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)});rows=rows.slice(0,18).map(function(r,i){return Object.assign({},r,{rank:i+1,city:area})});boCategoryData[area]=rows;var pick=AREAS[area].bjs;boCategoryData[pick]=rows.filter(function(r){return r.bjsPick===true}).map(function(r){return Object.assign({},r)})});
+    window.BOP_LA_SD_AREA_PAGE_COUNTS={losAngeles:LA_ORDER.length,sanDiego:SD_ORDER.length,total:LA_ORDER.length+SD_ORDER.length,allDestinationPages:Object.keys(BO_CITY_CONFIG).length};
+    return true;
+  }
+  function patchGate(id,order){var gate=document.getElementById(id);if(!gate)return;gate.querySelectorAll('.bop-lamap-zone').forEach(function(zone,i){if(order[i])zone.dataset.dest=order[i]})}
+  function patchGates(){patchGate('bopCityGate_losangeles',LA_ORDER);patchGate('bopCityGate_sandiego',SD_ORDER)}
+  installConfigs();
+  var tries=0,t=setInterval(function(){tries++;distribute();patchGates();if(tries>24)clearInterval(t)},500);
+  new MutationObserver(patchGates).observe(document.body,{childList:true,subtree:true});
+  distribute();patchGates();
+})();
+</script>
+<script id="bop-next-fifty-global-launch-v344">
+(function(){
+var raw=[
+'tokyo|Tokyo|Japan|35.676|139.650|Sézanne|MICHELIN Guide|3',
+'mexicocity|Mexico City|Mexico|19.433|-99.133|Quintonil|MICHELIN Guide|2',
+'copenhagen|Copenhagen|Denmark|55.676|12.568|Geranium|MICHELIN Guide|3',
+'bangkok|Bangkok|Thailand|13.756|100.502|Sorn|MICHELIN Guide|3',
+'lima|Lima|Peru|-12.046|-77.043|Maido|World’s 50 Best|0',
+'madrid|Madrid|Spain|40.417|-3.704|DiverXO|MICHELIN Guide|3',
+'barcelona|Barcelona|Spain|41.388|2.170|Disfrutar|MICHELIN Guide|3',
+'hongkong|Hong Kong|Hong Kong SAR|22.319|114.169|Caprice|MICHELIN Guide|3',
+'singapore|Singapore|Singapore|1.352|103.820|Odette|MICHELIN Guide|3',
+'seoul|Seoul|South Korea|37.566|126.978|Mingles|MICHELIN Guide|3',
+'kyoto|Kyoto|Japan|35.012|135.768|Kikunoi Honten|MICHELIN Guide|3',
+'osaka|Osaka|Japan|34.694|135.502|HAJIME|MICHELIN Guide|3',
+'rome|Rome|Italy|41.903|12.496|La Pergola|MICHELIN Guide|3',
+'sansebastian|San Sebastián|Spain|43.319|-1.981|Arzak|MICHELIN Guide|3',
+'milan|Milan|Italy|45.464|9.190|Enrico Bartolini al Mudec|MICHELIN Guide|3',
+'amsterdam|Amsterdam|Netherlands|52.367|4.904|Flore|MICHELIN Guide|2',
+'lisbon|Lisbon|Portugal|38.722|-9.139|Belcanto|MICHELIN Guide|2',
+'istanbul|Istanbul|Turkey|41.008|28.978|TURK Fatih Tutak|MICHELIN Guide|2',
+'dubai|Dubai|United Arab Emirates|25.204|55.271|Trèsind Studio|MICHELIN Guide|3',
+'buenosaires|Buenos Aires|Argentina|-34.604|-58.382|Aramburu|MICHELIN Guide|2',
+'saopaulo|São Paulo|Brazil|-23.551|-46.633|D.O.M.|MICHELIN Guide|2',
+'montreal|Montreal|Canada|45.502|-73.567|Jérôme Ferrer — Europea|MICHELIN Guide|1',
+'toronto|Toronto|Canada|43.653|-79.383|Alo|MICHELIN Guide|1',
+'vancouver|Vancouver|Canada|49.283|-123.121|Published on Main|MICHELIN Guide|1',
+'melbourne|Melbourne|Australia|-37.814|144.963|Attica|50 Best Discovery|0',
+'sydney|Sydney|Australia|-33.869|151.209|Quay|50 Best Discovery|0',
+'shanghai|Shanghai|China|31.230|121.474|Taian Table|MICHELIN Guide|3',
+'taipei|Taipei|Taiwan|25.033|121.565|Le Palais|MICHELIN Guide|3',
+'macau|Macau|Macau SAR|22.199|113.544|Robuchon au Dôme|MICHELIN Guide|3',
+'beijing|Beijing|China|39.904|116.407|King’s Joy|MICHELIN Guide|3',
+'mumbai|Mumbai|India|19.076|72.878|Masque|Asia’s 50 Best|0',
+'newdelhi|New Delhi|India|28.614|77.209|Indian Accent|Asia’s 50 Best|0',
+'bogota|Bogotá|Colombia|4.711|-74.072|El Chato|Latin America’s 50 Best|0',
+'oaxaca|Oaxaca|Mexico|17.073|-96.727|Los Danzantes Oaxaca|MICHELIN Guide|1',
+'riodejaneiro|Rio de Janeiro|Brazil|-22.907|-43.173|Oteque|MICHELIN Guide|2',
+'santiago|Santiago|Chile|-33.449|-70.669|Boragó|Latin America’s 50 Best|0',
+'cartagena|Cartagena|Colombia|10.391|-75.479|Celele|Latin America’s 50 Best|0',
+'brussels|Brussels|Belgium|50.847|4.352|Bozar Restaurant|MICHELIN Guide|2',
+'antwerp|Antwerp|Belgium|51.219|4.402|Zilte|MICHELIN Guide|3',
+'vienna|Vienna|Austria|48.208|16.374|Amador|MICHELIN Guide|3',
+'berlin|Berlin|Germany|52.520|13.405|Rutz|MICHELIN Guide|3',
+'munich|Munich|Germany|48.135|11.582|JAN|MICHELIN Guide|3',
+'stockholm|Stockholm|Sweden|59.329|18.069|Frantzén|MICHELIN Guide|3',
+'oslo|Oslo|Norway|59.914|10.752|Maaemo|MICHELIN Guide|3',
+'dublin|Dublin|Ireland|53.350|-6.260|Chapter One by Mickael Viljanen|MICHELIN Guide|2',
+'porto|Porto|Portugal|41.158|-8.629|Casa de Chá da Boa Nova|MICHELIN Guide|2',
+'florence|Florence|Italy|43.770|11.255|Enoteca Pinchiorri|MICHELIN Guide|3',
+'naples|Naples|Italy|40.852|14.268|George Restaurant|MICHELIN Guide|2',
+'seattle|Seattle|United States|47.606|-122.332|Canlis|James Beard Foundation|0',
+'zagreb|Zagreb|Croatia|45.815|15.982|Noel|MICHELIN Guide|1'
+];
+var cities=raw.map(function(s){var p=s.split('|');return{key:p[0],name:p[1],country:p[2],lat:+p[3],lon:+p[4],restaurant:p[5],source:p[6],stars:+p[7]}});
+function slug(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'')}
+function starter(c){var michelin=/MICHELIN/.test(c.source),jb=/James Beard/.test(c.source);return{rank:1,name:c.restaurant,city:c.key,rating:null,reviews:null,ratingSource:c.source,ratingNote:(c.stars?c.stars+' MICHELIN Star'+(c.stars===1?'':'s')+'. ':'')+'Launch qualification verified from '+c.source+'; aggregate customer score pending.',why:c.restaurant+' gives '+c.name+' an independently recognized launch restaurant',note:'This is the first verified Best Of Period listing for '+c.name+'. More restaurants, aggregate ratings, contact details and verified interior photography will follow in the city completion pass.',image:'',url:'',address:'',phone:'',hours:[],price:4,hue:'28, 38%, 23%',michelinStars:c.stars||undefined,michelinGuide:michelin||undefined,jamesBeard:jb||undefined,jamesBeardHonor:jb?'James Beard Foundation recognition':undefined,photoRequired:true,photoAuditStatus:'awaiting-verified-interior',redCalloutLabel:'LAUNCH RECOGNITION',redCallout:c.source+' recognition establishes the first independently verified restaurant for this new city page.'}}
+function install(){if(typeof BO_CITY_CONFIG!=='object'||typeof boCategoryData!=='object')return false;cities.forEach(function(c){var picks='bjspicks'+c.key;BO_CITY_CONFIG[c.key]={displayName:c.name,landingName:c.name,areaList:[c.name],tickerMessages:['BEST OF '+c.name.toUpperCase(),'NOW LIVE'],useNameCycler:true,bjsPicksCat:picks,countryLabel:c.country,globalLaunch2026:true};if(BO_MAIN_CITY_CATS.indexOf(c.key)<0)BO_MAIN_CITY_CATS.push(c.key);var r=starter(c);boCategoryData[c.key]=[r];boCategoryData[picks]=Array.isArray(boCategoryData[picks])?boCategoryData[picks]:[];var category=r.jamesBeard?'jamesbeard':r.michelinGuide?'michelin':'bestof';boCategoryData[category]=Array.isArray(boCategoryData[category])?boCategoryData[category]:[];if(!boCategoryData[category].some(function(x){return x&&x.city===c.key&&slug(x.name)===slug(r.name)}))boCategoryData[category].push(Object.assign({},r));if(Array.isArray(OC_CITIES)){var existing=OC_CITIES.find(function(x){return slug(x.n)===slug(c.name)});if(existing){existing.t='live';existing.dest=c.key;existing.la=c.lat;existing.lo=c.lon}else OC_CITIES.push({n:c.name,la:c.lat,lo:c.lon,t:'live',dest:c.key})}});window.BOP_GLOBAL_LAUNCH_2026={newMainCities:cities.length,totalMainDestinations:72,totalDestinationPages:97,houstonIncluded:false,zagrebIncluded:true};return true}
+var tries=0,t=setInterval(function(){tries++;if(install()||tries>30)clearInterval(t)},250);install();
+})();
+</script>
+<style id="bop-main-period-copyright-baseline-v345">
+/* Main landing brand lock: the copyright mark belongs at the lower-right
+   baseline of Period, never floating through the middle of the word. */
+#bopLandingOverlay .bop-splash-period{
+  position:relative!important;
+  display:inline-block!important;
+}
+#bopLandingOverlay .bop-splash-period>.period-mark{
+  position:absolute!important;
+  top:auto!important;
+  right:-.23em!important;
+  bottom:.06em!important;
+  margin:0!important;
+  font-size:.18em!important;
+  line-height:1!important;
+  vertical-align:baseline!important;
+  transform:none!important;
+}
+</style>
+<style id="bop-opening-exact-font-embedded-v346">
+@font-face{
+  font-family:'Bodoni Moda Opening Embedded';
+  src:url(data:font/woff2;base64,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) format('woff2');
+  font-style:normal;
+  font-weight:900;
+  font-display:block;
+}
+#bopExclusiveInvitation .bop-world-best,
+#bopExclusiveInvitation .bop-world-period{
+  font-family:'Bodoni Moda Opening Embedded','Bodoni Moda',serif!important;
+  font-style:normal!important;
+  font-weight:900!important;
+}
+</style>
+<style id="bop-opening-static-apple-copyright-v347">
+/* The approved text remains one unchanged text run. Only these two marks move. */
+#bopExclusiveInvitation .bop-opening-static-apple{
+  position:absolute;
+  z-index:4;
+  left:48.9%;
+  top:-.02em;
+  width:.42em;
+  height:.42em;
+  pointer-events:none;
+}
+#bopExclusiveInvitation .bop-opening-static-apple svg{
+  display:block;
+  width:100%;
+  height:100%;
+}
+#bopExclusiveInvitation .bop-opening-static-apple path{
+  fill:#F59E0B;
+}
+#bopExclusiveInvitation .bop-world-period>sup{
+  position:relative!important;
+  top:1.35em!important;
+}
+</style>
+<style id="bop-opening-orb-fit-v348">
+/* Outer opening frame only. Approved logo text dimensions remain untouched. */
+#bopExclusiveInvitation{
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+}
+#bopExclusiveInvitation .bop-exclusive-orb{
+  width:min(89.3vw,589px,calc(100dvh - 32px))!important;
+}
+</style>
+<style id="bop-opening-orb-up-dot-mask-v349">
+/* Hide only the original i-dot behind the approved apple. */
+#bopExclusiveInvitation .bop-opening-static-apple{
+  isolation:isolate;
+}
+#bopExclusiveInvitation .bop-opening-static-apple::before{
+  content:'';
+  position:absolute;
+  z-index:0;
+  left:50%;
+  top:52%;
+  width:.25em;
+  height:.25em;
+  border-radius:50%;
+  background:#050505;
+  transform:translate(-50%,-50%);
+}
+#bopExclusiveInvitation .bop-opening-static-apple svg{
+  position:relative;
+  z-index:1;
+}
+/* Move the complete orb upward without resizing or changing its contents. */
+#bopExclusiveInvitation .bop-exclusive-orb{
+  position:relative!important;
+  top:-4vh!important;
+}
+</style>
 </body></html>
