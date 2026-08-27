@@ -43794,4 +43794,110 @@ var t=setInterval(function(){ if(addGiordanos()) clearInterval(t); }, 300);
 }
 
 </style>
+
+<script id="bop-visible-bjs-badge-final-v304-script">
+(function(){
+/* v304: the landing/hub-page BJS badge has multiple legacy duplicate
+   implementations scattered through this file, several already hidden
+   with display:none, and the one actually rendering visibly couldn't be
+   pinned down through static search alone. Rather than fix yet another
+   specific element that might not be the real one, this finds whatever
+   is ACTUALLY visible on screen showing bare "BJS" text (small badge or
+   button, not a full sentence) and fixes it directly on the real DOM,
+   wherever it lives. Skips the WHY popup's own badge, which is already
+   handled correctly by its own fix. */
+function isVisible(el){
+  if(!el || !el.getClientRects) return false;
+  var r = el.getClientRects();
+  if(!r.length) return false;
+  var cs = window.getComputedStyle(el);
+  return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0;
+}
+function fixVisibleBjsBadges(){
+  var candidates = document.querySelectorAll('button, span, div, a');
+  candidates.forEach(function(el){
+    if(el.closest('#bjsWhyOverlay')) return; /* already handled separately */
+    if(el.children.length > 0) return; /* only leaf nodes with plain text */
+    var t = (el.textContent || '').trim();
+    if(t !== 'BJS') return;
+    if(!isVisible(el)) return;
+    if(el.dataset.bopCoAdded === '1') return;
+    var co = document.createElement('span');
+    co.textContent = 'CO.';
+    co.style.cssText = 'display:block;font-size:0.6em;line-height:1;margin-top:1px;';
+    el.appendChild(co);
+    el.dataset.bopCoAdded = '1';
+  });
+}
+window.__bopTick(fixVisibleBjsBadges, 700);
+document.addEventListener('click', function(){ setTimeout(fixVisibleBjsBadges, 250); }, true);
+})();
+
+</script>
+
+<script id="bop-la-sd-final-corrective-v305-script">
+(function(){
+/* v305: Los Angeles and San Diego kept landing on the flat city page
+   despite five separate entry-point functions being patched to redirect
+   to the zone gate. Given how many duplicate/legacy code paths this file
+   turned out to have for the BJS badge, there's very likely a 6th (or
+   more) way into a city I haven't found by reading code. Rather than
+   keep hunting for it, this watches the ACTUAL result: any time the main
+   city hub content becomes visible while boCityContext is LA or SD and
+   the gate hasn't been dismissed yet this visit, it swaps straight to
+   the gate — regardless of which function put it there. */
+var dismissedCities = {};
+function currentCityIsGateEligible(){
+  var ctx = (typeof boCityContext !== 'undefined') ? boCityContext : (window.boCityContext || null);
+  return ctx === 'losangeles' || ctx === 'sandiego';
+}
+function hubIsShowing(){
+  var best = document.getElementById('bestOfOverlay');
+  /* Any content showing in bestOfOverlay while we're on an ungated LA/SD
+     visit is the wrong state — don't depend on guessing the hub's exact
+     internal tile class names, just check that something is open there. */
+  return !!(best && best.classList.contains('open'));
+}
+function enforce(){
+  if(typeof window.bopShowCityGate !== 'function') return;
+  var ctx = (typeof boCityContext !== 'undefined') ? boCityContext : window.boCityContext;
+  if(!currentCityIsGateEligible()) return;
+  if(dismissedCities[ctx]) return;
+  var gateOpen = document.querySelector('.bop-city-gate.open');
+  if(gateOpen) return; /* gate already showing, nothing to fix */
+  if(!hubIsShowing()) return;
+  window.bopShowCityGate(ctx);
+}
+/* If the user genuinely taps through a zone on the gate, don't fight them
+   afterward — only intervene the moment the flat hub appears unearned. */
+document.addEventListener('click', function(e){
+  var zoneTap = e.target.closest && e.target.closest('.bop-city-gate [data-dest], .bop-lamap-zone, .bop-nyli-zone');
+  if(zoneTap){
+    var ctx = (typeof boCityContext !== 'undefined') ? boCityContext : window.boCityContext;
+    if(ctx) dismissedCities[ctx] = true;
+  }
+}, true);
+window.__bopTick(enforce, 400);
+})();
+
+</script>
+
+<style id="bop-search-powered-by-gold-fix-v306">
+/* v306: the city hub page's "powered by BJS" badge was being forced
+   lowercase by a rule scoped to #bestOfOverlay, and showing up red on
+   at least San Diego. This overrides both directly on the actual badge
+   and its SVG text, regardless of what's setting the wrong color upstream. */
+#bestOfOverlay .bo-search-powered-by{
+  text-transform:uppercase!important;
+  color:#F59E0B!important;
+  -webkit-text-fill-color:#F59E0B!important;
+}
+#bestOfOverlay .bo-search-powered-by svg text{
+  fill:#F59E0B!important;
+}
+#bestOfOverlay .bo-search-powered-by svg circle{
+  stroke:#F59E0B!important;
+}
+
+</style>
 </body></html>
