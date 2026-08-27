@@ -254,7 +254,7 @@ html.bop-qr-bypass-active #bopPromoModal{
     transform:none;
   }
   .bop-splash-line1{
-    font-weight:900; text-transform:uppercase;
+    font-weight:900; text-transform:none;
     font-size:clamp(1.4rem, 6.2vmin, 2.6rem);
     color:#f2f1ed; letter-spacing:0.03em;
     text-shadow:0 0 16px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.2);
@@ -28417,7 +28417,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 .bop-world-landing-shell{position:relative;width:min(720px,calc(100% - 24px));min-height:100vh;margin:0 auto;padding:34px 18px 90px;border-left:1px solid rgba(245,158,11,.45);border-right:1px solid rgba(245,158,11,.45);background:linear-gradient(135deg,rgba(245,158,11,.022),transparent 38%,rgba(228,0,43,.018))}
 .bop-world-back{position:absolute;top:34px;left:18px;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 .68rem/1.05 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer}
 .bop-world-hero{padding:92px 0 34px;text-align:center}
-.bop-world-best{position:relative;z-index:2;color:#fff;font:900 clamp(3rem,13vw,6rem)/.86 'Bodoni Moda',serif;letter-spacing:-.01em;text-transform:uppercase}
+.bop-world-best{position:relative;z-index:2;color:#fff;font:900 clamp(3rem,13vw,6rem)/.86 'Bodoni Moda',serif;letter-spacing:-.01em;text-transform:none}
 .bop-world-title-line{display:flex;align-items:center;justify-content:center;gap:0;margin-top:-25px;white-space:nowrap}
 .bop-world-hero-globe{position:relative;z-index:3;width:calc(clamp(138px,39vw,215px) - 2pt);height:calc(clamp(138px,39vw,215px) - 2pt);margin-left:clamp(-30px,-5vw,-10px);margin-right:-4px;filter:drop-shadow(0 0 14px rgba(245,158,11,.72));animation:bopLandingGlobeTurn 18s linear infinite}
 .bop-world-hero-globe *{fill:none;stroke:#F59E0B;stroke-width:2.25;stroke-linecap:round}
@@ -40915,7 +40915,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 .bo-ft-shell{position:relative;width:min(720px,calc(100% - 24px));margin:0 auto;padding:34px 18px 90px;}
 .bo-ft-back{position:absolute;top:34px;left:18px;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 .68rem/1.05 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer;}
 .bo-ft-hero{padding:92px 0 20px;text-align:center;}
-.bo-ft-best{color:#fff;font:900 clamp(2.2rem,10vw,4.2rem)/.86 'Bodoni Moda',serif;letter-spacing:.015em;text-transform:uppercase;}
+.bo-ft-best{color:#fff;font:900 clamp(2.2rem,10vw,4.2rem)/.86 'Bodoni Moda',serif;letter-spacing:.015em;text-transform:none;}
 .bo-ft-title-line{display:flex;align-items:center;justify-content:center;gap:0;margin-top:-15px;flex-wrap:wrap;}
 .bo-ft-globe{width:clamp(90px,26vw,150px);height:clamp(90px,26vw,150px);margin-right:-4px;filter:drop-shadow(0 0 14px rgba(245,158,11,.72));animation:bopLandingGlobeTurn 18s linear infinite;}
 .bo-ft-globe *{fill:none;stroke:#F59E0B;stroke-width:2.25;stroke-linecap:round;}
@@ -44304,6 +44304,46 @@ function sweepCorner(){
   });
 }
 window.__bopTick(sweepCorner, 600);
+})();
+
+</script>
+
+<script id="bop-bestof-titlecase-v321-script">
+(function(){
+/* v321: normalize every literal "BEST OF" text node to title-case
+   "Best of", matching the same content-based approach used for "Period"
+   -- there are 15+ separate hardcoded instances across different
+   classes and JS template strings, so fixing each one individually
+   would be exactly the kind of fragile, easy-to-miss-one work that's
+   caused repeated problems on this site. This catches all of them by
+   what they actually render, not by which of the many implementations
+   produced them. Deliberately scoped to the literal words "BEST OF"
+   only -- a rotating city name that follows it in the DOM is a
+   separate, untouched sibling node and is not affected. */
+function isLeafBestOfNode(node){
+  if(node.nodeType !== 3) return false;
+  return node.nodeValue.trim() === 'BEST OF';
+}
+function transformNode(textNode){
+  const parent = textNode.parentNode;
+  if(!parent) return;
+  textNode.nodeValue = textNode.nodeValue.replace('BEST OF', 'Best of');
+}
+function scan(root){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const targets = [];
+  let node;
+  while((node = walker.nextNode())){
+    if(isLeafBestOfNode(node)) targets.push(node);
+  }
+  targets.forEach(transformNode);
+}
+function install(){
+  scan(document.body);
+  window.__bopMutationHandlers.push(scan);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', install);
+else install();
 })();
 
 </script>
