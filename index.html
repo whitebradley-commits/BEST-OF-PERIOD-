@@ -23895,7 +23895,25 @@ function boRenderCategory(cat){
   // a No. 1 pick in its own category, so it keeps whatever order the data
   // already built (Best Of Period first) instead of being re-sorted by star
   // rating like every other page.
-  const sortedEntries = boRankedRestaurantList(boScopedCategoryList);
+  /* A list earns its length; eighteen is the universal ceiling, never a
+     quota. Destination Best Of pages are intentionally tighter at eleven.
+     Every
+     ordinary ranked page excludes scores below 3.8, prefers the 4.6+ group,
+     and only reaches downward when fewer than six high-scoring choices exist.
+     BJS Picks remain editorial and therefore keep their existing rules. */
+  let sortedEntries = boRankedRestaurantList(boScopedCategoryList);
+  if(!isBjsPicksCat(cat)){
+    sortedEntries = sortedEntries.filter(entry => {
+      const score = boRestaurantScore(entry);
+      return score != null && score >= 3.8;
+    });
+    const strongest = sortedEntries.filter(entry => boRestaurantScore(entry) >= 4.6);
+    const listCap = isMainCityPage ? 11 : 18;
+    sortedEntries = (strongest.length >= 6 ? strongest : sortedEntries.slice(0,6)).slice(0,listCap);
+  }
+  /* Editorial BJS Picks are not score-ranked, but they still obey the global
+     maximum so no page can grow without bound. */
+  sortedEntries = sortedEntries.slice(0,18);
   if(boSectionHeadTitleEl){
     const sectionCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     boSectionHeadTitleEl.classList.toggle('bo-brewery-ranking-title', cat === 'brewery');
@@ -44695,7 +44713,16 @@ var SHORE=[
  {city:'southshoreli',name:'Oishi Omakase',rating:4.9,reviews:32,price:4,address:'Long Beach, NY 11561',why:'An intimate Long Beach counter for a focused chef-led sushi progression',note:'A small-format omakase experience where pacing, direct chef interaction and seasonal fish matter more than a sprawling menu.',label:'SMALL-SAMPLE STANDOUT',callout:'The score is promising but the review sample is still small; treat the counter experience—not the number—as the draw.'},
  {city:'southshoreli',name:'Dodici',rating:4.8,reviews:691,price:3,address:'12 N Park Ave, Rockville Centre, NY 11570',why:'A warm Rockville Centre Italian standby with lasting neighborhood loyalty',note:'Classic pasta, seafood and an inviting brick-lined room make it a comfortable, conversation-friendly dinner.',label:'NEIGHBORHOOD CLASSIC',callout:'A longevity pick, not a novelty pick—come for familiar Italian cooking done with care.'},
  {city:'southshoreli',name:'Mesita — Rockville Centre',rating:4.7,reviews:1571,price:3,address:'212 Merrick Rd, Rockville Centre, NY 11570',why:'A colorful, high-energy Mexican room made for margaritas and groups',note:'Tacos, shareable plates and a serious tequila-and-mezcal focus turn dinner into a lively night out.',label:'MARGARITA NIGHT',callout:'Choose this for energy; quieter conversation is not the point.'},
- {city:'southshoreli',name:'Drift 82',rating:4.6,reviews:368,price:3,address:'82 Brightwood St, Patchogue, NY 11772',why:'A relaxed Patchogue waterfront stop for seafood, cocktails and live music',note:'The dockside setting and entertainment calendar make it a useful summer stop when the plan extends beyond dinner.',label:'DOCKSIDE SCENE',callout:'Check the music schedule and weather before going—the outdoor experience can change the entire night.'}
+ {city:'southshoreli',name:'Drift 82',rating:4.6,reviews:368,price:3,address:'82 Brightwood St, Patchogue, NY 11772',why:'A relaxed Patchogue waterfront stop for seafood, cocktails and live music',note:'The dockside setting and entertainment calendar make it a useful summer stop when the plan extends beyond dinner.',label:'DOCKSIDE SCENE',callout:'Check the music schedule and weather before going—the outdoor experience can change the entire night.'},
+ {city:'northshoreli',name:'Trattoria DiMeo',rating:4.8,reviews:867,price:3,address:'183 Roslyn Rd, Roslyn Heights, NY 11577',why:'Traditional Neapolitan cooking sustained by more than five decades of family history',note:'The DiMeo family has served Roslyn since 1969, building a warm trattoria around red-sauce classics and Southern Italian hospitality.',label:'SINCE 1969',callout:'A 56-year Roslyn institution whose family story reaches back to Naples.'},
+ {city:'northshoreli',name:'Limani — Roslyn',rating:4.7,reviews:2849,price:4,address:'1043 Northern Blvd, Roslyn, NY 11576',why:'A polished Greek seafood room where whole fish and pristine ingredients lead',note:'The bright Mediterranean dining room is built for seafood displayed by the pound, composed salads and long celebratory lunches.'},
+ {city:'northshoreli',name:'Il Mulino New York — Long Island',rating:4.8,reviews:1747,price:4,address:'1042 Northern Blvd, Roslyn, NY 11576',why:'The famed Manhattan Italian formula translated to a formal Roslyn dining room',note:'Northern Italian cooking, veteran service and a deep special-occasion rhythm make this an established North Shore power dinner.',label:'MANHATTAN PEDIGREE',callout:'This is the Long Island outpost of the internationally known Il Mulino New York restaurant family.'},
+ {city:'northshoreli',name:"Alessandro's Italian",rating:4.8,reviews:974,price:4,address:'Manhasset, NY 11030',why:'Chef-owned contemporary Italian cooking with a strong handmade-pasta identity',note:'Alessandro Acquista blends Italian tradition with a modern Manhasset dining room, centering the menu on fresh pasta and polished classics.'},
+ {city:'northshoreli',name:'Cipollini Trattoria and Bar',rating:4.7,reviews:1721,price:4,address:'2110 Northern Blvd, Manhasset, NY 11030',why:'A bustling Americana Manhasset trattoria with enduring see-and-be-seen energy',note:'Italian standards, a broad wine list and a lively terrace make Cipollini as much a social address as a restaurant.'},
+ {city:'northshoreli',name:'Peter Luger Steak House — Great Neck',rating:4.7,reviews:7000,price:4,address:'255 Northern Blvd, Great Neck, NY 11021',phone:'(516) 487-8800',url:'https://peterluger.com/pages/locations-reservations',bjsPick:true,bjsPickCity:'northshoreli',bjsPickLabel:'North Shore Steakhouse',why:'The North Shore outpost of New York’s defining porterhouse institution',note:'USDA Prime beef is family-selected and dry-aged in-house, then served sizzling and sliced for the table with the ritual bacon, tomato and onion, German potatoes and creamed spinach.',label:'BJS STEAKHOUSE PICK',callout:'The Great Neck location opened in 1960, survived a severe 1984 fire and returned in 1986. It remains under the same Forman-family stewardship as the 1887 Brooklyn original.'},
+ {city:'southshoreli',name:"Toto's Restaurant",rating:4.9,reviews:448,price:4,address:'Wantagh, NY 11793',why:'A high-energy Wantagh steakhouse combining live music with a dressed-up dining room',note:'The room is built for a night out: steaks, seafood, attentive service and regular entertainment rather than a quiet neighborhood meal.'},
+ {city:'southshoreli',name:'Nautilus Cafe',rating:4.8,reviews:1666,price:3,address:'46 W Park Ave, Freeport, NY 11520',why:'A veteran Freeport seafood restaurant with unusually durable diner support',note:'Seafood, steaks and polished service give Nautilus a steadier, more traditional identity than the louder Nautical Mile party rooms.'},
+ {city:'southshoreli',name:'King Umberto',rating:4.9,reviews:2117,price:3,address:'1343 Hempstead Tpke, Elmont, NY 11003',why:'An Elmont Italian institution where serious cooking meets banquet-room generosity',note:'Family-run since 1976, King Umberto is known for pizza, old-school Italian specialties and a dramatic modern patio.',label:'LONG ISLAND INSTITUTION',callout:'Founded in 1976, this family restaurant grew from a neighborhood pizzeria into one of Nassau County’s best-known Italian destinations.'}
 ];
 var EXTRA={
  'sharkbarmontauk':{why:'An Amagansett roadside bar that treats seafood with a playful late-night streak',note:'The compact, casual room leans into cocktails, fried oysters and lobster fried rice—a useful break from formal Hamptons dining.'},
@@ -44731,18 +44758,240 @@ function apply(){
  boCategoryData.bestof=Array.isArray(boCategoryData.bestof)?boCategoryData.bestof:[];
  var shoreSpecial={
   'thefarmitalyhuntington':1,'oceanatthecrescentbeachclub':1,'ohkbarrestaurant':1,
-  'beginnings':1
+  'beginnings':1,'trattoriadimeo':1,'ilmulinonewyorklongisland':1,'kingumberto':1,
+  'peterlugersteakhousegreatneck':1
  };
  SHORE.forEach(function(x){var r=Object.assign({rank:0,city:x.city,rating:x.rating.toFixed(1),reviews:x.reviews,ratingSource:'Current verified-diner rating',ratingNote:'Current public verified-diner rating: '+x.rating.toFixed(1)+' from '+x.reviews.toLocaleString()+' reviews. Rating evidence is kept separate from Best Of Period editorial copy.',hours:[],phone:null,url:'',hue:'28, 38%, 23%'},x);if(shoreSpecial[key(x.name)]){r.redCalloutLabel=x.label;r.redCallout=x.callout}else{delete r.redCalloutLabel;delete r.redCallout}delete r.label;delete r.callout;boCategoryData.bestof.push(r)});
+ /* Put each Shore record into the cuisine pages users can actually tap. The
+    prior pass only placed them in the shared Best Of pool, so the city and
+    genre pages were empty even though the records existed. */
+ var shoreCategories={
+  'thefarmitalyhuntington':['italianhighend'],
+  'primeanamericankitchenbar':['steakhighend','seafoodhighend'],
+  'stellinaristorante':['italianhighend'],
+  'laptiteframboise':['french'],
+  'hendrickstavern':['steakhighend','american'],
+  '2spring':['american'],
+  'besitomexicanhuntington':['mexicanhighend'],
+  'barneys':['american'],
+  'sandbar':['seafoodhighend','american'],
+  'thewildgoose':['american'],
+  'oceanatthecrescentbeachclub':['seafoodhighend'],
+  'ohkbarrestaurant':['american'],
+  'pantry':['breakfastcasual','american'],
+  'primiitaliansteakhouse':['italianhighend','steakhighend'],
+  'mercatokitchencocktails':['italiancasual'],
+  'thejames':['steakhighend','american'],
+  'one10modernitalian':['italianhighend'],
+  'theoarsteakseafoodgrille':['seafoodcasual','steakcasual'],
+  'salt':['seafoodhighend'],
+  'beginnings':['american'],
+  'sangria71islandpark':['spanish'],
+  'oishiomakase':['sushihighend'],
+  'dodici':['italiancasual'],
+  'mesitarockvillecentre':['mexicanhighend'],
+  'drift82':['seafoodcasual'],
+  'trattoriadimeo':['italiancasual'],
+  'limaniroslyn':['seafoodhighend','mediterranean'],
+  'ilmulinonewyorklongisland':['italianhighend'],
+  'alessandrositalian':['italianhighend'],
+  'cipollinitrattoriaandbar':['italianhighend'],
+  'peterlugersteakhousegreatneck':['steakhighend'],
+  'totosrestaurant':['steakhighend'],
+  'nautiluscafe':['seafoodcasual'],
+  'kingumberto':['italiancasual','pizza']
+ };
+ SHORE.forEach(function(x){
+  var source=boCategoryData.bestof.find(function(r){return r&&r.city===x.city&&key(r.name)===key(x.name)});
+  (shoreCategories[key(x.name)]||[]).forEach(function(cat){
+   boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];
+   if(!boCategoryData[cat].some(function(r){return r&&r.city===x.city&&key(r.name)===key(x.name)}))boCategoryData[cat].push(Object.assign({},source));
+  });
+ });
  Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r)return;var d=EXTRA[key(r.name)];if(d){r.why=d.why;r.note=d.note;if(d.callout){r.redCalloutLabel=d.label;r.redCallout=d.callout}else if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}}if(platformLed(r.why)){r.why='A locally distinctive restaurant selected for its cooking, setting and neighborhood identity'}if(!r.note||platformLed(r.note)){r.note='The rating is only one signal. Use this section for the restaurant’s cooking, atmosphere and place in its neighborhood.'}if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}})});
  ['northshoreli','southshoreli','bronx','brooklyn','hamptons','manhattan'].forEach(function(city){
   var seen={},pool=[];Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r||r.city!==city||!parseFloat(r.rating))return;var k=key(r.name);if(!seen[k]){seen[k]=1;pool.push(r)}})});
   pool.sort(function(a,b){var ax=(a.bjsPick?3:0)+(a.michelinStars?3:0)+(a.jamesBeard?2:0)+(a.redCallout?1:0),bx=(b.bjsPick?3:0)+(b.michelinStars?3:0)+(b.jamesBeard?2:0)+(b.redCallout?1:0);return bx-ax||(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
-  var keep=pool.slice(0,16);boCategoryData.bestof=boCategoryData.bestof.filter(function(r){return !r||r.city!==city});keep.forEach(function(r,i){r.rank=i+1;boCategoryData.bestof.push(r)});
+  var keep=pool.slice(0,11);boCategoryData.bestof=boCategoryData.bestof.filter(function(r){return !r||r.city!==city});keep.forEach(function(r,i){r.rank=i+1;boCategoryData.bestof.push(r)});
+  /* Main destination pages read boCategoryData[city], not the shared Best Of
+     array. Rebuild that city array after the final additions so the cards are
+     visible instead of stopping at an empty heading. */
+  boCategoryData[city]=keep.map(function(r){return Object.assign({},r)});
+  if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[city]&&BO_CITY_CONFIG[city].bjsPicksCat){
+   var pickCat=BO_CITY_CONFIG[city].bjsPicksCat;
+   var priorPicks=Array.isArray(boCategoryData[pickCat])?boCategoryData[pickCat].filter(function(r){return !r||r.city!==city}):[];
+   keep.filter(function(r){return r&&r.bjsPick}).forEach(function(r){priorPicks.push(Object.assign({},r))});
+   boCategoryData[pickCat]=priorPicks;
+  }
  });
  return true;
 }
 var tries=0,t=setInterval(function(){tries++;if(apply()||tries>40)clearInterval(t)},250);
 })();
 </script>
+<script id="bop-ny-borough-category-depth-v338-script">
+(function(){
+/* v338: Connect the Bronx/Queens editorial records to the cuisine pages and
+   add a restrained verified-diner batch. A restaurant may live in several
+   useful genre pools, but destination and visible category lists remain
+   capped by the existing 16-card ranking layer. */
+var ADD=[
+ {city:'queens',name:'Amylos',rating:4.8,reviews:859,price:3,address:'33-19 Broadway, Astoria, NY 11106',phone:'(718) 215-0228',url:'https://www.amylos.com/',why:'Modern Greek cooking built around charcoal, seafood and warm Astoria hospitality',note:'The room moves easily from weekend brunch to a dressed-up dinner; charcoal-grilled lamb chops and a thoughtful Greek wine program give it more identity than a generic neighborhood Mediterranean menu.',cats:['mediterranean','seafoodhighend']},
+ {city:'queens',name:'Maiella — Long Island City',rating:4.7,reviews:2699,price:4,address:'46-10 Center Blvd, Long Island City, NY 11109',url:'https://maiellalic.com/',why:'Waterfront Italian dining with a direct view across the East River',note:'The Gantry Plaza State Park setting makes this a useful sightseeing dinner: handmade pasta, steaks and a broad Italian menu arrive with the Manhattan skyline just outside.',cats:['italianhighend'],label:'SKYLINE DINNER',callout:'Pair the reservation with a Gantry Plaza waterfront walk; the unobstructed Manhattan view is the feature no midtown dining room can reproduce.'},
+ {city:'queens',name:'Jiang Nan — Flushing',rating:4.6,reviews:0,price:2,address:'133-42 39th Ave, Flushing, NY 11354',phone:'(718) 353-8855',url:'https://jiangnanny.com/',why:'A Michelin-listed Flushing dining room spanning Sichuan, Shanghainese and Cantonese cooking',note:'The menu is unusually broad, so the best table strategy is communal: combine a whole fish or signature entrée with cold dishes, vegetables and regional specialties.',cats:['chinese']},
+ {city:'queens',name:'Agora Taverna — Forest Hills',rating:4.6,reviews:301,price:3,address:'70-09 Austin St, Forest Hills, NY 11375',why:'A Forest Hills Greek taverna where whole fish and daily seafood lead the menu',note:'Seafood arrives with the lemon, olive oil and directness of a traditional Greek kitchen, while the Austin Street location keeps it useful for a relaxed neighborhood dinner.',cats:['mediterranean','seafoodcasual']},
+ {city:'queens',name:'Via Trenta',rating:4.6,reviews:214,price:3,address:'36-19 30th Ave, Astoria, NY 11103',why:'An intimate Astoria Italian room centered on handmade pasta and regional standards',note:'The scale is part of the appeal: this is a conversation-friendly neighborhood restaurant rather than a sprawling special-event venue.',cats:['italiancasual']},
+ {city:'bronx',name:"Frankie's Restaurant — Arthur Avenue",rating:4.8,reviews:92,price:4,address:'2376 Arthur Ave, Bronx, NY 10458',why:'A contemporary, cocktail-minded take on an Arthur Avenue Italian night out',note:'Frankie’s brings a more dressed-up, late-evening energy to Belmont while keeping pasta and familiar Italian-American dishes at the center.',cats:['italianhighend']},
+ {city:'bronx',name:'Çka Ka Qëllu — Bronx',rating:4.8,reviews:72,price:2,address:'2321 Hughes Ave, Bronx, NY 10458',url:'https://www.ckakaqellu.com/',why:'A Michelin-recognized celebration of Albanian country cooking near Arthur Avenue',note:'Rustic breads, clay-pot dishes and recipes rooted in Kosovo make this one of the borough’s most culturally specific dining experiences.',cats:['mediterranean'],label:'A RARE NEW YORK TABLE',callout:'The restaurant doubles as a living showcase of Albanian and Kosovar food traditions—an identity still uncommon in New York dining.'},
+ {city:'bronx',name:'Pasquale’s Rigoletto',rating:4.6,reviews:505,price:3,address:'2311 Arthur Ave, Bronx, NY 10458',phone:'(718) 365-6644',url:'http://www.pasqualesrigoletto.com/',why:'An enduring Arthur Avenue dining room for classic Italian hospitality',note:'The large, traditional room suits family dinners and celebrations, with seafood, pasta and old-school Italian-American standards built for a full table.',cats:['italiancasual']}
+];
+var MAP={
+ 'patriciasofmorrispark':['italianhighend'],
+ 'enzosofwilliamsbridge':['italianhighend'],
+ 'robertosrestaurant':['italianhighend'],
+ 'emiliasrestaurant':['italiancasual'],
+ 'mariosrestaurantarthuravenue':['italiancasual'],
+ 'jakessteakhouse':['steakhighend'],
+ 'antoniostrattoria':['italiancasual'],
+ 'trattoriazeroottonove':['italiancasual','pizza'],
+ 'hudsongardengrill':['american'],
+ 'enzosofarthuravenue':['italiancasual'],
+ 'casaenrique':['mexicanhighend'],
+ 'meju':['korean'],
+ 'tavernakyclades':['seafoodcasual','mediterranean'],
+ 'ilbambino':['italiancasual'],
+ 'sushionmejacksonheights':['sushihighend'],
+ 'soothrlic':['thai'],
+ 'zaabzaabqueens':['thai'],
+ 'christossteakhouse':['steakhighend'],
+ 'gyukakujapanesebbqflushing':['korean'],
+ 'vetrobyrussosonthebay':['italianhighend'],
+ 'papazzioitalianrestaurant':['italiancasual']
+};
+/* Approved interior photographs only. Each URL was visually matched to the
+   named restaurant; no exterior, generic dining-room or people-led image is
+   accepted into this map. Unresolved cards intentionally remain blank. */
+var IMAGES={
+ 'amylos':'https://static.spotapps.co/spots/62/bb20a74dca49ed94b6cf69c06dfbb8/wide_medium',
+ 'maiellalongislandcity':'https://images.squarespace-cdn.com/content/v1/5531506ae4b09627e6ef61c1/1583708789571-BD48CN60G7POVF77G7S0/bluarch_maiella_press%2Bimage_05%2BMIN.jpg',
+ 'jiangnanflushing':'https://thevendry.com/cdn-cgi/image/width%3D1920%2Cquality%3D75%2Cfit%3Dcontain%2Cmetadata%3Dnone%2Cformat%3Dauto/https%3A%2F%2Fs3.us-east-1.amazonaws.com%2Fuploads.thevendry.co%2F23050%2F1682087271047_2020-10-23.jpg',
+ 'viatrenta':'https://img-us.didaudo.net/us-locations/US/000/002/2296/via-trenta-osteria-wine-bar-16.jpg?fit=cover&h=600&output=webp&w=800',
+ 'ckakaqellubronx':'https://ckakaqellu.com/wp-content/uploads/2023/03/IMG_0618.jpg',
+ 'pasqualesrigoletto':'https://www.pasqualesrigoletto.com/mobile/images/diningroom3slide.jpg',
+ 'mariosrestaurantarthuravenue':'https://s3-media0.fl.yelpcdn.com/bphoto/mXw3pmATpbuN7GjGOXAasg/l.jpg',
+ 'vetrobyrussosonthebay':'https://images.otstatic.com/prod1/33244661/7/large.jpg',
+ 'papazzioitalianrestaurant':'https://www.tagvenue.com/resize/b6/3a/widen-1680-noupsize%3B49637-entire-restaurant-room.jpg',
+ 'christossteakhouse':'https://res.cloudinary.com/the-infatuation/image/upload/c_fill%2Cw_3840%2Car_4%3A3%2Cg_auto%2Cf_auto/images/Christos_26_e3wmzd'
+};
+/* City-qualified replacements prevent a shared restaurant name from putting
+   a Brooklyn room on its Las Vegas card (or vice versa). */
+var NY_INTERIORS={
+ 'brooklyn|peterlugersteakhouse':'https://accidentallywesanderson.com/wp-content/uploads/2021/04/IMG_6959-scaled.jpg',
+ 'manhattan|raos':'https://www.tapasmagazine.es/wp-content/uploads/2023/08/raos-restaurante-mas-exclusivo-nueva-york-8.webp',
+ 'manhattan|sushisho':'https://tock-public.imgix.net/imagesprod/user_uploaded_images_v1/56c9a808-f473-4e9d-b80b-a3854bb87500.jpg?auto=format&ixlib=java-2.3.2',
+ 'manhattan|atomix':'https://blogs-images.forbes.com/katiechang/files/2018/08/Interior_ATOMIX_DianeKang.jpg',
+ 'brooklyn|gagetollner':'https://www.finedininglovers.com/sites/default/files/places/gage--tollner-chijwzz-lwlbwokr-hshouzdrkw-0.png',
+ 'brooklyn|thefourhorsemen':'https://res.cloudinary.com/the-infatuation/image/upload/c_fill%2Cw_640%2Car_4%3A3%2Cg_center%2Cf_auto/NoahDevereaux_FourHorsemen_011_Interior_bk8ug9',
+ 'brooklyn|sahadis':'https://industrycity.com/wp-content/uploads/2023/03/22tmag-Sahadis-slide-8VEI-superJumbo-683x1024.webp',
+ 'queens|addaindiancanteen':'https://platform.ny.eater.com/wp-content/uploads/sites/6/chorus/uploads/chorus_asset/file/13047861/IMG_0165.jpg?crop=16.666666666667%2C0%2C66.666666666667%2C100&quality=90&strip=all&w=2400',
+ 'manhattan|frenchette':'https://res.cloudinary.com/the-infatuation/image/upload/c_fill%2Cw_3840%2Car_4%3A3%2Cg_auto%2Cf_auto/cms/Frenchette-Dining_20Room-DavidALee',
+ 'manhattan|tatianabykwameonwuachi':'https://thevendry.com/cdn-cgi/image/height%3D1920%2Cwidth%3D1920%2Cfit%3Dcontain%2Cmetadata%3Dnone/https%3A/s3.us-east-1.amazonaws.com/uploads.thevendry.co/23049/1669636567419_tatiana-cover.jpg',
+ 'manhattan|sylvias':'https://res.cloudinary.com/the-infatuation/image/upload/q_auto%2Cf_auto/images/IMG_3896_drmaif',
+ 'manhattan|gramercytavern':'https://www.wineenthusiast.com/wp-content/uploads/2023/05/Gramercy_Tavern_DiningRoomInteriorDaniel-Krieger1920x1280.jpg'
+ ,'manhattan|lebernardin':'https://i.insider.com/5374c4216bb3f78935360e25?auto=webp&format=jpeg&width=800'
+ ,'manhattan|perse':'https://novayorkevoce.com/wp-content/uploads/2019/05/03-Per-Se-Restaurant-4th-Floor-Time-Warner-Center-10-Columbus-Circle-New-York-NY-10019-USA-1.jpg'
+ ,'manhattan|elevenmadisonpark':'https://media.architecturaldigest.com/photos/59d7d4ee9033bd1d685599cf/1%3A1/w_4091%2Ch_4091%2Cc_limit/untitled-225-Pano.jpg'
+ ,'manhattan|jungsik':'https://images.otstatic.com/prod1/48563747/3/large.jpg'
+ ,'manhattan|aquavit':'https://www.samtell.com/hs-fs/hubfs/Blogs/Body%20Images/easter-brunch-aquavit.jpg?height=1331&name=easter-brunch-aquavit.jpg&width=2000'
+ ,'brooklyn|aska':'https://resizer.otstatic.com/v4/photos/65505769-2?height=720&width=1280'
+ ,'manhattan|atera':'https://eatingreallywell.com/application/files/3417/5048/0314/2021-10-05_11-41_581.webp'
+ ,'manhattan|themodern':'https://www.yonder.fr/sites/default/files/cityguides/rubriques/restaurants/CGF-NYC-THEMODERN-1.jpg'
+};
+function key(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function addTo(cat,r){boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];if(!boCategoryData[cat].some(function(x){return x&&x.city===r.city&&key(x.name)===key(r.name)}))boCategoryData[cat].push(Object.assign({},r))}
+function apply(){
+ if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+ boCategoryData.bestof=Array.isArray(boCategoryData.bestof)?boCategoryData.bestof:[];
+ /* First wire every record from the earlier borough pass into its cuisine. */
+ boCategoryData.bestof.slice().forEach(function(r){if(!r||(r.city!=='bronx'&&r.city!=='queens'))return;(MAP[key(r.name)]||[]).forEach(function(cat){addTo(cat,r)})});
+  ADD.forEach(function(x){
+  var r={rank:0,name:x.name,city:x.city,rating:x.rating.toFixed(1),reviews:x.reviews,price:x.price,address:x.address,phone:x.phone||null,url:x.url||'',hours:[],ratingSource:'Current verified-diner rating',ratingNote:x.reviews?'Current verified-diner signal: '+x.rating.toFixed(1)+' from '+x.reviews.toLocaleString()+' reviews.':'Current public rating: '+x.rating.toFixed(1)+'. Review count was not displayed by the source.',why:x.why,note:x.note,hue:'28, 38%, 23%'};
+  if(x.callout){r.redCalloutLabel=x.label;r.redCallout=x.callout}
+  if(!boCategoryData.bestof.some(function(y){return y&&y.city===r.city&&key(y.name)===key(r.name)}))boCategoryData.bestof.push(r);
+  x.cats.forEach(function(cat){addTo(cat,r)});
+  });
+ Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r)return;var src=NY_INTERIORS[String(r.city||'')+'|'+key(r.name)]||IMAGES[key(r.name)];if(!src)return;r.image=src;r.imagePosition='center';r.photoPolicy='verified-interior';r.photoVerified='2026-08-27'})});
+ ['bronx','queens'].forEach(function(city){
+  var seen={},pool=[];Object.keys(boCategoryData).forEach(function(cat){if(cat===city)return;(boCategoryData[cat]||[]).forEach(function(r){if(!r||r.city!==city||parseFloat(r.rating)<3.8)return;var k=key(r.name);if(!seen[k]){seen[k]=1;pool.push(r)}})});
+  pool.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
+  var keep=pool.slice(0,11);boCategoryData.bestof=boCategoryData.bestof.filter(function(r){return !r||r.city!==city});keep.forEach(function(r,i){r.rank=i+1;boCategoryData.bestof.push(r)});boCategoryData[city]=keep.map(function(r){return Object.assign({},r)});
+ });
+ return true;
+}
+var tries=0,t=setInterval(function(){tries++;if(apply()||tries>45)clearInterval(t)},250);
+})();
+</script>
+<style id="bop-ny-lockup-spacing-v337">
+/* New York destination names belong to Period as one lockup. Replace the
+   legacy fixed grid columns—which stranded short wordmarks on the left—with
+   a content-sized centered row and a small, consistent gap. */
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText),
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText){
+  display:flex!important;
+  grid-template-columns:none!important;
+  justify-content:center!important;
+  align-items:baseline!important;
+  gap:.12em!important;
+  width:100%!important;
+  overflow:visible!important;
+}
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText) .bop-splash-city-col,
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-city-col{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  text-align:right!important;
+}
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText) .bop-splash-period,
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText) .bop-splash-period{
+  flex:0 0 auto!important;
+  margin:0!important;
+  transform:none!important;
+}
+/* Brooklyn is one horizontal phrase: BROOK + bridge + LYN, then Period. */
+body.bop-nyc-context #bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word){
+  display:flex!important;
+  justify-content:center!important;
+  align-items:baseline!important;
+  gap:.10em!important;
+  font-size:clamp(1.72rem,7.8vw,2.3rem)!important;
+}
+body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word{
+  display:inline-flex!important;
+  align-items:baseline!important;
+  width:auto!important;
+  height:auto!important;
+  gap:.055em!important;
+  white-space:nowrap!important;
+}
+body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-fixed,
+body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-lyn{
+  position:static!important;
+  display:inline-block!important;
+  font-size:.76em!important;
+  line-height:1!important;
+  width:auto!important;
+  margin:0!important;
+  transform:none!important;
+}
+body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge{
+  position:static!important;
+  display:block!important;
+  flex:0 0 1.55em!important;
+  width:1.55em!important;
+  height:.66em!important;
+  margin:0!important;
+  transform:none!important;
+}
+</style>
 </body></html>
