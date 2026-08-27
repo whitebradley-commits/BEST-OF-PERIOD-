@@ -231,7 +231,7 @@ html.bop-qr-bypass-active #bopPromoModal{
     position:absolute; inset:14px; border-radius:50%;
     border:1px solid rgba(245,158,11,0.55);
   }
-  .bop-splash-hero{ text-align:center; line-height:0.95; padding:2% 4%; font-family:'Fraunces', serif; }
+  .bop-splash-hero{ text-align:center; line-height:0.95; padding:2% 4%; font-family:'Bodoni Moda', serif; }
   .bop-splash-hero-nocircle .bop-splash-line1{
     font-size:clamp(2.58rem, 11.65vmin, 4.52rem) !important;
   }
@@ -281,6 +281,7 @@ html.bop-qr-bypass-active #bopPromoModal{
   .bop-splash-period{
     position:relative; z-index:1;
     text-align:left; white-space:nowrap; font-size:1.15em;
+    font-weight:900;
     color:#F59E0B;
     text-shadow:0 0 16px rgba(245,158,11,0.5), 0 0 40px rgba(245,158,11,0.22);
   }
@@ -44268,6 +44269,41 @@ function runWhenFontReady(){
    (no more pushing "of" further from "Best"). Disabled, not deleted, in
    case a future context still wants width-matched centered text. */
 // (auto-run disabled)
+})();
+
+</script>
+
+<script id="bop-corner-bjs-sweep-v320-script">
+(function(){
+/* v320: the bottom-right corner has apparently had multiple duplicate
+   BJS badge implementations stacking on top of each other across
+   different page types -- hiding two known selectors wasn't enough,
+   since a Richmond city page still showed several. Rather than keep
+   hunting for individual CSS selectors one at a time (which has failed
+   repeatedly on this exact spot), this finds whatever is ACTUALLY
+   rendering in that corner and contains "BJS" text, and removes it
+   directly -- except the music icon itself, which must stay. */
+function isBottomRightCorner(rect){
+  var vw = window.innerWidth, vh = window.innerHeight;
+  return rect.right > vw - 90 && rect.bottom > vh - 90 && rect.width > 0 && rect.width < 200;
+}
+function sweepCorner(){
+  var candidates = document.querySelectorAll('body > *, body *');
+  candidates.forEach(function(el){
+    if(el.id === 'bopMusicCorner' || el.closest('#bopMusicCorner')) return;
+    if(el.closest('#bjsWhyOverlay') || el.closest('#legendOverlay')) return; /* not this corner-sweep's concern */
+    var cs = window.getComputedStyle(el);
+    if(cs.position !== 'fixed') return;
+    if(cs.display === 'none') return;
+    var text = (el.textContent || '').trim();
+    if(!/^BJS(\s|$)/i.test(text) && text.toUpperCase() !== 'BJS' && text.toUpperCase() !== 'BJS CO.') return;
+    var rect = el.getBoundingClientRect();
+    if(!isBottomRightCorner(rect)) return;
+    el.style.setProperty('display', 'none', 'important');
+    el.dataset.bopCornerRemoved = '1';
+  });
+}
+window.__bopTick(sweepCorner, 600);
 })();
 
 </script>
