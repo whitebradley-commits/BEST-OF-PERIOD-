@@ -29408,13 +29408,15 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </style>
 <!-- Fresh delivery build v145: emoji-free worldwide category drawings -->
 <style id="bop-restore-home-bjs-v146">
-/* BJS is not part of the floating three, but remains in its home-page corner. */
+/* v146 originally force-showed the home BJS badge here with display:flex
+   at z-index 2147483001 -- directly on top of the music/mute button, which
+   is why the corner always showed stacked buttons no matter what later
+   hide rules were added (they lost this specificity battle). v332: this
+   rule is now the hide itself, at the same winning specificity. */
 #bopLandingOverlay.open>button.footer-hotlink[data-dest="about"]{
-  display:flex!important;
-  position:fixed!important;
-  right:14px!important;
-  bottom:max(14px,env(safe-area-inset-bottom))!important;
-  z-index:2147483001!important;
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 </style>
 <!-- Fresh delivery build v146: restored home-page BJS logo -->
@@ -44387,8 +44389,11 @@ function sweepCorner(){
     var cs = window.getComputedStyle(el);
     if(cs.position !== 'fixed') return;
     if(cs.display === 'none') return;
-    var text = (el.textContent || '').trim();
-    if(!/^BJS(\s|$)/i.test(text) && text.toUpperCase() !== 'BJS' && text.toUpperCase() !== 'BJS CO.') return;
+    /* v332: normalize whitespace first -- the badge's SVG text nodes
+       concatenate as "BJSCO." with NO space, which the old test missed,
+       letting the badge survive every sweep. */
+    var norm = (el.textContent || '').replace(/\s+/g,'').toUpperCase();
+    if(norm !== 'BJS' && norm !== 'BJSCO.') return;
     var rect = el.getBoundingClientRect();
     if(!isBottomRightCorner(rect)) return;
     el.style.setProperty('display', 'none', 'important');
@@ -44485,4 +44490,24 @@ window.__bopTick(dedupeMusicCorner, 400);
 })();
 
 </script>
+
+<style id="bop-corner-only-music-final-v332">
+/* v332 FINAL corner rule -- placed last in the document on purpose so it
+   wins the cascade over every stacked patch above. The bottom-right corner
+   belongs to #bopMusicCorner (music/mute) ONLY. Every BJS badge variant
+   that has ever been parked in that corner is hidden here, matching BOTH
+   aria-label spellings ("BJS CO." and "BJS Co.") since an old script
+   renames it at runtime, which is what kept breaking earlier hide rules. */
+#bopLandingOverlay.open>button.footer-hotlink[data-dest="about"],
+#bopLandingOverlay>button.footer-hotlink[data-dest="about"],
+button[aria-label="BJS CO."][data-dest="about"],
+button[aria-label="BJS Co."][data-dest="about"],
+#bopStaticFounders,
+#bopStaticLandingDock .bop-static-bjs{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  opacity:0!important;
+}
+</style>
 </body></html>
