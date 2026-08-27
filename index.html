@@ -23920,6 +23920,17 @@ function boRenderCategory(cat){
       rankedCue.style.display = rankedScreenOn ? 'flex' : 'none';
     }
   }
+  /* The red editorial line belongs to Best Of Period, not to any one review
+     platform. Keep platform-level evidence available in the expanded research
+     note, while presenting the short card blurb as our independent summary. */
+  const boPublicWhyCopy = value => String(value || '')
+    .replace(/Google Maps(?:'|’)?(?:s)?/gi, 'public review data')
+    .replace(/Google\s+reviews?/gi, 'public reviews')
+    .replace(/\bon\s+Google\b/gi, 'across public reviews')
+    .replace(/\bGoogle\b/gi, 'public review data')
+    .replace(/public reviews\s+reviews/gi, 'public reviews')
+    .replace(/public review data\s+review data/gi, 'public review data');
+
   sortedEntries.forEach((s, i) => {
     s.rank = i + 1;
   });
@@ -23997,7 +24008,7 @@ function boRenderCategory(cat){
           <div class="bo-price-tag">${'$'.repeat(s.price)}<span style="opacity:0.25">${'$'.repeat(4 - s.price)}</span></div>
         </div>
         ${cat === 'jamesbeard' && s.jamesBeardHonor ? `<div class="bo-why" style="color:#E4002B;"><span class="bo-jb-badge" style="margin:0 6px 0 0;cursor:default;">JB</span>${s.jamesBeardHonor}</div>` : ''}
-        <div class="bo-why">${s.why}</div>
+        <div class="bo-why">${boPublicWhyCopy(s.why)}</div>
         <button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button>
         <div class="bo-note bo-note-collapsed">${s.note}</div>
         ${s.chefName ? `<div class="bo-chef-line"><span class="bo-chef-badge">CHEF</span><button type="button" class="bo-chef-name-link" data-chef-url="${(s.chefUrl || '').replace(/"/g,'&quot;')}" data-chef-name="${String(s.chefName).replace(/"/g,'&quot;')}">${s.chefName}</button></div>` : ''}
@@ -44510,4 +44521,209 @@ button[aria-label="BJS Co."][data-dest="about"],
   opacity:0!important;
 }
 </style>
+<style id="bop-responsive-lockup-and-apple-v333">
+/* v333: mobile lockup repair. Period must remain one horizontal word inside
+   destination/category tiles; its apple replaces only the i-dot and must not
+   cover the i itself. These late rules intentionally correct every city with
+   one shared treatment instead of adding New York-only exceptions. */
+.bo-lead-best-lockup{
+  overflow:visible!important;
+}
+.bo-picker-period,
+.bo-lead-best-period{
+  display:block!important;
+  width:auto!important;
+  min-width:max-content!important;
+  max-width:none!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+  writing-mode:horizontal-tb!important;
+}
+.bop-period-i-wrap{
+  white-space:nowrap!important;
+}
+.bop-period-apple-i{
+  top:.08em!important;
+  width:.27em!important;
+  height:.27em!important;
+}
+@media (max-width:430px){
+  .bo-picker-btn-small .bo-lead-best-lockup{
+    min-width:76px;
+  }
+  .bo-picker-btn-small .bo-lead-best-period{
+    font-size:.66em!important;
+  }
+}
+</style>
+<style id="bop-brooklyn-bridge-order-v334">
+/* v334: approved Brooklyn wordmark order — BROOK, bridge, LYN. The markup
+   already follows this order; these final rules remove older absolute
+   positioning that visually moved LYN in front of the bridge. */
+#bestOfOverlay .bop-brooklyn-word,
+.bo-lead-best-lockup .bop-brooklyn-word{
+  display:inline-flex!important;
+  position:relative!important;
+  align-items:flex-end!important;
+  justify-content:flex-start!important;
+  width:auto!important;
+  height:auto!important;
+  gap:.07em!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+#bestOfOverlay .bop-brooklyn-word .bop-brooklyn-fixed,
+#bestOfOverlay .bop-brooklyn-word .bop-brooklyn-lyn,
+.bo-lead-best-lockup .bop-brooklyn-word .bop-brooklyn-fixed,
+.bo-lead-best-lockup .bop-brooklyn-word .bop-brooklyn-lyn{
+  position:static!important;
+  display:inline-block!important;
+  width:auto!important;
+  margin:0!important;
+  font-size:.70em!important;
+  line-height:1!important;
+  letter-spacing:-.055em!important;
+  transform:none!important;
+}
+#bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge,
+.bo-lead-best-lockup .bop-brooklyn-word .bop-brooklyn-bridge{
+  position:static!important;
+  display:block!important;
+  flex:0 0 1.65em!important;
+  width:1.65em!important;
+  height:.72em!important;
+  margin:0 0 .01em!important;
+  transform:none!important;
+  order:2!important;
+}
+#bestOfOverlay .bop-brooklyn-word .bop-brooklyn-fixed,
+.bo-lead-best-lockup .bop-brooklyn-word .bop-brooklyn-fixed{order:1!important}
+#bestOfOverlay .bop-brooklyn-word .bop-brooklyn-lyn,
+.bo-lead-best-lockup .bop-brooklyn-word .bop-brooklyn-lyn{order:3!important}
+#bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word){
+  grid-template-columns:minmax(0,5.75em) minmax(0,4.55em)!important;
+  column-gap:.10em!important;
+  align-items:center!important;
+}
+</style>
+<script id="bop-ny-borough-depth-and-ratings-v335-script">
+(function(){
+/* v335: the first borough pass was visually sparse because the Best Of pages
+   inherited only a couple of award listings. Build real Bronx and Queens
+   shortlists and carry verified scores into matching Michelin/genre cards.
+   Where two current platforms were available, the displayed score is their
+   rounded cross-platform average; otherwise the named verified-diner source
+   remains explicit in the expanded note. */
+var ROWS=[
+  {city:'bronx',name:"Patricia's of Morris Park",rating:4.5,reviews:824,price:4,genre:'Italian',address:'1082 Morris Park Ave, Bronx, NY 10461',source:'BJS aggregate: OpenTable 4.8 (681) + Tripadvisor 4.1 (143)',why:'A Morris Park destination balancing polished service with neighborhood warmth'},
+  {city:'bronx',name:"Enzo's of Williamsbridge",rating:4.7,reviews:365,price:3,genre:'Italian',address:'1998 Williamsbridge Rd, Bronx, NY 10461',source:'BJS aggregate: OpenTable 4.9 (329) + Tripadvisor 4.4 (36)',why:'One of Morris Park’s strongest current Italian dining rooms'},
+  {city:'bronx',name:"Roberto's Restaurant",rating:4.5,reviews:1628,price:4,genre:'Italian',address:'603 Crescent Ave, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.8 (1,344) + Tripadvisor 4.2 (284)',why:'Arthur Avenue destination cooking rooted in Salerno'},
+  {city:'bronx',name:"Emilia's Restaurant",rating:4.5,reviews:747,price:3,genre:'Italian',address:'2331 Arthur Ave, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.7 (460) + Tripadvisor 4.3 (287)',why:'A warm Arthur Avenue classic with sustained diner support'},
+  {city:'bronx',name:"Mario's Restaurant — Arthur Avenue",rating:4.8,reviews:1196,price:3,genre:'Neapolitan Italian',address:'2342 Arthur Ave, Bronx, NY 10458',source:'OpenTable verified diners: 4.8 (1,196)',why:'Five generations of Neapolitan cooking and a James Beard America’s Classics honor'},
+  {city:'bronx',name:"Jake's Steakhouse",rating:4.7,reviews:1733,price:4,genre:'Steakhouse',address:'6031 Broadway, Bronx, NY 10471',source:'OpenTable verified diners: 4.7 (1,733)',why:'Riverdale’s long-running neighborhood steakhouse'},
+  {city:'bronx',name:"Antonio's Trattoria",rating:4.6,reviews:252,price:2,genre:'Italian',address:'2370 Belmont Ave, Bronx, NY 10458',source:'Tripadvisor public rating: 4.6 (252)',why:'Arthur Avenue comfort cooking built around fresh pasta'},
+  {city:'bronx',name:'Trattoria Zero Otto Nove',rating:4.4,reviews:1445,price:3,genre:'Italian and Pizza',address:'2357 Arthur Ave, Bronx, NY 10458',source:'BJS aggregate: public 4.5 (1,000) + Tripadvisor 4.3 (445)',why:'Inventive Sorrento-style pizza and pasta from a wood-burning oven'},
+  {city:'bronx',name:'Hudson Garden Grill',rating:4.4,reviews:4132,price:4,genre:'New American',address:'2900 Southern Blvd, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.5 (3,942) + Tripadvisor 4.3 (190)',why:'Seasonal Hudson Valley cooking inside the New York Botanical Garden'},
+  {city:'bronx',name:"Enzo's of Arthur Avenue",rating:4.3,reviews:448,price:3,genre:'Italian',address:'2339 Arthur Ave, Bronx, NY 10458',source:'Tripadvisor public rating: 4.3 (448)',why:'A lively Arthur Avenue staple known for generous red-sauce classics'},
+  {city:'queens',name:'Casa Enrique',rating:4.5,reviews:1107,price:3,genre:'Mexican',address:'5-48 49th Ave, Long Island City, NY 11101',source:'BJS aggregate: public 4.6 (820) + Tripadvisor 4.4 (287)',why:'Chiapas-rooted Mexican cooking with years of Michelin recognition'},
+  {city:'queens',name:'Meju',rating:4.9,reviews:86,price:4,genre:'Korean Tasting Menu',address:'5-28 49th Ave, Long Island City, NY 11101',source:'BJS aggregate: Google 4.8 (86) + Resy 5.0 + Tripadvisor 5.0 (small sample)',why:'An eight-seat Michelin-starred Korean fermentation counter from Chef Hooni Kim'},
+  {city:'queens',name:'Taverna Kyclades',rating:4.6,reviews:6035,price:2,genre:'Greek Seafood',address:'36-01 Ditmars Blvd, Astoria, NY 11105',source:'Current public rating: 4.6 (6,035)',why:'Astoria seafood institution with exceptional review depth'},
+  {city:'queens',name:'Il Bambino',rating:4.6,reviews:92,price:2,genre:'Italian Small Plates',address:'34-08 31st Ave, Astoria, NY 11106',source:'Tripadvisor public rating: 4.6 (92)',why:'Astoria panini and small plates with a devoted neighborhood following'},
+  {city:'queens',name:'Sushi on Me — Jackson Heights',rating:4.9,reviews:695,price:4,genre:'Omakase Sushi',address:'71-26 Roosevelt Ave, Jackson Heights, NY 11372',source:'OpenTable verified diners: 4.9 (695)',why:'A one-hour omakase experience with serious sushi and playful speakeasy energy'},
+  {city:'queens',name:'Soothr LIC',rating:4.7,reviews:184,price:3,genre:'Thai',address:'Long Island City, Queens, NY',source:'OpenTable verified diners: 4.7 (184)',why:'Bangkok Chinatown-inspired Thai cooking in an immersive Long Island City room'},
+  {city:'queens',name:'Zaab Zaab — Queens',rating:4.5,reviews:28,price:2,genre:'Isaan Thai',address:'Elmhurst, Queens, NY',source:'OpenTable verified diners: 4.5 (28); Michelin Bib Gourmand',why:'Bold Isaan cooking recognized by Michelin and the James Beard Foundation'},
+  {city:'queens',name:'Christos Steak House',rating:4.8,reviews:1201,price:4,genre:'Steakhouse',address:'41-08 23rd Ave, Astoria, NY 11105',source:'OpenTable verified diners: 4.8 (1,201)',why:'Astoria steakhouse combining prime cuts with Greek hospitality'},
+  {city:'queens',name:'Gyu-Kaku Japanese BBQ — Flushing',rating:4.8,reviews:943,price:3,genre:'Japanese BBQ',address:'Flushing, Queens, NY',source:'OpenTable verified diners: 4.8 (943)',why:'Interactive Japanese barbecue backed by substantial verified-diner volume'},
+  {city:'queens',name:"Vetro by Russo's on the Bay",rating:4.9,reviews:1705,price:4,genre:'Italian',address:'164-49 Cross Bay Blvd, Howard Beach, NY 11414',source:'OpenTable verified diners: 4.9 (1,705)',why:'Polished Howard Beach Italian dining with one of Queens’ deepest high-score records'},
+  {city:'queens',name:'Papazzio Italian Restaurant',rating:5.0,reviews:423,price:3,genre:'Italian',address:'39-38 Bell Blvd, Bayside, NY 11361',source:'OpenTable verified diners: 5.0 (423)',why:'A Bayside neighborhood favorite with an exceptional verified-diner record'}
+];
+function key(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function apply(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  boCategoryData.bestof=Array.isArray(boCategoryData.bestof)?boCategoryData.bestof:[];
+  ROWS.forEach(function(item){
+    Object.keys(boCategoryData).forEach(function(cat){
+      var list=boCategoryData[cat];if(!Array.isArray(list))return;
+      list.forEach(function(r){
+        if(!r||r.city!==item.city||key(r.name)!==key(item.name))return;
+        r.rating=item.rating.toFixed(1);r.reviews=item.reviews;r.ratingSource=item.source;
+        r.ratingNote=item.source+'. Best Of Period keeps platform evidence in this expanded note while the red line remains our editorial summary.';
+        if(!r.address&&item.address)r.address=item.address;
+      });
+    });
+    var exists=boCategoryData.bestof.some(function(r){return r&&r.city===item.city&&key(r.name)===key(item.name)});
+    if(!exists)boCategoryData.bestof.push({rank:0,name:item.name,city:item.city,rating:item.rating.toFixed(1),reviews:item.reviews,ratingSource:item.source,ratingNote:item.source,why:item.why,note:item.genre+'. Selected after the New York borough depth and rating audit.',address:item.address,phone:null,url:'',hours:[],price:item.price,hue:'28, 38%, 23%'});
+  });
+  ['bronx','queens'].forEach(function(city){
+    var rows=boCategoryData.bestof.filter(function(r){return r&&r.city===city});
+    rows.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
+    rows.forEach(function(r,i){r.rank=i+1});
+  });
+  return true;
+}
+var tries=0,t=setInterval(function(){tries++;if(apply()||tries>30)clearInterval(t)},250);
+})();
+</script>
+<script id="bop-ny-editorial-refresh-v336-script">
+(function(){
+/* v336: Ratings are evidence, not editorial copy. Remove routine platform
+   language from the red line sitewide, enrich New York-area cards with actual
+   reasons to go, and build right-sized North/South Shore shortlists. */
+var SHORE=[
+ {city:'northshoreli',name:'The Farm Italy — Huntington',rating:4.7,reviews:2939,price:4,address:'12 Gerard St, Huntington, NY 11743',why:'A transportive Huntington dining room for polished, rustic Italian cooking',note:'The dramatic room, handmade pasta and celebratory energy make this a full night out—not simply another neighborhood Italian reservation.',label:'ROOM WITH A POINT OF VIEW',callout:'Named one of OpenTable’s Top 100 U.S. restaurants; reserve well ahead for prime weekend tables.'},
+ {city:'northshoreli',name:'Prime — An American Kitchen & Bar',rating:4.6,reviews:8444,price:4,address:'117 New York Ave, Huntington, NY 11743',why:'Huntington Harbor views, a serious steak program and a deck built for sunset',note:'Go for the water as much as the dining room: steaks, sushi, seafood and live music make it useful for dates, groups and visitors.',label:'WATERFRONT MOVE',callout:'Request the harbor-facing deck when weather allows; sunset is part of the reservation.'},
+ {city:'northshoreli',name:'Stellina Ristorante',rating:4.8,reviews:876,price:4,address:'76 South St, Oyster Bay, NY 11771',why:'A refined Oyster Bay destination for modern Italian cooking',note:'An intimate, special-occasion room where handmade pasta, seafood and polished hospitality carry the evening.',label:'DATE-NIGHT ADDRESS',callout:'Small, stylish and deliberately paced—book this for a real dinner, not a rushed stop.'},
+ {city:'northshoreli',name:"La P'tite Framboise",rating:4.8,reviews:1712,price:3,address:'294 Main St, Port Washington, NY 11050',why:'The North Shore’s convincing little slice of a classic French bistro',note:'Steak frites, mussels and French standards arrive in a warm room that works equally well for brunch or a lingering dinner.',label:'BISTRO STANDBY',callout:'A dependable Port Washington choice when the table wants French comfort rather than ceremony.'},
+ {city:'northshoreli',name:"Hendrick's Tavern",rating:4.7,reviews:2879,price:4,address:'1305 Old Northern Blvd, Roslyn, NY 11576',why:'A handsome Roslyn tavern with old-school polish and broad crowd appeal',note:'The historic-feeling rooms, steaks, seafood and strong bar make it especially effective for celebrations and multigenerational dinners.',label:'CELEBRATION TABLE',callout:'Ask which room your table is in—the distinct dining spaces create very different nights.'},
+ {city:'northshoreli',name:'2 Spring',rating:4.8,reviews:1359,price:4,address:'2 Spring St, Oyster Bay, NY 11771',why:'Design-forward Oyster Bay dining built around seasonal American cooking',note:'A polished townhouse setting, precise cocktails and ingredient-led plates make this one of the area’s sharpest modern dining rooms.',label:'OYSTER BAY MODERN',callout:'The architecture and layered rooms are part of the experience; it rewards a slower special-occasion meal.'},
+ {city:'northshoreli',name:'Besito Mexican — Huntington',rating:4.8,reviews:3793,price:3,address:'402 New York Ave, Huntington, NY 11743',why:'A lively Huntington favorite for polished Mexican cooking and agave drinks',note:'Tableside energy, guacamole, tacos and a deep tequila selection make it a reliable group-friendly night out.',label:'GROUP NIGHT',callout:'High energy and strong drinks make this better for a festive table than a hushed dinner.'},
+ {city:'northshoreli',name:'Barney’s',rating:4.8,reviews:337,price:4,address:'315 Buckram Rd, Locust Valley, NY 11560',why:'A Locust Valley country restaurant with quiet, old-North-Shore charm',note:'The converted-house atmosphere and seasonal American menu suit a romantic dinner or unhurried Sunday meal.',label:'COUNTRY-HOUSE CHARM',callout:'One of the list’s calmest escapes—choose it when atmosphere and conversation matter.'},
+ {city:'northshoreli',name:'Sandbar',rating:4.6,reviews:2130,price:4,address:'55 Main St, Cold Spring Harbor, NY 11724',why:'A polished Cold Spring Harbor room that lets seafood lead',note:'Contemporary American cooking, a sharp raw-bar sensibility and village setting make it a natural pre- or post-show choice.',label:'HARBOR VILLAGE PICK',callout:'Pair dinner with a walk through Cold Spring Harbor’s compact historic center.'},
+ {city:'northshoreli',name:'The Wild Goose',rating:4.6,reviews:1036,price:3,address:'75 Main St, Port Washington, NY 11050',why:'A convivial Main Street tavern with a broad modern-American menu',note:'A flexible Port Washington choice for burgers, seafood, cocktails and groups whose tastes do not all point in one direction.',label:'EASY CROWD-PLEASER',callout:'The rare useful all-purpose pick: casual enough for a weeknight, polished enough for company.'},
+ {city:'northshoreli',name:'Ocean at The Crescent Beach Club',rating:4.6,reviews:2442,price:4,address:'333 Bayville Ave, Bayville, NY 11709',why:'Dinner directly on Long Island Sound with resort-style sunset views',note:'Seafood, cocktails and a beach-club setting make the scenery the headline; time the reservation to daylight.',label:'SIGHTSEEING DINNER',callout:'This is a view-first reservation—arrive before sunset and request an outdoor or water-facing table.'},
+ {city:'northshoreli',name:'OHK Bar & Restaurant',rating:4.6,reviews:700,price:4,address:'135 W Gate Dr, Huntington, NY 11743',why:'Dinner inside the Gilded Age fantasy of Oheka Castle',note:'The castle setting turns lunch, cocktails or dinner into an architectural outing; mansion tours can make it a complete afternoon.',label:'CASTLE EXPERIENCE',callout:'Oheka’s guestbook and screen history run from Charlie Chaplin-era glamour to modern music-video fame.'},
+ {city:'southshoreli',name:'Pantry',rating:4.7,reviews:1244,price:3,address:'525 Merrick Rd, Rockville Centre, NY 11570',why:'A playful Rockville Centre kitchen that makes brunch and comfort food an event',note:'Creative pancakes, over-the-top brunch plates and an energetic room make this especially useful for groups and celebrations.',label:'BRUNCH ENERGY',callout:'Come hungry and expect a scene—the generous, camera-ready plates are part of the fun.'},
+ {city:'southshoreli',name:'Primi Italian Steakhouse',rating:4.8,reviews:1707,price:4,address:'999 Montauk Hwy, West Islip, NY 11795',why:'A polished Italian steakhouse where handmade pasta and prime cuts share billing',note:'A large, handsome room and menu built for sharing make it a dependable anniversary, birthday or business-dinner address.',label:'SPECIAL-OCCASION SAFE BET',callout:'Do not choose between pasta and steak; build the table around both.'},
+ {city:'southshoreli',name:'Mercato Kitchen & Cocktails',rating:4.7,reviews:1003,price:3,address:'4958 Merrick Rd, Massapequa Park, NY 11762',why:'Modern Italian comfort food with a lively cocktail-driven room',note:'Pasta, pizza and crowd-friendly plates are backed by a bar program that keeps the night feeling social.',label:'DINNER INTO DRINKS',callout:'A useful Massapequa pick when the group wants the bar to matter as much as the food.'},
+ {city:'southshoreli',name:'The James',rating:4.6,reviews:878,price:4,address:'102 E Main St, Babylon, NY 11702',why:'A glamorous Babylon dining room with steakhouse confidence',note:'A dramatic interior, polished cocktails and contemporary American menu make it feel more metropolitan than suburban.',label:'DRESSED-UP BABYLON',callout:'Pick this when the room needs to impress; the visual drama is intentional.'},
+ {city:'southshoreli',name:'One10 Modern Italian',rating:4.6,reviews:3405,price:4,address:'569 Broadhollow Rd, Melville, NY 11747',why:'Big-night Italian dining with a sleek room and expansive menu',note:'Handmade pasta, steaks, seafood and an energetic lounge atmosphere suit large celebrations and client dinners.',label:'BIG-TABLE READY',callout:'The scale is a feature: this is built for birthdays, business dinners and a table that wants choices.'},
+ {city:'southshoreli',name:'The Oar Steak & Seafood Grille',rating:4.6,reviews:892,price:3,address:'264 West Ave, Patchogue, NY 11772',why:'A Patchogue waterfront institution with boats at the edge of the deck',note:'Steaks and seafood come with marina views and a relaxed nautical setting that earns its place on a summer itinerary.',label:'MARINA TABLE',callout:'Ask for the deck and make the meal part of a Patchogue waterfront walk.'},
+ {city:'southshoreli',name:'SALT',rating:4.7,reviews:1810,price:4,address:'3100 Whaleneck Dr, Merrick, NY 11566',why:'Seasonal waterfront dining with boats, breezes and sunset built in',note:'A marina setting, seafood-forward menu and outdoor bar give South Shore summer its most literal dining-room expression.',label:'SUNSET RESERVATION',callout:'Book around sunset; the waterfront is not background decoration—it is the reason to go.'},
+ {city:'southshoreli',name:'Beginnings',rating:4.6,reviews:864,price:3,address:'1986 Park St, Atlantic Beach, NY 11509',why:'A literary-themed restaurant where every room starts a different story',note:'Bookish decor, creative American cooking and playful cocktails give this Atlantic Beach restaurant a point of view all its own.',label:'LITERARY DINNER',callout:'The concept is more than a name: books and storytelling shape the room, menu and mood.'},
+ {city:'southshoreli',name:'Sangria 71 — Island Park',rating:4.6,reviews:766,price:3,address:'4585 Austin Blvd, Island Park, NY 11558',why:'A festive Spanish table for paella, tapas and pitchers meant to be shared',note:'This is social dining by design: order across the tapas list, add paella and let the sangria set the pace.',label:'SHARE THE TABLE',callout:'Best with four or more people so the table can cover tapas and a full paella.'},
+ {city:'southshoreli',name:'Oishi Omakase',rating:4.9,reviews:32,price:4,address:'Long Beach, NY 11561',why:'An intimate Long Beach counter for a focused chef-led sushi progression',note:'A small-format omakase experience where pacing, direct chef interaction and seasonal fish matter more than a sprawling menu.',label:'SMALL-SAMPLE STANDOUT',callout:'The score is promising but the review sample is still small; treat the counter experience—not the number—as the draw.'},
+ {city:'southshoreli',name:'Dodici',rating:4.8,reviews:691,price:3,address:'12 N Park Ave, Rockville Centre, NY 11570',why:'A warm Rockville Centre Italian standby with lasting neighborhood loyalty',note:'Classic pasta, seafood and an inviting brick-lined room make it a comfortable, conversation-friendly dinner.',label:'NEIGHBORHOOD CLASSIC',callout:'A longevity pick, not a novelty pick—come for familiar Italian cooking done with care.'},
+ {city:'southshoreli',name:'Mesita — Rockville Centre',rating:4.7,reviews:1571,price:3,address:'212 Merrick Rd, Rockville Centre, NY 11570',why:'A colorful, high-energy Mexican room made for margaritas and groups',note:'Tacos, shareable plates and a serious tequila-and-mezcal focus turn dinner into a lively night out.',label:'MARGARITA NIGHT',callout:'Choose this for energy; quieter conversation is not the point.'},
+ {city:'southshoreli',name:'Drift 82',rating:4.6,reviews:368,price:3,address:'82 Brightwood St, Patchogue, NY 11772',why:'A relaxed Patchogue waterfront stop for seafood, cocktails and live music',note:'The dockside setting and entertainment calendar make it a useful summer stop when the plan extends beyond dinner.',label:'DOCKSIDE SCENE',callout:'Check the music schedule and weather before going—the outdoor experience can change the entire night.'}
+];
+var EXTRA={
+ 'nicktonis':{why:'The East Hampton institution where rustic Tuscan cooking meets Hamptons social history',note:'Open since 1988, the farmhouse room, wood-burning oven and famously loyal regulars make it more than a celebrity sighting spot.',label:'HAMPTONS INSTITUTION',callout:'A longtime Ina Garten favorite and celebrity magnet—but the wood-fired cooking is why it has lasted.'},
+ 'duryeaslobsterdeck':{why:'Montauk lobster, rosé and unobstructed Fort Pond Bay views',note:'The former 1920s bait-shop site has become a polished waterfront destination; the sunset and communal seafood spreads define the experience.',label:'WATERFRONT STORY',callout:'Now owned by financier Marc Rowan, Duryea’s transformation is as talked-about as its sunset tables.'},
+ 'pagesagharbor':{why:'A polished Sag Harbor bistro with a garden patio and seafood-forward menu',note:'Local oysters, charred octopus, duck confit and a tucked-away patio make it a useful Main Street dinner beyond the obvious harbor view.',label:'ORDER WITH A PLAN',callout:'Look for local oysters and the garden patio; both make the reservation feel distinctly Sag Harbor.'},
+ 'hudsongardengrill':{why:'Seasonal Hudson Valley cooking inside the New York Botanical Garden',note:'A rare meal that doubles as sightseeing: build it into a garden visit rather than treating it as a standalone restaurant stop.',label:'DINNER + DESTINATION',callout:'Located inside NYBG—time the reservation around the gardens and current exhibition.'},
+ 'mariosrestaurantarthuravenue':{why:'Five generations of Neapolitan cooking on Arthur Avenue',note:'A true Belmont institution for red-sauce classics, hospitality and a dining room tied to the neighborhood’s living Italian-American history.',label:'JAMES BEARD CLASSIC',callout:'A James Beard America’s Classics honoree—the family history is the accolade that matters here.'},
+ 'thefourhorsemen':{why:'A Williamsburg wine bar where the cooking became destination-worthy in its own right',note:'The LCD Soundsystem connection gets attention, but the natural-wine program, concise seasonal menu and Michelin-starred kitchen sustain the reservation demand.',label:'MUSIC + WINE PEDIGREE',callout:'Co-founded by LCD Soundsystem’s James Murphy; come for the cellar and kitchen, not celebrity theater.'},
+ 'gageandtollner':{why:'A landmark 1879 dining room revived for oysters, chops and old New York glamour',note:'The mirrored, gaslit Downtown Brooklyn space is a sight in itself, now paired with a modern menu that respects its chophouse history.',label:'HISTORIC ROOM',callout:'One of Brooklyn’s great surviving interiors—look up before you order.'},
+ 'gramercytavern':{why:'The enduring New York model for warm, exacting American hospitality',note:'Choose the tavern for spontaneity and à la carte flexibility or the dining room for a longer, more composed experience.',label:'TWO WAYS TO GO',callout:'Tavern and dining room are meaningfully different; choose before you reserve.'},
+ 'lebernardin':{why:'New York’s benchmark for precise, luxurious seafood',note:'The formal room and tasting structure reward diners who want technique, service and pristine fish without trend-chasing.',label:'NYC BENCHMARK',callout:'The seafood is the focus; this is one of the city’s defining fine-dining rooms, not merely an award collection.'},
+ 'atomix':{why:'A Korean tasting experience that joins rigorous cooking with exceptional design',note:'Each course arrives with a cultural and ingredient story, making the custom counter experience both dinner and guided narrative.',label:'GLOBAL DESTINATION',callout:'The reservation is difficult because the experience is singular—plan release dates, not just dinner dates.'}
+};
+function key(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function platformLed(v){return /(google|yelp|tripadvisor|opentable|reviews?|rated|\d(?:\.\d)?\s*\/\s*5)/i.test(String(v||''))}
+function apply(){
+ if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+ boCategoryData.bestof=Array.isArray(boCategoryData.bestof)?boCategoryData.bestof:[];
+ SHORE.forEach(function(x){var r=Object.assign({rank:0,city:x.city,rating:x.rating.toFixed(1),reviews:x.reviews,ratingSource:'Current verified-diner rating',ratingNote:'Current public verified-diner rating: '+x.rating.toFixed(1)+' from '+x.reviews.toLocaleString()+' reviews. Rating evidence is kept separate from Best Of Period editorial copy.',hours:[],phone:null,url:'',hue:'28, 38%, 23%'},x,{redCalloutLabel:x.label,redCallout:x.callout});delete r.label;delete r.callout;boCategoryData.bestof.push(r)});
+ Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r)return;var d=EXTRA[key(r.name)];if(d){r.why=d.why;r.note=d.note;r.redCalloutLabel=d.label;r.redCallout=d.callout}if(platformLed(r.why)){var useful=String(r.note||'').trim();r.why=useful&&!platformLed(useful)?useful.split(/[.!?]/)[0]:'A locally distinctive restaurant selected for its food, setting and staying power'}if(!r.note||platformLed(r.note)){r.note='Use the rating as one signal; the more important reason to go is the restaurant’s cooking, atmosphere and place in its neighborhood.'}if(!r.redCallout&&r.note&&!platformLed(r.note)){r.redCalloutLabel='WHY IT STANDS OUT';r.redCallout=r.note}})});
+ ['northshoreli','southshoreli','bronx','brooklyn','hamptons','manhattan'].forEach(function(city){
+  var seen={},pool=[];Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r||r.city!==city||!parseFloat(r.rating))return;var k=key(r.name);if(!seen[k]){seen[k]=1;pool.push(r)}})});
+  pool.sort(function(a,b){var ax=(a.bjsPick?3:0)+(a.michelinStars?3:0)+(a.jamesBeard?2:0)+(a.redCallout?1:0),bx=(b.bjsPick?3:0)+(b.michelinStars?3:0)+(b.jamesBeard?2:0)+(b.redCallout?1:0);return bx-ax||(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
+  var keep=pool.slice(0,16);boCategoryData.bestof=boCategoryData.bestof.filter(function(r){return !r||r.city!==city});keep.forEach(function(r,i){r.rank=i+1;boCategoryData.bestof.push(r)});
+ });
+ return true;
+}
+var tries=0,t=setInterval(function(){tries++;if(apply()||tries>40)clearInterval(t)},250);
+})();
+</script>
 </body></html>
