@@ -9814,6 +9814,13 @@ function ocShowCity(city){
         if(landing) landing.classList.remove('open');
 
         boCityContext = destination;
+
+        if((destination==='losangeles'||destination==='sandiego')&&typeof window.bopShowCityGate==='function'){
+          window.bopShowCityGate(destination);
+          window.scrollTo(0, 0);
+          return;
+        }
+
         if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', destination);
 
         var best = document.getElementById('bestOfOverlay');
@@ -9954,6 +9961,18 @@ function setupOtherCities(){
       }
 
       boCityContext = dest;
+
+      if((dest==='losangeles'||dest==='sandiego')&&typeof window.bopShowCityGate==='function'){
+        overlay.classList.remove('open');
+        var gateCard = document.getElementById('ocCityCard');
+        if(gateCard) gateCard.classList.remove('open');
+        searchInput.value = '';
+        searchResults.innerHTML = '';
+        searchResults.classList.remove('open');
+        window.bopShowCityGate(dest);
+        return;
+      }
+
       if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', dest);
       overlay.classList.remove('open');
 
@@ -31861,6 +31880,18 @@ footer .bop-mini-legend-badge,
 (function(){
   var destinationByName={London:'london',Paris:'paris',Zurich:'zurich','Zürich':'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
   function openCity(destination){
+    if((destination==='losangeles'||destination==='sandiego')&&typeof window.bopShowCityGate==='function'){
+      var world0=document.getElementById('ocWorldOverlay'),card0=document.getElementById('ocCityCard');
+      if(card0)card0.classList.remove('open','oc-city-choice-card','oc-territory-catch');
+      if(world0){world0.classList.remove('open');world0.setAttribute('aria-hidden','true')}
+      document.body.classList.remove('oc-world-active');
+      var landing0=document.getElementById('bopLandingOverlay');if(landing0)landing0.classList.remove('open');
+      var worldwide0=document.getElementById('bopWorldwideLanding');if(worldwide0)worldwide0.classList.remove('open');
+      if(typeof boCityContext!=='undefined')boCityContext=destination;
+      if(typeof window.boCityContext!=='undefined')window.boCityContext=destination;
+      window.bopShowCityGate(destination);
+      return;
+    }
     var world=document.getElementById('ocWorldOverlay'),card=document.getElementById('ocCityCard');
     if(card)card.classList.remove('open','oc-city-choice-card','oc-territory-catch');
     if(world){world.classList.remove('open');world.setAttribute('aria-hidden','true')}
@@ -39594,6 +39625,12 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
     ['ocWorldOverlay','boNearMapPage','bopWorldwideLanding','boMoviesPage','boWorldwidePage'].forEach(function(id){var overlay=document.getElementById(id);if(overlay)overlay.classList.remove('open','active','is-open');});
     document.body.classList.remove('oc-world-active','bo-near-map-active','bo-closest-five-active');
     if(dest==='newyork'&&typeof window.bopOpenNewYorkGateway==='function'){window.bopOpenNewYorkGateway();return;}
+    if((dest==='losangeles'||dest==='sandiego')&&typeof window.bopShowCityGate==='function'){
+      boCityContext=dest;
+      var landing0=document.getElementById('bopLandingOverlay');if(landing0)landing0.classList.remove('open');
+      window.bopShowCityGate(dest);
+      return;
+    }
     if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
     boCityContext=dest;
     var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
