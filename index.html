@@ -1,4 +1,39 @@
-<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}}catch(e){}})();</script><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
+<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}
+/* v308: hard bypass. Every previous attempt closed the invitation/promo
+   gates AFTER they had already rendered, which kept failing on real
+   devices even when it worked in testing. This instead marks the <html>
+   element the instant the URL is parsed -- before ANY overlay markup
+   has even been created -- so a same-document CSS rule can hide those
+   overlays from ever becoming visible in the first place, with zero
+   dependency on any later script running, finishing, or racing correctly. */
+if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VENDORSIGNUP_REQUESTED){
+  document.documentElement.classList.add('bop-qr-bypass-active');
+}
+}catch(e){}
+/* Third, independent attempt to actually open checkin -- the two existing
+   mechanisms elsewhere in the page appear to race each other, which is a
+   plausible reason this has been unreliable. This one is intentionally
+   simple: just wait for the page to finish loading, then call the opener
+   directly, once. It doesn't touch or depend on the other two. */
+function bopHardOpenCheckin(){
+  if(window.__BOP_CHECKIN_REQUESTED===true && typeof window.boOpenFoodTruckCheckin==='function'){
+    window.boOpenFoodTruckCheckin();
+  }
+}
+if(document.readyState==='complete'){ setTimeout(bopHardOpenCheckin, 50); }
+else{ window.addEventListener('load', function(){ setTimeout(bopHardOpenCheckin, 50); }); }
+})();</script>
+<style id="bop-qr-bypass-instant-hide-v308">
+/* Belt-and-suspenders: hidden purely by CSS the instant the class lands,
+   independent of whether any JS gate-closing logic runs at all. */
+html.bop-qr-bypass-active #bopExclusiveInvitation,
+html.bop-qr-bypass-active #bopPromoModal{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+</style><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Best of Period</title><link href="manifest.json" rel="manifest"/><meta content="#0a0a0a" name="theme-color"/><meta content="yes" name="apple-mobile-web-app-capable"/><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/><meta content="Best of Period" name="apple-mobile-web-app-title"/><link href="icon-192.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo+Narrow:wght@400;500;600;700&amp;family=Baloo+2:wght@600;700;800&amp;family=Bebas+Neue&amp;family=Alfa+Slab+One&amp;family=Roboto+Condensed:wght@300;400&amp;family=IBM+Plex+Sans+Condensed:wght@400;700&amp;family=Playfair+Display:ital,wght@0,700;0,900;1,700&amp;family=Oswald:wght@400;500&amp;display=swap" rel="stylesheet"/> <style> :root{
     --bg:#000000;
     --surface:#000000;
     --field:#000000;
@@ -4470,21 +4505,25 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    width:16px;
-    height:16px;
+    width:17px;
+    height:17px;
     flex-shrink:0;
-    border-radius:50%;
+    border-radius:0;
     border:0;
     padding:0;
-    background:#1d9bf0;
+    background:transparent;
     cursor:pointer;
   }
-  .bo-verified-blue{background:#1d9bf0;}
-  .bo-verified-red{background:#E4002B;}
+  /* v310: apple badge replaces the old circular checkmark. Kept the old
+     class names as no-ops so nothing referencing bo-verified-blue/red
+     elsewhere on the site breaks -- they just don't paint a background
+     on an apple-shaped SVG the way they did on the old circle. */
+  .bo-verified-blue{background:transparent;}
+  .bo-verified-red{background:transparent;}
 
   .bo-verified svg{
-    width:10px;
-    height:10px;
+    width:17px;
+    height:17px;
   }
 
   .bo-uno-badge{
@@ -20208,8 +20247,9 @@ function boBuildExpandedLegend(){
         <div><span class="bo-badge-count-demo bo-legend-count">99</span><p><b>Category Count</b><small>The exact number of restaurants waiting behind that category tile in the selected city.</small></p></div>
         <div><span class="bo-badge-count-demo bo-legend-count">12</span><p><b>Near Me Count</b><small>On the Near Me map, the numbered circle represents listed restaurants within a three-mile radius of your current location.</small></p></div>
         <div><span class="bo-badge-onebite-demo bo-legend-onebite"><span class="bo-badge-bjs-mark">BJS</span><span class="bo-badge-onebite-vs">VS</span><span class="bo-badge-onebite-mark">ONE<br>BITE</span></span><p><b>BJS vs One Bite</b><small>BJS comparison score to the One Bite national average.</small></p></div><div><span class="bo-legend-dave-demo" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;"><svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#f0b184" stroke="#F59E0B" stroke-width="2"/><path d="M8 18c0-9 5-14 12-14 8 0 13 5 13 14-4-4-8-6-13-6-5 0-9 2-12 6z" fill="#211610"/><path d="M8 14c1-7 5-11 12-11s11 4 12 11H8z" fill="#00274C"/><path d="M7 14h27c-2 3-7 4-14 3-6 0-10-1-13-3z" fill="#00274C" stroke="#FFCB05" stroke-width=".8"/><path d="M15 6h3l2 3 2-3h3v7h-2V9l-3 4-3-4v4h-2V6z" fill="#FFCB05"/><path d="M10 24c2 8 6 12 10 12s9-4 11-12c-3 3-6 4-11 4s-8-1-10-4z" fill="#3a2418"/></svg></span><p><b>Dave Score</b><small>When <a href="https://x.com/stoolpresidente" target="_blank" rel="noopener" style="color:#F59E0B;text-decoration:underline;">Dave Portnoy</a> has personally reviewed a pizza spot, his individual score appears alongside the BJS and One Bite scores.</small></p></div>
-        <div id="boLegendVerification"><span class="bo-legend-check">&#10003;</span><p><b>Verified</b></p></div>
-        <div><span class="bo-legend-check bo-legend-check-red">&#10003;</span><p><b>Unverified</b></p></div>
+        <div id="boLegendVerification" style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/></svg><p><b>BJS Pick / 4.9+</b><small>Gold apple &mdash; our top tier.</small></p></div>
+        <div style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#000" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/><path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><p><b>Verified</b><small>Michelin, James Beard, or a real sourced 4.4+ rating.</small></p></div>
+        <div style="display:flex;align-items:center;gap:8px;"><svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#000" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/></svg><p><b>Unverified</b><small>New or not yet meeting the verified bar.</small></p></div>
         <div class="bo-legend-vendor-row"><button type="button" class="bo-verified-vendor-link" data-dest="vendor">Become a verified vendor</button></div>
         <div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>An editorial selection from Best of Period.</small></p></div>
       </div>
@@ -21970,6 +22010,11 @@ const boPickerConfig = {
   sushi: [
     { label: 'Casual', cat: 'sushicasual' },
     { label: 'Fine', cat: 'sushihighend' },
+    { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' }
+  ],
+  seafood: [
+    { label: 'Casual', cat: 'seafoodcasual' },
+    { label: 'Fine', cat: 'seafoodhighend' },
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' }
   ],
   steak: [
@@ -23896,10 +23941,19 @@ function boRenderCategory(cat){
     const bjsVerifiedKey=String(s.name||'').trim().toLowerCase();
     if(s.bjsPick)BO_PERMANENT_BJS_VERIFIED.add(bjsVerifiedKey);
     const verificationRating = parseFloat(s.rating);
-    const isBlueVerified = (Number.isFinite(verificationRating) && verificationRating >= 4.9) ||
-      s.bjsVerified === true || s.bjsPick === true || BO_PERMANENT_BJS_VERIFIED.has(bjsVerifiedKey);
-    const verificationStatus = isBlueVerified ? 'verified' :
-      (Number.isFinite(verificationRating) && verificationRating >= 4.4 ? 'processing' : 'unverified');
+    /* v310: gold apple tier -- BJS Pick or a 4.9+ rating, strictly. */
+    const isGoldApple = s.bjsPick === true ||
+      (Number.isFinite(verificationRating) && verificationRating >= 4.9);
+    /* Verified (checkmark apple) -- Michelin, James Beard, or a 4.9 auto-qualify
+       on top of gold; everything else still verified the normal way it always
+       was (4.4+ sourced rating, manual bjsVerified flag, or the permanent list). */
+    const isVerifiedApple = isGoldApple ||
+      (Number.isFinite(s.michelinStars) && s.michelinStars > 0) ||
+      s.jamesBeard === true ||
+      s.bjsVerified === true ||
+      BO_PERMANENT_BJS_VERIFIED.has(bjsVerifiedKey) ||
+      (Number.isFinite(verificationRating) && verificationRating >= 4.4);
+    const verificationStatus = isGoldApple ? 'gold' : (isVerifiedApple ? 'verified' : 'unverified');
     const card = document.createElement('div');
     card.className = 'bo-card' + (s.bjsPick ? ' bo-card-bjs' : '');
     card.id = 'bo-card-' + s.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -23938,7 +23992,7 @@ function boRenderCategory(cat){
           const pickCityKey = s.bjsPickCity || s.city || boCityContext;
           return `<div class="bo-card-bjs-source"><svg viewBox="0 0 40 40" width="17" height="17" style="vertical-align:-3px;margin-right:3px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICK</span> &middot; ${labels.map(lbl => formatPickLabel(lbl, pickCityKey)).join(' &middot; ')}</div>`;
         })() : ''}
-        <h3>${s.name}${openClosedBadgeHTML(s.hours, s.open24)}<span class="bo-verified bo-verification-badge bo-verification-${verificationStatus}" data-verification-status="${verificationStatus}" title="${verificationStatus === 'verified' ? 'Verified' : verificationStatus === 'processing' ? 'Processing' : 'Unverified'}" aria-label="${verificationStatus === 'verified' ? 'Verified' : verificationStatus === 'processing' ? 'Processing' : 'Unverified'}"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.6L9.2 18L20 6"/></svg></span>${boOwnershipStoryId(s, boCityContext) ? `<button type="button" class="bo-uno-badge" data-info-badge="UNO" data-ownership-story="${boOwnershipStoryId(s, boCityContext)}" aria-label="Under new ownership information specific to ${s.name}" title="Under new ownership — tap for this business's details">UNO</button>` : ''}${s.michelinStars ? `<span class="bo-michelin-badge" data-michelin-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's Michelin list" title="${s.michelinStars} Michelin Star${s.michelinStars > 1 ? 's' : ''} — tap for the Michelin list"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">${'\u2605'.repeat(s.michelinStars)}</span></span>` : ''}${s.jamesBeard ? `<span class="bo-jb-badge" data-jb-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's James Beard list" title="${String(s.jamesBeardHonor || 'James Beard Foundation recognition').replace(/&/g,'&amp;').replace(/"/g,'&quot;')} — tap for the James Beard list">JB</span>` : ''}${s.worldFamous ? `<span class="bo-world-famous-badge" title="Internationally recognized landmark">${s.worldFamousLabel || 'WORLD FAMOUS'}</span>` : ''}${s.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${s.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}${isRecentlyOpened(s.openedDate) ? '<span class="bo-new-badge">NEW</span>' : ''}</h3>
+        <h3>${s.name}${openClosedBadgeHTML(s.hours, s.open24)}<span class="bo-verified bo-apple-badge bo-apple-${verificationStatus}" data-verification-status="${verificationStatus}" title="${verificationStatus === 'gold' ? 'BJS Pick / 4.9+' : verificationStatus === 'verified' ? 'Verified' : 'Unverified'}" aria-label="${verificationStatus === 'gold' ? 'BJS Pick / 4.9+' : verificationStatus === 'verified' ? 'Verified' : 'Unverified'}"><svg viewBox="0 0 24 24" fill="none"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="${verificationStatus === 'gold' ? '#F59E0B' : '#000'}" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/>${verificationStatus === 'verified' ? '<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' : ''}</svg></span>${boOwnershipStoryId(s, boCityContext) ? `<button type="button" class="bo-uno-badge" data-info-badge="UNO" data-ownership-story="${boOwnershipStoryId(s, boCityContext)}" aria-label="Under new ownership information specific to ${s.name}" title="Under new ownership — tap for this business's details">UNO</button>` : ''}${s.michelinStars ? `<span class="bo-michelin-badge" data-michelin-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's Michelin list" title="${s.michelinStars} Michelin Star${s.michelinStars > 1 ? 's' : ''} — tap for the Michelin list"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">${'\u2605'.repeat(s.michelinStars)}</span></span>` : ''}${s.jamesBeard ? `<span class="bo-jb-badge" data-jb-city="${s.city || boCityContext}" role="link" tabindex="0" aria-label="Open this city's James Beard list" title="${String(s.jamesBeardHonor || 'James Beard Foundation recognition').replace(/&/g,'&amp;').replace(/"/g,'&quot;')} — tap for the James Beard list">JB</span>` : ''}${s.worldFamous ? `<span class="bo-world-famous-badge" title="Internationally recognized landmark">${s.worldFamousLabel || 'WORLD FAMOUS'}</span>` : ''}${s.offStrip ? '<button type="button" class="bo-ots-badge" data-info-badge="OTS" aria-label="Off the Strip information">OTS</button>' : ''}${s.downtown ? '<button type="button" class="bo-dt-badge" data-info-badge="DT" aria-label="Downtown information">DT</button>' : ''}${isRecentlyOpened(s.openedDate) ? '<span class="bo-new-badge">NEW</span>' : ''}</h3>
         <div class="bo-rating-row">
           <div class="bo-rating">${s.rating ? '★ ' + s.rating : 'Not yet independently rated'}</div>
           <div class="bo-price-tag">${'$'.repeat(s.price)}<span style="opacity:0.25">${'$'.repeat(4 - s.price)}</span></div>
@@ -30098,6 +30152,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   content:'';position:absolute;z-index:2;width:10px;height:6px;border-left:3px solid var(--check);border-bottom:3px solid var(--check);transform:translateY(-1px) rotate(-45deg);filter:drop-shadow(0 1px 0 rgba(255,255,255,.22));
 }
 .bo-verification-badge svg{display:none!important}
+.bo-verification-gold{--badge:#F59E0B;--check:#F59E0B}
 .bo-verification-verified{--badge:#168cff;--check:#064b9d}
 .bo-verification-processing{--badge:#ffd400;--check:#a96c00}
 .bo-verification-unverified{--badge:#E4002B;--check:#E4002B}
@@ -30136,10 +30191,15 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 </section>
 <script id="bop-bjs-verification-v158">
 (function(){
-  function badge(status,large){return '<span class="bo-verification-badge bo-verification-'+status+(large?' is-guide':'')+'" aria-hidden="true"></span>';}
+  function badge(status,large){
+    var fill = status==='gold' ? '#F59E0B' : '#000';
+    var check = status==='unverified' ? '' : '<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+    var svg = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="'+fill+'" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/>'+check+'</svg>';
+    return '<span class="bo-apple-badge bo-apple-'+status+(large?' is-guide':'')+'" aria-hidden="true">'+svg+'</span>';
+  }
   function verificationKey(){return '<div class="bo-verification-key">'+
-    '<div class="bo-verification-key-item">'+badge('verified',true)+'<b>VERIFIED</b><small>4.9–5.0 or BJS verified</small></div>'+
-    '<div class="bo-verification-key-item">'+badge('processing',true)+'<b>PROCESSING</b><small>4.4–4.8</small></div>'+
+    '<div class="bo-verification-key-item">'+badge('gold',true)+'<b>GOLD</b><small>BJS Pick or 4.9+</small></div>'+
+    '<div class="bo-verification-key-item">'+badge('verified',true)+'<b>VERIFIED</b><small>Michelin, James Beard, or 4.4+</small></div>'+
     '<div class="bo-verification-key-item">'+badge('unverified',true)+'<b>UNVERIFIED</b><small>4.3 or below</small></div></div>';}
   function vendorLink(){return '<div class="bo-legend-vendor-row"><button type="button" class="bo-verified-vendor-link" data-dest="vendor"><span>Become a verified vendor</span>'+badge('verified',false)+'</button></div>';}
   function upgradeLegend(){
@@ -30159,7 +30219,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
   }
   function upgradeExistingCards(){
     document.querySelectorAll('.bo-card').forEach(function(card){
-      const ratingNode=card.querySelector('.bo-rating');const mark=card.querySelector('.bo-verified');if(!ratingNode||!mark||mark.classList.contains('bo-verification-badge'))return;
+      const ratingNode=card.querySelector('.bo-rating');const mark=card.querySelector('.bo-verified');if(!ratingNode||!mark||mark.classList.contains('bo-apple-badge')||mark.classList.contains('bo-verification-badge'))return;
       const value=parseFloat(ratingNode.textContent.replace('★','').trim());const manual=mark.classList.contains('bo-verified-blue');const status=manual||value>=4.9?'verified':value>=4.4?'processing':'unverified';
       mark.className='bo-verified bo-verification-badge bo-verification-'+status;mark.dataset.verificationStatus=status;mark.title=status==='verified'?'Verified':status==='processing'?'Processing':'Unverified';mark.setAttribute('aria-label',mark.title+' — open Legend');
     });
@@ -40888,8 +40948,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
             '</div>'+
           '</header>'+
           '<div class="bop-world-divider"></div>'+
-          '<div class="bo-ft-sub">Pick Your Location</div>'+
-          '<div class="bo-ft-road-row"><div class="bo-ft-road-line"></div><svg class="bo-ft-drive-truck bo-ft-drive-truck-road" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
+          '<div class="bo-ft-sub-road-row"><div class="bo-ft-sub">Pick Your Location</div><svg class="bo-ft-drive-truck bo-ft-drive-truck-inline" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></div>'+
           '<div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>'+
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
@@ -43751,30 +43810,40 @@ var t=setInterval(function(){ if(addGiordanos()) clearInterval(t); }, 300);
 /* v302: food trucks page — masthead now matches Worldwide Bests exactly
    (globe + Period, no truck). Truck relocated below "Pick Your Location",
    enlarged, sitting on its own road line like it's driving toward the map. */
-#bopFoodTruckOverlay .bo-ft-road-row{
-  position:relative;
-  height:clamp(52px,15vw,78px);
-  margin:4px 0 18px;
+/* Extra clearance between "FOOD TRUCKS" and the globe+Period line below
+   it -- the base -25px pull-up was tuned for the plain Worldwide Bests
+   page, which has no hero word in between, so it was dragging the globe
+   up into the text here. */
+#bopFoodTruckOverlay .bop-world-title-line{
+  margin-top:6px;
+}
+#bopFoodTruckOverlay .bo-ft-hero-word{
+  margin-bottom:8px;
+}
+
+/* Pick Your Location + truck, inline on one row, wheels sitting right on
+   a road line under the whole row -- no boxed background on the truck,
+   it's a clean isolated icon now. */
+#bopFoodTruckOverlay .bo-ft-sub-road-row{
   display:flex;
-  align-items:center;
+  align-items:flex-end;
+  justify-content:center;
+  gap:10px;
+  border-bottom:2px solid #F59E0B;
+  box-shadow:0 2px 9px -2px rgba(245,158,11,.8);
+  padding-bottom:6px;
+  margin:0 auto 20px;
+  width:fit-content;
+  max-width:92%;
 }
-#bopFoodTruckOverlay .bo-ft-road-line{
-  position:absolute;
-  left:0;right:0;top:50%;
-  height:2px;
-  background:#F59E0B;
-  box-shadow:0 0 9px rgba(245,158,11,.8);
-  transform:translateY(-1px);
+#bopFoodTruckOverlay .bo-ft-sub-road-row .bo-ft-sub{
+  margin:0;
 }
-#bopFoodTruckOverlay .bo-ft-drive-truck-road{
-  position:relative;
-  z-index:1;
-  width:clamp(70px,20vw,104px);
-  height:clamp(70px,20vw,104px);
-  margin:0 auto;
+#bopFoodTruckOverlay .bo-ft-drive-truck-inline{
+  width:clamp(46px,13vw,66px);
+  height:clamp(46px,13vw,66px);
   display:block;
-  filter:drop-shadow(0 0 9px rgba(245,158,11,.75));
-  background:#000;
+  filter:drop-shadow(0 0 6px rgba(245,158,11,.65));
 }
 
 </style>
@@ -43862,4 +43931,113 @@ window.__bopTick(enforce, 400);
 }
 
 </style>
+
+<script id="bop-seafood-tiers-and-sd-picks-v307-script">
+(function(){
+/* v307: seafood now has real Casual/Fine tiers instead of one flat list,
+   per request. Existing entries (Vegas + Hamptons) migrate automatically
+   by price so nothing already live gets orphaned by the new picker
+   config: price 4 -> Fine, everything else -> Casual. Then adds two new
+   San Diego BJS Picks: Joe's Crab Shack (Casual Seafood) and Din Tai
+   Fung (Chinese, its closest existing real category) with its Petco Park
+   stand listed as a limited-menu second location. */
+function migrateSeafood(){
+  if(typeof boCategoryData!=='object'||!boCategoryData||!boCategoryData.seafood) return false;
+  if(boCategoryData.seafood.__bopMigratedV307) return true;
+  var flat = boCategoryData.seafood;
+  boCategoryData.seafoodcasual = boCategoryData.seafoodcasual || [];
+  boCategoryData.seafoodhighend = boCategoryData.seafoodhighend || [];
+  flat.forEach(function(r){
+    if(!r) return;
+    var target = (r.price === 4) ? boCategoryData.seafoodhighend : boCategoryData.seafoodcasual;
+    var exists = target.some(function(x){ return x && x.name === r.name && (x.city||'bestof') === (r.city||'bestof'); });
+    if(!exists) target.push(r);
+  });
+  flat.__bopMigratedV307 = true;
+
+  var jcsExists = boCategoryData.seafoodcasual.some(function(r){ return r && r.city==='sandiego' && r.name==="Joe's Crab Shack"; });
+  if(!jcsExists){
+    boCategoryData.seafoodcasual.push({
+      rank:null, name:"Joe's Crab Shack", city:'sandiego', rating:'3.7 / 5',
+      why:'BJS Pick \u2014 Oceanside Harbor seafood shack with a scenic waterfront patio.',
+      note:'3.7/5 on 435+ Tripadvisor reviews. Steam pots, crab buckets, and harbor views; a fun, casual pick over a strict numbers-only bar.',
+      url:'', address:'314 Harbor Dr, Oceanside, CA 92054', phone:'(760) 722-1345',
+      hue:'195, 40%, 30%', price:2, instagram:null, facebook:null,
+      bjsPick:true, bjsPickCity:'sandiego', bjsPickLabel:'BJS Pick \u2014 Casual Seafood'
+    });
+  }
+  return true;
+}
+function addDinTaiFung(){
+  if(typeof boCategoryData!=='object'||!boCategoryData||!boCategoryData.chinese) return false;
+  var arr = boCategoryData.chinese;
+  var exists = arr.some(function(r){ return r && r.city==='sandiego' && r.name==='Din Tai Fung'; });
+  if(exists) return true;
+  arr.push({
+    rank:null, name:'Din Tai Fung', city:'sandiego', rating:'4.4 / 5',
+    why:'BJS Pick \u2014 world-renowned Taiwanese soup dumplings, Westfield UTC mall.',
+    note:'4.4/5 on 125 Tripadvisor reviews. Xiao long bao and hand-pulled noodles; reservations strongly recommended, walk-in waits run long.',
+    url:'https://dtf.com/en-us/locations/san-diego', address:'4301 La Jolla Village Dr Ste 2000, San Diego, CA 92122', phone:'(858) 375-5988',
+    hue:'18, 42%, 27%', price:3, instagram:null, facebook:null,
+    bjsPick:true, bjsPickCity:'sandiego', bjsPickLabel:'BJS Pick \u2014 Chinese',
+    otherLocations:[
+      {name:'Din Tai Fung \u2014 Petco Park', address:'100 Park Blvd, San Diego, CA 92101', phone:null, note:'Stadium concession stand \u2014 limited menu, game days only. Not the full-service restaurant.'}
+    ]
+  });
+  return true;
+}
+var t=setInterval(function(){
+  var a=migrateSeafood(), b=addDinTaiFung();
+  if(a && b) clearInterval(t);
+}, 300);
+})();
+
+</script>
+
+<script id="bop-apple-badges-open-legend-v311-script">
+(function(){
+/* v311: every apple badge on every card, site-wide, now opens the Legend
+   page when tapped -- same underlying behavior as the existing footer
+   "Legend" link (close other overlays, open #legendOverlay, scroll top),
+   just triggered from any .bo-apple-badge instead of one footer button. */
+function closeOtherOverlays(){
+  document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(p){
+    if(p.id && (/Overlay$|Page$/.test(p.id) || p.id==='bopWorldwideLanding') && p.id!=='legendOverlay'){
+      p.classList.remove('open','active','is-open','tg-open');
+    }
+  });
+}
+function openLegendFromBadge(event){
+  event.preventDefault();
+  event.stopPropagation();
+  closeOtherOverlays();
+  var page = document.getElementById('legendOverlay');
+  if(page){ page.classList.add('open'); page.scrollTop = 0; }
+  document.body.style.overflow = '';
+  window.scrollTo(0,0);
+}
+document.addEventListener('click', function(event){
+  var badge = event.target.closest && event.target.closest('.bo-apple-badge');
+  if(!badge) return;
+  if(badge.classList.contains('is-guide')) return; /* the legend's own key isn't a link to itself */
+  openLegendFromBadge(event);
+}, true);
+
+/* Make them read as tappable, not just decorative. */
+function markInteractive(){
+  document.querySelectorAll('.bo-apple-badge:not(.is-guide)').forEach(function(b){
+    if(b.dataset.bopLegendLink==='1') return;
+    b.style.cursor = 'pointer';
+    b.setAttribute('role','link');
+    if(!b.getAttribute('aria-label')){
+      var status = b.dataset.verificationStatus || '';
+      b.setAttribute('aria-label', (status==='gold'?'BJS Pick / 4.9+':status==='verified'?'Verified':'Unverified') + ' \u2014 open Legend');
+    }
+    b.dataset.bopLegendLink='1';
+  });
+}
+window.__bopTick(markInteractive, 800);
+})();
+
+</script>
 </body></html>
