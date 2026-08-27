@@ -43795,65 +43795,7 @@ var t=setInterval(function(){ if(addGiordanos()) clearInterval(t); }, 300);
 
 </style>
 
-<script id="bop-visible-bjs-badge-final-v304-script">
-(function(){
-/* v304 (revised): the original version only checked leaf DOM nodes,
-   which meant it completely missed button > svg > text badges — exactly
-   the structure the actual corner BJS button uses. This version checks
-   textContent on ANY element (which includes SVG <text> content too),
-   so it catches every badge type regardless of internal structure. */
-function isVisible(el){
-  if(!el || !el.getClientRects) return false;
-  var r = el.getClientRects();
-  if(!r.length) return false;
-  var cs = window.getComputedStyle(el);
-  return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0;
-}
-function fixVisibleBjsBadges(){
-  var candidates = document.querySelectorAll('button, span, div, a, svg');
-  candidates.forEach(function(el){
-    if(el.closest('#bjsWhyOverlay')) return; /* already handled separately */
-    if(el.dataset && el.dataset.bopCoAdded === '1') return;
-    var t = (el.textContent || '').trim();
-    if(t !== 'BJS') return;
-    if(!isVisible(el)) return;
 
-    var svgText = el.querySelector && el.querySelector('svg text, text');
-    if(svgText){
-      /* SVG-based badge: add a second <text> line in the same coordinate
-         space rather than an HTML span, which wouldn't render inside SVG. */
-      var svgRoot = svgText.closest('svg');
-      if(!svgRoot || svgRoot.dataset.bopCoAdded === '1') return;
-      var ns = 'http://www.w3.org/2000/svg';
-      var co = document.createElementNS(ns, 'text');
-      var x = svgText.getAttribute('x') || '20';
-      var y = parseFloat(svgText.getAttribute('y') || '20') + 10;
-      co.setAttribute('x', x);
-      co.setAttribute('y', y);
-      co.setAttribute('text-anchor', svgText.getAttribute('text-anchor') || 'middle');
-      co.setAttribute('font-family', svgText.getAttribute('font-family') || 'Archivo Black, sans-serif');
-      co.setAttribute('font-size', (parseFloat(svgText.getAttribute('font-size')||'11')) * 0.72);
-      co.setAttribute('fill', svgText.getAttribute('fill') || '#F59E0B');
-      co.textContent = 'CO.';
-      svgRoot.appendChild(co);
-      svgRoot.dataset.bopCoAdded = '1';
-      if(el.dataset) el.dataset.bopCoAdded = '1';
-      return;
-    }
-
-    if(el.children.length > 0) return; /* non-SVG element with unexpected children, skip */
-    var co2 = document.createElement('span');
-    co2.textContent = 'CO.';
-    co2.style.cssText = 'display:block;font-size:0.6em;line-height:1;margin-top:1px;';
-    el.appendChild(co2);
-    el.dataset.bopCoAdded = '1';
-  });
-}
-window.__bopTick(fixVisibleBjsBadges, 700);
-document.addEventListener('click', function(){ setTimeout(fixVisibleBjsBadges, 250); }, true);
-})();
-
-</script>
 
 <script id="bop-la-sd-final-corrective-v305-script">
 (function(){
