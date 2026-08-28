@@ -46736,4 +46736,203 @@ try{
   console.error('Food-truck database initialization failed',error);
 }
 </script>
+
+<style id="bop-foodtruck-hero-globe-tight-v420">
+/* v420: Food Trucks masthead — globe enlarged and tucked tight against
+   "FOOD TRUCKS" (above) and "Period" (right). Two things were shrinking
+   it before: the flex row squeezed the SVG to 103px wide (vs 176 tall),
+   and the spin animation's scale() made its true edges unpredictable.
+   Now: flex-shrink off, spin at scale(1), size driven by one variable,
+   and the SVG's built-in empty border (11% each side) pulled in with
+   negative margins so the drawn circle itself sits flush. Scoped to the
+   Food Trucks page only. */
+@keyframes bopFoodTruckGlobeTurn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#bopFoodTruckOverlay .bop-world-hero-globe{
+  --ftg:clamp(170px,54vw,250px);
+  flex:0 0 auto!important;
+  width:var(--ftg)!important;
+  height:var(--ftg)!important;
+  margin:0 calc(var(--ftg) * -0.11) 0 calc(var(--ftg) * -0.21)!important;
+  animation:bopFoodTruckGlobeTurn 18s linear infinite!important;
+}
+#bopFoodTruckOverlay .bop-world-title-line{
+  margin-top:calc(clamp(170px,54vw,250px) * -0.11 - 6px)!important;
+  gap:0!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+}
+#bopFoodTruckOverlay .bop-world-period{
+  margin-left:0!important;
+  flex:0 0 auto!important;
+}
+</style>
+
+
+<style id="bop-foodtruck-golive-map-orb-v421">
+/* v421: After a successful check-in ("You're live!"), a GO TO MAP orb pops
+   in under the status line. Tapping it leaves the QR-arrival bypass, closes
+   the check-in card and opens the live food-truck map, so the vendor lands
+   inside the site instead of on a dead end. */
+#bopFtGoToMapOrb{
+  display:none;
+  width:118px;height:118px;margin:22px auto 0;
+  border:2px solid #F59E0B;border-radius:50%;
+  background:#050505;color:#E4002B;
+  font:900 .78rem/1.12 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  box-shadow:0 0 14px rgba(245,158,11,.72);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  animation:bopFtOrbPulse 2.4s ease-in-out infinite;
+}
+#bopFtGoToMapOrb.bop-ft-orb-show{display:block;animation:bopFtOrbPop .45s cubic-bezier(.2,1.4,.4,1) 1,bopFtOrbPulse 2.4s ease-in-out .45s infinite;}
+#bopFtGoToMapOrb span{display:block;font-size:1.35em;line-height:1;margin-bottom:5px;}
+@keyframes bopFtOrbPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes bopFtOrbPulse{0%,100%{box-shadow:0 0 14px rgba(245,158,11,.72)}50%{box-shadow:0 0 26px rgba(245,158,11,1)}}
+</style>
+<script id="bop-foodtruck-golive-map-orb-v421-script">
+(function(){
+  function leaveBypassAndOpenMap(){
+    /* 1. Stop the QR-arrival machinery from re-opening check-in (it re-checks
+          the URL every 250ms for the first 20s), then lift the bypass. */
+    try{ window.__BOP_CHECKIN_REQUESTED=false; }catch(e){}
+    try{
+      if(/[?&]checkin=1/.test(location.search)||location.hash==='#checkin'){
+        history.replaceState(null,'',location.pathname);
+      }
+    }catch(e){}
+    document.documentElement.classList.remove('bop-qr-bypass-active');
+    /* 2. Make sure the invitation gate and landing page don't jump in front. */
+    var gate=document.getElementById('bopExclusiveInvitation');
+    if(gate){ gate.classList.add('bop-invite-closed'); gate.setAttribute('aria-hidden','true'); }
+    document.documentElement.classList.remove('bop-invite-active');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing) landing.classList.remove('open');
+    /* 3. Close the check-in card and open the live map. */
+    var checkin=document.getElementById('bopFoodTruckCheckin');
+    if(checkin) checkin.classList.remove('open');
+    document.body.style.overflow='';
+    if(typeof window.boOpenFoodTruckMap==='function') window.boOpenFoodTruckMap();
+    var map=document.getElementById('bopFoodTruckOverlay');
+    if(map){ map.classList.add('open'); try{ map.scrollTop=0; }catch(e){} }
+  }
+  window.bopFtLeaveBypassAndOpenMap=leaveBypassAndOpenMap;
+
+  function ensureOrb(status){
+    var orb=document.getElementById('bopFtGoToMapOrb');
+    if(orb) return orb;
+    orb=document.createElement('button');
+    orb.type='button'; orb.id='bopFtGoToMapOrb';
+    orb.setAttribute('aria-label','Go to the live food truck map');
+    orb.innerHTML='<span>&#127758;</span>Go to<br>map';
+    orb.addEventListener('click',leaveBypassAndOpenMap);
+    status.parentNode.insertBefore(orb,status.nextSibling);
+    return orb;
+  }
+
+  function watch(){
+    var status=document.getElementById('bopFtCheckinStatus');
+    if(!status||status.dataset.bopV421==='1') return;
+    status.dataset.bopV421='1';
+    var orb=ensureOrb(status);
+    function sync(){
+      var live=/you'?re live/i.test(status.textContent||'');
+      if(live){
+        if(!orb.classList.contains('bop-ft-orb-show')){
+          orb.classList.add('bop-ft-orb-show');
+          try{ orb.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+        }
+      }else orb.classList.remove('bop-ft-orb-show');
+    }
+    new MutationObserver(sync).observe(status,{childList:true,characterData:true,subtree:true});
+    sync();
+
+    /* Check-in card's own Back button: on a QR arrival there is nothing
+       behind it, so Back also takes the vendor to the map. */
+    var page=document.getElementById('bopFoodTruckCheckin');
+    var back=page&&page.querySelector('.bo-ft-back');
+    if(back&&!back.dataset.bopV421){
+      back.dataset.bopV421='1';
+      back.addEventListener('click',function(){
+        if(document.documentElement.classList.contains('bop-qr-bypass-active')) leaveBypassAndOpenMap();
+      });
+    }
+  }
+  var tries=0, t=setInterval(function(){ watch(); if(++tries>240) clearInterval(t); },250);
+  document.addEventListener('click',function(e){
+    if(e.target&&e.target.closest&&e.target.closest('#bopFtCheckinCta,[data-dest="foodtruck-checkin"]')) setTimeout(watch,50);
+  },true);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',watch); else watch();
+})();
+</script>
+
+<style id="bop-foodtruck-pin-popup-directions-v422">
+/* v422: Food truck pin popups — DIRECTIONS orb (opens the site's own
+   directions popup, never leaves the site), a bigger easier-to-hit X,
+   a scroll cap so a tall logo/description can't push the X offscreen,
+   and tap-anywhere-on-the-map-to-close. Scoped to the Food Trucks page. */
+#bopFoodTruckOverlay .leaflet-popup-content-wrapper{background:#06090d;color:#fff;border:1.5px solid #F59E0B;border-radius:12px;box-shadow:0 0 16px rgba(245,158,11,.5);}
+#bopFoodTruckOverlay .leaflet-popup-tip{background:#06090d;border:1px solid #F59E0B;}
+#bopFoodTruckOverlay .leaflet-popup-content{margin:12px 12px 10px;max-height:52vh;overflow:auto;-webkit-overflow-scrolling:touch;}
+#bopFoodTruckOverlay .leaflet-popup-close-button{width:36px!important;height:36px!important;right:-12px!important;top:-12px!important;font:900 26px/34px Arial,sans-serif!important;color:#E4002B!important;background:#050505!important;border:2px solid #F59E0B!important;border-radius:50%!important;box-shadow:0 0 10px rgba(245,158,11,.65)!important;text-align:center;padding:0!important;z-index:6;}
+.bo-ft-dir-orb{display:flex;align-items:center;justify-content:center;width:100%;margin:10px 0 0;padding:11px 8px;border:2px solid #F59E0B;border-radius:999px;background:#050505;color:#E4002B;font:900 .82rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.bo-ft-dir-orb:active{transform:scale(.96);}
+</style>
+<script id="bop-foodtruck-pin-popup-directions-v422-script">
+(function(){
+  var hooked=null;
+  function nameFromPopup(popup){
+    try{
+      var el=popup.getElement&&popup.getElement();
+      var first=el&&el.querySelector('.leaflet-popup-content > div > div');
+      var t=first?first.textContent.trim():'';
+      return t.length<60?t:'';
+    }catch(e){return '';}
+  }
+  function hook(map){
+    if(!map||map===hooked||!map.on)return;
+    hooked=map;
+    map.options.closePopupOnClick=true;
+    map.on('popupopen',function(e){
+      var popup=e.popup, src=popup&&popup._source;
+      var ll=src&&src.getLatLng?src.getLatLng():popup.getLatLng();
+      var root=popup.getElement&&popup.getElement();
+      var content=root&&root.querySelector('.leaflet-popup-content');
+      if(!content||!ll||content.querySelector('.bo-ft-dir-orb'))return;
+      var name=nameFromPopup(popup);
+      var orb=document.createElement('button');
+      orb.type='button';orb.className='bo-ft-dir-orb';orb.textContent='Directions';
+      orb.addEventListener('click',function(ev){
+        ev.preventDefault();ev.stopPropagation();
+        var q=ll.lat.toFixed(6)+','+ll.lng.toFixed(6);
+        if(typeof openDirectionsPopup==='function')openDirectionsPopup(q,name||'Food Truck');
+      });
+      content.appendChild(orb);
+      setTimeout(function(){try{popup.update();}catch(_e){}},0);
+    });
+    /* Tap anywhere on the map that isn't the popup, a pin, or a control -> close. */
+    var box=map.getContainer();
+    function outside(ev){
+      var t=ev.target;
+      if(!t||!t.closest)return;
+      if(t.closest('.leaflet-popup, .leaflet-marker-icon, .leaflet-control'))return;
+      map.closePopup();
+    }
+    box.addEventListener('touchstart',outside,{passive:true});
+    box.addEventListener('mousedown',outside);
+  }
+  var orig=window.boOpenFoodTruckMap;
+  if(typeof orig==='function'){
+    window.boOpenFoodTruckMap=function(){
+      var r=orig.apply(this,arguments);
+      var tries=0,t=setInterval(function(){
+        tries++;
+        if(window.bopFtMapInstance&&window.bopFtMapInstance!==hooked){hook(window.bopFtMapInstance);clearInterval(t);}
+        else if(tries>80)clearInterval(t);
+      },250);
+      return r;
+    };
+  }
+  if(window.bopFtMapInstance)hook(window.bopFtMapInstance);
+})();
+</script>
+
 </body></html>
