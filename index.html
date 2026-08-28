@@ -41737,7 +41737,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       });
       document.getElementById('bopFtCheckinCta').addEventListener('click', function(){ window.boOpenFoodTruckCheckin(); });
 
-      var checkinUrl = location.origin + location.pathname + '#checkin';
+      var checkinUrl = 'https://bestofperiod.com/?checkin=1';
       var qrImg = document.getElementById('bopFtQrImg');
       if(qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(checkinUrl);
       var qrWrap = document.getElementById('bopFtQrWrap');
@@ -43340,7 +43340,7 @@ ready(function(){
       honest status instead of 'Checking in…' forever.
    4. New: Take My Truck Down — clears the live pin (checkedInAt) while
       keeping the saved profile. */
-var CHECKIN_URL = location.origin + location.pathname + '#checkin';
+var CHECKIN_URL = 'https://bestofperiod.com/?checkin=1';
 
 function fixQr(){
   var img = document.getElementById('bopFtQrImg');
@@ -46400,4 +46400,164 @@ ready(function(){
   transform:translateX(-50%)!important;
 }
 </style>
+<style id="bop-foodtruck-direct-route-v401">
+/* A QR arrival is a dedicated vendor tool, not a normal site visit. Hide all
+   unrelated pages, gates, prompts and widgets before they can flash onscreen. */
+html.bop-qr-bypass-active body>*{display:none!important;}
+html.bop-qr-bypass-active body>#bopFoodTruckCheckin{
+  display:block!important;
+  visibility:visible!important;
+}
+html.bop-qr-bypass-active body{overflow:hidden!important;}
+#bopFtConnTest.bop-conn-setup{color:#F59E0B!important;}
+</style>
+<script id="bop-foodtruck-reliable-direct-checkin-v401">
+(function(){
+var PROJECT='bop-food-trucks';
+var API_KEY='AIzaSyCfyTi1MtABID3n-ivLModltn1LyMfIhC0';
+var HEALTH_URL='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents/foodtrucks?pageSize=1&key='+API_KEY;
+var DIRECT_URL='https://bestofperiod.com/?checkin=1';
+
+function wantsCheckin(){
+  try{
+    var p=new URLSearchParams(location.search);
+    return window.__BOP_CHECKIN_REQUESTED===true || p.get('checkin')==='1' || (location.hash||'')==='#checkin';
+  }catch(e){return false;}
+}
+
+/* Every displayed, enlarged and shared QR uses one conventional query URL.
+   It survives fresh-device startup and is captured before any site gate. */
+function fixEveryQr(){
+  ['bopFtQrImg','bopFtQrZoomImg'].forEach(function(id){
+    var img=document.getElementById(id);
+    if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size='+(id==='bopFtQrZoomImg'?'360':'200')+'x'+(id==='bopFtQrZoomImg'?'360':'200')+'&data='+encodeURIComponent(DIRECT_URL);
+  });
+  var share=document.getElementById('bopFtQrShare');
+  if(share && !share.dataset.bopV401){
+    var clean=share.cloneNode(true);
+    clean.dataset.bopV401='1';
+    share.parentNode.replaceChild(clean,share);
+    clean.addEventListener('click',function(){
+      var payload={title:'Check In Your Truck',text:'Go live on the Best of Period food-truck map.',url:DIRECT_URL};
+      if(navigator.share) navigator.share(payload).catch(function(){});
+      else if(navigator.clipboard) navigator.clipboard.writeText(DIRECT_URL).catch(function(){});
+      else prompt('Copy this link:',DIRECT_URL);
+    });
+  }
+}
+
+function serverHealth(){
+  return fetch(HEALTH_URL,{cache:'no-store'}).then(function(r){
+    return r.json().catch(function(){return {};}).then(function(body){
+      if(r.ok) return {ok:true};
+      var msg=(body&&body.error&&body.error.message)||('HTTP '+r.status);
+      return {ok:false,status:r.status,message:msg};
+    });
+  }).catch(function(err){return {ok:false,status:0,message:(err&&err.message)||'network error'};});
+}
+
+function showRealHealth(){
+  var line=document.getElementById('bopFtConnTest');
+  if(!line)return;
+  line.className='';
+  line.textContent='LIVE MAP CONNECTION: CHECKING SERVER\u2026';
+  serverHealth().then(function(result){
+    line.className='';
+    if(result.ok){
+      line.textContent='LIVE MAP CONNECTION: READY';
+      line.classList.add('bop-conn-ok');
+    }else if(result.status===404 && /database.*does not exist/i.test(result.message||'')){
+      line.textContent='LIVE MAP SETUP REQUIRED: FIRESTORE DATABASE HAS NOT BEEN CREATED';
+      line.classList.add('bop-conn-setup');
+    }else{
+      line.textContent='LIVE MAP CONNECTION: FAILED ('+(result.status||'NETWORK')+')';
+      line.classList.add('bop-conn-bad');
+    }
+  });
+}
+
+function installReliableSubmit(){
+  var old=document.getElementById('bopFtCheckinSubmit');
+  if(!old || old.dataset.bopV401)return;
+  var btn=old.cloneNode(true);
+  btn.dataset.bopV401='1';
+  old.parentNode.replaceChild(btn,old); /* removes the old hanging listener */
+  btn.addEventListener('click',function(){
+    var status=document.getElementById('bopFtCheckinStatus');
+    var phone=document.getElementById('bopFtPhone');
+    var name=document.getElementById('bopFtName');
+    var website=document.getElementById('bopFtWebsite');
+    var instagram=document.getElementById('bopFtInstagram');
+    var description=document.getElementById('bopFtDescription');
+    var key=(phone&&phone.value||'').replace(/\D/g,'');
+    var truck=(name&&name.value||'').trim();
+    if(key.length<7){status.textContent='Please enter a valid phone number.';return;}
+    if(!truck){status.textContent='Please enter your truck name.';return;}
+    btn.disabled=true;
+    status.textContent='Checking the live map service\u2026';
+    serverHealth().then(function(health){
+      if(!health.ok){
+        btn.disabled=false;
+        if(health.status===404 && /database.*does not exist/i.test(health.message||'')){
+          status.textContent='Check-in is temporarily unavailable while the live-map database is being activated.';
+        }else status.textContent='The live-map service could not be reached. Please try again.';
+        showRealHealth();
+        return;
+      }
+      if(!navigator.geolocation){btn.disabled=false;status.textContent='Location is not available in this browser.';return;}
+      status.textContent='Getting your current location\u2026';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        if(!window.bopFtDb){btn.disabled=false;status.textContent='The live-map database did not load. Refresh and try again.';return;}
+        status.textContent='Putting your truck on the live map\u2026';
+        var write=window.bopFtDb.collection('foodtrucks').doc(key).set({
+          name:truck,
+          phone:(phone.value||'').trim(),
+          website:(website&&website.value||'').trim(),
+          instagram:(instagram&&instagram.value||'').trim(),
+          description:(description&&description.value||'').trim(),
+          photo:window.bopFtPhotoUrl||'',
+          lat:pos.coords.latitude,
+          lng:pos.coords.longitude,
+          accuracy:pos.coords.accuracy||null,
+          checkedInAt:firebase.firestore.FieldValue.serverTimestamp()
+        },{merge:true});
+        var timer=setTimeout(function(){btn.disabled=false;status.textContent='The live map did not confirm your check-in. Please try again.';},15000);
+        write.then(function(){
+          clearTimeout(timer);btn.disabled=false;
+          status.textContent="You're live! Your truck is now on the map.";
+        }).catch(function(err){
+          clearTimeout(timer);btn.disabled=false;
+          var code=(err&&err.code)||'write error';
+          status.textContent=code.indexOf('permission')>-1?'The live map is not yet accepting vendor check-ins.':'Check-in failed ('+code+'). Please try again.';
+        });
+      },function(err){
+        btn.disabled=false;
+        if(err&&err.code===1) status.textContent='Please allow location access, then tap Check In again.';
+        else if(err&&err.code===2) status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
+        else status.textContent='Location took too long. Please try again.';
+      },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
+    });
+  });
+}
+
+function directOpen(){
+  if(!wantsCheckin())return;
+  document.documentElement.classList.add('bop-qr-bypass-active');
+  document.querySelectorAll('.open').forEach(function(el){if(el.id!=='bopFoodTruckCheckin')el.classList.remove('open');});
+  if(typeof window.boOpenFoodTruckCheckin==='function'){
+    window.boOpenFoodTruckCheckin();
+    installReliableSubmit();showRealHealth();
+  }
+}
+
+var tries=0;
+var timer=setInterval(function(){
+  tries++;fixEveryQr();installReliableSubmit();
+  if(wantsCheckin())directOpen();
+  if(document.getElementById('bopFtConnTest'))showRealHealth();
+  if(tries>80)clearInterval(timer);
+},250);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',directOpen);else directOpen();
+})();
+</script>
 </body></html>
