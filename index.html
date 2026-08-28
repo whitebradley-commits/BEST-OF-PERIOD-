@@ -23208,24 +23208,47 @@ function boTileRestaurantCount(cat, cityKey){
     const key=String(value||'bestof').toLowerCase();
     return (key==='vegas'||key==='lasvegas') ? 'bestof' : key;
   };
+  // A tile badge is a promise about the page behind it. It must count ONLY
+  // the entries that page will actually render — same score floor, same
+  // strongest-six rule, same caps, same award-list exemption the renderer
+  // uses — so a tile can never claim restaurants and open onto fewer.
+  const canSimulate = typeof boRankedRestaurantList==='function' && typeof boRestaurantScore==='function';
+  const visibleSubset=(leafCat,list)=>{
+    const scoped=(Array.isArray(list)?list:[]).filter(r=>r&&r.name&&normalizeCity(r.city)===city);
+    if(!canSimulate) return scoped;
+    const isAward=(leafCat==='michelin'||leafCat==='jamesbeard');
+    const isPick=(typeof isBjsPicksCat==='function')&&isBjsPicksCat(leafCat);
+    const ranked=boRankedRestaurantList(scoped.slice());
+    if(isPick||isAward) return ranked.slice(0,18);
+    const rated=ranked.filter(e=>{const s=boRestaurantScore(e);return s!=null&&s>=3.8;});
+    const strong=rated.filter(e=>boRestaurantScore(e)>=4.6);
+    const cap=BO_CITY_CONFIG[leafCat]?11:18;
+    return (strong.length>=6?strong:rated.slice(0,6)).slice(0,cap);
+  };
   const seen=new Set();
-  const addList=list=>{
-    if(!Array.isArray(list)) return;
-    list.forEach(r=>{
-      if(!r||!r.name||normalizeCity(r.city)!==city) return;
+  const addList=(list,leafCat)=>{
+    visibleSubset(leafCat,list).forEach(r=>{
       seen.add(String(r.name).trim().toLowerCase()+'|'+String(r.address||'').trim().toLowerCase());
     });
   };
   if(cat==='__citytotal'){
-    Object.values(boCategoryData).forEach(addList);
+    // City totals stay a raw census of everything tagged to the city.
+    Object.values(boCategoryData).forEach(list=>{
+      if(!Array.isArray(list)) return;
+      list.forEach(r=>{
+        if(!r||!r.name||normalizeCity(r.city)!==city) return;
+        seen.add(String(r.name).trim().toLowerCase()+'|'+String(r.address||'').trim().toLowerCase());
+      });
+    });
     return seen.size;
   }
   if(cat==='bestof'){
-    addList(boCategoryData[city]||[]);
+    addList(boCategoryData[city]||[], city);
     return seen.size;
   }
   if(cat==='bjspicks'){
-    addList(boCategoryData[(BO_CITY_CONFIG[city]||{}).bjsPicksCat]||[]);
+    const pickCat=(BO_CITY_CONFIG[city]||{}).bjsPicksCat;
+    addList(boCategoryData[pickCat]||[], pickCat);
     return seen.size;
   }
   const visited=new Set();
@@ -23239,7 +23262,7 @@ function boTileRestaurantCount(cat, cityKey){
         // Breakfast, etc. would inflate the parent total with unrelated picks.
         if(child.cat!=='bjspicks') collect(child.cat);
       });
-    }else addList(boCategoryData[key]||[]);
+    }else addList(boCategoryData[key]||[], key);
   };
   collect(cat);
   return seen.size;
@@ -23928,7 +23951,15 @@ function boRenderCategory(cat){
      and only reaches downward when fewer than six high-scoring choices exist.
      BJS Picks remain editorial and therefore keep their existing rules. */
   let sortedEntries = boRankedRestaurantList(boScopedCategoryList);
-  if(!isBjsPicksCat(cat)){
+  // Michelin and James Beard are award lists: the award itself is the
+  // qualification (this matches the data processor's own rule further down
+  // the file). The score floor below was silently deleting every award
+  // entry that didn't have an independently verified rating yet, which is
+  // how a city's Michelin tile could claim 16 restaurants and then render
+  // a completely empty page. Unrated award cards already display
+  // "Not yet independently rated", so they render safely.
+  const boIsAwardListCat = (cat === 'michelin' || cat === 'jamesbeard');
+  if(!isBjsPicksCat(cat) && !boIsAwardListCat){
     sortedEntries = sortedEntries.filter(entry => {
       const score = boRestaurantScore(entry);
       return score != null && score >= 3.8;
@@ -25809,7 +25840,21 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
         // must return to that chooser, not reopen the same borough or skip
         // all the way past New York to the global city search.
         const nySubcities = ['manhattan','brooklyn','queens','bronx','hamptons','northshoreli','southshoreli'];
-        if(nySubcities.includes(boCityContext) && typeof window.bopOpenNewYorkGateway === 'function'){
+        // San Diego and Los Angeles areas sit one level below their coastal
+        // map gates the same way — Back from an area's Main page returns to
+        // that map, not to the global landing.
+        const areaGateParents = {
+          sdoceanside:'sandiego',sdcarlsbad:'sandiego',sdencinitas:'sandiego',sddelmar:'sandiego',
+          sdlajolla:'sandiego',sdpacificbeach:'sandiego',sddowntown:'sandiego',sdcoronado:'sandiego',
+          lavalley:'losangeles',lanorthhollywood:'losangeles',laweho:'losangeles',lahollywood:'losangeles',
+          lalosfelizsilverlake:'losangeles',lasantamonicavenice:'losangeles',labeveryhillswestside:'losangeles',
+          ladowntown:'losangeles',laculvercity:'losangeles',lasouthbaylax:'losangeles'
+        };
+        if(areaGateParents[boCityContext] && typeof window.bopShowCityGate === 'function'){
+          const bestOverlay = document.getElementById('bestOfOverlay');
+          if(bestOverlay) bestOverlay.classList.remove('open');
+          window.bopShowCityGate(areaGateParents[boCityContext]);
+        } else if(nySubcities.includes(boCityContext) && typeof window.bopOpenNewYorkGateway === 'function'){
           const bestOverlay = document.getElementById('bestOfOverlay');
           if(bestOverlay) bestOverlay.classList.remove('open');
           window.bopOpenNewYorkGateway();
@@ -43143,7 +43188,7 @@ function buildGate(key){
     '<div class="bop-city-gate-title">'+cfg.title+'</div>'+
     '<div class="bop-city-gate-sub">'+cfg.sub+'</div>'+
     '<div class="bop-city-gate-stage">'+cfg.svg+'</div>'+
-    '<div class="bop-city-gate-note">Every neighborhood leads to the full '+cfg.title.replace(/^./,function(c){return c;})+' directory for now \u2014 area-by-area lists are next.</div>';
+    '<div class="bop-city-gate-note">Tap your area for its own directory.</</div>';
   document.body.appendChild(el);
   el.querySelector('.bop-city-gate-back').addEventListener('click', function(){
     el.classList.remove('open');
@@ -43155,6 +43200,24 @@ function buildGate(key){
   });
   el.querySelectorAll('.bop-lamap-zone').forEach(function(zone){
     zone.addEventListener('click', function(){
+      // v401: the area script stamps each zone with its own destination key
+      // (Oceanside, Del Mar, La Jolla, ... / the ten L.A. areas). Route there
+      // so every area shows ITS OWN directory and tile numbers — not the
+      // whole parent territory added together. Zones without a wired
+      // destination keep the old full-city behavior as a fallback.
+      var dest = zone.dataset.dest;
+      if(dest && typeof BO_CITY_CONFIG === 'object' && BO_CITY_CONFIG[dest]){
+        el.classList.remove('open');
+        document.body.style.overflow='';
+        var best = document.getElementById('bestOfOverlay');
+        if(best) best.classList.add('open');
+        window.boCityContext = dest;
+        try { boCityContext = dest; } catch(e) {}
+        if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', dest);
+        window.boRenderCategory('otheroptions');
+        window.scrollTo(0,0);
+        return;
+      }
       proceedPastGate(key);
     });
   });
@@ -43182,6 +43245,9 @@ function proceedPastGate(key){
   window.scrollTo(0,0);
 }
 
+// v401: let the site's back-navigation reopen this gate (Back from an
+// area's Main page should land on the coastal map, not skip past it).
+window.bopShowCityGate = function(k){ showGate(k); };
 var origRender = window.boRenderCategory;
 if(typeof origRender === 'function' && !origRender.__bopGateWrapped){
   var wrapped = function(cat){
