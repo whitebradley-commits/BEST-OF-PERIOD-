@@ -24373,7 +24373,14 @@ function boRenderCategory(cat){
   // exempted from it — this is exactly what happened to Miami's main page
   // earlier, and resurfaced here on London's BJS Picks page once it dropped
   // to a single entry (Fallow) after Dishoom moved to its own category.
-  if(boSectionHeadEl) boSectionHeadEl.style.display = (!boScopedCategoryList || boScopedCategoryList.length === 0) && !isMainCityPage && !isBjsPick ? 'none' : '';
+  // Picker/hub tile pages (boPickerConfig[cat] — Other Bests, Steak, Sushi, ...)
+  // are just a grid of tiles, never a ranked restaurant list, so their section
+  // head (including the "Top N, Right Now" title below) must stay hidden no
+  // matter how many entries happen to exist in that category's data. This was
+  // previously only hidden a few lines up and then unconditionally overwritten
+  // right here whenever the scoped list wasn't empty — which is exactly what
+  // let "The Top 3, Right Now" leak onto tile pages like Other Bests.
+  if(boSectionHeadEl) boSectionHeadEl.style.display = boPickerConfig[cat] || ((!boScopedCategoryList || boScopedCategoryList.length === 0) && !isMainCityPage && !isBjsPick) ? 'none' : '';
   if(boScrollCueEl) boScrollCueEl.style.display = (isMainCityPage || isBjsPick) ? 'flex' : 'none';
   if(boHeroSubEl){
     const isDiveTier = cat.toLowerCase().includes('dive');
@@ -24462,7 +24469,9 @@ function boRenderCategory(cat){
   if(boSectionHeadTitleEl){
     const sectionCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
     boSectionHeadTitleEl.classList.toggle('bo-brewery-ranking-title', cat === 'brewery');
-    if(isBjsPicksCat(cat)){
+    if(isBjsPicksCat(cat) || boPickerConfig[cat]){
+      // Tile/picker pages never get a "Top N, Right Now" (or brewery-style)
+      // ranking title — they're a grid of tiles, not a ranked list.
       boSectionHeadTitleEl.textContent = '';
     }else if(cat === 'brewery'){
       boSectionHeadTitleEl.innerHTML = `<span>${sectionCityName}’s ${sortedEntries.length} Strongest</span><span>Breweries and Taprooms</span><span>Right Now!</span>`;
