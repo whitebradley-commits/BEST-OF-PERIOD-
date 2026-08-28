@@ -27658,6 +27658,9 @@ body footer .fine-print>span:first-child+span,
   };
   function exactShareUrl(){
     const url=new URL(location.href),overlay=document.getElementById('fntOverlay'),frame=document.getElementById('fntFrame');
+    const ftPage=document.getElementById('bopFoodTruckOverlay'),vsPage=document.getElementById('bopVendorStandOverlay');
+    if(isOpen(ftPage)){url.search='';url.hash='';url.searchParams.set('page','foodtrucks');return url.toString();}
+    if(isOpen(vsPage)){url.search='';url.hash='';url.searchParams.set('page','streetvendors');return url.toString();}
     if(overlay&&overlay.style.display!=='none'&&frame&&frame.contentWindow){
       url.search='';url.hash='';
       if(typeof frame.contentWindow.getFntShareQuery==='function'){
@@ -27678,6 +27681,8 @@ body footer .fine-print>span:first-child+span,
   function isOpen(element){return !!(element&&isVisible(element)&&(element.classList.contains('open')||element.classList.contains('active')||element.classList.contains('is-open')||element.classList.contains('tg-open')))}
   function exactShareData(){
     const fnt=document.getElementById('fntOverlay'),frame=document.getElementById('fntFrame'),movies=document.getElementById('boMoviesPage'),world=document.getElementById('boWorldwidePage');
+    if(isOpen(document.getElementById('bopFoodTruckOverlay')))return {title:'Best of Period — Food Trucks',text:'Check out the live food truck map on Best of Period.',url:exactShareUrl()};
+    if(isOpen(document.getElementById('bopVendorStandOverlay')))return {title:'Best of Period — Street Vendors',text:'Check out the live street vendor map on Best of Period.',url:exactShareUrl()};
     if(isVisible(fnt)&&frame&&frame.contentWindow){
       let query='',team='';
       try{
@@ -40711,7 +40716,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 <div id="bopExclusiveInvitation" role="dialog" aria-modal="true" aria-labelledby="bopExclusiveInvitationTitle">
   <section class="bop-exclusive-orb">
     <h2 class="bop-exclusive-copy" id="bopExclusiveInvitationTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Best of Period</h2>
-    <header class="bop-world-hero bop-exclusive-world-hero" aria-hidden="true"><div class="bop-world-best">Best of</div><div class="bop-world-title-line bop-exclusive-title-line"><div class="bop-world-period">Perıod<span class="bop-opening-static-apple" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke="#F59E0B" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg></span><sup>&copy;</sup></div></div></header>
+    <header class="bop-world-hero bop-exclusive-world-hero" aria-hidden="true"><div class="bop-world-best">Best <span class="bop-invite-of-word">of</span></div><div class="bop-world-title-line bop-exclusive-title-line"><div class="bop-world-period">Perıod<span class="bop-opening-static-apple" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke="#F59E0B" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg></span><sup>&copy;</sup></div></div></header>
     <div class="bop-exclusive-btn-row">
       <button class="bop-exclusive-enter" id="bopExclusivePromo" type="button">PROMO<br/>VIDEO</button>
       <button class="bop-exclusive-enter" id="bopExclusiveEnter" type="button"><span class="bop-bjs-co-stack"><span class="bop-bjs-thick">BJS</span><span class="bop-bjs-co-light">CO.</span></span></button>
@@ -41603,13 +41608,11 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
   }
   function boFetchFtLiveCount(){
     if(!window.bopFtDb || !window.bopFtDb.collection) return;
-    var cutoff = Date.now() - (8*60*60*1000);
     window.bopFtDb.collection('foodtrucks').get().then(function(snap){
       var live = 0;
       snap.forEach(function(doc){
         var d = doc.data();
-        var t = d && d.checkedInAt && d.checkedInAt.toMillis ? d.checkedInAt.toMillis() : 0;
-        if(t >= cutoff) live++;
+        if(window.bopIsLive && window.bopIsLive(d)) live++;
       });
       window.__bopFtLiveCount = live;
       boApplyFtTileCount();
@@ -41916,12 +41919,11 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       window.bopFtUnsub = window.bopFtDb.collection('foodtrucks').onSnapshot(function(snap){
         Object.keys(window.bopFtMarkers).forEach(function(id){ map.removeLayer(window.bopFtMarkers[id]); });
         window.bopFtMarkers = {};
-        var liveWindowMs = 8*60*60*1000, now = Date.now(), liveCount = 0;
+        var liveCount = 0;
         snap.forEach(function(doc){
           var d = doc.data();
           if(!d.checkedInAt || typeof d.lat!=='number' || typeof d.lng!=='number') return;
-          var ts = d.checkedInAt.toMillis ? d.checkedInAt.toMillis() : 0;
-          if(now - ts > liveWindowMs) return;
+          if(!window.bopIsLive(d)) return;
           liveCount++;
           var marker = L.marker([d.lat,d.lng],{icon:truckIcon}).addTo(map);
           var links = [];
@@ -41958,7 +41960,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
           '<div class="bo-ftc-title">Check In Your Truck</div>'+
-          '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 10 seconds.</div>'+
+          '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
           '<input class="bo-ftc-field" id="bopFtWebsite" type="text" placeholder="Website or ordering link (optional)" />'+
@@ -43549,7 +43551,8 @@ var CITY_BY_NAME={
   'Project BBQ':'LAS VEGAS','The Chef Truck':'LAS VEGAS',
   'Micklethwait Craft Meats':'AUSTIN','Smash That':'SEATTLE',
   'Bad Luck Burger Club':'NASHVILLE','Tacos My Blessing':'ST. AUGUSTINE',
-  'Slow River Coffee':'BOISE','Blue Sparrow \u2014 Pizza Alley Bus':'DENVER'
+  'Slow River Coffee':'BOISE','Blue Sparrow \u2014 Pizza Alley Bus':'DENVER',
+  'Best of Period Info':'LOS ANGELES'
 };
 
 /* 1. permanent locations grouped by city */
@@ -47068,13 +47071,10 @@ try{
 </style>
 <script id="bop-foodtruck-multi-truck-manage-v425-script">
 (function(){
-  var LIVE_MS=8*60*60*1000;
   function digits(v){return String(v||'').replace(/\D/g,'');}
   function slug(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'truck';}
   function isLive(d){
-    if(!d||!d.checkedInAt)return false;
-    var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
-    return ts&&(Date.now()-ts)<LIVE_MS;
+    return window.bopIsLive?window.bopIsLive(d):false;
   }
   function takeDown(id){
     return window.bopFtDb.collection('foodtrucks').doc(id).set({checkedInAt:null},{merge:true});
@@ -47218,13 +47218,13 @@ try{
 .bo-ft-help-link{display:inline-block;margin:10px auto 0;padding:6px 14px;color:#F59E0B;font:900 .74rem/1.2 'Archivo Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;text-shadow:0 0 6px rgba(245,158,11,.5);}
 .bo-ft-help-link b{color:#E4002B;font-size:1.25em;margin-right:4px;}
 .bo-ft-help-row{text-align:center;}
-#bopFtHelpPopup{position:fixed!important;inset:0!important;z-index:2147483000!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.82);padding:20px;}
+#bopFtHelpPopup{position:fixed!important;inset:0!important;z-index:2147483647!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.82);padding:20px;}
 #bopFtHelpPopup.bop-fth-open,html.bop-qr-bypass-active body>#bopFtHelpPopup.bop-fth-open{display:flex!important;}
-#bopFtHelpCard{position:relative!important;width:min(420px,calc(100vw - 40px))!important;max-width:none!important;min-width:0!important;margin:0 auto!important;left:auto!important;right:auto!important;top:auto!important;transform:none!important;box-sizing:border-box;border:2px solid #F59E0B;border-radius:16px;background:#050505;padding:30px 22px 24px;text-align:center;box-shadow:0 0 26px rgba(245,158,11,.7);}
+#bopFtHelpCard{position:relative!important;width:min(440px,calc(100vw - 24px))!important;max-width:none!important;min-width:0!important;margin:0 auto!important;left:auto!important;right:auto!important;top:auto!important;transform:none!important;box-sizing:border-box;border:2px solid #F59E0B;border-radius:16px;background:#050505;padding:30px 22px 24px;text-align:center;box-shadow:0 0 26px rgba(245,158,11,.7);}
 #bopFtHelpCard .bo-fth-title{font:900 1rem/1.2 'Archivo Black',Arial,sans-serif;color:#F59E0B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
 #bopFtHelpCard .bo-fth-title b{color:#E4002B;}
-#bopFtHelpCard p{margin:0;color:#fff;font:700 1rem/1.55 Arial,sans-serif;}
-#bopFtHelpCard a{color:#F59E0B;font-weight:900;text-decoration:underline;word-break:break-all;}
+#bopFtHelpCard p{margin:0;color:#fff;font:700 .92rem/1.55 Arial,sans-serif;}
+#bopFtHelpCard a{color:#F59E0B;font-weight:900;text-decoration:underline;white-space:nowrap;}
 #bopFtHelpClose{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 22px/34px Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.65);}
 </style>
 <script id="bop-foodtruck-help-asterisk-v426-script">
@@ -47239,7 +47239,7 @@ try{
     o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('bop-fth-open');});
     o.querySelector('#bopFtHelpClose').addEventListener('click',function(){o.classList.remove('bop-fth-open');});
   }
-  function openHelp(e){if(e){e.preventDefault();e.stopPropagation();}ensureOverlay();document.getElementById('bopFtHelpPopup').classList.add('bop-fth-open');}
+  function openHelp(e){if(e){e.preventDefault();e.stopPropagation();}var promo=document.getElementById('bopPromoModal');if(promo&&promo.classList.contains('open')){promo.classList.remove('open');var v=document.getElementById('bopPromoVideo');if(v)v.pause();}ensureOverlay();document.getElementById('bopFtHelpPopup').classList.add('bop-fth-open');}
   function makeLink(){
     var a=document.createElement('span');a.className='bo-ft-help-link';a.innerHTML='<b>*</b>Help';a.setAttribute('role','button');
     a.addEventListener('click',openHelp);return a;
@@ -47293,13 +47293,13 @@ select.bo-ftc-field{-webkit-appearance:none;appearance:none;background-image:url
 .bo-vs-help-link{display:inline-block;margin:10px auto 0;padding:6px 14px;color:#F59E0B;font:900 .74rem/1.2 'Archivo Black',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;text-shadow:0 0 6px rgba(245,158,11,.5);}
 .bo-vs-help-link b{color:#E4002B;font-size:1.25em;margin-right:4px;}
 .bo-vs-help-row{text-align:center;}
-#bopVsHelpPopup{position:fixed!important;inset:0!important;z-index:2147483000!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.82);padding:20px;}
+#bopVsHelpPopup{position:fixed!important;inset:0!important;z-index:2147483647!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.82);padding:20px;}
 #bopVsHelpPopup.bop-fth-open{display:flex!important;}
 #bopVsHelpCard{position:relative!important;width:min(420px,calc(100vw - 40px))!important;max-width:none!important;margin:0 auto!important;box-sizing:border-box;border:2px solid #F59E0B;border-radius:16px;background:#050505;padding:30px 22px 24px;text-align:center;box-shadow:0 0 26px rgba(245,158,11,.7);}
 #bopVsHelpCard .bo-fth-title{font:900 1rem/1.2 'Archivo Black',Arial,sans-serif;color:#F59E0B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
 #bopVsHelpCard .bo-fth-title b{color:#E4002B;}
-#bopVsHelpCard p{margin:0;color:#fff;font:700 1rem/1.55 Arial,sans-serif;}
-#bopVsHelpCard a{color:#F59E0B;font-weight:900;text-decoration:underline;word-break:break-all;}
+#bopVsHelpCard p{margin:0;color:#fff;font:700 .92rem/1.55 Arial,sans-serif;}
+#bopVsHelpCard a{color:#F59E0B;font-weight:900;text-decoration:underline;white-space:nowrap;}
 #bopVsHelpClose{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 22px/34px Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.65);}
 
 #bopVsMyStands{display:none;margin:12px 0 4px;text-align:left;border:1.5px solid #F59E0B;border-radius:12px;padding:10px 12px;background:#0a0a0a;}
@@ -47466,18 +47466,25 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
   function renderVsMarkers(){
     var map=window.bopVsMapInstance;
-    if(!map||!window.bopVsLiveDocs)return;
+    if(!map)return;
     Object.keys(window.bopVsMarkers||{}).forEach(function(id){map.removeLayer(window.bopVsMarkers[id]);});
     window.bopVsMarkers={};
     var cartIcon=L.divIcon({className:'bo-vs-marker',html:cartIconHTML,iconSize:[34,34],iconAnchor:[17,17]});
     var liveCount=0;
-    window.bopVsLiveDocs.forEach(function(item){
+    (window.bopVsLiveDocs||[]).forEach(function(item){
       var id=item.id,d=item.d;
       if(activeFilter!=='all'&&d.category!==activeFilter)return;
       liveCount++;
       var marker=L.marker([d.lat,d.lng],{icon:cartIcon}).addTo(map);
       marker.bindPopup(vsPopupHTML(id,d));
       window.bopVsMarkers[id]=marker;
+    });
+    (window.bopVsSeedVendors||[]).forEach(function(t,i){
+      if(activeFilter!=='all'&&t.category!==activeFilter)return;
+      var seedId='seed_'+i;
+      var marker=L.marker([t.lat,t.lng],{icon:cartIcon}).addTo(map);
+      marker.bindPopup(vsPopupHTML(seedId,t));
+      window.bopVsMarkers[seedId]=marker;
     });
     var note=document.getElementById('bopVsEmptyNote');
     if(note)note.style.display=liveCount?'none':'block';
@@ -47509,7 +47516,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
         if(typeof openDirectionsPopup==='function')openDirectionsPopup(q,name);
       });
       content.appendChild(orb);
-      if(id){
+      if(id&&id.indexOf('seed_')!==0){
         var link=document.createElement('span');link.className='bo-vs-takedown-link';link.textContent='This is my stand \u2014 take it down';
         link.addEventListener('click', function(ev){
           ev.preventDefault();ev.stopPropagation();
@@ -47526,15 +47533,16 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       setTimeout(function(){try{popup.update();}catch(_e){}},0);
     });
 
+    renderVsMarkers(); /* seed pins show immediately, even before Firestore connects */
+
     if(window.bopFtDb){
       if(window.bopVsUnsub)window.bopVsUnsub();
       window.bopVsUnsub=window.bopFtDb.collection('vendorstands').onSnapshot(function(snap){
-        var liveWindowMs=8*60*60*1000, now=Date.now(), out=[];
+        var out=[];
         snap.forEach(function(doc){
           var d=doc.data();
           if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number')return;
-          var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
-          if(now-ts>liveWindowMs)return;
+          if(!window.bopIsLive(d))return;
           out.push({id:doc.id,d:d});
         });
         window.bopVsLiveDocs=out;
@@ -47558,7 +47566,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
           '<div class="bo-ftc-title">Check In Your Stand</div>'+
-          '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 10 seconds.</div>'+
+          '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
           '<label class="bo-vs-field-label">What do you sell?</label>'+
@@ -47662,12 +47670,11 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     if(key.length<7){box.classList.add('on');box.innerHTML='<div class="bo-ftm-head">My Stands</div><div class="bo-ftm-empty">Enter the phone number you check in with to see your stands.</div>';return;}
     if(!window.bopFtDb){box.classList.add('on');box.innerHTML='<div class="bo-ftm-head">My Stands</div><div class="bo-ftm-empty">Connecting to the live map\u2026</div>';return;}
     box.classList.add('on');box.innerHTML='<div class="bo-ftm-head">My Stands</div><div class="bo-ftm-empty">Looking up your stands\u2026</div>';
-    var liveMs=8*60*60*1000;
     window.bopFtDb.collection('vendorstands').get().then(function(snap){
       var list=[];
       snap.forEach(function(doc){
         var d=doc.data();
-        if(!d.checkedInAt)return;
+        if(!window.bopIsLive(d))return;
         var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
         if(!ts||(Date.now()-ts)>liveMs)return;
         if(vsDigits(d.phone)===key||doc.id===key||doc.id.indexOf(key+'_')===0)list.push({id:doc.id,d:d});
@@ -47747,7 +47754,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     o.addEventListener('click', function(e){if(e.target===o)o.classList.remove('bop-fth-open');});
     o.querySelector('#bopVsHelpClose').addEventListener('click', function(){o.classList.remove('bop-fth-open');});
   }
-  function openVsHelp(e){if(e){e.preventDefault();e.stopPropagation();}ensureVsHelp();document.getElementById('bopVsHelpPopup').classList.add('bop-fth-open');}
+  function openVsHelp(e){if(e){e.preventDefault();e.stopPropagation();}var promo=document.getElementById('bopPromoModal');if(promo&&promo.classList.contains('open')){promo.classList.remove('open');var v=document.getElementById('bopPromoVideo');if(v)v.pause();}ensureVsHelp();document.getElementById('bopVsHelpPopup').classList.add('bop-fth-open');}
   document.addEventListener('click', function(e){
     var t=e.target.closest&&e.target.closest('#bopVsHelpLinkMap,#bopVsHelpLinkCheckin');
     if(t)openVsHelp(e);
@@ -47804,137 +47811,6 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 .bo-ftd-tag.permanent{background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid #F59E0B;}
 .bo-ftd-empty{padding:20px 4px;color:#9A9A9A;font:600 .85rem/1.5 Arial,sans-serif;text-align:center;}
 </style>
-<script id="bop-live-directory-v429-script">
-(function(){
-  function esc(v){return String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function liveMs(){return 8*60*60*1000;}
-
-  /* ---- Food Trucks: combined LIVE + permanent directory ---- */
-  function fetchLiveTrucks(){
-    if(!window.bopFtDb)return Promise.resolve([]);
-    return window.bopFtDb.collection('foodtrucks').get().then(function(snap){
-      var now=Date.now(), out=[];
-      snap.forEach(function(doc){
-        var d=doc.data();
-        if(!d||!d.checkedInAt||typeof d.lat!=='number')return;
-        var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
-        if(!ts||(now-ts)>liveMs())return;
-        out.push(d);
-      });
-      return out;
-    }).catch(function(){return [];});
-  }
-  function truckRow(name,description,linkHref,linkLabel,tagHtml){
-    return '<div class="bo-near-osm-item"><div class="bo-near-osm-item-name">'+esc(name)+tagHtml+'</div>'+
-      (description?'<div class="bo-near-osm-item-meta">'+esc(description)+'</div>':'')+
-      (linkHref?'<a class="bo-near-osm-item-link" href="'+linkHref+'" target="_blank" rel="noopener">'+linkLabel+'</a>':'')+
-      '</div>';
-  }
-  function openFoodTruckDirectory(){
-    var old=document.getElementById('bopFoodTruckPermanentList');
-    if(old&&old.parentNode)old.parentNode.removeChild(old);
-    var page=document.createElement('section');
-    page.id='bopFoodTruckPermanentList';
-    page.className='bo-ft-overlay';
-    page.setAttribute('aria-label','Live Food Truck Directory');
-    page.innerHTML='<div class="bo-ftc-shell"><button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-      '<div class="bo-ftc-title">Food Truck Directory</div>'+
-      '<div id="bopFtDirBody" class="bo-ftd-empty">Loading live trucks\u2026</div></div>';
-    document.body.appendChild(page);
-    page.querySelector('.bo-ft-back').addEventListener('click', function(){
-      page.classList.remove('open'); document.body.style.overflow='';
-    });
-    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
-
-    fetchLiveTrucks().then(function(live){
-      var seed=(window.bopFtSeedTrucks||[]).map(function(t){return Object.assign({permanent:true},t);});
-      var liveTagged=live.map(function(t){return Object.assign({permanent:false},t);});
-      var all=liveTagged.concat(seed);
-      var body=document.getElementById('bopFtDirBody');
-      if(!body)return;
-      if(!all.length){body.innerHTML='No trucks are checked in right now, and no permanent locations are on file yet.';return;}
-      var rowsHtml=all.map(function(t){
-        var linkHref=t.website||('https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng);
-        var linkLabel=t.website?'Website / Order':'Directions';
-        var tag=t.permanent?'<span class="bo-ftd-tag permanent">PERMANENT</span>':'<span class="bo-ftd-tag live">LIVE NOW</span>';
-        return truckRow(t.name,t.description,linkHref,linkLabel,tag);
-      }).join('');
-      body.className=''; body.innerHTML=rowsHtml;
-    });
-  }
-  openFoodTruckDirectory.__bopLiveDirectory=true;
-  function installFoodTruckDirectory(){
-    if(window.boOpenFoodTruckPermanentList!==openFoodTruckDirectory){
-      window.boOpenFoodTruckPermanentList=openFoodTruckDirectory;
-    }
-  }
-  setInterval(installFoodTruckDirectory,400);
-
-  /* ---- Street Vendors: matching live directory (no seed data yet) ---- */
-  function fetchLiveVendors(){
-    if(!window.bopFtDb)return Promise.resolve([]);
-    return window.bopFtDb.collection('vendorstands').get().then(function(snap){
-      var now=Date.now(), out=[];
-      snap.forEach(function(doc){
-        var d=doc.data();
-        if(!d||!d.checkedInAt||typeof d.lat!=='number')return;
-        var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
-        if(!ts||(now-ts)>liveMs())return;
-        out.push(d);
-      });
-      return out;
-    }).catch(function(){return [];});
-  }
-  window.boOpenVendorStandDirectory=function(){
-    var old=document.getElementById('bopVendorStandDirectory');
-    if(old&&old.parentNode)old.parentNode.removeChild(old);
-    var page=document.createElement('section');
-    page.id='bopVendorStandDirectory';
-    page.className='bo-ft-overlay';
-    page.setAttribute('aria-label','Live Street Vendor Directory');
-    page.innerHTML='<div class="bo-ftc-shell"><button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-      '<div class="bo-ftc-title">Street Vendor Directory</div>'+
-      '<div id="bopVsDirBody" class="bo-ftd-empty">Loading live stands\u2026</div></div>';
-    document.body.appendChild(page);
-    page.querySelector('.bo-ft-back').addEventListener('click', function(){
-      page.classList.remove('open'); document.body.style.overflow='';
-    });
-    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
-
-    fetchLiveVendors().then(function(live){
-      var body=document.getElementById('bopVsDirBody');
-      if(!body)return;
-      if(!live.length){body.innerHTML='No stands are checked in right now.';return;}
-      var CAT_LABEL={grill:'Grill Items',juices:'Mexican Juices',flowers:'Flowers',other:'Other'};
-      var rowsHtml=live.map(function(t){
-        var linkHref=t.website||('https://www.google.com/maps/search/?api=1&query='+t.lat+','+t.lng);
-        var linkLabel=t.website?'Website / Order':'Directions';
-        var cat=CAT_LABEL[t.category]||'';
-        var desc=[cat,t.description].filter(Boolean).join(' \u2014 ');
-        return truckRow(t.name,desc,linkHref,linkLabel,'<span class="bo-ftd-tag live">LIVE NOW</span>');
-      }).join('');
-      body.className=''; body.innerHTML=rowsHtml;
-    });
-  };
-
-  /* Add the matching button + wiring to the Street Vendors map page. */
-  function installVendorDirectoryButton(){
-    var page=document.getElementById('bopVendorStandOverlay');
-    if(!page||page.querySelector('#bopVsDirectoryLink'))return;
-    var qrRow=page.querySelector('.bo-ft-qr-row');
-    if(!qrRow)return;
-    var btn=document.createElement('button');
-    btn.type='button'; btn.className='bo-ft-permanent-link'; btn.id='bopVsDirectoryLink';
-    btn.textContent='LIVE STREET VENDOR DIRECTORY \u2192';
-    btn.addEventListener('click', window.boOpenVendorStandDirectory);
-    var helpRow=page.querySelector('.bo-vs-help-row');
-    if(helpRow)helpRow.parentNode.insertBefore(btn,helpRow);
-    else qrRow.parentNode.appendChild(btn);
-  }
-  setInterval(installVendorDirectoryButton,400);
-})();
-</script>
-
 <style id="bop-truck-vendor-photo-directory-v429">
 /* v429: (a) both check-in forms now offer EITHER a manual photo upload OR
    a website pull, whichever the vendor prefers; (b) pin popups show a
@@ -47953,7 +47829,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 .bo-ftd-tag.live{background:rgba(228,0,43,.18);color:#ff5470;}
 .bo-ftd-tag.perm{background:rgba(245,158,11,.16);color:#F59E0B;}
 
-#bopPinPhotoZoomPopup{position:fixed!important;inset:0!important;z-index:2147483000!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.86);padding:20px;}
+#bopPinPhotoZoomPopup{position:fixed!important;inset:0!important;z-index:2147483647!important;display:none;align-items:center!important;justify-content:center!important;width:100vw!important;height:100vh!important;background:rgba(0,0,0,.86);padding:20px;}
 #bopPinPhotoZoomPopup.bop-fth-open{display:flex!important;}
 #bopPinPhotoZoomPopup img{width:min(320px,84vw);height:auto;border-radius:12px;border:2px solid #F59E0B;box-shadow:0 0 22px rgba(245,158,11,.6);}
 </style>
@@ -48124,12 +48000,10 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
     if(!window.bopFtDb){render('');return;}
     window.bopFtDb.collection(opts.collection).get().then(function(snap){
-      var liveMs=8*60*60*1000,now=Date.now(),rows=[];
+      var rows=[];
       snap.forEach(function(doc){
         var d=doc.data();
-        if(!d.checkedInAt)return;
-        var ts=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
-        if(!ts||(now-ts)>liveMs)return;
+        if(!window.bopIsLive(d))return;
         rows.push(directoryRow(d.name||opts.singular,'LIVE NOW',d.description||'',linksFor(d)));
       });
       render(rows.join(''));
@@ -48150,10 +48024,342 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     if(qrRow)qrRow.parentNode.insertBefore(btn,qrRow.nextSibling);
     else page.querySelector('.bo-ft-shell').appendChild(btn);
     btn.addEventListener('click',function(){
-      openDirectory({pageId:'bopVendorStandDirectory',title:'Street Vendor Directory',collection:'vendorstands',singular:'Street Vendor',seed:[]});
+      openDirectory({pageId:'bopVendorStandDirectory',title:'Street Vendor Directory',collection:'vendorstands',singular:'Street Vendor',seed:window.bopVsSeedVendors||[]});
     });
   }
   setInterval(ensureVendorDirectoryButton,400);
+})();
+</script>
+
+<style id="bop-invite-of-nudge-v430">
+/* v430: opening invitation orb only — nudge just the word "of" (in
+   "Best of") closer to "Best", to line its ending serif up with the "d"
+   of "Period" below it. Nothing else on this popup, and no other "Best
+   of" instance on the site, is touched. */
+#bopExclusiveInvitation .bop-invite-of-word{
+  display:inline-block;
+  margin-left:-7px;
+}
+</style>
+
+<script id="bop-tile-order-fix-v431">
+(function(){
+  /* Street Vendors and Food Trucks kept drifting apart as later patches
+     inserted their own tiles in between. This runs last and unconditionally
+     re-sorts Street Vendors to sit immediately after Food Trucks, no
+     matter what else has been added to the list by then. */
+  function fix(){
+    if(typeof boPickerConfig==='undefined'||!boPickerConfig.otheroptions)return false;
+    var list=boPickerConfig.otheroptions;
+    var ftAt=list.findIndex(function(x){return x.cat==='foodtrucks'});
+    var svAt=list.findIndex(function(x){return x.cat==='streetvendors'});
+    if(ftAt<0||svAt<0)return false;
+    if(svAt===ftAt+1)return true; /* already adjacent, nothing to do */
+    var sv=list.splice(svAt,1)[0];
+    var newFtAt=list.findIndex(function(x){return x.cat==='foodtrucks'});
+    list.splice(newFtAt+1,0,sv);
+    return true;
+  }
+  var tries=0,t=setInterval(function(){tries++;fix();if(tries>120)clearInterval(t);},250);
+})();
+</script>
+
+<style id="bop-truck-vendor-hours-order-analog-v432">
+.bo-ft-hours-row{display:flex;gap:10px;margin-bottom:6px;}
+.bo-ft-hours-field{flex:1;text-align:left;}
+.bo-ft-hours-field label{display:block;margin:0 0 4px 2px;color:#F59E0B;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+.bo-ft-hours-field input{width:100%;box-sizing:border-box;padding:12px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#fff;font:600 .95rem/1 Arial,sans-serif;}
+.bo-ft-hours-hint{margin:0 0 14px 2px;color:#ccc;font:600 .74rem/1.4 Arial,sans-serif;text-align:left;}
+.bo-ft-order-link{margin-top:-6px;}
+.bo-ft-bottom-analog{display:block;width:100%;margin:22px 0 0;padding:16px 10px;border:1.5px solid rgba(245,158,11,.55);border-radius:12px;background:transparent;color:#F59E0B;font:900 1rem/1.3 'Archivo Black',Arial,sans-serif;letter-spacing:.02em;text-align:center;cursor:pointer;}
+.bo-ft-bottom-analog small{display:block;margin-top:4px;color:#ccc;font:600 .74rem/1.4 Arial,sans-serif;letter-spacing:0;text-transform:none;}
+.bo-ftd-city-head{margin:22px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(245,158,11,.4);color:#F59E0B;font:900 .82rem/1.2 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.bo-ftd-city-head:first-child{margin-top:0;}
+</style>
+<script id="bop-truck-vendor-hours-order-analog-v432-script">
+(function(){
+  function digits(v){return String(v||'').replace(/\D/g,'');}
+  function esc(v){return String(v||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  /* ---- (A) single source of truth for "is this doc still live" ---- */
+  window.bopIsLive=function(d){
+    if(!d||!d.checkedInAt)return false;
+    var start=d.checkedInAt.toMillis?d.checkedInAt.toMillis():0;
+    if(!start)return false;
+    var until=(typeof d.liveUntil==='number')?d.liveUntil:(start+8*60*60*1000);
+    return Date.now()<until;
+  };
+
+  /* ---- default HH:MM values for the time pickers ---- */
+  function hhmm(date){var h=String(date.getHours()).padStart(2,'0'),m=String(date.getMinutes()).padStart(2,'0');return h+':'+m;}
+  function computeLiveUntil(fromStr,untilStr){
+    var now=new Date();
+    var startOfDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    function toMs(str){var p=str.split(':');return (parseInt(p[0],10)*60+parseInt(p[1],10))*60000;}
+    var fromMs=startOfDay.getTime()+toMs(fromStr||hhmm(now));
+    var untilMs=startOfDay.getTime()+toMs(untilStr||hhmm(new Date(now.getTime()+8*3600000)));
+    if(untilMs<=fromMs)untilMs+=24*3600000; /* rolled past midnight */
+    if(untilMs-fromMs>24*3600000)untilMs=fromMs+24*3600000; /* one day max */
+    return untilMs;
+  }
+
+  var ORDER_OPTIONS=[{id:'phone',label:'Phone Call'},{id:'ubereats',label:'Uber Eats'},{id:'doordash',label:'DoorDash'},{id:'grubhub',label:'Grubhub'},{id:'postmates',label:'Postmates'},{id:'other',label:'Website / Order Link'}];
+  function orderOptionsHTML(){return ORDER_OPTIONS.map(function(o){return '<option value="'+o.id+'">'+o.label+'</option>';}).join('');}
+  function orderLabel(id){var f=ORDER_OPTIONS.find(function(o){return o.id===id});return f?f.label:'';}
+
+  /* ---- (C) inject hours + order-preference fields into both forms ---- */
+  function injectHoursAndOrder(formId,submitBtnId,prefix){
+    var form=document.getElementById(formId);
+    var submit=document.getElementById(submitBtnId);
+    if(!form||!submit||form.dataset.bopV432)return;
+    form.dataset.bopV432='1';
+    var now=new Date();
+    var hoursRow=document.createElement('div');
+    hoursRow.className='bo-ft-hours-row';
+    hoursRow.innerHTML=
+      '<div class="bo-ft-hours-field"><label>Live From</label><input type="time" id="'+prefix+'LiveFrom" value="'+hhmm(now)+'"></div>'+
+      '<div class="bo-ft-hours-field"><label>Live Until</label><input type="time" id="'+prefix+'LiveUntil" value="'+hhmm(new Date(now.getTime()+8*3600000))+'"></div>';
+    var hint=document.createElement('div');
+    hint.className='bo-ft-hours-hint';
+    hint.textContent='One day at a time \u2014 if Until is earlier than From, we treat it as tomorrow morning (e.g. 8 PM to 3 AM). You can always take it down early.';
+    var orderWrap=document.createElement('div');
+    orderWrap.innerHTML='<label class="bo-ft-hours-field" style="display:block;margin-bottom:14px;"><label style="display:block;margin:0 0 4px 2px;color:#F59E0B;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;">How should people order?</label><select class="bo-ftc-field" id="'+prefix+'OrderPref">'+orderOptionsHTML()+'</select></label>'+
+      '<input class="bo-ftc-field bo-ft-order-link" id="'+prefix+'OrderLink" type="text" placeholder="Link to your listing (e.g. your Uber Eats page)" style="display:none;">';
+    submit.parentNode.insertBefore(hoursRow,submit);
+    submit.parentNode.insertBefore(hint,submit);
+    submit.parentNode.insertBefore(orderWrap,submit);
+    var pref=document.getElementById(prefix+'OrderPref'),link=document.getElementById(prefix+'OrderLink');
+    pref.addEventListener('change',function(){
+      link.style.display=(pref.value==='phone')?'none':'block';
+    });
+  }
+  setInterval(function(){
+    injectHoursAndOrder('bopFoodTruckCheckin','bopFtCheckinSubmit','bopFt');
+    injectHoursAndOrder('bopVendorStandCheckin','bopVsCheckinSubmit','bopVs');
+  },400);
+
+  /* ---- (D) final submit override — captures hours + order pref too ---- */
+  function finalizeSubmit(config){
+    var old=document.getElementById(config.submitId);
+    if(!old||old.dataset.bopV432)return;
+    if(!document.getElementById(config.prefix+'LiveFrom'))return; /* wait for fields to exist */
+    var btn=old.cloneNode(true);
+    btn.dataset.bopV432='1';
+    old.parentNode.replaceChild(btn,old);
+    btn.addEventListener('click',function(){
+      var status=document.getElementById(config.statusId);
+      var phone=document.getElementById(config.prefix+'Phone');
+      var name=document.getElementById(config.prefix+'Name');
+      var key=digits(phone&&phone.value),nameVal=(name&&name.value||'').trim();
+      if(key.length<7){status.textContent='Please enter a valid phone number.';return;}
+      if(!nameVal){status.textContent=config.nameRequiredMsg;return;}
+      if(!window.bopFtDb){status.textContent='The live-map database is still loading. Try again in a second.';return;}
+      var fromEl=document.getElementById(config.prefix+'LiveFrom'),untilEl=document.getElementById(config.prefix+'LiveUntil');
+      var liveUntil=computeLiveUntil(fromEl&&fromEl.value,untilEl&&untilEl.value);
+      var orderPrefEl=document.getElementById(config.prefix+'OrderPref'),orderLinkEl=document.getElementById(config.prefix+'OrderLink');
+      var orderMethod=orderPrefEl?orderPrefEl.value:'phone';
+      var orderLink=(orderMethod!=='phone'&&orderLinkEl)?orderLinkEl.value.trim():'';
+      btn.disabled=true;
+      if(!navigator.geolocation){btn.disabled=false;status.textContent='Location is not available in this browser.';return;}
+      status.textContent='Getting your current location\u2026';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        status.textContent=config.savingMsg;
+        var extra=config.collectExtra?config.collectExtra():{};
+        var id=key+'_'+nameVal.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+        var timer=setTimeout(function(){btn.disabled=false;status.textContent='The live map did not confirm your check-in. Please try again.';},15000);
+        var payload=Object.assign({
+          name:nameVal,phone:phone.value.trim(),
+          lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy||null,
+          checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+          liveUntil:liveUntil,orderMethod:orderMethod,orderLink:orderLink
+        },extra);
+        window.bopFtDb.collection(config.collection).doc(id).set(payload,{merge:true}).then(function(){
+          clearTimeout(timer);btn.disabled=false;
+          status.textContent=config.successMsg;
+          if(config.onSuccess)config.onSuccess();
+        }).catch(function(err){
+          clearTimeout(timer);btn.disabled=false;
+          var code=(err&&err.code)||'write error';
+          status.textContent=code.indexOf('permission')>-1?'The live map is not yet accepting vendor check-ins.':'Check-in failed ('+code+'). Please try again.';
+        });
+      },function(err){
+        btn.disabled=false;
+        if(err&&err.code===1)status.textContent='Please allow location access, then tap Check In again.';
+        else if(err&&err.code===2)status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
+        else status.textContent='Location took too long. Please try again.';
+      },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
+    });
+  }
+  setInterval(function(){
+    finalizeSubmit({
+      submitId:'bopFtCheckinSubmit',statusId:'bopFtCheckinStatus',prefix:'bopFt',collection:'foodtrucks',
+      nameRequiredMsg:'Please enter your truck name.',savingMsg:'Putting your truck on the live map\u2026',
+      successMsg:"You're live! Your truck is now on the map.",
+      collectExtra:function(){
+        var website=document.getElementById('bopFtWebsite'),instagram=document.getElementById('bopFtInstagram'),description=document.getElementById('bopFtDescription');
+        return {website:(website&&website.value||'').trim(),instagram:(instagram&&instagram.value||'').trim(),description:(description&&description.value||'').trim(),photo:window.bopFtPhotoUrl||''};
+      },
+      onSuccess:function(){var orb=document.getElementById('bopFtGoToMapOrb');if(orb)orb.classList.add('bop-ft-orb-show');}
+    });
+    finalizeSubmit({
+      submitId:'bopVsCheckinSubmit',statusId:'bopVsCheckinStatus',prefix:'bopVs',collection:'vendorstands',
+      nameRequiredMsg:'Please enter your stand name.',savingMsg:'Putting your stand on the live map\u2026',
+      successMsg:"You're live! Your stand is now on the map.",
+      collectExtra:function(){
+        var website=document.getElementById('bopVsWebsite'),instagram=document.getElementById('bopVsInstagram'),description=document.getElementById('bopVsDescription'),category=document.getElementById('bopVsCategory');
+        return {website:(website&&website.value||'').trim(),instagram:(instagram&&instagram.value||'').trim(),description:(description&&description.value||'').trim(),photo:window.bopVsPhotoUrl||'',category:category?category.value:'other'};
+      },
+      onSuccess:function(){var orb=document.getElementById('bopVsGoMapOrb');if(orb)orb.classList.add('on');}
+    });
+  },400);
+
+  /* ---- (E) Analog List: flat, global, grouped by nearest known city ---- */
+  var HUBS=[
+    {name:'Las Vegas',lat:36.1699,lng:-115.1398},{name:'Los Angeles',lat:34.0522,lng:-118.2437},
+    {name:'San Diego',lat:32.7157,lng:-117.1611},{name:'New York City',lat:40.7128,lng:-74.0060},
+    {name:'Austin',lat:30.2672,lng:-97.7431},{name:'Seattle',lat:47.6062,lng:-122.3321},
+    {name:'Nashville',lat:36.1627,lng:-86.7816},{name:'Boise',lat:43.6150,lng:-116.2023},
+    {name:'Denver',lat:39.7392,lng:-104.9903},{name:'Santa Barbara',lat:34.4208,lng:-119.6982},
+    {name:'Miami',lat:25.7617,lng:-80.1918},{name:'London',lat:51.5072,lng:-0.1276},
+    {name:'Paris',lat:48.8566,lng:2.3522},{name:'Tokyo',lat:35.6762,lng:139.6503}
+  ];
+  function nearestCity(lat,lng){
+    var best=null,bestD=Infinity;
+    HUBS.forEach(function(h){
+      var d=Math.pow(h.lat-lat,2)+Math.pow(h.lng-lng,2);
+      if(d<bestD){bestD=d;best=h.name;}
+    });
+    /* Rough cutoff so far-flung check-ins don't get mislabeled as a hub
+       hundreds of miles away \u2014 real reverse-geocoding would replace this. */
+    return bestD<9 ? best : 'Other Locations';
+  }
+  function orderLinkFor(d){
+    if(d.orderMethod==='phone'||!d.orderMethod)return d.phone?'<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call to Order</a>':'';
+    var label=orderLabel(d.orderMethod)||'Order';
+    var href=d.orderLink||d.website;
+    return href?'<a class="bo-near-osm-item-link" href="'+href+'" target="_blank" rel="noopener">Order on '+label+'</a>':'';
+  }
+  function analogRow(d){
+    var links=[];
+    if(d.phone)links.push('<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call</a>');
+    var order=orderLinkFor(d);if(order)links.push(order);
+    links.push('<a class="bo-near-osm-item-link" href="https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng+'" target="_blank" rel="noopener">Directions</a>');
+    var photo=d.photo?'<img src="'+d.photo+'" alt="" class="bo-ft-pin-thumb">':'';
+    return '<div class="bo-near-osm-item">'+photo+'<div class="bo-near-osm-item-name">'+esc(d.name||'Listing')+'</div>'+
+      (d.description?'<div class="bo-near-osm-item-meta">'+esc(d.description)+'</div>':'')+
+      links.join('')+'</div>';
+  }
+  function openAnalogList(collection,title){
+    var id='bopAnalogList';
+    var old=document.getElementById(id);if(old&&old.parentNode)old.parentNode.removeChild(old);
+    var page=document.createElement('section');page.id=id;page.className='bo-ft-overlay';page.setAttribute('aria-label',title);
+    page.innerHTML='<div class="bo-ftc-shell"><button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+      '<div class="bo-ftc-title">'+esc(title)+'</div>'+
+      '<div class="bo-ftc-sub">Every city, worldwide \u2014 grouped by the nearest one we track.</div>'+
+      '<div id="bopAnalogBody">Loading\u2026</div></div>';
+    document.body.appendChild(page);
+    page.querySelector('.bo-ft-back').addEventListener('click',function(){page.classList.remove('open');document.body.style.overflow='';});
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    if(!window.bopFtDb){document.getElementById('bopAnalogBody').textContent='Connecting to the live map\u2026';return;}
+    window.bopFtDb.collection(collection).get().then(function(snap){
+      var groups={};
+      snap.forEach(function(doc){
+        var d=doc.data();
+        if(!window.bopIsLive(d)||typeof d.lat!=='number')return;
+        var city=nearestCity(d.lat,d.lng);
+        (groups[city]=groups[city]||[]).push(d);
+      });
+      var cities=Object.keys(groups).sort();
+      var body=document.getElementById('bopAnalogBody');
+      if(!cities.length){body.innerHTML='Nothing live right now, anywhere.';return;}
+      body.innerHTML=cities.map(function(city){
+        return '<div class="bo-ftd-city-head">'+esc(city)+' ('+groups[city].length+')</div>'+groups[city].map(analogRow).join('');
+      }).join('');
+    }).catch(function(){document.getElementById('bopAnalogBody').textContent='Could not reach the live map.';});
+  }
+
+  function addAnalogLink(pageSel,collection,title){
+    var page=document.querySelector(pageSel);
+    if(!page||page.querySelector('.bo-ft-bottom-analog'))return;
+    var directoryBtn=page.querySelector('.bo-ft-permanent-link,#bopVsDirectoryLink');
+    var btn=document.createElement('button');
+    btn.type='button';btn.className='bo-ft-bottom-analog';
+    btn.innerHTML='Is your phone too small? Map confusing?<small>Check out the Analog List</small>';
+    if(directoryBtn)directoryBtn.parentNode.insertBefore(btn,directoryBtn.nextSibling);
+    else page.querySelector('.bo-ft-shell').appendChild(btn);
+    btn.addEventListener('click',function(){openAnalogList(collection,title);});
+  }
+  setInterval(function(){
+    addAnalogLink('#bopFoodTruckOverlay','foodtrucks','Analog List \u2014 Food Trucks');
+    addAnalogLink('#bopVendorStandOverlay','vendorstands','Analog List \u2014 Street Vendors');
+  },400);
+})();
+</script>
+
+<style id="bop-takedown-hint-share-deeplink-v433">
+.bo-ft-takedown-hint{margin:-4px 0 12px;color:#999;font:600 .72rem/1.4 Arial,sans-serif;text-align:center;}
+</style>
+<script id="bop-takedown-hint-share-deeplink-v433-script">
+(function(){
+  /* "Takes 10 seconds" note under the take-one-down buttons on both forms. */
+  function addTakedownHint(btnId){
+    var btn=document.getElementById(btnId);
+    if(!btn||btn.dataset.bopV433)return;
+    btn.dataset.bopV433='1';
+    var hint=document.createElement('div');
+    hint.className='bo-ft-takedown-hint';
+    hint.textContent='Takes 10 seconds.';
+    btn.parentNode.insertBefore(hint,btn.nextSibling);
+  }
+  setInterval(function(){
+    addTakedownHint('bopFtManageBtn');
+    addTakedownHint('bopVsManageBtn');
+  },400);
+
+  /* Deep-link arrival: shared Food Truck / Street Vendor links now open
+     directly to that page instead of landing on the generic homepage. */
+  function openSharedPage(){
+    var params=new URLSearchParams(location.search);
+    var page=params.get('page');
+    if(page!=='foodtrucks'&&page!=='streetvendors')return;
+    var gate=document.getElementById('bopExclusiveInvitation');
+    if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
+    document.documentElement.classList.remove('bop-invite-active');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open');
+    var promo=document.getElementById('bopPromoModal');
+    if(promo&&promo.classList.contains('open')){promo.classList.remove('open');var v=document.getElementById('bopPromoVideo');if(v)v.pause();}
+    setTimeout(function(){
+      if(page==='foodtrucks'&&typeof window.boOpenFoodTruckMap==='function')window.boOpenFoodTruckMap();
+      else if(page==='streetvendors'&&typeof window.boOpenVendorStandMap==='function')window.boOpenVendorStandMap();
+    },350);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',openSharedPage);else openSharedPage();
+})();
+</script>
+
+<script id="bop-tesla-diner-demo-pin-v434-script">
+(function(){
+  /* Demo/placeholder permanent pin so a fresh Food Trucks or Street
+     Vendors page never looks empty or broken before real check-ins come
+     in \u2014 same info on both pages, at the Tesla Diner address. */
+  var DEMO_PIN={
+    name:'Best of Period Info',
+    lat:34.0909, lng:-118.3418,
+    website:'https://bestofperiod.com',
+    category:'other',
+    description:'A quick look at how Best of Period works \u2014 tap Website to explore the site.'
+  };
+
+  function addToFoodTrucks(){
+    if(!Array.isArray(window.bopFtSeedTrucks))return false;
+    if(window.bopFtSeedTrucks.some(function(t){return t.name===DEMO_PIN.name;}))return true;
+    window.bopFtSeedTrucks.push({name:DEMO_PIN.name,lat:DEMO_PIN.lat,lng:DEMO_PIN.lng,website:DEMO_PIN.website,description:DEMO_PIN.description});
+    return true;
+  }
+  window.bopVsSeedVendors=window.bopVsSeedVendors||[{name:DEMO_PIN.name,lat:DEMO_PIN.lat,lng:DEMO_PIN.lng,website:DEMO_PIN.website,category:DEMO_PIN.category,description:DEMO_PIN.description}];
+
+  var tries=0,t=setInterval(function(){tries++;if(addToFoodTrucks()||tries>80)clearInterval(t);},250);
 })();
 </script>
 </body></html>
