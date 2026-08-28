@@ -45365,4 +45365,193 @@ var tries=0,t=setInterval(function(){tries++;if(install()||tries>30)clearInterva
   top:-4vh!important;
 }
 </style>
+<style id="bop-period-apple-geometry-v398">
+/* v398: the site-wide apple-on-the-i (v313) placed every apple at a fixed
+   spot inside its wrapper, which is only correct in contexts with zero
+   letter-spacing and tight line-height (like the front page). Everywhere
+   else the apple drifts:
+   1) Tracked-out headings (e.g. letter-spacing:.28em) widen the wrapper
+      past the "i" glyph itself, so centering on the wrapper pushes the
+      apple right of the letter by half the letter-spacing. Compensated
+      below via a per-wrapper CSS variable set by the companion script.
+   2) The wrapper's box height followed each page's own line-height, so
+      the same em-based "top" landed the apple at different heights on
+      different pages. line-height:1 pins the wrapper's box to one
+      consistent height everywhere; surrounding layout is unaffected
+      because the parent line box still uses the parent's line-height.
+   3) All-caps "PERIOD" has no dot to replace -- the capital I fills the
+      box, so the old fixed top stamped the apple ON the letter. Caps
+      wrappers now float the apple just above the I instead. */
+/* v398.1: the main first page (opening invitation + landing splash) was
+   already hand-tuned and correct -- it must render EXACTLY as before.
+   These overrides now apply only to wraps NOT marked exempt; the script
+   marks every wrap inside the front-page containers as exempt, which
+   restores their original v313 rendering untouched. */
+.bop-period-i-wrap:not(.bop-i-exempt){line-height:1!important;}
+.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i{left:calc(50% - var(--bop-i-ls, 0px)/2)!important;}
+.bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{top:-0.26em!important;}
+</style>
+<script id="bop-period-apple-geometry-v398-script">
+(function(){
+/* Companion to the v398 style above, plus one coverage gap fix:
+   v313 matched only text that was exactly the word "Period", so any
+   instance written with the copyright mark inside the same text run
+   ("PERIOD(c)" -- e.g. the Best Hotels city sheets) never received an
+   apple at all and still shows a plain dotted i. Handled here with the
+   same wrapper structure so the geometry fixes apply to it too. */
+
+var EXEMPT = '#bopExclusiveInvitation, #bopLandingOverlay, #tbotrLandingOverlay';
+function fixWrap(wrap){
+  if(!wrap || wrap.nodeType !== 1) return;
+  /* Front-page containers keep the original, already-approved rendering. */
+  if(wrap.closest && wrap.closest(EXEMPT)){
+    wrap.classList.add('bop-i-exempt');
+    wrap.classList.remove('bop-i-caps');
+    wrap.style.removeProperty('--bop-i-ls');
+    return;
+  }
+  wrap.classList.remove('bop-i-exempt');
+  /* Letter-spacing compensation: measure what the wrapper actually
+     inherited, so this stays correct in every context automatically. */
+  try{
+    var ls = getComputedStyle(wrap).letterSpacing;
+    if(ls && ls !== 'normal' && parseFloat(ls)){
+      wrap.style.setProperty('--bop-i-ls', ls);
+    } else {
+      wrap.style.removeProperty('--bop-i-ls');
+    }
+    /* Caps detection: either the character itself is a capital I, or a
+       lowercase dotless-i is being visually uppercased by CSS. */
+    var isCapsChar = wrap.textContent.indexOf('I') > -1;
+    var isCssCaps = getComputedStyle(wrap).textTransform === 'uppercase';
+    wrap.classList.toggle('bop-i-caps', isCapsChar || isCssCaps);
+  }catch(e){}
+}
+
+function fixAll(root){
+  var scope = (root && root.nodeType === 1) ? root : document.body;
+  if(!scope) return;
+  if(scope.classList && scope.classList.contains('bop-period-i-wrap')) fixWrap(scope);
+  scope.querySelectorAll('.bop-period-i-wrap').forEach(fixWrap);
+}
+
+/* Coverage gap: transform "Period(c)" / "PERIOD(c)" leaves that v313 skips.
+   Same output structure as v313 (Per + wrapped dotless i + od), keeping
+   the (c) attached after "od" exactly as authored. */
+var COPY = '\u00A9';
+function isCopyLeaf(node){
+  if(node.nodeType !== 3) return false;
+  var t = node.nodeValue.trim().toLowerCase();
+  return t === 'period' + COPY;
+}
+function transformCopyLeaf(textNode){
+  var parent = textNode.parentNode;
+  if(!parent) return;
+  var original = textNode.nodeValue.trim();
+  var word = original.slice(0, -1); /* strip the (c) */
+  var isUpper = word === word.toUpperCase() && /[A-Z]/.test(word);
+  var per = isUpper ? 'PER' : 'Per';
+  var od = (isUpper ? 'OD' : 'od') + COPY;
+  var dotlessI = isUpper ? 'I' : '\u0131';
+  var frag = document.createDocumentFragment();
+  frag.appendChild(document.createTextNode(per));
+  var iWrap = document.createElement('span');
+  iWrap.className = 'bop-period-i-wrap';
+  var apple = document.createElement('span');
+  apple.className = 'bop-period-apple-i';
+  apple.setAttribute('aria-hidden','true');
+  apple.innerHTML =
+    '<svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/>' +
+    '<path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke-linecap="round"/>' +
+    '<path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg>';
+  iWrap.appendChild(apple);
+  iWrap.appendChild(document.createTextNode(dotlessI));
+  frag.appendChild(iWrap);
+  frag.appendChild(document.createTextNode(od));
+  parent.replaceChild(frag, textNode);
+  fixWrap(iWrap);
+}
+function scanCopyLeaves(root){
+  var scope = (root && root.nodeType === 1) ? root : document.body;
+  if(!scope) return;
+  var walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, null);
+  var targets = [], node;
+  while((node = walker.nextNode())){
+    if(isCopyLeaf(node)) targets.push(node);
+  }
+  targets.forEach(transformCopyLeaf);
+}
+
+function pass(root){ scanCopyLeaves(root); fixAll(root); }
+
+function install(){
+  pass(document.body);
+  if(window.__bopMutationHandlers) window.__bopMutationHandlers.push(pass);
+  /* Same 1200ms safety-net cadence v313 already uses, so wraps recreated
+     by rotating/re-rendered pages get their geometry restored too. */
+  if(window.__bopTick) window.__bopTick(function(){ pass(document.body); }, 1200);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', install);
+else install();
+})();
+</script>
+<script id="bop-concepts-back-origin-v399-script">
+(function(){
+/* v399: the Concepts page back button was hard-coded to always return to
+   the Founders/About page, no matter where Concepts was actually opened
+   from (its footer "Concepts" link exists on many pages). This records
+   which page was open at the moment Concepts is entered, and makes the
+   back button return there. Falls back to Founders/About -- the old
+   behavior -- if nothing was recorded. */
+
+/* Ordered: specific pages first, base layers last, matching how the site
+   stacks overlays (bestOfOverlay is the always-on base, the landing
+   splash sits above everything). */
+var CANDIDATES = [
+  'aboutUsOverlay','promotionsOverlay','legendOverlay','companyHubOverlay',
+  'bopMemberOverlay','lvMemberOverlay','directoryOverlay','ocWorldOverlay',
+  'tbotrLandingOverlay','wtfLandingOverlay','bopLandingOverlay','bestOfOverlay'
+];
+function isShown(el){
+  if(!el) return false;
+  var s = getComputedStyle(el);
+  if(s.display === 'none' || s.visibility === 'hidden') return false;
+  return el.classList.contains('open') || el.classList.contains('is-open') || el.classList.contains('active');
+}
+function currentPageId(){
+  for(var i = 0; i < CANDIDATES.length; i++){
+    var el = document.getElementById(CANDIDATES[i]);
+    if(isShown(el)) return CANDIDATES[i];
+  }
+  return null;
+}
+
+/* Record the origin at the instant a Concepts entry link is tapped --
+   capture phase, so this reads the page state before the existing
+   bubble-phase handlers close everything. */
+document.addEventListener('click', function(event){
+  var link = event.target.closest && event.target.closest('[data-dest="concepts"]');
+  if(!link) return;
+  var id = currentPageId();
+  if(id) window.__bopConceptsOrigin = id;
+}, true);
+
+/* Intercept the Concepts back button ahead of the old element-level
+   handler (capture beats target phase), and route to the recorded
+   origin instead of unconditionally to Founders. */
+document.addEventListener('click', function(event){
+  var back = event.target.closest && event.target.closest('#conceptsBack');
+  if(!back) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  var concepts = document.getElementById('conceptsOverlay');
+  if(concepts) concepts.classList.remove('open');
+  var originId = window.__bopConceptsOrigin;
+  var origin = originId ? document.getElementById(originId) : null;
+  if(!origin) origin = document.getElementById('aboutUsOverlay'); /* old default */
+  if(origin){ origin.classList.add('open'); origin.scrollTop = 0; }
+  window.scrollTo(0,0);
+}, true);
+})();
+</script>
 </body></html>
