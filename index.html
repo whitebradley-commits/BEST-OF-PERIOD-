@@ -43674,7 +43674,7 @@ document.addEventListener('click',function(){setTimeout(function(){installPerman
 .bop-city-gate-title{color:#fff;font:900 clamp(28px,9vw,44px)/1 Arial,sans-serif;letter-spacing:.02em;text-align:center;margin:4px 0 2px}
 .bop-city-gate-sub{text-align:center;color:#d5a654;font:800 11px/1.3 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin:0 0 18px}
 .bop-city-gate-stage{background:linear-gradient(180deg,#07101a,#020409);border:2px solid #8a570d;border-radius:24px;box-shadow:0 0 22px rgba(246,160,20,.18);padding:14px 8px}
-.bop-city-gate-stage svg{display:block;width:100%;height:auto}
+.bop-city-gate-stage svg{display:block;width:100%;height:auto;overflow:visible}
 .bop-city-gate-note{max-width:520px;margin:16px auto 0;text-align:center;color:#8a7452;font:700 10.5px/1.5 Arial,sans-serif;letter-spacing:.02em}
 
 </style>
@@ -43693,7 +43693,7 @@ var CITY_MAPS = {
       '<svg viewBox="0 0 400 512" role="img" aria-label="Los Angeles to San Juan Capistrano area selector">'+
       '<text x="10" y="20" fill="#d5a654" font="800 11px Arial,sans-serif">N \u2191</text>'+
       '<text x="24" y="292" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 292)">PACIFIC OCEAN</text>'+
-      '<g class="bop-lamap-zone"><polygon points="86,6 330,4 332,32 84,36"/><text x="123" y="25" fill="#f6a014" font="900 10.5px Arial,sans-serif">NORTH HOLLYWOOD &amp; BURBANK</text></g>'+
+      '<g class="bop-lamap-zone"><polygon points="86,8 330,6 332,34 84,38"/><text x="208" y="27" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">N.H. &amp; BURBANK</text></g>'+
       '<g class="bop-lamap-zone"><polygon points="80,40 332,38 334,66 78,70"/><text x="154" y="59" fill="#f6a014" font="900 11px Arial,sans-serif">WEST HOLLYWOOD</text></g>'+
       '<g class="bop-lamap-zone"><polygon points="76,74 334,72 336,100 74,104"/><text x="158" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">BEVERLY HILLS</text></g>'+
       '<g class="bop-lamap-zone"><polygon points="72,108 336,106 338,134 70,138"/><text x="137" y="127" fill="#f6a014" font="900 10.5px Arial,sans-serif">SANTA MONICA &amp; VENICE</text></g>'+
@@ -43716,7 +43716,7 @@ var CITY_MAPS = {
       '<svg viewBox="0 0 400 306" role="img" aria-label="Map of the San Diego coastline">'+
       '<text x="10" y="20" fill="#d5a654" font="800 11px Arial,sans-serif">N \u2191</text>'+
       '<text x="24" y="180" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 180)">PACIFIC OCEAN</text>'+
-      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="86,6 330,4 332,32 84,36"/><text x="160" y="25" fill="#f6a014" font="900 11px Arial,sans-serif">OCEANSIDE</text></g>'+
+      '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="86,8 330,6 332,34 84,38"/><text x="208" y="27" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">OCEANSIDE</text></g>'+
       '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="80,40 332,38 334,66 78,70"/><text x="164" y="59" fill="#f6a014" font="900 11px Arial,sans-serif">CARLSBAD</text></g>'+
       '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="76,74 334,72 336,100 74,104"/><text x="162" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">ENCINITAS</text></g>'+
       '<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="72,108 336,106 338,134 70,138"/><text x="166" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">DEL MAR</text></g>'+
@@ -46417,7 +46417,7 @@ ready(function(){
 .bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,
 .bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{
   left:48%!important;
-  top:calc(.04em + 5px)!important;
+  top:calc(.04em + 15px)!important;
   width:.30em!important;
   height:.30em!important;
   transform:translateX(-50%)!important;
@@ -46470,13 +46470,15 @@ function fixEveryQr(){
 }
 
 function serverHealth(){
-  return fetch(HEALTH_URL,{cache:'no-store'}).then(function(r){
-    return r.json().catch(function(){return {};}).then(function(body){
-      if(r.ok) return {ok:true};
-      var msg=(body&&body.error&&body.error.message)||('HTTP '+r.status);
-      return {ok:false,status:r.status,message:msg};
-    });
-  }).catch(function(err){return {ok:false,status:0,message:(err&&err.message)||'network error'};});
+  /* Use the Firebase Web SDK itself. The old REST probe required Google IAM
+     credentials and falsely returned 403 even when browser rules allowed the
+     vendor tool to read and write. */
+  if(!window.bopFtDb||!window.bopFtDb.collection){
+    return Promise.resolve({ok:false,status:0,message:'database is still loading'});
+  }
+  return window.bopFtDb.collection('foodtrucks').limit(1).get()
+    .then(function(){return {ok:true};})
+    .catch(function(err){return {ok:false,status:0,message:(err&&err.message)||'Firebase connection error',code:(err&&err.code)||''};});
 }
 
 function showRealHealth(){
@@ -46654,6 +46656,42 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.address)return;if(r.city==='losangeles'||r.city==='sandiego'||/^(la|sd)/.test(String(r.city||'')))r.directionsUrl=maps(r.address)})});
 
   window.BOP_LA_SD_AWARD_CONTACT_AUDIT={version:405,recordsAddedOrEnriched:rows.length+michelinRows.length+localRows.length,directionsNormalized:true,photoRule:'verified empty interiors only'};
+})();
+</script>
+<!-- New York uses the same clean stacked selector language as LA and SD. -->
+<style id="bop-new-york-stacked-gateway-v406">
+#bopNewYorkGateway .bop-nyli-stage{min-height:0!important;padding:14px 8px!important;border:2px solid #8a570d!important;border-radius:24px!important;background:linear-gradient(180deg,#07101a,#020409)!important;box-shadow:0 0 22px rgba(246,160,20,.18)!important;overflow:visible!important}
+#bopNewYorkGateway .bop-nymap{display:block;width:100%;height:auto;overflow:visible}
+#bopNewYorkGateway .bop-nyli-intro{color:#d5a654!important;font:800 11px/1.3 Arial,sans-serif!important;letter-spacing:.14em!important;text-transform:uppercase!important}
+</style>
+<script id="bop-new-york-stacked-gateway-v406-script">
+(function(){
+var MAP=''+
+'<svg class="bop-nymap" viewBox="0 0 400 286" role="img" aria-label="New York area selector">'+
+ '<text x="10" y="20" fill="#d5a654" font="800 11px Arial,sans-serif">N ↑</text>'+
+ '<text x="24" y="195" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 195)">ATLANTIC OCEAN</text>'+
+ '<g class="bop-nymap-zone" data-dest="manhattan"><polygon points="86,8 330,6 332,38 84,40"/><text x="208" y="29" text-anchor="middle">MANHATTAN</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="brooklyn"><polygon points="80,44 334,42 336,74 78,76"/><text x="207" y="65" text-anchor="middle">BROOKLYN</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="queens"><polygon points="74,80 338,78 340,110 72,112"/><text x="206" y="101" text-anchor="middle">QUEENS</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="bronx"><polygon points="68,116 342,114 344,146 66,148"/><text x="205" y="137" text-anchor="middle">THE BRONX</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="northshoreli"><polygon points="62,152 346,150 348,182 60,184"/><text x="204" y="173" text-anchor="middle">NORTH SHORE</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="southshoreli"><polygon points="56,188 350,186 352,218 54,220"/><text x="203" y="209" text-anchor="middle">SOUTH SHORE</text></g>'+
+ '<g class="bop-nymap-zone" data-dest="hamptons"><polygon points="50,224 354,222 356,254 48,256"/><text x="202" y="245" text-anchor="middle">THE HAMPTONS</text></g>'+
+'</svg>';
+function install(){
+ var gateway=document.getElementById('bopNewYorkGateway');
+ var stage=gateway&&gateway.querySelector('.bop-nyli-stage');
+ if(!stage||stage.dataset.bopStackedNy==='1')return;
+ stage.dataset.bopTopdown='1';stage.dataset.bopStackedNy='1';stage.innerHTML=MAP;
+ var intro=gateway.querySelector('.bop-nyli-intro');
+ if(intro)intro.textContent='New York City to the Hamptons';
+ stage.querySelectorAll('.bop-nymap-zone').forEach(function(zone){zone.addEventListener('click',function(){
+   var tile=gateway.querySelector('.bop-ny-gateway-tile[data-ny-destination="'+zone.dataset.dest+'"]');
+   if(tile)tile.click();
+ })});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+setTimeout(install,900);document.addEventListener('click',function(){setTimeout(install,150)},true);
 })();
 </script>
 <!-- Connect the food-truck tools to the existing named Firestore database. -->
