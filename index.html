@@ -46935,4 +46935,95 @@ try{
 })();
 </script>
 
+
+<style id="bop-foodtruck-globe-trim-and-city-own-line-v423">
+/* v423 (a): Food Trucks globe pulled back ~22% from v420 — it was crowding
+   "FOOD TRUCKS" and "Period" on a real iPhone. Same flush-fit geometry. */
+#bopFoodTruckOverlay .bop-world-hero-globe{
+  --ftg:clamp(136px,42vw,200px);
+  width:var(--ftg)!important;
+  height:var(--ftg)!important;
+  margin:0 calc(var(--ftg) * -0.09) 0 calc(var(--ftg) * -0.16)!important;
+}
+#bopFoodTruckOverlay .bop-world-title-line{
+  margin-top:calc(clamp(136px,42vw,200px) * -0.11 + 2px)!important;
+}
+/* v423 (b): BJS Picks / category hero — when a city name can't be
+   abbreviated and won't fit beside "Period", it gets its own line above
+   Period (centered, sized to fit) instead of running over it. */
+.bop-splash-line2.bo-city-own-line{
+  width:calc(100vw - 28px)!important;
+  grid-template-columns:1fr!important;
+  justify-items:center!important;
+  column-gap:0!important;
+  row-gap:.06em!important;
+  max-width:calc(100vw - 28px)!important;
+}
+.bop-splash-line2.bo-city-own-line .bop-splash-city-col{
+  width:100%!important;text-align:center!important;max-width:none!important;
+}
+.bop-splash-line2.bo-city-own-line .bop-splash-city{
+  display:inline-block;white-space:nowrap!important;word-spacing:normal!important;
+}
+.bop-splash-line2.bo-city-own-line .bop-splash-period{margin:0!important;}
+</style>
+<script id="bop-foodtruck-globe-trim-and-city-own-line-v423-script">
+(function(){
+  /* (b) measure-and-stack for long city names in the subcategory lockup */
+  function fitCityLines(){
+    document.querySelectorAll('#boHeroTitle .bo-subcategory-lockup .bop-splash-line2').forEach(function(line){
+      var city=line.querySelector('.bop-splash-city'),period=line.querySelector('.bop-splash-period');
+      if(!city||!period)return;
+      var text=city.textContent.trim();
+      if(line.dataset.bopV423===text)return;
+      line.classList.remove('bo-city-own-line');city.style.removeProperty('font-size');
+      var avail=window.innerWidth-28;
+      var cw=city.getBoundingClientRect().width;
+      if(cw===0)return;                            /* not laid out yet */
+      var need=cw+period.getBoundingClientRect().width+12;
+      if(need>avail){
+        line.classList.add('bo-city-own-line');
+        var w=city.getBoundingClientRect().width,max=avail-16;
+        if(w>max){
+          var fs=parseFloat(getComputedStyle(city).fontSize);
+          city.style.setProperty('font-size',(fs*max/w)+'px','important');
+        }
+      }
+      line.dataset.bopV423=text;
+    });
+  }
+  setInterval(fitCityLines,400);
+  window.addEventListener('resize',function(){document.querySelectorAll('.bop-splash-line2[data-bop-v423]').forEach(function(l){delete l.dataset.bopV423});fitCityLines();});
+
+  /* (c) Food Trucks map Back: if nothing is left open underneath (QR
+     arrival -> check-in -> Back -> map -> Back), go to the rotating
+     landing page instead of a black screen. */
+  function visible(el){
+    if(!el||el.id==='bopFoodTruckOverlay')return false;
+    var cs=getComputedStyle(el);
+    if(cs.display==='none'||cs.visibility==='hidden'||cs.opacity==='0')return false;
+    var r=el.getBoundingClientRect();return r.width>0&&r.height>0;
+  }
+  function wireMapBack(){
+    var page=document.getElementById('bopFoodTruckOverlay');
+    var back=page&&page.querySelector('.bo-ft-back');
+    if(!back||back.dataset.bopV423)return;
+    back.dataset.bopV423='1';
+    back.addEventListener('click',function(){
+      setTimeout(function(){
+        var anyOpen=Array.prototype.slice.call(document.querySelectorAll('body>.open, body>section.open, body>div.open')).some(visible);
+        if(anyOpen)return;
+        var gate=document.getElementById('bopExclusiveInvitation');
+        if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
+        document.documentElement.classList.remove('bop-invite-active','bop-qr-bypass-active');
+        var landing=document.getElementById('bopLandingOverlay');
+        if(landing){landing.classList.add('open');try{landing.scrollTop=0;}catch(e){}}
+        document.body.style.overflow='';
+        try{window.scrollTo(0,0);}catch(e){}
+      },60);
+    });
+  }
+  setInterval(wireMapBack,400);
+})();
+</script>
 </body></html>
