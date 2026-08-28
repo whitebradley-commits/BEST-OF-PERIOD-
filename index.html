@@ -26399,7 +26399,10 @@ init(); </script> <script id="bopUnifiedNavigationPatch"> /* Unified Best Of Per
           sdlajolla:'sandiego',sdpacificbeach:'sandiego',sddowntown:'sandiego',sdcoronado:'sandiego',
           lavalley:'losangeles',lanorthhollywood:'losangeles',laweho:'losangeles',lahollywood:'losangeles',
           lalosfelizsilverlake:'losangeles',lasantamonicavenice:'losangeles',labeveryhillswestside:'losangeles',
-          ladowntown:'losangeles',laculvercity:'losangeles',lasouthbaylax:'losangeles'
+          ladowntown:'losangeles',laculvercity:'losangeles',lasouthbaylax:'losangeles',
+          lalongbeach:'losangeles',lahuntingtonbeach:'losangeles',lanewportbeach:'losangeles',
+          lacostamesa:'losangeles',lairvine:'losangeles',lalagunadanapoint:'losangeles',
+          lasanjuancapistrano:'losangeles'
         };
         if(areaGateParents[boCityContext] && typeof window.bopShowCityGate === 'function'){
           const bestOverlay = document.getElementById('bestOfOverlay');
@@ -42047,7 +42050,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
             photo: window.bopFtPhotoUrl || '',
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
-            checkedInAt: firebase.firestore.FieldValue.serverTimestamp()
+            checkedInAt: window.bopFtServerTimestamp ? window.bopFtServerTimestamp() : firebase.firestore.FieldValue.serverTimestamp()
           }, {merge:true}).then(function(){
             status.textContent = "You're live! Tap Back to see yourself on the map.";
           }).catch(function(){
@@ -45756,22 +45759,22 @@ body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge{
 (function(){
   var AREAS={
     lavalley:{parent:'losangeles',displayName:'San Fernando Valley',landingName:'The Valley',areas:['Sherman Oaks','Encino','Studio City','Tarzana','Woodland Hills'],bjs:'bjspickslavalley'},
-    lanorthhollywood:{parent:'losangeles',displayName:'North Hollywood & Burbank',landingName:'NoHo & Burbank',areas:['North Hollywood','Burbank','Toluca Lake'],bjs:'bjspickslanorthhollywood'},
-    laweho:{parent:'losangeles',displayName:'West Hollywood',landingName:'West Hollywood',areas:['West Hollywood','Sunset Strip'],bjs:'bjspickslaweho'},
+    lanorthhollywood:{parent:'losangeles',displayName:'North Hollywood & Burbank',landingName:'N.H. & Burbank',areas:['North Hollywood','Burbank','Toluca Lake'],bjs:'bjspickslanorthhollywood'},
+    laweho:{parent:'losangeles',displayName:'West Hollywood',landingName:'W. Hollywood',areas:['West Hollywood','Sunset Strip'],bjs:'bjspickslaweho'},
     lahollywood:{parent:'losangeles',displayName:'Hollywood',landingName:'Hollywood',areas:['Hollywood','Thai Town','Fairfax'],bjs:'bjspickslahollywood'},
     lalosfelizsilverlake:{parent:'losangeles',displayName:'Los Feliz & Silver Lake',landingName:'Los Feliz',areas:['Los Feliz','Silver Lake','Echo Park','Atwater Village'],bjs:'bjspickslalosfelizsilverlake'},
-    lasantamonicavenice:{parent:'losangeles',displayName:'Santa Monica & Venice',landingName:'Santa Monica',areas:['Santa Monica','Venice','Marina del Rey','Malibu'],bjs:'bjspickslasantamonicavenice'},
+    lasantamonicavenice:{parent:'losangeles',displayName:'Santa Monica & Venice',landingName:'S.M. & Venice',areas:['Santa Monica','Venice','Marina del Rey','Malibu'],bjs:'bjspickslasantamonicavenice'},
     labeveryhillswestside:{parent:'losangeles',displayName:'Beverly Hills & Westside',landingName:'Beverly Hills',areas:['Beverly Hills','Westwood','Brentwood','Century City'],bjs:'bjspickslabeveryhillswestside'},
-    ladowntown:{parent:'losangeles',displayName:'Downtown Los Angeles',landingName:'Downtown L.A.',areas:['Downtown','Arts District','Little Tokyo'],bjs:'bjspicksladowntown'},
+    ladowntown:{parent:'losangeles',displayName:'Downtown Los Angeles',landingName:'DWTN L.A.',areas:['Downtown','Arts District','Little Tokyo'],bjs:'bjspicksladowntown'},
     laculvercity:{parent:'losangeles',displayName:'Culver City',landingName:'Culver City',areas:['Culver City','Palms'],bjs:'bjspickslaculvercity'},
-    lasouthbaylax:{parent:'losangeles',displayName:'South Bay & LAX',landingName:'South Bay',areas:['Manhattan Beach','Hermosa Beach','Redondo Beach','Hawthorne','LAX'],bjs:'bjspickslasouthbaylax'},
+    lasouthbaylax:{parent:'losangeles',displayName:'South Bay & LAX',landingName:'S.B. & LAX',areas:['Manhattan Beach','Hermosa Beach','Redondo Beach','Hawthorne','LAX'],bjs:'bjspickslasouthbaylax'},
     lalongbeach:{parent:'losangeles',displayName:'Long Beach',landingName:'Long Beach',areas:['Long Beach','Belmont Shore','Naples'],bjs:'bjspickslalongbeach'},
-    lahuntingtonbeach:{parent:'losangeles',displayName:'Huntington Beach',landingName:'Huntington Beach',areas:['Huntington Beach','Sunset Beach'],bjs:'bjspickslahuntingtonbeach'},
+    lahuntingtonbeach:{parent:'losangeles',displayName:'Huntington Beach',landingName:'H.B.',areas:['Huntington Beach','Sunset Beach'],bjs:'bjspickslahuntingtonbeach'},
     lanewportbeach:{parent:'losangeles',displayName:'Newport Beach',landingName:'Newport Beach',areas:['Newport Beach','Corona del Mar','Balboa Island'],bjs:'bjspickslanewportbeach'},
     lacostamesa:{parent:'losangeles',displayName:'Costa Mesa',landingName:'Costa Mesa',areas:['Costa Mesa','South Coast Metro'],bjs:'bjspickslacostamesa'},
     lairvine:{parent:'losangeles',displayName:'Irvine',landingName:'Irvine',areas:['Irvine','Spectrum Center'],bjs:'bjspickslairvine'},
-    lalagunadanapoint:{parent:'losangeles',displayName:'Laguna Beach & Dana Point',landingName:'Laguna & Dana Point',areas:['Laguna Beach','Dana Point','Laguna Niguel'],bjs:'bjspickslalagunadanapoint'},
-    lasanjuancapistrano:{parent:'losangeles',displayName:'San Juan Capistrano',landingName:'San Juan Capistrano',areas:['San Juan Capistrano'],bjs:'bjspickslasanjuancapistrano'},
+    lalagunadanapoint:{parent:'losangeles',displayName:'Laguna Beach & Dana Point',landingName:'L.B. & D.P.',areas:['Laguna Beach','Dana Point','Laguna Niguel'],bjs:'bjspickslalagunadanapoint'},
+    lasanjuancapistrano:{parent:'losangeles',displayName:'San Juan Capistrano',landingName:'S.J.C.',areas:['San Juan Capistrano'],bjs:'bjspickslasanjuancapistrano'},
     sdoceanside:{parent:'sandiego',displayName:'Oceanside',landingName:'Oceanside',areas:['Oceanside','Oceanside Harbor'],bjs:'bjspickssdoceanside'},
     sdcarlsbad:{parent:'sandiego',displayName:'Carlsbad',landingName:'Carlsbad',areas:['Carlsbad','Carlsbad Village'],bjs:'bjspickssdcarlsbad'},
     sdencinitas:{parent:'sandiego',displayName:'Encinitas & Cardiff',landingName:'Encinitas',areas:['Encinitas','Cardiff-by-the-Sea'],bjs:'bjspickssdencinitas'},
@@ -46414,7 +46417,7 @@ ready(function(){
 .bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,
 .bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{
   left:48%!important;
-  top:.04em!important;
+  top:calc(.04em + 5px)!important;
   width:.30em!important;
   height:.30em!important;
   transform:translateX(-50%)!important;
@@ -46435,7 +46438,7 @@ html.bop-qr-bypass-active body{overflow:hidden!important;}
 (function(){
 var PROJECT='bop-food-trucks';
 var API_KEY='AIzaSyCfyTi1MtABID3n-ivLModltn1LyMfIhC0';
-var HEALTH_URL='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents/foodtrucks?pageSize=1&key='+API_KEY;
+var HEALTH_URL='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/default/documents/foodtrucks?pageSize=1&key='+API_KEY;
 var DIRECT_URL='https://bestofperiod.com/?checkin=1';
 
 function wantsCheckin(){
@@ -46539,7 +46542,7 @@ function installReliableSubmit(){
           lat:pos.coords.latitude,
           lng:pos.coords.longitude,
           accuracy:pos.coords.accuracy||null,
-          checkedInAt:firebase.firestore.FieldValue.serverTimestamp()
+          checkedInAt:window.bopFtServerTimestamp ? window.bopFtServerTimestamp() : firebase.firestore.FieldValue.serverTimestamp()
         },{merge:true});
         var timer=setTimeout(function(){btn.disabled=false;status.textContent='The live map did not confirm your check-in. Please try again.';},15000);
         write.then(function(){
@@ -46579,5 +46582,120 @@ var timer=setInterval(function(){
 },250);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',directOpen);else directOpen();
 })();
+</script>
+<script id="bop-la-sd-award-contact-audit-v405">
+(function(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return;
+  function maps(address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address)}
+  function add(cat,r){
+    var list=boCategoryData[cat]||(boCategoryData[cat]=[]);
+    var old=list.find(function(x){return x&&x.city===r.city&&String(x.name).toLowerCase()===String(r.name).toLowerCase()});
+    if(old)Object.assign(old,r);else list.push(Object.assign({},r));
+  }
+  function record(name,city,address,phone,url,honor,note){
+    return {name:name,city:city,address:address,phone:phone,url:url,directionsUrl:maps(address),
+      rating:null,reviews:null,ratingSource:'Official restaurant and James Beard Foundation',
+      ratingNote:honor,why:honor,note:note||honor,price:3,hue:'28, 38%, 23%',
+      jamesBeard:true,jamesBeardHonor:honor,photoRequired:true,image:'',
+      photoAuditStatus:'awaiting-verified-empty-interior',photoPolicy:'No food and no people; publish only a verified interior.'};
+  }
+  var rows=[
+    {cats:['jamesbeard','michelin','seafoodfine','newamericanfine'],r:Object.assign(record('Providence','losangeles','5955 Melrose Ave, Los Angeles, CA 90038','(323) 460-4170','https://providencela.com/','2026 James Beard Outstanding Hospitality winner.','Michael Cimarusti’s landmark sustainable seafood tasting restaurant.'),{michelinStars:3,michelinGuide:true,michelinGreenStar:true,ratingNote:'Three MICHELIN Stars; 2026 James Beard Outstanding Hospitality winner.'})},
+    {cats:['jamesbeard','michelin','asianfusion','newamericanfine'],r:Object.assign(record('Kato','losangeles','777 S Alameda St, Building 1, Ste 114, Los Angeles, CA 90021','(213) 797-5770','https://www.katorestaurant.com/','2026 James Beard Outstanding Wine and Other Beverages Program winner.','Jon Yao’s Taiwanese American tasting restaurant at ROW DTLA.'),{michelinStars:2,michelinGuide:true,ratingNote:'Two MICHELIN Stars; 2026 James Beard Outstanding Wine and Other Beverages Program winner.'})},
+    {cats:['jamesbeard','michelin','newamericanfine'],r:Object.assign(record('Seline','losangeles','3110 Main St, Ste 132, Santa Monica, CA 90405','(424) 744-8811','https://www.selinerestaurant.com/','2026 James Beard Best Chef: California winner — Dave Beran.','A narrative tasting-menu restaurant in Santa Monica from chef Dave Beran.'),{michelinStars:1,michelinGuide:true,ratingNote:'One MICHELIN Star; 2026 James Beard Best Chef: California winner — Dave Beran.'})},
+    {cats:['jamesbeard','michelin','newamericanfine'],r:Object.assign(record('Dunsmoor','losangeles','3501 Eagle Rock Blvd, Los Angeles, CA 90065','(323) 686-6027','https://www.dunsmoor.la/','2026 James Beard Best Chef: California semifinalist — Brian Dunsmoor.','A live-fire American restaurant in Glassell Park.'),{michelinGuide:true})},
+    {cats:['jamesbeard','mediterranean','middleeastern','vegan'],r:record('Kismet','losangeles','4648 Hollywood Blvd, Los Angeles, CA 90027','(323) 409-0404','https://www.kismetla.com/','2026 James Beard Best Chef: California semifinalists — Sarah Hymanson and Sara Kramer.','A vegetable-forward Mediterranean restaurant in Los Feliz.')},
+    {cats:['jamesbeard','michelin','bbq'],r:Object.assign(record("Moo's Craft Barbecue",'losangeles','2118 N Broadway, Los Angeles, CA 90031','(323) 686-4133','https://www.mooscraftbbq.com/','2026 James Beard Best Chef: California semifinalists — Andrew Muñoz and Michelle Muñoz.','A Michelin-selected Texas-style barbecue restaurant rooted in East L.A.'),{michelinGuide:true})},
+    {cats:['jamesbeard','frenchfine','asianfusion'],r:record('Camélia','losangeles','1850 Industrial St, Los Angeles, CA 90021','(213) 800-9750','https://cameliadtla.com/','2026 James Beard Best Chef: California semifinalist — Charles Namba.','A French-Japanese bistro in the Arts District.')},
+    {cats:['jamesbeard','michelin','seafoodcasual','mexicanfine'],r:Object.assign(record('Holbox','losangeles','3655 S Grand Ave, Ste C9, Los Angeles, CA 90007','(213) 986-9972','https://www.holboxla.com/','2026 James Beard Outstanding Chef semifinalist — Gilberto Cetina.','A Yucatán-style Mexican seafood counter inside Mercado La Paloma.'),{michelinStars:1,michelinGuide:true,ratingNote:'One MICHELIN Star; 2026 James Beard Outstanding Chef semifinalist — Gilberto Cetina.'})},
+    {cats:['jamesbeard','michelin','japanesefine'],r:Object.assign(record('n/naka','losangeles','3455 Overland Ave, Los Angeles, CA 90034','(310) 836-6252','https://n-naka.com/','2026 James Beard Outstanding Chef semifinalist — Niki Nakayama.','Niki Nakayama’s modern kaiseki restaurant in Palms.'),{michelinStars:2,michelinGuide:true,ratingNote:'Two MICHELIN Stars; 2026 James Beard Outstanding Chef semifinalist — Niki Nakayama.'})},
+    {cats:['jamesbeard','michelin','newamericanfine'],r:Object.assign(record('Lilo','sandiego','2571 Roosevelt St, Carlsbad, CA 92008','(442) 303-8245','https://www.restaurantlilo.com/','2026 James Beard Best Chef: California semifinalist — Eric Bost.','An intimate Carlsbad tasting counter from chef Eric Bost.'),{michelinStars:1,michelinGuide:true,ratingNote:'One MICHELIN Star; 2026 James Beard Best Chef: California semifinalist — Eric Bost.'})},
+    {cats:['jamesbeard','asianfusion','steakhighend'],r:record('Animae','sandiego','969 Pacific Hwy, San Diego, CA 92101','(619) 432-1225','https://www.animaesd.com/','2026 James Beard Best Chef: California semifinalist and 2025 finalist — Tara Monsod.','A dramatic Asian-inspired steakhouse in Downtown San Diego.')},
+    {cats:['jamesbeard','koreanfine','asianfusion'],r:Object.assign(record('Restaurant Ki','losangeles','111 San Pedro St, Los Angeles, CA 90012','(213) 786-3154','https://restaurantki.com/','2026 James Beard Best New Restaurant semifinalist.','A ten-seat contemporary Korean tasting counter in Little Tokyo.'),{michelinStars:1,michelinGuide:true,ratingNote:'One MICHELIN Star; 2026 James Beard Best New Restaurant semifinalist.'})},
+    {cats:['jamesbeard','japanesecasual','asianfusion'],r:record('RVR','losangeles','1305 Abbot Kinney Blvd, Venice, CA 90291','(310) 573-8077','https://www.rvr.la/','2026 James Beard Best New Restaurant semifinalist.','A Venice izakaya pairing Japanese technique with California produce.')},
+    {cats:['jamesbeard','breakfastbakery','bakery','coffee'],r:record('Gusto Bread','losangeles','2710 E 4th St, Long Beach, CA 90814','(562) 343-1881','https://gustobread.com/','2026 James Beard Outstanding Bakery semifinalist.','Long Beach artisanal panadería founded by Arturo Enciso and Ana Belén Salatino.')},
+    {cats:['jamesbeard','mediterranean','middleeastern'],r:record('AMMATOLI','losangeles','285 E 3rd St, Long Beach, CA 90802','(562) 435-0808','https://www.ammatoli.com/','2026 James Beard Outstanding Hospitality semifinalist.','Chef Dima Habibeh’s Levantine restaurant in Downtown Long Beach.')},
+    {cats:['jamesbeard','italiancasual','italianfine'],r:record('Antico Nuovo','losangeles','4653 Beverly Blvd, Los Angeles, CA 90004','(323) 510-3093','https://www.anticonuovo-la.com/','2026 James Beard Outstanding Restaurant semifinalist.','Rustic Italian cooking and handmade pasta in Larchmont.')},
+    {cats:['jamesbeard','mexicancasual','bakery'],r:record('Komal','losangeles','3655 S Grand Ave C2, Los Angeles, CA 90007','(213) 275-1062','https://komal.toast.site/','2026 James Beard Emerging Chef semifinalist — Fátima Juárez.','A Mercado La Paloma molino centered on masa and regional Mexican cooking.')},
+    {cats:['jamesbeard','seafoodfine','latin'],r:record('Si! Mon','losangeles','60 N Venice Blvd, Venice, CA 90291','(310) 302-0016','https://www.si-mon.la/','2026 James Beard Emerging Chef semifinalist — José Olmedo Carles Rojas.','Panamanian and Caribbean-influenced cooking in Venice.')},
+    {cats:['jamesbeard','pizza','bakery'],r:record('Quarter Sheets','losangeles','1305 Portia St, Los Angeles, CA 90026','(310) 916-9293','https://www.quartersheetspizza.com/','2026 James Beard Outstanding Pastry Chef or Baker semifinalist — Hannah Ziskin.','Echo Park pizza and cake shop recognized for its pastry program.')},
+    {cats:['jamesbeard','koreancasual','asianfusion'],r:record('Baroo','losangeles','905 E 2nd St, Los Angeles, CA 90012','(213) 221-7967','https://www.baroolosangeles.com/','2026 James Beard Best Chef: California semifinalist — Kwang Uh.','A contemporary Korean tasting restaurant in the Arts District.')},
+    {cats:['jamesbeard','bars','asianfusion'],r:record('Realm of the 52 Remedies','sandiego','4805 Convoy St, San Diego, CA 92111','(619) 780-6675','https://www.52remedies.com/','2026 James Beard Outstanding Bar semifinalist.','A Convoy District cocktail bar inspired by Chinese apothecary traditions.')}
+  ];
+  function michelinRecord(name,address,phone,url,note,extra){return Object.assign({name:name,city:'losangeles',address:address,phone:phone,url:url,directionsUrl:maps(address),rating:null,reviews:null,ratingSource:'MICHELIN Guide and official restaurant',ratingNote:note,why:note,note:note,price:3,hue:'28, 38%, 23%',michelinGuide:true,photoRequired:true,image:'',photoAuditStatus:'awaiting-verified-empty-interior',photoPolicy:'No food and no people; publish only a verified interior.'},extra||{})}
+  var michelinRows=[
+    {cats:['michelin','italianfine'],r:michelinRecord('Bello by Sandro Nardone','1200 Bison Ave, Ste C2, Newport Beach, CA 92660','(949) 520-7191','https://www.bellobysandronardone.com/','Selected by the 2026 MICHELIN Guide.')},
+    {cats:['michelin','sushifine'],r:michelinRecord('Sushi ii','100 W Coast Hwy, Ste 202, Newport Beach, CA 92663','(949) 287-6268','https://www.sushi-ii.com/','Selected by the 2026 MICHELIN Guide.')},
+    {cats:['michelin','frenchfine'],r:michelinRecord('Marché Moderne','7862 E Pacific Coast Hwy, Newport Beach, CA 92657','(714) 434-7900','https://marchemoderne.net/','Selected by the 2026 MICHELIN Guide.')},
+    {cats:['michelin','newamericanfine'],r:michelinRecord('Fable & Spirit','3441 Via Lido, Ste A, Newport Beach, CA 92663','(949) 409-9913','https://www.fableandspirit.com/','2026 MICHELIN Bib Gourmand.',{michelinBibGourmand:true})},
+    {cats:['michelin','sushifine'],r:michelinRecord('Hana re','2930 Bristol St, Costa Mesa, CA 92626','(714) 545-2800','https://www.hanaresushi.com/','Selected by the 2026 MICHELIN Guide.')},
+    {cats:['michelin','frenchfine'],r:michelinRecord('Knife Pleat','3333 Bristol St, Ste 3001, Costa Mesa, CA 92626','(714) 266-3388','https://knifepleat.com/','Selected by the 2026 MICHELIN Guide.')},
+    {cats:['michelin','spanish','steakhighend'],r:michelinRecord('Vaca','695 Town Center Dr, Ste 170, Costa Mesa, CA 92626','(714) 463-6060','https://vacarestaurant.com/costa-mesa/','Selected by the 2026 MICHELIN Guide.')}
+  ];
+  function localRecord(name,address,phone,url,rating,reviews,source,note,extra){var hasRating=rating!==null&&rating!==undefined;return Object.assign({name:name,city:'losangeles',address:address,phone:phone,url:url,directionsUrl:maps(address),rating:hasRating?String(rating):null,reviews:hasRating?reviews:null,ratingSource:source,ratingNote:hasRating?source+' '+rating+' from '+Number(reviews).toLocaleString()+' verified diners.':source,why:note,note:note,price:2,hue:'28, 38%, 23%',image:''},extra||{})}
+  var localRows=[
+    {cats:['bbq','michelin','jamesbeard'],r:Object.assign(localRecord('Heritage Barbecue','31721 Camino Capistrano, San Juan Capistrano, CA 92675','(714) 951-6287','https://www.heritagecraftbbq.com/',null,null,'MICHELIN Guide and James Beard Foundation recognition','A Michelin-selected Central Texas-style smokehouse in historic San Juan Capistrano.'),{michelinGuide:true,jamesBeard:true,jamesBeardHonor:'2025 James Beard Best Chef: California nominee — Daniel Castillo.',photoRequired:true,photoAuditStatus:'awaiting-verified-empty-interior'})},
+    {cats:['mediterranean','middleeastern','breakfastcasual'],r:localRecord('Mayfield','31761 Camino Capistrano, San Juan Capistrano, CA 92675','(949) 218-5140','https://www.mayfieldoc.com/',4.5,17,'Tripadvisor','A Californian and Levantine restaurant with an indoor-outdoor dining room and garden patio.')},
+    {cats:['newamericancasual','bars'],r:localRecord("Trevor's at the Tracks",'26701 Verdugo St, San Juan Capistrano, CA 92675','(949) 493-9593','https://www.trevorsatthetracks.com/',4.4,178,'OpenTable','A locally rooted international restaurant inside the historic train depot.')},
+    {cats:['newamerican','seafoodcasual'],r:localRecord('230 Forest Avenue','230 Forest Ave, Laguna Beach, CA 92651','(949) 494-2545','https://230forestavenue.com/',4.8,3075,'OpenTable','A long-running Laguna Beach landmark for California seafood and steaks.')},
+    {cats:['pizza','italiancasual'],r:localRecord('Truly Pizza — Laguna Beach','320 N Coast Hwy, Laguna Beach, CA 92651','(949) 549-4124','https://trulypizza.com/pages/laguna-beach',4.8,257,'OpenTable','A highly rated open-air artisan pizzeria overlooking the Laguna Beach coastline.')},
+    {cats:['steakhighend','michelin'],r:Object.assign(localRecord('Selanne Steak Tavern','1464 S Coast Hwy, Laguna Beach, CA 92651','(949) 715-9881','https://www.selannesteaktavern.com/',4.7,3162,'OpenTable','A Michelin-selected neighborhood steakhouse in a restored 1934 Laguna Beach home.',{price:4}),{michelinGuide:true,photoRequired:true,photoAuditStatus:'awaiting-verified-empty-interior'})}
+    ,{cats:['newamericancasual','seafoodcasual','burgers'],r:localRecord('Coastal Kitchen','34091 Pacific Coast Hwy, Dana Point, CA 92629','(949) 449-2822','https://www.coastalkitchendanapoint.com/',4.8,5835,'OpenTable','A high-volume Dana Point favorite for seafood, steaks, salads, and burgers.')}
+    ,{cats:['pizza','italiancasual'],r:localRecord('Truly Pizza — Dana Point','24402 Del Prado Ave, Dana Point, CA 92629','(949) 218-8220','https://trulypizza.com/',4.8,1284,'OpenTable','A nationally recognized artisan pizzeria in Dana Point’s Lantern District.')}
+    ,{cats:['newamericancasual','italiancasual','steakcasual'],r:localRecord('Luxe Restaurant & Martini Bar','24582 Del Prado Ave, Dana Point, CA 92629','(949) 276-4990','https://www.luxefinedining.com/',4.8,758,'OpenTable','A locally owned Dana Point restaurant combining seafood, steaks, Italian dishes, and a martini bar.')}
+  ];
+  rows.forEach(function(entry){entry.cats.forEach(function(cat){add(cat,entry.r)});add(entry.r.city,entry.r)});
+  michelinRows.forEach(function(entry){entry.cats.forEach(function(cat){add(cat,entry.r)});add(entry.r.city,entry.r)});
+  localRows.forEach(function(entry){entry.cats.forEach(function(cat){add(cat,entry.r)});add(entry.r.city,entry.r)});
+
+  /* Every audited LA/SD record with an address receives a deterministic
+     one-tap Google Maps destination. Missing contact fields stay visibly
+     missing; this pass never fabricates a phone number or rating. */
+  Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.address)return;if(r.city==='losangeles'||r.city==='sandiego'||/^(la|sd)/.test(String(r.city||'')))r.directionsUrl=maps(r.address)})});
+
+  window.BOP_LA_SD_AWARD_CONTACT_AUDIT={version:405,recordsAddedOrEnriched:rows.length+michelinRows.length+localRows.length,directionsNormalized:true,photoRule:'verified empty interiors only'};
+})();
+</script>
+<!-- Connect the food-truck tools to the existing named Firestore database. -->
+<script type="module" id="bop-foodtruck-named-database">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {
+  initializeFirestore, collection, doc, getDoc, getDocs, setDoc,
+  onSnapshot, query, limit, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const config={
+  apiKey:'AIzaSyCfyTi1MtABID3n-ivLModltn1LyMfIhC0',
+  authDomain:'bop-food-trucks.firebaseapp.com',
+  projectId:'bop-food-trucks',
+  storageBucket:'bop-food-trucks.firebasestorage.app',
+  messagingSenderId:'448387989317',
+  appId:'1:448387989317:web:1123cd337684185764882c'
+};
+
+try{
+  const app=initializeApp(config,'bop-food-trucks-named-db');
+  const db=initializeFirestore(app,{},'default');
+  const wrapCollection=(name)=>{
+    const ref=collection(db,name);
+    return {
+      get:()=>getDocs(ref),
+      onSnapshot:(next,error)=>onSnapshot(ref,next,error),
+      limit:(count)=>({get:()=>getDocs(query(ref,limit(count)))}),
+      doc:(id)=>{
+        const refDoc=doc(db,name,id);
+        return {
+          get:()=>getDoc(refDoc),
+          set:(data,options)=>setDoc(refDoc,data,options||{})
+        };
+      }
+    };
+  };
+  window.bopFtDb={collection:wrapCollection};
+  window.bopFtServerTimestamp=serverTimestamp;
+  window.dispatchEvent(new Event('bop-foodtruck-database-ready'));
+}catch(error){
+  console.error('Food-truck database initialization failed',error);
+}
 </script>
 </body></html>
