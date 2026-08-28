@@ -9099,6 +9099,12 @@ function startInfiniteCityCycler(elId, cities, holdMs){
     // broadcasting a structural/class mutation through the whole site.
     if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = last;
     else el.appendChild(document.createTextNode(last));
+    // v317: text-node updates above never touched data-fit, so long names
+    // (Florence, Beverly Hills, Los Angeles, Washington DC...) kept the
+    // short-name font size and ran straight into the "Period" word with no
+    // gap. Recompute and reapply data-fit on every swap, same as the other
+    // city displays that get it set at creation time.
+    if(typeof boCityFitValue === 'function') el.setAttribute('data-fit', boCityFitValue(last));
     setTimeout(step, holdMs);
   }
 
@@ -20721,8 +20727,16 @@ function boBuildExpandedLegend(){
       #legendOverlay .bo-legend-rankings h3,
       #legendOverlay .bo-legend-badges h3,
       #legendOverlay .bo-legend-location h3{color:#F59E0B!important;font-size:2.7rem!important;line-height:1.04!important;text-shadow:0 0 12px rgba(245,158,11,.62)!important}
-      .bop-legend-teens-link{appearance:none;border:0;background:none;color:#F59E0B;font:italic 900 1.35rem/1 'Brush Script MT','Segoe Script','Snell Roundhand',cursive;letter-spacing:-.02em;cursor:pointer;padding:12px 20px;text-shadow:0 0 8px rgba(245,158,11,.75)}
-      .bop-legend-founders-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;border:2px solid #F59E0B;border-radius:10px;background:#000;color:#F59E0B;font:900 1.4rem/1 'Archivo Black',sans-serif;letter-spacing:.03em;cursor:pointer;padding:16px 22px;text-shadow:0 0 10px rgba(245,158,11,.7);box-shadow:0 0 10px rgba(245,158,11,.24)}
+      .bop-legend-teens-link{appearance:none;border:1px solid #F59E0B;border-radius:6px;background:#F59E0B;color:#000;font:800 .68rem 'Archivo Black',sans-serif;letter-spacing:.04em;cursor:pointer;padding:7px 14px;text-shadow:none;box-shadow:none}
+      .bop-legend-founders-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid #F59E0B;border-radius:6px;background:#000;color:#F59E0B;font:800 .7rem 'Archivo Black',sans-serif;letter-spacing:.04em;cursor:pointer;padding:7px 14px;text-shadow:none;box-shadow:none}
+      .bop-legend-founders-partners-link{appearance:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid #F59E0B;border-radius:6px;background:#000;color:#F59E0B;font:800 .62rem 'Archivo Black',sans-serif;letter-spacing:.04em;cursor:pointer;padding:6px 12px;text-shadow:none;box-shadow:none;margin-top:12px}
+      .bop-legend-fp-photos{display:none;margin:16px auto 0;max-width:100%;width:96vw;gap:8px}
+      .bop-legend-fp-photos>div{flex:1;min-width:0;padding:0 3px;text-align:center}
+      .bop-legend-fp-photo-frame{width:100%;height:160px;border:2px solid #F59E0B;border-radius:6px;overflow:hidden;margin:0 auto 6px}
+      .bop-legend-fp-photo-frame img{width:100%;height:100%;object-fit:cover;display:block}
+      .bop-legend-fp-name{color:#fff;font-weight:700;font-size:.66rem}
+      .bop-legend-email-link{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid #F59E0B;border-radius:50%;color:#F59E0B;margin-top:16px}
+      .bop-legend-email-link svg{width:15px;height:15px}
     `;
     document.head.appendChild(hierarchyStyle);
   }
@@ -20776,10 +20790,46 @@ function boBuildExpandedLegend(){
       <button type="button" class="bop-legend-teens-link">TEENS</button>
     </section>
     <section class="bo-legend-section" style="text-align:center;padding:28px 4px 34px;">
-      <button type="button" class="footer-hotlink bop-legend-founders-link" data-dest="about">FOUNDERS BJS CO.</button>
+      <button type="button" class="footer-hotlink bop-legend-founders-link" data-dest="about">FOUNDERS</button>
+      <div>
+        <button type="button" id="bopLegendFpToggle" aria-expanded="false" aria-controls="bopLegendFpPhotos" class="bop-legend-founders-partners-link">FOUNDERS AND PARTNERS</button>
+      </div>
+      <div id="bopLegendFpPhotos" class="bop-legend-fp-photos">
+        <div><div class="bop-legend-fp-photo-frame"><img alt="Bradley White" src="" data-fp-src="founderPhotoBrad"/></div><span class="bop-legend-fp-name">Bradley White</span></div>
+        <div><div class="bop-legend-fp-photo-frame"><img alt="Jordan Bamford" src="" data-fp-src="founderPhotoJordan"/></div><span class="bop-legend-fp-name">Jordan Bamford</span></div>
+        <div><div class="bop-legend-fp-photo-frame"><img alt="Sam Welbourne" src="" data-fp-src="founderPhotoSam"/></div><span class="bop-legend-fp-name">Sam Welbourne</span></div>
+      </div>
+      <div>
+        <a class="bop-legend-email-link" href="mailto:info@bestofperiod.com" aria-label="Email info at Best Of Period dot com">
+          <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3.5" y="6.5" width="25" height="19" rx="2.5"/><path d="m5 9 11 9 11-9"/></svg>
+        </a>
+      </div>
     </section>`;
 }
 boBuildExpandedLegend();
+
+document.addEventListener('click',function(event){
+  const fpToggle=event.target.closest&&event.target.closest('#bopLegendFpToggle');
+  if(!fpToggle)return;
+  event.preventDefault();
+  event.stopPropagation();
+  const panel=document.getElementById('bopLegendFpPhotos');
+  if(!panel)return;
+  const isOpen=panel.style.display!=='none'&&panel.style.display!=='';
+  if(!isOpen){
+    panel.querySelectorAll('img[data-fp-src]').forEach(function(img){
+      if(img.getAttribute('src'))return;
+      const sourceId=img.getAttribute('data-fp-src');
+      const sourceImg=document.querySelector('#'+sourceId+' img');
+      if(sourceImg&&sourceImg.src)img.src=sourceImg.src;
+    });
+    panel.style.display='flex';
+    fpToggle.setAttribute('aria-expanded','true');
+  }else{
+    panel.style.display='none';
+    fpToggle.setAttribute('aria-expanded','false');
+  }
+},true);
 
 document.addEventListener('click',function(event){
   const teenButton=event.target.closest&&event.target.closest('.bop-legend-teens-link');
@@ -25043,6 +25093,10 @@ function startBopCityCycler(elId, cities, firstHold, hold, outMs, inMs, rampSche
     // text node avoids waking every global observer for an invisible fade.
     if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = next;
     else el.appendChild(document.createTextNode(next));
+    // v317: keep data-fit in sync with the swapped-in name, same reasoning
+    // as startInfiniteCityCycler — otherwise longer names (Cape Town, Abu
+    // Dhabi...) inherit whatever size the previous shorter name had.
+    if(typeof boCityFitValue === 'function') el.setAttribute('data-fit', boCityFitValue(next));
     setTimeout(swap, getNextHold());
   }
   setTimeout(swap, firstHold);
@@ -43962,7 +44016,7 @@ document.addEventListener('click', function(){ setTimeout(attachAutofill, 250); 
    re-asserting the correct line indefinitely (not just once) since the
    legacy scripts' own timers could re-fire and re-overwrite it later. */
 var CORRECT_HTML = '<span style="display:inline-block;text-align:center;padding:0 8px;">'+
-  '<br/>By digging in, eating the world every chance we get, between the founders and affiliates, together we\u2019re building the most interactive direct directory available today!'+
+  '<br/>We dig in. Eating the world every chance we get, between the founders and affiliates, together we\u2019re building the most interactive direct directory available today!'+
   '</span>';
 var MARKER = 'interactive direct directory';
 
