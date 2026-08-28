@@ -23220,8 +23220,9 @@ function boTileRestaurantCount(cat, cityKey){
     const isPick=(typeof isBjsPicksCat==='function')&&isBjsPicksCat(leafCat);
     const ranked=boRankedRestaurantList(scoped.slice());
     if(isPick||isAward) return ranked.slice(0,18);
-    const rated=ranked.filter(e=>{const s=boRestaurantScore(e);return s!=null&&s>=3.8;});
-    const strong=rated.filter(e=>boRestaurantScore(e)>=4.6);
+    const exempt=e=>!!(e&&(e.michelinStars||e.michelinGuide||e.bjsPick));
+    const rated=ranked.filter(e=>{if(exempt(e))return true;const s=boRestaurantScore(e);return s!=null&&s>=3.8;});
+    const strong=rated.filter(e=>boRestaurantScore(e)>=4.6||exempt(e));
     const cap=BO_CITY_CONFIG[leafCat]?11:18;
     return (strong.length>=6?strong:rated.slice(0,6)).slice(0,cap);
   };
@@ -23959,12 +23960,19 @@ function boRenderCategory(cat){
   // a completely empty page. Unrated award cards already display
   // "Not yet independently rated", so they render safely.
   const boIsAwardListCat = (cat === 'michelin' || cat === 'jamesbeard');
+  // v403: an individual entry carrying a real non-numeric quality signal —
+  // a Michelin star, Michelin Guide recognition, or a hand-picked BJS
+  // selection — stays on its category page even without an independently
+  // verified score yet, exactly as the data processor's own exemption rule
+  // already promises. Unrated cards display "Not yet independently rated".
+  const boEntryExemptFromFloor = entry => !!(entry && (entry.michelinStars || entry.michelinGuide || entry.bjsPick));
   if(!isBjsPicksCat(cat) && !boIsAwardListCat){
     sortedEntries = sortedEntries.filter(entry => {
+      if(boEntryExemptFromFloor(entry)) return true;
       const score = boRestaurantScore(entry);
       return score != null && score >= 3.8;
     });
-    const strongest = sortedEntries.filter(entry => boRestaurantScore(entry) >= 4.6);
+    const strongest = sortedEntries.filter(entry => boRestaurantScore(entry) >= 4.6 || boEntryExemptFromFloor(entry));
     const listCap = isMainCityPage ? 11 : 18;
     sortedEntries = (strongest.length >= 6 ? strongest : sortedEntries.slice(0,6)).slice(0,listCap);
   }
@@ -45110,17 +45118,14 @@ body.bop-nyc-context #bestOfOverlay .bop-brooklyn-word .bop-brooklyn-bridge{
   /* Mobile-safe directions: use the restaurant address in the native Google
      Maps directions endpoint. This avoids the embedded-map overlay that was
      swallowing taps in several iPhone browsers. */
-  document.addEventListener('click',function(event){
-    var btn=event.target&&event.target.closest&&event.target.closest('[data-directions-popup]');
-    if(!btn)return;
-    var address=btn.getAttribute('data-directions-popup');
-    if(!address)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    var url='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address);
-    var opened=window.open(url,'_blank','noopener');
-    if(!opened)window.location.href=url;
-  },true);
+  /* v402: the capture-phase hijack that lived here bypassed the site's own
+     directions popup and, whenever the browser blocked its window.open call
+     (common on iPhone), fell back to window.location.href — replacing the
+     entire site with Google Maps with no way back, which read as "I hit
+     directions and nothing popped up." Removed. The original in-site
+     directions popup handles these taps again; the tap-swallowing problem
+     it was written to dodge is fixed at the source in the v402 style below
+     by making the embedded map preview non-interactive. */
 
   /* Keep late-added card images and the PICS gallery in sync. Earlier builds
      populated the gallery before the New York data patches ran. */
@@ -45620,4 +45625,143 @@ document.addEventListener('click', function(event){
 }, true);
 })();
 </script>
+<style id="bop-directions-popup-restore-v402">
+/* v402: the embedded map is a PREVIEW. Making it non-interactive means it
+   can never swallow taps meant for the popup's own buttons (the iPhone
+   problem an earlier patch tried to dodge by bypassing this popup
+   entirely). Panning/zooming lives in the real Maps app via the green
+   OPEN IN MAPS button, which opens in a separate tab so the site itself
+   always stays open. */
+#directionsPopupMap{pointer-events:none!important;}
+#directionsPopupOverlay .directionsPopupSheet, #directionsPopupOverlay > div{position:relative;}
+#directionsPopupOpen{position:relative;z-index:3;}
+</style>
+<script id="bop-directions-popup-restore-v402-script">
+(function(){
+  function harden(){
+    var openEl=document.getElementById('directionsPopupOpen');
+    if(openEl){
+      openEl.setAttribute('target','_blank');
+      openEl.setAttribute('rel','noopener noreferrer');
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',harden);else harden();
+})();
+</script>
+<script id="bop-verified-roster-additions-v404-script">
+(function(){
+/* v404: verified roster work, Aug 2026 session.
+   1) Manhattan Fine Italian: Rezdora and Torrisi were already in the data
+      but unrated and unflagged, so they never rendered. Both hold current
+      MICHELIN one-star status (verified against guide.michelin.com and the
+      restaurants' own materials this session) — flagged accordingly.
+      Ratings intentionally left for the multi-source verification pass:
+      Tripadvisor's 3.8 (141 reviews) for Rezdora reads as a low outlier
+      against its Michelin star and NYT three-star review, so per house
+      rules it is flagged for closer review rather than used alone.
+   2) Los Angeles: Fine Italian and Fine Sushi were completely empty.
+      Added star/Guide-verified anchors. Addresses are real, so the LA
+      area classifier also seeds Hollywood / Beverly Hills / Downtown /
+      Culver City area pages from these automatically.
+   3) Miami Fine Italian: added Michelin-Guide-recognized Macchialina.
+   No invented ratings anywhere: entries render via the award exemption
+   and show "Not yet independently rated" until the ratings pass scores
+   them. */
+function upsert(cat, entry){
+  if(typeof boCategoryData !== 'object' || !boCategoryData) return false;
+  if(!Array.isArray(boCategoryData[cat])) boCategoryData[cat] = [];
+  var list = boCategoryData[cat];
+  var hit = list.find(function(r){
+    return r && r.name && r.city === entry.city &&
+      String(r.name).toLowerCase().replace(/[^a-z]/g,'') === String(entry.name).toLowerCase().replace(/[^a-z]/g,'');
+  });
+  if(hit){
+    Object.keys(entry).forEach(function(k){ if(hit[k] === undefined || hit[k] === null || hit[k] === '') hit[k] = entry[k]; });
+  } else {
+    list.push(entry);
+  }
+  return true;
+}
+function apply(){
+  if(typeof boCategoryData !== 'object' || !boCategoryData || !Array.isArray(boCategoryData.italianhighend)) return false;
+  /* ---- Manhattan: flag + complete existing entries ---- */
+  upsert('italianhighend', {name:'Rezd\u00f4ra', city:'manhattan', michelinStars:1, price:4,
+    address:'27 E 20th St, New York, NY 10003', url:'https://www.rezdora.nyc/',
+    why:'Michelin-starred Emilia-Romagna pasta tasting from chef Stefano Secchi in Flatiron',
+    ratingNote:'Rating pending multi-source verification. MICHELIN one star (2021\u20132025) and a New York Times three-star review confirmed; Tripadvisor 3.8 (141 reviews) flagged as a low outlier for team review.'});
+  upsert('italianhighend', {name:'Torrisi', city:'manhattan', michelinStars:1, price:4,
+    address:'275 Mulberry St, New York, NY 10012', url:'https://torrisinyc.com/',
+    why:'Major Food Group\u2019s Michelin-starred Italian-American dining room in the landmark Puck Building',
+    ratingNote:'Rating pending multi-source verification. MICHELIN one star (since 2023) and a top-ten New York Times NYC ranking (2024) confirmed.'});
+  /* ---- Los Angeles: Fine Italian ---- */
+  upsert('italianhighend', {name:'Osteria Mozza', city:'losangeles', michelinStars:1, price:4,
+    address:'6602 Melrose Ave, Los Angeles, CA 90038', url:'https://www.osteriamozza.com/',
+    why:'Nancy Silverton\u2019s Michelin-starred Hollywood flagship, built around the famed mozzarella bar and handmade pastas',
+    ratingNote:'Rating pending multi-source verification. MICHELIN one star, held since 2008 and maintained in the 2025 California Guide.'});
+  upsert('italianhighend', {name:'Mother Wolf', city:'losangeles', michelinGuide:true, price:3,
+    address:'1545 Wilcox Ave, Los Angeles, CA 90028',
+    why:'Evan Funke\u2019s grand Roman dining hall in Hollywood\u2019s Citizen News building \u2014 cacio e pepe, amatriciana, wood-fired pies',
+    ratingNote:'Rating pending multi-source verification. MICHELIN Guide listed (Italian, Roman).'});
+  /* ---- Los Angeles: Fine Sushi ---- */
+  upsert('sushihighend', {name:'Sushi Kaneyoshi', city:'losangeles', michelinStars:1, price:4,
+    address:'111 S San Pedro St, Suite B1, Los Angeles, CA 90012',
+    why:'Michelin-starred Edomae omakase hidden in a Little Tokyo basement \u2014 widely called the city\u2019s best high-end sushi counter',
+    ratingNote:'Rating pending multi-source verification. MICHELIN one star confirmed; Time Out LA\u2019s top ultra-premium omakase pick.'});
+  upsert('sushihighend', {name:'Nozawa Bar', city:'losangeles', michelinStars:1, price:4,
+    address:'212 N Canon Dr, Beverly Hills, CA 90210',
+    why:'A Michelin-starred 10-seat, 20-course omakase counter tucked inside Sugarfish Beverly Hills',
+    ratingNote:'Rating pending multi-source verification. MICHELIN star confirmed; chef Jay Sada took over the counter in June 2025.'});
+  /* ---- Los Angeles: Michelin page anchors ---- */
+  upsert('michelin', {name:'n/naka', city:'losangeles', michelinStars:1, price:4,
+    address:'3455 S Overland Ave, Los Angeles, CA 90034', url:'https://n-naka.com/',
+    why:'Niki Nakayama\u2019s Michelin-starred modern kaiseki in Palms \u2014 one of the hardest tables in Los Angeles',
+    ratingNote:'Rating pending multi-source verification. MICHELIN one star confirmed through the 2025 California Guide.'});
+  upsert('michelin', {name:'715', city:'losangeles', michelinStars:1, price:4,
+    address:'738 E 3rd St, Los Angeles, CA 90013',
+    why:'An eight-seat, 20-course Michelin-starred omakase counter in the Arts District from chef Seigo Tamura',
+    ratingNote:'Rating pending multi-source verification. MICHELIN star confirmed.'});
+  /* ---- Miami: Fine Italian ---- */
+  upsert('italianhighend', {name:'Macchialina', city:'miami', michelinGuide:true, price:3,
+    address:'820 Alton Rd, Miami Beach, FL 33139',
+    why:'James Beard semifinalist Michael Pirolo\u2019s Michelin-recognized Alton Road trattoria \u2014 the local consensus pick for Miami\u2019s best pasta',
+    ratingNote:'Rating pending multi-source verification. MICHELIN Guide recognized since the Florida Guide launched; $75 four-course tasting menu.'});
+  return true;
+}
+function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+ready(function(){
+  var tries = 0;
+  var t = setInterval(function(){ tries++; if(apply() || tries > 30) clearInterval(t); }, 300);
+});
+})();
+</script>
+<style id="bop-opening-orb-position-and-btn-scale-v400">
+/* v400: opening invitation tune-up (last-in-document authoritative).
+   1) The big orb previously sat -4vh high (v349). Per direct request the
+      whole thing now comes down and centers: top:0 restores the true
+      grid center of the screen. Contents untouched.
+   2) The three bottom circles only (PROMO VIDEO, BJS CO., email) shrink
+      5% -- circle diameter only, text/icon sizes unchanged. */
+#bopExclusiveInvitation .bop-exclusive-orb{
+  top:0!important;
+}
+#bopExclusiveInvitation .bop-exclusive-btn-row .bop-exclusive-enter,
+#bopExclusiveInvitation .bop-exclusive-contact-icononly{
+  width:51.3px!important;
+  height:51.3px!important;
+}
+#bopExclusiveInvitation #bopExclusiveEnter{
+  width:66.5px!important;
+  height:66.5px!important;
+}
+@media(max-width:370px){
+  #bopExclusiveInvitation .bop-exclusive-btn-row .bop-exclusive-enter{
+    width:39.9px!important;
+    height:39.9px!important;
+  }
+  #bopExclusiveInvitation #bopExclusiveEnter{
+    width:39.9px!important;
+    height:39.9px!important;
+  }
+}
+</style>
 </body></html>
