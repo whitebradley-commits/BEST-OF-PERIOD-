@@ -41954,7 +41954,8 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           if(d.instagram) links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#F59E0B;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
           var photoHTML = d.photo ? '<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">' : '';
           var descHTML = d.description ? '<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>' : '';
-          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Food Truck')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+          var permHTML = d.permanent ? '<div style="display:inline-block;margin-bottom:4px;padding:2px 7px;border:1px solid #F59E0B;border-radius:5px;font:800 .6rem Arial;color:#F59E0B;letter-spacing:.04em;">PERMANENT LOCATION</div>' : '';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+permHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Food Truck')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>');
           window.bopFtMarkers[doc.id] = marker;
         });
         var note = document.getElementById('bopFtEmptyNote');
@@ -47095,6 +47096,13 @@ try{
 #bopFtMyTrucks .bo-ftm-name{font:800 .9rem/1.25 Arial,sans-serif;color:#fff;}
 #bopFtMyTrucks .bo-ftm-sub{font:600 .7rem/1.3 Arial,sans-serif;color:#aaa;}
 #bopFtMyTrucks .bo-ftm-remove{flex:0 0 auto;padding:8px 12px;border:1.5px solid #E4002B;border-radius:999px;background:#050505;color:#E4002B;font:900 .68rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+#bopFtMyTrucks .bo-ftm-btns{display:flex;gap:8px;flex:0 0 auto;}
+#bopFtMyTrucks .bo-ftm-confirm{flex:0 0 auto;padding:8px 12px;border:1.5px solid #F59E0B;border-radius:999px;background:#050505;color:#F59E0B;font:900 .68rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+#bopFtMyTrucks .bo-ftm-perm-tag,
+#bopVsMyStands .bo-ftm-perm-tag,
+#bopAnalogList .bo-ftm-perm-tag{display:inline-block;margin-left:5px;padding:1px 6px;border:1px solid #F59E0B;border-radius:5px;font:800 .55rem Arial;color:#F59E0B;letter-spacing:.03em;vertical-align:middle;}
+#bopVsMyStands .bo-ftm-perm-tag{border-color:#14B8A6;color:#14B8A6;}
+#bopAnalogList[aria-label*="Street Vendors"] .bo-ftm-perm-tag{border-color:#14B8A6;color:#14B8A6;}
 #bopFtMyTrucks .bo-ftm-empty{font:600 .8rem/1.4 Arial,sans-serif;color:#ccc;}
 .bo-ft-takedown-link{display:block;margin-top:8px;text-align:center;font:700 .68rem/1.3 Arial,sans-serif;color:#E4002B;text-decoration:underline;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 </style>
@@ -47182,9 +47190,18 @@ try{
       if(!list.length)html+='<div class="bo-ftm-empty">None of your trucks are on the map right now.</div>';
       list.forEach(function(t){
         var when=t.d.checkedInAt&&t.d.checkedInAt.toMillis?new Date(t.d.checkedInAt.toMillis()):null;
-        html+='<div class="bo-ftm-row"><div><div class="bo-ftm-name">'+esc(t.d.name||'Food Truck')+'</div><div class="bo-ftm-sub">Checked in '+(when?when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'')+'</div></div><button type="button" class="bo-ftm-remove" data-id="'+esc(t.id)+'">Remove</button></div>';
+        html+='<div class="bo-ftm-row"><div><div class="bo-ftm-name">'+esc(t.d.name||'Food Truck')+(t.d.permanent?' <span class="bo-ftm-perm-tag">PERMANENT</span>':'')+'</div><div class="bo-ftm-sub">Checked in '+(when?when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'')+'</div></div><div class="bo-ftm-btns">'+(t.d.permanent?'<button type="button" class="bo-ftm-confirm" data-id="'+esc(t.id)+'">Still here</button>':'')+'<button type="button" class="bo-ftm-remove" data-id="'+esc(t.id)+'">Remove</button></div></div>';
       });
       box.innerHTML=html;
+      box.querySelectorAll('.bo-ftm-confirm').forEach(function(b){
+        b.addEventListener('click',function(){
+          b.disabled=true;b.textContent='Confirming\u2026';
+          window.bopFtDb.collection('foodtrucks').doc(b.dataset.id).set({liveUntil:Date.now()+14*24*3600000},{merge:true}).then(function(){
+            if(status)status.textContent='Confirmed \u2014 live for another 14 days.';
+            refreshList();
+          }).catch(function(err){b.disabled=false;b.textContent='Still here';if(status)status.textContent='Could not confirm ('+((err&&err.code)||'error')+'). Try again.';});
+        });
+      });
       box.querySelectorAll('.bo-ftm-remove').forEach(function(b){
         b.addEventListener('click',function(){
           b.disabled=true;b.textContent='Removing\u2026';
@@ -47489,9 +47506,10 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     if(d.website)links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#14B8A6;">Website / Order</a>');
     if(d.instagram)links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#14B8A6;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
     var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
+    var permHTML=d.permanent?'<div style="display:inline-block;margin-bottom:4px;padding:2px 7px;border:1px solid #14B8A6;border-radius:5px;font:800 .6rem Arial;color:#14B8A6;letter-spacing:.03em;">PERMANENT</div>':'';
     var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
     var catHTML='<div style="font:800 .68rem Arial;color:#8fbf6f;margin-bottom:4px;display:flex;align-items:center;gap:4px;">'+(typeof window.bopVsCatIcon==='function'?'<span style="width:14px;height:14px;display:inline-flex;">'+window.bopVsCatIcon(d.category)+'</span>':catIcon(d.category)+' ')+vsEsc(typeof window.bopVsCatLabel==='function'&&window.bopVsCatLabel(d.category)?window.bopVsCatLabel(d.category):catLabel(d.category))+'</div>';
-    return '<div style="width:190px;" data-vs-id="'+vsEsc(id)+'">'+photoHTML+'<div style="font:800 .95rem Arial;color:#14B8A6;margin-bottom:2px;">'+vsEsc(d.name||'Street Vendor')+'</div>'+catHTML+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>';
+    return '<div style="width:190px;" data-vs-id="'+vsEsc(id)+'">'+photoHTML+permHTML+'<div style="font:800 .95rem Arial;color:#14B8A6;margin-bottom:2px;">'+vsEsc(d.name||'Street Vendor')+'</div>'+catHTML+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>';
   }
 
   function renderVsMarkers(){
@@ -47713,7 +47731,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       if(!list.length)html+='<div class="bo-ftm-empty">None of your stands are on the map right now.</div>';
       list.forEach(function(t){
         var when=t.d.checkedInAt&&t.d.checkedInAt.toMillis?new Date(t.d.checkedInAt.toMillis()):null;
-        html+='<div class="bo-ftm-row"><div><div class="bo-ftm-name">'+vsEsc(t.d.name||'Street Vendor')+'</div><div class="bo-ftm-sub">'+vsEsc(catLabel(t.d.category))+' \u2014 Checked in '+(when?when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'')+'</div></div><button type="button" class="bo-ftm-remove" data-id="'+vsEsc(t.id)+'">Remove</button></div>';
+        html+='<div class="bo-ftm-row"><div><div class="bo-ftm-name">'+vsEsc(t.d.name||'Street Vendor')+(t.d.permanent?' <span class="bo-ftm-perm-tag">PERMANENT</span>':'')+'</div><div class="bo-ftm-sub">'+vsEsc(catLabel(t.d.category))+' \u2014 Checked in '+(when?when.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'')+'</div></div><button type="button" class="bo-ftm-remove" data-id="'+vsEsc(t.id)+'">Remove</button></div>';
       });
       box.innerHTML=html;
       box.querySelectorAll('.bo-ftm-remove').forEach(function(b){
@@ -48098,6 +48116,10 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
 <style id="bop-truck-vendor-hours-order-analog-v432">
 .bo-ft-hours-row{display:flex;gap:10px;margin-bottom:6px;}
+.bo-ft-permanent-row{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px;padding:10px 12px;border:1px solid #F59E0B;border-radius:10px;background:#0a0a0a;cursor:pointer;}
+.bo-ft-permanent-row input{margin-top:3px;flex:0 0 auto;width:16px;height:16px;accent-color:#F59E0B;}
+.bo-ft-permanent-row span{color:#eee;font:600 .78rem/1.4 Arial,sans-serif;}
+.bo-ft-permanent-row small{display:block;color:#999;font-weight:400;margin-top:2px;}
 .bo-ft-hours-field{flex:1;text-align:left;}
 .bo-ft-hours-field label{display:block;margin:0 0 4px 2px;color:#F59E0B;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;}
 .bo-ft-hours-field input{width:100%;box-sizing:border-box;padding:12px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#fff;font:600 .95rem/1 Arial,sans-serif;}
@@ -48154,12 +48176,33 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     var hint=document.createElement('div');
     hint.className='bo-ft-hours-hint';
     hint.textContent='One day at a time \u2014 if Until is earlier than From, we treat it as tomorrow morning (e.g. 8 PM to 3 AM). You can always take it down early.';
+    var permWrap=null;
+    {
+      /* A truck or stand parked at one spot every day (a commissary lot, a
+         regular weekday spot) can mark itself permanent instead of picking
+         hours every single time. Still expires automatically after 14 days
+         without a re-confirm, so one that's actually moved on or closed
+         doesn't sit on the map forever unnoticed -- "MY TRUCKS"/"MY STANDS"
+         gets a one-tap way to re-confirm. */
+      var permNoun=(prefix==='bopFt')?'truck':'stand';
+      permWrap=document.createElement('label');
+      permWrap.className='bo-ft-permanent-row';
+      permWrap.innerHTML='<input type="checkbox" id="'+prefix+'Permanent"> <span>This is a permanent location <small>(same spot every day \u2014 stays live for 14 days, then just re-confirm)</small></span>';
+    }
     var orderWrap=document.createElement('div');
     orderWrap.innerHTML='<label class="bo-ft-hours-field" style="display:block;margin-bottom:14px;"><label style="display:block;margin:0 0 4px 2px;color:#F59E0B;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;">How should people order?</label><select class="bo-ftc-field" id="'+prefix+'OrderPref">'+orderOptionsHTML()+'</select></label>'+
       '<input class="bo-ftc-field bo-ft-order-link" id="'+prefix+'OrderLink" type="text" placeholder="Link to your listing (e.g. your Uber Eats page)" style="display:none;">';
     submit.parentNode.insertBefore(hoursRow,submit);
     submit.parentNode.insertBefore(hint,submit);
     submit.parentNode.insertBefore(orderWrap,submit);
+    if(permWrap){
+      hoursRow.parentNode.insertBefore(permWrap,hoursRow);
+      var permCb=document.getElementById(prefix+'Permanent');
+      permCb.addEventListener('change',function(){
+        hoursRow.style.display=permCb.checked?'none':'';
+        hint.style.display=permCb.checked?'none':'';
+      });
+    }
     var pref=document.getElementById(prefix+'OrderPref'),link=document.getElementById(prefix+'OrderLink');
     pref.addEventListener('change',function(){
       link.style.display=(pref.value==='phone')?'none':'block';
@@ -48187,7 +48230,9 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       if(!nameVal){status.textContent=config.nameRequiredMsg;return;}
       if(!window.bopFtDb){status.textContent='The live-map database is still loading. Try again in a second.';return;}
       var fromEl=document.getElementById(config.prefix+'LiveFrom'),untilEl=document.getElementById(config.prefix+'LiveUntil');
-      var liveUntil=computeLiveUntil(fromEl&&fromEl.value,untilEl&&untilEl.value);
+      var permEl=document.getElementById(config.prefix+'Permanent');
+      var isPermanent=!!(permEl&&permEl.checked);
+      var liveUntil=isPermanent?(Date.now()+14*24*3600000):computeLiveUntil(fromEl&&fromEl.value,untilEl&&untilEl.value);
       var orderPrefEl=document.getElementById(config.prefix+'OrderPref'),orderLinkEl=document.getElementById(config.prefix+'OrderLink');
       var orderMethod=orderPrefEl?orderPrefEl.value:'phone';
       var orderLink=(orderMethod!=='phone'&&orderLinkEl)?orderLinkEl.value.trim():'';
@@ -48203,7 +48248,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           name:nameVal,phone:phone.value.trim(),
           lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy||null,
           checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
-          liveUntil:liveUntil,orderMethod:orderMethod,orderLink:orderLink
+          liveUntil:liveUntil,orderMethod:orderMethod,orderLink:orderLink,permanent:isPermanent
         },extra);
         function writeIt(){
           window.bopFtDb.collection(config.collection).doc(id).set(payload,{merge:true}).then(function(){
@@ -48351,7 +48396,8 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     var photo=d.photo?'<img src="'+d.photo+'" alt="" class="bo-ft-pin-thumb">':'';
     var catIcon=(d.category&&typeof window.bopVsCatIcon==='function')?window.bopVsCatIcon(d.category):'';
     var iconSpan=catIcon?'<span style="display:inline-flex;width:15px;height:15px;vertical-align:-3px;margin-right:5px;">'+catIcon+'</span>':'';
-    return '<div class="bo-near-osm-item">'+photo+'<div class="bo-near-osm-item-name">'+iconSpan+esc(d.name||'Listing')+'</div>'+
+    var permTag=d.permanent?' <span class="bo-ftm-perm-tag">PERMANENT</span>':'';
+    return '<div class="bo-near-osm-item">'+photo+'<div class="bo-near-osm-item-name">'+iconSpan+esc(d.name||'Listing')+permTag+'</div>'+
       (d.description?'<div class="bo-near-osm-item-meta">'+esc(d.description)+'</div>':'')+
       links.join('')+'</div>';
   }
@@ -48772,48 +48818,71 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 })();
 </script>
 
-<script id="bop-checkin-back-to-map-v440-script">
+<script id="bop-checkin-back-consolidated-v443-script">
 (function(){
-  /* Go Live pages reached straight from a QR scan get the map opened
-     silently underneath them first, but the QR-bypass mode that hides
-     everything except the check-in sheet was still active -- so closing
-     the check-in sheet didn't actually reveal that map, it just left a
-     blank screen (or, depending on timing, fell through two Back taps to
-     the generic landing page). Back should always land on that category's
-     own map -- Food Truck Back -> Food Truck map, Vendor Back -> Vendor
-     map -- so people see what they're signing up alongside, in one tap,
-     whether they arrived by QR or by browsing in normally. */
-  function goToMap(mapPageId, openFnName){
+  /* ONE authoritative Back handler for both Go Live pages.
+     Before this, the food-truck Back button had three separate click
+     handlers stacked on it (and the vendor one had two), added over time
+     and never removed. Two of them were correct but only ran while "QR
+     bypass mode" was still on -- and several arrival scripts switch that
+     off during setup, so they silently didn't fire. What ran instead just
+     closed the sheet without clearing the "arrived by QR" signals, and the
+     arrival safety loop (which re-checks the URL for 20s) then re-opened
+     the sign-up form right after Back closed it. This replaces all of that
+     with a single deterministic sequence, regardless of how the person
+     arrived:
+       1. clear every "wants check-in" signal (flag, URL, hash, session)
+       2. lift bypass, close gate / landing / promo
+       3. close the sign-up sheet
+       4. open that category's map
+     The Back button is cloned to strip every older listener, so only this
+     one runs. */
+  function goBackToMap(kind){
+    var isFt=(kind==='ft');
+    try{ window.__BOP_CHECKIN_REQUESTED=false; window.__BOP_VS_CHECKIN_REQUESTED=false; }catch(e){}
+    try{ sessionStorage.removeItem('bop-vendorcheckin-pass'); }catch(e){}
+    try{
+      var u=new URL(location.href);
+      u.searchParams.delete('checkin'); u.searchParams.delete('vendorcheckin'); u.hash='';
+      history.replaceState(null,'',u.pathname+(u.search||''));
+    }catch(e){}
     document.documentElement.classList.remove('bop-invite-active','bop-qr-bypass-active');
     var gate=document.getElementById('bopExclusiveInvitation');
     if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
-    var promo=document.getElementById('bopPromoModal');
-    if(promo)promo.classList.remove('open');
     var landing=document.getElementById('bopLandingOverlay');
     if(landing)landing.classList.remove('open');
-    var mapPage=document.getElementById(mapPageId);
-    if(mapPage&&mapPage.classList.contains('open')){
-      // already sitting there from the QR-arrival flow -- just needs the
-      // bypass CSS lifted (done above) so it actually shows.
+    var promo=document.getElementById('bopPromoModal');
+    if(promo)promo.classList.remove('open');
+    var checkin=document.getElementById(isFt?'bopFoodTruckCheckin':'bopVendorStandCheckin');
+    if(checkin)checkin.classList.remove('open');
+    var mapId=isFt?'bopFoodTruckOverlay':'bopVendorStandOverlay';
+    var openFn=isFt?window.boOpenFoodTruckMap:window.boOpenVendorStandMap;
+    var map=document.getElementById(mapId);
+    if(map&&map.classList.contains('open')){
       document.body.style.overflow='hidden';
-    } else if(typeof window[openFnName]==='function'){
-      window[openFnName]();
+    } else if(typeof openFn==='function'){
+      openFn();
     }
     try{window.scrollTo(0,0);}catch(e){}
   }
-  function wireCheckinBack(pageId, mapPageId, openFnName){
+  function consolidate(pageId,kind){
     var page=document.getElementById(pageId);
     var back=page&&page.querySelector('.bo-ft-back');
-    if(!back||back.dataset.bopV440)return;
-    back.dataset.bopV440='1';
-    back.addEventListener('click',function(){
-      setTimeout(function(){ goToMap(mapPageId, openFnName); }, 60);
+    if(!back||back.dataset.bopV443)return;
+    /* Clone to drop every previously-attached click listener. */
+    var fresh=back.cloneNode(true);
+    fresh.dataset.bopV443='1';
+    fresh.dataset.bopV421='1'; fresh.dataset.bopV440='1'; /* keep older wirers from re-attaching */
+    back.parentNode.replaceChild(fresh,back);
+    fresh.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      goBackToMap(kind);
     });
   }
   setInterval(function(){
-    wireCheckinBack('bopFoodTruckCheckin','bopFoodTruckOverlay','boOpenFoodTruckMap');
-    wireCheckinBack('bopVendorStandCheckin','bopVendorStandOverlay','boOpenVendorStandMap');
-  },400);
+    consolidate('bopFoodTruckCheckin','ft');
+    consolidate('bopVendorStandCheckin','vs');
+  },300);
 })();
 </script>
 
