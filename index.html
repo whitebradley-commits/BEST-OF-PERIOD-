@@ -48292,6 +48292,17 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     });
     return bestD<9 ? best : null;
   }
+  /* Tight snap: only when the point is genuinely inside a known metro
+     (~35 mi), so one city never fragments into district headings. */
+  function snapToHub(lat,lng){
+    if(typeof lat!=='number'||typeof lng!=='number')return null;
+    var best=null,bestD=Infinity;
+    HUBS.forEach(function(h){
+      var d=Math.pow(h.lat-lat,2)+Math.pow(h.lng-lng,2);
+      if(d<bestD){bestD=d;best=h.name;}
+    });
+    return bestD<0.25 ? best : null;
+  }
   /* Real reverse-geocoding (OpenStreetMap Nominatim, free, no key needed)
      so a check-in from a city that was never hardcoded -- Paris, Tokyo,
      anywhere -- still gets its own real city name instead of falling into
@@ -48313,11 +48324,8 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       city=String(city).replace(/\s+County$/i,'').trim();
       /* If a known hub is very close, use its clean name so one metro
          never splits into several nearby-district headings. */
-      var hub=nearestHub(lat,lng);
-      if(hub){
-        var h=HUBS.filter(function(x){return x.name===hub;})[0];
-        if(h&&Math.pow(h.lat-lat,2)+Math.pow(h.lng-lng,2)<0.25)return hub;
-      }
+      var hub=snapToHub(lat,lng);
+      if(hub)return hub;
       return city;
     }).catch(function(){return nearestHub(lat,lng);});
   };
@@ -48357,7 +48365,11 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     window.bopFtDb.collection(collection).get().then(function(snap){
       var groups={};
       function add(d){
-        var city=d.city||nearestCity(d.lat,d.lng);
+        /* Snap to a known hub at display time too -- so a doc that stored
+           a fragmented district name (West Hollywood, Santa Monica,
+           "Los Angeles County") from an earlier version still groups
+           under the one metro heading. Nothing stays stuck on stale data. */
+        var city=snapToHub(d.lat,d.lng)||d.city||nearestCity(d.lat,d.lng);
         (groups[city]=groups[city]||[]).push(d);
       }
       snap.forEach(function(doc){
