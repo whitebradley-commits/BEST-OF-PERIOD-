@@ -41908,8 +41908,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
           '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta"><span class="bo-ft-cta-line1">Do you have a food truck?</span><span class="bo-ft-cta-line2">Click here to go live <svg class="bo-ft-cta-truck" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></span></button>'+
           '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Go Live QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopFtQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
-          '<button type="button" class="bo-ft-permanent-link" id="bopFtPermanentLink">LIVE FOOD TRUCK DIRECTORY &rarr;</button>'+
-        '</div>';
+          '</div>';
       document.body.appendChild(page);
       page.querySelector('.bo-ft-back').addEventListener('click', function(){
         page.classList.remove('open'); document.body.style.overflow='';
@@ -43942,7 +43941,7 @@ function buildGate(key){
     window.scrollTo(0,0);
   });
   /* v462: citywide strip at the top of the map — opens the full parent-city directory (every neighborhood ranked together). */
-      el.querySelectorAll('.bop-lamap-all').forEach(function(all){ all.addEventListener('click', function(){ window.boCityContext = key; try { boCityContext = key; } catch(e) {} if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', key); proceedPastGate(key); }); });
+      el.querySelectorAll('.bop-lamap-all').forEach(function(all){ all.addEventListener('click', function(){ el.classList.remove('open'); document.body.style.overflow=''; var best = document.getElementById('bestOfOverlay'); if(best) best.classList.add('open'); window.boCityContext = key; try { boCityContext = key; } catch(e) {} dismissed[key] = true; if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', key); window.boRenderCategory('otheroptions'); window.scrollTo(0,0); }); });
       el.querySelectorAll('.bop-lamap-zone').forEach(function(zone){
     zone.addEventListener('click', function(){
       // v401: the area script stamps each zone with its own destination key
@@ -48222,6 +48221,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
   };
 
   function ensureVendorDirectoryButton(){
+    return; /* removed per Brad — the Analog List button now covers this */
     var page=document.getElementById('bopVendorStandOverlay');
     if(!page||page.querySelector('#bopVsDirectoryLink'))return;
     var btn=document.createElement('button');
@@ -50530,6 +50530,39 @@ function apply(){
         r.note=r.note.replace("Howard is a 2024 James Beard Best Chef: Southwest semifinalist.","Howard was a 2026 James Beard Best Chef: Southwest finalist.");
       }
     });
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
+
+
+
+<script id="bop-la-boos-philly-removal-v468-script">
+(function(){
+/* v468: Brad's call -- remove Boo's Philly Cheesesteaks (Silver Lake)
+   site-wide. Yelp marks it CLOSED as of June 2026; it was flagged rather
+   than pulled during the v463 LA ratings pass, and Brad's decided now to
+   pull it rather than keep carrying it unrated. Removes every record
+   matching this exact name+city across all categories, then re-ranks
+   whatever list it came out of. */
+var TARGET_CITY='losangeles';
+var TARGET_NAME="boo's philly cheesesteaks — silver lake";
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function apply(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+    var before=arr.length;
+    var filtered=arr.filter(function(r){
+      return !(r&&r.name&&(r.city||'bestof')===TARGET_CITY&&norm(r.name)===TARGET_NAME);
+    });
+    if(filtered.length!==before){
+      var n=0;filtered.forEach(function(r){if(r)r.rank=++n;});
+      boCategoryData[cat]=filtered;
+    }
   });
   return true;
 }
