@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}
+<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}if(p.get('vendorcheckin')==='1'||h==='vendorcheckin'){window.__BOP_VS_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-vendorcheckin-pass','1');}
 /* v308: hard bypass. Every previous attempt closed the invitation/promo
    gates AFTER they had already rendered, which kept failing on real
    devices even when it worked in testing. This instead marks the <html>
@@ -6,7 +6,7 @@
    has even been created -- so a same-document CSS rule can hide those
    overlays from ever becoming visible in the first place, with zero
    dependency on any later script running, finishing, or racing correctly. */
-if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VENDORSIGNUP_REQUESTED){
+if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VENDORSIGNUP_REQUESTED||window.__BOP_VS_CHECKIN_REQUESTED){
   document.documentElement.classList.add('bop-qr-bypass-active');
 }
 }catch(e){}
@@ -18,6 +18,9 @@ if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VENDORSIGNUP_REQUESTED){
 function bopHardOpenCheckin(){
   if(window.__BOP_CHECKIN_REQUESTED===true && typeof window.boOpenFoodTruckCheckin==='function'){
     window.boOpenFoodTruckCheckin();
+  }
+  if(window.__BOP_VS_CHECKIN_REQUESTED===true && typeof window.boOpenVendorStandCheckin==='function'){
+    window.boOpenVendorStandCheckin();
   }
 }
 if(document.readyState==='complete'){ setTimeout(bopHardOpenCheckin, 50); }
@@ -29072,7 +29075,7 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
 @keyframes bopLandingGlobeTurn{to{transform:rotate(360deg)}}
 @media(max-width:350px){#bopLandingOverlay .bop-landing-control-row{left:8px;gap:6px}#bopLandingOverlay .bop-landing-control-row>.bop-landing-control-btn{flex-basis:64px!important;width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important}}
 
-#bopWorldwideLanding{position:fixed;inset:0;z-index:100500;display:none;overflow-y:auto;background:#000;color:#fff;-webkit-overflow-scrolling:touch}
+#bopWorldwideLanding{position:fixed;inset:0;z-index:2147483001;display:none;overflow-y:auto;background:#000;color:#fff;-webkit-overflow-scrolling:touch}
 #bopWorldwideLanding.open{display:block}
 .bop-world-landing-shell{position:relative;width:min(720px,calc(100% - 24px));min-height:100vh;margin:0 auto;padding:34px 18px 90px;border-left:1px solid rgba(245,158,11,.45);border-right:1px solid rgba(245,158,11,.45);background:linear-gradient(135deg,rgba(245,158,11,.022),transparent 38%,rgba(228,0,43,.018))}
 .bop-world-back{position:absolute;top:34px;left:18px;width:68px;height:68px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 .68rem/1.05 'Archivo Black',sans-serif;box-shadow:0 0 12px rgba(245,158,11,.65);cursor:pointer}
@@ -29601,6 +29604,14 @@ body footer .fine-print>span:first-child+span,#promotionsOverlay footer .fine-pr
       document.body.style.overflow='';
       if(key==='restaurants'){
         window.location.assign('https://bestofperiod.com/');
+        return;
+      }
+      if(key==='foodtrucks'){
+        window.requestAnimationFrame(function(){if(typeof window.boOpenFoodTruckMap==='function')window.boOpenFoodTruckMap();});
+        return;
+      }
+      if(key==='streetvendors'){
+        window.requestAnimationFrame(function(){if(typeof window.boOpenVendorStandMap==='function')window.boOpenVendorStandMap();});
         return;
       }
       window.requestAnimationFrame(function(){
@@ -41733,7 +41744,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '<div class="bo-ft-map-wrap"><div id="bopFoodTruckMapEl"></div><div class="bo-ft-pinch-hint" id="bopFtPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopFtEmptyNote" style="display:none;">Food trucks log on and off constantly — this is a live feed. Permanent spots (like Project BBQ and The Chef Truck) are always on the map. Always worth double-checking with the business directly before you head out.</div>'+
           '<button type="button" class="bo-ft-checkin-cta" id="bopFtCheckinCta"><span class="bo-ft-cta-line1">Do you have a food truck?</span><span class="bo-ft-cta-line2">Click here to go live <svg class="bo-ft-cta-truck" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/></g><g class="bo-ft-wheel"><circle cx="25" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="25" y1="59" x2="25" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="18" y1="66" x2="32" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="76" cy="66" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="76" y1="59" x2="76" y2="73" stroke="#F59E0B" stroke-width="2.5"/><line x1="69" y1="66" x2="83" y2="66" stroke="#F59E0B" stroke-width="2.5"/></g></svg></span></button>'+
-          '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Check-in QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopFtQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
+          '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopFtQrWrap"><img class="bo-ft-qr-img" id="bopFtQrImg" alt="Go Live QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopFtQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
           '<button type="button" class="bo-ft-permanent-link" id="bopFtPermanentLink">LIVE FOOD TRUCK DIRECTORY &rarr;</button>'+
         '</div>';
       document.body.appendChild(page);
@@ -41746,12 +41757,12 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
 
       var checkinUrl = 'https://bestofperiod.com/?checkin=1';
       var qrImg = document.getElementById('bopFtQrImg');
-      if(qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(checkinUrl);
+      if(qrImg) qrImg.src = 'bop-qr-foodtruck.png';
       var qrWrap = document.getElementById('bopFtQrWrap');
       if(qrWrap) qrWrap.addEventListener('click', function(){ window.boOpenFoodTruckQrZoom(checkinUrl); });
       var qrShare = document.getElementById('bopFtQrShare');
       if(qrShare) qrShare.addEventListener('click', async function(){
-        var data = { title: 'Check In Your Truck', text: 'Go live on the Best of Period food-truck map.', url: checkinUrl };
+        var data = { title: 'Go Live: Your Truck', text: 'Go live on the Best of Period food-truck map.', url: checkinUrl };
         try{
           if(navigator.share){ await navigator.share(data); }
           else if(navigator.clipboard && navigator.clipboard.writeText){
@@ -41807,12 +41818,12 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       page = document.createElement('section');
       page.id = 'bopFoodTruckQrZoom';
       page.className = 'bo-ft-overlay';
-      page.setAttribute('aria-label','Food Truck Check-In QR Code');
+      page.setAttribute('aria-label','Food Truck Go Live QR Code');
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
           '<div class="bo-ftc-title">Scan To Sign Up</div>'+
-          '<img class="bo-ft-qr-zoom-img" id="bopFtQrZoomImg" alt="Check-in QR code" />'+
+          '<img class="bo-ft-qr-zoom-img" id="bopFtQrZoomImg" alt="Go Live QR code" />'+
         '</div>';
       document.body.appendChild(page);
       page.querySelector('.bo-ft-back').addEventListener('click', function(){
@@ -41820,7 +41831,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       });
     }
     var zoomImg = document.getElementById('bopFtQrZoomImg');
-    if(zoomImg) zoomImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=360x360&data=' + encodeURIComponent(checkinUrl);
+    if(zoomImg) zoomImg.src = 'bop-qr-foodtruck.png';
     page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
   };
 
@@ -41955,11 +41966,11 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       page = document.createElement('section');
       page.id = 'bopFoodTruckCheckin';
       page.className = 'bo-ft-overlay';
-      page.setAttribute('aria-label','Food Truck Check-In');
+      page.setAttribute('aria-label','Food Truck Go Live');
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<div class="bo-ftc-title">Check In Your Truck</div>'+
+          '<div class="bo-ftc-title">Go Live: Your Truck</div>'+
           '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
@@ -41970,7 +41981,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
           '</div>'+
           '<textarea class="bo-ftc-field" id="bopFtDescription" rows="3" placeholder="Short description (auto-filled from your website, or write your own)" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
           '<input class="bo-ftc-field" id="bopFtInstagram" type="text" placeholder="Instagram handle (optional)" />'+
-          '<button type="button" class="bo-ftc-btn" id="bopFtCheckinSubmit">I\'m Here — Check In</button>'+
+          '<button type="button" class="bo-ftc-btn" id="bopFtCheckinSubmit">I\'m Here — Go Live</button>'+
           '<div class="bo-ftc-status" id="bopFtCheckinStatus"></div>'+
         '</div>';
       document.body.appendChild(page);
@@ -42043,7 +42054,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
         status.textContent = 'Getting your location…';
         navigator.geolocation.getCurrentPosition(function(pos){
           if(!window.bopFtDb){ status.textContent = 'Connection error — try again.'; return; }
-          status.textContent = 'Checking in…';
+          status.textContent = 'Going live…';
           window.bopFtDb.collection('foodtrucks').doc(key).set({
             name: name,
             phone: phoneEl.value.trim(),
@@ -43351,7 +43362,7 @@ var CHECKIN_URL = 'https://bestofperiod.com/?checkin=1';
 function fixQr(){
   var img = document.getElementById('bopFtQrImg');
   if(img && img.src && img.src.indexOf('vendorsignup') !== -1){
-    img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(CHECKIN_URL);
+    img.src = 'bop-qr-foodtruck.png';
   }
   var share = document.getElementById('bopFtQrShare');
   if(share && !share.dataset.bopCheckinShare){
@@ -43359,7 +43370,7 @@ function fixQr(){
     clone.dataset.bopCheckinShare = '1';
     share.parentNode.replaceChild(clone, share);
     clone.addEventListener('click', function(){
-      var payload = { title:'Check In Your Truck', text:'Go live on the Best of Period food-truck map.', url: CHECKIN_URL };
+      var payload = { title:'Go Live: Your Truck', text:'Go live on the Best of Period food-truck map.', url: CHECKIN_URL };
       if(navigator.share){ navigator.share(payload).catch(function(){}); }
       else if(navigator.clipboard){ navigator.clipboard.writeText(CHECKIN_URL); }
     });
@@ -46460,7 +46471,7 @@ function wantsCheckin(){
 function fixEveryQr(){
   ['bopFtQrImg','bopFtQrZoomImg'].forEach(function(id){
     var img=document.getElementById(id);
-    if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size='+(id==='bopFtQrZoomImg'?'360':'200')+'x'+(id==='bopFtQrZoomImg'?'360':'200')+'&data='+encodeURIComponent(DIRECT_URL);
+    if(img) img.src='bop-qr-foodtruck.png';
   });
   var share=document.getElementById('bopFtQrShare');
   if(share && !share.dataset.bopV401){
@@ -46468,7 +46479,7 @@ function fixEveryQr(){
     clean.dataset.bopV401='1';
     share.parentNode.replaceChild(clean,share);
     clean.addEventListener('click',function(){
-      var payload={title:'Check In Your Truck',text:'Go live on the Best of Period food-truck map.',url:DIRECT_URL};
+      var payload={title:'Go Live: Your Truck',text:'Go live on the Best of Period food-truck map.',url:DIRECT_URL};
       if(navigator.share) navigator.share(payload).catch(function(){});
       else if(navigator.clipboard) navigator.clipboard.writeText(DIRECT_URL).catch(function(){});
       else prompt('Copy this link:',DIRECT_URL);
@@ -46564,7 +46575,7 @@ function installReliableSubmit(){
         });
       },function(err){
         btn.disabled=false;
-        if(err&&err.code===1) status.textContent='Please allow location access, then tap Check In again.';
+        if(err&&err.code===1) status.textContent='Please allow location access, then tap Go Live again.';
         else if(err&&err.code===2) status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
         else status.textContent='Location took too long. Please try again.';
       },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
@@ -47133,7 +47144,7 @@ try{
         });
       },function(err){
         btn.disabled=false;
-        if(err&&err.code===1)status.textContent='Please allow location access, then tap Check In again.';
+        if(err&&err.code===1)status.textContent='Please allow location access, then tap Go Live again.';
         else if(err&&err.code===2)status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
         else status.textContent='Location took too long. Please try again.';
       },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
@@ -47330,7 +47341,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
   function cartSvg(cls,size){
     return '<svg class="'+cls+'" viewBox="0 0 100 100" width="'+size+'" height="'+size+'" aria-hidden="true"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">'+CART_ICON_PATH+'</svg>';
   }
-  var CATEGORIES=[{id:'grill',label:'Grill Items',icon:'\uD83C\uDF2D'},{id:'juices',label:'Mexican Juices',icon:'\uD83C\uDF4D'},{id:'flowers',label:'Flowers',icon:'\uD83C\uDF38'},{id:'pumpkins',label:'Pumpkins',icon:'\uD83C\uDF83'},{id:'other',label:'Other',icon:'\u2022'}];
+  var CATEGORIES=[{id:'grill',label:'Grill Items',icon:'\uD83C\uDF2D'},{id:'juices',label:'Fruterias',icon:'\uD83C\uDF4D'},{id:'flowers',label:'Flowers',icon:'\uD83C\uDF38'},{id:'pumpkins',label:'Pumpkins',icon:'\uD83C\uDF83'},{id:'other',label:'Other',icon:'\u2022'}];
   function catLabel(id){var f=CATEGORIES.find(function(c){return c.id===id});return f?f.label:'Street Vendor';}
   function catIcon(id){var f=CATEGORIES.find(function(c){return c.id===id});return f?f.icon:'\u2022';}
 
@@ -47386,7 +47397,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           '<div class="bo-ft-map-wrap"><div id="bopVendorStandMapEl"></div><div class="bo-ft-pinch-hint" id="bopVsPinchHint"><svg width="46" height="46" viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="18" r="5" fill="#F59E0B"/><circle cx="46" cy="46" r="5" fill="#F59E0B"/><path d="M18 18 L30 30" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M46 46 L34 34" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M10 10 L16 16" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><path d="M54 54 L48 48" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/></svg><span>Pinch or use +/&minus; to zoom</span></div></div>'+
           '<div class="bo-ft-empty-note" id="bopVsEmptyNote" style="display:none;">Street vendors log on and off constantly — this is a live feed. Always worth double-checking availability before you head out.</div>'+
           '<button type="button" class="bo-ft-checkin-cta" id="bopVsCheckinCta"><span class="bo-ft-cta-line1">Do you have a stand?</span><span class="bo-ft-cta-line2">Click here to go live '+cartSvg('bo-ft-cta-truck',0)+'</span></button>'+
-          '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopVsQrWrap"><img class="bo-ft-qr-img" id="bopVsQrImg" alt="Check-in QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopVsQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
+          '<div class="bo-ft-qr-row"><div class="bo-ft-qr-wrap" id="bopVsQrWrap"><img class="bo-ft-qr-img" id="bopVsQrImg" alt="Go Live QR code" /><div class="bo-ft-qr-label">Tap to Zoom</div></div><button type="button" class="bo-ft-qr-share" id="bopVsQrShare" aria-label="Share the vendor sign-up link"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg><span>Share<br>Link</span></button></div>'+
           '<div class="bo-vs-help-row"><span class="bo-vs-help-link" id="bopVsHelpLinkMap"><b>*</b>Help</span></div>'+
         '</div>';
       document.body.appendChild(page);
@@ -47422,11 +47433,11 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
       var checkinUrl='https://bestofperiod.com/?vendorcheckin=1';
       var qrImg=document.getElementById('bopVsQrImg');
-      if(qrImg)qrImg.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(checkinUrl);
+      if(qrImg)qrImg.src='bop-qr-vendor.png';
       document.getElementById('bopVsCheckinCta').addEventListener('click', function(){ window.boOpenVendorStandCheckin(); });
       var qrShare=document.getElementById('bopVsQrShare');
       if(qrShare)qrShare.addEventListener('click', function(){
-        var payload={title:'Check In Your Stand',text:'Go live on the Best of Period street-vendor map.',url:checkinUrl};
+        var payload={title:'Go Live: Your Stand',text:'Go live on the Best of Period street-vendor map.',url:checkinUrl};
         if(navigator.share){navigator.share(payload).catch(function(){});}
         else if(navigator.clipboard){navigator.clipboard.writeText(checkinUrl);var span=qrShare.querySelector('span');var o=span.innerHTML;span.innerHTML='Copied!';setTimeout(function(){span.innerHTML=o;},1600);}
         else{prompt('Copy this link to share:',checkinUrl);}
@@ -47561,12 +47572,12 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       page=document.createElement('section');
       page.id='bopVendorStandCheckin';
       page.className='bo-ft-overlay';
-      page.setAttribute('aria-label','Street Vendor Check-In');
+      page.setAttribute('aria-label','Street Vendor Go Live');
       var options=CATEGORIES.map(function(c){return '<option value="'+c.id+'">'+c.label+'</option>';}).join('');
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<div class="bo-ftc-title">Check In Your Stand</div>'+
+          '<div class="bo-ftc-title">Go Live: Your Stand</div>'+
           '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
@@ -47576,7 +47587,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           '<input class="bo-ftc-field" id="bopVsWebsite" type="text" placeholder="Website or ordering link (optional)" />'+
           '<textarea class="bo-ftc-field" id="bopVsDescription" rows="3" placeholder="Short description (what you sell, cash or card, etc.)" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
           '<input class="bo-ftc-field" id="bopVsInstagram" type="text" placeholder="Instagram handle (optional)" />'+
-          '<button type="button" class="bo-ftc-btn" id="bopVsCheckinSubmit">I\'m Here — Check In</button>'+
+          '<button type="button" class="bo-ftc-btn" id="bopVsCheckinSubmit">I\'m Here — Go Live</button>'+
           '<div class="bo-ftc-status" id="bopVsCheckinStatus"></div>'+
           '<button type="button" id="bopVsManageBtn">My Stands \u2014 Take One Down</button>'+
           '<div id="bopVsMyStands"></div>'+
@@ -47650,7 +47661,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           });
         },function(err){
           btn.disabled=false;
-          if(err&&err.code===1)status.textContent='Please allow location access, then tap Check In again.';
+          if(err&&err.code===1)status.textContent='Please allow location access, then tap Go Live again.';
           else if(err&&err.code===2)status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
           else status.textContent='Location took too long. Please try again.';
         },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
@@ -48187,7 +48198,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
         });
       },function(err){
         btn.disabled=false;
-        if(err&&err.code===1)status.textContent='Please allow location access, then tap Check In again.';
+        if(err&&err.code===1)status.textContent='Please allow location access, then tap Go Live again.';
         else if(err&&err.code===2)status.textContent='Your location could not be determined. Move near a window or outdoors and try again.';
         else status.textContent='Location took too long. Please try again.';
       },{enableHighAccuracy:false,timeout:20000,maximumAge:60000});
@@ -48490,11 +48501,11 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     flowers:'<svg viewBox="0 0 24 24"><g fill="none" stroke="#14B8A6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="6.3" r="2.4"/><circle cx="17.7" cy="12" r="2.4"/><circle cx="12" cy="17.7" r="2.4"/><circle cx="6.3" cy="12" r="2.4"/></g></svg>',
     pumpkins:'<svg viewBox="0 0 24 24"><g fill="none" stroke="#FF8A1F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5c0-4 3.5-6.3 8-6.3s8 2.3 8 6.3-3.5 7-8 7-8-3-8-7z"/><path d="M12 7.2v13M8 9c0 3 1 8 4 10.5M16 9c0 3-1 8-4 10.5"/><path d="M12 4.3c0 1.3-1.1 1.6-1.1 2.7M12 4.3c0-1.3 1.4-1.7 2.2-3"/></g></svg>'
   };
-  var CAT_LABELS={grill:'Grill Items',juices:'Mexican Juices',flowers:'Flowers',pumpkins:'Pumpkins'};
+  var CAT_LABELS={grill:'Grill Items',juices:'Fruterias',flowers:'Flowers',pumpkins:'Pumpkins'};
 
   /* replace the CATEGORIES list used by the check-in dropdown site-wide:
      four real choices, Pumpkins added, Other dropped per direct request. */
-  window.BOP_VS_CATEGORIES=[{id:'grill',label:'Grill Items'},{id:'juices',label:'Mexican Juices'},{id:'flowers',label:'Flowers'},{id:'pumpkins',label:'Pumpkins'}];
+  window.BOP_VS_CATEGORIES=[{id:'grill',label:'Grill Items'},{id:'juices',label:'Fruterias'},{id:'flowers',label:'Flowers'},{id:'pumpkins',label:'Pumpkins'}];
 
   function fixDropdown(){
     var sel=document.getElementById('bopVsCategory');
@@ -48510,7 +48521,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     row.dataset.bopV436='1';
     var wrap=document.createElement('div');
     wrap.innerHTML=
-      '<div class="bo-vs-cat-heading">Grill Items &middot; Mexican Juices &middot; Flowers</div>'+
+      '<div class="bo-vs-cat-heading">Grill Items &middot; Fruterias &middot; Flowers</div>'+
       '<div class="bo-vs-ft-crosslink">For Food Trucks, follow <b id="bopVsToFoodTrucks">Food Trucks</b> &rarr;</div>'+
       '<div class="bo-vs-seasonal">'+CAT_ICONS.pumpkins+'<span>Seasonal Item: Pumpkins</span></div>';
     row.parentNode.replaceChild(wrap,row);
@@ -48548,6 +48559,112 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
   setInterval(function(){
     fixDropdown();
     trimFilterRow();
+  },400);
+})();
+</script>
+
+<style id="bop-branded-qr-images-v437">
+.bo-ft-qr-img,.bo-ft-qr-zoom-img{background:#000!important;padding:0!important;}
+</style>
+<script id="bop-branded-qr-images-v437-script">
+(function(){
+  /* Every QR image on both pages now points at the real branded, printable
+     files (gold/black for Food Trucks, teal/black for Street Vendors) —
+     fixed at each source assignment, no dynamic generation left to race
+     against. This script just adds the one thing that was missing:
+     Street Vendors never had "Tap to Zoom" actually wired up. */
+  var VS_QR='bop-qr-vendor.png';
+  function wireVendorZoom(){
+    var wrap=document.getElementById('bopVsQrWrap');
+    if(!wrap||wrap.dataset.bopV437)return;
+    wrap.dataset.bopV437='1';
+    wrap.style.cursor='pointer';
+    wrap.addEventListener('click',function(){
+      var old=document.getElementById('bopVsQrZoomOverlay');
+      if(old&&old.parentNode)old.parentNode.removeChild(old);
+      var page=document.createElement('section');
+      page.id='bopVsQrZoomOverlay';page.className='bo-ft-overlay';page.setAttribute('aria-label','Street Vendor check-in QR code');
+      page.innerHTML='<div class="bo-ftc-shell"><button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+        '<img class="bo-ft-qr-zoom-img" id="bopVsQrZoomImg" alt="Go Live QR code" src="'+VS_QR+'"></div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click',function(){page.classList.remove('open');document.body.style.overflow='';});
+      page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    });
+  }
+  setInterval(wireVendorZoom,400);
+})();
+</script>
+
+<style id="bop-uber-delivery-callout-v438">
+.bo-ft-uber-callout{display:flex;align-items:center;gap:12px;width:100%;margin:16px 0 0;padding:12px 14px;border:1.5px solid #F59E0B;border-radius:14px;background:#0a0a0a;text-align:left;}
+.bo-ft-uber-orb{flex:0 0 auto;width:56px;height:56px;border-radius:50%;background:#050505;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 0 10px rgba(245,158,11,.5);-webkit-tap-highlight-color:transparent;}
+.bo-ft-uber-orb span{color:#F59E0B;font:900 .74rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.02em;}
+.bo-ft-uber-orb:active{transform:scale(.95);}
+.bo-ft-uber-copy{flex:1;color:#eee;font:600 .8rem/1.4 Arial,sans-serif;text-align:left;}
+.bo-ft-uber-copy b{color:#F59E0B;}
+#bopVendorStandOverlay .bo-ft-uber-callout{border-color:var(--vs-teal)!important;}
+#bopVendorStandOverlay .bo-ft-uber-orb{border-color:var(--vs-teal)!important;box-shadow:0 0 10px var(--vs-teal-glow)!important;}
+#bopVendorStandOverlay .bo-ft-uber-orb span{color:var(--vs-teal)!important;}
+#bopVendorStandOverlay .bo-ft-uber-copy b{color:var(--vs-teal)!important;}
+#bopLandingOverlay .bo-ft-uber-callout{max-width:400px;margin:22px auto 0;}
+</style>
+<script id="bop-uber-delivery-callout-v438-script">
+(function(){
+  var HTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Eats"><span>UBER</span></a>'+
+    '<div class="bo-ft-uber-copy">With your exact location, customers can now set up delivery! <b>Go Live now!</b></div>';
+  var landingHTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Eats"><span>UBER</span></a>'+
+    '<div class="bo-ft-uber-copy">Own a food truck or street vendor stand? <b>Go Live now!</b> and let customers set up delivery with your exact location.</div>';
+  function install(ctaId){
+    var cta=document.getElementById(ctaId);
+    if(!cta||cta.parentNode.querySelector('.bo-ft-uber-callout'))return;
+    var box=document.createElement('div');
+    box.className='bo-ft-uber-callout';
+    box.innerHTML=HTML;
+    cta.parentNode.insertBefore(box,cta.nextSibling);
+  }
+  function installLanding(){
+    var page=document.getElementById('bopLandingOverlay');
+    if(!page||page.querySelector('.bo-ft-uber-callout'))return;
+    var content=page.querySelector('.ty-content')||page.querySelector('.bop-world-landing-shell')||page;
+    var box=document.createElement('div');
+    box.className='bo-ft-uber-callout';
+    box.innerHTML=landingHTML;
+    content.appendChild(box);
+  }
+  setInterval(function(){
+    install('bopFtCheckinCta');
+    install('bopVsCheckinCta');
+    installLanding();
+  },400);
+})();
+</script>
+
+
+
+<style id="bop-worldwide-foodtruck-vendor-tiles-v439">
+#bopWorldwideLanding [data-worldwide-key="foodtrucks"],
+#bopWorldwideLanding [data-worldwide-key="streetvendors"]{color:#F59E0B;}
+</style>
+<script id="bop-worldwide-foodtruck-vendor-tiles-v439-script">
+(function(){
+  var FT_ICON='<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62V38h46v8h19l17 19v-4"/><path d="M54 46h19l13 15v13H8V62"/><circle cx="30" cy="70" r="8"/><circle cx="76" cy="70" r="8"/></g></svg>';
+  var VS_ICON='<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M14 20 Q45 -2 76 20"/><line x1="45" y1="20" x2="45" y2="46"/><rect x="22" y="46" width="46" height="20" rx="2"/><line x1="22" y1="55" x2="68" y2="55"/><circle cx="30" cy="74" r="8"/><circle cx="60" cy="74" r="8"/></g></svg>';
+  function ensureTile(key,label,iconHtml){
+    var grid=document.querySelector('#bopWorldwideLanding .bop-world-tiles');
+    if(!grid||grid.querySelector('[data-worldwide-key="'+key+'"]'))return;
+    var tile=document.createElement('button');
+    tile.type='button';
+    tile.className='bop-world-tile';
+    tile.dataset.worldwideKey=key;
+    tile.setAttribute('aria-label',label+' \u2014 Best of Period, worldwide');
+    tile.innerHTML=iconHtml+label;
+    var restaurantTile=grid.querySelector('[data-worldwide-key="restaurants"]');
+    if(restaurantTile&&restaurantTile.nextSibling)grid.insertBefore(tile,restaurantTile.nextSibling);
+    else grid.appendChild(tile);
+  }
+  setInterval(function(){
+    ensureTile('foodtrucks','FOOD TRUCKS',FT_ICON);
+    ensureTile('streetvendors','STREET VENDORS',VS_ICON);
   },400);
 })();
 </script>
