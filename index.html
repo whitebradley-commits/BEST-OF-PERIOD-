@@ -46598,6 +46598,11 @@ function installReliableSubmit(){
 
 function directOpen(){
   if(!wantsCheckin())return;
+  /* Once the check-in page is already open, do nothing more: this used to
+     re-open it every 250ms for 20s, and every re-open reset the page's
+     scroll to the top -- so nobody arriving from a link could scroll down. */
+  var page=document.getElementById('bopFoodTruckCheckin');
+  if(page&&page.classList.contains('open'))return;
   document.documentElement.classList.add('bop-qr-bypass-active');
   document.querySelectorAll('.open').forEach(function(el){if(el.id!=='bopFoodTruckCheckin')el.classList.remove('open');});
   if(typeof window.boOpenFoodTruckCheckin==='function'){
