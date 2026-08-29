@@ -24200,7 +24200,7 @@ function boRenderCategory(cat){
     // Preserve the original editorial group at the top. Only the categories
     // after this group belong in the alphabetical directory. BJS Picks is the
     // final tile in the featured group (never a detached row of its own).
-    const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','cheesesteak','foodtrucks','bjspicks'];
+    const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','foodtrucks','streetvendors','cheesesteak','bjspicks'];
     let featuredPickerOptions = [];
     let featuredBjsOption = null;
     if(cat === 'otheroptions'){
@@ -41305,6 +41305,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
      for space, unlike a normal page masthead. */
   #bopExclusiveInvitation .bop-exclusive-world-hero{
     padding:0;
+    margin-top:50px;
     text-align:left;
     display:flex;
     flex-direction:column;
@@ -47331,8 +47332,8 @@ select.bo-ftc-field{-webkit-appearance:none;appearance:none;background-image:url
 
 html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;visibility:visible!important;}
 
-#bopVendorStandOverlay .leaflet-popup-content-wrapper{background:#06090d;color:#fff;border:1.5px solid #F59E0B;border-radius:12px;box-shadow:0 0 16px rgba(245,158,11,.5);}
-#bopVendorStandOverlay .leaflet-popup-tip{background:#06090d;border:1px solid #F59E0B;}
+#bopVendorStandOverlay .leaflet-popup-content-wrapper{background:#06090d;color:#fff;border:1.5px solid #14B8A6;border-radius:12px;box-shadow:0 0 16px rgba(20,184,166,.5);}
+#bopVendorStandOverlay .leaflet-popup-tip{background:#06090d;border:1px solid #14B8A6;}
 #bopVendorStandOverlay .leaflet-popup-content{margin:12px 12px 10px;max-height:52vh;overflow:auto;-webkit-overflow-scrolling:touch;}
 #bopVendorStandOverlay .leaflet-popup-close-button{width:36px!important;height:36px!important;right:-12px!important;top:-12px!important;font:900 26px/34px Arial,sans-serif!important;color:#E4002B!important;background:#050505!important;border:2px solid #F59E0B!important;border-radius:50%!important;box-shadow:0 0 10px rgba(245,158,11,.65)!important;text-align:center;padding:0!important;z-index:6;}
 </style>
@@ -47367,7 +47368,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
   };
 
   /* ---- 2. map page ---- */
-  var cartIconHTML='<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);">'+cartSvg('',20)+'</div>';
+  var cartIconHTML='<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #14B8A6;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(20,184,166,.7);">'+cartSvg('bo-vs-marker-cart',20)+'</div>';
   var activeFilter='all';
 
   window.boOpenVendorStandMap=function(){
@@ -47468,13 +47469,13 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
   function vsPopupHTML(id,d){
     var links=[];
-    if(d.phone)links.push('<a href="tel:'+d.phone+'" style="color:#F59E0B;">'+d.phone+'</a>');
-    if(d.website)links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website / Order</a>');
-    if(d.instagram)links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#F59E0B;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
+    if(d.phone)links.push('<a href="tel:'+d.phone+'" style="color:#14B8A6;">'+d.phone+'</a>');
+    if(d.website)links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#14B8A6;">Website / Order</a>');
+    if(d.instagram)links.push('<a href="https://instagram.com/'+String(d.instagram).replace(/^@/,'')+'" target="_blank" rel="noopener" style="color:#14B8A6;">@'+String(d.instagram).replace(/^@/,'')+'</a>');
     var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
     var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
     var catHTML='<div style="font:800 .68rem Arial;color:#8fbf6f;margin-bottom:4px;display:flex;align-items:center;gap:4px;">'+(typeof window.bopVsCatIcon==='function'?'<span style="width:14px;height:14px;display:inline-flex;">'+window.bopVsCatIcon(d.category)+'</span>':catIcon(d.category)+' ')+vsEsc(typeof window.bopVsCatLabel==='function'&&window.bopVsCatLabel(d.category)?window.bopVsCatLabel(d.category):catLabel(d.category))+'</div>';
-    return '<div style="width:190px;" data-vs-id="'+vsEsc(id)+'">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+vsEsc(d.name||'Street Vendor')+'</div>'+catHTML+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>';
+    return '<div style="width:190px;" data-vs-id="'+vsEsc(id)+'">'+photoHTML+'<div style="font:800 .95rem Arial;color:#14B8A6;margin-bottom:2px;">'+vsEsc(d.name||'Street Vendor')+'</div>'+catHTML+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>';
   }
 
   function renderVsMarkers(){
@@ -48417,7 +48418,10 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     window.bopFtSeedTrucks.push({name:DEMO_PIN.name,lat:DEMO_PIN.lat,lng:DEMO_PIN.lng,website:DEMO_PIN.website,description:DEMO_PIN.description});
     return true;
   }
-  window.bopVsSeedVendors=window.bopVsSeedVendors||[{name:DEMO_PIN.name,lat:DEMO_PIN.lat,lng:DEMO_PIN.lng,website:DEMO_PIN.website,category:DEMO_PIN.category,description:DEMO_PIN.description}];
+  window.bopVsSeedVendors=window.bopVsSeedVendors||[
+    {name:DEMO_PIN.name,lat:DEMO_PIN.lat,lng:DEMO_PIN.lng,website:DEMO_PIN.website,category:DEMO_PIN.category,description:DEMO_PIN.description},
+    {name:'March\u00e9 aux Fleurs Reine Elizabeth II',lat:48.8551,lng:2.3468,website:'https://www.visitparisregion.com/en/marche-aux-fleurs-reine-elizabeth-ii',category:'flowers',description:"Paris's oldest flower market, running continuously since 1808 \u2014 Place Louis L\u00e9pine, \u00cele de la Cit\u00e9."}
+  ];
 
   var tries=0,t=setInterval(function(){tries++;if(addToFoodTrucks()||tries>80)clearInterval(t);},250);
 })();
@@ -48511,6 +48515,8 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 .bo-food-truck-label:has(.bo-vs-tile-cart){color:var(--vs-teal)!important;}
 .bo-vs-tile-cart{filter:none!important;}
 .bo-vs-tile-cart *{stroke:var(--vs-teal)!important;}
+.bo-vs-marker-cart *{stroke:var(--vs-teal)!important;}
+#bopVendorStandOverlay .bo-ft-cta-truck *{stroke:var(--vs-teal)!important;}
 
 /* --- (3) trimmed category row: heading + food-trucks crosslink + seasonal callout --- */
 .bo-vs-cat-heading{margin:14px 0 2px;color:var(--vs-teal);font:900 .92rem/1.3 'Archivo Black',Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-align:center;}
