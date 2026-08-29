@@ -49666,4 +49666,126 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clear
 })();
 </script>
 
+<script id="bop-verified-ratings-manhattan-batch13-v456-script">
+(function(){
+/* v456: Manhattan unrated sweep -- final batch covering the rest of the
+   original 76-restaurant list (2026-08-29). Real ratings today;
+   <=200-review sources docked 0.1 per site rule. This batch also removes:
+   - Sushi Ichimura: permanently CLOSED in 2025; its Greenwich St space is
+     now occupied by an unrelated restaurant, Muku.
+   - La Bastide by Andrea Calstier: misplaced -- actually in North Salem,
+     NY (Westchester/Hudson Valley), not Manhattan.
+   - Sofreh: misplaced -- actually in Prospect Heights, Brooklyn.
+   - Absolute Bagels: permanently CLOSED Dec 2024 after a failed health
+     inspection. The 2788 Broadway space is now "2788 Bagels," a wholly
+     different, unrelated business -- not a continuation.
+   Kappo Sono is left unrated this pass -- no reliable public review count
+   was found; its address is updated to its current location (it has moved
+   twice) and flagged for a recheck once more public reviews exist. */
+var ROWS=[
+  {name:"Icca",rating:4.9,reviews:2,phone:"(646) 649-3415",address:"20 Warren St, New York, NY 10007",url:"https://iccanyc.com/",
+   ratingNote:"Tripadvisor 5.0 on only 2 reviews, docked 0.1 = 4.9. One MICHELIN star, Tribeca omakase. Very small public sample -- recheck as it grows."},
+  {name:"Sushi Amane",rating:4.2,reviews:14,phone:"(212) 986-5300",address:"245 E 44th St, New York, NY 10017",url:"https://www.sushi-amane.com/",
+   ratingNote:"Tripadvisor 4.3 on 14 reviews, docked 0.1 = 4.2. One MICHELIN star, located inside Mifune restaurant."},
+  {name:"Tempura Matsui",rating:4.4,reviews:51,phone:"(212) 986-8885",address:"222 E 39th St, New York, NY 10016",url:"https://www.tempuramatsui.com/",
+   ratingNote:"Tripadvisor 4.5 on 51 reviews, docked 0.1 = 4.4. One MICHELIN star, the only tempura-dedicated restaurant in the US."},
+  {name:"Yoshino",rating:4.9,reviews:8,phone:"(917) 444-1988",address:"342 Bowery, New York, NY 10003",url:"https://www.yoshinonewyork.com/",
+   ratingNote:"Tripadvisor 5.0 on a small, uncounted sample, docked 0.1 to 4.9 out of caution. One MICHELIN star, #1 on OAD's 2025 North America list."},
+  {name:"Café Carmellini",rating:4.3,reviews:23,phone:"(212) 231-9200",address:"250 5th Ave, New York, NY 10001",url:"https://www.cafecarmellini.com/",
+   ratingNote:"Tripadvisor 4.4 on 23 reviews, docked 0.1 = 4.3. Chef Andrew Carmellini's fine-dining return, inside the Fifth Avenue Hotel."},
+  {name:"Rezdôra",rating:3.7,reviews:141,phone:"",address:"27 E 20th St, New York, NY 10003",url:"https://www.rezdora.nyc/",
+   ratingNote:"Tripadvisor 3.8 on 141 reviews, docked 0.1 = 3.7. One MICHELIN star, Emilia-Romagna pasta specialist."},
+  {name:"Rao's",rating:4.3,reviews:94,phone:"(212) 722-6709",address:"455 E 114th St, New York, NY 10029",url:"https://raossince1896.com/",
+   ratingNote:"Tripadvisor 4.4 on 94 reviews, docked 0.1 = 4.3. East Harlem institution since 1896, famously hard to book."},
+  {name:"Tuome",rating:4.1,reviews:83,phone:"(646) 833-7811",address:"536 E 5th St, New York, NY 10009",url:"https://www.tuomenyc.com/",
+   ratingNote:"Tripadvisor 4.2 on 83 reviews, docked 0.1 = 4.1. One MICHELIN star, New American with Asian influence."},
+  {name:"Essential by Christophe",rating:4.9,reviews:24,phone:"(646) 478-7928",address:"103 W 77th St, New York, NY 10024",url:"https://www.essentialbychristophe.com/",
+   ratingNote:"Tripadvisor 5.0 on 24 reviews, docked 0.1 = 4.9. One MICHELIN star, Upper West Side."},
+  {name:"L'Abeille",rating:4.0,reviews:10,phone:"",address:"412 Greenwich St, New York, NY 10013",url:"https://www.labeillenyc.com/",
+   ratingNote:"Tripadvisor 4.1 on only 10 reviews, docked 0.1 = 4.0. One MICHELIN star, French-Japanese, Tribeca."},
+  {name:"Shmoné",rating:4.1,reviews:11,phone:"(646) 438-9815",address:"61 W 8th St, New York, NY 10011",url:"https://www.shmonenyc.com/",
+   ratingNote:"Tripadvisor 4.2 on 11 reviews, docked 0.1 = 4.1. One MICHELIN star, Chef Eyal Shani, Greenwich Village."},
+  {name:"Zou Zou's",rating:4.1,reviews:56,phone:"(212) 380-8585",address:"385 9th Ave, New York, NY 10001",url:"https://zouzousnyc.com/",
+   ratingNote:"Tripadvisor 4.2 on 56 reviews, docked 0.1 = 4.1. Eastern Mediterranean, Pendry Manhattan West."},
+  {name:"Dirt Candy",rating:4.5,reviews:393,phone:"(212) 228-7732",address:"86 Allen St, New York, NY 10002",url:"https://www.dirtcandynyc.com/",
+   ratingNote:"Tripadvisor 4.5 (393 reviews) -- large sample, no dock. Chef Amanda Cohen's vegetable-forward tasting menu."},
+  {name:"63 Clinton",rating:4.6,reviews:12,phone:"(917) 663-6223",address:"63 Clinton St, New York, NY 10002",url:"https://www.63clinton.com/",
+   ratingNote:"Tripadvisor 4.7 on only 12 reviews, docked 0.1 = 4.6. One MICHELIN star, Lower East Side."},
+  {name:"Estela",rating:4.2,reviews:417,phone:"(212) 219-7693",address:"47 E Houston St, New York, NY 10012",url:"https://estelanyc.com/",
+   ratingNote:"Tripadvisor 4.2 (417 reviews) -- large sample, no dock. Chef Ignacio Mattos, one MICHELIN star."},
+  {name:"Frevo",rating:4.7,reviews:53,phone:"(646) 455-0804",address:"48 W 8th St, New York, NY 10011",url:"https://frevonyc.com/",
+   ratingNote:"Tripadvisor 4.8 on 53 reviews, docked 0.1 = 4.7. One MICHELIN star, hidden behind an art gallery."},
+  {name:"Kisa",rating:4.5,reviews:658,phone:"(646) 866-8622",address:"205 Allen St, New York, NY 10002",url:"",
+   ratingNote:"RestaurantGuru 4.5 (658 reviews) used as primary source -- Tripadvisor shows no numeric rating yet. Korean 'taxi driver diner' concept, James Beard semifinalist."},
+  {name:"Sylvia's",rating:4.1,reviews:2187,phone:"(212) 996-0660",address:"328 Malcolm X Blvd, New York, NY 10027",url:"https://sylviasrestaurant.com/",
+   ratingNote:"Tripadvisor 4.1 (2,187 reviews) -- very large sample, no dock. Harlem soul food institution since 1962."},
+  {name:"Tatiana by Kwame Onwuachi",rating:4.2,reviews:35,phone:"(212) 875-5222",address:"10 Lincoln Center Plaza, New York, NY 10023",url:"https://www.tatiananyc.com/",
+   ratingNote:"Tripadvisor 4.3 on 35 reviews, docked 0.1 = 4.2. Afro-Caribbean, inside David Geffen Hall at Lincoln Center."},
+  {name:"Thai Diner",rating:4.1,reviews:42,phone:"(646) 559-4140",address:"186 Mott St, New York, NY 10012",url:"https://www.thaidiner.com/",
+   ratingNote:"Tripadvisor 4.2 on 42 reviews, docked 0.1 = 4.1. From the Uncle Boons team, Nolita."},
+  {name:"Via Carota",rating:4.3,reviews:458,phone:"(212) 255-1962",address:"51 Grove St, New York, NY 10014",url:"https://www.viacarota.com/",
+   ratingNote:"Tripadvisor 4.3 (458 reviews) -- large sample, no dock. West Village trattoria from Jody Williams and Rita Sodi."},
+  {name:"Ess-a-Bagel",rating:4.3,reviews:1849,phone:"(212) 980-1010",address:"831 3rd Ave, New York, NY 10022",url:"https://www.ess-a-bagel.com/",
+   ratingNote:"Tripadvisor 4.3 (1,849 reviews) -- very large sample, no dock. NYC bagel institution since 1976."},
+  {name:"Tompkins Square Bagels",rating:4.6,reviews:234,phone:"(646) 351-6520",address:"165 Ave A, New York, NY 10009",url:"https://www.tompkinssquarebagels.com/",
+   ratingNote:"Tripadvisor 4.6 (234 reviews) -- large sample, no dock. Flagship East Village location."},
+  {name:"Pop Up Bagels",rating:4.0,reviews:19,phone:"(855) 747-6347",address:"139 E 57th St, New York, NY 10022",url:"",
+   ratingNote:"Tripadvisor 4.1 on only 19 reviews, docked 0.1 = 4.0. Fresh-from-the-oven concept, multiple Manhattan locations."},
+  {name:"H&H Bagels",rating:4.1,reviews:153,phone:"(212) 734-7441",address:"1551 2nd Ave, New York, NY 10028",url:"",
+   ratingNote:"Tripadvisor 4.2 on 153 reviews, docked 0.1 = 4.1. NYC bagel institution since 1972."}
+];
+var UPDATE_ONLY=[
+  {name:"Kappo Sono",address:"135 W 42nd St, New York, NY 10036",phone:"",
+   note:"No reliable public review count found on Tripadvisor (page shows zero reviews); left unrated this pass rather than guess. The restaurant has moved twice (originally 177 Ludlow St, then 39 E 13th St, now 135 W 42nd St per its own site) -- address updated to current location. Recheck once it has a public review base."}
+];
+var REMOVE=["Sushi Ichimura","La Bastide by Andrea Calstier","Sofreh","Absolute Bagels"];
+var REMOVE_NOTES={
+  "sushi ichimura":"permanently closed 2025; space now occupied by Muku (unrelated restaurant)",
+  "la bastide by andrea calstier":"misplaced \u2014 actual location is North Salem, NY (Westchester/Hudson Valley)",
+  "sofreh":"misplaced \u2014 actual location is Prospect Heights, Brooklyn",
+  "absolute bagels":"permanently closed Dec 2024 after failed health inspection; space now an unrelated business (\"2788 Bagels\")"
+};
+var NY=['manhattan','newyork','bestof'];
+function apply(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  function norm(s){return String(s).toLowerCase().replace(/[’‘]/g,"'").replace(/—/g," ").replace(/\s+/g," ").trim();}
+  var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});
+  by[norm("Pop Up Bagels — West Village")]=by[norm("Pop Up Bagels")];
+  var upd={};UPDATE_ONLY.forEach(function(v){upd[norm(v.name)]=v;});
+  var removeSet={};REMOVE.forEach(function(n){removeSet[n.toLowerCase()]=true});
+  var hit=false;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+    var kept=arr.filter(function(r){
+      if(r&&r.name&&removeSet[String(r.name).toLowerCase()]&&NY.indexOf(r.city||'bestof')>-1){hit=true;return false;}
+      return true;
+    });
+    if(kept.length!==arr.length){var n=0;kept.forEach(function(r){r.rank=++n});boCategoryData[cat]=kept;}
+    boCategoryData[cat].forEach(function(r){
+      if(!r||!r.name)return;
+      var key=norm(r.name);
+      if(NY.indexOf(r.city||'bestof')<0)return;
+      var v=by[key];
+      if(v&&!r.__v456){
+        r.__v456=true;hit=true;
+        r.rating=v.rating.toFixed(1)+' / 5';r.reviews=v.reviews;r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;
+        if(!r.phone&&v.phone)r.phone=v.phone;if(!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;
+        if(r.note&&/Aggregate public rating/i.test(r.note))r.note=r.note.replace(/\s*Aggregate public rating[^.]*\.?/i,'').trim();
+        return;
+      }
+      var u=upd[key];
+      if(u&&!r.__v456u){
+        r.__v456u=true;hit=true;
+        r.address=u.address;if(u.phone)r.phone=u.phone;
+        r.ratingNote=u.note;
+      }
+    });
+  });
+  return hit;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
+
 </body></html>
