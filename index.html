@@ -48188,15 +48188,29 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
           liveUntil:liveUntil,orderMethod:orderMethod,orderLink:orderLink
         },extra);
-        window.bopFtDb.collection(config.collection).doc(id).set(payload,{merge:true}).then(function(){
-          clearTimeout(timer);btn.disabled=false;
-          status.textContent=config.successMsg;
-          if(config.onSuccess)config.onSuccess();
-        }).catch(function(err){
-          clearTimeout(timer);btn.disabled=false;
-          var code=(err&&err.code)||'write error';
-          status.textContent=code.indexOf('permission')>-1?'The live map is not yet accepting vendor check-ins.':'Check-in failed ('+code+'). Please try again.';
-        });
+        function writeIt(){
+          window.bopFtDb.collection(config.collection).doc(id).set(payload,{merge:true}).then(function(){
+            clearTimeout(timer);btn.disabled=false;
+            status.textContent=config.successMsg;
+            if(config.onSuccess)config.onSuccess();
+          }).catch(function(err){
+            clearTimeout(timer);btn.disabled=false;
+            var code=(err&&err.code)||'write error';
+            status.textContent=code.indexOf('permission')>-1?'The live map is not yet accepting vendor check-ins.':'Check-in failed ('+code+'). Please try again.';
+          });
+        }
+        /* Resolve a real city name once, at check-in, and save it on the
+           doc -- this is what lets the Analog List group by an actual
+           city automatically, anywhere in the world, with no fixed list
+           of hubs to maintain. */
+        if(typeof window.bopResolveCityName==='function'){
+          window.bopResolveCityName(pos.coords.latitude,pos.coords.longitude).then(function(city){
+            if(city)payload.city=city;
+            writeIt();
+          }).catch(function(){writeIt();});
+        }else{
+          writeIt();
+        }
       },function(err){
         btn.disabled=false;
         if(err&&err.code===1)status.textContent='Please allow location access, then tap Go Live again.';
@@ -48228,7 +48242,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     });
   },400);
 
-  /* ---- (E) Analog List: flat, global, grouped by nearest known city ---- */
+  /* ---- (E) Analog List: flat, global, grouped by city -- automatic ---- */
   var HUBS=[
     {name:'Las Vegas',lat:36.1699,lng:-115.1398},{name:'Los Angeles',lat:34.0522,lng:-118.2437},
     {name:'San Diego',lat:32.7157,lng:-117.1611},{name:'New York City',lat:40.7128,lng:-74.0060},
@@ -48238,15 +48252,32 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     {name:'Miami',lat:25.7617,lng:-80.1918},{name:'London',lat:51.5072,lng:-0.1276},
     {name:'Paris',lat:48.8566,lng:2.3522},{name:'Tokyo',lat:35.6762,lng:139.6503}
   ];
-  function nearestCity(lat,lng){
+  function nearestHub(lat,lng){
     var best=null,bestD=Infinity;
     HUBS.forEach(function(h){
       var d=Math.pow(h.lat-lat,2)+Math.pow(h.lng-lng,2);
       if(d<bestD){bestD=d;best=h.name;}
     });
-    /* Rough cutoff so far-flung check-ins don't get mislabeled as a hub
-       hundreds of miles away \u2014 real reverse-geocoding would replace this. */
-    return bestD<9 ? best : 'Other Locations';
+    return bestD<9 ? best : null;
+  }
+  /* Real reverse-geocoding (OpenStreetMap Nominatim, free, no key needed)
+     so a check-in from a city that was never hardcoded -- Paris, Tokyo,
+     anywhere -- still gets its own real city name instead of falling into
+     a generic bucket. Runs once, at check-in, and the result is saved on
+     the doc, so the Analog List itself never has to call out to the
+     network -- it just reads whatever city was resolved at sign-up time. */
+  window.bopResolveCityName=function(lat,lng){
+    var url='https://nominatim.openstreetmap.org/reverse?format=json&zoom=10&addressdetails=1&lat='+lat+'&lon='+lng;
+    return fetch(url,{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(data){
+      var a=data&&data.address;
+      if(!a)return nearestHub(lat,lng);
+      var city=a.city||a.town||a.village||a.municipality||a.county;
+      if(!city)return nearestHub(lat,lng);
+      return city;
+    }).catch(function(){return nearestHub(lat,lng);});
+  };
+  function nearestCity(lat,lng){
+    return nearestHub(lat,lng)||'Other Locations';
   }
   function orderLinkFor(d){
     if(d.orderMethod==='phone'||!d.orderMethod)return d.phone?'<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call to Order</a>':'';
@@ -48283,7 +48314,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       snap.forEach(function(doc){
         var d=doc.data();
         if(!window.bopIsLive(d)||typeof d.lat!=='number')return;
-        var city=nearestCity(d.lat,d.lng);
+        var city=d.city||nearestCity(d.lat,d.lng);
         (groups[city]=groups[city]||[]).push(d);
       });
       var cities=Object.keys(groups).sort();
@@ -48598,8 +48629,8 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 
 <style id="bop-uber-delivery-callout-v438">
 .bo-ft-uber-callout{display:flex;align-items:center;gap:12px;width:100%;margin:16px 0 0;padding:12px 14px;border:1.5px solid #F59E0B;border-radius:14px;background:#0a0a0a;text-align:left;}
-.bo-ft-uber-orb{flex:0 0 auto;width:56px;height:56px;border-radius:50%;background:#050505;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 0 10px rgba(245,158,11,.5);-webkit-tap-highlight-color:transparent;}
-.bo-ft-uber-orb span{color:#F59E0B;font:900 .74rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.02em;}
+.bo-ft-uber-orb{flex:0 0 auto;width:56px;height:56px;border-radius:50%;background:#050505;border:2px solid #F59E0B;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 0 10px rgba(245,158,11,.5);-webkit-tap-highlight-color:transparent;}
+.bo-ft-uber-orb span{color:#F59E0B;font:900 .56rem/1.05 'Archivo Black',Arial,sans-serif;letter-spacing:.01em;text-align:center;}
 .bo-ft-uber-orb:active{transform:scale(.95);}
 .bo-ft-uber-copy{flex:1;color:#eee;font:600 .8rem/1.4 Arial,sans-serif;text-align:left;}
 .bo-ft-uber-copy b{color:#F59E0B;}
@@ -48607,14 +48638,11 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 #bopVendorStandOverlay .bo-ft-uber-orb{border-color:var(--vs-teal)!important;box-shadow:0 0 10px var(--vs-teal-glow)!important;}
 #bopVendorStandOverlay .bo-ft-uber-orb span{color:var(--vs-teal)!important;}
 #bopVendorStandOverlay .bo-ft-uber-copy b{color:var(--vs-teal)!important;}
-#bopLandingOverlay .bo-ft-uber-callout{max-width:400px;margin:22px auto 0;}
 </style>
 <script id="bop-uber-delivery-callout-v438-script">
 (function(){
-  var HTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Eats"><span>UBER</span></a>'+
-    '<div class="bo-ft-uber-copy">With your exact location, customers can now set up delivery! <b>Go Live now!</b></div>';
-  var landingHTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Eats"><span>UBER</span></a>'+
-    '<div class="bo-ft-uber-copy">Own a food truck or street vendor stand? <b>Go Live now!</b> and let customers set up delivery with your exact location.</div>';
+  var HTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Package"><span>UBER<br>PACKAGE</span></a>'+
+    '<div class="bo-ft-uber-copy">With your exact location, let customers know where you are and give them the chance to set up a pickup at your location. <b>Go Live now!</b></div>';
   function install(ctaId){
     var cta=document.getElementById(ctaId);
     if(!cta||cta.parentNode.querySelector('.bo-ft-uber-callout'))return;
@@ -48623,19 +48651,15 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     box.innerHTML=HTML;
     cta.parentNode.insertBefore(box,cta.nextSibling);
   }
-  function installLanding(){
+  function removeFromLanding(){
     var page=document.getElementById('bopLandingOverlay');
-    if(!page||page.querySelector('.bo-ft-uber-callout'))return;
-    var content=page.querySelector('.ty-content')||page.querySelector('.bop-world-landing-shell')||page;
-    var box=document.createElement('div');
-    box.className='bo-ft-uber-callout';
-    box.innerHTML=landingHTML;
-    content.appendChild(box);
+    var box=page&&page.querySelector('.bo-ft-uber-callout');
+    if(box)box.remove();
   }
   setInterval(function(){
     install('bopFtCheckinCta');
     install('bopVsCheckinCta');
-    installLanding();
+    removeFromLanding();
   },400);
 })();
 </script>
