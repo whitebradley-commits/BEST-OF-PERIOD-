@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}if(p.get('vendorcheckin')==='1'||h==='vendorcheckin'){window.__BOP_VS_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-vendorcheckin-pass','1');}
+if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VS_CHECKIN_REQUESTED){window.__bopArrivedViaQr=true;}
 /* v308: hard bypass. Every previous attempt closed the invitation/promo
    gates AFTER they had already rendered, which kept failing on real
    devices even when it worked in testing. This instead marks the <html>
@@ -41762,7 +41763,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       if(qrWrap) qrWrap.addEventListener('click', function(){ window.boOpenFoodTruckQrZoom(checkinUrl); });
       var qrShare = document.getElementById('bopFtQrShare');
       if(qrShare) qrShare.addEventListener('click', async function(){
-        var data = { title: 'Go Live: Your Truck', text: 'Go live on the Best of Period food-truck map.', url: checkinUrl };
+        var data = { title: 'Go Live!', text: 'Go live on the Best of Period food-truck map.', url: checkinUrl };
         try{
           if(navigator.share){ await navigator.share(data); }
           else if(navigator.clipboard && navigator.clipboard.writeText){
@@ -41970,7 +41971,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<div class="bo-ftc-title">Go Live: Your Truck</div>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
           '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
@@ -43370,7 +43371,7 @@ function fixQr(){
     clone.dataset.bopCheckinShare = '1';
     share.parentNode.replaceChild(clone, share);
     clone.addEventListener('click', function(){
-      var payload = { title:'Go Live: Your Truck', text:'Go live on the Best of Period food-truck map.', url: CHECKIN_URL };
+      var payload = { title:'Go Live!', text:'Go live on the Best of Period food-truck map.', url: CHECKIN_URL };
       if(navigator.share){ navigator.share(payload).catch(function(){}); }
       else if(navigator.clipboard){ navigator.clipboard.writeText(CHECKIN_URL); }
     });
@@ -46479,7 +46480,7 @@ function fixEveryQr(){
     clean.dataset.bopV401='1';
     share.parentNode.replaceChild(clean,share);
     clean.addEventListener('click',function(){
-      var payload={title:'Go Live: Your Truck',text:'Go live on the Best of Period food-truck map.',url:DIRECT_URL};
+      var payload={title:'Go Live!',text:'Go live on the Best of Period food-truck map.',url:DIRECT_URL};
       if(navigator.share) navigator.share(payload).catch(function(){});
       else if(navigator.clipboard) navigator.clipboard.writeText(DIRECT_URL).catch(function(){});
       else prompt('Copy this link:',DIRECT_URL);
@@ -47437,7 +47438,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       document.getElementById('bopVsCheckinCta').addEventListener('click', function(){ window.boOpenVendorStandCheckin(); });
       var qrShare=document.getElementById('bopVsQrShare');
       if(qrShare)qrShare.addEventListener('click', function(){
-        var payload={title:'Go Live: Your Stand',text:'Go live on the Best of Period street-vendor map.',url:checkinUrl};
+        var payload={title:'Go Live!',text:'Go live on the Best of Period street-vendor map.',url:checkinUrl};
         if(navigator.share){navigator.share(payload).catch(function(){});}
         else if(navigator.clipboard){navigator.clipboard.writeText(checkinUrl);var span=qrShare.querySelector('span');var o=span.innerHTML;span.innerHTML='Copied!';setTimeout(function(){span.innerHTML=o;},1600);}
         else{prompt('Copy this link to share:',checkinUrl);}
@@ -47577,7 +47578,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
       page.innerHTML =
         '<div class="bo-ftc-shell">'+
           '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-          '<div class="bo-ftc-title">Go Live: Your Stand</div>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
           '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 2 minutes.</div>'+
           '<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
           '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
@@ -48665,6 +48666,50 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
   setInterval(function(){
     ensureTile('foodtrucks','FOOD TRUCKS',FT_ICON);
     ensureTile('streetvendors','STREET VENDORS',VS_ICON);
+  },400);
+})();
+</script>
+
+<script id="bop-checkin-back-to-landing-v440-script">
+(function(){
+  /* Go Live pages reached straight from a QR scan get the map opened
+     silently underneath them first (so the check-in sheet has something
+     to sit on top of) -- which means their Back button used to reveal
+     that map page before a second Back tap got you to the landing page.
+     For a QR arrival specifically, one Back tap should go straight to the
+     landing page instead, skipping the map the person never chose to
+     browse. Ordinary browsing (Food Trucks tile -> map -> Go Live) is
+     untouched -- Back there still returns to the map, since the person
+     opened it on purpose. */
+  window.__bopArrivedViaQr = window.__bopArrivedViaQr || false;
+
+  function goToLanding(){
+    var ftMap=document.getElementById('bopFoodTruckOverlay');
+    if(ftMap)ftMap.classList.remove('open');
+    var vsMap=document.getElementById('bopVendorStandOverlay');
+    if(vsMap)vsMap.classList.remove('open');
+    var gate=document.getElementById('bopExclusiveInvitation');
+    if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
+    document.documentElement.classList.remove('bop-invite-active','bop-qr-bypass-active');
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing){landing.classList.add('open');try{landing.scrollTop=0;}catch(e){}}
+    var promo=document.getElementById('bopPromoModal');
+    if(promo)promo.classList.remove('open');
+    document.body.style.overflow='';
+    try{window.scrollTo(0,0);}catch(e){}
+  }
+  function wireCheckinBack(pageId){
+    var page=document.getElementById(pageId);
+    var back=page&&page.querySelector('.bo-ft-back');
+    if(!back||back.dataset.bopV440)return;
+    back.dataset.bopV440='1';
+    back.addEventListener('click',function(){
+      if(window.__bopArrivedViaQr){ setTimeout(goToLanding,60); }
+    });
+  }
+  setInterval(function(){
+    wireCheckinBack('bopFoodTruckCheckin');
+    wireCheckinBack('bopVendorStandCheckin');
   },400);
 })();
 </script>
