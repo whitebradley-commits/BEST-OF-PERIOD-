@@ -48670,46 +48670,47 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
 })();
 </script>
 
-<script id="bop-checkin-back-to-landing-v440-script">
+<script id="bop-checkin-back-to-map-v440-script">
 (function(){
   /* Go Live pages reached straight from a QR scan get the map opened
-     silently underneath them first (so the check-in sheet has something
-     to sit on top of) -- which means their Back button used to reveal
-     that map page before a second Back tap got you to the landing page.
-     For a QR arrival specifically, one Back tap should go straight to the
-     landing page instead, skipping the map the person never chose to
-     browse. Ordinary browsing (Food Trucks tile -> map -> Go Live) is
-     untouched -- Back there still returns to the map, since the person
-     opened it on purpose. */
-  window.__bopArrivedViaQr = window.__bopArrivedViaQr || false;
-
-  function goToLanding(){
-    var ftMap=document.getElementById('bopFoodTruckOverlay');
-    if(ftMap)ftMap.classList.remove('open');
-    var vsMap=document.getElementById('bopVendorStandOverlay');
-    if(vsMap)vsMap.classList.remove('open');
+     silently underneath them first, but the QR-bypass mode that hides
+     everything except the check-in sheet was still active -- so closing
+     the check-in sheet didn't actually reveal that map, it just left a
+     blank screen (or, depending on timing, fell through two Back taps to
+     the generic landing page). Back should always land on that category's
+     own map -- Food Truck Back -> Food Truck map, Vendor Back -> Vendor
+     map -- so people see what they're signing up alongside, in one tap,
+     whether they arrived by QR or by browsing in normally. */
+  function goToMap(mapPageId, openFnName){
+    document.documentElement.classList.remove('bop-invite-active','bop-qr-bypass-active');
     var gate=document.getElementById('bopExclusiveInvitation');
     if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
-    document.documentElement.classList.remove('bop-invite-active','bop-qr-bypass-active');
-    var landing=document.getElementById('bopLandingOverlay');
-    if(landing){landing.classList.add('open');try{landing.scrollTop=0;}catch(e){}}
     var promo=document.getElementById('bopPromoModal');
     if(promo)promo.classList.remove('open');
-    document.body.style.overflow='';
+    var landing=document.getElementById('bopLandingOverlay');
+    if(landing)landing.classList.remove('open');
+    var mapPage=document.getElementById(mapPageId);
+    if(mapPage&&mapPage.classList.contains('open')){
+      // already sitting there from the QR-arrival flow -- just needs the
+      // bypass CSS lifted (done above) so it actually shows.
+      document.body.style.overflow='hidden';
+    } else if(typeof window[openFnName]==='function'){
+      window[openFnName]();
+    }
     try{window.scrollTo(0,0);}catch(e){}
   }
-  function wireCheckinBack(pageId){
+  function wireCheckinBack(pageId, mapPageId, openFnName){
     var page=document.getElementById(pageId);
     var back=page&&page.querySelector('.bo-ft-back');
     if(!back||back.dataset.bopV440)return;
     back.dataset.bopV440='1';
     back.addEventListener('click',function(){
-      if(window.__bopArrivedViaQr){ setTimeout(goToLanding,60); }
+      setTimeout(function(){ goToMap(mapPageId, openFnName); }, 60);
     });
   }
   setInterval(function(){
-    wireCheckinBack('bopFoodTruckCheckin');
-    wireCheckinBack('bopVendorStandCheckin');
+    wireCheckinBack('bopFoodTruckCheckin','bopFoodTruckOverlay','boOpenFoodTruckMap');
+    wireCheckinBack('bopVendorStandCheckin','bopVendorStandOverlay','boOpenVendorStandMap');
   },400);
 })();
 </script>
