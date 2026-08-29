@@ -44010,19 +44010,21 @@ function attachAutofill(){
     var url = websiteEl.value.trim();
     if(!url) return;
     if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    if(descEl.value.trim()) return; /* never overwrite what they already typed */
-    hint.style.display = 'block';
-    hint.textContent = 'Looking up your site\u2026';
+    var keepDescription = !!descEl.value.trim(); /* never overwrite what they already typed -- but still pull the photo */
+    if(!keepDescription){
+      hint.style.display = 'block';
+      hint.textContent = 'Looking up your site\u2026';
+    }
     fetch('https://api.microlink.io/?url=' + encodeURIComponent(url) + '&meta=true')
       .then(function(r){ return r.json(); })
       .then(function(data){
         if(!data || data.status !== 'success' || !data.data) throw new Error('no data');
         var d = data.data;
         var text = (d.description || d.title || '').trim();
-        if(text){
+        if(text && !keepDescription){
           descEl.value = text.length > 160 ? text.slice(0,157) + '\u2026' : text;
           hint.textContent = 'Pulled from your website \u2014 feel free to edit it.';
-        } else {
+        } else if(!keepDescription){
           hint.textContent = '';
           hint.style.display = 'none';
         }
@@ -47594,7 +47596,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
           '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
           '<label class="bo-vs-field-label">What do you sell?</label>'+
           '<select class="bo-ftc-field" id="bopVsCategory">'+options+'</select>'+
-          '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopVsPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopVsPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" capture="environment" id="bopVsPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of your stand (optional, but it helps people spot you).</div></div>'+
+          '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopVsPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopVsPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopVsPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of your stand (optional, but it helps people spot you).</div></div>'+
           '<input class="bo-ftc-field" id="bopVsWebsite" type="text" placeholder="Website or ordering link (optional)" />'+
           '<textarea class="bo-ftc-field" id="bopVsDescription" rows="3" placeholder="Short description (what you sell, cash or card, etc.)" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
           '<input class="bo-ftc-field" id="bopVsInstagram" type="text" placeholder="Instagram handle (optional)" />'+
@@ -47930,7 +47932,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     hint.textContent='Upload one photo, or list your website below and we\u2019ll pull one for you automatically.';
     card.parentNode.insertBefore(hint,card);
     var row=document.createElement('div');row.className='bo-ft-photo-row';
-    row.innerHTML='<label class="bo-ft-photo-btn" id="bopFtPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><input type="file" accept="image/*" capture="environment" id="bopFtPhotoInput" style="display:none;"></label>';
+    row.innerHTML='<label class="bo-ft-photo-btn" id="bopFtPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><input type="file" accept="image/*" id="bopFtPhotoInput" style="display:none;"></label>';
     card.parentNode.insertBefore(row,card);
     var btnImg=null;
     document.getElementById('bopFtPhotoInput').addEventListener('change',function(e){
@@ -48209,18 +48211,38 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
             status.textContent=code.indexOf('permission')>-1?'The live map is not yet accepting vendor check-ins.':'Check-in failed ('+code+'). Please try again.';
           });
         }
+        /* If they gave a website but no photo made it in yet (the on-blur
+           lookup is async and can lose the race against a quick tap on
+           Go Live -- or gets skipped entirely if they typed a description
+           first), pull the site's own image right here, at submit, with a
+           hard timeout so it can never hold up the check-in. */
+        function ensurePhotoFromWebsite(){
+          return new Promise(function(resolve){
+            if(payload.photo||!payload.website){resolve();return;}
+            var url=String(payload.website).trim();
+            if(!/^https?:\/\//i.test(url))url='https://'+url;
+            var done=false;
+            var t=setTimeout(function(){if(!done){done=true;resolve();}},4500);
+            fetch('https://api.microlink.io/?url='+encodeURIComponent(url)+'&meta=true')
+              .then(function(r){return r.json();})
+              .then(function(data){
+                var d=data&&data.status==='success'&&data.data;
+                var img=d&&((d.image&&d.image.url)||(d.logo&&d.logo.url));
+                if(img)payload.photo=img;
+              }).catch(function(){}).then(function(){if(!done){done=true;clearTimeout(t);resolve();}});
+          });
+        }
         /* Resolve a real city name once, at check-in, and save it on the
            doc -- this is what lets the Analog List group by an actual
            city automatically, anywhere in the world, with no fixed list
            of hubs to maintain. */
-        if(typeof window.bopResolveCityName==='function'){
-          window.bopResolveCityName(pos.coords.latitude,pos.coords.longitude).then(function(city){
-            if(city)payload.city=city;
-            writeIt();
-          }).catch(function(){writeIt();});
-        }else{
-          writeIt();
-        }
+        ensurePhotoFromWebsite().then(function(){
+          if(typeof window.bopResolveCityName==='function'){
+            return window.bopResolveCityName(pos.coords.latitude,pos.coords.longitude).then(function(city){
+              if(city)payload.city=city;
+            }).catch(function(){});
+          }
+        }).then(function(){writeIt();}).catch(function(){writeIt();});
       },function(err){
         btn.disabled=false;
         if(err&&err.code===1)status.textContent='Please allow location access, then tap Go Live again.';
@@ -48281,8 +48303,21 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     return fetch(url,{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(data){
       var a=data&&data.address;
       if(!a)return nearestHub(lat,lng);
-      var city=a.city||a.town||a.village||a.municipality||a.county;
+      /* Prefer the real city. Some big metros (Los Angeles especially)
+         come back with the city missing and only a county or district
+         name -- so strip " County" and fall back to the nearest known
+         hub when what we got isn't a clean city name. */
+      var city=a.city||a.town||a.village||a.municipality||'';
+      if(!city&&a.county)city=String(a.county).replace(/\s+County$/i,'');
       if(!city)return nearestHub(lat,lng);
+      city=String(city).replace(/\s+County$/i,'').trim();
+      /* If a known hub is very close, use its clean name so one metro
+         never splits into several nearby-district headings. */
+      var hub=nearestHub(lat,lng);
+      if(hub){
+        var h=HUBS.filter(function(x){return x.name===hub;})[0];
+        if(h&&Math.pow(h.lat-lat,2)+Math.pow(h.lng-lng,2)<0.25)return hub;
+      }
       return city;
     }).catch(function(){return nearestHub(lat,lng);});
   };
@@ -48321,12 +48356,20 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     if(!window.bopFtDb){document.getElementById('bopAnalogBody').textContent='Connecting to the live map\u2026';return;}
     window.bopFtDb.collection(collection).get().then(function(snap){
       var groups={};
+      function add(d){
+        var city=d.city||nearestCity(d.lat,d.lng);
+        (groups[city]=groups[city]||[]).push(d);
+      }
       snap.forEach(function(doc){
         var d=doc.data();
         if(!window.bopIsLive(d)||typeof d.lat!=='number')return;
-        var city=d.city||nearestCity(d.lat,d.lng);
-        (groups[city]=groups[city]||[]).push(d);
+        add(d);
       });
+      /* Permanent/seed pins (Best of Period Info, the Paris flower market,
+         the permanent food trucks) live in the page, not in Firestore --
+         fold them in so the Analog List matches what's on the map. */
+      var seeds=collection==='foodtrucks'?(window.bopFtSeedTrucks||[]):(window.bopVsSeedVendors||[]);
+      seeds.forEach(function(t){ if(typeof t.lat==='number'&&typeof t.lng==='number')add(t); });
       var cities=Object.keys(groups).sort();
       var body=document.getElementById('bopAnalogBody');
       if(!cities.length){body.innerHTML='Nothing live right now, anywhere.';return;}
