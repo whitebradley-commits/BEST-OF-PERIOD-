@@ -54091,4 +54091,101 @@ html.bop-invite-active #bopInviteCornerRow{display:flex!important}
 })();
 </script>
 
+<!-- v521: Brad's call (2026-08-30) -- found it. Backing out through Go Live
+     → a map page (Realtor/Food Truck/Vendor Stand/Garage Sale/Car For Sale/
+     Safe Meet-Up) → its check-in form works fine one step at a time, since
+     each "Back" just closes itself and reveals whatever's still open
+     underneath. But nothing in that chain ever explicitly closes Go Live
+     or reopens Landing -- opening a map page only closes Landing, and
+     closing the map page doesn't reopen anything. So a few Backs in a row
+     can close every overlay in the chain at once, leaving nothing "open"
+     at all -- an all-black screen -- until some other tap happens to
+     trigger a page that reopens Landing again.
+     Fix: a single safety net. Whenever any of these Back buttons is
+     clicked, check right after whether anything is left open; if not,
+     reopen Landing. Doesn't change any of the existing per-page Back
+     button code -- just catches the dead-end case. -->
+<script id="bop-golive-back-safety-net-v521">
+(function(){
+  var OVERLAY_IDS=['bopLandingOverlay','bopGoLiveOverlay','bopRealtorOverlay','bopRealtorCheckin',
+    'bopFoodTruckOverlay','bopFoodTruckCheckin','bopVendorStandOverlay','bopVendorStandCheckin',
+    'bopYardSaleOverlay','bopYardSaleCheckin','bopCarForSaleOverlay','bopCarForSaleCheckin',
+    'bopSafeMeetupOverlay','bopSafeMeetupCheckin'];
+  function anyOpen(){
+    return OVERLAY_IDS.some(function(id){
+      var el=document.getElementById(id);
+      return el&&el.classList.contains('open');
+    });
+  }
+  document.addEventListener('click',function(e){
+    var back=e.target.closest&&e.target.closest('.bo-rt-back,.bo-ys-back,.bo-cfs-back,.bo-sm-back,.bo-ft-back');
+    if(!back)return;
+    setTimeout(function(){
+      if(!anyOpen()){
+        var landing=document.getElementById('bopLandingOverlay');
+        if(landing){
+          landing.classList.add('open');
+          document.body.style.overflow='';
+          window.scrollTo(0,0);
+        }
+      }
+    },60);
+  },true);
+})();
+</script>
+
+<!-- v522: Brad's call (2026-08-30) -- on the four new Go Live map pages
+     (Realtor, Car For Sale, Garage Sale, Safe Meet-Up -- NOT Food Truck or
+     Street Vendor, left alone per his ask), the headline right above the
+     map is replaced with a bigger, two-line heading:
+       "PUT YOUR [HOUSE/CAR/GARAGE SALE/ITEM] ON THE MAP. PERIOD."
+       "GO LIVE NOW!"
+     Roughly double the size of the old one-line headline. "PERIOD." uses
+     the site's established Bodoni Moda "Period" font/gold color, with the
+     small apple icon next to it, matching the Best of Period branding as
+     closely as a plain inline treatment allows -- not the precise dotless-
+     i overlay trick used on the invitation gate itself, which is too
+     fragile to safely reproduce across four different contexts. Per
+     Brad's own note, the apple being there matters more than an exact
+     font match everywhere. -->
+<style id="bop-golive-big-heading-v522">
+.bo-golive-big-heading{margin:70px auto 16px;max-width:420px;text-align:center;}
+.bo-golive-big-heading .bo-golive-big-line1{display:block;color:#F59E0B;font:900 2rem/1.25 'Archivo Black',sans-serif;letter-spacing:.01em;}
+.bo-golive-big-heading .bo-golive-period-word{font-family:'Bodoni Moda',serif;font-weight:900;position:relative;white-space:nowrap;}
+.bo-golive-big-heading .bo-golive-mini-apple{display:inline-block;width:.42em;height:.42em;margin-left:.06em;vertical-align:.55em;}
+.bo-golive-big-heading .bo-golive-mini-apple svg{display:block;width:100%;height:100%;}
+.bo-golive-big-heading .bo-golive-mini-apple path{fill:#F59E0B;}
+.bo-golive-big-heading .bo-golive-big-line2{display:block;margin-top:6px;color:#F59E0B;font:900 1.6rem/1.2 'Archivo Black',sans-serif;letter-spacing:.02em;}
+@media(max-width:360px){
+  .bo-golive-big-heading .bo-golive-big-line1{font-size:1.55rem;}
+  .bo-golive-big-heading .bo-golive-big-line2{font-size:1.25rem;}
+}
+</style>
+<script id="bop-golive-big-heading-script-v522">
+(function(){
+  var APPLE_SVG='<span class="bo-golive-mini-apple" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke="#F59E0B" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg></span>';
+  function heading(noun){
+    return '<span class="bo-golive-big-line1">PUT YOUR '+noun+' ON THE MAP. <span class="bo-golive-period-word">PERIOD.'+APPLE_SVG+'</span></span>'+
+           '<span class="bo-golive-big-line2">GO LIVE NOW!</span>';
+  }
+  var TARGETS=[
+    {sel:'#bopRealtorOverlay .bo-rt-sub',noun:'HOUSE'},
+    {sel:'#bopCarForSaleOverlay .bo-cfs-sub',noun:'CAR'},
+    {sel:'#bopYardSaleOverlay .bo-ys-sub',noun:'GARAGE SALE'},
+    {sel:'#bopSafeMeetupOverlay .bo-sm-sub',noun:'ITEM'}
+  ];
+  function install(){
+    TARGETS.forEach(function(t){
+      var el=document.querySelector(t.sel);
+      if(!el||el.dataset.bopV522)return;
+      el.dataset.bopV522='1';
+      el.classList.add('bo-golive-big-heading');
+      el.innerHTML=heading(t.noun);
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
