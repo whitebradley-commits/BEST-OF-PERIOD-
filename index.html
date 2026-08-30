@@ -9358,6 +9358,15 @@ function setupBopLanding(){
   }
 
   input.addEventListener('input', function(){
+    // v481: this older results renderer (data-dest / 3-result cap, no LA or
+    // SD Directory option) was still attached alongside the newer
+    // "authoritative" search script below, and both wrote to the same
+    // results box on every keystroke. Whichever one's setTimeout happened
+    // to settle last silently won — so the correct results (including
+    // "Los Angeles Directory" / "San Diego Directory") only showed up
+    // sometimes, seemingly at random. Once the newer script has taken over
+    // the box, this one steps aside instead of racing it.
+    if(input.dataset.authoritativeSearchV269 === '1') return;
     const q = input.value.trim().toLowerCase();
     if(!q){
       // A cursor by itself is not a search. Keep the landing page clean until
@@ -35215,7 +35224,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
 .bop-ny-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}
 .bop-ny-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}
 .bop-ny-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}
-.bop-ny-gateway-title{margin:0;text-align:center;font:900 clamp(3.3rem,15vw,8.2rem)/.8 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:-.055em;text-shadow:0 0 24px rgba(255,255,255,.18)}
+.bop-ny-gateway-title{margin:0;text-align:center;font:900 clamp(2.3rem,10vw,4.4rem)/1.05 'Fraunces',serif;text-transform:none;letter-spacing:-.01em;text-shadow:0 0 24px rgba(255,255,255,.18);white-space:normal;word-break:keep-all;overflow-wrap:normal}
 .bop-ny-gateway-title .bop-ny-title-city{display:block;color:#E4002B;text-shadow:0 0 12px rgba(228,0,43,.34)}
 .bop-ny-gateway-title span{display:block;color:#F59E0B;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:.56em;letter-spacing:-.035em;text-transform:none;text-shadow:0 0 18px rgba(245,158,11,.55)}
 .bop-ny-gateway-title .bop-ny-title-period{display:block;color:#F59E0B}
@@ -35246,8 +35255,7 @@ body.bop-nyc-context #boHeroTitle .bop-splash-city{color:#E4002B!important;text-
   <button type="button" class="bop-ny-gateway-close" aria-label="Close New York destinations">×</button>
   <div class="bop-ny-gateway-inner">
     <div class="bop-ny-gateway-kicker">CHOOSE YOUR DESTINATION</div>
-    <h1 class="bop-ny-gateway-title">BEST OF<span class="bop-ny-title-city">NEW YORK</span><span class="bop-ny-title-period">Period<span class="period-mark">©</span></span></h1>
-    <p class="bop-ny-gateway-prompt">Five dining worlds. Pick one.</p>
+    <h1 class="bop-ny-gateway-title">Best Of<span class="bop-ny-title-city">New York</span><span class="bop-ny-title-period">Period<span class="period-mark">©</span></span></h1>
     <div class="bop-ny-gateway-grid">
       <button type="button" class="bop-ny-gateway-tile" data-number="01" data-ny-destination="manhattan"><strong>Manhattan</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-faint" d="M3 53h114M8 53V39h11v14M23 53V31h10v22M37 53V36h9v17M75 53V34h9v19M88 53V28h11v25M103 53V38h10v15"/><path class="art-fill" d="M50 53V20h5v-8h3V6h4v6h3v8h5v33z"/><path class="art-main" d="M60 6V1M54 26h12M54 33h12M54 40h12M58 20v33M62 20v33"/></svg></button>
       <button type="button" class="bop-ny-gateway-tile" data-number="02" data-ny-destination="brooklyn"><strong>Brooklyn</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-main" d="M5 51h110M18 51V18h12v33M90 51V18h12v33M18 26h12M90 26h12M24 18V10M96 18V10M24 10l-5 8M24 10l6 8M96 10l-6 8M96 10l6 8M30 28c15-20 45-20 60 0M30 32c17-16 43-16 60 0M5 40h110"/><path class="art-faint" d="M11 40l7-12M109 40l-7-12M38 40V28M48 40V22M60 40V20M72 40V22M82 40V28"/></svg></button>
@@ -36012,6 +36020,17 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
   function start(){
     var input=document.getElementById('bopLandingSearchInput'),results=document.getElementById('bopLandingResults');if(!input||!results)return;
     input.addEventListener('input',function(){
+      // v482: this listener has no defer (unlike the newer "authoritative"
+      // search script below, which schedules its repaint via setTimeout so
+      // it always paints last on a given keystroke). On its own that's fine
+      // -- but a burst of fast keystrokes could interleave the two scripts'
+      // callbacks unpredictably, so which one's results actually stuck was
+      // effectively a coin flip. That's exactly why "Los Angeles Directory"
+      // and "San Diego Directory" only showed up sometimes. Once the newer
+      // script has taken over the box (same flag the older duplicate
+      // listener above already respects), this one steps aside too instead
+      // of racing it.
+      if(input.dataset.authoritativeSearchV269 === '1') return;
       var q=normalize(input.value);if(!q)return;
       var found=launchCities.filter(function(city){return matches(city,q)}).slice(0,3);if(!found.length)return;
       /* Preserve the specialized New York chooser, which owns New York and borough queries. */
@@ -36744,9 +36763,11 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
     {name:'Geneva',region:'Switzerland',dest:'geneva',aliases:['Genève','Geneve']},
     {name:'Zermatt',region:'Switzerland',dest:'zermatt'},
     {name:'San Diego',region:'California',dest:'sandiego'},
+    {name:'San Diego Directory',region:'California \u2014 Neighborhoods',dest:'sandiegodirectory',aliases:['SD Directory','S.D. Directory']},
     {name:'Austin',region:'Texas',dest:'austin',aliases:['Austin, Texas','ATX']},
     {name:'Silicon Valley',region:'California',dest:'siliconvalley',aliases:['S.V.','SV']},
     {name:'Los Angeles',region:'California',dest:'losangeles',aliases:['L.A.','LA']},
+    {name:'Los Angeles Directory',region:'California \u2014 Neighborhoods',dest:'losangelesdirectory',aliases:['LA Directory','L.A. Directory']},
     {name:'Santa Barbara',region:'California',dest:'santabarbara'},
     {name:'San Francisco',region:'California',dest:'sanfrancisco',aliases:['S.F.','SF']},
     {name:'New York',region:'State Directory',dest:'newyork',aliases:['New York State']},
@@ -36785,6 +36806,17 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
     if(dest==='newyork'&&typeof window.bopOpenNewYorkGateway==='function'){
       if(landing)landing.classList.remove('open');if(results){results.classList.remove('open');results.innerHTML=''}
       window.bopOpenNewYorkGateway();return;
+    }
+    // "Los Angeles Directory" / "San Diego Directory" are the neighborhood
+    // breakdown for those two multi-area cities -- same idea as the New
+    // York state gateway above, just using the existing zone-picker map
+    // instead of a tile grid. Plain "Los Angeles" / "San Diego" keep going
+    // straight to the city's own main page, unchanged.
+    if((dest==='losangelesdirectory'||dest==='sandiegodirectory')&&typeof window.bopShowCityGate==='function'){
+      var realCity=dest==='losangelesdirectory'?'losangeles':'sandiego';
+      if(landing)landing.classList.remove('open');if(results){results.classList.remove('open');results.innerHTML=''}
+      boCityContext=realCity;
+      window.bopShowCityGate(realCity);return;
     }
     if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
     boCityContext=dest;
@@ -46340,7 +46372,7 @@ var tries=0,t=setInterval(function(){tries++;if(install()||tries>30)clearInterva
    apple at all and still shows a plain dotted i. Handled here with the
    same wrapper structure so the geometry fixes apply to it too. */
 
-var EXEMPT = '#bopExclusiveInvitation, #bopLandingOverlay, #tbotrLandingOverlay';
+var EXEMPT = '#bopExclusiveInvitation, #bopLandingOverlay, #tbotrLandingOverlay, #bopNewYorkGateway';
 function fixWrap(wrap){
   if(!wrap || wrap.nodeType !== 1) return;
   /* Front-page containers keep the original, already-approved rendering. */
