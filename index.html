@@ -22758,7 +22758,9 @@ const boPickerConfig = {
     { label: 'Thai', cat: 'thai' },
     { label: 'Vietnamese', cat: 'vietnamese' },
     { label: 'Pho', cat: 'pho' },
+    { label: 'Ramen', cat: 'ramen' },
     { label: 'Indian', cat: 'indian' },
+    { label: 'Filipino', cat: 'filipino' },
     { label: 'Fusion Asian', cat: 'asianfusion' },
     { label: 'Combo', cat: 'combo' },
     { label: BJS_PICKS_BUTTON_LABEL, cat: 'bjspicks' },
@@ -22876,6 +22878,7 @@ const boPickerTitles = {
     {name:"Diddy Riese Cookies",city:"losangeles",rating:"4.7",reviews:1007,ratingSource:"Tripadvisor",why:"Westwood's legendary made-to-order ice-cream cookie sandwich",note:"A high-volume Los Angeles dessert institution with more than a thousand Tripadvisor reviews.",address:"926 Broxton Ave, Los Angeles, CA 90024",phone:"(310) 208-0448",price:1},
     {name:"B Sweet Dessert Bar",city:"losangeles",rating:"4.7",reviews:2100,ratingSource:"Google",why:"Bread pudding, halo-halo and rotating over-the-top weekly specials",note:"A Sawtelle-area destination built entirely around warm, shareable desserts.",address:"2005 Sawtelle Blvd, Los Angeles, CA 90025",phone:"(310) 963-9769",price:2},
     {name:"Wanderlust Creamery — Atwater Village",city:"losangeles",rating:"4.7",reviews:1500,ratingSource:"Google",why:"Travel-inspired ice cream with flavors drawn from around the world",note:"Small-batch flavors and strong review volume make this one of LA's most distinctive ice-cream shops.",address:"3134 Glendale Blvd, Los Angeles, CA 90039",phone:"(323) 522-3983",price:2},
+    {name:"Levain Bakery",city:"losangeles",rating:"4.3",reviews:50,ratingSource:"Yelp",why:"The Manhattan-born 6-ounce chocolate chip cookie, now on South Beverly Drive",note:"Beverly Hills outpost of the famous Upper West Side cookie bakery, alongside its blueberry muffins, loaf cakes and weekend-only sticky buns.",address:"130 S Beverly Dr, Beverly Hills, CA 90212",phone:"(424) 699-1783",url:"https://levainbakery.com/pages/beverly-hills-ca",price:2,bjsTip:"<strong style=\"color:#F59E0B;\">THE CHOCOLATE CHIP COOKIE</strong><br>It's hard to make this claim, considering every mother and grandmother in the world may make the best chocolate chip cookie\u2026 However, this actually is #1 must eat."},
     {name:"Eileen's Special Cheesecake",city:"newyork",rating:"4.6",reviews:2158,ratingSource:"Tripadvisor",why:"A downtown New York cheesecake institution since 1975",note:"Tripadvisor ranks it among New York City's strongest dessert destinations, backed by more than 2,100 reviews.",address:"17 Cleveland Pl, New York, NY 10012",phone:"(212) 966-5585",price:1},
     {name:"Angelina Bakery — Times Square",city:"newyork",rating:"4.9",reviews:820,ratingSource:"Tripadvisor",why:"Italian bomboloni, croissants and pastry in the center of Times Square",note:"One of the highest current Tripadvisor dessert scores in New York with meaningful volume.",address:"1675 Broadway, New York, NY 10019",phone:"(212) 687-7100",price:2},
     {name:"Veniero's Pasticceria & Caffè",city:"newyork",rating:"4.5",reviews:590,ratingSource:"Tripadvisor",why:"Old New York Italian pastry, cannoli and cheesecake since 1894",note:"The longevity, selection and sustained review record make Veniero's essential to the directory.",address:"342 E 11th St, New York, NY 10003",phone:"(212) 674-7070",price:2},
@@ -36009,7 +36012,7 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
     var landing=document.getElementById('bopLandingOverlay'),results=document.getElementById('bopLandingResults');
     if(dest==='newyork'&&typeof window.bopOpenNewYorkGateway==='function'){if(landing)landing.classList.remove('open');if(results){results.classList.remove('open');results.innerHTML=''}window.bopOpenNewYorkGateway();return}
     if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
-    boCityContext=dest;
+    boCityContext=dest;window.boCityContext=dest;
     if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
     if(landing)landing.classList.remove('open');
     if(results){results.classList.remove('open');results.innerHTML=''}
@@ -36820,6 +36823,18 @@ apply();document.addEventListener('DOMContentLoaded',apply,{once:true});window.B
     }
     if(typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[dest])return;
     boCityContext=dest;
+    // v483: this script's own top-level scope shadows the real, page-wide
+    // boCityContext -- the bare assignment above only ever updated THIS
+    // script's private copy. Every actual render call (boRenderCategory,
+    // the hero, the tile grid) reads the real one and was fine, but
+    // anything living outside this script -- most importantly the Share
+    // Page button, which explicitly reads window.boCityContext -- kept
+    // seeing whatever city was set before this search, which defaults to
+    // Vegas ('bestof') on a fresh load. That's exactly why sharing a page
+    // for a city picked from this search box (Brooklyn, in one report)
+    // produced share text for Las Vegas instead. Forcing the assignment
+    // onto window explicitly closes that gap regardless of local shadowing.
+    window.boCityContext=dest;
     if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
     if(landing)landing.classList.remove('open');
     if(results){results.classList.remove('open','bop-ny-search-results');results.innerHTML=''}
@@ -38015,9 +38030,51 @@ window.__bopTick = function(fn, ms){
     kosherRec('Beverly Hills Thai Kosher Kitchen','4.2 / 5',
       'The only Glatt kosher Thai restaurant in the world, tucked into the heart of Beverly Hills',
       'Authentic Thai cooking \u2014 spicy noodle dishes, kefir-lime chicken \u2014 rebuilt entirely kosher; small room, arrive early to beat the dinner rush.',
-      '9036 Burton Way, Beverly Hills, CA 90211','(310) 288-4321','','350, 55%, 30%',3)
+      '9036 Burton Way, Beverly Hills, CA 90211','(310) 288-4321','','350, 55%, 30%',3),
+    kosherRec('Levain Bakery','4.3 / 5',
+      'The Manhattan-born 6-ounce chocolate chip cookie, now on South Beverly Drive',
+      '*Levain\u2019s own policy: \u201cOur facilities are not under kosher supervision, but our cookie ingredients are certified kosher.\u201d',
+      '130 S Beverly Dr, Beverly Hills, CA 90212','(424) 699-1783','https://levainbakery.com/pages/beverly-hills-ca','35, 45%, 28%',2,
+      {bjsTip:"<strong style=\"color:#F59E0B;\">THE CHOCOLATE CHIP COOKIE</strong><br>It's hard to make this claim, considering every mother and grandmother in the world may make the best chocolate chip cookie\u2026 However, this actually is #1 must eat."})
   ];
   (boCategoryData.nationkosher=boCategoryData.nationkosher||[]).push.apply(boCategoryData.nationkosher,laKosher);
+})();
+</script>
+<script id="bop-la-indian-buildout-v1">
+(function(){
+  var ADDED=false;
+  function apply(){
+    if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+    boCategoryData.indian=Array.isArray(boCategoryData.indian)?boCategoryData.indian:[];
+    if(!ADDED){
+      boCategoryData.indian.push(
+        {
+          rank:null,name:"Anarbagh",city:"losangeles",
+          rating:"4.1 / 5",reviews:975,ratingSource:"BJS aggregate",
+          ratingNote:"Yelp 4.3 (975 reviews) averaged with Google 3.9 (388 ratings) for a 4.1 BJS aggregate. Tripadvisor ranks it #77 of 212 restaurants in Beverly Hills but doesn't surface a clean star average.",
+          why:"Beverly Hills fine-dining Indian institution on South Beverly Drive since 1997",
+          note:"Chicken tikka masala, lamb korma and lamb vindaloo in a white-tablecloth Beverly Hills dining room; named a top Indian kitchen in Southern California by the LA Times and Daily News.",
+          address:"138 S Beverly Dr, Beverly Hills, CA 90212",phone:"(310) 888-4011",
+          url:"https://anarbaghbeverlyhills.com/",price:3,
+          instagram:null,facebook:null
+        },
+        {
+          rank:null,name:"Spice Affair",city:"losangeles",
+          rating:"4.5 / 5",reviews:0,ratingSource:"Uber Eats",
+          ratingNote:"Uber Eats 4.5 is the only clean, citable star average found this pass \u2014 Yelp and Google didn't surface a verifiable number, so this is a single source, not yet a full BJS aggregate.",
+          why:"Restaurant Row fine dining on La Cienega, known for its lamb biryani and habanero chicken tikka",
+          note:"Upscale modern Indian in a dramatic dining room with a fountain and chandeliers; opened 2014 on Beverly Hills' Restaurant Row.",
+          address:"50 N La Cienega Blvd, Beverly Hills, CA 90211",phone:"(310) 400-6800",
+          url:"https://spice-affair.com/",price:3,
+          instagram:null,facebook:null
+        }
+      );
+      ADDED=true;
+    }
+    return true;
+  }
+  function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+  ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();
 </script>
 <style id="bo-san-diego-territories-v1">
@@ -50281,7 +50338,13 @@ var ROWS=[
    why:"Three Jersey kids bringing the East Coast deli sandwich to Melrose — the chicken cutlet with pesto and spicy vodka sauce is the order",
    note:"The Melrose flagship (with sister shops in Venice and elsewhere); big Italian subs on house ciabatta and seeded rolls — the Don Pepe, the Masterpiece, meatball parm, a cult crispy-chicken Caesar wrap — plus real vegetarian options like eggplant parm. Built for pickup and delivery; a few counter seats and a patio.",
    specialNote:"The TikTok deli — the crispy chicken Caesar wrap went viral and made Ggiata one of LA's most-ordered sandwich shops.",
-   url:"https://www.ggiata.com/",address:"5009 Melrose Ave, Los Angeles, CA 90038",phone:"(323) 798-5713",hue:"340, 40%, 28%",price:2,instagram:"ggiata",facebook:null,openedDate:"2020"}}
+   url:"https://www.ggiata.com/",address:"5009 Melrose Ave, Los Angeles, CA 90038",phone:"(323) 798-5713",hue:"340, 40%, 28%",price:2,instagram:"ggiata",facebook:null,openedDate:"2020"}},
+ {cats:['deli'],r:{name:"Nate'n Al's",city:"losangeles",rating:"4.5 / 5",reviews:6086,ratingSource:"BJS aggregate",
+   ratingNote:"BJS aggregate: Tripadvisor 4.1 (460 reviews, ranked #21 of 213 Beverly Hills restaurants) + Restaurant Guru 4.9 (6,086 reviews) = 4.5.",
+   why:"Beverly Hills' celebrity deli since 1945 — Larry King's daily breakfast spot for over 40 years",
+   note:"Classic New York-style deli on Beverly Drive: hot pastrami and corned beef on double rye, matzo ball soup, smoked fish, blintzes and a full breakfast-all-day menu. Bought by longtime regulars Shelli and Irving Azoff in 2019 to keep the 1945 landmark going.",
+   specialNote:"CELEBRITY HANGOUT. Larry King had breakfast here almost every morning for more than 40 years, and generations of Hollywood agents, executives and stars have treated the corner booths as an unofficial meeting room since 1945.",
+   url:"https://www.natenals.com/",address:"414 N Beverly Dr, Beverly Hills, CA 90210",phone:"(310) 274-0101",hue:"25, 45%, 28%",price:2,instagram:null,facebook:"NatenAl",openedDate:"1945",legendary:true}}
 ];
 function key(city,name){return String(city||'bestof')+'|'+String(name).trim().toLowerCase();}
 function addTo(cat,r){
