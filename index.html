@@ -23671,7 +23671,7 @@ function renderBjsPickFooter(cat){
     const allPizzaBtn=document.createElement('button');
     allPizzaBtn.type='button';
     allPizzaBtn.className='bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed bo-all-pizza-scores-btn';
-    allPizzaBtn.innerHTML='<span>THE<br>ANALOG LIST</span>';
+    allPizzaBtn.innerHTML='<span>THE ANALOG<br><span class="bop-analog-pizza-script">PIZZA</span><br>LIST</span>';
     allPizzaBtn.addEventListener('click',function(){
       if(typeof window.boOpenAllPizzaScores==='function')window.boOpenAllPizzaScores();
     });
@@ -38545,6 +38545,8 @@ window.__bopTick = function(fn, ms){
 </style>
 <style id="bop-austin-steak-italian-pizza-and-all-scores-v1">
   .bo-all-pizza-scores-btn{color:#F59E0B!important;font-size:.7rem!important;line-height:1.08!important;letter-spacing:.035em!important}
+  .bo-all-pizza-scores-btn.bo-bottom-tile-fixed{width:126px!important;min-width:126px!important;max-width:126px!important;height:82px!important;min-height:82px!important;padding:8px 12px 8px 36px!important;border-radius:0!important;clip-path:polygon(0% 50%,100% 4%,100% 96%);justify-content:center}
+  .bo-all-pizza-scores-btn .bop-analog-pizza-script{font-size:1.15em;margin:1px 0}
   #bopAllPizzaScores{position:fixed;inset:0;z-index:13100;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}
   .bop-all-pizza-open #bopAllPizzaScores{display:block}
   .bop-all-pizza-shell{width:min(980px,100%);min-height:100%;margin:auto;padding:44px 12px 60px}
@@ -38553,9 +38555,10 @@ window.__bopTick = function(fn, ms){
   .bop-analog-pizza-script{display:inline-block;font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:1.35em;color:#E4002B;text-shadow:0 0 16px rgba(228,0,43,.65),0 0 40px rgba(228,0,43,.3);letter-spacing:.01em;margin:0 .06em}
   .bop-all-pizza-sub{max-width:650px;margin:0 auto 24px;text-align:center;color:#d6b472;font:800 11px/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.055em;text-transform:uppercase}
   .bop-all-pizza-grid{display:flex;flex-direction:column;gap:0}
-  .bop-all-pizza-row{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;padding:16px 6px;border-bottom:1px solid rgba(245,158,11,.18)}
+  .bop-all-pizza-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:16px 6px;border-bottom:1px solid rgba(245,158,11,.18)}
   .bop-all-pizza-row-name{flex:1 1 150px;min-width:0;color:#fff;font:900 13px/1.2 'Archivo Black',Arial,sans-serif;overflow-wrap:anywhere}
-  .bop-all-pizza-row-phone{flex:0 0 auto;color:#F59E0B;font:700 11.5px/1.2 'Archivo Narrow',Arial,sans-serif;text-decoration:none;white-space:nowrap}
+  .bop-all-pizza-row-dash{color:#F59E0B;font-weight:700}
+  .bop-all-pizza-row-phone{color:#F59E0B;font:700 11.5px/1.2 'Archivo Narrow',Arial,sans-serif;text-decoration:none;white-space:nowrap}
   .bop-all-pizza-row-phone:hover{text-decoration:underline}
   .bop-all-pizza-row-scores{flex:0 0 auto;display:flex;gap:10px;align-items:center;margin-left:auto}
   .bop-all-pizza-row-score{display:flex;flex-direction:column;align-items:center;min-width:34px}
@@ -38661,8 +38664,8 @@ window.__bopTick = function(fn, ms){
       return '<span class="bop-all-pizza-row-score'+(has?'':' is-dash')+'">'+(has?Number(val).toFixed(1):'\u2014')+'</span>';
     }
     overlay.querySelector('.bop-all-pizza-grid').innerHTML=rows.map(function(r){
-      var phoneHTML=r.phone?'<a class="bop-all-pizza-row-phone" href="tel:'+String(r.phone).replace(/[^0-9+]/g,'')+'">'+esc(r.phone)+'</a>':'<span class="bop-all-pizza-row-phone" style="opacity:.4">\u2014</span>';
-      return '<div class="bop-all-pizza-row"><span class="bop-all-pizza-row-name">'+esc(r.name)+'</span>'+phoneHTML+'<span class="bop-all-pizza-row-scores">'+scoreChip(r.bjsPizzaScore)+scoreChip(r.oneBiteScore)+scoreChip(r.oneBiteDaveScore)+'</span></div>';
+      var phoneHTML=r.phone?' <span class="bop-all-pizza-row-dash">\u2014</span> <a class="bop-all-pizza-row-phone" href="tel:'+String(r.phone).replace(/[^0-9+]/g,'')+'">'+esc(r.phone)+'</a>':'';
+      return '<div class="bop-all-pizza-row"><span class="bop-all-pizza-row-name">'+esc(r.name)+phoneHTML+'</span><span class="bop-all-pizza-row-scores">'+scoreChip(r.bjsPizzaScore)+scoreChip(r.oneBiteScore)+scoreChip(r.oneBiteDaveScore)+'</span></div>';
     }).join('');
   }
   function open(){savedY=window.scrollY;build();document.documentElement.classList.add('bop-all-pizza-open');document.body.style.overflow='hidden';overlay.scrollTop=0}
@@ -44036,7 +44039,7 @@ function buildGate(key){
     window.scrollTo(0,0);
   });
   /* v462: citywide strip at the top of the map — opens the full parent-city directory (every neighborhood ranked together). */
-      el.querySelectorAll('.bop-lamap-all').forEach(function(all){ all.addEventListener('click', function(){ el.classList.remove('open'); document.body.style.overflow=''; var best = document.getElementById('bestOfOverlay'); if(best) best.classList.add('open'); window.boCityContext = key; try { boCityContext = key; } catch(e) {} dismissed[key] = true; if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', key); window.boRenderCategory('otheroptions'); window.scrollTo(0,0); }); });
+      el.querySelectorAll('.bop-lamap-all').forEach(function(all){ all.addEventListener('click', function(){ el.classList.remove('open'); document.body.style.overflow=''; var best = document.getElementById('bestOfOverlay'); if(best) best.classList.add('open'); window.boCityContext = key; try { boCityContext = key; } catch(e) {} dismissed[key] = true; window.BOP_DISMISSED_GATES = window.BOP_DISMISSED_GATES || {}; window.BOP_DISMISSED_GATES[key] = true; if(typeof boReplaceBestOfRoute === 'function') boReplaceBestOfRoute('otheroptions', key); window.boRenderCategory('otheroptions'); window.scrollTo(0,0); }); });
       el.querySelectorAll('.bop-lamap-zone').forEach(function(zone){
     zone.addEventListener('click', function(){
       // v401: the area script stamps each zone with its own destination key
@@ -44066,6 +44069,21 @@ function buildGate(key){
 
 var dismissed = {};
 function showGate(key){
+  // v480: several different taps that route to "Los Angeles" (or San
+  // Diego) each independently call this to show the neighborhood map --
+  // including one that fired even when the user was ALREADY sitting on
+  // that city's own main page. The gate would flash open and then get
+  // closed again right after, so the tap looked like it did nothing --
+  // and the SECOND tap landed for real on whichever neighborhood zone
+  // happened to be under the user's finger (this is exactly how a tap on
+  // "Los Angeles" from the LA main page could land on North Hollywood &
+  // Burbank). If we're already parked on this exact city's main page,
+  // there's nothing to gate -- skip reopening the map entirely.
+  var best = document.getElementById('bestOfOverlay');
+  var alreadyThere = best && best.classList.contains('open') &&
+    typeof boCityContext !== 'undefined' && boCityContext === key &&
+    typeof boCurrentCat !== 'undefined' && boCurrentCat === 'otheroptions';
+  if(alreadyThere) return;
   var el = buildGate(key);
   document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');});
   el.classList.add('open');
@@ -44075,6 +44093,8 @@ function showGate(key){
 window.bopShowCityGate = showGate;
 function proceedPastGate(key){
   dismissed[key] = true;
+  window.BOP_DISMISSED_GATES = window.BOP_DISMISSED_GATES || {};
+  window.BOP_DISMISSED_GATES[key] = true;
   var el = gates[key];
   if(el){ el.classList.remove('open'); }
   document.body.style.overflow='';
@@ -44090,7 +44110,7 @@ window.bopShowCityGate = function(k){ showGate(k); };
 var origRender = window.boRenderCategory;
 if(typeof origRender === 'function' && !origRender.__bopGateWrapped){
   var wrapped = function(cat){
-    if(CITY_MAPS[window.boCityContext] && cat === 'otheroptions' && !dismissed[window.boCityContext]){
+    if(CITY_MAPS[window.boCityContext] && cat === 'otheroptions' && !dismissed[window.boCityContext] && !(window.BOP_DISMISSED_GATES && window.BOP_DISMISSED_GATES[window.boCityContext])){
       showGate(window.boCityContext);
       return;
     }
