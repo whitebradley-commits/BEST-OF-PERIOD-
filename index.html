@@ -54048,4 +54048,47 @@ html.bop-invite-active #bopInviteCornerRow{display:flex!important}
 })();
 </script>
 
+<!-- v520: Brad's call (2026-08-30) -- every Go Live map was opening centered
+     on a fixed Las Vegas point regardless of where the visitor actually is.
+     Now all six (Realtor, Food Truck, Vendor Stand, Yard Sale/Garage Sale,
+     Car For Sale, Safe Meet-Up) recenter on the visitor's real location as
+     soon as it's created, closer zoom than the old metro-wide default.
+     Falls back to whatever the map already opened with (Las Vegas) if the
+     visitor's browser doesn't support geolocation or they decline the
+     permission prompt -- there's no way around that; the browser controls
+     it, not the site. Doesn't touch any of the existing map-init code, just
+     watches for each map instance to appear and recenters it once. -->
+<script id="bop-golive-maps-recenter-on-user-v520">
+(function(){
+  var INSTANCE_VARS=['bopFtMapInstance','bopVsMapInstance','bopRealtorMapInstance','bopYardSaleMapInstance','bopCarForSaleMapInstance','bopSafeMeetupMapInstance'];
+  var centered=(typeof WeakSet!=='undefined')?new WeakSet():null;
+  var fallbackSeen=[];
+  function alreadyCentered(inst){
+    if(centered) return centered.has(inst);
+    return fallbackSeen.indexOf(inst)!==-1;
+  }
+  function markCentered(inst){
+    if(centered) centered.add(inst);
+    else fallbackSeen.push(inst);
+  }
+  function centerOnUser(map){
+    if(!navigator.geolocation||!map) return;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      try{ map.setView([pos.coords.latitude,pos.coords.longitude],13); }catch(_e){}
+    }, function(){ /* permission denied or unavailable -- leave the map's existing default center in place */ }, {enableHighAccuracy:true,timeout:8000});
+  }
+  function tick(){
+    INSTANCE_VARS.forEach(function(v){
+      var inst=window[v];
+      if(inst&&!alreadyCentered(inst)){
+        markCentered(inst);
+        centerOnUser(inst);
+      }
+    });
+  }
+  setInterval(tick,400);
+  tick();
+})();
+</script>
+
 </body></html>
