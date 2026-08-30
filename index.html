@@ -38040,6 +38040,37 @@ window.__bopTick = function(fn, ms){
   (boCategoryData.nationkosher=boCategoryData.nationkosher||[]).push.apply(boCategoryData.nationkosher,laKosher);
 })();
 </script>
+<script id="bop-superiority-burger-relocation-v1">
+(function(){
+  var FIXED=false;
+  function apply(){
+    if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+    if(FIXED)return true;
+    var found=false;
+    Object.keys(boCategoryData).forEach(function(cat){
+      var list=boCategoryData[cat];
+      if(!Array.isArray(list))return;
+      list.forEach(function(r){
+        if(!r||!r.name)return;
+        if(String(r.name).toLowerCase()!=='superiority burger')return;
+        found=true;
+        // Reopened Feb 2026 at a new, larger address after ~18 months
+        // closed for the move -- the old 430 E 9th St location is
+        // permanently closed on Yelp. Also correcting city: this is an
+        // East Village, Manhattan restaurant, not Brooklyn.
+        r.city='newyork';
+        r.address='119 Avenue A, New York, NY 10002';
+        r.phone='(212) 256-1192';
+        r.url=r.url||'https://www.superiorityburger.com/';
+      });
+    });
+    if(found)FIXED=true;
+    return found;
+  }
+  function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+  ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
 <script id="bop-la-indian-buildout-v1">
 (function(){
   var ADDED=false;
