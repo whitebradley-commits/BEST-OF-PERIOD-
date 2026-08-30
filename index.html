@@ -42008,6 +42008,7 @@ body.bop-main-landing-visible #bopStaticLandingDock{display:flex!important;visib
       attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19
     }).addTo(map);
     window.bopFtMapInstance = map;
+    if(window.bopFtTerritoryZoom) window.bopFtTerritoryZoom(map); /* v470: open on the viewer's territory */
     window.bopFtMarkers = {};
     var truckIcon = L.divIcon({className:'bo-ft-marker', html:truckIconHTML, iconSize:[34,34], iconAnchor:[17,17]});
 
@@ -47703,6 +47704,7 @@ html.bop-qr-bypass-active body>#bopVendorStandCheckin{display:block!important;vi
     L.control.zoom({position:'topleft'}).addTo(map);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19}).addTo(map);
     window.bopVsMapInstance=map;
+    if(window.bopFtTerritoryZoom) window.bopFtTerritoryZoom(map); /* v470: open on the viewer's territory */
     window.bopVsMarkers={};
     hookVsMapClose(map);
     map.on('popupopen', function(e){
@@ -50571,4 +50573,61 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clear
 })();
 </script>
 
+
+
+<script id="bop-ft-map-territory-zoom-v470-script">
+(function(){
+/* v470: Food-truck and vendor-stand maps used to open on the whole
+   continental US (setView [39,-98] zoom 4), so every viewer had to pinch
+   down to their own city. Now, when either map opens, we ask the phone
+   for its location (same permission the check-in flow already uses) and
+   drop the map on the viewer at zoom 9 -- roughly 30 miles across a
+   phone screen, i.e. the whole metro. If location is denied, times out,
+   or isn't available, nothing changes: the national view remains as the
+   fallback. Also adds a small "Near me" button so anyone can snap back
+   to their area after panning. Display-only: the check-in form, database
+   writes and live count are not in this code path. Both maps call
+   window.bopFtTerritoryZoom(map) right after they're created; the call is
+   guarded, so if this script ever fails to load the maps behave as before. */
+var TERRITORY_ZOOM = 9;
+function ensureCss(){
+  if(document.getElementById('bop-ft-nearme-css')) return;
+  var st=document.createElement('style'); st.id='bop-ft-nearme-css';
+  st.textContent='.bo-ft-nearme{display:block;margin-top:6px;padding:8px 11px;border-radius:10px;border:1px solid rgba(246,160,20,.55);background:rgba(8,8,8,.92);color:#f6a014;font:800 12px/1 Arial,sans-serif;letter-spacing:.04em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)}.bo-ft-nearme:active{background:rgba(246,160,20,.22)}.bo-ft-youdot{background:#2f8cff;border:3px solid #fff;border-radius:50%;width:16px;height:16px;box-shadow:0 0 0 6px rgba(47,140,255,.28)}';
+  document.head.appendChild(st);
+}
+window.bopFtTerritoryZoom = function(map){
+  if(!map || typeof L === 'undefined') return;
+  ensureCss();
+  var wantRecenter = true, youDot = null;
+  function place(latlng){
+    try{
+      if(youDot){ map.removeLayer(youDot); }
+      youDot = L.marker(latlng,{icon:L.divIcon({className:'bo-ft-youdot',iconSize:[16,16],iconAnchor:[8,8]}),interactive:false,zIndexOffset:-100}).addTo(map);
+    }catch(e){}
+  }
+  map.on('locationfound', function(e){
+    place(e.latlng);
+    if(wantRecenter){ wantRecenter=false; map.setView(e.latlng, TERRITORY_ZOOM); }
+  });
+  map.on('locationerror', function(){ /* keep the national fallback view */ });
+  try{ map.locate({setView:false, enableHighAccuracy:false, timeout:8000, maximumAge:300000}); }catch(e){}
+  try{
+    var NearMe = L.Control.extend({
+      options:{position:'topleft'},
+      onAdd:function(){
+        var b=L.DomUtil.create('button','bo-ft-nearme'); b.type='button'; b.textContent='\u{1F4CD} Near me';
+        L.DomEvent.disableClickPropagation(b); L.DomEvent.disableScrollPropagation(b);
+        b.addEventListener('click', function(){
+          wantRecenter=true;
+          try{ map.locate({setView:false, enableHighAccuracy:true, timeout:8000, maximumAge:0}); }catch(e){}
+        });
+        return b;
+      }
+    });
+    map.addControl(new NearMe());
+  }catch(e){}
+};
+})();
+</script>
 </body></html>
