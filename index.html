@@ -53809,4 +53809,243 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clear
 })();
 </script>
 
+<!-- v518: Brad's call (2026-08-30), four fixes/additions from his screenshot
+     and follow-up:
+     1) ENTER orb was 70px/15px (leftover sizing for the old two-line "BJS/
+        CO." stack) while its row-mates are 54px/42px -- that mismatch is
+        the "distorted" look on a smaller phone. Now it matches its siblings.
+     2) The BJS Co. corner badge wasn't showing at all: it was appended
+        inside #bopExclusiveInvitation, which uses backdrop-filter -- on
+        iOS Safari that makes position:fixed children position relative to
+        that box (and it's a CSS grid with one implicit cell), not the
+        viewport, so the badge was getting swallowed. Moved it to sit on
+        <body> directly, shown only while the gate is active.
+     3) Realtor page: a "CURRENTLY LIVE! analog list" link now sits directly
+        under the map -- first thing under it, per Brad's ask -- toggling
+        to a simple scrollable text list of the same live check-ins for
+        anyone who'd rather not use the map. Trying this on Realtor first.
+     4) Food Truck and Street Vendor pages: a short FYI note added under
+        the check-in button -- permanent locations, hours vary, check
+        before heading over. -->
+<style id="bop-invite-fixes-and-analog-list-v518">
+#bopExclusiveInvitation #bopExclusiveEnter{width:54px!important;height:54px!important;font-size:10.5px!important;}
+@media(max-width:370px){#bopExclusiveInvitation #bopExclusiveEnter{width:42px!important;height:42px!important;}}
+#bopExclusiveInviteBjsBadge2{display:none;position:fixed;right:14px;bottom:14px;z-index:2147483647;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;padding:0}
+html.bop-invite-active #bopExclusiveInviteBjsBadge2{display:flex!important}
+#bopExclusiveInviteBjsBadge2 svg{width:24px;height:24px}
+
+.bo-rt-analog-toggle{display:block;width:min(420px,100%);margin:14px auto 0;padding:10px 14px;border:2px solid #F59E0B;border-radius:10px;background:#0a0a0a;cursor:pointer;text-align:center}
+.bo-rt-analog-toggle .bo-rt-analog-live{color:#F59E0B;font:900 .95rem/1 'Archivo Black',sans-serif;letter-spacing:.02em}
+.bo-rt-analog-toggle .bo-rt-analog-sub{color:#ccc;font:700 .68rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;margin-left:6px}
+#bopRtAnalogListEl{display:none;width:100%;max-width:420px;margin:12px auto 0;text-align:left;max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#bopRtAnalogListEl .bo-rt-analog-card{border:1.5px solid #F59E0B;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#0a0a0a}
+#bopRtAnalogListEl .bo-rt-analog-name{color:#F59E0B;font:800 .9rem Arial,sans-serif;margin-bottom:2px}
+#bopRtAnalogListEl .bo-rt-analog-facts{color:#8fbf6f;font:800 .78rem Arial,sans-serif;margin-bottom:4px}
+#bopRtAnalogListEl .bo-rt-analog-desc{color:#ccc;font:600 .78rem/1.4 Arial,sans-serif;margin-bottom:4px}
+#bopRtAnalogListEl .bo-rt-analog-links{color:#eee;font:600 .8rem Arial,sans-serif;line-height:1.5}
+#bopRtAnalogListEl .bo-rt-analog-links a{color:#F59E0B}
+#bopRtAnalogListEl .bo-rt-analog-empty{color:#999;font:600 .82rem Arial,sans-serif;text-align:center;padding:14px 0}
+
+.bo-ft-fyi-note{max-width:420px;margin:14px auto 0;color:#999;font:600 .74rem/1.5 'Archivo Narrow',Arial,sans-serif;text-align:center}
+</style>
+<button id="bopExclusiveInviteBjsBadge2" type="button" aria-label="BJS Co. — Founders">
+  <svg aria-hidden="true" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="17" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="10.5" font-weight="900" fill="#F59E0B">BJS</text><text x="20" y="27" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="7.5" font-weight="900" fill="#E4002B">CO.</text></svg>
+</button>
+<script id="bop-invite-fixes-and-analog-list-script-v518">
+(function(){
+  // Fix 2: remove the old body-of-gate badge (broken by backdrop-filter
+  // containment) and rely on the fresh body-level one instead.
+  function install(){
+    var oldBadge=document.getElementById('bopExclusiveInviteBjsBadge');
+    if(oldBadge&&oldBadge.parentNode) oldBadge.parentNode.removeChild(oldBadge);
+    var badge=document.getElementById('bopExclusiveInviteBjsBadge2');
+    if(badge&&!badge.dataset.wired){
+      badge.dataset.wired='1';
+      badge.addEventListener('click',function(){
+        var about=document.getElementById('aboutUsOverlay');
+        if(about){about.classList.add('open');about.scrollTop=0;}
+      });
+    }
+
+    // Fix 3: Currently Live! analog list toggle on the Realtor page.
+    var mapEl=document.getElementById('bopRealtorOverlayMapEl');
+    var cta=document.getElementById('bopRtCheckinCta');
+    if(mapEl&&cta&&!document.getElementById('bopRtAnalogToggle')){
+      var toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.id='bopRtAnalogToggle';
+      toggle.className='bo-rt-analog-toggle';
+      toggle.innerHTML='<span class="bo-rt-analog-live">CURRENTLY LIVE!</span><span class="bo-rt-analog-sub">analog list</span>';
+      mapEl.parentNode.insertBefore(toggle,mapEl.nextSibling);
+
+      var listEl=document.createElement('div');
+      listEl.id='bopRtAnalogListEl';
+      mapEl.parentNode.insertBefore(listEl,toggle.nextSibling);
+
+      var listUnsub=null;
+      function renderList(){
+        if(!window.bopFtDb)return;
+        if(listUnsub)return;
+        listUnsub=window.bopFtDb.collection('realtors').onSnapshot(function(snap){
+          var rows=[];
+          snap.forEach(function(doc){
+            var d=doc.data();
+            if(!d.checkedInAt) return;
+            if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+            rows.push(d);
+          });
+          if(!rows.length){ listEl.innerHTML='<div class="bo-rt-analog-empty">Nothing live right now — check back soon.</div>'; return; }
+          listEl.innerHTML=rows.map(function(d){
+            var facts=[];
+            if(d.price) facts.push(d.price);
+            if(typeof d.beds==='number') facts.push(d.beds+' bd');
+            if(typeof d.baths==='number') facts.push(d.baths+' ba');
+            var factsHTML=facts.length?'<div class="bo-rt-analog-facts">'+facts.join(' &middot; ')+'</div>':'';
+            var descHTML=d.description?'<div class="bo-rt-analog-desc">'+d.description+'</div>':'';
+            var links=[];
+            if(d.phone) links.push('<a href="tel:'+d.phone+'">'+d.phone+'</a>');
+            if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener">Listing / Website</a>');
+            var linksHTML=links.length?'<div class="bo-rt-analog-links">'+links.join('<br>')+'</div>':'';
+            return '<div class="bo-rt-analog-card"><div class="bo-rt-analog-name">'+(d.name||'Open House')+'</div>'+factsHTML+descHTML+linksHTML+'</div>';
+          }).join('');
+        });
+      }
+
+      toggle.addEventListener('click',function(){
+        var showingList=listEl.style.display==='block';
+        if(showingList){
+          listEl.style.display='none';
+          mapEl.style.display='block';
+        } else {
+          renderList();
+          listEl.style.display='block';
+          mapEl.style.display='none';
+        }
+      });
+    }
+
+    // Fix 4: FYI note on Food Truck and Vendor Stand pages.
+    var ftCta=document.getElementById('bopFtCheckinCta');
+    if(ftCta&&!document.getElementById('bopFtFyiNote')){
+      var ftNote=document.createElement('p');
+      ftNote.id='bopFtFyiNote';
+      ftNote.className='bo-ft-fyi-note';
+      ftNote.textContent='FYI — these are permanent locations, hours vary, so it\'s always best to check before you head over.';
+      ftCta.parentNode.insertBefore(ftNote,ftCta.nextSibling);
+    }
+    var vsCta=document.getElementById('bopVsCheckinCta');
+    if(vsCta&&!document.getElementById('bopVsFyiNote')){
+      var vsNote=document.createElement('p');
+      vsNote.id='bopVsFyiNote';
+      vsNote.className='bo-ft-fyi-note';
+      vsNote.textContent='FYI — these are permanent locations, hours vary, so it\'s always best to check before you head over.';
+      vsCta.parentNode.insertBefore(vsNote,vsCta.nextSibling);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v519: Brad's call (2026-08-30), settling the invitation gate layout and
+     fixing the real music bug.
+     Final layout:
+     - Top row under "Best of Period.": ENTER, GO LIVE, PROMO VIDEO (3 orbs,
+       same size as before).
+     - Bottom-right corner: SHARE PAGE, BJS CO., EMAIL (3 small orbs, same
+       32px size/style). The email button is the same one that used to sit
+       in the top row -- physically moved here, not rebuilt. Share Page
+       reuses the site's existing shareCurrentPage() function, same as
+       every other Share Page button on the site, with a small share-icon
+       graphic.
+     - No music orb -- Brad's own correction: music can't start until
+       someone actually enters the site, so there's nothing to control yet
+       on this gate page.
+     Real bug fix: background music was supposed to autoplay once someone
+     enters, but only ENTER was wired to start it (not Go Live or Promo
+     Video), and the play() call was wrapped in a setTimeout -- on iOS
+     Safari that extra delay can knock the call outside the "direct user
+     gesture" window autoplay policy requires, so it silently failed. Now
+     all three entry buttons trigger it, and the call happens synchronously
+     inside the click handler. -->
+<style id="bop-invite-gate-final-layout-v519">
+#bopInviteCornerRow{position:fixed;right:14px;bottom:14px;z-index:2147483647;display:none;align-items:center;gap:8px;}
+html.bop-invite-active #bopInviteCornerRow{display:flex!important}
+#bopInviteCornerRow>*{position:static!important;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;text-decoration:none;margin:0!important;font:900 5px/1 'Archivo Black',sans-serif!important;color:#E4002B;letter-spacing:0;animation:none!important}
+#bopInviteCornerRow svg{width:22px;height:22px}
+#bopExclusiveInviteBjsBadge2{display:none!important;}
+</style>
+<div id="bopInviteCornerRow">
+  <button id="bopInviteShareBtn" type="button" aria-label="Share this page">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg>
+  </button>
+  <button id="bopInviteBjsBtn" type="button" aria-label="BJS Co. — Founders">
+    <svg aria-hidden="true" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="17" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="10.5" font-weight="900" fill="#F59E0B">BJS</text><text x="20" y="27" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="7.5" font-weight="900" fill="#E4002B">CO.</text></svg>
+  </button>
+</div>
+<script id="bop-invite-gate-final-layout-script-v519">
+(function(){
+  function install(){
+    var row=document.getElementById('bopInviteCornerRow');
+    var bjsBtn=document.getElementById('bopInviteBjsBtn');
+    var shareBtn=document.getElementById('bopInviteShareBtn');
+    if(row&&bjsBtn&&!bjsBtn.dataset.wired){
+      bjsBtn.dataset.wired='1';
+      bjsBtn.addEventListener('click',function(){
+        var about=document.getElementById('aboutUsOverlay');
+        if(about){about.classList.add('open');about.scrollTop=0;}
+      });
+    }
+    if(row&&shareBtn&&!shareBtn.dataset.wired){
+      shareBtn.dataset.wired='1';
+      shareBtn.addEventListener('click',function(){
+        if(typeof window.shareCurrentPage==='function') window.shareCurrentPage(shareBtn);
+      });
+    }
+    // Move the existing email button (was in the top row) into the corner
+    // row, at the end, rather than rebuilding it.
+    var emailBtn=document.querySelector('#bopExclusiveInvitation .bop-exclusive-contact-icononly');
+    if(row&&emailBtn&&emailBtn.parentNode!==row){
+      row.appendChild(emailBtn);
+    }
+    // Remove the leftover badge from v517/v518 now that BJS Co. lives in
+    // the shared corner row instead.
+    var oldBadge=document.getElementById('bopExclusiveInviteBjsBadge2');
+    if(oldBadge&&oldBadge.parentNode) oldBadge.parentNode.removeChild(oldBadge);
+
+    // Music bug fix: wire all three entry points, and call synchronously.
+    ['bopExclusiveEnter','bopExclusiveGoLive','bopExclusivePromo'].forEach(function(id){
+      var btn=document.getElementById(id);
+      if(btn&&!btn.dataset.bopMusicWired){
+        btn.dataset.bopMusicWired='1';
+        btn.addEventListener('click',function(){
+          if(typeof window.bopTryPlayBgMusic==='function') window.bopTryPlayBgMusic();
+        });
+      }
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<script id="bop-music-autoplay-fix-v519">
+(function(){
+  // Exposes the same tryPlay used by the v263 controller so the gate's
+  // entry buttons (and anything else) can trigger it directly, without a
+  // setTimeout in the way of the user-gesture window Safari requires.
+  function install(){
+    var music=document.getElementById('bopBgMusic');
+    if(!music)return;
+    if(window.bopTryPlayBgMusic)return;
+    window.bopTryPlayBgMusic=function(){
+      var mutedNow=false;
+      try{mutedNow=localStorage.getItem('bop-music-muted-v1')==='yes';}catch(_e){}
+      if(!mutedNow) music.play().catch(function(){});
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
