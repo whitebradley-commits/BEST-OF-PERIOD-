@@ -54188,4 +54188,319 @@ html.bop-invite-active #bopInviteCornerRow{display:flex!important}
 })();
 </script>
 
+<!-- v523: Brad's call (2026-08-30) -- the Realtor Go Live map is empty until
+     someone actually checks in, so it seeds with reference pins for the
+     corporate headquarters of the major national real estate brokerages --
+     12 companies, spread coast to coast. Styled as a distinct grey/silver
+     house-and-briefcase marker with an "HQ" tag, clearly different from the
+     gold house pin used for a real live open house, so it reads as
+     "here's who's out there" rather than an actual current listing.
+     One-time static layer, not tied to Firestore -- doesn't touch the live
+     check-in marker code at all. -->
+<script id="bop-realtor-hq-reference-pins-v523">
+(function(){
+  var COMPANIES=[
+    {name:"Compass",city:"New York, NY",lat:40.7413,lng:-73.9897},
+    {name:"Keller Williams Realty",city:"Austin, TX",lat:30.2672,lng:-97.7431},
+    {name:"RE/MAX",city:"Denver, CO",lat:39.7392,lng:-104.9903},
+    {name:"eXp Realty",city:"Bellingham, WA",lat:48.7519,lng:-122.4787},
+    {name:"Coldwell Banker Realty",city:"Madison, NJ",lat:40.7598,lng:-74.4176},
+    {name:"Berkshire Hathaway HomeServices",city:"Irvine, CA",lat:33.6846,lng:-117.8265},
+    {name:"HomeServices of America",city:"Minneapolis, MN",lat:44.9778,lng:-93.2650},
+    {name:"Redfin",city:"Seattle, WA",lat:47.6062,lng:-122.3321},
+    {name:"Douglas Elliman",city:"New York, NY",lat:40.7639,lng:-73.9713},
+    {name:"Howard Hanna Real Estate Services",city:"Pittsburgh, PA",lat:40.4406,lng:-79.9959},
+    {name:"William Raveis Real Estate",city:"Shelton, CT",lat:41.3165,lng:-73.0932},
+    {name:"Realty ONE Group",city:"Laguna Niguel, CA",lat:33.5225,lng:-117.7075}
+  ];
+  var hqIconHTML='<div style="width:32px;height:32px;border-radius:50%;background:#0a0a0a;border:2px solid #9ab;display:flex;align-items:center;justify-content:center;box-shadow:0 0 6px rgba(153,170,187,.6);"><svg width="18" height="18" viewBox="0 0 100 100" fill="none" stroke="#b9c6d4" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#b9c6d4" stroke="none"/></svg></div>';
+  var seen=(typeof WeakSet!=='undefined')?new WeakSet():null;
+  var fallbackSeen=[];
+  function alreadyDone(map){ return seen?seen.has(map):fallbackSeen.indexOf(map)!==-1; }
+  function markDone(map){ if(seen)seen.add(map); else fallbackSeen.push(map); }
+  function install(){
+    var map=window.bopRealtorMapInstance;
+    if(!map||typeof L==='undefined'||alreadyDone(map))return;
+    markDone(map);
+    var hqIcon=L.divIcon({className:'bo-rt-hq-marker',html:hqIconHTML,iconSize:[32,32],iconAnchor:[16,16]});
+    COMPANIES.forEach(function(c){
+      var marker=L.marker([c.lat,c.lng],{icon:hqIcon,zIndexOffset:-1000}).addTo(map);
+      marker.bindPopup('<div style="width:170px;"><div style="font:800 .9rem Arial;color:#b9c6d4;margin-bottom:2px;">'+c.name+'</div><div style="font:700 .72rem Arial;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;">Corporate Headquarters</div><div style="font:600 .78rem Arial;color:#ccc;">'+c.city+'</div></div>');
+    });
+  }
+  setInterval(install,400);
+  install();
+})();
+</script>
+
+<!-- v524: Brad's call (2026-08-30) -- the analog list didn't know about the
+     12 corporate-HQ reference pins added in v523 (those live only on the
+     map itself). Adding them here too, grouped by state so people can
+     scan by location -- some states have more than one, which is fine and
+     expected. Per his ask, these entries don't get a direct link/website/
+     directions -- just two small actions: PHONE (a popup with the number,
+     tap to call) and INFO (a popup with a short, honest blurb: founding
+     year, rough size, and public/private status). Both close with an X
+     and land you right back in the same spot in the list.
+     Only 3 of the 12 companies have a phone number I could verify from an
+     official source (Compass, Berkshire Hathaway HomeServices, Douglas
+     Elliman) -- the rest show INFO only rather than guessing at a number
+     from an unreliable aggregator site. This section is a separate static
+     block next to the live list, not mixed into it, since the live list's
+     own render function fully replaces its container's contents on every
+     Firestore update and would wipe out anything appended inside it. -->
+<style id="bop-realtor-hq-analog-list-v524">
+#bopRtHqByStateEl{display:none;width:100%;max-width:420px;margin:12px auto 0;text-align:left;}
+#bopRtHqByStateEl .bo-rt-hq-section-label{color:#F59E0B;font:800 .68rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px;text-align:center;}
+#bopRtHqByStateEl .bo-rt-hq-state{color:#b9c6d4;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;margin:14px 0 6px;}
+#bopRtHqByStateEl .bo-rt-hq-card{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1.5px solid #444;border-radius:10px;padding:9px 11px;margin-bottom:8px;background:#0a0a0a}
+#bopRtHqByStateEl .bo-rt-hq-name{color:#eee;font:700 .82rem Arial,sans-serif;flex:1;min-width:0;}
+#bopRtHqByStateEl .bo-rt-hq-city{display:block;color:#888;font:600 .68rem Arial,sans-serif;margin-top:1px;}
+#bopRtHqByStateEl .bo-rt-hq-actions{display:flex;gap:6px;flex:none;}
+#bopRtHqByStateEl .bo-rt-hq-btn{border:1.5px solid #F59E0B;border-radius:999px;background:transparent;color:#F59E0B;font:800 .62rem Arial,sans-serif;padding:5px 9px;cursor:pointer;letter-spacing:.03em;}
+#bopRtHqByStateEl .bo-rt-hq-btn[disabled]{border-color:#444;color:#555;cursor:default;}
+#bopRtHqPopupOverlay{display:none;position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:20px;}
+#bopRtHqPopupOverlay.open{display:flex;}
+#bopRtHqPopupCard{position:relative;max-width:320px;width:100%;background:#0a0a0a;border:2px solid #F59E0B;border-radius:14px;padding:22px 20px;text-align:center;box-shadow:0 0 16px rgba(245,158,11,.4);}
+#bopRtHqPopupClose{position:absolute;top:8px;right:10px;background:none;border:none;color:#F59E0B;font-size:20px;font-weight:900;cursor:pointer;line-height:1;}
+#bopRtHqPopupName{color:#F59E0B;font:800 1rem Arial,sans-serif;margin-bottom:10px;}
+#bopRtHqPopupBody{color:#ddd;font:600 .84rem/1.5 Arial,sans-serif;}
+#bopRtHqPopupBody a{color:#F59E0B;font-weight:800;font-size:1.05rem;text-decoration:none;}
+</style>
+<div id="bopRtHqByStateEl">
+  <div class="bo-rt-hq-section-label">Corporate Headquarters, By State</div>
+</div>
+<div id="bopRtHqPopupOverlay">
+  <div id="bopRtHqPopupCard">
+    <button id="bopRtHqPopupClose" type="button" aria-label="Close">&times;</button>
+    <div id="bopRtHqPopupName"></div>
+    <div id="bopRtHqPopupBody"></div>
+  </div>
+</div>
+<script id="bop-realtor-hq-analog-list-script-v524">
+(function(){
+  var COMPANIES=[
+    {name:"Compass",city:"New York",state:"NY",phone:"+16469820353",phoneDisplay:"646-982-0353",
+      info:"Publicly traded (NYSE: COMP). In early 2026, Compass acquired Anywhere Real Estate — parent of Coldwell Banker, Century 21, Sotheby's International Realty, ERA, Corcoran, and Better Homes and Gardens — making it the largest U.S. residential brokerage by sales volume."},
+    {name:"Keller Williams Realty",city:"Austin",state:"TX",phone:null,
+      info:"Privately held. Founded 1983. The world's largest real estate franchise by agent count — roughly 180,000+ agents across 1,000+ offices worldwide."},
+    {name:"RE/MAX",city:"Denver",state:"CO",phone:null,
+      info:"Publicly traded (NYSE: RMAX). Founded 1973. Roughly 140,000 agents across 9,000+ offices in 110+ countries. In 2026, RE/MAX agreed to be acquired by The Real Brokerage in an approximately $880 million deal."},
+    {name:"eXp Realty",city:"Bellingham",state:"WA",phone:null,
+      info:"Publicly traded through parent eXp World Holdings (Nasdaq: EXPI). Founded 2009. Fully cloud-based — no physical branch offices — one of the fastest-growing brokerages by agent count."},
+    {name:"Coldwell Banker Realty",city:"Madison",state:"NJ",phone:null,
+      info:"One of the oldest national real estate brands, founded 1906. Now part of Compass following the 2026 Anywhere Real Estate acquisition."},
+    {name:"Berkshire Hathaway HomeServices",city:"Irvine",state:"CA",phone:"+18005483466",phoneDisplay:"800-548-3466",
+      info:"Privately held network under Berkshire Hathaway. Roughly 50,000 real estate professionals across 4 continents and 13 countries and territories."},
+    {name:"HomeServices of America",city:"Minneapolis",state:"MN",phone:null,
+      info:"Privately held, founded 1998. Owned by Berkshire Hathaway Energy. Parent company of many regional brokerages, including numerous Berkshire Hathaway HomeServices franchises."},
+    {name:"Redfin",city:"Seattle",state:"WA",phone:null,
+      info:"Founded 2004. Formerly publicly traded (Nasdaq: RDFN) until being acquired by Rocket Companies in 2025–2026; now a Rocket Companies subsidiary."},
+    {name:"Douglas Elliman",city:"New York",state:"NY",phone:"+18003554626",phoneDisplay:"800-355-4626",
+      info:"Publicly traded (NYSE: DOUG). Founded 1911 — one of the oldest firms on this list. Roughly 7,000 agents across 113 offices; the largest residential brokerage in the New York metro area."},
+    {name:"Howard Hanna Real Estate Services",city:"Pittsburgh",state:"PA",phone:null,
+      info:"Privately held, family-owned. The largest family-owned real estate brokerage in the U.S. — roughly 15,000 agents and staff across 480+ offices in 13 states."},
+    {name:"William Raveis Real Estate",city:"Shelton",state:"CT",phone:null,
+      info:"Privately held, family-owned. Founded 1974. The largest family-owned real estate company in the Northeast."},
+    {name:"Realty ONE Group",city:"Laguna Niguel",state:"CA",phone:null,
+      info:"Privately held. Founded 2005 in Las Vegas by Kuba Jewgieniew. Roughly 18,000+ agents across 400+ offices in multiple countries."}
+  ];
+  var STATE_NAMES={NY:"New York",TX:"Texas",CO:"Colorado",WA:"Washington",NJ:"New Jersey",CA:"California",MN:"Minnesota",PA:"Pennsylvania",CT:"Connecticut"};
+
+  function renderHqSection(){
+    var host=document.getElementById('bopRtHqByStateEl');
+    if(!host||host.dataset.rendered)return;
+    host.dataset.rendered='1';
+    var byState={};
+    COMPANIES.forEach(function(c){ (byState[c.state]=byState[c.state]||[]).push(c); });
+    var states=Object.keys(byState).sort();
+    var html='<div class="bo-rt-hq-section-label">Corporate Headquarters, By State</div>';
+    states.forEach(function(st){
+      html+='<div class="bo-rt-hq-state">'+(STATE_NAMES[st]||st)+'</div>';
+      byState[st].forEach(function(c,i){
+        var idx=COMPANIES.indexOf(c);
+        html+='<div class="bo-rt-hq-card"><div class="bo-rt-hq-name">'+c.name+'<span class="bo-rt-hq-city">'+c.city+', '+st+'</span></div>'+
+          '<div class="bo-rt-hq-actions">'+
+          '<button type="button" class="bo-rt-hq-btn" data-hq-phone="'+idx+'"'+(c.phone?'':' disabled')+'>PHONE</button>'+
+          '<button type="button" class="bo-rt-hq-btn" data-hq-info="'+idx+'">INFO</button>'+
+          '</div></div>';
+      });
+    });
+    host.innerHTML=html;
+  }
+
+  function openPopup(name,bodyHTML){
+    var overlay=document.getElementById('bopRtHqPopupOverlay');
+    document.getElementById('bopRtHqPopupName').textContent=name;
+    document.getElementById('bopRtHqPopupBody').innerHTML=bodyHTML;
+    overlay.classList.add('open');
+  }
+  function closePopup(){
+    var overlay=document.getElementById('bopRtHqPopupOverlay');
+    if(overlay)overlay.classList.remove('open');
+  }
+
+  function install(){
+    renderHqSection();
+    var closeBtn=document.getElementById('bopRtHqPopupClose');
+    if(closeBtn&&!closeBtn.dataset.wired){closeBtn.dataset.wired='1';closeBtn.addEventListener('click',closePopup);}
+    var overlay=document.getElementById('bopRtHqPopupOverlay');
+    if(overlay&&!overlay.dataset.wired){overlay.dataset.wired='1';overlay.addEventListener('click',function(e){if(e.target===overlay)closePopup();});}
+
+    var host=document.getElementById('bopRtHqByStateEl');
+    if(host&&!host.dataset.clickWired){
+      host.dataset.clickWired='1';
+      host.addEventListener('click',function(e){
+        var phoneBtn=e.target.closest('[data-hq-phone]');
+        var infoBtn=e.target.closest('[data-hq-info]');
+        if(phoneBtn&&!phoneBtn.disabled){
+          var c=COMPANIES[+phoneBtn.dataset.hqPhone];
+          openPopup(c.name,'<a href="tel:'+c.phone+'">'+c.phoneDisplay+'</a>');
+          return;
+        }
+        if(infoBtn){
+          var c2=COMPANIES[+infoBtn.dataset.hqInfo];
+          openPopup(c2.name,c2.info);
+        }
+      });
+    }
+
+    // Show/hide alongside the existing Currently Live!/analog list toggle.
+    var toggle=document.getElementById('bopRtAnalogToggle');
+    if(toggle&&!toggle.dataset.hqWired){
+      toggle.dataset.hqWired='1';
+      toggle.addEventListener('click',function(){
+        var section=document.getElementById('bopRtHqByStateEl');
+        if(!section)return;
+        var listEl=document.getElementById('bopRtAnalogListEl');
+        section.style.display=(listEl&&listEl.style.display==='block')?'block':'none';
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v526: Brad's call (2026-08-30) -- two updates to the Corporate
+     Headquarters list:
+     1) Douglas Elliman's phone corrected to 212-891-7000, sourced directly
+        from elliman.com's own site footer (575 Madison Avenue, New York,
+        NY 10022) -- more authoritative than the toll-free number used in
+        v524.
+     2) Added Sotheby's International Realty -- Brad's right, it's a real
+        national brokerage brand, licensing the Sotheby's auction-house
+        name since 1976. Headquartered at 175 Park Avenue, Madison, NJ --
+        same building as Coldwell Banker, since both are part of the same
+        Anywhere Real Estate portfolio (now under Compass). No phone
+        number here either -- the only number I found for it wasn't from
+        an official Sotheby's source, just a data-broker listing, so it
+        stays INFO-only rather than risk a wrong number, same policy as
+        the other unverified ones.
+     This fully replaces the v524 render of the HQ-by-state section with
+     the corrected 13-company list, using its own data and click handling
+     rather than trying to patch v524's closure-scoped array from outside. -->
+<script id="bop-realtor-hq-list-correction-v526">
+(function(){
+  var COMPANIES=[
+    {name:"Compass",city:"New York",state:"NY",phone:"+16469820353",phoneDisplay:"646-982-0353",
+      info:"Publicly traded (NYSE: COMP). In early 2026, Compass acquired Anywhere Real Estate — parent of Coldwell Banker, Century 21, Sotheby's International Realty, ERA, Corcoran, and Better Homes and Gardens — making it the largest U.S. residential brokerage by sales volume."},
+    {name:"Keller Williams Realty",city:"Austin",state:"TX",phone:null,
+      info:"Privately held. Founded 1983. The world's largest real estate franchise by agent count — roughly 180,000+ agents across 1,000+ offices worldwide."},
+    {name:"RE/MAX",city:"Denver",state:"CO",phone:null,
+      info:"Publicly traded (NYSE: RMAX). Founded 1973. Roughly 140,000 agents across 9,000+ offices in 110+ countries. In 2026, RE/MAX agreed to be acquired by The Real Brokerage in an approximately $880 million deal."},
+    {name:"eXp Realty",city:"Bellingham",state:"WA",phone:null,
+      info:"Publicly traded through parent eXp World Holdings (Nasdaq: EXPI). Founded 2009. Fully cloud-based — no physical branch offices — one of the fastest-growing brokerages by agent count."},
+    {name:"Coldwell Banker Realty",city:"Madison",state:"NJ",phone:null,
+      info:"One of the oldest national real estate brands, founded 1906. Now part of Compass following the 2026 Anywhere Real Estate acquisition."},
+    {name:"Sotheby's International Realty",city:"Madison",state:"NJ",phone:null,
+      info:"Privately held. A licensed real estate franchise bearing the Sotheby's auction-house name since 1976 — part of the same Anywhere Real Estate portfolio (now under Compass) as Coldwell Banker, sharing this Madison, NJ headquarters. Focused on luxury and high-end listings worldwide."},
+    {name:"Berkshire Hathaway HomeServices",city:"Irvine",state:"CA",phone:"+18005483466",phoneDisplay:"800-548-3466",
+      info:"Privately held network under Berkshire Hathaway. Roughly 50,000 real estate professionals across 4 continents and 13 countries and territories."},
+    {name:"HomeServices of America",city:"Minneapolis",state:"MN",phone:null,
+      info:"Privately held, founded 1998. Owned by Berkshire Hathaway Energy. Parent company of many regional brokerages, including numerous Berkshire Hathaway HomeServices franchises."},
+    {name:"Redfin",city:"Seattle",state:"WA",phone:null,
+      info:"Founded 2004. Formerly publicly traded (Nasdaq: RDFN) until being acquired by Rocket Companies in 2025–2026; now a Rocket Companies subsidiary."},
+    {name:"Douglas Elliman",city:"New York",state:"NY",phone:"+12128917000",phoneDisplay:"212-891-7000",
+      info:"Publicly traded (NYSE: DOUG). Founded 1911 — one of the oldest firms on this list. Roughly 7,000 agents across 113 offices; the largest residential brokerage in the New York metro area."},
+    {name:"Howard Hanna Real Estate Services",city:"Pittsburgh",state:"PA",phone:null,
+      info:"Privately held, family-owned. The largest family-owned real estate brokerage in the U.S. — roughly 15,000 agents and staff across 480+ offices in 13 states."},
+    {name:"William Raveis Real Estate",city:"Shelton",state:"CT",phone:null,
+      info:"Privately held, family-owned. Founded 1974. The largest family-owned real estate company in the Northeast."},
+    {name:"Realty ONE Group",city:"Laguna Niguel",state:"CA",phone:null,
+      info:"Privately held. Founded 2005 in Las Vegas by Kuba Jewgieniew. Roughly 18,000+ agents across 400+ offices in multiple countries."}
+  ];
+  var STATE_NAMES={NY:"New York",TX:"Texas",CO:"Colorado",WA:"Washington",NJ:"New Jersey",CA:"California",MN:"Minnesota",PA:"Pennsylvania",CT:"Connecticut"};
+
+  function render(){
+    var host=document.getElementById('bopRtHqByStateEl');
+    if(!host||host.dataset.bopV526)return;
+    host.dataset.bopV526='1';
+    var byState={};
+    COMPANIES.forEach(function(c){ (byState[c.state]=byState[c.state]||[]).push(c); });
+    var states=Object.keys(byState).sort();
+    var html='<div class="bo-rt-hq-section-label">Corporate Headquarters, By State</div>';
+    states.forEach(function(st){
+      html+='<div class="bo-rt-hq-state">'+(STATE_NAMES[st]||st)+'</div>';
+      byState[st].forEach(function(c){
+        var idx=COMPANIES.indexOf(c);
+        html+='<div class="bo-rt-hq-card"><div class="bo-rt-hq-name">'+c.name+'<span class="bo-rt-hq-city">'+c.city+', '+st+'</span></div>'+
+          '<div class="bo-rt-hq-actions">'+
+          '<button type="button" class="bo-rt-hq-btn" data-hq2-phone="'+idx+'"'+(c.phone?'':' disabled')+'>PHONE</button>'+
+          '<button type="button" class="bo-rt-hq-btn" data-hq2-info="'+idx+'">INFO</button>'+
+          '</div></div>';
+      });
+    });
+    host.innerHTML=html;
+  }
+
+  function openPopup(name,bodyHTML){
+    var overlay=document.getElementById('bopRtHqPopupOverlay');
+    if(!overlay)return;
+    document.getElementById('bopRtHqPopupName').textContent=name;
+    document.getElementById('bopRtHqPopupBody').innerHTML=bodyHTML;
+    overlay.classList.add('open');
+  }
+
+  function install(){
+    render();
+    var host=document.getElementById('bopRtHqByStateEl');
+    if(host&&!host.dataset.bopV526Click){
+      host.dataset.bopV526Click='1';
+      host.addEventListener('click',function(e){
+        var phoneBtn=e.target.closest('[data-hq2-phone]');
+        var infoBtn=e.target.closest('[data-hq2-info]');
+        if(phoneBtn&&!phoneBtn.disabled){
+          var c=COMPANIES[+phoneBtn.dataset.hq2Phone];
+          openPopup(c.name,'<a href="tel:'+c.phone+'">'+c.phoneDisplay+'</a>');
+          return;
+        }
+        if(infoBtn){
+          var c2=COMPANIES[+infoBtn.dataset.hq2Info];
+          openPopup(c2.name,c2.info);
+        }
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+
+  // Keep the map's HQ pins in sync -- add the Sotheby's International
+  // Realty pin (v523 only had the original 12).
+  var hqIconHTML='<div style="width:32px;height:32px;border-radius:50%;background:#0a0a0a;border:2px solid #9ab;display:flex;align-items:center;justify-content:center;box-shadow:0 0 6px rgba(153,170,187,.6);"><svg width="18" height="18" viewBox="0 0 100 100" fill="none" stroke="#b9c6d4" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#b9c6d4" stroke="none"/></svg></div>';
+  var mapPinAdded=false;
+  function addSothebysPinToMap(){
+    if(mapPinAdded)return;
+    var map=window.bopRealtorMapInstance;
+    if(!map||typeof L==='undefined')return;
+    mapPinAdded=true;
+    var hqIcon=L.divIcon({className:'bo-rt-hq-marker',html:hqIconHTML,iconSize:[32,32],iconAnchor:[16,16]});
+    var marker=L.marker([40.7598,-74.4176],{icon:hqIcon,zIndexOffset:-1000}).addTo(map);
+    marker.bindPopup('<div style="width:170px;"><div style="font:800 .9rem Arial;color:#b9c6d4;margin-bottom:2px;">Sotheby\'s International Realty</div><div style="font:700 .72rem Arial;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;">Corporate Headquarters</div><div style="font:600 .78rem Arial;color:#ccc;">Madison, NJ</div></div>');
+  }
+  setInterval(addSothebysPinToMap,400);
+  addSothebysPinToMap();
+})();
+</script>
+
 </body></html>
