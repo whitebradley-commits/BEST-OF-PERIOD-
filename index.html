@@ -53436,4 +53436,377 @@ body:not(:has(#bopLandingOverlay.open)) #bopCornerBjsBadge{display:none!importan
 })();
 </script>
 
+<!-- v512: Brad's call (2026-08-30) -- add OC Kosher (Tustin, CA / Orange
+     County) as a BJS Pick, filed under the Kosher world category and LA's
+     BJS Picks page (closest existing city bucket -- the site doesn't have
+     a dedicated Orange County city yet). Special note per Brad's dictation:
+     kept cold, clean, fresh, sometimes thin on the shelves but best
+     quality/presentation. Follows the same push pattern used for the
+     Canter's Deli / Kosher cross-list (v483/v484). -->
+<script id="bop-oc-kosher-bjspick-v512">
+(function(){
+function apply(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+  var ocKosher={
+    name:"OC Kosher",
+    city:"losangeles",
+    why:"Orange County kosher market with a deli and restaurant, selling kosher meat and chicken plus ready-to-go cooked meals",
+    note:"Wide selection of fresh and frozen kosher food, a deli and restaurant, kosher meat and chicken, and outdoor seating. Certified by the Rabbinical Council of Orange County.",
+    specialNote:"This place is kept cold \u2744\ufe0f. It's clean, it's fresh \u2014 sometimes thin on the shelves, but best quality, best presentation. Period.",
+    address:"688 El Camino, Tustin, CA 92780",
+    phone:"(714) 838-3108",
+    url:"https://www.ockosher.com/",
+    kosher:true,
+    bjsPick:true,
+    bjsPickCity:"losangeles",
+    bjsPickLabel:"BJS Pick \u2014 Orange County Kosher"
+  };
+  ['nationkosher','bjspickslosangeles'].forEach(function(cat){
+    var list=boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];
+    if(list.some(function(x){return x&&x.name===ocKosher.name&&String(x.city||'bestof')==='losangeles';}))return;
+    list.push(Object.assign({rank:list.length+1},ocKosher));
+  });
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
+
+<!-- v513: Brad's call (2026-08-30) -- stand up Orange County as its own city,
+     called "O.C." per his dictation. Kosher is the first section (migrating
+     OC Kosher over from the temporary Los Angeles filing). Also ran a basic
+     Michelin/James Beard check per his ask, kept deliberately light:
+     - Knife Pleat (Costa Mesa) -- one of Orange County's three current
+       MICHELIN-starred restaurants (MICHELIN Guide California 2026).
+     - Heritage Barbecue (San Juan Capistrano) -- chef Daniel Castillo was a
+       James Beard "Best Chef: California" finalist (2025).
+     Search "Orange County" / "OC" / "O.C." on the main landing page to reach
+     it -- added as a supplementary result alongside the existing search,
+     since the core search list is closure-scoped and not touched here.
+     NOT done yet (kept out to stay basic per Brad's ask): a pin on the
+     Other Cities world map, and a Near Me distance entry. -->
+<script id="bop-orange-county-city-v513">
+(function(){
+function apply(){
+  if(typeof BO_CITY_CONFIG!=='object'||!BO_CITY_CONFIG)return false;
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+
+  if(!BO_CITY_CONFIG.orangecounty){
+    BO_CITY_CONFIG.orangecounty = {
+      displayName: 'O.C.',
+      landingName: 'O.C.',
+      areaList: ['Irvine', 'Newport Beach', 'Costa Mesa', 'Anaheim', 'Huntington Beach'],
+      tickerMessages: ['ORANGE COUNTY', 'YUMMY SOON!'],
+      useNameCycler: true,
+      bjsPicksCat: 'bjspicksorangecounty'
+    };
+  }
+
+  boCategoryData.orangecounty = Array.isArray(boCategoryData.orangecounty) ? boCategoryData.orangecounty : [];
+  boCategoryData.bjspicksorangecounty = Array.isArray(boCategoryData.bjspicksorangecounty) ? boCategoryData.bjspicksorangecounty : [];
+  boCategoryData.nationkosher = Array.isArray(boCategoryData.nationkosher) ? boCategoryData.nationkosher : [];
+  boCategoryData.bjspickslosangeles = Array.isArray(boCategoryData.bjspickslosangeles) ? boCategoryData.bjspickslosangeles : [];
+  boCategoryData.bbq = Array.isArray(boCategoryData.bbq) ? boCategoryData.bbq : [];
+
+  // Migrate OC Kosher off its temporary Los Angeles filing.
+  ['nationkosher','bjspickslosangeles'].forEach(function(cat){
+    var list=boCategoryData[cat];
+    for(var i=list.length-1;i>=0;i--){
+      if(list[i]&&list[i].name==='OC Kosher'&&list[i].city==='losangeles') list.splice(i,1);
+    }
+  });
+  var ocKosher={
+    name:"OC Kosher",
+    city:"orangecounty",
+    why:"Orange County kosher market with a deli and restaurant, selling kosher meat and chicken plus ready-to-go cooked meals",
+    note:"Wide selection of fresh and frozen kosher food, a deli and restaurant, kosher meat and chicken, and outdoor seating. Certified by the Rabbinical Council of Orange County.",
+    specialNote:"This place is kept cold \u2744\ufe0f. It's clean, it's fresh \u2014 sometimes thin on the shelves, but best quality, best presentation. Period.",
+    address:"688 El Camino, Tustin, CA 92780",
+    phone:"(714) 838-3108",
+    url:"https://www.ockosher.com/",
+    kosher:true,
+    bjsPick:true,
+    bjsPickCity:"orangecounty",
+    bjsPickLabel:"BJS Pick \u2014 Orange County Kosher"
+  };
+  ['orangecounty','nationkosher','bjspicksorangecounty'].forEach(function(cat){
+    var list=boCategoryData[cat];
+    if(list.some(function(x){return x&&x.name===ocKosher.name&&String(x.city||'bestof')==='orangecounty';}))return;
+    list.push(Object.assign({rank:list.length+1},ocKosher));
+  });
+
+  // Basic Michelin pick.
+  var knifePleat={
+    name:"Knife Pleat",
+    city:"orangecounty",
+    rating:null, reviews:null, image:'', imagePosition:'center',
+    michelinGuide:true, michelinStars:1,
+    why:"French fine dining from the South Coast Plaza penthouse, one of Orange County's three current MICHELIN-starred restaurants",
+    note:"One MICHELIN Star \u2014 MICHELIN Guide California 2026. Intimate French tasting menu overlooking South Coast Plaza.",
+    url:"", address:"South Coast Plaza, Costa Mesa, CA", phone:"", hours:[], price:4,
+    hue:'28, 34%, 24%'
+  };
+  if(!boCategoryData.orangecounty.some(function(x){return x&&x.name===knifePleat.name;})){
+    boCategoryData.orangecounty.push(Object.assign({rank:boCategoryData.orangecounty.length+1},knifePleat));
+  }
+
+  // Basic James Beard pick.
+  var heritageBbq={
+    name:"Heritage Barbecue",
+    city:"orangecounty",
+    rating:null, reviews:null, image:'', imagePosition:'center',
+    jamesBeard:true, jamesBeardHonor:"Best Chef: California \u2014 Finalist (2025)", jamesBeardSource:"James Beard Foundation",
+    why:"San Juan Capistrano barbecue joint from chef Daniel Castillo, a 2025 James Beard \"Best Chef: California\" finalist",
+    note:"Chef Daniel Castillo was named a James Beard Foundation \"Best Chef: California\" finalist in 2025.",
+    url:"", address:"San Juan Capistrano, CA", phone:"", hours:[], price:2,
+    hue:'4, 48%, 25%'
+  };
+  ['orangecounty','bbq'].forEach(function(cat){
+    var list=boCategoryData[cat];
+    if(list.some(function(x){return x&&x.name===heritageBbq.name&&String(x.city||'bestof')==='orangecounty';}))return;
+    list.push(Object.assign({rank:list.length+1},heritageBbq));
+  });
+
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
+<script id="bop-orange-county-search-v513">
+(function(){
+  function goToOrangeCounty(){
+    var overlay=document.getElementById('bopLandingOverlay');
+    var results=document.getElementById('bopLandingResults');
+    var best=document.getElementById('bestOfOverlay');
+    boCityContext='orangecounty';
+    if(typeof boReplaceBestOfRoute==='function') boReplaceBestOfRoute('otheroptions','orangecounty');
+    if(overlay) overlay.classList.remove('open');
+    if(results){ results.classList.remove('open'); results.innerHTML=''; }
+    if(best) best.classList.add('open');
+    if(typeof boRenderCategory==='function') boRenderCategory('otheroptions');
+    window.scrollTo(0,0);
+  }
+  function install(){
+    var input=document.getElementById('bopLandingSearchInput');
+    var results=document.getElementById('bopLandingResults');
+    if(!input||!results||input.dataset.bopOcWired)return;
+    input.dataset.bopOcWired='1';
+    input.addEventListener('input', function(){
+      var q=input.value.trim().toLowerCase();
+      if(!q) return;
+      var isMatch = 'orange county'.indexOf(q)===0 || q.indexOf('orange')===0 || q==='oc' || q==='o.c.';
+      if(!isMatch) return;
+      setTimeout(function(){
+        if(document.getElementById('bopOcSearchResult')) return;
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.id='bopOcSearchResult';
+        btn.className='bop-landing-result';
+        btn.innerHTML='<span class="bop-landing-result-dot"></span> Orange County, California';
+        btn.addEventListener('click', goToOrangeCounty);
+        results.appendChild(btn);
+        results.classList.add('open');
+      }, 0);
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v514: Brad's call (2026-08-30), correction to v513. Turns out the site
+     already had a full, well-researched set of Orange County restaurants --
+     they were just parked under Los Angeles as a placeholder city before
+     Orange County existed on its own. Rather than my hand-built Knife Pleat
+     / Heritage Barbecue stubs from v513 (removed below), this migrates the
+     real, already-written records over: Bello by Sandro Nardone, Sushi ii,
+     Marché Moderne, Fable & Spirit, Hana re, Vaca (Costa Mesa/Newport Beach
+     MICHELIN Guide selections), Heritage Barbecue, Mayfield, Trevor's at
+     the Tracks (San Juan Capistrano), 230 Forest Avenue, Truly Pizza —
+     Laguna Beach, Selanne Steak Tavern (Laguna Beach), Coastal Kitchen,
+     Truly Pizza — Dana Point, Luxe Restaurant & Martini Bar (Dana Point).
+     Knife Pleat stays excluded -- the site already flagged it below the
+     quality bar (3.4/5 on 26 reviews) and removed it from Los Angeles;
+     that exclusion carries over rather than resurfacing it here. Hana re
+     (verified 4.9/5, one MICHELIN star) is the featured Michelin pick
+     instead. Heritage Barbecue's real, already-written record (with its
+     actual address/phone/url and 2025 James Beard "Best Chef: California"
+     nominee honor for Daniel Castillo) replaces the v513 stub. -->
+<script id="bop-orange-county-real-data-migration-v514">
+(function(){
+function apply(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+
+  // Remove the v513 hand-built stubs now that the real records are migrating in.
+  ['orangecounty','bbq'].forEach(function(cat){
+    var list=boCategoryData[cat];
+    if(!Array.isArray(list))return;
+    for(var i=list.length-1;i>=0;i--){
+      var r=list[i];
+      if(r&&r.city==='orangecounty'&&(r.name==='Knife Pleat'||r.name==='Heritage Barbecue')&&!r.address){
+        list.splice(i,1);
+      }
+    }
+  });
+
+  // Migrate the real, already-written Orange County records off the Los
+  // Angeles placeholder tag. Knife Pleat is deliberately left out -- it's
+  // already excluded site-wide for being below the quality bar.
+  var OC_NAMES=['Bello by Sandro Nardone','Sushi ii','March\u00e9 Moderne','Fable & Spirit','Hana re','Vaca',
+    'Heritage Barbecue','Mayfield',"Trevor's at the Tracks",'230 Forest Avenue',
+    'Truly Pizza \u2014 Laguna Beach','Selanne Steak Tavern','Coastal Kitchen',
+    'Truly Pizza \u2014 Dana Point','Luxe Restaurant & Martini Bar'];
+  var nameSet={};OC_NAMES.forEach(function(n){nameSet[n]=true;});
+  var moved=0;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var list=boCategoryData[cat];
+    if(!Array.isArray(list))return;
+    list.forEach(function(r){
+      if(r&&r.city==='losangeles'&&nameSet[r.name]){r.city='orangecounty';moved++;}
+    });
+  });
+
+  window.BOP_OC_MIGRATION_V514={recordsRetagged:moved};
+  return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();
+</script>
+
+<!-- v515: Brad's call (2026-08-30).
+     1) The GO LIVE dock orb now reads "GO" over "LIVE" (two lines) instead
+        of cramming "GO LIVE" onto one line.
+     2) A small gold, sketched (not filled, not a globe) flat world map now
+        sits faintly behind the text inside that same orb.
+     3) Real bug fix: every "I'm Here — Go Live" check-in form (Realtor,
+        Food Truck, Street Vendor, Yard Sale, Car For Sale, Safe Meet-Up)
+        shares the .bo-ft-overlay class, which was z-index 100600 -- lower
+        than the map overlays it opens on top of (z-index 2147483200). The
+        check-in page WAS opening, just invisibly stacked behind the still-
+        open map. That's why tapping "Are you a realtor?" appeared to do
+        nothing until navigating away and back revealed it. Raising
+        .bo-ft-overlay above every map overlay's z-index fixes this for all
+        of them at once. -->
+<style id="bop-golive-orb-map-and-ftoverlay-zfix-v515">
+.bop-static-golive{position:relative;overflow:hidden;line-height:1.05!important;white-space:normal!important}
+.bop-static-golive .bop-golive-orb-map{position:absolute;inset:0;width:100%;height:100%;opacity:.35;pointer-events:none;z-index:0}
+.bop-static-golive .bop-golive-orb-label{position:relative;z-index:1;display:block}
+.bo-ft-overlay{z-index:2147483300!important;}
+</style>
+<script id="bop-golive-orb-fix-script-v515">
+(function(){
+  var WORLD_MAP_SVG =
+    '<svg class="bop-golive-orb-map" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">'+
+      '<path d="M8 40 Q18 30 28 36 Q36 30 44 38 Q40 46 30 46 Q20 52 10 46 Z"/>'+
+      '<path d="M46 34 Q58 24 66 30 Q74 22 84 28 Q90 40 80 46 Q84 58 72 62 Q62 70 52 62 Q44 66 40 56 Q46 48 46 34 Z"/>'+
+      '<path d="M90 26 Q104 18 116 24 Q126 20 132 30 Q124 36 128 46 Q118 50 110 44 Q100 48 96 38 Z"/>'+
+      '<path d="M138 30 Q152 24 160 32 Q168 28 172 38 Q162 44 150 40 Q142 46 138 30 Z"/>'+
+      '<path d="M150 56 Q160 52 166 60 Q160 68 152 64 Z"/>'+
+      '<path d="M160 66 Q172 62 180 70 Q186 80 176 84 Q166 88 158 80 Q154 72 160 66 Z"/>'+
+      '<circle cx="20" cy="60" r="1.4" fill="#F59E0B" stroke="none"/>'+
+      '<circle cx="70" cy="20" r="1.4" fill="#F59E0B" stroke="none"/>'+
+      '<circle cx="120" cy="60" r="1.4" fill="#F59E0B" stroke="none"/>'+
+    '</svg>';
+  function install(){
+    var btn=document.getElementById('bopStaticGoLive');
+    if(!btn||btn.dataset.bopV515)return;
+    btn.dataset.bopV515='1';
+    btn.innerHTML=WORLD_MAP_SVG+'<span class="bop-golive-orb-label">GO<br>LIVE</span>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v516: Brad's call (2026-08-30) -- the "SAFE BUY/SELL DROPS" sub-label was
+     forced onto one line and stuck out past the tile edge. Now it's two
+     lines -- "SAFE" over "BUY/SELL DROPS" -- so it fits inside the tile. -->
+<style id="bop-meetup-sub-twoline-v516">
+#bopGoLiveSafeMeetup .bo-golive-tile-sub{white-space:normal!important;line-height:1.25!important;}
+</style>
+<script id="bop-meetup-sub-twoline-script-v516">
+(function(){
+  function install(){
+    var tile=document.getElementById('bopGoLiveSafeMeetup');
+    if(!tile||tile.dataset.bopV516)return;
+    var sub=tile.querySelector('.bo-golive-tile-sub');
+    if(!sub)return;
+    tile.dataset.bopV516='1';
+    sub.innerHTML='SAFE<br>BUY/SELL DROPS';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v517: Brad's call (2026-08-30) -- this is the "Exclusive Invitation" gate
+     page (the Best of Period. circle with the button row underneath, shown
+     before the main landing page). Per his screenshot:
+     - The BJS Co. orb (which already functioned as ENTER -- it's the one
+       that closes the gate) now just reads "ENTER". The actual BJS Co.
+       branding moves to a small badge tucked in the bottom-right corner of
+       this page specifically.
+     - A new "GO LIVE" orb is added, same size as the others, opening the
+       Go Live overlay directly from the gate.
+     - Final order in the row: ENTER, GO LIVE, PROMO VIDEO, then the email
+       icon -- five orbs on the page total, four in the row plus BJS Co.
+       in the corner. -->
+<style id="bop-invite-gate-reorder-v517">
+#bopExclusiveInviteBjsBadge{position:fixed;right:14px;bottom:14px;z-index:100002;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;padding:0}
+#bopExclusiveInviteBjsBadge svg{width:24px;height:24px}
+#bopExclusiveGoLive{font-size:.62rem!important;line-height:1.15!important;letter-spacing:.01em!important}
+</style>
+<button id="bopExclusiveInviteBjsBadge" type="button" aria-label="BJS Co. — Founders">
+  <svg aria-hidden="true" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="17" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="10.5" font-weight="900" fill="#F59E0B">BJS</text><text x="20" y="27" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="7.5" font-weight="900" fill="#E4002B">CO.</text></svg>
+</button>
+<script id="bop-invite-gate-reorder-script-v517">
+(function(){
+  function install(){
+    var row=document.querySelector('#bopExclusiveInvitation .bop-exclusive-btn-row');
+    var enterBtn=document.getElementById('bopExclusiveEnter');
+    var promoBtn=document.getElementById('bopExclusivePromo');
+    if(!row||!enterBtn||!promoBtn)return;
+    if(row.dataset.bopV517)return;
+    row.dataset.bopV517='1';
+
+    // Relabel the existing ENTER button (was showing "BJS / CO.").
+    enterBtn.innerHTML='ENTER';
+
+    // Badge goes into the gate itself so it hides/shows with .bop-invite-closed automatically.
+    var badge=document.getElementById('bopExclusiveInviteBjsBadge');
+    if(badge&&badge.parentNode!==document.getElementById('bopExclusiveInvitation')){
+      document.getElementById('bopExclusiveInvitation').appendChild(badge);
+      badge.addEventListener('click',function(){
+        var about=document.getElementById('aboutUsOverlay');
+        if(about){about.classList.add('open');about.scrollTop=0;}
+      });
+    }
+
+    // New GO LIVE orb.
+    var goLiveBtn=document.getElementById('bopExclusiveGoLive');
+    if(!goLiveBtn){
+      goLiveBtn=document.createElement('button');
+      goLiveBtn.className='bop-exclusive-enter';
+      goLiveBtn.id='bopExclusiveGoLive';
+      goLiveBtn.type='button';
+      goLiveBtn.innerHTML='GO<br>LIVE';
+      goLiveBtn.addEventListener('click',function(){
+        var gate=document.getElementById('bopExclusiveInvitation');
+        if(gate){gate.classList.add('bop-invite-closed');document.documentElement.classList.remove('bop-invite-active');}
+        if(typeof window.bopOpenGoLivePage==='function')window.bopOpenGoLivePage();
+      });
+    }
+
+    // Final order: ENTER, GO LIVE, PROMO VIDEO, email icon.
+    row.insertBefore(enterBtn,row.firstChild);
+    row.insertBefore(goLiveBtn,promoBtn);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
