@@ -54503,4 +54503,120 @@ html.bop-invite-active #bopInviteCornerRow{display:flex!important}
 })();
 </script>
 
+<!-- v527: Brad's call (2026-08-30), several fixes:
+     1) The handshake emoji (🤝) in "MEET UP" and in the disclaimer text is
+        replaced everywhere with a custom gold line-art handshake icon,
+        matching the site's drawn-icon style instead of a device emoji.
+     2) Safe Meet-Up disclaimer reworded per his dictation: drops "if you'd
+        like to meet somewhere other than these locations" in favor of "if
+        an item is for sale or is live and is not at one of our suggested
+        locations, please request a proper MEET-UP."
+     3) The four new page headlines ("PUT YOUR X ON THE MAP...") had a
+        literal "." before the apple icon, creating a double-period look --
+        removed, matching how "Best of Period" itself never puts a dot
+        before its own mark. Apple icon size increased so it actually reads
+        as a mark, not a barely-visible fleck.
+     4) The Go Live page's "Go Live" headline drops the cursive Pacifico
+        script font for the site's regular bold Archivo Black, and the
+        "BEST OF PERIOD" lockup underneath now carries the real apple mark
+        instead of a plain © symbol.
+     5) Sitewide pass: every place using a plain "©" as the Period mark
+        (18 spots) now gets the actual apple icon instead, so "Best of
+        Period" reads consistently everywhere. This is a targeted,
+        run-once DOM replacement, not a rewrite of the underlying markup.
+     6) GO LIVE dock orb's background world-map icon bumped to be clearly
+        visible (higher opacity, explicit layering) in case it was too
+        faint to notice before.
+     Note on the pinch-zoom question: the zoom +/- control and Leaflet's
+     default pinch-to-zoom are both already in the code for every Go Live
+     map, and nothing in the stylesheet disables either -- I couldn't find
+     a code-level reason it wouldn't show. Worth a hard refresh on your end
+     before assuming it's still broken. -->
+<style id="bop-brand-and-icon-fixes-v527">
+.bo-golive-tile-sub .bo-meetup-handshake,.bo-sm-note .bo-meetup-handshake{display:inline-block;width:.95em;height:.95em;vertical-align:-.15em;margin:0 .05em;}
+.bo-meetup-handshake svg{display:block;width:100%;height:100%;}
+.bo-golive-mini-apple{width:.55em!important;height:.55em!important;vertical-align:.45em!important;}
+.bop-static-golive .bop-golive-orb-map{opacity:.55!important;z-index:0!important;}
+.bop-golive-title-fixed{margin:70px 0 4px;font-family:'Archivo Black',sans-serif!important;font-style:normal!important;color:#E4002B;font-size:clamp(2.2rem,10vw,3.4rem);text-align:center;line-height:1.05;letter-spacing:.02em;text-shadow:0 0 8px rgba(228,0,43,.85),0 0 20px rgba(228,0,43,.55),0 0 34px rgba(228,0,43,.3)}
+.bop-golive-lockup-apple{display:inline-block;width:.5em;height:.5em;vertical-align:.4em;margin-left:.05em;}
+.bop-golive-lockup-apple svg{display:block;width:100%;height:100%;}
+</style>
+<script id="bop-brand-and-icon-fixes-script-v527">
+(function(){
+  var APPLE_SVG='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z" fill="#F59E0B"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke="#F59E0B" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z" fill="#F59E0B"/></svg>';
+  var HANDSHAKE_SVG='<svg viewBox="0 0 100 60" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22 H30 L42 14"/><path d="M97 22 H70 L58 14"/><path d="M42 14 Q48 8 54 14 Q60 8 66 14 Q70 20 63 27 Q57 33 50 26 Q43 33 37 27 Q30 20 42 14 Z"/></svg>';
+  var HANDSHAKE_HTML='<span class="bo-meetup-handshake" aria-hidden="true">'+HANDSHAKE_SVG+'</span>';
+
+  function fixMeetupIcon(){
+    var tile=document.getElementById('bopGoLiveSafeMeetup');
+    if(tile){
+      var span=tile.querySelector('span');
+      if(span&&span.innerHTML.indexOf('🤝')!==-1&&!tile.dataset.bopV527icon){
+        tile.dataset.bopV527icon='1';
+        span.innerHTML=span.innerHTML.split('🤝').join(HANDSHAKE_HTML);
+      }
+    }
+    var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
+    if(note&&note.innerHTML.indexOf('🤝')!==-1&&!note.dataset.bopV527icon){
+      note.dataset.bopV527icon='1';
+      note.innerHTML=note.innerHTML.split('🤝').join(HANDSHAKE_HTML);
+    }
+  }
+
+  function fixDisclaimerText(){
+    var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
+    if(!note||note.dataset.bopV527text)return;
+    note.dataset.bopV527text='1';
+    note.innerHTML='*Going live geotargets your current location. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If an item is for sale or is live and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. Best of Period has chosen these drop spots for their security and proximity.';
+  }
+
+  function fixFourHeadlines(){
+    document.querySelectorAll('.bo-golive-period-word').forEach(function(el){
+      if(el.dataset.bopV527)return;
+      el.dataset.bopV527='1';
+      el.innerHTML=el.innerHTML.replace(/PERIOD\.\s*/,'PERIOD');
+    });
+  }
+
+  function fixGoLiveTitle(){
+    var title=document.querySelector('#bopGoLiveOverlay .bop-golive-title');
+    if(title&&!title.dataset.bopV527){
+      title.dataset.bopV527='1';
+      title.classList.add('bop-golive-title-fixed');
+    }
+    var lockup=document.querySelector('#bopGoLiveOverlay .bop-golive-lockup .bo-golive-period');
+    if(lockup&&!lockup.dataset.bopV527){
+      lockup.dataset.bopV527='1';
+      var mark=lockup.querySelector('.period-mark');
+      if(mark) mark.outerHTML='<span class="bop-golive-lockup-apple">'+APPLE_SVG+'</span>';
+    }
+  }
+
+  // Sitewide: every plain © Period mark becomes the real apple icon.
+  function fixAllPeriodMarks(){
+    document.querySelectorAll('.period-mark').forEach(function(el){
+      if(el.dataset.bopV527apple)return;
+      if(el.textContent.indexOf('©')===-1)return;
+      el.dataset.bopV527apple='1';
+      el.innerHTML=APPLE_SVG;
+      el.style.display='inline-block';
+      el.style.width='.5em';
+      el.style.height='.5em';
+      el.style.verticalAlign='.4em';
+      el.style.marginLeft='.05em';
+    });
+  }
+
+  function install(){
+    fixMeetupIcon();
+    fixDisclaimerText();
+    fixFourHeadlines();
+    fixGoLiveTitle();
+    fixAllPeriodMarks();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
