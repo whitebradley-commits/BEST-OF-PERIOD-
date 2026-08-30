@@ -52016,4 +52016,1424 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clear
   ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},300);});
 })();
 </script>
+<!-- v497: Brad's call (2026-08-30) -- one uniform DIRECT ACCESS layout across
+     every Worldwide directory (Music, Airlines, Autos, Cellular, Luxury Goods):
+     the compact wrapped tile grid Luxury Goods/Cellular already use (rows of
+     tiles, no sideways scrolling, no one-tile-per-row stacking), and every tap
+     opens the contact concierge popup (CALL / OFFICIAL SITE) so nothing ever
+     leaves the site directly. -->
+<style id="bop-worldwide-direct-unify-v497">
+#boWorldwidePage[data-worldwide-key] .bo-current-movies{overflow:visible!important;overflow-x:visible!important}
+#boWorldwidePage[data-worldwide-key] .bo-current-grid{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:none!important;grid-auto-flow:row!important;gap:8px!important;
+  width:100%!important;min-width:0!important;padding:8px 4px 15px!important
+}
+@media(min-width:700px){
+  #boWorldwidePage[data-worldwide-key] .bo-current-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+}
+#boWorldwidePage[data-worldwide-key] .bo-company-text-card{min-width:0!important;width:100%!important;min-height:88px!important}
+#boWorldwidePage[data-worldwide-key] .bo-company-text-inner{min-height:86px!important;padding:6px 3px!important;gap:7px!important}
+#boWorldwidePage[data-worldwide-key] .bo-company-name-link{font-size:clamp(.66rem,3.2vw,.94rem)!important;overflow-wrap:anywhere!important}
+#boWorldwidePage[data-worldwide-key] .bo-company-phone{font-size:clamp(.52rem,2.45vw,.68rem)!important}
+</style>
+<script id="bop-worldwide-direct-unify-v497-script">
+(function(){
+  if(typeof BO_WORLDWIDE_DATA==='undefined')return;
+  /* Music gets the same [name, url, phone] directory shape as the others.
+     Corporate support numbers filled where a public one actually exists:
+     Spotify and TIDAL publish no phone line, so those tiles show name only. */
+  if(BO_WORLDWIDE_DATA.songs)BO_WORLDWIDE_DATA.songs.links=[
+    ['Spotify','https://open.spotify.com/',''],
+    ['Apple Music','https://music.apple.com/','800-275-2273'],
+    ['YouTube Music','https://music.youtube.com/','650-253-0000'],
+    ['Amazon Music','https://music.amazon.com/','888-280-4331'],
+    ['TIDAL','https://tidal.com/','']
+  ];
+  /* Luxury Goods gaps with a published corporate line. LVMH, Kering and
+     Richemont are holding groups with no public consumer number -- left blank
+     on purpose rather than showing a wrong number. */
+  if(BO_WORLDWIDE_DATA.watches&&Array.isArray(BO_WORLDWIDE_DATA.watches.links)){
+    var lux={'Rolex':'212-758-7700','Ferrari':'201-816-2600'};
+    BO_WORLDWIDE_DATA.watches.links.forEach(function(item){if(!item[2]&&lux[item[0]])item[2]=lux[item[0]];});
+  }
+  /* Every directory renders the same text tile (Music and Airlines included). */
+  if(typeof boWorldwideActionHTML==='function'){
+    var prior=boWorldwideActionHTML;
+    boWorldwideActionHTML=function(item,index,action,key){
+      if(!BO_WORLDWIDE_DATA[key])return prior(item,index,action,key);
+      var name=item[0],url=item[1],phone=item[2]||'',digits=phone.replace(/\D/g,'');
+      var phoneButton=digits?'<button type="button" class="bo-company-phone" data-phone-popup="'+digits+'" data-phone-display="'+phone+'" aria-label="Call '+name+'">'+phone+'</button>':'';
+      return '<article class="bo-current-card bo-company-text-card"><div class="bo-company-text-inner"><a class="bo-company-name-link" href="'+url+'" aria-label="Open '+name+' official website">'+name+'</a>'+phoneButton+'</div></article>';
+    };
+  }
+  /* Concierge popup for every directory tap, not just Cellular/Luxury Goods.
+     The v240 handler already covers those two keys and stops propagation, so
+     this one picks up the rest. OFFICIAL SITE still flows through the
+     site-preserving external popup (v185), so best-of-period stays open.
+     Registered on window capture (after v240's own window listener) so it
+     runs ahead of the older document-level phone-popup handlers. */
+  window.addEventListener('click',function(event){
+    var page=document.querySelector('#boWorldwidePage.open[data-worldwide-key]');if(!page)return;
+    var link=event.target.closest&&event.target.closest('.bo-company-name-link');
+    var phone=event.target.closest&&event.target.closest('.bo-company-phone');
+    if(!link&&!phone)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    var card=(link||phone).closest('.bo-company-text-card');if(!card)return;
+    var nameEl=card.querySelector('.bo-company-name-link');
+    var p=card.querySelector('.bo-company-phone');
+    var overlay=document.getElementById('bopCompanyConcierge');
+    var nameNode=document.getElementById('bopCompanyConciergeName');
+    var callEl=document.getElementById('bopCompanyConciergeCall');
+    var siteEl=document.getElementById('bopCompanyConciergeSite');
+    if(!overlay||!nameNode||!callEl||!siteEl){
+      /* Concierge markup missing for any reason: fall back to the
+         site-preserving external popup rather than a dead tap. */
+      if(nameEl&&typeof window.bopOfferExternalLink==='function')window.bopOfferExternalLink(nameEl.href,nameEl.textContent.trim());
+      return;
+    }
+    var display=p?(p.dataset.phoneDisplay||p.textContent.trim()):'';
+    var digits=p?(p.dataset.phonePopup||''):'';
+    nameNode.textContent=(nameEl&&nameEl.textContent.trim())||'Company';
+    siteEl.href=(nameEl&&nameEl.href)||'#';
+    callEl.href=digits?'tel:'+digits:'#';
+    callEl.textContent=digits?'CALL '+display:'CALL';
+    callEl.classList.toggle('is-disabled',!digits);
+    overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
+  },true);
+})();
+</script>
+<!-- v498: current box office refresh (2026-08-30). Source: The Numbers daily
+     domestic chart, Friday Aug 28, 2026 -- U.S. theatrical, which is the
+     site's stated basis for CURRENT BOX OFFICE. Replaces the stale list
+     (One Night Only, Super Troopers 3, CatVideoFest etc. had dropped to
+     double-digit-theater runs). -->
+<script id="bop-current-box-office-refresh-v498-script">
+(function(){
+  if(typeof BO_MOVIES_CURRENT==='undefined')return;
+  var fresh=[
+    {title:'Spider-Man: Brand New Day',metric:'Current #1',date:'Now playing'},
+    {title:'Coyote vs. Acme',metric:'New this week',date:'Opened August 28'},
+    {title:'The Odyssey',metric:'Current top 3',date:'Now playing'},
+    {title:'The Dog Stars',metric:'New this week',date:'Opened August 28'},
+    {title:'Insidious: Out of the Further',metric:'Current top 5',date:'Now playing'},
+    {title:'Buddy',metric:'New this week',date:'Opened August 28'},
+    {title:'The End of Oak Street',metric:'Current Top 10',date:'Now playing'},
+    {title:'PAW Patrol: The Dino Movie',metric:'Current Top 10',date:'Now playing'},
+    {title:'Finding Emily',metric:'New this week',date:'Limited release'},
+    {title:'Tony',metric:'Current release',date:'Now playing'}
+  ];
+  BO_MOVIES_CURRENT.length=0;
+  fresh.forEach(function(m){BO_MOVIES_CURRENT.push(m);});
+})();
+</script>
+
+<!-- v499: Brad's call (2026-08-30) -- new "GO LIVE" orb on the landing page
+     dock, right before the Worldwide globe button, same row/colors/red text
+     as the other dock orbs. Opens a new "Go Live" page: GO LIVE in red script
+     with a glow, Best Of / Period lockup underneath, then three tiles --
+     Food Truck and Street Vendor (wired to the maps that already work) and
+     Realtor (new -- basic map skeleton only, same look, no data or filters
+     yet; dropdowns to come later). -->
+<style id="bop-golive-dock-orb-v499">
+.bop-static-golive{font-size:.78rem!important;letter-spacing:.01em!important;white-space:nowrap!important}
+@media(max-width:350px){.bop-static-golive{font-size:.7rem!important}}
+</style>
+<style id="bop-golive-page-v499">
+#bopGoLiveOverlay{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000}
+#bopGoLiveOverlay.open{display:block}
+#bopGoLiveOverlay .bo-golive-shell{min-height:100vh;padding:26px 18px 60px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
+#bopGoLiveOverlay .bo-golive-back{position:fixed;top:16px;left:14px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Black',sans-serif;cursor:pointer}
+.bop-golive-title{margin:70px 0 4px;font-family:'Pacifico',cursive;color:#E4002B;font-size:clamp(2.7rem,13vw,4.4rem);text-align:center;line-height:1.05;text-shadow:0 0 8px rgba(228,0,43,.85),0 0 20px rgba(228,0,43,.55),0 0 34px rgba(228,0,43,.3)}
+.bop-golive-lockup{margin:0 0 34px;text-align:center;font-family:'Fraunces',serif;font-weight:700;font-size:clamp(1.3rem,6vw,1.85rem);letter-spacing:.01em}
+.bop-golive-lockup .bo-golive-best{color:#fff}
+.bop-golive-lockup .bo-golive-period{color:var(--gold,#F59E0B)}
+.bop-golive-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:380px}
+.bop-golive-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:128px;padding:14px 6px;border:2px solid #F59E0B;border-radius:14px;background:#050505;color:#fff;box-shadow:0 0 10px rgba(245,158,11,.32);font:900 .68rem/1.15 'Archivo Black',Arial,sans-serif;text-align:center;letter-spacing:.02em;cursor:pointer}
+.bop-golive-tile svg{width:38px;height:38px;flex:none}
+.bop-golive-tile .bo-golive-tile-sub{display:block;margin-top:2px;color:#F59E0B;font-size:.6rem;letter-spacing:.05em}
+@media(max-width:360px){.bop-golive-tiles{gap:8px}.bop-golive-tile{min-height:112px;padding:10px 4px;font-size:.62rem}.bop-golive-tile svg{width:32px;height:32px}}
+</style>
+<div id="bopGoLiveOverlay" aria-label="Go Live">
+  <div class="bo-golive-shell">
+    <button class="bo-golive-back" id="bopGoLiveBack" type="button">&larr;<br>Back</button>
+    <div class="bop-golive-title">Go Live</div>
+    <div class="bop-golive-lockup"><span class="bo-golive-best">BEST OF</span> <span class="bo-golive-period">PERIOD<span class="period-mark">&copy;</span></span></div>
+    <div class="bop-golive-tiles">
+      <button class="bop-golive-tile" id="bopGoLiveRealtor" type="button" aria-label="Realtor, Open House">
+        <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#000"/></svg>
+        <span>REALTOR<span class="bo-golive-tile-sub">OPEN HOUSE</span></span>
+      </button>
+      <button class="bop-golive-tile" id="bopGoLiveFoodTruck" type="button" aria-label="Food Truck">
+        <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/><circle cx="25" cy="66" r="9" fill="#000"/><circle cx="76" cy="66" r="9" fill="#000"/></svg>
+        <span>FOOD TRUCK</span>
+      </button>
+      <button class="bop-golive-tile" id="bopGoLiveVendorStand" type="button" aria-label="Street Vendor">
+        <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M20 40 L50 12 L80 40"/><line x1="12" y1="40" x2="88" y2="40"/><rect x="26" y="40" width="48" height="38" fill="#000"/><line x1="38" y1="48" x2="38" y2="70"/><line x1="62" y1="48" x2="62" y2="70"/><line x1="30" y1="82" x2="70" y2="82"/></svg>
+        <span>STREET VENDOR</span>
+      </button>
+      <button class="bop-golive-tile" id="bopGoLiveYardSale" type="button" aria-label="Yard Sale">
+        <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M30 15 L88 15 L88 45 L58 85 L30 55 Z"/><circle cx="42" cy="30" r="6" fill="#000"/><line x1="12" y1="55" x2="30" y2="55"/><line x1="12" y1="55" x2="12" y2="90"/></svg>
+        <span>YARD SALE</span>
+      </button>
+    </div>
+  </div>
+</div>
+<script id="bop-golive-page-script-v499">
+(function(){
+  function openGoLive(){
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var page=document.getElementById('bopGoLiveOverlay');if(!page)return;
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+  }
+  function closeGoLive(){
+    var page=document.getElementById('bopGoLiveOverlay');if(page)page.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  window.bopOpenGoLivePage=openGoLive;
+  function install(){
+    var dock=document.getElementById('bopStaticLandingDock');
+    var world=document.getElementById('bopStaticWorld');
+    if(dock&&world&&!document.getElementById('bopStaticGoLive')){
+      var btn=document.createElement('button');
+      btn.className='bop-static-landing-button bop-static-golive';
+      btn.id='bopStaticGoLive';btn.type='button';btn.setAttribute('aria-label','Go Live');
+      btn.textContent='GO LIVE';
+      dock.insertBefore(btn,world);
+      btn.addEventListener('click',openGoLive);
+    }
+    var back=document.getElementById('bopGoLiveBack');if(back&&!back.dataset.wired){back.dataset.wired='1';back.addEventListener('click',closeGoLive);}
+    var ft=document.getElementById('bopGoLiveFoodTruck');if(ft&&!ft.dataset.wired){ft.dataset.wired='1';ft.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenFoodTruckMap==='function')window.boOpenFoodTruckMap();});}
+    var vs=document.getElementById('bopGoLiveVendorStand');if(vs&&!vs.dataset.wired){vs.dataset.wired='1';vs.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenVendorStandMap==='function')window.boOpenVendorStandMap();});}
+    var rt=document.getElementById('bopGoLiveRealtor');if(rt&&!rt.dataset.wired){rt.dataset.wired='1';rt.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenRealtorMap==='function')window.boOpenRealtorMap();});}
+    var ys=document.getElementById('bopGoLiveYardSale');if(ys&&!ys.dataset.wired){ys.dataset.wired='1';ys.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenYardSaleMap==='function')window.boOpenYardSaleMap();});}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- v499: Realtor -- live map + Go Live check-in, same pattern as Food Truck /
+     Street Vendor: phone as ID, name, website (auto-pulls a photo preview),
+     notes, and now Open From / Open Until hours. Pins use a little house
+     icon. No price/beds/date filters yet -- Brad's call was to get the
+     basics going first and add filters later. -->
+<style id="bop-realtor-map-v499">
+#bopRealtorOverlay{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000}
+#bopRealtorOverlay.open{display:block}
+#bopRealtorOverlay .bo-rt-shell{min-height:100vh;padding:26px 18px 50px;box-sizing:border-box;text-align:center}
+#bopRealtorOverlay .bo-rt-back{position:fixed;top:16px;left:14px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Black',sans-serif;cursor:pointer}
+#bopRealtorOverlay .bo-rt-sub{margin:70px 0 16px;color:#F59E0B;font:900 1rem/1.3 'Archivo Black',sans-serif;letter-spacing:.02em}
+#bopRealtorOverlayMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.4);overflow:hidden;margin:0 auto}
+#bopRealtorOverlay .bo-rt-note{max-width:420px;margin:16px auto 0;color:#ccc;font:400 .82rem/1.5 'Archivo Narrow',Arial,sans-serif}
+#bopRealtorOverlay .bo-rt-checkin-cta{display:block;width:min(420px,100%);margin:16px auto 0;padding:14px 18px;border:2px solid #F59E0B;border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#fff;font:700 .88rem/1.4 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.4)}
+#bopRealtorOverlay .bo-rt-cta-line2{display:block;margin-top:4px;color:#F59E0B;font:900 .95rem/1.2 'Archivo Black',sans-serif}
+</style>
+<div id="bopRealtorOverlay" aria-label="Realtor Open Houses">
+  <div class="bo-rt-shell">
+    <button class="bo-rt-back" id="bopRealtorBack" type="button">&larr;<br>Back</button>
+    <div class="bo-rt-sub">REALTOR &middot; OPEN HOUSE</div>
+    <div id="bopRealtorOverlayMapEl"></div>
+    <button type="button" class="bo-rt-checkin-cta" id="bopRtCheckinCta"><span>Hosting an open house?</span><span class="bo-rt-cta-line2">Click here to go live</span></button>
+    <p class="bo-rt-note">Price, beds/baths, and date filters are coming soon — for now, add those details in the notes when you go live.</p>
+  </div>
+</div>
+<script id="bop-realtor-map-script-v499">
+(function(){
+  var realtorIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#F59E0B" stroke="none"/></svg></div>';
+
+  function digitsOf(v){ return (v||'').replace(/\D/g,''); }
+  function hhmmNow(date){ var h=String(date.getHours()).padStart(2,'0'), m=String(date.getMinutes()).padStart(2,'0'); return h+':'+m; }
+  function computeRtLiveUntil(fromStr,untilStr){
+    var now=new Date();
+    var startOfDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    function toMs(str){ var p=(str||'00:00').split(':'); return (parseInt(p[0],10)*60+parseInt(p[1],10))*60000; }
+    var fromMs=startOfDay.getTime()+toMs(fromStr);
+    var untilMs=startOfDay.getTime()+toMs(untilStr);
+    if(untilMs<=fromMs) untilMs+=24*3600000;
+    if(untilMs-fromMs>24*3600000) untilMs=fromMs+24*3600000;
+    return untilMs;
+  }
+
+  function initMap(){
+    if(typeof L==='undefined'){ if(typeof boLoadLeaflet==='function'){boLoadLeaflet().catch(function(){});} setTimeout(initMap,150); return; }
+    var el=document.getElementById('bopRealtorOverlayMapEl');if(!el||el.dataset.mapReady)return;
+    el.dataset.mapReady='1';
+    var map=L.map(el,{worldCopyJump:true,zoomControl:false}).setView([36.1699,-115.1398],11);
+    L.control.zoom({position:'topleft'}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+    window.bopRealtorMapInstance=map;
+    var realtorIcon=L.divIcon({className:'bo-rt-marker',html:realtorIconHTML,iconSize:[34,34],iconAnchor:[17,17]});
+    window.bopRealtorMarkers=window.bopRealtorMarkers||{};
+    if(window.bopFtDb){
+      if(window.bopRtUnsub) window.bopRtUnsub();
+      window.bopRtUnsub=window.bopFtDb.collection('realtors').onSnapshot(function(snap){
+        Object.keys(window.bopRealtorMarkers).forEach(function(id){ map.removeLayer(window.bopRealtorMarkers[id]); });
+        window.bopRealtorMarkers={};
+        snap.forEach(function(doc){
+          var d=doc.data();
+          if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
+          if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+          var marker=L.marker([d.lat,d.lng],{icon:realtorIcon}).addTo(map);
+          var links=[];
+          if(d.phone) links.push('<a href="tel:'+d.phone+'" style="color:#F59E0B;">'+d.phone+'</a>');
+          if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Listing / Website</a>');
+          var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
+          var factsParts=[];
+          if(d.price) factsParts.push(d.price);
+          if(typeof d.beds==='number') factsParts.push(d.beds+' bd');
+          if(typeof d.baths==='number') factsParts.push(d.baths+' ba');
+          var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
+          var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Open House')+'</div>'+factsHTML+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+          window.bopRealtorMarkers[doc.id]=marker;
+        });
+      });
+    }
+    setTimeout(function(){ map.invalidateSize(); },200);
+  }
+  window.boOpenRealtorMap=function(){
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var page=document.getElementById('bopRealtorOverlay');if(!page)return;
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    setTimeout(initMap,30);
+  };
+
+  window.boOpenRealtorCheckin=function(){
+    var landing=document.getElementById('bopLandingOverlay'); if(landing) landing.classList.remove('open');
+    var page=document.getElementById('bopRealtorCheckin');
+    if(!page){
+      page=document.createElement('section');
+      page.id='bopRealtorCheckin';
+      page.className='bo-ft-overlay';
+      page.setAttribute('aria-label','Realtor Go Live');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
+          '<div class="bo-ftc-sub">Go live on the Best of Period open house map. Takes 2 minutes.</div>'+
+          '<input class="bo-ftc-field" id="bopRtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+          '<input class="bo-ftc-field" id="bopRtName" type="text" placeholder="Listing name or address" />'+
+          '<input class="bo-ftc-field" id="bopRtWebsite" type="text" placeholder="Listing link or website (optional)" />'+
+          '<div class="bo-ftc-status" id="bopRtPreviewStatus" style="display:none;"></div>'+
+          '<div id="bopRtPreviewCard" style="display:none;text-align:left;border:1.5px solid #F59E0B;border-radius:10px;padding:12px;margin-bottom:14px;background:#0a0a0a;">'+
+            '<img id="bopRtPreviewImg" src="" alt="" style="display:none;width:100%;max-height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;">'+
+          '</div>'+
+          '<textarea class="bo-ftc-field" id="bopRtDescription" rows="3" placeholder="Notes — anything buyers should know" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
+          '<input class="bo-ftc-field" id="bopRtPrice" type="text" placeholder="Price (e.g. $450,000)" />'+
+          '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Beds</label><input type="number" min="0" step="1" id="bopRtBeds" class="bo-ftc-field" style="margin-bottom:0;"></div><div class="bo-ft-hours-field"><label>Baths</label><input type="number" min="0" step="0.5" id="bopRtBaths" class="bo-ftc-field" style="margin-bottom:0;"></div></div>'+
+          '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopRtLiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopRtLiveUntil"></div></div>'+
+          '<div class="bo-ft-hours-hint">Your open house hours for today. You can always take it down early.</div>'+
+          '<button type="button" class="bo-ftc-btn" id="bopRtCheckinSubmit">I\'m Here — Go Live</button>'+
+          '<div class="bo-ftc-status" id="bopRtCheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      var now=new Date();
+      document.getElementById('bopRtLiveFrom').value=hhmmNow(now);
+      document.getElementById('bopRtLiveUntil').value=hhmmNow(new Date(now.getTime()+4*3600000));
+
+      window.bopRtPhotoUrl='';
+      var websiteEl=document.getElementById('bopRtWebsite');
+      var nameEl=document.getElementById('bopRtName');
+      var phoneEl=document.getElementById('bopRtPhone');
+      var descEl=document.getElementById('bopRtDescription');
+      var previewImg=document.getElementById('bopRtPreviewImg');
+
+      websiteEl.addEventListener('blur', function(){
+        var url=websiteEl.value.trim();
+        if(!url) return;
+        if(!/^https?:\/\//i.test(url)) url='https://'+url;
+        websiteEl.value=url;
+        var statusEl=document.getElementById('bopRtPreviewStatus');
+        statusEl.style.display='block';
+        statusEl.textContent='Pulling a preview from your listing…';
+        fetch('https://api.microlink.io/?url='+encodeURIComponent(url)+'&meta=true')
+          .then(function(r){ return r.json(); })
+          .then(function(json){
+            statusEl.style.display='none';
+            if(json && json.status==='success' && json.data){
+              if(!nameEl.value && json.data.title) nameEl.value=json.data.title;
+              if(!descEl.value && json.data.description) descEl.value=json.data.description;
+              if(json.data.image && json.data.image.url){
+                window.bopRtPhotoUrl=json.data.image.url;
+                previewImg.src=window.bopRtPhotoUrl;
+                previewImg.style.display='block';
+              }
+            }
+          })
+          .catch(function(){ statusEl.style.display='none'; });
+      });
+
+      document.getElementById('bopRtCheckinSubmit').addEventListener('click', function(){
+        var status=document.getElementById('bopRtCheckinStatus');
+        var name=nameEl.value.trim();
+        var key=digitsOf(phoneEl.value);
+        if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
+        if(!name){ status.textContent='Please enter the listing name or address.'; return; }
+        if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+        var fromEl=document.getElementById('bopRtLiveFrom'), untilEl=document.getElementById('bopRtLiveUntil');
+        var liveUntil=computeRtLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
+        var priceEl=document.getElementById('bopRtPrice'), bedsEl=document.getElementById('bopRtBeds'), bathsEl=document.getElementById('bopRtBaths');
+        var bedsVal=bedsEl&&bedsEl.value!==''?parseFloat(bedsEl.value):null;
+        var bathsVal=bathsEl&&bathsEl.value!==''?parseFloat(bathsEl.value):null;
+        status.textContent='Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
+          status.textContent='Going live…';
+          var id=key+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+          window.bopFtDb.collection('realtors').doc(id).set({
+            name:name,
+            phone:phoneEl.value.trim(),
+            website:websiteEl.value.trim(),
+            description:descEl.value.trim(),
+            price:priceEl?priceEl.value.trim():'',
+            beds:(bedsVal!==null&&!isNaN(bedsVal))?bedsVal:null,
+            baths:(bathsVal!==null&&!isNaN(bathsVal))?bathsVal:null,
+            photo:window.bopRtPhotoUrl||'',
+            lat:pos.coords.latitude,
+            lng:pos.coords.longitude,
+            checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+            liveUntil:liveUntil
+          },{merge:true}).then(function(){
+            status.textContent="You're live! Tap Back to see your open house on the map.";
+          }).catch(function(){
+            status.textContent='Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent='Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+
+  function install(){
+    var back=document.getElementById('bopRealtorBack');
+    if(back&&!back.dataset.wired){
+      back.dataset.wired='1';
+      back.addEventListener('click',function(){
+        var page=document.getElementById('bopRealtorOverlay');if(page)page.classList.remove('open');
+        document.body.style.overflow='';
+        if(window.bopRealtorMapInstance){window.bopRealtorMapInstance.remove();window.bopRealtorMapInstance=null;}
+        if(window.bopRtUnsub){window.bopRtUnsub();window.bopRtUnsub=null;}
+      });
+    }
+    var cta=document.getElementById('bopRtCheckinCta');
+    if(cta&&!cta.dataset.wired){ cta.dataset.wired='1'; cta.addEventListener('click', function(){ window.boOpenRealtorCheckin(); }); }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v501: Yard Sale -- fourth Go Live tile. Same pattern as Realtor/Food Truck/
+     Street Vendor: phone as ID, name, optional website, photo, notes, and
+     hours. Pin uses a little sale-tag icon (same shape as the tile). No
+     price/beds/baths here -- those are a single-listing idea, not a
+     multi-item yard sale. -->
+<style id="bop-yardsale-map-v501">
+#bopYardSaleOverlay{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000}
+#bopYardSaleOverlay.open{display:block}
+#bopYardSaleOverlay .bo-ys-shell{min-height:100vh;padding:26px 18px 50px;box-sizing:border-box;text-align:center}
+#bopYardSaleOverlay .bo-ys-back{position:fixed;top:16px;left:14px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Black',sans-serif;cursor:pointer}
+#bopYardSaleOverlay .bo-ys-sub{margin:70px 0 16px;color:#F59E0B;font:900 1rem/1.3 'Archivo Black',sans-serif;letter-spacing:.02em}
+#bopYardSaleOverlayMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.4);overflow:hidden;margin:0 auto}
+#bopYardSaleOverlay .bo-ys-note{max-width:420px;margin:16px auto 0;color:#ccc;font:400 .82rem/1.5 'Archivo Narrow',Arial,sans-serif}
+#bopYardSaleOverlay .bo-ys-checkin-cta{display:block;width:min(420px,100%);margin:16px auto 0;padding:14px 18px;border:2px solid #F59E0B;border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#fff;font:700 .88rem/1.4 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.4)}
+#bopYardSaleOverlay .bo-ys-cta-line2{display:block;margin-top:4px;color:#F59E0B;font:900 .95rem/1.2 'Archivo Black',sans-serif}
+</style>
+<div id="bopYardSaleOverlay" aria-label="Yard Sales">
+  <div class="bo-ys-shell">
+    <button class="bo-ys-back" id="bopYardSaleBack" type="button">&larr;<br>Back</button>
+    <div class="bo-ys-sub">YARD SALE</div>
+    <div id="bopYardSaleOverlayMapEl"></div>
+    <button type="button" class="bo-ys-checkin-cta" id="bopYsCheckinCta"><span>Having a yard sale?</span><span class="bo-ys-cta-line2">Click here to go live</span></button>
+    <p class="bo-ys-note">List what you're selling in the notes when you go live.</p>
+  </div>
+</div>
+<script id="bop-yardsale-map-script-v501">
+(function(){
+  var yardSaleIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M30 15 L88 15 L88 45 L58 85 L30 55 Z"/><circle cx="42" cy="30" r="6" fill="#0a0a0a"/><line x1="12" y1="55" x2="30" y2="55"/><line x1="12" y1="55" x2="12" y2="90"/></svg></div>';
+
+  function digitsOf(v){ return (v||'').replace(/\D/g,''); }
+  function hhmmNow(date){ var h=String(date.getHours()).padStart(2,'0'), m=String(date.getMinutes()).padStart(2,'0'); return h+':'+m; }
+  function computeYsLiveUntil(fromStr,untilStr){
+    var now=new Date();
+    var startOfDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    function toMs(str){ var p=(str||'00:00').split(':'); return (parseInt(p[0],10)*60+parseInt(p[1],10))*60000; }
+    var fromMs=startOfDay.getTime()+toMs(fromStr);
+    var untilMs=startOfDay.getTime()+toMs(untilStr);
+    if(untilMs<=fromMs) untilMs+=24*3600000;
+    if(untilMs-fromMs>24*3600000) untilMs=fromMs+24*3600000;
+    return untilMs;
+  }
+
+  function initMap(){
+    if(typeof L==='undefined'){ if(typeof boLoadLeaflet==='function'){boLoadLeaflet().catch(function(){});} setTimeout(initMap,150); return; }
+    var el=document.getElementById('bopYardSaleOverlayMapEl');if(!el||el.dataset.mapReady)return;
+    el.dataset.mapReady='1';
+    var map=L.map(el,{worldCopyJump:true,zoomControl:false}).setView([36.1699,-115.1398],11);
+    L.control.zoom({position:'topleft'}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+    window.bopYardSaleMapInstance=map;
+    var yardSaleIcon=L.divIcon({className:'bo-ys-marker',html:yardSaleIconHTML,iconSize:[34,34],iconAnchor:[17,17]});
+    window.bopYardSaleMarkers=window.bopYardSaleMarkers||{};
+    if(window.bopFtDb){
+      if(window.bopYsUnsub) window.bopYsUnsub();
+      window.bopYsUnsub=window.bopFtDb.collection('yardsales').onSnapshot(function(snap){
+        Object.keys(window.bopYardSaleMarkers).forEach(function(id){ map.removeLayer(window.bopYardSaleMarkers[id]); });
+        window.bopYardSaleMarkers={};
+        snap.forEach(function(doc){
+          var d=doc.data();
+          if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
+          if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+          var marker=L.marker([d.lat,d.lng],{icon:yardSaleIcon}).addTo(map);
+          var links=[];
+          if(d.phone) links.push('<a href="tel:'+d.phone+'" style="color:#F59E0B;">'+d.phone+'</a>');
+          if(d.website) links.push('<a href="'+d.website+'" target="_blank" rel="noopener" style="color:#F59E0B;">Website</a>');
+          var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
+          var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Yard Sale')+'</div>'+descHTML+'<div style="font:600 .8rem Arial;color:#eee;line-height:1.5;">'+links.join('<br>')+'</div></div>');
+          window.bopYardSaleMarkers[doc.id]=marker;
+        });
+      });
+    }
+    setTimeout(function(){ map.invalidateSize(); },200);
+  }
+  window.boOpenYardSaleMap=function(){
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var page=document.getElementById('bopYardSaleOverlay');if(!page)return;
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    setTimeout(initMap,30);
+  };
+
+  window.boOpenYardSaleCheckin=function(){
+    var landing=document.getElementById('bopLandingOverlay'); if(landing) landing.classList.remove('open');
+    var page=document.getElementById('bopYardSaleCheckin');
+    if(!page){
+      page=document.createElement('section');
+      page.id='bopYardSaleCheckin';
+      page.className='bo-ft-overlay';
+      page.setAttribute('aria-label','Yard Sale Go Live');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
+          '<div class="bo-ftc-sub">Go live on the Best of Period yard sale map. Takes 2 minutes.</div>'+
+          '<input class="bo-ftc-field" id="bopYsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+          '<input class="bo-ftc-field" id="bopYsName" type="text" placeholder="Sale name or address" />'+
+          '<input class="bo-ftc-field" id="bopYsWebsite" type="text" placeholder="Website or listing link (optional)" />'+
+          '<div class="bo-ftc-status" id="bopYsPreviewStatus" style="display:none;"></div>'+
+          '<div id="bopYsPreviewCard" style="display:none;text-align:left;border:1.5px solid #F59E0B;border-radius:10px;padding:12px;margin-bottom:14px;background:#0a0a0a;">'+
+            '<img id="bopYsPreviewImg" src="" alt="" style="display:none;width:100%;max-height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;">'+
+          '</div>'+
+          '<textarea class="bo-ftc-field" id="bopYsDescription" rows="3" placeholder="Notes — what you\'re selling, anything shoppers should know" style="resize:vertical;font-family:Arial,sans-serif;"></textarea>'+
+          '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopYsLiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopYsLiveUntil"></div></div>'+
+          '<div class="bo-ft-hours-hint">Your yard sale hours for today. You can always take it down early.</div>'+
+          '<button type="button" class="bo-ftc-btn" id="bopYsCheckinSubmit">I\'m Here — Go Live</button>'+
+          '<div class="bo-ftc-status" id="bopYsCheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      var now=new Date();
+      document.getElementById('bopYsLiveFrom').value=hhmmNow(now);
+      document.getElementById('bopYsLiveUntil').value=hhmmNow(new Date(now.getTime()+4*3600000));
+
+      window.bopYsPhotoUrl='';
+      var websiteEl=document.getElementById('bopYsWebsite');
+      var nameEl=document.getElementById('bopYsName');
+      var phoneEl=document.getElementById('bopYsPhone');
+      var descEl=document.getElementById('bopYsDescription');
+      var previewImg=document.getElementById('bopYsPreviewImg');
+
+      websiteEl.addEventListener('blur', function(){
+        var url=websiteEl.value.trim();
+        if(!url) return;
+        if(!/^https?:\/\//i.test(url)) url='https://'+url;
+        websiteEl.value=url;
+        var statusEl=document.getElementById('bopYsPreviewStatus');
+        statusEl.style.display='block';
+        statusEl.textContent='Pulling a preview…';
+        fetch('https://api.microlink.io/?url='+encodeURIComponent(url)+'&meta=true')
+          .then(function(r){ return r.json(); })
+          .then(function(json){
+            statusEl.style.display='none';
+            if(json && json.status==='success' && json.data){
+              if(!nameEl.value && json.data.title) nameEl.value=json.data.title;
+              if(!descEl.value && json.data.description) descEl.value=json.data.description;
+              if(json.data.image && json.data.image.url){
+                window.bopYsPhotoUrl=json.data.image.url;
+                previewImg.src=window.bopYsPhotoUrl;
+                previewImg.style.display='block';
+              }
+            }
+          })
+          .catch(function(){ statusEl.style.display='none'; });
+      });
+
+      document.getElementById('bopYsCheckinSubmit').addEventListener('click', function(){
+        var status=document.getElementById('bopYsCheckinStatus');
+        var name=nameEl.value.trim();
+        var key=digitsOf(phoneEl.value);
+        if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
+        if(!name){ status.textContent='Please enter the sale name or address.'; return; }
+        if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+        var fromEl=document.getElementById('bopYsLiveFrom'), untilEl=document.getElementById('bopYsLiveUntil');
+        var liveUntil=computeYsLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
+        status.textContent='Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
+          status.textContent='Going live…';
+          var id=key+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+          window.bopFtDb.collection('yardsales').doc(id).set({
+            name:name,
+            phone:phoneEl.value.trim(),
+            website:websiteEl.value.trim(),
+            description:descEl.value.trim(),
+            photo:window.bopYsPhotoUrl||'',
+            lat:pos.coords.latitude,
+            lng:pos.coords.longitude,
+            checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+            liveUntil:liveUntil
+          },{merge:true}).then(function(){
+            status.textContent="You're live! Tap Back to see your sale on the map.";
+          }).catch(function(){
+            status.textContent='Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent='Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+
+  function install(){
+    var back=document.getElementById('bopYardSaleBack');
+    if(back&&!back.dataset.wired){
+      back.dataset.wired='1';
+      back.addEventListener('click',function(){
+        var page=document.getElementById('bopYardSaleOverlay');if(page)page.classList.remove('open');
+        document.body.style.overflow='';
+        if(window.bopYardSaleMapInstance){window.bopYardSaleMapInstance.remove();window.bopYardSaleMapInstance=null;}
+        if(window.bopYsUnsub){window.bopYsUnsub();window.bopYsUnsub=null;}
+      });
+    }
+    var cta=document.getElementById('bopYsCheckinCta');
+    if(cta&&!cta.dataset.wired){ cta.dataset.wired='1'; cta.addEventListener('click', function(){ window.boOpenYardSaleCheckin(); }); }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v502: Brad's call (2026-08-30) --
+     (1) Yard Sale simplified to just Photo + Description + Hours (no phone,
+         name, or website -- geolocation places the pin, so nothing else is
+         needed). Overrides the v501 checkin function.
+     (2) Realtor headline changed to "OPEN HOUSES LIVE!"
+     (3) New "Car For Sale" tile on the Go Live page -- same map/heading
+         pattern as the others. Headline "SELL YOUR CAR LIVE!" Fields:
+         Photo, Year, Make, Model, Mileage, Condition, and the hours you'll
+         be at the location. No price field yet (wasn't on the list) --
+         easy to add if wanted. -->
+<style id="bop-golive-v502-tile-grid">
+.bop-golive-tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;max-width:480px!important}
+</style>
+<script id="bop-golive-v502-headline-fixes">
+(function(){
+  function fix(){
+    var rtSub=document.querySelector('#bopRealtorOverlay .bo-rt-sub');
+    if(rtSub&&rtSub.textContent!=='OPEN HOUSES LIVE!')rtSub.textContent='OPEN HOUSES LIVE!';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix);else fix();
+  new MutationObserver(fix).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<script id="bop-yardsale-simplify-v502">
+(function(){
+  function compressToDataUrl(file,onDone){
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){
+      var maxDim=700,scale=Math.min(1,maxDim/Math.max(img.naturalWidth,img.naturalHeight));
+      var w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var q=0.62,data=c.toDataURL('image/jpeg',q);
+      while(data.length>380000&&q>0.3){q-=0.1;data=c.toDataURL('image/jpeg',q);}
+      URL.revokeObjectURL(url);
+      onDone(data);
+    };
+    img.src=url;
+  }
+  function hhmmNow(date){ var h=String(date.getHours()).padStart(2,'0'), m=String(date.getMinutes()).padStart(2,'0'); return h+':'+m; }
+  function computeLiveUntil(fromStr,untilStr){
+    var now=new Date();
+    var startOfDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    function toMs(str){ var p=(str||'00:00').split(':'); return (parseInt(p[0],10)*60+parseInt(p[1],10))*60000; }
+    var fromMs=startOfDay.getTime()+toMs(fromStr);
+    var untilMs=startOfDay.getTime()+toMs(untilStr);
+    if(untilMs<=fromMs) untilMs+=24*3600000;
+    if(untilMs-fromMs>24*3600000) untilMs=fromMs+24*3600000;
+    return untilMs;
+  }
+  window.boOpenYardSaleCheckin=function(){
+    var landing=document.getElementById('bopLandingOverlay'); if(landing) landing.classList.remove('open');
+    var old=document.getElementById('bopYardSaleCheckin');
+    if(old&&old.dataset.bopV502!=='1'){ old.parentNode.removeChild(old); old=null; }
+    var page=old;
+    if(!page){
+      page=document.createElement('section');
+      page.id='bopYardSaleCheckin';
+      page.className='bo-ft-overlay';
+      page.dataset.bopV502='1';
+      page.setAttribute('aria-label','Yard Sale Go Live');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
+          '<div class="bo-ftc-sub">Go live on the Best of Period yard sale map. Your location is used automatically.</div>'+
+          '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopYs2PhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopYs2PreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopYs2PhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of your sale (optional, but it helps people spot you).</div></div>'+
+          '<textarea class="bo-ftc-field" id="bopYs2Description" rows="3" placeholder="What are you selling? Anything shoppers should know."></textarea>'+
+          '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopYs2LiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopYs2LiveUntil"></div></div>'+
+          '<div class="bo-ft-hours-hint">Your yard sale hours for today. You can always take it down early.</div>'+
+          '<button type="button" class="bo-ftc-btn" id="bopYs2CheckinSubmit">I\'m Here — Go Live</button>'+
+          '<div class="bo-ftc-status" id="bopYs2CheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      var now=new Date();
+      document.getElementById('bopYs2LiveFrom').value=hhmmNow(now);
+      document.getElementById('bopYs2LiveUntil').value=hhmmNow(new Date(now.getTime()+4*3600000));
+
+      window.bopYs2PhotoUrl='';
+      var descEl=document.getElementById('bopYs2Description');
+      var previewImg=document.getElementById('bopYs2PreviewImg');
+      document.getElementById('bopYs2PhotoInput').addEventListener('change',function(e){
+        var f=e.target.files&&e.target.files[0];
+        if(!f)return;
+        compressToDataUrl(f,function(data){
+          window.bopYs2PhotoUrl=data;
+          previewImg.src=data;previewImg.style.display='block';
+        });
+      });
+
+      document.getElementById('bopYs2CheckinSubmit').addEventListener('click', function(){
+        var status=document.getElementById('bopYs2CheckinStatus');
+        if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+        var fromEl=document.getElementById('bopYs2LiveFrom'), untilEl=document.getElementById('bopYs2LiveUntil');
+        var liveUntil=computeLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
+        status.textContent='Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
+          status.textContent='Going live…';
+          window.bopFtDb.collection('yardsales').add({
+            description:descEl.value.trim(),
+            photo:window.bopYs2PhotoUrl||'',
+            lat:pos.coords.latitude,
+            lng:pos.coords.longitude,
+            checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+            liveUntil:liveUntil
+          }).then(function(){
+            status.textContent="You're live! Tap Back to see your sale on the map.";
+          }).catch(function(){
+            status.textContent='Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent='Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+})();
+</script>
+<!-- Car For Sale: new tile, map, and go-live flow. Same pattern as the
+     others -- photo, year, make, model, mileage, condition, and the hours
+     you'll be there. No phone/name/address (geolocation places the pin). -->
+<style id="bop-carforsale-v502">
+#bopCarForSaleOverlay{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000}
+#bopCarForSaleOverlay.open{display:block}
+#bopCarForSaleOverlay .bo-cfs-shell{min-height:100vh;padding:26px 18px 50px;box-sizing:border-box;text-align:center}
+#bopCarForSaleOverlay .bo-cfs-back{position:fixed;top:16px;left:14px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Black',sans-serif;cursor:pointer}
+#bopCarForSaleOverlay .bo-cfs-sub{margin:70px 0 16px;color:#F59E0B;font:900 1rem/1.3 'Archivo Black',sans-serif;letter-spacing:.02em}
+#bopCarForSaleOverlayMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.4);overflow:hidden;margin:0 auto}
+#bopCarForSaleOverlay .bo-cfs-note{max-width:420px;margin:16px auto 0;color:#ccc;font:400 .82rem/1.5 'Archivo Narrow',Arial,sans-serif}
+#bopCarForSaleOverlay .bo-cfs-checkin-cta{display:block;width:min(420px,100%);margin:16px auto 0;padding:14px 18px;border:2px solid #F59E0B;border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#fff;font:700 .88rem/1.4 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.4)}
+#bopCarForSaleOverlay .bo-cfs-cta-line2{display:block;margin-top:4px;color:#F59E0B;font:900 .95rem/1.2 'Archivo Black',sans-serif}
+.bop-golive-tile#bopGoLiveCarForSale svg{stroke:#F59E0B}
+</style>
+<div id="bopCarForSaleOverlay" aria-label="Cars For Sale">
+  <div class="bo-cfs-shell">
+    <button class="bo-cfs-back" id="bopCarForSaleBack" type="button">&larr;<br>Back</button>
+    <div class="bo-cfs-sub">SELL YOUR CAR LIVE!</div>
+    <div id="bopCarForSaleOverlayMapEl"></div>
+    <button type="button" class="bo-cfs-checkin-cta" id="bopCfsCheckinCta"><span>Selling a car?</span><span class="bo-cfs-cta-line2">Click here to go live</span></button>
+    <p class="bo-cfs-note">Price isn't collected yet — mention it in the notes if you'd like buyers to see it.</p>
+  </div>
+</div>
+<script id="bop-carforsale-script-v502">
+(function(){
+  var carIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="22" height="22" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M10 65 L15 45 L30 35 L70 35 L85 45 L90 65 Z"/><circle cx="28" cy="70" r="10" fill="#0a0a0a"/><circle cx="72" cy="70" r="10" fill="#0a0a0a"/></svg></div>';
+
+  function hhmmNow(date){ var h=String(date.getHours()).padStart(2,'0'), m=String(date.getMinutes()).padStart(2,'0'); return h+':'+m; }
+  function computeLiveUntil(fromStr,untilStr){
+    var now=new Date();
+    var startOfDay=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    function toMs(str){ var p=(str||'00:00').split(':'); return (parseInt(p[0],10)*60+parseInt(p[1],10))*60000; }
+    var fromMs=startOfDay.getTime()+toMs(fromStr);
+    var untilMs=startOfDay.getTime()+toMs(untilStr);
+    if(untilMs<=fromMs) untilMs+=24*3600000;
+    if(untilMs-fromMs>24*3600000) untilMs=fromMs+24*3600000;
+    return untilMs;
+  }
+  function compressToDataUrl(file,onDone){
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){
+      var maxDim=700,scale=Math.min(1,maxDim/Math.max(img.naturalWidth,img.naturalHeight));
+      var w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var q=0.62,data=c.toDataURL('image/jpeg',q);
+      while(data.length>380000&&q>0.3){q-=0.1;data=c.toDataURL('image/jpeg',q);}
+      URL.revokeObjectURL(url);
+      onDone(data);
+    };
+    img.src=url;
+  }
+
+  function initMap(){
+    if(typeof L==='undefined'){ if(typeof boLoadLeaflet==='function'){boLoadLeaflet().catch(function(){});} setTimeout(initMap,150); return; }
+    var el=document.getElementById('bopCarForSaleOverlayMapEl');if(!el||el.dataset.mapReady)return;
+    el.dataset.mapReady='1';
+    var map=L.map(el,{worldCopyJump:true,zoomControl:false}).setView([36.1699,-115.1398],11);
+    L.control.zoom({position:'topleft'}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+    window.bopCarForSaleMapInstance=map;
+    var carIcon=L.divIcon({className:'bo-cfs-marker',html:carIconHTML,iconSize:[34,34],iconAnchor:[17,17]});
+    window.bopCarForSaleMarkers=window.bopCarForSaleMarkers||{};
+    if(window.bopFtDb){
+      if(window.bopCfsUnsub) window.bopCfsUnsub();
+      window.bopCfsUnsub=window.bopFtDb.collection('carsforsale').onSnapshot(function(snap){
+        Object.keys(window.bopCarForSaleMarkers).forEach(function(id){ map.removeLayer(window.bopCarForSaleMarkers[id]); });
+        window.bopCarForSaleMarkers={};
+        snap.forEach(function(doc){
+          var d=doc.data();
+          if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
+          if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+          var marker=L.marker([d.lat,d.lng],{icon:carIcon}).addTo(map);
+          var title=[d.year,d.make,d.model].filter(Boolean).join(' ')||'Car For Sale';
+          var factsParts=[];
+          if(d.mileage) factsParts.push(d.mileage+' mi');
+          if(d.condition) factsParts.push(d.condition);
+          var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
+          var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
+          var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+title+'</div>'+factsHTML+descHTML+'</div>');
+          window.bopCarForSaleMarkers[doc.id]=marker;
+        });
+      });
+    }
+    setTimeout(function(){ map.invalidateSize(); },200);
+  }
+  window.boOpenCarForSaleMap=function(){
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var page=document.getElementById('bopCarForSaleOverlay');if(!page)return;
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    setTimeout(initMap,30);
+  };
+
+  window.boOpenCarForSaleCheckin=function(){
+    var landing=document.getElementById('bopLandingOverlay'); if(landing) landing.classList.remove('open');
+    var page=document.getElementById('bopCarForSaleCheckin');
+    if(!page){
+      page=document.createElement('section');
+      page.id='bopCarForSaleCheckin';
+      page.className='bo-ft-overlay';
+      page.setAttribute('aria-label','Sell Your Car Live');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
+          '<div class="bo-ftc-sub">Go live on the Best of Period car-for-sale map. Your location is used automatically.</div>'+
+          '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopCfsPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopCfsPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopCfsPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of the car (optional, but it helps buyers spot you).</div></div>'+
+          '<input class="bo-ftc-field" id="bopCfsYear" type="text" inputmode="numeric" placeholder="Year (e.g. 2018)" />'+
+          '<input class="bo-ftc-field" id="bopCfsMake" type="text" placeholder="Make (e.g. Honda)" />'+
+          '<input class="bo-ftc-field" id="bopCfsModel" type="text" placeholder="Model (e.g. Accord)" />'+
+          '<input class="bo-ftc-field" id="bopCfsMileage" type="text" inputmode="numeric" placeholder="Mileage" />'+
+          '<select class="bo-ftc-field" id="bopCfsCondition"><option value="">Condition (optional)</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Needs Work</option></select>'+
+          '<textarea class="bo-ftc-field" id="bopCfsDescription" rows="3" placeholder="Notes — anything buyers should know"></textarea>'+
+          '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Here From</label><input type="time" id="bopCfsLiveFrom"></div><div class="bo-ft-hours-field"><label>Here Until</label><input type="time" id="bopCfsLiveUntil"></div></div>'+
+          '<div class="bo-ft-hours-hint">The hours you and the car will be at this location today. You can always take it down early.</div>'+
+          '<button type="button" class="bo-ftc-btn" id="bopCfsCheckinSubmit">I\'m Here — Go Live</button>'+
+          '<div class="bo-ftc-status" id="bopCfsCheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      var now=new Date();
+      document.getElementById('bopCfsLiveFrom').value=hhmmNow(now);
+      document.getElementById('bopCfsLiveUntil').value=hhmmNow(new Date(now.getTime()+4*3600000));
+
+      window.bopCfsPhotoUrl='';
+      var previewImg=document.getElementById('bopCfsPreviewImg');
+      document.getElementById('bopCfsPhotoInput').addEventListener('change',function(e){
+        var f=e.target.files&&e.target.files[0];
+        if(!f)return;
+        compressToDataUrl(f,function(data){
+          window.bopCfsPhotoUrl=data;
+          previewImg.src=data;previewImg.style.display='block';
+        });
+      });
+
+      document.getElementById('bopCfsCheckinSubmit').addEventListener('click', function(){
+        var status=document.getElementById('bopCfsCheckinStatus');
+        var year=document.getElementById('bopCfsYear').value.trim();
+        var make=document.getElementById('bopCfsMake').value.trim();
+        var model=document.getElementById('bopCfsModel').value.trim();
+        var mileage=document.getElementById('bopCfsMileage').value.trim();
+        var condition=document.getElementById('bopCfsCondition').value;
+        var description=document.getElementById('bopCfsDescription').value.trim();
+        if(!make&&!model){ status.textContent='Please enter at least the make or model.'; return; }
+        if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+        var fromEl=document.getElementById('bopCfsLiveFrom'), untilEl=document.getElementById('bopCfsLiveUntil');
+        var liveUntil=computeLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
+        status.textContent='Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
+          status.textContent='Going live…';
+          window.bopFtDb.collection('carsforsale').add({
+            year:year,make:make,model:model,mileage:mileage,condition:condition,
+            description:description,
+            photo:window.bopCfsPhotoUrl||'',
+            lat:pos.coords.latitude,
+            lng:pos.coords.longitude,
+            checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+            liveUntil:liveUntil
+          }).then(function(){
+            status.textContent="You're live! Tap Back to see it on the map.";
+          }).catch(function(){
+            status.textContent='Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent='Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+
+  function install(){
+    var back=document.getElementById('bopCarForSaleBack');
+    if(back&&!back.dataset.wired){
+      back.dataset.wired='1';
+      back.addEventListener('click',function(){
+        var page=document.getElementById('bopCarForSaleOverlay');if(page)page.classList.remove('open');
+        document.body.style.overflow='';
+        if(window.bopCarForSaleMapInstance){window.bopCarForSaleMapInstance.remove();window.bopCarForSaleMapInstance=null;}
+        if(window.bopCfsUnsub){window.bopCfsUnsub();window.bopCfsUnsub=null;}
+      });
+    }
+    var cta=document.getElementById('bopCfsCheckinCta');
+    if(cta&&!cta.dataset.wired){ cta.dataset.wired='1'; cta.addEventListener('click', function(){ window.boOpenCarForSaleCheckin(); }); }
+
+    /* Add the tile itself to the existing Go Live tiles grid (delivered
+       markup can't be edited in place -- inserted at runtime instead). */
+    var grid=document.querySelector('.bop-golive-tiles');
+    if(grid&&!document.getElementById('bopGoLiveCarForSale')){
+      var tile=document.createElement('button');
+      tile.className='bop-golive-tile';
+      tile.id='bopGoLiveCarForSale';
+      tile.type='button';
+      tile.setAttribute('aria-label','Car For Sale');
+      tile.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 65 L15 45 L30 35 L70 35 L85 45 L90 65 Z"/><circle cx="28" cy="70" r="10" fill="#000"/><circle cx="72" cy="70" r="10" fill="#000"/></svg><span>CAR FOR SALE</span>';
+      grid.appendChild(tile);
+      tile.addEventListener('click', function(){
+        if(typeof window.bopOpenGoLivePage!=='undefined'){
+          var overlay=document.getElementById('bopGoLiveOverlay');
+          if(overlay)overlay.classList.remove('open');
+          document.body.style.overflow='';
+        }
+        window.boOpenCarForSaleMap();
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v503: Brad's call (2026-08-30) -- the BJS orb in the landing dock (the
+     one appended as the 4th, after Share/Other Cities/Closest Five) now
+     reads "ENTER" instead of the BJS lockup. Same spot, same row, just new
+     text -- tapping it simply lands you back on the main page (it wasn't
+     doing much else). The actual BJS Co logo (gold ring, black background,
+     red/gold lockup) moves to its own small, tucked-away badge in the
+     bottom-right corner, smaller than the original fixed corner button. -->
+<style id="bop-dock-enter-and-bjs-corner-v503">
+#bopStaticFounders{display:flex!important}
+#bopStaticFounders .bop-static-bjs-lockup{width:auto!important;height:auto!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#bopStaticFounders .bop-static-bjs-lockup strong{font-size:14px!important;letter-spacing:.03em!important}
+#bopStaticFounders .bop-static-bjs-lockup small{display:none!important}
+#bopCornerBjsBadge{position:fixed;right:12px;bottom:12px;z-index:100002;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;padding:0}
+#bopCornerBjsBadge svg{width:24px;height:24px}
+body:has(#bopLandingOverlay.open) #bopCornerBjsBadge{display:flex!important}
+body:not(:has(#bopLandingOverlay.open)) #bopCornerBjsBadge{display:none!important}
+</style>
+<button id="bopCornerBjsBadge" type="button" aria-label="BJS Co. — Founders" data-dest="about">
+  <svg aria-hidden="true" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="17" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="10.5" font-weight="900" fill="#F59E0B">BJS</text><text x="20" y="27" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="7.5" font-weight="900" fill="#E4002B">CO.</text></svg>
+</button>
+<script id="bop-dock-enter-and-bjs-corner-script-v503">
+(function(){
+  function install(){
+    var founders=document.getElementById('bopStaticFounders');
+    if(founders){
+      var lockup=founders.querySelector('.bop-static-bjs-lockup strong');
+      if(lockup&&lockup.textContent!=='ENTER')lockup.textContent='ENTER';
+      founders.removeAttribute('tabindex');
+      if(!founders.dataset.enterWired){
+        founders.dataset.enterWired='1';
+        founders.addEventListener('click',function(){
+          var results=document.getElementById('bopLandingResults');
+          if(results)results.innerHTML='';
+          var input=document.getElementById('bopLandingSearchInput');
+          if(input)input.blur();
+        });
+      }
+    }
+    var corner=document.getElementById('bopCornerBjsBadge');
+    if(corner&&!corner.dataset.wired){
+      corner.dataset.wired='1';
+      corner.addEventListener('click',function(){
+        var about=document.getElementById('aboutUsOverlay');
+        if(about){about.classList.add('open');about.scrollTop=0;}
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v504: Brad's call (2026-08-30) -- tile order and labels on the Go Live
+     page: Houses For Sale, Cars For Sale, Food Trucks, Street Vendors,
+     Garage Sales (no "LIVE" on the tiles themselves). Page headlines all end
+     in "LIVE!": Open House Live!, Sell Your Car Live!, Garage Sales Live!
+     Bottom CTAs reworded to match the Food Truck / Street Vendor pattern:
+     a short question, then "Go live now!" -->
+<script id="bop-golive-relabel-reorder-v504">
+(function(){
+  function setTileLabel(id,html){
+    var tile=document.getElementById(id);if(!tile)return;
+    var span=tile.querySelector('span:last-child');
+    if(span)span.innerHTML=html;
+  }
+  function reorderTiles(){
+    var grid=document.querySelector('.bop-golive-tiles');if(!grid)return;
+    var order=['bopGoLiveRealtor','bopGoLiveCarForSale','bopGoLiveFoodTruck','bopGoLiveVendorStand','bopGoLiveYardSale'];
+    order.forEach(function(id){var el=document.getElementById(id);if(el)grid.appendChild(el);});
+  }
+  function fixHeadlines(){
+    var rtSub=document.querySelector('#bopRealtorOverlay .bo-rt-sub');
+    if(rtSub&&rtSub.textContent!=='OPEN HOUSE LIVE!')rtSub.textContent='OPEN HOUSE LIVE!';
+    var ysSub=document.querySelector('#bopYardSaleOverlay .bo-ys-sub');
+    if(ysSub&&ysSub.textContent!=='GARAGE SALES LIVE!')ysSub.textContent='GARAGE SALES LIVE!';
+  }
+  function fixCtas(){
+    var rt=document.getElementById('bopRtCheckinCta');
+    if(rt){
+      var s=rt.querySelectorAll('span');
+      if(s[0]&&s[0].textContent!=='Are you a realtor?')s[0].textContent='Are you a realtor?';
+      if(s[1]&&s[1].textContent!=='Go live now!')s[1].textContent='Go live now!';
+    }
+    var cfs=document.getElementById('bopCfsCheckinCta');
+    if(cfs){
+      var s2=cfs.querySelectorAll('span');
+      if(s2[0]&&s2[0].textContent!=='Do you have a car for sale?')s2[0].textContent='Do you have a car for sale?';
+      if(s2[1]&&s2[1].textContent!=='Go live now!')s2[1].textContent='Go live now!';
+    }
+    var ys=document.getElementById('bopYsCheckinCta');
+    if(ys){
+      var s3=ys.querySelectorAll('span');
+      if(s3[0]&&s3[0].textContent!=='Are you having a garage/yard sale today?')s3[0].textContent='Are you having a garage/yard sale today?';
+      if(s3[1]&&s3[1].textContent!=='Go live now!')s3[1].textContent='Go live now!';
+    }
+  }
+  function install(){
+    setTileLabel('bopGoLiveRealtor','HOUSES FOR SALE');
+    setTileLabel('bopGoLiveCarForSale','CARS FOR SALE');
+    setTileLabel('bopGoLiveFoodTruck','FOOD TRUCKS');
+    setTileLabel('bopGoLiveVendorStand','STREET VENDORS');
+    setTileLabel('bopGoLiveYardSale','GARAGE SALES');
+    reorderTiles();
+    fixHeadlines();
+    fixCtas();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v505: Brad's call (2026-08-30) -- sixth Go Live tile, "Safe Meet-Up" /
+     "Buy/Sell Drops". Same map pattern as the others. Headline "BUY, SELL
+     SAFELY!" Bottom CTA "Are you selling something? Go live now!" Fields:
+     what you're selling, category dropdown (ending in Miscellaneous),
+     price, photo, description, and a fixed dropdown of five designated
+     safe meet-up spots (Target, 7-Eleven, Police Station, Public Library,
+     Walmart). No phone/name -- geolocation places the pin, matching Yard
+     Sale and Car For Sale. Asterisk note about only meeting at a listed spot. -->
+<style id="bop-safemeetup-v505">
+#bopSafeMeetupOverlay{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000}
+#bopSafeMeetupOverlay.open{display:block}
+#bopSafeMeetupOverlay .bo-sm-shell{min-height:100vh;padding:26px 18px 50px;box-sizing:border-box;text-align:center}
+#bopSafeMeetupOverlay .bo-sm-back{position:fixed;top:16px;left:14px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Black',sans-serif;cursor:pointer}
+#bopSafeMeetupOverlay .bo-sm-sub{margin:70px 0 16px;color:#F59E0B;font:900 1rem/1.3 'Archivo Black',sans-serif;letter-spacing:.02em}
+#bopSafeMeetupOverlayMapEl{width:100%;height:56vh;min-height:340px;border:2px solid #F59E0B;border-radius:14px;box-shadow:0 0 12px rgba(245,158,11,.4);overflow:hidden;margin:0 auto}
+#bopSafeMeetupOverlay .bo-sm-checkin-cta{display:block;width:min(420px,100%);margin:16px auto 0;padding:14px 18px;border:2px solid #F59E0B;border-radius:12px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#fff;font:700 .88rem/1.4 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.4)}
+#bopSafeMeetupOverlay .bo-sm-cta-line2{display:block;margin-top:4px;color:#F59E0B;font:900 .95rem/1.2 'Archivo Black',sans-serif}
+#bopSafeMeetupOverlay .bo-sm-note{max-width:420px;margin:16px auto 0;color:#ccc;font:400 .8rem/1.55 'Archivo Narrow',Arial,sans-serif}
+</style>
+<div id="bopSafeMeetupOverlay" aria-label="Safe Meet-Up">
+  <div class="bo-sm-shell">
+    <button class="bo-sm-back" id="bopSafeMeetupBack" type="button">&larr;<br>Back</button>
+    <div class="bo-sm-sub">BUY, SELL SAFELY!</div>
+    <div id="bopSafeMeetupOverlayMapEl"></div>
+    <button type="button" class="bo-sm-checkin-cta" id="bopSmCheckinCta"><span>Are you selling something?</span><span class="bo-sm-cta-line2">Go live now!</span></button>
+    <p class="bo-sm-note">*We have designated these as "safe" locations — please only meet up at one of them.</p>
+  </div>
+</div>
+<script id="bop-safemeetup-script-v505">
+(function(){
+  var CATEGORIES=['Phone','Computer','Clothes','Furniture','Electronics','Appliances','Toys & Games','Sporting Goods','Books & Media','Vehicles & Parts','Tools','Jewelry','Miscellaneous'];
+  var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart'];
+  var smIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M50 12 L84 26 V50 C84 72 68 86 50 92 C32 86 16 72 16 50 V26 Z"/><path d="M34 50 L45 62 L68 38"/></svg></div>';
+
+  function compressToDataUrl(file,onDone){
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){
+      var maxDim=700,scale=Math.min(1,maxDim/Math.max(img.naturalWidth,img.naturalHeight));
+      var w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var q=0.62,data=c.toDataURL('image/jpeg',q);
+      while(data.length>380000&&q>0.3){q-=0.1;data=c.toDataURL('image/jpeg',q);}
+      URL.revokeObjectURL(url);
+      onDone(data);
+    };
+    img.src=url;
+  }
+
+  function initMap(){
+    if(typeof L==='undefined'){ if(typeof boLoadLeaflet==='function'){boLoadLeaflet().catch(function(){});} setTimeout(initMap,150); return; }
+    var el=document.getElementById('bopSafeMeetupOverlayMapEl');if(!el||el.dataset.mapReady)return;
+    el.dataset.mapReady='1';
+    var map=L.map(el,{worldCopyJump:true,zoomControl:false}).setView([36.1699,-115.1398],11);
+    L.control.zoom({position:'topleft'}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(map);
+    window.bopSafeMeetupMapInstance=map;
+    var smIcon=L.divIcon({className:'bo-sm-marker',html:smIconHTML,iconSize:[34,34],iconAnchor:[17,17]});
+    window.bopSafeMeetupMarkers=window.bopSafeMeetupMarkers||{};
+    if(window.bopFtDb){
+      if(window.bopSmUnsub) window.bopSmUnsub();
+      window.bopSmUnsub=window.bopFtDb.collection('safemeetups').onSnapshot(function(snap){
+        Object.keys(window.bopSafeMeetupMarkers).forEach(function(id){ map.removeLayer(window.bopSafeMeetupMarkers[id]); });
+        window.bopSafeMeetupMarkers={};
+        snap.forEach(function(doc){
+          var d=doc.data();
+          if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
+          if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+          var marker=L.marker([d.lat,d.lng],{icon:smIcon}).addTo(map);
+          var factsParts=[];
+          if(d.price) factsParts.push(d.price);
+          if(d.category) factsParts.push(d.category);
+          var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
+          var spotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">Meet at: '+d.spot+'</div>':'';
+          var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
+          var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
+          marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Item For Sale')+'</div>'+factsHTML+spotHTML+descHTML+'</div>');
+          window.bopSafeMeetupMarkers[doc.id]=marker;
+        });
+      });
+    }
+    setTimeout(function(){ map.invalidateSize(); },200);
+  }
+  window.boOpenSafeMeetupMap=function(){
+    var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+    var page=document.getElementById('bopSafeMeetupOverlay');if(!page)return;
+    page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+    setTimeout(initMap,30);
+  };
+
+  window.boOpenSafeMeetupCheckin=function(){
+    var landing=document.getElementById('bopLandingOverlay'); if(landing) landing.classList.remove('open');
+    var page=document.getElementById('bopSafeMeetupCheckin');
+    if(!page){
+      page=document.createElement('section');
+      page.id='bopSafeMeetupCheckin';
+      page.className='bo-ft-overlay';
+      page.setAttribute('aria-label','Safe Meet-Up Go Live');
+      var categoryOptions=CATEGORIES.map(function(c){return '<option>'+c+'</option>';}).join('');
+      var spotOptions='<option value="">Choose a safe location</option>'+SPOTS.map(function(s){return '<option>'+s+'</option>';}).join('');
+      page.innerHTML =
+        '<div class="bo-ftc-shell">'+
+          '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
+          '<div class="bo-ftc-title">Go Live!</div>'+
+          '<div class="bo-ftc-sub">Go live on the Best of Period safe meet-up map. Your location is used automatically.</div>'+
+          '<input class="bo-ftc-field" id="bopSmName" type="text" placeholder="What are you selling?" />'+
+          '<select class="bo-ftc-field" id="bopSmCategory">'+categoryOptions+'</select>'+
+          '<input class="bo-ftc-field" id="bopSmPrice" type="text" placeholder="Price (e.g. $40)" />'+
+          '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of the item (optional, but it helps buyers spot you).</div></div>'+
+          '<textarea class="bo-ftc-field" id="bopSmDescription" rows="3" placeholder="Description — condition, details, anything buyers should know"></textarea>'+
+          '<select class="bo-ftc-field" id="bopSmSpot">'+spotOptions+'</select>'+
+          '<button type="button" class="bo-ftc-btn" id="bopSmCheckinSubmit">I\'m Here — Go Live</button>'+
+          '<div class="bo-ftc-status" id="bopSmCheckinStatus"></div>'+
+        '</div>';
+      document.body.appendChild(page);
+      page.querySelector('.bo-ft-back').addEventListener('click', function(){
+        page.classList.remove('open'); document.body.style.overflow='';
+      });
+
+      window.bopSmPhotoUrl='';
+      var previewImg=document.getElementById('bopSmPreviewImg');
+      document.getElementById('bopSmPhotoInput').addEventListener('change',function(e){
+        var f=e.target.files&&e.target.files[0];
+        if(!f)return;
+        compressToDataUrl(f,function(data){
+          window.bopSmPhotoUrl=data;
+          previewImg.src=data;previewImg.style.display='block';
+        });
+      });
+
+      document.getElementById('bopSmCheckinSubmit').addEventListener('click', function(){
+        var status=document.getElementById('bopSmCheckinStatus');
+        var name=document.getElementById('bopSmName').value.trim();
+        var category=document.getElementById('bopSmCategory').value;
+        var price=document.getElementById('bopSmPrice').value.trim();
+        var description=document.getElementById('bopSmDescription').value.trim();
+        var spot=document.getElementById('bopSmSpot').value;
+        if(!name){ status.textContent='Please say what you\'re selling.'; return; }
+        if(!spot){ status.textContent='Please choose one of the safe meet-up locations.'; return; }
+        if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+        status.textContent='Getting your location…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
+          status.textContent='Going live…';
+          window.bopFtDb.collection('safemeetups').add({
+            name:name,category:category,price:price,description:description,spot:spot,
+            photo:window.bopSmPhotoUrl||'',
+            lat:pos.coords.latitude,
+            lng:pos.coords.longitude,
+            checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
+            liveUntil:Date.now()+8*3600000
+          }).then(function(){
+            status.textContent="You're live! Tap Back to see your listing on the map.";
+          }).catch(function(){
+            status.textContent='Something went wrong — try again.';
+          });
+        }, function(){
+          status.textContent='Location permission is needed to check in.';
+        }, {enableHighAccuracy:true, timeout:10000});
+      });
+    }
+    page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
+  };
+
+  function install(){
+    var back=document.getElementById('bopSafeMeetupBack');
+    if(back&&!back.dataset.wired){
+      back.dataset.wired='1';
+      back.addEventListener('click',function(){
+        var page=document.getElementById('bopSafeMeetupOverlay');if(page)page.classList.remove('open');
+        document.body.style.overflow='';
+        if(window.bopSafeMeetupMapInstance){window.bopSafeMeetupMapInstance.remove();window.bopSafeMeetupMapInstance=null;}
+        if(window.bopSmUnsub){window.bopSmUnsub();window.bopSmUnsub=null;}
+      });
+    }
+    var cta=document.getElementById('bopSmCheckinCta');
+    if(cta&&!cta.dataset.wired){ cta.dataset.wired='1'; cta.addEventListener('click', function(){ window.boOpenSafeMeetupCheckin(); }); }
+
+    var grid=document.querySelector('.bop-golive-tiles');
+    if(grid&&!document.getElementById('bopGoLiveSafeMeetup')){
+      var tile=document.createElement('button');
+      tile.className='bop-golive-tile';
+      tile.id='bopGoLiveSafeMeetup';
+      tile.type='button';
+      tile.setAttribute('aria-label','Safe Meet-Up');
+      tile.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M50 12 L84 26 V50 C84 72 68 86 50 92 C32 86 16 72 16 50 V26 Z"/><path d="M34 50 L45 62 L68 38"/></svg><span>SAFE MEET-UP<span class="bo-golive-tile-sub">BUY/SELL DROPS</span></span>';
+      grid.appendChild(tile);
+      tile.addEventListener('click', function(){
+        var overlay=document.getElementById('bopGoLiveOverlay');
+        if(overlay)overlay.classList.remove('open');
+        document.body.style.overflow='';
+        window.boOpenSafeMeetupMap();
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v506: Brad's call (2026-08-30) -- replaces the short asterisk note on the
+     Safe Meet-Up page with a full disclaimer: going live geotargets current
+     location, the RULES (styled to become a hotlink later -- not wired yet,
+     Brad's still deciding on that), the five-locations requirement, the
+     "proper MEETUP" phrasing, and a closing line on why these locations were
+     chosen. He's still deciding whether this rolls out to the other Go Live
+     pages too. -->
+<style id="bop-safemeetup-disclaimer-v506">
+#bopSafeMeetupOverlay .bo-sm-note{max-width:440px}
+#bopSafeMeetupOverlay .bo-sm-note .bo-sm-rules-link{color:#F59E0B;font-weight:800;text-decoration:underline;text-underline-offset:2px}
+</style>
+<script id="bop-safemeetup-disclaimer-script-v506">
+(function(){
+  function install(){
+    var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
+    if(!note||note.dataset.bopV506)return;
+    note.dataset.bopV506='1';
+    note.innerHTML='*Going live geotargets your current location. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If you\'d like to meet somewhere other than what\'s available in the drop-down, please ask for a proper MEETUP. Best of Period has chosen these locations for their unmistakable security and proximity.';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v507: Brad's call (2026-08-30) -- disclaimer wording fix. Drop
+     "unmistakable" entirely (no replacement word). "somewhere other than
+     these locations" instead of "what's available in the drop-down".
+     Closing line: "these drop spots" not "these locations". And "meet up"
+     is now written with a handshake emoji in place of the dash -- that's
+     the logo treatment for this word, everywhere it appears. -->
+<script id="bop-safemeetup-disclaimer-script-v507">
+(function(){
+  function install(){
+    var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
+    if(!note||note.dataset.bopV507)return;
+    note.dataset.bopV507='1';
+    note.innerHTML='*Going live geotargets your current location. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If you\'d like to meet somewhere other than these locations, please request a proper MEET🤝UP. Best of Period has chosen these drop spots for their security and proximity.';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v508: Brad's call (2026-08-30) -- the tile itself now reads
+     "SAFE MEET🤝UP" (handshake emoji in place of the dash), matching the
+     disclaimer wording -- this is the logo treatment for "meet up"
+     everywhere it appears. -->
+<script id="bop-safemeetup-tile-emoji-v508">
+(function(){
+  function install(){
+    var tile=document.getElementById('bopGoLiveSafeMeetup');
+    if(!tile||tile.dataset.bopV508)return;
+    var span=tile.querySelector('span');
+    if(!span)return;
+    tile.dataset.bopV508='1';
+    span.innerHTML='SAFE MEET🤝UP<span class="bo-golive-tile-sub">BUY/SELL DROPS</span>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v509: Brad's call (2026-08-30) -- drop "Safe" from the tile. It now just
+     reads "MEET🤝UP" with "BUY/SELL DROPS" underneath, unchanged. -->
+<script id="bop-meetup-drop-safe-v509">
+(function(){
+  function install(){
+    var tile=document.getElementById('bopGoLiveSafeMeetup');
+    if(!tile||tile.dataset.bopV509)return;
+    var span=tile.querySelector('span');
+    if(!span)return;
+    tile.dataset.bopV509='1';
+    span.innerHTML='MEET🤝UP<span class="bo-golive-tile-sub">BUY/SELL DROPS</span>';
+    tile.setAttribute('aria-label','Meet Up');
+    var overlay=document.getElementById('bopSafeMeetupOverlay');
+    if(overlay)overlay.setAttribute('aria-label','Meet Up');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v510: Brad's call (2026-08-30) -- on the Safe Meet-Up go-live form: a
+     warning at the top ("Do not check in until you are at one of the
+     approved locations") and a small one-line strip at the bottom showing
+     the five approved spots (Target, 7-Eleven, Police Station, Public
+     Library, Walmart) with a simple icon + brand-colored name for each --
+     kept small so it stays on one line on a phone screen. -->
+<style id="bop-meetup-form-notice-v510">
+.bo-sm-checkin-warn{background:rgba(228,0,43,0.12);border:1.5px solid #E4002B;border-radius:10px;padding:10px 14px;margin:0 0 18px;color:#ff6b6b;font:800 .74rem/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase;}
+.bo-sm-approved-wrap{margin-top:22px;}
+.bo-sm-approved-label{color:#F59E0B;font:800 .62rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.bo-sm-approved-row{display:flex;align-items:center;justify-content:center;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
+.bo-sm-approved-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto;}
+.bo-sm-approved-item svg{width:16px;height:16px;}
+.bo-sm-approved-item span{font-size:.56rem;font-weight:800;white-space:nowrap;letter-spacing:.01em;}
+</style>
+<script id="bop-meetup-form-notice-script-v510">
+(function(){
+  function install(){
+    var shell=document.querySelector('#bopSafeMeetupCheckin .bo-ftc-shell');
+    if(!shell||shell.dataset.bopV510)return;
+    shell.dataset.bopV510='1';
+
+    var warn=document.createElement('div');
+    warn.className='bo-sm-checkin-warn';
+    warn.textContent='Do not check in until you are at one of the approved locations.';
+    var sub=shell.querySelector('.bo-ftc-sub');
+    if(sub)sub.parentNode.insertBefore(warn,sub);
+
+    var wrap=document.createElement('div');
+    wrap.className='bo-sm-approved-wrap';
+    wrap.innerHTML =
+      '<div class="bo-sm-approved-label">Approved Locations</div>'+
+      '<div class="bo-sm-approved-row">'+
+        '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#CC0000"/></svg><span style="color:#E4342F;">Target</span></div>'+
+        '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#2E7D32"/></svg><span style="color:#F59E0B;">7-Eleven</span></div>'+
+        '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#8FB8E8" stroke-width="1.8" aria-hidden="true"><path d="M12 3 L20 6 V12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 V6 Z"/><path d="M8 12 L11 15 L16 9"/></svg><span style="color:#8FB8E8;">Police Station</span></div>'+
+        '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A66B" stroke-width="1.8" aria-hidden="true"><path d="M4 5 h9 a2 2 0 0 1 2 2 v13 h-9 a2 2 0 0 1 -2 -2 z"/><path d="M15 5 h5 v15 h-5"/><line x1="7" y1="9" x2="11" y2="9"/><line x1="7" y1="13" x2="11" y2="13"/></svg><span style="color:#C9A66B;">Public Library</span></div>'+
+        '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#0071CE"/></svg><span style="color:#4FA3E8;">Walmart</span></div>'+
+      '</div>';
+    var status=shell.querySelector('.bo-ftc-status');
+    if(status)status.parentNode.insertBefore(wrap,status.nextSibling);
+    else shell.appendChild(wrap);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+<!-- v511: Brad's call (2026-08-30) -- tile sub-label goes back to including
+     "Safe": "SAFE BUY/SELL DROPS", shrunk down small enough to stay on one
+     line at the same tile size (tile itself is untouched). -->
+<style id="bop-meetup-sub-shrink-v511">
+#bopGoLiveSafeMeetup .bo-golive-tile-sub{font-size:.4rem!important;letter-spacing:.01em!important;white-space:nowrap;}
+</style>
+<script id="bop-meetup-sub-shrink-script-v511">
+(function(){
+  function install(){
+    var tile=document.getElementById('bopGoLiveSafeMeetup');
+    if(!tile||tile.dataset.bopV511)return;
+    var sub=tile.querySelector('.bo-golive-tile-sub');
+    if(!sub)return;
+    tile.dataset.bopV511='1';
+    sub.textContent='SAFE BUY/SELL DROPS';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
