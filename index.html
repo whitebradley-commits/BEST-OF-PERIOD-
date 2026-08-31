@@ -36204,4 +36204,87 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 })();
 </script>
 
+
+
+
+<style id="bop-analog-position-fix-v528">
+#bopRtHqByStateEl{margin-top:22px!important;}
+#bopRtHqByStateEl .bo-rt-hq-section-label{font-size:.85rem!important;margin-bottom:14px!important;}
+#bopRtHqByStateEl .bo-rt-hq-state:first-of-type{margin-top:26px!important;}
+#bopRtHqByStateEl .bo-rt-hq-state{margin:30px 0 12px!important;font-size:1.15rem!important;}
+#bopRtHqByStateEl .bo-rt-hq-card{margin-bottom:11px!important;padding:11px 13px!important;}
+#bopRtHqByStateEl .bo-rt-hq-name{font-size:.9rem!important;}
+.bop-golive-orb-label-final{position:relative;z-index:1;display:block;}
+</style>
+<script id="bop-relocate-and-fixes-v528">(function(){
+  // 1) Move the misplaced state-grouped list to actually live inside the
+  // Realtor page, right after the live list, instead of loose in <body>.
+  function relocateHqSection(){
+    var hq=document.getElementById('bopRtHqByStateEl');
+    var list=document.getElementById('bopRtAnalogListEl');
+    if(!hq||!list)return;
+    if(hq.parentNode!==list.parentNode || hq.previousElementSibling!==list){
+      list.parentNode.insertBefore(hq,list.nextSibling);
+    }
+  }
+
+  // 2) Remove the confusing "Pick Your Location" line on Food Truck and
+  // Vendor Stand pages -- it reads like a customer/vendor picker prompt,
+  // which is ambiguous since both use the same page.
+  function removePickLocation(){
+    document.querySelectorAll('.bo-ft-sub').forEach(function(el){
+      if(el.textContent.trim()==='Pick Your Location') el.style.display='none';
+    });
+  }
+
+  // 3) Random distinct color per state, applied wherever a state-grouped
+  // list appears (currently: the Realtor page's Open Houses Analog List).
+  var STATE_COLORS=['#F59E0B','#3b9dff','#E4002B','#7bc47f','#A855F7','#4fc3f7','#ffd24d','#ff6ec7','#7CC96F','#ff9a3c','#2DD4BF'];
+  function shuffledColors(n){
+    var pool=STATE_COLORS.slice();
+    for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+    while(pool.length<n) pool=pool.concat(STATE_COLORS);
+    return pool.slice(0,n);
+  }
+  function colorizeAllStateLists(){
+    document.querySelectorAll('[id$="HqByStateEl"], .bo-rt-hq-section-label').forEach(function(label){
+      var host=label.closest('div');
+      if(!host||host.dataset.bopColored)return;
+      var states=host.querySelectorAll('[class$="-hq-state"]');
+      if(!states.length)return;
+      host.dataset.bopColored='1';
+      var colors=shuffledColors(states.length);
+      states.forEach(function(el,i){ el.style.color=colors[i]; el.style.textShadow='0 0 6px '+colors[i]; });
+    });
+  }
+
+  // 4) Dock orb: "GO LIVE" -> "LIVE!" bigger.
+  // Note: an earlier patch (v532) also targets this element via the
+  // .bop-golive-orb-label class on its own persistent interval, and will
+  // keep reverting this if we don't stop it from finding the element.
+  function fixDockOrb(){
+    var btn=document.getElementById('bopStaticGoLive');
+    if(!btn)return;
+    var label=btn.querySelector('.bop-golive-orb-label');
+    if(!label)return;
+    if(label.dataset.bopV528final)return;
+    label.dataset.bopV528final='1';
+    label.innerHTML='LIVE!';
+    label.style.fontSize='1.6em';
+    label.style.lineHeight='1';
+    label.classList.remove('bop-golive-orb-label');
+    label.className='bop-golive-orb-label-final';
+  }
+
+  function install(){
+    relocateHqSection();
+    removePickLocation();
+    colorizeAllStateLists();
+    fixDockOrb();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
