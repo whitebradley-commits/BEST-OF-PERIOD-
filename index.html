@@ -31219,7 +31219,7 @@ setInterval(wireVendorZoom,400);
 <style id="bop-uber-delivery-callout-v438">.bo-ft-uber-callout{display:flex;align-items:center;gap:12px;width:100%;margin:16px 0 0;padding:12px 14px;border:1.5px solid #F59E0B;border-radius:14px;background:#0a0a0a;text-align:left}.bo-ft-uber-orb{flex:0 0 auto;width:56px;height:56px;border-radius:50%;background:#050505;border:2px solid #F59E0B;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 0 10px rgba(245,158,11,.5);-webkit-tap-highlight-color:transparent}.bo-ft-uber-orb span{color:#F59E0B;font:900 .56rem/1.05 'Archivo Black',Arial,sans-serif;letter-spacing:.01em;text-align:center}.bo-ft-uber-orb:active{transform:scale(.95)}.bo-ft-uber-copy{flex:1;color:#eee;font:600 .8rem/1.4 Arial,sans-serif;text-align:left}.bo-ft-uber-copy b{color:#F59E0B}#bopVendorStandOverlay .bo-ft-uber-callout{border-color:var(--vs-teal)!important}#bopVendorStandOverlay .bo-ft-uber-orb{border-color:var(--vs-teal)!important;box-shadow:0 0 10px var(--vs-teal-glow)!important}#bopVendorStandOverlay .bo-ft-uber-orb span{color:var(--vs-teal)!important}#bopVendorStandOverlay .bo-ft-uber-copy b{color:var(--vs-teal)!important}</style>
 <script id="bop-uber-delivery-callout-v438-script">(function(){
 var HTML='<a class="bo-ft-uber-orb" href="https://www.ubereats.com" aria-label="Open Uber Package"><span>UBER<br>PACKAGE</span></a>'+
-'<div class="bo-ft-uber-copy">When you go live, you let customers know where you are and give them the chance to set up a pickup. <b>Go Live now!</b></div>';
+'<div class="bo-ft-uber-copy">When you go <span class="bo-live-glow-word">live</span>, you let customers know where you are and give them the chance to set up a pickup. <b>Go Live now!</b></div>';
 function install(ctaId){
 var cta=document.getElementById(ctaId);
 if(!cta||cta.parentNode.querySelector('.bo-ft-uber-callout'))return;
@@ -34180,7 +34180,7 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
     <div class="bo-ys-sub">YARD SALE</div>
     <div id="bopYardSaleOverlayMapEl"></div>
     <button type="button" class="bo-ys-checkin-cta" id="bopYsCheckinCta"><span>Having a yard sale?</span><span class="bo-ys-cta-line2">Click here to go live</span></button>
-    <p class="bo-ys-note">List what you're selling in the notes when you go live.</p>
+    <p class="bo-ys-note">List what you're selling in the notes when you go <span class="bo-live-glow-word">live</span>.</p>
   </div>
 </div>
 <script id="bop-yardsale-map-script-v501">(function(){
@@ -34513,15 +34513,17 @@ snap.forEach(function(doc){
 var d=doc.data();
 if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
 if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
-var marker=L.marker([d.lat,d.lng],{icon:carIcon}).addTo(map);
+var marker=L.marker([d.lat,d.lng],{icon:(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?L.divIcon({className:'bo-cfs-marker',html:'<div style="width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid #F59E0B;box-shadow:0 0 8px rgba(245,158,11,.7);">'+window.bopSmSpotLogoSVG[d.spot]+'</div>',iconSize:[34,34],iconAnchor:[17,17]}):carIcon}).addTo(map);
 var title=[d.year,d.make,d.model].filter(Boolean).join(' ')||'Car For Sale';
 var factsParts=[];
 if(d.mileage) factsParts.push(d.mileage+' mi');
 if(d.condition) factsParts.push(d.condition);
 var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
+var cfsSpotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
+var cfsSpotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">'+cfsSpotLogoHTML+'Meet at: '+d.spot+'</div>':'';
 var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
 var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
-marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+title+'</div>'+factsHTML+descHTML+'</div>');
+marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+title+'</div>'+factsHTML+cfsSpotHTML+descHTML+'</div>');
 window.bopCarForSaleMarkers[doc.id]=marker;
 });
 });
@@ -34553,6 +34555,7 @@ page.innerHTML =
 '<input class="bo-ftc-field" id="bopCfsModel" type="text" placeholder="Model (e.g. Accord)" />'+
 '<input class="bo-ftc-field" id="bopCfsMileage" type="text" inputmode="numeric" placeholder="Mileage" />'+
 '<select class="bo-ftc-field" id="bopCfsCondition"><option value="">Condition (optional)</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Needs Work</option></select>'+
+'<select class="bo-ftc-field" id="bopCfsSpot"><option value="">Choose a recommended location</option><option>Target</option><option>7-Eleven</option><option>Police Station</option><option>Public Library</option><option>Walmart</option><option>Tesla Supercharger</option></select>'+
 '<textarea class="bo-ftc-field" id="bopCfsDescription" rows="3" placeholder="Notes — anything buyers should know"></textarea>'+
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Here From</label><input type="time" id="bopCfsLiveFrom"></div><div class="bo-ft-hours-field"><label>Here Until</label><input type="time" id="bopCfsLiveUntil"></div></div>'+
 '<div class="bo-ft-hours-hint">The hours you and the car will be at this location today. You can always take it down early.</div>'+
@@ -34583,6 +34586,7 @@ var make=document.getElementById('bopCfsMake').value.trim();
 var model=document.getElementById('bopCfsModel').value.trim();
 var mileage=document.getElementById('bopCfsMileage').value.trim();
 var condition=document.getElementById('bopCfsCondition').value;
+var spot=document.getElementById('bopCfsSpot')?document.getElementById('bopCfsSpot').value:'';
 var description=document.getElementById('bopCfsDescription').value.trim();
 if(!make&&!model){ status.textContent='Please enter at least the make or model.'; return; }
 if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
@@ -34593,7 +34597,7 @@ navigator.geolocation.getCurrentPosition(function(pos){
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 window.bopFtDb.collection('carsforsale').add({
-year:year,make:make,model:model,mileage:mileage,condition:condition,
+year:year,make:make,model:model,mileage:mileage,condition:condition,spot:spot,
 description:description,
 photo:window.bopCfsPhotoUrl||'',
 lat:pos.coords.latitude,
@@ -34747,7 +34751,7 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
 </div>
 <script id="bop-safemeetup-script-v505">(function(){
 var CATEGORIES=['Phone','Computer','Clothes','Furniture','Electronics','Appliances','Toys & Games','Sporting Goods','Books & Media','Vehicles & Parts','Tools','Jewelry','Miscellaneous'];
-var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart'];
+var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart','Tesla Supercharger'];
 var smIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M50 12 L84 26 V50 C84 72 68 86 50 92 C32 86 16 72 16 50 V26 Z"/><path d="M34 50 L45 62 L68 38"/></svg></div>';
 function compressToDataUrl(file,onDone){
 var img=new Image(),url=URL.createObjectURL(file);
@@ -34782,12 +34786,13 @@ snap.forEach(function(doc){
 var d=doc.data();
 if(!d.checkedInAt||typeof d.lat!=='number'||typeof d.lng!=='number') return;
 if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
-var marker=L.marker([d.lat,d.lng],{icon:smIcon}).addTo(map);
+var marker=L.marker([d.lat,d.lng],{icon:(window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?L.divIcon({className:'bo-sm-marker',html:'<div style="width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid #F59E0B;box-shadow:0 0 8px rgba(245,158,11,.7);">'+window.bopSmSpotLogoSVG[d.spot]+'</div>',iconSize:[34,34],iconAnchor:[17,17]}):smIcon}).addTo(map);
 var factsParts=[];
 if(d.price) factsParts.push(d.price);
 if(d.category) factsParts.push(d.category);
 var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
-var spotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">Meet at: '+d.spot+'</div>':'';
+var spotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
+var spotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">'+spotLogoHTML+'Meet at: '+d.spot+'</div>':'';
 var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
 var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
 marker.bindPopup('<div style="width:190px;">'+photoHTML+'<div style="font:800 .95rem Arial;color:#F59E0B;margin-bottom:2px;">'+(d.name||'Item For Sale')+'</div>'+factsHTML+spotHTML+descHTML+'</div>');
@@ -34821,7 +34826,7 @@ page.innerHTML =
 '<input class="bo-ftc-field" id="bopSmName" type="text" placeholder="What are you selling?" />'+
 '<select class="bo-ftc-field" id="bopSmCategory">'+categoryOptions+'</select>'+
 '<input class="bo-ftc-field" id="bopSmPrice" type="text" placeholder="Price (e.g. $40)" />'+
-'<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of the item (optional, but it helps buyers spot you).</div></div>'+
+'<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of the item (optional, but it helps buyers see your product).</div></div>'+
 '<textarea class="bo-ftc-field" id="bopSmDescription" rows="3" placeholder="Description — condition, details, anything buyers should know"></textarea>'+
 '<select class="bo-ftc-field" id="bopSmSpot">'+spotOptions+'</select>'+
 '<button type="button" class="bo-ftc-btn" id="bopSmCheckinSubmit">I\'m Here — Go Live</button>'+
@@ -34960,7 +34965,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
 
-<style id="bop-meetup-form-notice-v510">.bo-sm-checkin-warn{background:rgba(228,0,43,0.12);border:1.5px solid #E4002B;border-radius:10px;padding:10px 14px;margin:0 0 18px;color:#ff6b6b;font:800 .74rem/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase}.bo-sm-approved-wrap{margin-top:22px}.bo-sm-approved-label{color:#F59E0B;font:800 .62rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}.bo-sm-approved-row{display:flex;align-items:center;justify-content:center;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}.bo-sm-approved-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}.bo-sm-approved-item svg{width:16px;height:16px}.bo-sm-approved-item span{font-size:.56rem;font-weight:800;white-space:nowrap;letter-spacing:.01em}</style>
+<style id="bop-meetup-form-notice-v510">.bo-sm-checkin-warn{background:rgba(228,0,43,0.12);border:1.5px solid #E4002B;border-radius:10px;padding:10px 14px;margin:0 0 18px;color:#ff6b6b;font:800 .74rem/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase}.bo-sm-approved-wrap{margin-top:22px}.bo-sm-approved-label{color:#F59E0B;font:800 .62rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}.bo-sm-approved-row{display:flex;align-items:center;justify-content:flex-start;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 4px 2px}.bo-sm-approved-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto;text-decoration:none;cursor:pointer}.bo-sm-approved-item svg{width:16px;height:16px}.bo-sm-approved-item span{font-size:.56rem;font-weight:800;white-space:nowrap;letter-spacing:.01em}</style>
 <script id="bop-meetup-form-notice-script-v510">(function(){
 function install(){
 var shell=document.querySelector('#bopSafeMeetupCheckin .bo-ftc-shell');
@@ -34974,13 +34979,14 @@ if(sub)sub.parentNode.insertBefore(warn,sub);
 var wrap=document.createElement('div');
 wrap.className='bo-sm-approved-wrap';
 wrap.innerHTML =
-'<div class="bo-sm-approved-label">Approved Locations</div>'+
+'<div class="bo-sm-approved-label">Recommended Locations</div>'+
 '<div class="bo-sm-approved-row">'+
-'<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#CC0000"/></svg><span style="color:#E4342F;">Target</span></div>'+
-'<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#2E7D32"/></svg><span style="color:#F59E0B;">7-Eleven</span></div>'+
+'<a class="bo-sm-approved-item" href="https://www.target.com/store-locator/find-stores" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#CC0000"/><circle cx="12" cy="12" r="6.2" fill="#fff"/><circle cx="12" cy="12" r="2.6" fill="#CC0000"/></svg><span style="color:#E4342F;">Target</span></a>'+
+'<a class="bo-sm-approved-item" href="https://www.7-eleven.com/locations" target="_blank" rel="noopener"><svg viewBox="0 0 40 24" aria-hidden="true"><rect x="1" y="1" width="38" height="22" rx="3" fill="#2E7D32"/><text x="20" y="12" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="10" fill="#E4342F">7</text><text x="20" y="20" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="6.5" fill="#fff">ELEVEN</text></svg><span style="color:#F59E0B;">7-Eleven</span></a>'+
 '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#8FB8E8" stroke-width="1.8" aria-hidden="true"><path d="M12 3 L20 6 V12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 V6 Z"/><path d="M8 12 L11 15 L16 9"/></svg><span style="color:#8FB8E8;">Police Station</span></div>'+
 '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A66B" stroke-width="1.8" aria-hidden="true"><path d="M4 5 h9 a2 2 0 0 1 2 2 v13 h-9 a2 2 0 0 1 -2 -2 z"/><path d="M15 5 h5 v15 h-5"/><line x1="7" y1="9" x2="11" y2="9"/><line x1="7" y1="13" x2="11" y2="13"/></svg><span style="color:#C9A66B;">Public Library</span></div>'+
-'<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#0071CE"/></svg><span style="color:#4FA3E8;">Walmart</span></div>'+
+'<a class="bo-sm-approved-item" href="https://www.walmart.com/store/finder" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#0071CE"/><g stroke="#FFC220" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7.2" y1="7.2" x2="16.8" y2="16.8"/><line x1="16.8" y1="7.2" x2="7.2" y2="16.8"/></g></svg><span style="color:#4FA3E8;">Walmart</span></a>'+
+'<a class="bo-sm-approved-item" href="https://www.tesla.com/findus?v=2&search=supercharger" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#000"/><path d="M6 7h12l-1 2h-4v9h-2V9H7z" fill="#E82127"/></svg><span style="color:#E82127;">Tesla Supercharger</span></a>'+
 '</div>';
 var status=shell.querySelector('.bo-ftc-status');
 if(status)status.parentNode.insertBefore(wrap,status.nextSibling);
@@ -35768,7 +35774,7 @@ function fixDisclaimerText(){
 var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
 if(!note||note.dataset.bopV527text)return;
 note.dataset.bopV527text='1';
-note.innerHTML='*Going live geotargets your current location. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If an item is for sale or is live and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. Best of Period has chosen these drop spots for their security and proximity.';
+note.innerHTML='*Going <span class="bo-live-glow-word">live</span> geotargets your current location. By going <span class="bo-live-glow-word">live</span>, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five recommended drop locations. If an item is for sale or is <span class="bo-live-glow-word">live</span> and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. Best of Period has chosen these drop spots for their security and proximity.';
 }
 function fixFourHeadlines(){
 document.querySelectorAll('.bo-golive-period-word').forEach(function(el){
@@ -36371,6 +36377,223 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
   function install(){
     fixApprovedWording();
     glowCurrentlyLive();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<style id="bop-sm-analog-list-v532">
+.bo-sm-analog-toggle{display:block;width:min(420px,100%);margin:14px auto 0;padding:10px 14px;border:2px solid #F59E0B;border-radius:10px;background:#0a0a0a;cursor:pointer;text-align:center}
+.bo-sm-analog-toggle .bo-rt-analog-live{color:#F59E0B;font:900 .95rem/1 'Archivo Black',sans-serif;letter-spacing:.02em}
+.bo-sm-analog-toggle .bo-rt-analog-sub{color:#ccc;font:700 .68rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;margin-left:6px}
+#bopSmAnalogListEl{display:none;width:100%;max-width:420px;margin:12px auto 0;text-align:left;max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#bopSmAnalogListEl .bo-rt-analog-card{border:1.5px solid #F59E0B;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#0a0a0a}
+#bopSmAnalogListEl .bo-rt-analog-name{color:#F59E0B;font:800 .9rem Arial,sans-serif;margin-bottom:2px}
+#bopSmAnalogListEl .bo-rt-analog-facts{color:#8fbf6f;font:800 .78rem Arial,sans-serif;margin-bottom:4px}
+#bopSmAnalogListEl .bo-rt-analog-desc{color:#ccc;font:600 .78rem/1.4 Arial,sans-serif;margin-bottom:4px}
+#bopSmAnalogListEl .bo-rt-analog-links{color:#eee;font:600 .8rem Arial,sans-serif;line-height:1.5}
+#bopSmAnalogListEl .bo-rt-analog-links a{color:#F59E0B}
+#bopSmAnalogListEl .bo-rt-analog-empty{color:#999;font:600 .82rem Arial,sans-serif;text-align:center;padding:14px 0}
+#bopSmHqByStateEl{display:none;width:100%;max-width:420px;margin:22px auto 0;text-align:left}
+#bopSmHqByStateEl .bo-rt-hq-section-label{color:#F59E0B;font:800 .85rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin:0 0 14px;text-align:center}
+#bopSmHqByStateEl .bo-rt-hq-state{font:900 1.15rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;margin:30px 0 12px}
+#bopSmHqByStateEl .bo-rt-hq-state:first-of-type{margin-top:26px}
+#bopSmHqByStateEl .bo-rt-hq-card{display:flex;align-items:center;gap:10px;border:1.5px solid #444;border-radius:10px;padding:11px 13px;margin-bottom:11px;background:#0a0a0a}
+#bopSmHqByStateEl .bo-rt-hq-logo{width:30px;height:30px;flex:none;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#000}
+#bopSmHqByStateEl .bo-rt-hq-logo svg{width:100%;height:100%}
+#bopSmHqByStateEl .bo-rt-hq-name{color:#eee;font:700 .9rem Arial,sans-serif;flex:1;min-width:0}
+#bopSmHqByStateEl .bo-rt-hq-city{display:block;color:#888;font:600 .68rem Arial,sans-serif;margin-top:1px}
+</style>
+<script id="bop-sm-map-logos-and-hq-v532">(function(){
+  var LOGO_SVG={
+    'Target':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#CC0000"/><circle cx="12" cy="12" r="7.4" fill="#fff"/><circle cx="12" cy="12" r="3.1" fill="#CC0000"/></svg>',
+    '7-Eleven':'<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#2E7D32"/><text x="12" y="11" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="9" fill="#E4342F">7</text><text x="12" y="19" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="5.2" fill="#fff">ELEVEN</text></svg>',
+    'Walmart':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0071CE"/><g stroke="#FFC220" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="4.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="19.5" y2="12"/><line x1="6.9" y1="6.9" x2="17.1" y2="17.1"/><line x1="17.1" y1="6.9" x2="6.9" y2="17.1"/></g></svg>',
+    'Tesla Supercharger':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#000"/><path d="M6.5 7h11l-1 2.2h-4v9.3h-2.2V9.2h-4.8z" fill="#E82127"/></svg>',
+    'Police Station':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0a0a0a"/><path d="M12 3.5 L19 6 V12 C19 16.5 16 20 12 21.5 C8 20 5 16.5 5 12 V6 Z" fill="none" stroke="#8FB8E8" stroke-width="1.6"/><path d="M8.5 12 L11 14.5 L15.5 9" fill="none" stroke="#8FB8E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    'Public Library':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0a0a0a"/><path d="M5 5.5 h8 a1.6 1.6 0 0 1 1.6 1.6 v11.4 h-8 a1.6 1.6 0 0 1 -1.6 -1.6 z" fill="none" stroke="#C9A66B" stroke-width="1.4"/><path d="M14.6 5.5 h4.4 v13 h-4.4" fill="none" stroke="#C9A66B" stroke-width="1.4"/><line x1="7" y1="9" x2="10.5" y2="9" stroke="#C9A66B" stroke-width="1.2"/><line x1="7" y1="12.2" x2="10.5" y2="12.2" stroke="#C9A66B" stroke-width="1.2"/></svg>'
+  };
+  window.bopSmSpotLogoSVG = LOGO_SVG;
+
+  var HQ=[
+    {name:'Target Corporation',city:'Minneapolis',state:'MN',lat:44.9744,lng:-93.2761,logo:'Target'},
+    {name:'7-Eleven, Inc.',city:'Irving',state:'TX',lat:32.9037,lng:-96.9791,logo:'7-Eleven'},
+    {name:'Tesla, Inc.',city:'Austin',state:'TX',lat:30.2201,lng:-97.6180,logo:'Tesla Supercharger'},
+    {name:'Walmart Inc.',city:'Bentonville',state:'AR',lat:36.3729,lng:-94.2088,logo:'Walmart'},
+    {name:'Metropolitan Police Dept.',city:'Washington',state:'DC',lat:38.8951,lng:-77.0192,logo:'Police Station'},
+    {name:'DC Public Library (MLK Memorial)',city:'Washington',state:'DC',lat:38.8977,lng:-77.0219,logo:'Public Library'}
+  ];
+  var STATE_NAMES={MN:'Minnesota',TX:'Texas',AR:'Arkansas',DC:'Washington, DC'};
+  var STATE_COLORS=['#F59E0B','#3b9dff','#E4002B','#7bc47f','#A855F7','#4fc3f7'];
+
+  function seenMap(){ return (typeof WeakSet!=='undefined') ? new WeakSet() : {has:function(){return false;},add:function(){}}; }
+  var hqSeen=seenMap();
+  function seedHqPins(){
+    var map=window.bopSafeMeetupMapInstance;
+    if(!map||typeof L==='undefined'||hqSeen.has(map))return;
+    hqSeen.add(map);
+    HQ.forEach(function(c){
+      var html='<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:2px solid #888;box-shadow:0 0 6px rgba(153,170,187,.6);">'+LOGO_SVG[c.logo]+'</div>';
+      var icon=L.divIcon({className:'bo-sm-hq-marker',html:html,iconSize:[32,32],iconAnchor:[16,16]});
+      var marker=L.marker([c.lat,c.lng],{icon:icon,zIndexOffset:-1000}).addTo(map);
+      marker.bindPopup('<div style="width:170px;"><div style="font:800 .9rem Arial;color:#ddd;margin-bottom:2px;">'+c.name+'</div><div style="font:700 .72rem Arial;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;">Corporate Headquarters</div><div style="font:600 .78rem Arial;color:#ccc;">'+c.city+', '+c.state+'</div></div>');
+    });
+  }
+
+  function renderHqSection(){
+    var host=document.getElementById('bopSmHqByStateEl');
+    if(!host||host.dataset.rendered)return;
+    host.dataset.rendered='1';
+    var byState={};
+    HQ.forEach(function(c){ (byState[c.state]=byState[c.state]||[]).push(c); });
+    var states=Object.keys(byState).sort();
+    var html='<div class="bo-rt-hq-section-label">Corporate Headquarters Analog List</div>';
+    states.forEach(function(st,si){
+      var color=STATE_COLORS[si%STATE_COLORS.length];
+      html+='<div class="bo-rt-hq-state" style="color:'+color+';text-shadow:0 0 6px '+color+';">'+(STATE_NAMES[st]||st)+'</div>';
+      byState[st].forEach(function(c){
+        html+='<div class="bo-rt-hq-card"><div class="bo-rt-hq-logo">'+LOGO_SVG[c.logo]+'</div><div class="bo-rt-hq-name">'+c.name+'<span class="bo-rt-hq-city">'+c.city+', '+st+'</span></div></div>';
+      });
+    });
+    host.innerHTML=html;
+  }
+
+  // Swap the live-checkin marker icon + popup to the selected business logo.
+  function patchLiveMarkerLogos(){
+    if(window.__bopSmMarkerPatchInstalled)return;
+    var origMarker=L && L.marker;
+    if(!L||typeof L.marker!=='function')return;
+    window.__bopSmMarkerPatchInstalled=true;
+  }
+
+  function install(){
+    seedHqPins();
+    renderHqSection();
+    // Build the toggle + live list if the CTA exists and we haven't already.
+    var mapEl=document.getElementById('bopSafeMeetupOverlayMapEl');
+    var cta=document.getElementById('bopSmCheckinCta');
+    if(mapEl&&cta&&!document.getElementById('bopSmAnalogToggle')){
+      var toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.id='bopSmAnalogToggle';
+      toggle.className='bo-sm-analog-toggle';
+      toggle.innerHTML='<span class="bo-rt-analog-live">CURRENTLY LIVE!</span><span class="bo-rt-analog-sub">analog list</span>';
+      mapEl.parentNode.insertBefore(toggle,mapEl.nextSibling);
+      var listEl=document.createElement('div');
+      listEl.id='bopSmAnalogListEl';
+      mapEl.parentNode.insertBefore(listEl,toggle.nextSibling);
+      var hq=document.getElementById('bopSmHqByStateEl');
+      if(!hq){
+        hq=document.createElement('div');
+        hq.id='bopSmHqByStateEl';
+        mapEl.parentNode.insertBefore(hq,listEl.nextSibling);
+      }
+      var listUnsub=null;
+      function renderList(){
+        if(!window.bopFtDb)return;
+        if(listUnsub)return;
+        listUnsub=window.bopFtDb.collection('safemeetups').onSnapshot(function(snap){
+          var rows=[];
+          snap.forEach(function(doc){
+            var d=doc.data();
+            if(!d.checkedInAt) return;
+            if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d)) return;
+            rows.push(d);
+          });
+          if(!rows.length){ listEl.innerHTML='<div class="bo-rt-analog-empty">Nothing live right now — check back soon.</div>'; return; }
+          listEl.innerHTML=rows.map(function(d){
+            var facts=[];
+            if(d.price) facts.push(d.price);
+            if(d.category) facts.push(d.category);
+            var factsHTML=facts.length?'<div class="bo-rt-analog-facts">'+facts.join(' &middot; ')+'</div>':'';
+            var descHTML=d.description?'<div class="bo-rt-analog-desc">'+d.description+'</div>':'';
+            var links=[];
+            if(d.spot) links.push('<span>Meet at: '+d.spot+'</span>');
+            var linksHTML=links.length?'<div class="bo-rt-analog-links">'+links.join('<br>')+'</div>':'';
+            return '<div class="bo-rt-analog-card"><div class="bo-rt-analog-name">'+(d.name||'Item For Sale')+'</div>'+factsHTML+descHTML+linksHTML+'</div>';
+          }).join('');
+        });
+      }
+      toggle.addEventListener('click',function(){
+        var showingList=listEl.style.display==='block';
+        if(showingList){
+          listEl.style.display='none';
+          hq.style.display='none';
+          mapEl.style.display='block';
+        } else {
+          renderList();
+          renderHqSection();
+          listEl.style.display='block';
+          hq.style.display='block';
+          mapEl.style.display='none';
+        }
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  window.__bopTick ? window.__bopTick(install,400) : setInterval(install,400);
+})();
+</script>
+
+
+
+
+<style id="bop-cfs-locations-and-caution-v533">
+.bo-parking-caution{max-width:420px;margin:22px auto 8px;padding:12px 14px;border:1.5px solid #444;border-radius:10px;background:rgba(255,255,255,0.03);color:#ccc;font:600 .76rem/1.55 'Archivo Narrow',Arial,sans-serif;text-align:center}
+</style>
+<script id="bop-cfs-locations-and-caution-script-v533">(function(){
+  var CAUTION_TEXT='If you do not easily see the recommended location, you are not at the recommended location. Do your best to find and park in a lit, safe feeling area.';
+
+  function buildLocationsRowHTML(){
+    return '<div class="bo-sm-approved-wrap">'+
+      '<div class="bo-sm-approved-label">Recommended Locations</div>'+
+      '<div class="bo-sm-approved-row">'+
+      '<a class="bo-sm-approved-item" href="https://www.target.com/store-locator/find-stores" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#CC0000"/><circle cx="12" cy="12" r="6.2" fill="#fff"/><circle cx="12" cy="12" r="2.6" fill="#CC0000"/></svg><span style="color:#E4342F;">Target</span></a>'+
+      '<a class="bo-sm-approved-item" href="https://www.7-eleven.com/locations" target="_blank" rel="noopener"><svg viewBox="0 0 40 24" aria-hidden="true"><rect x="1" y="1" width="38" height="22" rx="3" fill="#2E7D32"/><text x="20" y="12" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="10" fill="#E4342F">7</text><text x="20" y="20" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="6.5" fill="#fff">ELEVEN</text></svg><span style="color:#F59E0B;">7-Eleven</span></a>'+
+      '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#8FB8E8" stroke-width="1.8" aria-hidden="true"><path d="M12 3 L20 6 V12 C20 17 16.5 20.5 12 22 C7.5 20.5 4 17 4 12 V6 Z"/><path d="M8 12 L11 15 L16 9"/></svg><span style="color:#8FB8E8;">Police Station</span></div>'+
+      '<div class="bo-sm-approved-item"><svg viewBox="0 0 24 24" fill="none" stroke="#C9A66B" stroke-width="1.8" aria-hidden="true"><path d="M4 5 h9 a2 2 0 0 1 2 2 v13 h-9 a2 2 0 0 1 -2 -2 z"/><path d="M15 5 h5 v15 h-5"/><line x1="7" y1="9" x2="11" y2="9"/><line x1="7" y1="13" x2="11" y2="13"/></svg><span style="color:#C9A66B;">Public Library</span></div>'+
+      '<a class="bo-sm-approved-item" href="https://www.walmart.com/store/finder" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#0071CE"/><g stroke="#FFC220" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="7.2" y1="7.2" x2="16.8" y2="16.8"/><line x1="16.8" y1="7.2" x2="7.2" y2="16.8"/></g></svg><span style="color:#4FA3E8;">Walmart</span></a>'+
+      '<a class="bo-sm-approved-item" href="https://www.tesla.com/findus?v=2&search=supercharger" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#000"/><path d="M6 7h12l-1 2h-4v9h-2V9H7z" fill="#E82127"/></svg><span style="color:#E82127;">Tesla Supercharger</span></a>'+
+      '</div></div>';
+  }
+
+  function install(){
+    // Car For Sale: insert Recommended Locations row after the spot dropdown.
+    var cfsSpot=document.getElementById('bopCfsSpot');
+    if(cfsSpot && !document.getElementById('bopCfsLocationsWrap')){
+      var wrap=document.createElement('div');
+      wrap.id='bopCfsLocationsWrap';
+      wrap.innerHTML=buildLocationsRowHTML();
+      cfsSpot.parentNode.insertBefore(wrap, cfsSpot.nextSibling);
+    }
+
+    // Bottom-of-page caution sentence on Car For Sale.
+    var cfsStatus=document.getElementById('bopCfsCheckinStatus');
+    if(cfsStatus && !document.getElementById('bopCfsCaution')){
+      var note1=document.createElement('div');
+      note1.id='bopCfsCaution';
+      note1.className='bo-parking-caution';
+      note1.textContent=CAUTION_TEXT;
+      cfsStatus.parentNode.insertBefore(note1, cfsStatus.nextSibling);
+    }
+
+    // Bottom-of-page caution sentence on Safe Meetup — append as the very
+    // last element of the form shell so it lands below the Recommended
+    // Locations row too, not sandwiched between status and that row.
+    var smStatus=document.getElementById('bopSmCheckinStatus');
+    if(smStatus){
+      var smShell=smStatus.closest('.bo-ftc-shell')||smStatus.parentNode;
+      var note2=document.getElementById('bopSmCaution');
+      if(!note2){
+        note2=document.createElement('div');
+        note2.id='bopSmCaution';
+        note2.className='bo-parking-caution';
+        note2.textContent=CAUTION_TEXT;
+      }
+      if(smShell.lastElementChild!==note2) smShell.appendChild(note2);
+    }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
   new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
