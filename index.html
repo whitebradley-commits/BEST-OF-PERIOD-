@@ -36338,4 +36338,43 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 })();
 </script>
 
+
+<style id="bop-golive-now-spacing-v531">
+.bo-golive-big-heading .bo-golive-big-line2{
+  font-size:2.3rem!important;
+  margin-top:14px!important;
+  margin-bottom:22px!important;
+}
+@media(max-width:360px){
+  .bo-golive-big-heading .bo-golive-big-line2{font-size:1.75rem!important;}
+}
+.bo-live-glow-word{color:#E4002B!important;text-shadow:0 0 8px rgba(228,0,43,.8),0 0 16px rgba(228,0,43,.45);animation:none!important;}
+</style>
+<script id="bop-live-word-glow-and-text-fixes-v531">(function(){
+  function fixApprovedWording(){
+    document.querySelectorAll('.bo-sm-rules-link').forEach(function(rulesEl){
+      var noteEl=rulesEl.parentElement;
+      if(!noteEl||noteEl.dataset.bopV531)return;
+      if(noteEl.innerHTML.indexOf('approved drop locations')===-1)return;
+      noteEl.dataset.bopV531='1';
+      noteEl.innerHTML=noteEl.innerHTML.replace('approved drop locations','recommended drop locations');
+    });
+  }
+  function glowCurrentlyLive(){
+    document.querySelectorAll('.bo-rt-analog-live').forEach(function(el){
+      if(el.dataset.bopV531)return;
+      if(el.textContent.indexOf('LIVE')===-1)return;
+      el.dataset.bopV531='1';
+      el.innerHTML=el.innerHTML.replace('LIVE','<span class="bo-live-glow-word">LIVE</span>');
+    });
+  }
+  function install(){
+    fixApprovedWording();
+    glowCurrentlyLive();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
