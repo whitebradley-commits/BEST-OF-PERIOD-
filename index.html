@@ -54619,4 +54619,140 @@ html.bop-invite-active #bopInviteCornerRow{display:flex!important}
 })();
 </script>
 
+<!-- v528: Brad's call (2026-08-30), from his screenshots:
+     1) REAL BUG: every map was showing "API KEY REQUIRED" watermarked
+        across the tiles -- CARTO's free anonymous tile tier now requires a
+        key, so their server started returning placeholder tiles instead of
+        real maps. Fixed sitewide by swapping to Esri's World Dark Gray
+        Base tiles, which are genuinely free with no key required, same
+        dark look. Done as a one-time patch of L.tileLayer itself so it
+        catches all 8 map instances without touching their individual init
+        code.
+     2) REAL BUG: the four new page headlines kept reverting back to the
+        old one-line text ("OPEN HOUSE LIVE!" etc.) -- an earlier patch
+        (v504) was still watching and resetting that exact text on every
+        page change, fighting the newer heading. Fixed by re-asserting the
+        correct heading on an interval so it always wins.
+     3) Per Brad's simplification: the four headlines drop the "PERIOD"
+        wordplay entirely now -- too much trouble for what it added. Just:
+          "PUT YOUR HOUSE ON THE MAP."     (Realtor)
+          "PUT YOUR CAR ON THE MAP."       (Car For Sale)
+          "PUT YOUR GARAGE SALE ON THE MAP." (Garage Sale)
+          "PUT YOUR ITEM ON THE MAP."      (Safe Meet-Up)
+        "GO LIVE NOW!" underneath, each about 2.5x bigger than before.
+     4) The GO LIVE dock orb now reads "GO LIVE NOW!" (three short lines).
+     5) The 12 corporate-HQ reference entries (map popups + analog list)
+        now carry an "OPEN 24 HOURS" tag, per Brad's direction. -->
+<style id="bop-tile-fix-and-headline-v528">
+.bo-golive-big-heading .bo-golive-big-line1{font-size:1.9rem!important;}
+.bo-golive-big-heading .bo-golive-big-line2{font-size:3.6rem!important;line-height:1.05!important;margin-top:10px!important;}
+@media(max-width:360px){
+  .bo-golive-big-heading .bo-golive-big-line1{font-size:1.45rem!important;}
+  .bo-golive-big-heading .bo-golive-big-line2{font-size:2.5rem!important;}
+}
+#bopStaticGoLive .bop-golive-orb-label{line-height:1!important;}
+#bopStaticGoLive .bop-golive-orb-label .bo-golive-now-line{display:block;font-size:.78em;}
+.bo-rt-hq-247{display:inline-block;margin-top:2px;color:#7bc47f;font:800 .6rem Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;}
+</style>
+<script id="bop-tile-fix-and-headline-script-v528">
+(function(){
+  // 1) Tile fix: patch L.tileLayer once Leaflet is available, before any
+  // map has a chance to request the broken CARTO url.
+  var tilePatched=false;
+  function patchTiles(){
+    if(tilePatched||typeof L==='undefined'||!L.tileLayer)return;
+    tilePatched=true;
+    var orig=L.tileLayer;
+    L.tileLayer=function(url,options){
+      if(typeof url==='string'&&url.indexOf('basemaps.cartocdn.com')!==-1){
+        url='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+        options=Object.assign({},options,{attribution:'&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',maxZoom:16});
+      }
+      return orig.call(this,url,options);
+    };
+  }
+  setInterval(patchTiles,50);
+  patchTiles();
+
+  // Also catch any map that already initialized with the broken tile url
+  // before this patch had a chance to intercept L.tileLayer.
+  var ESRI_URL='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+  var INSTANCE_VARS=['bopFtMapInstance','bopVsMapInstance','bopRealtorMapInstance','bopYardSaleMapInstance','bopCarForSaleMapInstance','bopSafeMeetupMapInstance'];
+  var fixedMaps=(typeof WeakSet!=='undefined')?new WeakSet():null;
+  var fixedMapsFallback=[];
+  function fixExistingTiles(){
+    if(typeof L==='undefined')return;
+    INSTANCE_VARS.forEach(function(v){
+      var map=window[v];
+      if(!map)return;
+      var already=fixedMaps?fixedMaps.has(map):fixedMapsFallback.indexOf(map)!==-1;
+      if(already)return;
+      if(fixedMaps)fixedMaps.add(map);else fixedMapsFallback.push(map);
+      map.eachLayer(function(layer){
+        if(layer._url&&layer._url.indexOf('basemaps.cartocdn.com')!==-1){
+          map.removeLayer(layer);
+          L.tileLayer(ESRI_URL,{attribution:'&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',maxZoom:16}).addTo(map);
+        }
+      });
+    });
+  }
+  setInterval(fixExistingTiles,500);
+
+  // 2) & 3) Headline text: re-assert on an interval so an older patch
+  // (v504) resetting .bo-rt-sub/.bo-ys-sub back to its own text can't win.
+  var HEADLINES=[
+    {sel:'#bopRealtorOverlay .bo-rt-sub',line1:'PUT YOUR HOUSE ON THE MAP.'},
+    {sel:'#bopCarForSaleOverlay .bo-cfs-sub',line1:'PUT YOUR CAR ON THE MAP.'},
+    {sel:'#bopYardSaleOverlay .bo-ys-sub',line1:'PUT YOUR GARAGE SALE ON THE MAP.'},
+    {sel:'#bopSafeMeetupOverlay .bo-sm-sub',line1:'PUT YOUR ITEM ON THE MAP.'}
+  ];
+  function enforceHeadlines(){
+    HEADLINES.forEach(function(h){
+      var el=document.querySelector(h.sel);
+      if(!el)return;
+      el.classList.add('bo-golive-big-heading');
+      var wantHTML='<span class="bo-golive-big-line1">'+h.line1+'</span><span class="bo-golive-big-line2">GO LIVE NOW!</span>';
+      if(el.innerHTML!==wantHTML) el.innerHTML=wantHTML;
+    });
+  }
+  setInterval(enforceHeadlines,500);
+  enforceHeadlines();
+
+  // 4) GO LIVE orb wording.
+  function fixOrb(){
+    var btn=document.getElementById('bopStaticGoLive');
+    if(!btn)return;
+    var label=btn.querySelector('.bop-golive-orb-label');
+    if(!label||label.dataset.bopV528)return;
+    label.dataset.bopV528='1';
+    label.innerHTML='GO<br>LIVE<span class="bo-golive-now-line">NOW!</span>';
+  }
+  function installOrb(){ fixOrb(); }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installOrb);else installOrb();
+  new MutationObserver(installOrb).observe(document.documentElement,{childList:true,subtree:true});
+
+  // 5) "OPEN 24 HOURS" tag on HQ reference entries -- map popups and the
+  // analog list cards.
+  function tagHqPopups(){
+    document.querySelectorAll('.leaflet-popup-content').forEach(function(p){
+      if(p.dataset.bop247)return;
+      if(p.innerHTML.indexOf('Corporate Headquarters')===-1)return;
+      p.dataset.bop247='1';
+      p.innerHTML=p.innerHTML.replace('Corporate Headquarters','Corporate Headquarters <span class="bo-rt-hq-247">&middot; Open 24 Hours</span>');
+    });
+  }
+  function tagHqListCards(){
+    document.querySelectorAll('#bopRtHqByStateEl .bo-rt-hq-name').forEach(function(el){
+      if(el.dataset.bop247)return;
+      el.dataset.bop247='1';
+      var span=document.createElement('span');
+      span.className='bo-rt-hq-247';
+      span.textContent='Open 24 Hours';
+      el.appendChild(span);
+    });
+  }
+  setInterval(function(){tagHqPopups();tagHqListCards();},500);
+})();
+</script>
+
 </body></html>
