@@ -28389,6 +28389,12 @@ frag.appendChild(iWrap);
 frag.appendChild(document.createTextNode(od));
 parent.replaceChild(frag, textNode);
 if(parent.dataset) parent.dataset.bopPeriodApplied = '1';
+/* Once "Period" gets the apple-over-i treatment, any leftover
+sibling .period-mark (old copyright-symbol-turned-apple element)
+is now a redundant second apple sitting next to the word --
+remove it so only one apple shows. */
+var trailingMark = parent.querySelector ? parent.querySelector('.period-mark') : null;
+if(trailingMark) trailingMark.remove();
 }
 function scan(root){
 const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
