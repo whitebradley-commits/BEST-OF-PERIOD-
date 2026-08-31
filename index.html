@@ -16051,8 +16051,10 @@ const backBtn = document.getElementById('legendBack');
 if(!overlay) return;
 function backToHub(){
 overlay.classList.remove('open');
-const best = document.getElementById('bestOfOverlay');
-if(best) best.classList.add('open');
+var originId = window.__bopLegendOrigin || 'bestOfOverlay';
+var origin = document.getElementById(originId);
+if(origin){ origin.classList.add('open'); }
+else { const best = document.getElementById('bestOfOverlay'); if(best) best.classList.add('open'); }
 window.scrollTo(0,0);
 }
 if(backBtn) backBtn.addEventListener('click', backToHub);
@@ -16721,6 +16723,15 @@ window.scrollTo(0,0);
 return;
 }
 if(dest === 'legend'){
+window.__bopLegendOrigin = (function(){
+var candidates=['bopLandingOverlay','bestOfOverlay','lvSteamOverlay','wtfLandingOverlay','companyHubOverlay','tbotrLandingOverlay'];
+for(var i=0;i<candidates.length;i++){
+var el=document.getElementById(candidates[i]);
+if(el&&el.classList.contains('open')) return candidates[i];
+}
+return 'bestOfOverlay';
+})();
+window.bopLegendReturnPage = window.__bopLegendOrigin;
 closeAllPageOverlays();
 const legend = document.getElementById('legendOverlay');
 if(legend){ legend.classList.add('open'); legend.scrollTop = 0; }
@@ -34829,7 +34840,7 @@ page.id='bopSafeMeetupCheckin';
 page.className='bo-ft-overlay';
 page.setAttribute('aria-label','Safe Meet-Up Go Live');
 var categoryOptions=CATEGORIES.map(function(c){return '<option>'+c+'</option>';}).join('');
-var spotOptions='<option value="">Choose a safe location</option>'+SPOTS.map(function(s){return '<option>'+s+'</option>';}).join('');
+var spotOptions='<option value="">Choose a recommended location</option>'+SPOTS.map(function(s){return '<option>'+s+'</option>';}).join('');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
@@ -34977,7 +34988,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
 
-<style id="bop-meetup-form-notice-v510">.bo-sm-checkin-warn{background:rgba(228,0,43,0.12);border:1.5px solid #E4002B;border-radius:10px;padding:10px 14px;margin:0 0 18px;color:#ff6b6b;font:800 .74rem/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase}.bo-sm-approved-wrap{margin-top:22px}.bo-sm-approved-label{color:#F59E0B;font:800 .62rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}.bo-sm-approved-row{display:flex;align-items:center;justify-content:flex-start;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 4px 2px}.bo-sm-approved-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto;text-decoration:none;cursor:pointer}.bo-sm-approved-item svg{width:16px;height:16px}.bo-sm-approved-item span{font-size:.56rem;font-weight:800;white-space:nowrap;letter-spacing:.01em}</style>
+<style id="bop-meetup-form-notice-v510">.bo-sm-checkin-warn{background:rgba(228,0,43,0.12);border:1.5px solid #E4002B;border-radius:10px;padding:10px 14px;margin:0 0 18px;color:#ff6b6b;font:800 .74rem/1.4 'Archivo Narrow',Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase}.bo-sm-approved-wrap{margin-top:22px}.bo-sm-approved-label{color:#F59E0B;font:800 .62rem/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}.bo-sm-approved-row{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:16px 14px;overflow-x:visible;padding:2px 4px}.bo-sm-approved-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto;text-decoration:none;cursor:pointer;width:58px}.bo-sm-approved-item svg{width:32px;height:32px}.bo-sm-approved-item span{font-size:.66rem;font-weight:800;white-space:nowrap;letter-spacing:.01em}</style>
 <script id="bop-meetup-form-notice-script-v510">(function(){
 function install(){
 var shell=document.querySelector('#bopSafeMeetupCheckin .bo-ftc-shell');
@@ -36553,7 +36564,7 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 
 
 <style id="bop-cfs-locations-and-caution-v533">
-.bo-parking-caution{max-width:420px;margin:22px auto 8px;padding:12px 14px;border:1.5px solid #444;border-radius:10px;background:rgba(255,255,255,0.03);color:#ccc;font:600 .76rem/1.55 'Archivo Narrow',Arial,sans-serif;text-align:center}
+.bo-parking-caution{max-width:420px;margin:22px auto 8px;padding:14px 16px;border:2px solid #E4002B;border-radius:10px;background:rgba(228,0,43,0.10);box-shadow:0 0 14px rgba(228,0,43,.28);color:#FF3B3B;font:800 .8rem/1.55 'Archivo Narrow',Arial,sans-serif;text-align:center;text-shadow:0 0 8px rgba(228,0,43,.5)}
 </style>
 <script id="bop-cfs-locations-and-caution-script-v533">(function(){
   var CAUTION_TEXT='If you do not easily see the recommended location, you are not at the recommended location. Do your best to find and park in a lit, safe feeling area.';
