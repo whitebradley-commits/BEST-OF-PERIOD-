@@ -36305,4 +36305,37 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 })();
 </script>
 
+
+<style id="bop-meetup-icon-fix-v530">
+#bopGoLiveSafeMeetup .bo-meetup-handshake{
+  display:inline-block!important;
+  width:18px!important;
+  height:18px!important;
+  margin:0 2px!important;
+  vertical-align:-3px!important;
+  font-size:0!important;
+}
+#bopGoLiveSafeMeetup .bo-meetup-handshake svg{display:block!important;width:100%!important;height:100%!important;}
+#bopGoLiveSafeMeetup .bo-golive-tile-sub{margin-top:4px!important;}
+.bo-live-pulse-word{color:#E4002B!important;animation:bopLivePulseGlow 1.3s ease-in-out infinite;}
+@keyframes bopLivePulseGlow{
+  0%,100%{opacity:.75;text-shadow:0 0 4px rgba(228,0,43,.5);}
+  50%{opacity:1;text-shadow:0 0 14px rgba(228,0,43,.95),0 0 24px rgba(228,0,43,.6);}
+}
+@media(prefers-reduced-motion:reduce){.bo-live-pulse-word{animation:none;}}
+</style>
+<script id="bop-live-word-pulse-v530">(function(){
+  function install(){
+    document.querySelectorAll('.bo-golive-big-line2').forEach(function(el){
+      if(el.dataset.bopV530)return;
+      if(el.textContent.trim()!=='GO LIVE NOW!')return;
+      el.dataset.bopV530='1';
+      el.innerHTML='GO <span class="bo-live-pulse-word">LIVE</span> NOW!';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
