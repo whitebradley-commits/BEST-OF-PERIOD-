@@ -36150,4 +36150,58 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 })();
 </script>
 
+
+<style id="bop-hq-headline-fix-v527">
+#bopRtHqByStateEl .bo-rt-hq-state{font-size:1.05rem!important;margin:22px 0 10px!important;text-shadow:0 0 6px currentColor}
+</style>
+<script id="bop-multi-fix-v527">(function(){
+  var STATE_COLORS=['#F59E0B','#3b9dff','#E4002B','#7bc47f','#A855F7','#4fc3f7','#ffd24d','#ff6ec7','#7CC96F'];
+  function colorizeStates(){
+    var host=document.getElementById('bopRtHqByStateEl');
+    if(!host)return;
+    var states=host.querySelectorAll('.bo-rt-hq-state');
+    states.forEach(function(el,i){ el.style.color=STATE_COLORS[i%STATE_COLORS.length]; });
+    var label=host.querySelector('.bo-rt-hq-section-label');
+    if(label && label.textContent.indexOf('Corporate Headquarters')!==-1){
+      label.textContent='Open Houses Analog List';
+    }
+  }
+  function fixFyiNote(){
+    document.querySelectorAll('.bo-ft-fyi-note').forEach(function(el){
+      var want="FYI - permanent locations, hours vary, so it's always best to check before you head over.";
+      if(el.textContent!==want) el.textContent=want;
+    });
+  }
+  function fixHelpPopup(){
+    var card=document.getElementById('bopFtHelpCard');
+    if(!card)return;
+    var p=card.querySelector('p');
+    if(p && p.dataset.bopV527)return;
+    if(p){
+      p.dataset.bopV527='1';
+      p.innerHTML='If you are unable to add or remove your food truck, email us at <a href="mailto:info@bestofperiod.com?subject=Food%20truck%20listing">info@bestofperiod.com</a>.';
+    }
+  }
+  function fixCrossNav(){
+    document.querySelectorAll('.bo-ft-bottom-analog').forEach(function(el){
+      if(el.dataset.bopV527)return;
+      var html=el.innerHTML;
+      var m=html.match(/Looking for (Street Vendors|Food Trucks)\?/);
+      if(!m)return;
+      el.dataset.bopV527='1';
+      var singular=m[1]==='Street Vendors'?'a street vendor':'a food truck';
+      el.innerHTML='Are you '+singular+'?<small style="color:#F59E0B;font-weight:900;">Go live now!</small>';
+    });
+  }
+  function install(){
+    colorizeStates();
+    fixFyiNote();
+    fixHelpPopup();
+    fixCrossNav();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
