@@ -25259,14 +25259,14 @@ target.disabled=true;goBack();setTimeout(function(){target.disabled=false},450);
       goLiveBtn.className='bop-exclusive-enter';
       goLiveBtn.id='bopExclusiveGoLive';
       goLiveBtn.type='button';
-      goLiveBtn.innerHTML='GO<br>LIVE';
+      goLiveBtn.innerHTML='LIVE!';
       goLiveBtn.addEventListener('click',function(){
         var gate=document.getElementById('bopExclusiveInvitation');
         if(gate){ gate.classList.add('bop-invite-closed'); document.documentElement.classList.remove('bop-invite-active'); }
         if(typeof window.bopOpenGoLivePage==='function') window.bopOpenGoLivePage();
       });
     }
-    if(goLiveBtn.innerHTML!=='GO<br>LIVE') goLiveBtn.innerHTML='GO<br>LIVE';
+    if(goLiveBtn.innerHTML!=='LIVE!') goLiveBtn.innerHTML='LIVE!';
 
     if(row.children[0]!==enterBtn) row.insertBefore(enterBtn,row.firstChild);
     if(enterBtn.nextSibling!==goLiveBtn) row.insertBefore(goLiveBtn,enterBtn.nextSibling);
@@ -36281,6 +36281,24 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
     removePickLocation();
     colorizeAllStateLists();
     fixDockOrb();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<style id="bop-golive-now-resize-v529">
+.bo-golive-big-heading .bo-golive-big-line2{font-size:2rem!important;margin-top:6px!important;}
+@media(max-width:360px){
+  .bo-golive-big-heading .bo-golive-big-line2{font-size:1.5rem!important;}
+}
+</style>
+<script id="bop-hide-filters-note-v529">(function(){
+  function install(){
+    document.querySelectorAll('.bo-rt-note').forEach(function(el){
+      if(el.textContent.indexOf('coming soon')!==-1) el.style.display='none';
+    });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
   new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
