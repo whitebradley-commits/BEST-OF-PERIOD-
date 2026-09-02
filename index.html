@@ -25273,7 +25273,7 @@ target.disabled=true;goBack();setTimeout(function(){target.disabled=false},450);
     <h2 class="bop-exclusive-copy" id="bopExclusiveInvitationTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Best of Period</h2>
     <header class="bop-world-hero bop-exclusive-world-hero" aria-hidden="true"><div class="bop-world-best">Best <span class="bop-invite-of-word">of</span></div><div class="bop-world-title-line bop-exclusive-title-line"><div class="bop-world-period">Per<span class="bop-period-i-wrap"><span class="bop-period-apple-i" aria-hidden="true"><svg viewBox="0 0 40 40" fill-rule="evenodd"><path d="M20 6C13.4 6 8 11.4 8 18c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12zm0 16.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg></span>&#305;</span><span class="bop-period-apple-o" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/><path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke-linecap="round"/><path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg></span>d<sup>&copy;</sup></div></div></header>
     <div class="bop-exclusive-btn-row">
-      <button class="bop-exclusive-enter" id="bopExclusivePromo" type="button">PROMO<br/>VIDEO</button>
+      <button class="bop-exclusive-enter" id="bopExclusivePromo" type="button">LV<br/>NEWS</button>
       <button class="bop-exclusive-enter" id="bopExclusiveEnter" type="button"><span class="bop-bjs-co-stack"><span class="bop-bjs-thick">BJS</span><span class="bop-bjs-co-light">CO.</span></span></button>
       <a class="bop-exclusive-contact bop-exclusive-contact-icononly" href="mailto:info@bestofperiod.com" aria-label="Email info at Best Of Period dot com">
         <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3.5" y="6.5" width="25" height="19" rx="2.5"/><path d="m5 9 11 9 11-9"/></svg>
@@ -36832,6 +36832,99 @@ return hit;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<style id="bop-food-truck-bottom-layout-v473">
+#bopFoodTruckOverlay .bo-ft-fyi-note{display:none!important}
+#bopFoodTruckOverlay .bo-ft-checkin-cta.bo-ft-v473-big{width:100%!important;max-width:none!important;margin:22px 0 0!important;padding:16px 10px!important;border:1.5px solid rgba(245,158,11,.55)!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;font:900 1rem/1.3 'Archivo Black',Arial,sans-serif!important;letter-spacing:.02em!important}
+#bopFoodTruckOverlay .bo-ft-checkin-cta.bo-ft-v473-big small{display:block;color:#F59E0B;font-weight:900}
+#bopFoodTruckOverlay .bo-ft-qr-row.bo-ft-v473-moved{margin-top:34px}
+</style>
+<script id="bop-food-truck-bottom-layout-v473-script">(function(){
+/* v473 (2026-09-01): Food Truck page bottom — drop the FYI line, put the
+three boxes (Do you have a food truck? / Analog List / Street vendor)
+together at the same size, and move the QR code + Help to the very bottom. */
+function apply(){
+var ov=document.getElementById('bopFoodTruckOverlay');if(!ov)return false;
+var shell=ov.querySelector('.bo-ft-shell');if(!shell)return false;
+var cta=shell.querySelector('.bo-ft-checkin-cta');
+var analog=shell.querySelectorAll('.bo-ft-bottom-analog');
+var qr=shell.querySelector('.bo-ft-qr-row');
+var help=shell.querySelector('.bo-ft-help-row');
+if(!cta||!analog.length||!qr)return false;
+if(shell.dataset.bopV473)return true;
+shell.dataset.bopV473='1';
+shell.querySelectorAll('.bo-ft-fyi-note').forEach(function(n){n.remove();});
+cta.classList.add('bo-ft-v473-big');
+/* order: 3 boxes, then QR, then Help */
+shell.insertBefore(cta,analog[0]);
+qr.classList.add('bo-ft-v473-moved');
+shell.appendChild(qr);
+if(help)shell.appendChild(help);
+return true;
+}
+var n=0,t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},400);
+document.addEventListener('click',function(){setTimeout(apply,600);},true);
+})();</script>
+
+<style id="bop-period-pin-anchor-v474">
+.bop-period-i-wrap .bop-i-glyph-v474{position:relative;display:inline-block;line-height:1!important;vertical-align:baseline}
+</style>
+<script id="bop-period-pin-anchor-v474-script">(function(){
+/* v474 (2026-09-01): On secondary pages (city heroes, Street Vendors, Food
+Trucks, etc.) the "Period" pin floated well above the ı because the pin was
+anchored to the wrap's tall line box (line-height:normal with the display
+serif), not the glyph. Wrap the ı in a line-height:1 box and anchor the pin
+to that, so it sits on the letter exactly like the landing page. */
+function fix(){
+document.querySelectorAll('.bop-period-i-wrap').forEach(function(w){
+if(w.dataset.bopV474)return;
+if(w.closest('#bopLandingOverlay'))return; /* landing already correct */
+var pin=w.querySelector(':scope > .bop-period-apple-i');if(!pin)return;
+var textNode=null;
+for(var i=0;i<w.childNodes.length;i++){var n=w.childNodes[i];if(n.nodeType===3&&n.textContent.trim()){textNode=n;break;}}
+if(!textNode)return;
+var g=document.createElement('span');g.className='bop-i-glyph-v474';
+w.insertBefore(g,textNode);g.appendChild(pin);g.appendChild(textNode);
+w.dataset.bopV474='1';
+});
+}
+fix();
+var n=0,t=setInterval(function(){n++;fix();if(n>30)clearInterval(t);},500);
+new MutationObserver(function(){fix();}).observe(document.body,{childList:true,subtree:true});
+})();</script>
+
+<style id="bop-why-orb-text-lower-v475">
+/* v475: WHY orb — start the copy lower in the orb and drop the BJS CO. badge
+closer to the bottom edge. */
+#bjsWhyOverlay .bjs-why-orb{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:stretch!important;height:min(122vw,545px)!important;padding-top:16%!important;padding-bottom:5%!important;box-sizing:border-box}
+#bjsWhyOverlay .bjs-why-orb-text{transform:none!important;display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+#bjsWhyOverlay .bjs-why-orb-text>p{margin:4px 0!important}
+#bjsWhyOverlay .bjs-why-orb-text>*:last-child{margin-top:auto!important;padding-top:10px!important}
+#bjsWhyOverlay .bjs-why-orb-text .bjs-why-bottom-badge{margin-bottom:0!important}
+#bjsWhyOverlay .bjs-why-orb-text>.bjs-why-city-period-lockup{margin-top:2px!important;margin-bottom:6px!important}
+#bjsWhyOverlay .bjs-why-orb-text>.bjs-why-city-period-lockup+div{margin-top:4px!important;margin-bottom:8px!important}
+</style>
+
+<style id="bop-worldwide-globe-lower-v476">
+/* v476: Worldwide page — nudge the globe down so it no longer touches "Best Of". */
+#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{position:relative;top:7px!important}
+</style>
+
+<script id="bop-legend-analog-link-fix-v477-script">(function(){
+/* v477: Legend page — the gold "Analog List" link under the BJS / One Bite
+explanation was trying to click a pizza tile that isn't on the page, so it
+did nothing. Send it straight to the BJS vs One Bite vs Dave score list. */
+window.addEventListener('click',function(e){
+var btn=e.target.closest&&e.target.closest('#bopLegendOneBiteAnalogLink');
+if(!btn)return;
+e.preventDefault();e.stopImmediatePropagation();
+var legend=document.getElementById('legendOverlay');
+if(legend)legend.classList.remove('open');
+if(typeof window.boOpenAllPizzaScores==='function'){window.boOpenAllPizzaScores();return;}
+/* fallback: tap the One Bite mark if the list opener isn't ready */
+var mark=document.querySelector('.bo-onebite-mark');if(mark)mark.click();
+},true);
 })();</script>
 
 </body></html>
