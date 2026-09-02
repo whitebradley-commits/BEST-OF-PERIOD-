@@ -877,9 +877,9 @@ const LIVE_CITIES = [
 { name: 'Lucerne', region: 'Switzerland', dest: 'lucerne', aliases: ['Luzern'] },
 { name: 'Geneva', region: 'Switzerland', dest: 'geneva', aliases: ['Genève', 'Geneve'] },
 { name: 'Zermatt', region: 'Switzerland', dest: 'zermatt' },
-{ name: 'San Diego', region: 'California \u2014 Multiple Cities', dest: 'sandiego' },
+{ name: 'San Diego', region: 'County Directory', dest: 'sandiego' },
 { name: 'Silicon Valley', region: 'California', dest: 'siliconvalley', aliases: ['S.V.', 'SV', 'S V'] },
-{ name: 'Los Angeles', region: 'California \u2014 Multiple Cities', dest: 'losangeles', aliases: ['L.A.', 'LA', 'L A'] },
+{ name: 'Los Angeles', region: 'County Directory', dest: 'losangeles', aliases: ['L.A.', 'LA', 'L A'] },
 { name: 'Santa Barbara', region: 'California', dest: 'santabarbara' },
 { name: 'San Francisco', region: 'California', dest: 'sanfrancisco', aliases: ['S.F.', 'SF', 'S F'] },
 { name: 'New York', region: 'State Directory', dest: 'newyork', aliases: ['New York State'] },
@@ -33985,7 +33985,7 @@ fresh.forEach(function(m){BO_MOVIES_CURRENT.push(m);});
 <div id="bopGoLiveOverlay" aria-label="Go Live">
   <div class="bo-golive-shell">
     <button class="bo-golive-back" id="bopGoLiveBack" type="button">&larr;<br>Back</button>
-    <div class="bop-golive-title">Go Live</div>
+    <div class="bop-golive-title">Go Live!</div>
     <div class="bop-golive-lockup"><span class="bo-golive-best">Best Of</span> <span class="bo-golive-period">PERIOD<span class="period-mark">&copy;</span></span></div>
     <div class="bop-golive-tiles">
       <button class="bop-golive-tile" id="bopGoLiveRealtor" type="button" aria-label="Realtor, Open House">
@@ -37813,6 +37813,127 @@ function ready(fn){if(document.readyState==='loading')document.addEventListener(
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
 
+<script id="bop-verified-ratings-la-batch1-v515-script">(function(){
+/* v515: Los Angeles ratings-verification pass, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"Somni",rating:4.8,reviews:0,address:"9045 Nemo St, West Hollywood, CA 90069",url:"https://www.somnila.com/",stars:3,
+ratingNote:"PROVISIONAL. No public aggregate star (Tock-only, ~20 seats); Time Out 5/5. THREE MICHELIN Stars — awarded June 2025 seven months after reopening, held 2026; with Providence, LA's first three-star. Aitor Zabala's Spanish-modernist tasting from $645 — the most expensive restaurant in Los Angeles. West Hollywood."},
+{name:"Restaurant Ki",rating:4.6,reviews:0,url:"https://www.restaurantki.com/",stars:1,
+ratingNote:"PROVISIONAL. Time Out 4/5; public aggregate star not surfaced. One MICHELIN Star (new 2025, held 2026); James Beard recognition. Ki Kim's Korean tasting counter, Arts District. Phone on file."},
+{name:"Seline",rating:4.7,reviews:0,url:"https://www.selinerestaurant.com/",stars:1,
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced. One MICHELIN Star — NEW in the 2026 guide (June 2026); Dave Beran (Dialogue, Pasjoli) won James Beard Best Chef: California 2026. Tasting menu, Santa Monica."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function la(c){c=String(c||'');return c==='losangeles'||c==='orangecounty'||(/^la/.test(c)&&!/^lasvegas/.test(c));}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if(!la(r.city||r.parentCity))return;var v=by[norm(r.name)];if(!v||r.__v515)return;r.__v515=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-la-batch2-michelin-2026-v517-script">(function(){
+/* v517 (2026-09-02): Heritage Barbecue verified + Bib badge; the five LA
+one-stars missing from the data (2025–2026 guides) added to Michelin/LA. */
+var HERITAGE={rating:4.5,bib:true,address:"31721 Camino Capistrano, San Juan Capistrano, CA 92675",
+ratingNote:"PROVISIONAL. Tripadvisor star not surfaced (reviews near-uniformly rave; brisket 'virtually flawless'); Yelp star to confirm. MICHELIN Bib Gourmand (badge added — it was carrying Guide only) + James Beard recognition. Central Texas-style over California white oak, 1,000-gallon offset smokers, counter service to an outdoor patio; Wed–Fri 3pm and Fri–Sat noon until sold out. Get in line early."};
+var NEW=[
+{name:"Miura",area:"Beverly Hills",note:"One MICHELIN Star — new in the June 2026 guide. Rating pending."},
+{name:"Kojima",area:"Sawtelle",note:"One MICHELIN Star — new in the June 2026 guide. Rating pending."},
+{name:"Corridor 109",area:"Melrose Hill",note:"One MICHELIN Star — new in the June 2026 guide. Rating pending."},
+{name:"Lielle",area:"Pico-Robertson",note:"One MICHELIN Star — new in the June 2026 guide. Rating pending."},
+{name:"Mori Nozomi",area:"Los Angeles",note:"One MICHELIN Star — new in the 2025 guide, held 2026 (opened March 2024). Time Out 5/5. Rating pending."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function la(c){c=String(c||'');return c==='losangeles'||c==='orangecounty'||(/^la/.test(c)&&!/^lasvegas/.test(c));}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!=='heritage barbecue'||!la(r.city||r.parentCity)||r.__v517)return;r.__v517=true;hit=true;
+r.rating=HERITAGE.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=HERITAGE.ratingNote;r.michelinBibGourmand=true;r.michelinGuide=true;if(!r.address)r.address=HERITAGE.address;});});
+NEW.forEach(function(v){var exists=false;Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&la(r.city||r.parentCity);}))exists=true;});if(exists)return;
+var rec={name:v.name,city:'losangeles',rating:null,reviews:null,ratingSource:'',ratingNote:v.note,michelinStars:1,michelinGuide:true,address:v.area+', Los Angeles, CA',phone:'',why:v.note,note:v.note,__v517:true};
+['michelin','losangeles'].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));});hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-la-batch3-v518-script">(function(){
+/* v518: Los Angeles James Beard set, batch 3 (2026-09-02). */
+var ROWS=[
+{name:"Quarter Sheets",rating:4.6,address:"1305 Portia St, Los Angeles, CA 90026",addCats:["pizza"],
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced; New York Times 50 Best Restaurants in America (2023), Bon Appétit, Food & Wine Best New Chef (Hannah Ziskin, 2023), Time Out top LA pizzeria; James Beard recognition. Detroit-style pan squares with inch-high buttery crusts, slab cakes and pies. Echo Park; Resy tables release two weeks out at 9am and vanish in minutes, walk-ins wait an hour-plus."},
+{name:"RVR",rating:4.5,address:"1305 Abbot Kinney Blvd, Venice, CA 90291",
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced; Infatuation top-19 Venice. James Beard recognition. Travis Lett's (ex-Gjelina) reboot of MTN — Cal-Japanese izakaya: pork-belly gyoza, smoked-shoyu little gems, fresh-rolled clam ramen, highballs. Online reservations 30 days out at midnight. Address to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function la(c){c=String(c||'');return c==='losangeles'||c==='orangecounty'||(/^la/.test(c)&&!/^lasvegas/.test(c));}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if(!la(r.city||r.parentCity))return;var v=by[norm(r.name)];if(!v)return;if(!r.__v518){r.__v518=true;hit=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;}if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){var src=proto[norm(v.name)];if(!src)return;(v.addCats||[]).forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];if(boCategoryData[cat].some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&la(r.city||r.parentCity);}))return;var c=JSON.parse(JSON.stringify(src));boCategoryData[cat].push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-la-oc-michelin-v519-script">(function(){
+/* v519: Orange County Michelin set (2026-09-02) — seven verified as Guide
+Recommended; public star ratings not surfaced for any, all provisional. */
+var ROWS=[
+{name:"Marché Moderne",rating:4.5,ratingNote:"PROVISIONAL. Restaurantji #4 of 99 in Newport Beach; Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended; Time Out. Florent & Amelia Marneau's reworked French classics — coq au vin as linguine, octopus-and-hamachi crudo — in a room of cocktail dresses and Rolexes. Crystal Cove. Special occasion."},
+{name:"Fable & Spirit",rating:4.4,ratingNote:"PROVISIONAL. Restaurantji #5 in Newport Beach; Infatuation 8/10; Tripadvisor star to confirm. MICHELIN Bib Gourmand. Irish-American in Lido Marina Village — Guinness brown bread, wood-fired octopus, 12-hour Kurobuta porchetta, brioche bread pudding. Loud, glamorous, date-night."},
+{name:"Bello by Sandro Nardone",rating:4.4,ratingNote:"PROVISIONAL. Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended (2024, 2025). Candlelit modern Italian near Fashion Island — gamberoni e uova, porchettina, wood-oven pizzas as mains, huge wine list; aperitivo hour Mon–Thu."},
+{name:"Sushi ii",rating:4.6,ratingNote:"PROVISIONAL. Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended. Koji Takahashi's high-precision omakase counter in Newport Beach — the priciest of the city's four Michelin picks."},
+{name:"Knife Pleat",rating:4.6,ratingNote:"PROVISIONAL. Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended. Tony Esnault (ex-Church & State, Spring) and Yassmin Sarmadi's French fine dining atop South Coast Plaza, Costa Mesa; tasting and à la carte."},
+{name:"Hana re",rating:4.6,ratingNote:"PROVISIONAL. Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended. Chef Shunji Kurihara's intimate omakase counter in Costa Mesa — Edomae nigiri plus cooked kaiseki courses; reservation only."},
+{name:"Vaca",rating:4.4,ratingNote:"PROVISIONAL. Tripadvisor/Yelp star to confirm. MICHELIN Guide Recommended. Amar Santana's Spanish — dry-aged steaks, paella, jamón, sherry — at South Coast Plaza, Costa Mesa."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function la(c){c=String(c||'');return c==='losangeles'||c==='orangecounty'||(/^la/.test(c)&&!/^lasvegas/.test(c));}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if(!la(r.city||r.parentCity))return;var v=by[norm(r.name)];if(!v||r.__v519)return;r.__v519=true;hit=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;r.michelinGuide=true;if(norm(r.name)==='fable & spirit')r.michelinBibGourmand=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-la-new-stars-v520-script">(function(){
+/* v520: LA's 2025–2026 new one-stars — descriptions + provisional ratings (2026-09-02). */
+var ROWS=[
+{name:"Miura",rating:4.7,why:"Beverly Hills' 18-course omakase counter — one of five LA restaurants to win a first MICHELIN Star in June 2026, weeks after joining the Guide.",ratingNote:"PROVISIONAL. Too new for a public aggregate. One MICHELIN Star (June 2026, first year eligible). Street address/phone to confirm."},
+{name:"Kojima",rating:4.7,why:"Sawtelle's eight-seat counter from Tokyo Bib Gourmand chef Hayato Kojima — traditional Japanese technique with Western touches, fish flown from Toyosu, SoCal produce.",ratingNote:"PROVISIONAL. Too new for a public aggregate. One MICHELIN Star (June 2026, first year eligible). Street address/phone to confirm."},
+{name:"Corridor 109",rating:4.6,why:"Melrose Hill's seafood-focused tasting menu — added to the Guide in March 2026 and starred three months later.",ratingNote:"PROVISIONAL. Too new for a public aggregate. One MICHELIN Star (June 2026). Street address/phone to confirm."},
+{name:"Lielle",rating:4.6,why:"Pico-Robertson's intimate fine-dining room — 'culinary intimacy' is how LA Magazine framed its first star.",ratingNote:"PROVISIONAL. Too new for a public aggregate. One MICHELIN Star (June 2026, first year eligible). Street address/phone to confirm."},
+{name:"Mori Nozomi",rating:4.8,why:"Chef Nozomi Mori's minimalist eight-seat sushi omakase — Japanese seafood plus Santa Monica farmers'-market produce; Time Out's rare 5/5.",ratingNote:"PROVISIONAL. Time Out 5/5; public aggregate star not surfaced. One MICHELIN Star (2025, held 2026; opened March 2024). Street address/phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function la(c){c=String(c||'');return c==='losangeles'||c==='orangecounty'||(/^la/.test(c)&&!/^lasvegas/.test(c));}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if(!la(r.city||r.parentCity))return;var v=by[norm(r.name)];if(!v||r.__v520)return;r.__v520=true;hit=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;r.why=v.why;r.note=v.why;r.michelinStars=1;r.michelinGuide=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-neworleans-batch1-v521-script">(function(){
+/* v521: New Orleans ratings pass, batch 1 (2026-09-02). Emeril's corrected to TWO stars. */
+var ROWS=[
+{name:"Emeril's",rating:4.4,reviews:2893,stars:2,address:"800 Tchoupitoulas St, New Orleans, LA 70130",url:"https://www.emerilsrestaurant.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (2,893 reviews; #108 of 1,481 in New Orleans) = 4.4; recent TA reviews split between raves and service complaints. TWO MICHELIN Stars (Nov 2025 — E.J. Lagasse, 22, the youngest two-star chef ever; badge corrected from one), Michelin Young Chef Award; NYT three stars (Tejal Rao); La Liste 92; North America's 50 Best #20; AAA Five Diamond; Wine Spectator Grand Award since 1999 (30,000 bottles). Tasting menu only, Warehouse District."},
+{name:"Saint Claire",rating:4.6,address:"New Orleans, LA",
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced; James Beard nominee 2026 (Melissa Martin of Mosquito Supper Club, with Cassi Dymond). French-country cooking with Louisiana ingredients in a restored historic home under live oaks — one of the city's hardest reservations. Address/phone to confirm."},
+{name:"Bywater Bakery",rating:4.5,address:"3624 Dauphine St, New Orleans, LA 70117",
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced; James Beard nominee 2026 (Outstanding Bakery). Since 2017: award-winning king cakes, the Chantilly cake, breads, live local musicians. Bywater. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='neworleans')return;var v=by[norm(r.name)];if(!v||r.__v521)return;r.__v521=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
 <script id="bop-sd-steak-tiers-v490-script">(function(){
 /* v490: San Diego steak tiers (2026-09-02) + site-wide sync. Also fixes a
 data-drift problem found here: the same restaurant carried different
@@ -37848,7 +37969,7 @@ if(!src)return;
 if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&(r.city||'')===(src.city||'');}))return;
 var copy=JSON.parse(JSON.stringify(src));copy.__v490=true;arr.push(copy);hit=true;});});
 /* ---- site-wide sync: one restaurant, one verified number ---- */
-function region(r){var c=String(r.parentCity||r.city||'');if(/^sd/.test(c))return 'sandiego';if(/^la(?!s)/.test(c))return 'losangeles';return c;}
+function region(r){var c=String(r.parentCity||r.city||'');if(/^sd/.test(c))return 'sandiego';if(/^la(?!svegas)/.test(c)||c==='orangecounty')return 'losangeles';return c;}
 var verified={};
 Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
 arr.forEach(function(r){if(!r||!r.name||r.ratingSource!=='BJS aggregate')return;var k=norm(r.name)+'|'+region(r);if(!verified[k])verified[k]=r;});});
@@ -37932,7 +38053,9 @@ directly). The only removal is the "ALL OF <CITY> — CITYWIDE" strip on the
 area maps (see v507). Nothing hidden here. */
 })();</script>
 
-<style id="bop-city-bjs-picks-v512">
+<style id="bop-city-bjs-picks-v512">/* v523: the NY gateway title's display:block on inner spans was stacking Per / ı / o / d vertically once the pin+apple transform ran */
+.bop-ny-gateway-title .bop-ny-title-period span{display:inline!important;font-size:inherit!important;letter-spacing:inherit!important;font-style:inherit!important;text-shadow:inherit!important}.bop-ny-gateway-title .bop-ny-title-period .bop-period-i-wrap,.bop-ny-gateway-title .bop-ny-title-period .bop-i-glyph-v474{display:inline-block!important;position:relative!important}.bop-ny-gateway-title .bop-ny-title-period .bop-period-apple-o{display:inline-block!important}.bop-ny-gateway-title .bop-ny-title-period .bop-period-apple-i{display:block!important}
+
 .bop-city-picks-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:min(92%,420px);margin:16px auto 6px;padding:13px 18px;border:2px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 1rem/1.1 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 14px rgba(245,158,11,.55),0 0 34px rgba(245,158,11,.25);animation:bopPicksGlow 2.4s ease-in-out infinite;cursor:pointer}
 .bop-city-picks-btn .bjs-mini{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;width:38px;height:38px;border-radius:50%;border:2px solid #F59E0B;background:#000;color:#F59E0B;font:900 10px/1 'Archivo Black',Arial,sans-serif;text-align:center;flex:0 0 38px}
 .bop-city-picks-btn .bjs-mini small{display:block;font-size:7px;color:#E4002B;letter-spacing:.05em}
@@ -37940,7 +38063,7 @@ area maps (see v507). Nothing hidden here. */
 #bopCityPicksPage{position:fixed;inset:0;z-index:2147483646;display:none;overflow:auto;background:#000;color:#fff;font-family:'Archivo Narrow',Arial,sans-serif;padding:18px 14px calc(120px + env(safe-area-inset-bottom));box-sizing:border-box;-webkit-overflow-scrolling:touch}
 #bopCityPicksPage.open{display:block}
 #bopCityPicksPage .cp-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1.5px solid #F59E0B;border-radius:12px;color:#F59E0B;font:900 .9rem 'Archivo Black',Arial,sans-serif;padding:10px 16px;margin-bottom:14px}
-#bopCityPicksPage h1{margin:6px 0 0;text-align:center;color:#fff;font:900 clamp(2rem,9vw,2.7rem)/1 'Fraunces',Georgia,serif}
+#bopCityPicksPage h1.cp-title{margin:6px 0 22px;color:#fff}#bopCityPicksPage .cp-title .bop-ny-title-period span{display:inline;font-size:inherit;letter-spacing:inherit;font-style:inherit;text-shadow:inherit}#bopCityPicksPage .cp-title .bop-ny-title-period .bop-period-i-wrap,#bopCityPicksPage .cp-title .bop-ny-title-period .bop-i-glyph-v474{display:inline-block;position:relative}#bopCityPicksPage .cp-title .bop-ny-title-period .bop-period-apple-o{display:inline-block}#bopCityPicksPage .cp-title .bop-ny-title-period .bop-period-apple-i{display:block}
 #bopCityPicksPage .cp-sub{text-align:center;margin:8px 0 22px;font:900 1.15rem/1.1 'Archivo Black',Arial,sans-serif;color:#F59E0B;letter-spacing:.06em}
 #bopCityPicksPage .cp-sub .p{color:#F59E0B}
 #bopCityPicksPage .cp-card{border:1.5px solid rgba(245,158,11,.7);border-radius:16px;padding:14px 14px 12px;margin:0 auto 12px;max-width:520px;background:#070707;box-shadow:0 0 10px rgba(245,158,11,.2)}
@@ -37958,12 +38081,21 @@ the bottom of each city's area chooser, opening a page that lists only that
 city's BJS Picks — "Best Of <City> / BJS Picks, Period" — with an ALL BJS
 PICKS button at the bottom. (2) Back from any LA/SD neighborhood category
 page returns to that city's area map (it was going to the citywide page). */
-var CITY={losangeles:{label:'BJS PICKS LA',title:'Los Angeles',test:function(c){return /^la(?!s)|^losangeles/.test(c);}},
-sandiego:{label:'BJS PICKS S.D.',title:'San Diego',test:function(c){return /^sd|^sandiego/.test(c);}},
-newyork:{label:'BJS PICKS NEW YORK',title:'New York',test:function(c){return /^(newyork|manhattan|brooklyn|queens|bronx|hamptons|statenisland)$/.test(c);}}};
+var CITY={losangeles:{label:'BJS PICKS LA',title:'Los Angeles',picksTitle:'BJS Picks LA',test:function(c){return /^la(?!s)|^losangeles/.test(c);}},
+sandiego:{label:'BJS PICKS S.D.',title:'San Diego',picksTitle:'BJS Picks S.D.',test:function(c){return /^sd|^sandiego/.test(c);}},
+newyork:{label:'BJS PICKS NEW YORK',title:'New York',picksTitle:'BJS Picks N.Y.',test:function(c){return /^(newyork|manhattan|brooklyn|queens|bronx|hamptons|statenisland)$/.test(c);}}};
 var AREA_KIDS={};(function(){var s=document.getElementById('bop-city-bjs-picks-v512-script');})();
 function region(r){return String(r.parentCity||r.city||'');}
 function areaName(r){var c=String(r.city||'');try{if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[c]&&BO_CITY_CONFIG[c].displayName)return BO_CITY_CONFIG[c].displayName;}catch(e){}return '';}
+var LABELS={steakhighend:'Fine Steak',steakcasual:'Casual Steak',steakdive:'Dive Steak',italianhighend:'Fine Italian',italiancasual:'Casual Italian',italiandive:'Dive Italian',mexicanhighend:'Fine Mexican',mexicancasual:'Casual Mexican',mexicandive:'Dive Mexican',sushihighend:'Fine Sushi',sushicasual:'Casual Sushi',breakfasthighend:'Fine Breakfast',breakfastcasual:'Casual Breakfast',breakfastdive:'Dive Breakfast',seafoodhighend:'Fine Seafood',seafoodcasual:'Casual Seafood',cheesesteak:'Cheesesteak',bagels:'Bagels',pizza:'Pizza',burgers:'Burgers',bbq:'BBQ',pho:'Pho',vietnamese:'Vietnamese',chinese:'Chinese',korean:'Korean',thai:'Thai',indian:'Indian',greek:'Greek',french:'French',vegan:'Vegan',dessert:'Dessert',brunch:'Brunch',tacos:'Tacos',wings:'Wings',hotdogs:'Hot Dogs',brewery:'Brewery',bars:'Bars',asianfusion:'Asian Fusion',asian:'Asian',southern:'Southern','24hours':'24 Hours',foodtrucks:'Food Trucks',streetvendors:'Street Vendors',steak:'Steak',italian:'Italian',mexican:'Mexican',sushi:'Sushi',seafood:'Seafood',breakfast:'Breakfast',ramen:'Ramen',mediterranean:'Mediterranean',peruvian:'Peruvian',japanese:'Japanese',coffee:'Coffee'};
+var SKIP=/^(bjspicks|michelin|jamesbeard|nation|bestof|newrestaurants|asianbestofrest|jamesbeardverified)/;
+function pickCategory(rec){var key=rec.name.toLowerCase().replace(/\s+/g,' ').trim();var found=[];
+Object.keys(boCategoryData).forEach(function(cat){if(SKIP.test(cat))return;if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[cat])return;if(/^(sd|la)[a-z]+$/.test(cat)&&!LABELS[cat])return;var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+if(arr.some(function(r){return r&&r.name&&r.name.toLowerCase().replace(/\s+/g,' ').trim()===key;}))found.push(cat);});
+var pick=found.filter(function(c){return /bjspick$/.test(c);}).map(function(c){return c.replace(/bjspick$/,'');});
+var cats=(pick.length?pick:found).filter(function(c){return LABELS[c];});
+if(!cats.length)cats=found.filter(function(c){return !/bjspick$/.test(c);});
+if(!cats.length)return '';var c=cats[0];return LABELS[c]||c.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,function(x){return x.toUpperCase();});}
 function picksFor(key){var cfg=CITY[key];var seen={},out=[];if(typeof boCategoryData!=='object')return out;
 Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||!r.bjsPick)return;if(!cfg.test(region(r))&&!cfg.test(String(r.city||'')))return;var k=r.name.toLowerCase().replace(/\s+/g,' ').trim();if(seen[k])return;seen[k]=1;out.push(r);});});
 out.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);});return out;}
@@ -37972,10 +38104,10 @@ function ensurePage(){if(page)return page;page=document.createElement('div');pag
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function openPicks(key){var cfg=CITY[key];if(!cfg)return;lastKey=key;var p=ensurePage();var rows=picksFor(key);
 var h='<button type="button" class="cp-back">\u2190 Back</button>'+
-'<h1>Best Of '+esc(cfg.title)+'</h1><div class="cp-sub">BJS PICKS<span class="p">, PERIOD</span></div>';
+'<h1 class="bop-ny-gateway-title cp-title">Best Of<span class="bop-ny-title-city">'+esc(cfg.picksTitle)+'</span><span class="bop-ny-title-period">Period<span class="period-mark">\u00a9</span></span></h1>';
 if(!rows.length)h+='<div class="cp-empty">No BJS Picks filed for '+esc(cfg.title)+' yet.</div>';
-rows.forEach(function(r){var area=areaName(r);var rating=r.rating?String(r.rating).replace(/\s*\/\s*5/,'')+' / 5':'';
-h+='<div class="cp-card"><div class="cp-name">'+esc(r.name)+'</div><div class="cp-meta">'+(rating?esc(rating)+' \u00b7 ':'')+'BJS PICK'+(area?' \u00b7 '+esc(area):'')+'</div>'+
+rows.forEach(function(r){var area=areaName(r);var rn=parseFloat(String(r.rating||''));var rating=isNaN(rn)?'':rn.toFixed(1)+' / 5';var catLabel=pickCategory(r);
+h+='<div class="cp-card"><div class="cp-name">'+esc(r.name)+'</div><div class="cp-meta">'+(rating?esc(rating)+' \u00b7 ':'')+'BJS PICK'+(catLabel?' \u2014 '+esc(catLabel):'')+(area?' \u00b7 '+esc(area):'')+'</div>'+
 (r.why||r.note?'<div class="cp-why">'+esc(r.why||r.note)+'</div>':'')+
 (r.address?'<div class="cp-line">'+esc(r.address)+'</div>':'')+
 (r.phone?'<div class="cp-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>':'')+'</div>';});
@@ -37986,7 +38118,7 @@ document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList
 var ny=document.getElementById('bopNewYorkGateway');if(ny&&(ny.classList.contains('open')||ny.getAttribute('aria-hidden')==='false')){ny.__picksReturn=true;ny.classList.remove('open');ny.setAttribute('aria-hidden','true');ny.style.display='none';}
 p.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';p.scrollTop=0;
 p.querySelector('.cp-back').onclick=function(){closePicks(true);};
-p.querySelector('.cp-all').onclick=function(){closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');window.scrollTo(0,0);};}
+p.querySelector('.cp-all').onclick=function(){closePicks(false);if(typeof window.boOpenAllBjsPicks==='function'){window.boOpenAllBjsPicks();return;}var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');window.scrollTo(0,0);};}
 function closePicks(back){if(!page)return;page.classList.remove('open');document.documentElement.style.overflow='';document.body.style.overflow='';
 if(!back)return;
 if(lastKey==='newyork'){var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.style.display='';if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();return;}
@@ -38000,7 +38132,7 @@ Object.keys(CITY).forEach(function(key){if(key==='newyork')return;var g=document
 var ny=document.getElementById('bopNewYorkGateway');if(ny&&!ny.querySelector('.bop-city-picks-btn')){var inner=ny.querySelector('.bop-ny-gateway-inner')||ny;inner.appendChild(btn('newyork'));}}
 window.__v512inject=inject;inject();setInterval(function(){try{inject();}catch(e){}},400);new MutationObserver(function(){try{inject();}catch(e){window.__v512err=String(e);}}).observe(document.body,{childList:true,subtree:true});
 /* (2) Back from an LA/SD neighborhood category page → that city's area map */
-var KIDS=null;function parentOf(city){if(/^la(?!s)/.test(city))return 'losangeles';if(/^sd/.test(city))return 'sandiego';return null;}
+var KIDS=null;function parentOf(city){if(/^la(?!svegas)/.test(city))return 'losangeles';if(/^sd/.test(city))return 'sandiego';return null;}
 function onBack(e){window.__v512back=(window.__v512back||0)+1;var t=e.target&&e.target.closest&&e.target.closest('#boBackBtn');if(!t)return;window.__v512hit=[typeof boCurrentCat!=='undefined'?boCurrentCat:'?',String(window.boCityContext),typeof boCityContext!=='undefined'?boCityContext:'?'];
 var cat=typeof boCurrentCat!=='undefined'?boCurrentCat:'';var city=String(window.boCityContext||(typeof boCityContext!=='undefined'?boCityContext:'')||'');
 var parent=parentOf(city);if(cat!=='otheroptions'||!parent)return;
@@ -38009,6 +38141,42 @@ var best=document.getElementById('bestOfOverlay');if(best)best.classList.remove(
 if(typeof boReplaceBestOfRoute==='function'){try{boReplaceBestOfRoute('','');}catch(err){}}
 if(typeof window.bopShowCityGate==='function')window.bopShowCityGate(parent);window.scrollTo(0,0);}
 window.addEventListener('pointerdown',onBack,true);window.addEventListener('click',onBack,true);
+})();</script>
+
+<script id="bop-la-sd-always-gate-v516-script">(function(){
+/* v516 (2026-09-02): Los Angeles and San Diego never open the old citywide
+title page from a list or search. Any request to render the citywide
+category page for those two cities opens the area map (directory) instead —
+same behaviour New York already has with its borough gateway. Deep links
+into a specific area still work; only the parent-city page is gated. */
+function hook(){
+if(typeof window.boRenderCategory!=='function'||window.boRenderCategory.__v516)return;
+var orig=window.boRenderCategory;
+var w=function(cat){var city=String(window.boCityContext||(typeof boCityContext!=='undefined'?boCityContext:'')||'');
+if(cat==='otheroptions'&&(city==='losangeles'||city==='sandiego')&&typeof window.bopShowCityGate==='function'&&!window.__bopAllowCitywide){
+var best=document.getElementById('bestOfOverlay');if(best)best.classList.remove('open');
+var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+var nav=document.getElementById('bopWorldZoneNavigator');if(nav)nav.classList.remove('open');
+document.documentElement.style.overflow='';document.body.style.overflow='';
+window.bopShowCityGate(city);window.scrollTo(0,0);return;}
+return orig.apply(this,arguments);};
+w.__v516=true;window.boRenderCategory=w;try{boRenderCategory=w;}catch(e){}
+}
+hook();var n=0,t=setInterval(function(){n++;hook();if(n>40)clearInterval(t);},300);
+})();</script>
+
+<style id="bop-legend-price-key-v522">
+#legendOverlay .bo-legend-price .bop-legend-price-key{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.4vw,14px);margin:10px 0 2px;color:#F59E0B;font:900 clamp(11px,3vw,15px)/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;white-space:nowrap;text-shadow:none}
+#legendOverlay .bo-legend-price .bop-legend-price-key span{color:inherit;font:inherit;text-shadow:none}
+#legendOverlay .bo-legend-price .bop-legend-price-key i{display:block;width:1px;height:16px;flex:0 0 1px;background:rgba(245,158,11,.72)}
+#legendOverlay .bo-legend-price .bo-price-legend{display:none!important}
+</style>
+<script id="bop-legend-price-key-v522-script">(function(){
+/* v522 (2026-09-02): the Legend's price line now looks exactly like the
+Closest 5 key — flat gold caps with thin dividers: DIVE $ | CASUAL $$–$$$ |
+FINE $$$$ — instead of the glowing orange signs. */
+function fix(){var sec=document.querySelector('#legendOverlay .bo-legend-price');if(!sec||sec.querySelector('.bop-legend-price-key'))return;var old=sec.querySelector('.bo-price-legend');var k=document.createElement('div');k.className='bop-legend-price-key';k.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine four dollar signs');k.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$\u2013$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$$</span>';if(old)old.parentNode.insertBefore(k,old);else sec.appendChild(k);}
+fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
 })();</script>
 
 </body></html>
