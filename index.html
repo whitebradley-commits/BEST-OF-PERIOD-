@@ -37464,6 +37464,297 @@ function ready(fn){if(document.readyState==='loading')document.addEventListener(
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
 
+<script id="bop-sd-breakfast-v499-script">(function(){
+/* v499: San Diego breakfast tiers, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"Morning Glory",rating:4.3,reviews:5085,phone:"(619) 629-0302",address:"550 W Date St, Ste C, San Diego, CA 92101",cats:[],
+ratingNote:"PROVISIONAL. Tripadvisor star not surfaced (reviews split: stunning room, 1–2 hr waits, food 'doesn't quite pop'); Yelp volume 5,085, star to confirm. MICHELIN Bib Gourmand (held 2026) — the only Bib breakfast spot in the US. Consortium Holdings; soufflé pancakes, breakfast dim-sum cart. Walk-in only, OpenTable waitlist once full. Mon–Fri 8–3, Sat–Sun 8–4."},
+{name:"Harry's Coffee Shop",rating:4.5,reviews:426,city:"sandiego",create:true,cats:["breakfastdive","sandiego","sdlajolla"],phone:"(858) 454-7381",address:"7545 Girard Ave, La Jolla, CA 92037",url:"http://harryscoffeeshop.com/",
+why:"La Jolla's oldest restaurant — a family-run counter-and-booth diner since 1960. The B.W. Benny (bacon waffle, poached eggs, ham, hollandaise, maple) made Food Network; fresh grapefruit juice, your own pot of coffee, diner prices. Big lot out back. Daily 7am–2:30pm; line by 9.",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (426 reviews; #17 of 1,397 in La Jolla) = 4.5; Yelp volume 1,248, star to confirm. Infatuation-recommended. Low cost, high ratings."},
+{name:"Rudford's Restaurant",rating:null,cats:["breakfastdive"]}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;
+if(!r.__v499&&v.rating!=null){r.__v499=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address&&v.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(!r.phone&&v.phone)r.phone=v.phone;hit=true;}if(!src)src=r;});});
+if(!src&&v.create)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone,why:v.why,note:v.why,__v499:true};
+if(!src)return;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v499=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-breakfast-v500-script">(function(){
+/* v500: San Diego breakfast, batch 2 (2026-09-02). */
+var ROWS=[
+{name:"Great Maple — Hillcrest",rating:4.4,reviews:392,city:"sandiego",create:true,cats:["breakfasthighend","brunch","sandiego"],address:"1451 Washington St, San Diego, CA 92103",url:"https://www.thegreatmaple.com/",
+why:"A 1950s diner with swagger — maple-bacon doughnuts, brisket popovers with béarnaise, Fruity Pebbles pancakes and seasonal pies, plus prime-rib Fridays. Takes reservations (rare for SD brunch); own parking lot.",
+ratingNote:"PROVISIONAL. Trip.com 4.4 + Tripadvisor 392 reviews (star not surfaced; Travelers' Choice-tier praise, some 2-hour-wait complaints) = 4.4; Yelp star to confirm. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf('great maple')!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v500){r.__v500=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url)r.url=v.url;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v500:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name).indexOf('great maple')===0;}))return;var c=JSON.parse(JSON.stringify(src));c.__v500=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-vietnamese-pho-v501-script">(function(){
+/* v501: San Diego Vietnamese + Pho tiles (2026-09-02). */
+var ROWS=[
+{name:"Kingfisher",rating:4.5,reviews:705,city:"sandiego",cats:["vietnamese","sandiego","michelin"],phone:"(619) 432-1014",address:"2469 Broadway, San Diego, CA 92102",url:"https://www.kingfishersd.com/",guide:true,
+why:"Golden Hill's modern-Vietnamese showpiece — a striking central bar, inventive cocktails and shareable plates like raw scallops dressed in canh chua flavors, steak tartare with rice crackers, whole grouper for two. Dinner only; closed Tuesday.",
+ratingNote:"PROVISIONAL. Tripadvisor 4.6 (7 reviews, too few) ; Yelp volume 705, star to confirm. MICHELIN Guide Recommended (2026). Mon, Wed–Sat 5–11pm, Sun 4–11pm."},
+{name:"Phuong Trang",rating:4.2,reviews:76,city:"sandiego",cats:["vietnamese","pho","sandiego"],address:"4170 Convoy St, San Diego, CA 92111",
+why:"The Convoy Street institution with the biggest Vietnamese menu in the county — seven-course beef, bánh xèo crepes, rice-paper wraps, lobster specials, and a proper pho. No-frills, always a wait, worth it.",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (76 reviews) = 4.2; Yelp star to confirm. Low cost, high ratings. Phone to confirm."},
+{name:"Pho Ca Dao & Grill",rating:4.4,reviews:131,city:"sandiego",cats:["vietnamese","pho","sandiego"],address:"8373 Mira Mesa Blvd, San Diego, CA 92126",
+why:"Mira Mesa's fastest-turning pho house — rare-brisket pho, beef-stew pho, grilled-pork rice plates and boba, packed with families and out in twenty minutes. A place to eat, not to dine.",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (62 reviews, Grill listing) + 4.2 (69, original listing) = 4.4; Yelp star to confirm. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf(norm(v.name).split(' and ')[0])!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v501){r.__v501=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(!r.phone&&v.phone)r.phone=v.phone;if(v.guide)r.michelinGuide=true;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone||'',why:v.why,note:v.why,michelinGuide:!!v.guide,__v501:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(src.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v501=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-pho-eight-v502-script">(function(){
+/* v502: San Diego Pho list to 8 (2026-09-02). Pho Hoa stays the BJS Pick and
+in the ranked list. */
+var ROWS=[
+{name:"Pho Hoa",rating:4.2,reviews:19,cats:[],
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (19 reviews) = 4.2; Yelp star to confirm. BJS Pick. Crystal-clear oxtail broth, cash preferred (card fee). Note: 4717 El Cajon Blvd is City Heights/University Heights — its copy under Downtown & Gaslamp is misfiled."},
+{name:"OB Noodle House",rating:4.4,reviews:419,city:"sandiego",cats:["pho","vietnamese","sandiego"],address:"2218 Cable St, San Diego, CA 92107",
+why:"Ocean Beach's Vietnamese noodle bar with 1,000 whiskeys — oxtail pho, garlic noodles, and the late-night crowd that made it Tripadvisor's #1 pho in San Diego.",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (419 reviews; #1 on TA's San Diego pho list) = 4.4; Yelp star to confirm. Phone to confirm."},
+{name:"Pho Fifth Avenue",rating:4.5,reviews:7000,city:"sandiego",cats:["pho","vietnamese","sandiego"],address:"3807 5th Ave, San Diego, CA 92103",
+why:"Hillcrest's neighborhood pho room — deeply developed broth, a strong veggie pho, bánh mì and egg rolls, open late. A North Park/Hillcrest go-to.",
+ratingNote:"BJS aggregate: Uber Eats 4.6 (7,000+ ratings, docked to 4.5) = 4.5; Yelp/TA star to confirm. Daily 10:45am–9:45pm. Phone to confirm."},
+{name:"Pho Point Loma & Grill",rating:4.2,reviews:48,city:"sandiego",cats:["pho","sandiego"],address:"3860 Valley Ct, San Diego, CA 92103",
+why:"Pho plus a real grill menu — tom yum, grilled pork plates and a pho locals call the best on the peninsula.",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (48 reviews) = 4.2; Yelp star to confirm. Address to confirm. Phone to confirm."},
+{name:"Pho Cow Cali",rating:4.3,reviews:0,city:"sandiego",cats:["pho","sandiego"],address:"9170 Mira Mesa Blvd, San Diego, CA 92126",
+why:"Mira Mesa since 1989 — the House Special Pho with filet mignon in a bowl the size of a sink, always packed, always fast.",
+ratingNote:"PROVISIONAL. No public aggregate star surfaced; consistently praised on Yelp/Wanderlog. Phone to confirm."},
+{name:"Pho Saigon Star",rating:4.3,reviews:12,city:"sandiego",cats:["pho","sandiego"],
+why:"Kearny Mesa's solid neighborhood pho — the one hospital staff from nearby Zion Kaiser send you to.",
+ratingNote:"PROVISIONAL. Tripadvisor 4.3 on only 12 reviews; Yelp star to confirm. Address/phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v502){r.__v502=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address&&v.address)r.address=v.address;hit=true;}if(!src)src=r;});});
+if(!src&&v.city)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address||'',phone:'',why:v.why,note:v.why,__v502:true};
+if(!src)return;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v502=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-convoy-korean-chinese-v503-script">(function(){
+/* v503: San Diego Korean + Chinese (Convoy District), batch 1 (2026-09-02). */
+var ROWS=[
+{name:"Friend's House Korean",rating:4.4,reviews:1380,city:"sandiego",cats:["korean","sandiego"],phone:"(858) 292-0499",address:"4647 Convoy St, Ste 101A, San Diego, CA 92111",url:"https://friendshouserestaurant.com/",
+why:"Convoy's family-run village-style Korean house since 2005 — army stew, spicy squid, tteokbokki street food, soondubu and a covered patio; the anchor of the DalBam / Grandma Tofu / Cross Street family of restaurants. Mon–Sat 11–9:30, Sun 4–9:30.",
+ratingNote:"PROVISIONAL. Yelp volume 1,380 (Health Score 97), star to confirm; Tripadvisor star not surfaced. Axios' pick for authentic homestyle Korean on Convoy."},
+{name:"Tofu House",rating:4.3,reviews:0,city:"sandiego",cats:["korean","sandiego"],address:"4229 Convoy St, San Diego, CA 92111",
+why:"The Convoy Center soondubu standard — bubbling tofu stews, stone-bowl bibimbap, spicy chicken bulgogi combos and six banchan for real value.",
+ratingNote:"PROVISIONAL. Tripadvisor star not surfaced (uses TA review-collection tools); Yelp star to confirm. Phone to confirm."},
+{name:"Dumpling Inn & Shanghai Saloon",rating:4.3,reviews:0,city:"sandiego",cats:["chinese","sandiego"],address:"4625 Convoy St, San Diego, CA 92111",
+why:"Convoy's original dumpling house, now with a Shanghai-style bar next door — pan-fried buns, steamed dumplings, house-made tripe, lo mein, and the tightest parking on the strip.",
+ratingNote:"PROVISIONAL. Tripadvisor/Yelp star not surfaced; TA reviewers call the noodles and steamed dumplings exceptional. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;var key=norm(v.name).split(' and ')[0];
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf(key)!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v503){r.__v503=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(!r.phone&&v.phone)r.phone=v.phone;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone||'',why:v.why,note:v.why,__v503:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name).indexOf(key)===0;}))return;var c=JSON.parse(JSON.stringify(src));c.__v503=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-thai-v504-script">(function(){
+/* v504: San Diego Thai tile (2026-09-02). */
+var ROWS=[
+{name:"Supannee House of Thai",rating:4.4,reviews:0,city:"sandiego",cats:["thai","sandiego"],address:"2907 Shelter Island Dr, San Diego, CA 92106",url:"https://sdthai.com/",
+why:"Point Loma's farm-to-table Thai — the owner grows her own chilis, herbs and vegetables and buys local fish, so the papaya salad, po tak seafood soup and nam kao tod taste like the garden. Ex-Amarin chef. Closed mid-afternoon.",
+ratingNote:"PROVISIONAL. Yelp 4.5 (restaurant-reported average), Time Out Recommended; Tripadvisor star not surfaced. Phone to confirm."},
+{name:"Sab-E-Lee",rating:4.4,reviews:0,city:"sandiego",cats:["thai","sandiego"],address:"2405 Ulric St, San Diego, CA 92111",
+why:"Linda Vista's fiery Isaan (northeastern) Thai since 2008 — larb, namtok, crispy pork belly, morning-glory stir-fry — a Zagat Top 50 San Diego pick and the spice-lover's choice. Cash-friendly, takeout-strong; second location in Rancho Peñasquitos.",
+ratingNote:"PROVISIONAL. Zagat Top 50 (2015); Yelp star to confirm; Tripadvisor star not surfaced. Address to confirm. Phone to confirm."},
+{name:"Amarin Thai",rating:4.3,reviews:0,city:"sandiego",cats:["thai","sandiego"],address:"3843 Richmond St, San Diego, CA 92103",
+why:"Hillcrest's family-run classic since 1993 (Chef Nok Suree) — massaman curry, oversized chicken satay, mango sticky rice and a generous lunch special, in a whimsical flower-filled room. Parking at night is the only catch.",
+ratingNote:"PROVISIONAL. Tripadvisor reviews consistently strong (star not surfaced); Yelp star to confirm. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/-/g,' ').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf(norm(v.name))!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v504){r.__v504=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v504:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name).indexOf(norm(v.name))===0;}))return;var c=JSON.parse(JSON.stringify(src));c.__v504=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-phonomenal-holbox-v505-script">(function(){
+/* v505 (2026-09-02): Phonomenal (National City) added to San Diego Pho +
+Vietnamese; Holbox (LA) verified, starred, and filed into the real tiles
+(it sat in a non-tile 'mexicanfine' key with no rating on most copies). */
+var ROWS=[
+{name:"Phonomenal",region:"sandiego",rating:4.8,reviews:267,city:"sandiego",cats:["pho","vietnamese","asian","sandiego"],phone:"(619) 856-4216",address:"811 K Ave, National City, CA 91950",
+why:"Yelp's #1 pho in America and #4 of its Top 100 US restaurants (2025) — a tiny National City shop with a three-item menu: Cambodian-style spare-rib pho from Chef Ming Thatsany's 30-year family broth, shrimp-and-pork spring rolls, and fresh cococane juice. Sells out by ~2pm; line up before open.",
+ratingNote:"BJS aggregate: 4.9 (267 reviews, SageMenu/Yelp mirror, docked to 4.8) = 4.8; Yelp star to confirm. Yelp Top 100 Places to Eat in the US #4 (2025); Yelp Top 25 Pho Spots #1. National City (South Bay)."},
+{name:"Holbox",region:"losangeles",rating:4.7,reviews:0,cats:["mexicancasual","tacos","seafoodcasual","michelin","jamesbeard"],stars:1,url:"https://holboxla.com/",
+ratingNote:"BJS aggregate: Yelp Top 100 Places to Eat in the US #1 (2025); Infatuation/LA Times top-tier; public star to confirm = 4.7 provisional. One MICHELIN Star (since 2024) — counter-service stall in Mercado La Paloma, South LA; Gilberto Cetina's Yucatán seafood (kanpachi tostadas, octopus, aguachiles) plus an 8-seat omakase bar two nights a week. James Beard recognition. Replaces an unsourced 4.8 / blank ratings across copies."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function region(r){var c=String(r.parentCity||r.city||'');if(/^sd|^sandiego/.test(c))return 'sandiego';if(/^la(?!s)|^losangeles/.test(c))return 'losangeles';return c;}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name)||region(r)!==v.region)return;
+if(!r.__v505){r.__v505=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address&&v.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(!r.phone&&v.phone)r.phone=v.phone;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}hit=true;}if(!src)src=r;});});
+if(!src&&v.city)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:v.phone,why:v.why,note:v.why,__v505:true};
+if(!src)return;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&region(r)===v.region;}))return;var c=JSON.parse(JSON.stringify(src));c.__v505=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-indian-v506-script">(function(){
+/* v506: San Diego Indian tile (2026-09-02). */
+var ROWS=[
+{name:"Punjabi Tandoor",rating:4.4,city:"sandiego",cats:["indian","sandiego"],address:"9235 Activity Rd, Ste 107, San Diego, CA 92126",
+why:"The Miramar industrial-park counter San Diegans drive across town for — chicken makhani, tandoori everything, stretchy naan pulled from the clay oven, rice pudding thrown in. Cheap, fast, packed at lunch, Yelp's perennial top Indian in the city.",
+ratingNote:"PROVISIONAL. Yelp top-listed Indian in San Diego, star to confirm; Tripadvisor star not surfaced. Low cost, high ratings. Phone to confirm."},
+{name:"Himalayan Cuisine",rating:4.5,city:"sandiego",cats:["indian","sandiego"],address:"7918 El Cajon Blvd, La Mesa, CA 91942",
+why:"La Mesa's Nepalese-Indian favorite — momo dumplings, goat curry, lamb vindaloo and a Himalayan-spiced lunch buffet in a small, friendly room with a line out the door on weekends.",
+ratingNote:"PROVISIONAL. Consistently at the top of TA's San Diego Indian list (star not surfaced); Yelp star to confirm. Phone to confirm."},
+{name:"Royal India",rating:4.2,reviews:325,city:"sandiego",cats:["indian","sandiego","sddowntown"],address:"329 Market St, San Diego, CA 92101",url:"https://www.royalindia.com/",
+why:"The Gaslamp's palace-style North Indian room — imported décor, chandeliers, a waterfall wall, tandoor-baked breads, halal and a big vegan menu, with a patio on Market St. The tourist-friendly downtown choice.",
+ratingNote:"PROVISIONAL. Tripadvisor 325 reviews, star not surfaced and recent reviews split (food praised, service thin); Yelp star to confirm. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf(norm(v.name))!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v506){r.__v506=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v506:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name).indexOf(norm(v.name))===0;}))return;var c=JSON.parse(JSON.stringify(src));c.__v506=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-philly-franks-v508-script">(function(){
+/* v508 (2026-09-02): Philly Frank's Steaks, San Marcos — BJS Pick, Best
+Cheesesteak, San Diego. Was missing from the data entirely. */
+var R={name:"Philly Frank's Steaks",city:"sdoceanside",parentCity:"sandiego",bjsPick:true,rating:"4.5 / 5",reviews:1074,ratingSource:'BJS aggregate',
+phone:"(760) 591-0145",address:"151 S Rancho Santa Fe Rd, San Marcos, CA 92078",url:"http://www.phillyfranks.com",
+why:"BJS PICK — the best cheesesteak in San Diego County, period. Amoroso rolls shipped from Philadelphia, ribeye chopped to order, Wiz or white American, fried onions and sweet peppers; Wise chips, Tastykakes, birch beer and Italian water ice on the side. A strip-mall room off the 78 that tastes like South Philly. Daily 11–8 (8:30 Fri–Sat).",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 + Google 4.6 (903) + Yellow Pages 4.5; Yelp volume 1,074 = 4.5. BJS Pick: Best Cheesesteak, San Diego."};
+R.note=R.why;
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+["cheesesteak","bjspickssandiego","bjspicks","sandiego","sdoceanside","bjspickssdoceanside"].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&/philly frank/i.test(r.name);}))return;var c=JSON.parse(JSON.stringify(R));c.__v508=true;arr.unshift(c);hit=true;});return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-cheesesteak-ten-oceanside-v509-script">(function(){
+/* v509 (2026-09-02): San Diego Cheesesteak list built to 10 with Philly
+Frank's as the BJS Pick; Philly Frank's filed under the Oceanside area,
+which now reads "Oceanside · Vista · San Marcos" (North County inland). */
+var ROWS=[
+{name:"Gaglione Brothers",rating:4.4,city:"sandiego",address:"5950 Santo Rd, San Diego, CA 92124",why:"Axios' Super Bowl pick for San Diego's most authentic cheesesteak — shaved ribeye, grilled onions, American or Wiz on a toasted Amoroso roll, hot cherry peppers for zing. Family-run since 1999; Cheez fries mandatory. Tierrasanta/Allied Gardens (second shop in Point Loma).",ratingNote:"PROVISIONAL. Axios San Diego #1 cheesesteak (2025); Yelp star to confirm. Phone to confirm."},
+{name:"Barrio Philly",rating:4.4,city:"sandiego",cats:["sddowntown"],address:"807 F St, San Diego, CA 92101",why:"Downtown's cheesesteak counter — meat that melts, seasoned fries, big burgers, buy-one-get-one nights. The East Village lunch line.",ratingNote:"BJS aggregate: Uber Eats 4.6 (600+ ratings, docked) = 4.4; Yelp star to confirm. Phone to confirm."},
+{name:"Giorgino's",rating:4.3,city:"sandiego",address:"2646 Broadway, San Diego, CA 92102",why:"Golden Hill's neighborhood deli and Axios' runner-up for the classic cheesesteak — plus meatball subs and Italian hoagies on proper rolls.",ratingNote:"PROVISIONAL. Axios runner-up (2025); Yelp star to confirm. Address/phone to confirm."},
+{name:"GoodBar",rating:4.3,city:"sandiego",address:"1872 Rosecrans St, San Diego, CA 92106",why:"Point Loma bar with a cheesesteak locals call the best this side of the Mississippi — wings, burgers, noon–8:45.",ratingNote:"BJS aggregate: Uber Eats 4.4 (180+ ratings) = 4.3; Yelp star to confirm. Phone to confirm."},
+{name:"The Meat Brothers",rating:4.3,city:"sandiego",address:"San Marcos, CA",why:"San Marcos' other cheesesteak stop — chopped-to-order, stuffed rolls, generous for the price.",ratingNote:"PROVISIONAL. Yelp-listed top cheesesteak in San Marcos; star, address and phone to confirm."},
+{name:"Big Daddy's",rating:4.2,city:"sandiego",address:"San Marcos, CA",why:"North County counter with a loyal following for the beef Philly and the chicken-parm sandwich.",ratingNote:"PROVISIONAL. Yelp-listed; star, address and phone to confirm."},
+{name:"Philly Steak Subs",rating:4.2,city:"sandiego",address:"La Mesa, CA",why:"East County's straight-ahead sub shop — Yelp's top La Mesa cheesesteak, fair prices, friendly counter.",ratingNote:"PROVISIONAL. Yelp #1 cheesesteak in La Mesa; star, address and phone to confirm."},
+{name:"The Cheesesteak Grill",rating:4.1,city:"sandiego",address:"La Mesa, CA",why:"Grill-counter cheesesteaks, tots and fries; a Yelp East County regular.",ratingNote:"PROVISIONAL. Yelp-listed; star, address and phone to confirm."},
+{name:"Ab's Philly Steak",rating:4.1,city:"sandiego",address:"San Diego, CA",why:"Small-shop cheesesteaks with a big local fan base; frings and a side of Wiz.",ratingNote:"PROVISIONAL. Yelp-listed; star, address and phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+/* Oceanside → Oceanside · Vista · San Marcos */
+try{if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG.sdoceanside&&!BO_CITY_CONFIG.sdoceanside.__v509){var o=BO_CITY_CONFIG.sdoceanside;o.displayName='Oceanside · Vista · San Marcos';o.areas=['Oceanside','Oceanside Harbor','Vista','San Marcos'];o.__v509=true;hit=true;}}catch(e){}
+document.querySelectorAll('.bop-lamap-zone[data-dest="sdoceanside"] text').forEach(function(t){if(/^oceanside$/i.test(t.textContent.trim())){t.textContent='OCEANSIDE · VISTA · SAN MARCOS';t.setAttribute('font-size',String(Math.max(9,(parseFloat(t.getAttribute('font-size'))||13)*0.86)));}});
+/* Philly Frank's → Oceanside area copy */
+var pf=null;(boCategoryData.cheesesteak||[]).forEach(function(r){if(r&&/philly frank/i.test(r.name||'')&&(r.city||'')==='sandiego')pf=r;});
+if(false&&pf&&!pf.__v509){pf.__v509=true;['sdoceanside','bjspickssdoceanside'].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];if(boCategoryData[cat].some(function(r){return r&&/philly frank/i.test(r.name||'');}))return;var c=JSON.parse(JSON.stringify(pf));c.city='sdoceanside';c.parentCity='sandiego';boCategoryData[cat].unshift(c);});
+var cc=JSON.parse(JSON.stringify(pf));cc.city='sdoceanside';cc.parentCity='sandiego';if(!boCategoryData.cheesesteak.some(function(r){return r&&/philly frank/i.test(r.name||'')&&r.city==='sdoceanside';}))boCategoryData.cheesesteak.push(cc);hit=true;}
+/* the other nine */
+if(!Array.isArray(boCategoryData.cheesesteak))boCategoryData.cheesesteak=[];
+ROWS.forEach(function(v){if(boCategoryData.cheesesteak.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&/^s(andiego|d)/.test(r.city||'');}))return;
+var rec={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:'',why:v.why,note:v.why,__v509:true};
+boCategoryData.cheesesteak.push(rec);(v.cats||[]).concat(['sandiego']).forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];if(boCategoryData[cat].some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));});hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);
+new MutationObserver(function(){document.querySelectorAll('.bop-lamap-zone[data-dest="sdoceanside"] text').forEach(function(t){if(/^oceanside$/i.test(t.textContent.trim())){t.textContent='OCEANSIDE · VISTA · SAN MARCOS';t.setAttribute('font-size',String(Math.max(9,(parseFloat(t.getAttribute('font-size'))||13)*0.86)));}});}).observe(document.body,{childList:true,subtree:true});});
+})();</script>
+
+<script id="bop-sd-cheesesteak-northcounty-v510-script">(function(){
+/* v510 (2026-09-02): North County cheesesteak corrections — The Cheesesteak
+Grill is Oceanside (was filed La Mesa); Hungry Bear Deli (Vista) and The Wise
+Ox (Oceanside) added; Ab's Philly Steak (no verifiable location) removed. */
+var FIX={"the cheesesteak grill":{city:"sdoceanside",parentCity:"sandiego",address:"1771 S Oceanside Blvd, Oceanside, CA 92054",url:"https://cheesesteakgrilloside.com/",rating:"4.4 / 5",
+why:"South Oceanside's cheesesteak-only grill — Philly transplants call it the Mecca: white American or Wiz on a proper roll, mushroom steaks, the bowl for the carb-conscious, seasoned and sweet-potato fries. Yelp's #1 'philly cheese steak' in Oceanside.",
+ratingNote:"PROVISIONAL. Yelp #1 for cheesesteak in Oceanside (Philly Frank's is #2); star to confirm. Phone to confirm."}};
+var ADD=[
+{name:"Hungry Bear Deli",rating:4.4,city:"sdoceanside",parentCity:"sandiego",address:"Vista, CA",
+why:"Vista's family-run deli for 15 years — Yelp's highest-rated sandwich shop in the tri-city — where the cheesesteak shares the board with hot pastrami and a Caesar sando on soft, fresh bread. A deli that happens to make a great Philly, not a Philly shop.",
+ratingNote:"BJS aggregate: Yelp 4.5 (1,300 reviews, docked to 4.4 — general deli, not a cheesesteak specialist) = 4.4. Address/phone to confirm."},
+{name:"The Wise Ox Butcher & Deli",rating:4.3,city:"sdoceanside",parentCity:"sandiego",address:"Oceanside, CA",
+why:"Oceanside whole-animal butcher shop with a lunch counter — the cheesesteak is cut from their own dry-aged beef; the prosciutto-and-arugula is the sleeper hit.",
+ratingNote:"PROVISIONAL. Yelp-listed top-3 for cheesesteak in Oceanside/Vista; star to confirm. Address/phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+for(var i=arr.length-1;i>=0;i--){var r=arr[i];if(!r||!r.name)continue;var n=norm(r.name);
+if(n==="ab's philly steak"&&/^s(andiego|d)/.test(r.city||'')){arr.splice(i,1);hit=true;continue;}
+var f=FIX[n];if(f&&/^s(andiego|d)/.test(r.city||r.parentCity||'')&&!r.__v510){r.__v510=true;Object.keys(f).forEach(function(k){r[k]=f[k];});hit=true;}}});
+ADD.forEach(function(v){["cheesesteak","sandiego"].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];if(boCategoryData[cat].some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;
+boCategoryData[cat].push({name:v.name,city:v.city,parentCity:v.parentCity,rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:'',why:v.why,note:v.why,__v510:true});hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
 <script id="bop-sd-steak-tiers-v490-script">(function(){
 /* v490: San Diego steak tiers (2026-09-02) + site-wide sync. Also fixes a
 data-drift problem found here: the same restaurant carried different
@@ -37539,6 +37830,48 @@ try{boRenderCategory=w;}catch(e){}
 hook();
 var n=0,t=setInterval(function(){n++;hook();ensure();if(n>60)clearInterval(t);},500);
 new MutationObserver(function(){ensure();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+})();</script>
+
+<script id="bop-city-gate-back-and-ghosttap-v507-script">(function(){
+/* v507 (2026-09-02): Other Cities → city map ("gate") flow fixes.
+   1) Back on the map returns to the Other Cities list you came from,
+      instead of dumping you on the landing page.
+   2) Ghost-tap guard: for 700ms after a map opens from the list, taps on
+      its zones are ignored — the finger-lift that opened the map can't
+      also select the first neighborhood under it ("I never tapped Oceanside").
+   3) The "ALL OF <CITY> — CITYWIDE" strip is removed from every map: the
+      user must pick a neighborhood.
+   Note: an earlier global click handler swallows city-button clicks before
+   they reach later listeners, so origin is detected by watching the
+   navigator close and a gate open within the same beat. */
+var navClosedAt=0, openedAt=0, fromNav=false;
+function navEl(){return document.getElementById('bopWorldZoneNavigator');}
+var lastGate=null,navWasOpen=false;
+function scan(){var n=navEl();var navOpen=!!(n&&n.classList.contains('open'));if(navWasOpen&&!navOpen)navClosedAt=Date.now();navWasOpen=navOpen;
+var g=document.querySelector('.bop-city-gate.open');if(g&&g!==lastGate){openedAt=Date.now();fromNav=(openedAt-navClosedAt)<1500;g.__fromNav=fromNav;}lastGate=g;}
+new MutationObserver(scan).observe(document.documentElement,{attributes:true,childList:true,subtree:true,attributeFilter:['class','style']});
+setInterval(scan,150);
+function guard(e){var gate=e.target&&e.target.closest&&e.target.closest('.bop-city-gate.open');if(!gate)return;
+if(Date.now()-openedAt<700&&e.target.closest('.bop-lamap-zone,.bop-lamap-all')){e.stopImmediatePropagation();e.preventDefault();return;}
+if(e.type==='click'&&e.target.closest('.bop-city-gate-back')&&gate.__fromNav){
+e.stopImmediatePropagation();e.preventDefault();
+gate.classList.remove('open');document.body.style.overflow='';
+var best=document.getElementById('bestOfOverlay');if(best)best.classList.remove('open');
+var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+var n=navEl();if(n){n.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';}
+if(typeof boReplaceBestOfRoute==='function'){try{boReplaceBestOfRoute('','');}catch(err){}}
+window.scrollTo(0,0);}}
+window.addEventListener('click',guard,true);window.addEventListener('touchend',guard,true);window.addEventListener('pointerup',guard,true);
+/* 3) remove the citywide strip from every gate, now and whenever one is built */
+function strip(){document.querySelectorAll('.bop-city-gate .bop-lamap-all').forEach(function(a){a.remove();});document.querySelectorAll('.bop-city-gate-note').forEach(function(n){if(/top bar/i.test(n.textContent))n.textContent='Tap your area for its own directory.';});}
+strip();new MutationObserver(strip).observe(document.body,{childList:true,subtree:true});
+var st=document.createElement('style');st.textContent='.bop-city-gate .bop-lamap-all{display:none!important}';document.head.appendChild(st);
+})();</script>
+<script id="bop-navigator-parent-cities-only-v511-script">(function(){
+/* v511 (2026-09-02, revised per Brad): every city AND neighborhood stays in
+the Other Cities list and search (Manhattan, Oceanside, etc. are tappable
+directly). The only removal is the "ALL OF <CITY> — CITYWIDE" strip on the
+area maps (see v507). Nothing hidden here. */
 })();</script>
 
 </body></html>
