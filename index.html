@@ -36927,4 +36927,618 @@ var mark=document.querySelector('.bo-onebite-mark');if(mark)mark.click();
 },true);
 })();</script>
 
+<script id="bop-verified-ratings-miami-batch3-v478-script">(function(){
+/* v478: Miami ratings-verification pass, batch 3 (2026-09-01). */
+var ROWS=[
+{name:"Stubborn Seed",rating:4.5,reviews:3261,phone:"(786) 668-4458",url:"https://www.stubbornseed.com/",
+ratingNote:"BJS aggregate: OpenTable 4.6 (3,261 reviews) + Tripadvisor 4.4 = 4.5, volume-weighted. Yelp volume 645. One MICHELIN Star 2022–2025 plus Green Star (2025); James Beard Best Chef: South semifinalist 2022; Top Chef S13 winner Jeremy Ford. Tasting menu only ($50pp late-cancel fee). Open nightly 6pm. Verified open Sept 2026."},
+{name:"Tambourine Room by Tristan Brandt",rating:4.6,reviews:61,phone:"(305) 876-6555",url:"https://www.tambourineroom.com/",
+ratingNote:"PROVISIONAL. Tiny public sample — OpenTable 61 reviews, Yelp 14, Tripadvisor 3.8 on only 5 (excluded). Held at 4.6 on OpenTable/Forbes/Infatuation strength. One MICHELIN Star (held in 2026 guide). 12–18 seats inside Carillon Miami Wellness Resort; 10-course $265 fall–spring, 5-course $169 summer."},
+{name:"The Surf Club Restaurant",rating:4.4,reviews:230,phone:"(305) 768-9440",url:"https://www.surfclubrestaurant.com/",
+ratingNote:"PROVISIONAL. Tripadvisor 4.4 + Time Out 5/5; Yelp volume 230, Restaurantji 325, no OpenTable (walk-ins at bar). Reviews split sharply on value ($400+ for two). One MICHELIN Star (held in 2026 guide); Wine Spectator Best of Award of Excellence. Thomas Keller's Continental menu — Beef Wellington, Lobster Thermidor. Open nightly 5:30pm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='miami')return;
+var v=by[norm(r.name)];if(!v||r.__v478)return;r.__v478=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.reviews=v.reviews;r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;
+if(!r.phone&&v.phone)r.phone=v.phone;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-miami-batch4-v479-script">(function(){
+/* v479: Miami ratings-verification pass, batch 4 (2026-09-01) — the new
+2026 Bib Gourmands. Also fills addresses/phones and files Barra Callao under
+Peruvian/Miami and To Be Determined under Miami, since they only sat in the
+Michelin / New Restaurants lists. */
+var ROWS=[
+{name:"Barra Callao",rating:4.8,reviews:2433,phone:"(305) 974-2815",address:"17034 W Dixie Hwy, North Miami Beach, FL 33160",url:"https://www.barracallao.com/",addCats:["miami","peruvian"],
+ratingNote:"BJS aggregate: Restaurant Guru 4.9 (2,433 reviews) + Tripadvisor 4.0 (11, docked to 3.9) = 4.8, volume-weighted. Yelp volume 80, OpenTable 24. MICHELIN Bib Gourmand, new in the 2026 Florida Guide. 12-seat Peruvian ceviche counter (Chef Anthony Verastegui, ex-Aji Carbon); closes 9pm, last orders early."},
+{name:"Cotoa",rating:4.8,reviews:101,phone:"(786) 328-1460",address:"12475 NE 6th Ct, North Miami, FL 33161",url:"https://www.cotoarestaurant.com/",
+ratingNote:"PROVISIONAL. Tripadvisor 5.0 (14, docked to 4.9) + Yelp volume 101 — sample still small. MICHELIN Bib Gourmand, new in the 2026 Florida Guide; first Ecuadorian restaurant in the US in the guide (Chef Alejandra Espinoza, UN gastronomy ambassador). 24 seats. Open Wed–Sun; closed Mon–Tue."},
+{name:"To Be Determined",rating:4.6,reviews:75,phone:"(305) 717-4640",address:"2240 SW 32nd Ave, Miami, FL 33145",url:"https://www.tbdmiami.com/",addCats:["miami"],
+ratingNote:"PROVISIONAL. OpenTable 75 reviews; too few public ratings to aggregate firmly. MICHELIN Bib Gourmand, new in the 2026 Florida Guide; Infatuation Best New Restaurants 2025. Ever-changing seasonal wine-bar menu, everything made in-house. Dinner Wed–Sun 5:30–10pm, Sunday brunch 10:30–3."},
+{name:"Double Luck",rating:4.4,reviews:71,phone:"(305) 675-4287",address:"1085 NE 79th St, Miami, FL 33138",url:"https://www.doubleluckchinese.com/",
+ratingNote:"PROVISIONAL. Tripadvisor 4.4 (5) + Yelp volume 71 — reviews mixed on food, unanimous on the party vibe. MICHELIN Bib Gourmand, new in the 2026 Florida Guide; from the Tâm Tâm team. Hennessy orange chicken flambéed tableside, crab-leg rangoon. Dinner Wed–Sun 5:30–10pm; closed Mon–Tue. Resy."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='miami')return;
+var v=by[norm(r.name)];if(!v||r.__v479)return;r.__v479=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.reviews=v.reviews;r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;
+if(!r.phone&&v.phone)r.phone=v.phone;if(!r.address&&v.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;
+if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){if(!v.addCats)return;var src=proto[norm(v.name)];if(!src)return;
+v.addCats.forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;
+var copy=JSON.parse(JSON.stringify(src));copy.__v479=true;arr.push(copy);});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-miami-batch5-v480-script">(function(){
+/* v480: Miami ratings-verification pass, batch 5 (2026-09-01) — closes out
+Miami. Also moves Bagel Emporium to its new 4000 Ponce address (reopened Jan
+2026), files Macchialina under Miami (was only in Fine Italian), and puts
+Bachour / Bar Bucce / Amara into the Miami list. */
+var ROWS=[
+{name:"Macchialina",rating:4.3,reviews:958,phone:"(305) 534-2124",url:"https://macchialina.com/",addCats:["miami"],
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (494 reviews) + Restaurantji volume 448 + Yelp volume 958 = 4.3 (Yelp star still to confirm). MICHELIN Guide Recommended (2026); James Beard semifinalist 2016 (Chef Michael Pirolo); Jacqueline Pirolo = MICHELIN Florida 2025 Sommelier of the Year. Mon–Thu 6–10pm, Fri–Sun 5–11pm. Verified open Sept 2026."},
+{name:"Bar Bucce",rating:4.6,reviews:33,phone:"(305) 202-2526",address:"7220 N Miami Ave, Miami, FL 33150",url:"https://www.barbucce.com/",addCats:["miami"],
+ratingNote:"PROVISIONAL. Tripadvisor 5.0 (handful) + Yelp volume 33 — too new to aggregate firmly. Dave Portnoy One Bite 8.1. From the Macchialina family; coal-charred pies, Italian market and natural-wine bar in Little River. Open Wed–Sun from noon; closed Mon–Tue."},
+{name:"Bachour",rating:4.4,reviews:128,phone:"(305) 203-0552",address:"2020 Salzedo St, Ste 103, Coral Gables, FL 33134",url:"https://www.bachourmiami.com/",addCats:["miami"],
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (128 reviews, docked to 4.3) + Facebook 11.9k check-ins; Yelp star still to confirm. MICHELIN Bib Gourmand since 2022 (Antonio Bachour). Bakery-restaurant: pastries, brunch, lunch; daily 8am–4pm, dinner Mon–Sat 4–7pm. Doral location is separate (TA 3.7)."},
+{name:"Amara at Paraiso",rating:4.3,reviews:5514,phone:"(305) 676-9495",address:"3101 NE 7th Ave, Miami, FL 33137",url:"https://amaraatparaiso.com/",addCats:["miami"],
+ratingNote:"PROVISIONAL. OpenTable 5,514 reviews (star to confirm) vs Tripadvisor 3.8 (313) — big platform split; Yelp volume 1,101. James Beard 2026 semifinalist, Outstanding Wine & Other Beverages; Michael Schwartz (JB winner). Bayfront, Sunday brunch buffet. Note: the building sold in 2026 (Robert Rivani, $19.8M) — watch for changes. Mon–Thu 11:30–10, Fri–Sat to 10:30, Sun 11–10."},
+{name:"El Bagel",rating:null,reviews:308,url:"https://www.elbagelmiami.com/",
+ratingNote:"Rating pending — Yelp 308 reviews (MiMo) + 96 (Coconut Grove), star to confirm. Infatuation #1 bagel in Miami; New Times top 10. Grab-and-go, order online ahead; no phone. MiMo daily 8–2; Grove closed Tuesdays."},
+{name:"Bagel Bar East",rating:null,reviews:332,phone:"(305) 895-7022",
+ratingNote:"Rating pending — Yelp 332 reviews, star to confirm. Staten Island-family NY deli since 1999; handmade bagels, house-cooked pastrami/corned beef, famous Reuben. Daily 6:30am–3pm."},
+{name:"Bagel Emporium & Grille",rating:null,reviews:295,phone:"(305) 666-9519",address:"4000 Ponce de Leon Blvd, Coral Gables, FL 33146",forceAddress:true,
+ratingNote:"Rating pending — Yelp 295 reviews, star to confirm. MOVED: reopened January 2026 at 4000 Ponce (Ponce de Leon & Bird Rd) after 50 years on S Dixie Hwy across from UM; now serves lunch and dinner daily plus a full bar. Founded 1975."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='miami')return;
+var v=by[norm(r.name)];if(!v||r.__v480)return;r.__v480=true;hit=true;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';}
+r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;
+if(v.address&&(v.forceAddress||!r.address))r.address=v.address;
+if(v.url&&!r.url)r.url=v.url;
+if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){if(!v.addCats)return;var src=proto[norm(v.name)];if(!src)return;
+v.addCats.forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;
+var copy=JSON.parse(JSON.stringify(src));copy.__v480=true;arr.push(copy);});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-sf-batch1-v481-script">(function(){
+/* v481: San Francisco ratings-verification pass, batch 1 (2026-09-01). */
+var ROWS=[
+{name:"Atelier Crenn",rating:4.8,reviews:4984,phone:"(415) 440-0460",address:"3127 Fillmore St, San Francisco, CA 94123",url:"https://www.ateliercrenn.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 5.0 (4,984 reviews) + Tripadvisor 4.5 (274) = 4.8 (RG rounds high; held a notch under). Yelp volume 976. Three MICHELIN Stars (2026 guide); Dominique Crenn. Pescatarian tasting menu ~$405pp, prepaid via Tock. Tue–Sat 5–8:30pm; closed Sun–Mon."},
+{name:"Benu",rating:4.8,reviews:5360,phone:"(415) 685-4860",address:"22 Hawthorne St, San Francisco, CA 94105",url:"https://www.benusf.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 5.0 (5,360 reviews) + Tripadvisor 4.4 (265) = 4.8 (held a notch under RG's rounding). Three MICHELIN Stars (SF's first); AAA Five Diamond 2012–2025; Time Out 5/5; World's 50 Best. Corey Lee (ex-French Laundry). ~$390–424pp. Tue–Thu 5:30–8:30, Fri–Sat 5:30–9; closed Sun–Mon."},
+{name:"Quince",rating:4.7,reviews:1697,phone:"(415) 775-8500",address:"470 Pacific Ave, San Francisco, CA 94133",url:"https://www.quincerestaurant.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (566 reviews) + AAA Diamond food 5.0 / service 4.6 / decor 5.0 = 4.7. Yelp volume 1,697. Three MICHELIN Stars + Green Star (2026 guide); Forbes Four-Star; Relais & Châteaux; Michael Tusk = James Beard Best Chef: Pacific 2011. 10-course $475 / 4-course $270. Tue–Sat dinner; Fri–Sat lunch; closed Sun–Mon."},
+{name:"Foreign Cinema",rating:4.2,reviews:969,address:"2534 Mission St, San Francisco, CA 94110",url:"https://foreigncinema.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (969 reviews) + Zagat 4.2 = 4.2. Traveler's Choice. James Beard Outstanding Restaurant nominee (multiple years). Cal-Med dinner and brunch with films projected in the courtyard; reviews note service slipping in recent years. Phone to confirm."},
+{name:"House of Prime Rib",rating:4.4,reviews:1775,address:"1906 Van Ness Ave, San Francisco, CA 94109",url:"https://houseofprimerib.net/",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (1,775 reviews); Yelp star to confirm. James Beard America's Classics. Tableside-carved prime rib, Yorkshire pudding, spinning salad — the SF institution since 1949. Phone to confirm."},
+{name:"Sons & Daughters",rating:4.3,reviews:197,phone:"(415) 994-7933",address:"2875 18th St, San Francisco, CA 94110",forceAddress:true,url:"https://www.sonsanddaughterssf.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (197 reviews, docked to 4.2) + Trip.com 4.3 = 4.3. NOW TWO MICHELIN STARS under chef Harrison Cheney (New Nordic); James Beard Rising Star (Teague Moriarty). MOVED in 2025 from 708 Bush St (Nob Hill) to 2875 18th St in the Mission (former Osito space) — address updated."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='sanfrancisco')return;
+var v=by[norm(r.name)];if(!v||r.__v481)return;r.__v481=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.reviews=v.reviews;r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;
+if(v.address&&(v.forceAddress||!r.address))r.address=v.address;
+if(v.url&&!r.url)r.url=v.url;
+if(v.name==='Sons & Daughters'){r.michelinStars=2;r.michelinGuide=true;}
+});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-sf-batch2-v482-script">(function(){
+/* v482: San Francisco ratings-verification pass, batch 2 (2026-09-01). */
+var ROWS=[
+{name:"Ernest",rating:4.4,reviews:1028,address:"1890 Bryant St, Ste 100, San Francisco, CA 94110",url:"https://www.ernestsf.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.4 (1,028 reviews) + Tripadvisor 5.0 (handful, excluded) = 4.4. MICHELIN Guide Recommended (2026); James Beard semifinalist (Brandon Rice). SF Chronicle 2025: 'quietly one of SF's hottest restaurants'. Entrance is around the corner at Florida & Mariposa. Wed–Sun dinner; closed Mon–Tue. Phone to confirm."},
+{name:"Nightbird",rating:4.5,reviews:1787,address:"330 Gough St, San Francisco, CA 94102",url:"https://www.nightbirdrestaurant.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.5 (1,787 reviews); Tripadvisor thin. MICHELIN Guide Recommended (two-fork comfort). Kim Alter's rotating five-course tasting menu in Hayes Valley, behind the carved-owl door; Linden Room bar after dinner. Phone to confirm."},
+{name:"Mijoté",rating:null,reviews:0,address:"1080 Valencia St, San Francisco, CA 94110",
+ratingNote:"Rating pending — no aggregate star surfaced on Tripadvisor or Restaurant Guru; Yelp star to confirm. MICHELIN Guide Recommended; Infatuation top-25 Mission. Four-course prix fixe ($84) that changes daily; natural wine."},
+{name:"Boichik Bagels — Presidio Heights",rating:null,reviews:0,
+ratingNote:"Rating pending — Tripadvisor listing has no reviews yet; Yelp star to confirm. Emily Winston's Berkeley-born NY-style bagel (NYT-lauded); Chronicle blind test 2025 found it sweet/malty. Takeout only."},
+{name:"Schlok's Bagels & Lox",rating:null,reviews:0,
+ratingNote:"Rating pending — Yelp star to confirm (Yelp's #1 bagel in SF, Aug 2026). #2 in the SF Chronicle 2025 blind taste test; house-cured lox. NoPa takeout window."},
+{name:"Wise Sons Jewish Delicatessen",rating:null,reviews:0,
+ratingNote:"Rating pending — Yelp star to confirm. Winner of the SF Standard 2025 five-shop bagel blind test ('densely crusted, slightly crackled'); Mission flagship at 24th St with other locations."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='sanfrancisco')return;
+var v=by[norm(r.name)];if(!v||r.__v482)return;r.__v482=true;hit=true;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;}
+r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-sv-batch1-v483-script">(function(){
+/* v483: Silicon Valley ratings-verification pass, batch 1 (2026-09-01). */
+var ROWS=[
+{name:"Dio Deka",rating:4.4,reviews:302,address:"210 E Main St, Los Gatos, CA 95030",url:"https://www.diodeka.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (302 reviews; #2 of 134 in Los Gatos) = 4.4; Yelp star to confirm. MICHELIN Guide Recommended. Hellenic menu plus Allen Bros. prime steaks and double-cut lamb chops over mesquite, inside Hotel Los Gatos."},
+{name:"Madera",rating:4.4,reviews:1019,address:"2825 Sand Hill Rd, Menlo Park, CA 94025",url:"https://www.maderasandhill.com/",
+ratingNote:"PROVISIONAL. Platforms split hard: Tripadvisor 3.9 (251) vs Restaurant Guru 4.8 (5,292, likely blended with the Rosewood hotel); Yelp volume 1,019. Held at 4.4 pending Yelp star. Formerly Michelin-starred (2013–), now MICHELIN Guide Recommended. Recent TA reviews cite a 5% 'cost of living' surcharge and uneven service. Daily 7am–8:30pm (Rosewood Sand Hill)."},
+{name:"Yeobo, Darling",rating:4.6,reviews:0,address:"Menlo Park, CA",url:"https://www.yeobodarling.com/",
+ratingNote:"PROVISIONAL. Too new for a public aggregate; Yelp ranks it #1 restaurant in Menlo Park (May 2026). Added to the MICHELIN Guide March 2026 — the only new Peninsula addition — from Michael & Meichih Kim, formerly of one-star Maum. Korean-Taiwanese à la carte; wagyu kalbi, lu rou lasagna. 50 seats."},
+{name:"Be.Stéak.Ă",rating:4.3,reviews:8,address:"1887 S Bascom Ave, Campbell, CA 95008",forceAddress:true,
+ratingNote:"PROVISIONAL. Tripadvisor 3.9 on only 8 reviews; Yelp star to confirm. MICHELIN Guide Recommended (Jeffrey Stout, Orchard City Kitchen). Note: it's in Campbell, not San Jose. Dinner nightly; lunch Fri–Sat; Sunday Supper four-course family menu."}
+];
+function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='siliconvalley')return;
+var v=by[norm(r.name)];if(!v||r.__v483)return;r.__v483=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;if(v.address&&(v.forceAddress||!r.address))r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-sv-batch2-v484-script">(function(){
+/* v484: Silicon Valley ratings-verification pass, batch 2 (2026-09-02). */
+var ROWS=[
+{name:"Sushi Shin",rating:4.5,reviews:421,address:"312 Arguello St, Redwood City, CA 94063",url:"https://sushishinredwoodcity.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.5 (421 reviews) + Tripadvisor 5.0 (few, excluded) = 4.5; Yelp volume 158. Held a MICHELIN Star 2021–2023, dropped to Guide Recommended in 2024 (matches its badge here). Nine-seat Edomae omakase, Chef Jason Zhan; Tock opens 30 days out at 10pm. Closed Sun–Mon. Second phone listed on Yelp: (650) 257-7858."},
+{name:"Zola",rating:4.4,reviews:3076,address:"565 Bryant St, Palo Alto, CA 94301",url:"https://www.zolapaloalto.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.5 (3,076 reviews) + Sirved 4.5 + Tripadvisor 4.0 (90, docked to 3.9) = 4.4, volume-weighted. Yelp volume 629. MICHELIN Guide Recommended; Bib Gourmand 2015. French bistro + BarZola late-night bar (Andrew Luck is an investor). Dinner Mon–Sat 5–10; closed Sunday."},
+{name:"Saffron",rating:4.0,reviews:2471,address:"1143 San Carlos Ave, San Carlos, CA 94070",url:"https://thesaffronrestaurant.com/",
+ratingNote:"PROVISIONAL. Restaurant Guru 4.0 (2,471 reviews); Yelp volume 1,242, star to confirm. MICHELIN Guide Recommended since 2020 (Ajay Walia, whose Rasa in Burlingame held a star). Casual modern Northern Indian, open since 2003; lunch 11:30–2:30, dinner 4–9 daily. Sits at the bottom of the site's range — worth a look if Yelp comes in under 4.0."}
+];
+function norm(s){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city&&city!=='siliconvalley')return;
+var v=by[norm(r.name)];if(!v||r.__v484)return;r.__v484=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-brooklyn-batch1-v485-script">(function(){
+/* v485: Brooklyn ratings-verification pass, batch 1 (2026-09-02). Moves
+Sushi Nakazawa, Don Angie and Patsy's Pizzeria from Brooklyn to Manhattan
+(West Village / East Harlem). Don Angie lost its MICHELIN Star in 2023 —
+badge corrected to Guide Recommended. */
+var ROWS=[
+{name:"Sushi Nakazawa",city:"manhattan",rating:4.3,reviews:317,address:"23 Commerce St, New York, NY 10014",url:"https://www.sushinakazawa.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (317 reviews); OpenTable star to confirm (books out in under a minute, 30 days ahead). One MICHELIN Star. Daisuke Nakazawa (Jiro Dreams of Sushi). West Village — moved here from Brooklyn where it was misfiled. 20-piece omakase; counter seats bookable only in pairs at midnight."},
+{name:"Don Angie",city:"manhattan",rating:4.4,reviews:100,address:"103 Greenwich Ave, New York, NY 10014",url:"https://www.donangie.com/",fixStar:true,
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (100 reviews, docked to 4.3) + OpenTable Diners' Choice = 4.4; OpenTable star to confirm. Held a MICHELIN Star 2021–2023, now Guide Recommended (badge corrected). James Beard nominations 2019, 2020, 2022, 2025 (Angie Rito & Scott Tacinelli). Pinwheel lasagna for two, chrysanthemum salad. West Village — moved here from Brooklyn where it was misfiled."},
+{name:"Patsy’s Pizzeria",city:"manhattan",rating:null,reviews:0,address:"2287 1st Ave, New York, NY 10035",
+ratingNote:"Rating pending — star pull next pass. James Beard America's Classics. The original 1933 coal-oven slice shop in East Harlem — moved here from Brooklyn where it was misfiled."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='brooklyn'&&city!=='manhattan')return;
+var v=by[norm(r.name)];if(!v||r.__v485)return;r.__v485=true;hit=true;
+if(v.city)r.city=v.city;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;}
+r.ratingNote=v.ratingNote;
+if(v.fixStar){r.michelinStars=0;r.michelinGuide=true;}
+if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-brooklyn-batch2-v486-script">(function(){
+/* v486: Brooklyn ratings-verification pass, batch 2 (2026-09-02). */
+var ROWS=[
+{name:"Aska",rating:4.5,reviews:52,address:"47 S 5th St, Brooklyn, NY 11249",url:"https://www.askanyc.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (52 reviews, docked to 4.5) = 4.5; Yelp/OpenTable star to confirm. Two MICHELIN Stars (confirmed 2026). Fredrik Berselius' Nordic tasting menu (~14 courses) in an 1860s warehouse under the Williamsburg Bridge. South Williamsburg."},
+{name:"The Four Horsemen",rating:4.5,reviews:2404,address:"295 Grand St, Brooklyn, NY 11211",url:"https://www.fourhorsemenbk.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.5 (2,404 reviews) + Tripadvisor 4.7 (58, docked to 4.6) = 4.5, volume-weighted. One MICHELIN Star (since 2020 guide); James Beard Outstanding Wine Program 2022; Time Out 4/5. James Murphy's (LCD Soundsystem) natural-wine bar; Chef Nick Curtola. Mon–Fri 5:30pm–1am, Sat–Sun noon–1am. Williamsburg."},
+{name:"Shota Omakase",rating:4.7,reviews:58,address:"50 S 3rd St, Brooklyn, NY 11249",url:"https://www.shotaomakase.com/",
+ratingNote:"PROVISIONAL. Yelp volume 58, Time Out 5/5; too few public aggregate stars. One MICHELIN Star (Dec 2024 guide, first year eligible). Chef Cheng Lin (ex-Ito), 18-course Edomae at $195 / $255 premium; 16-seat U counter plus 10-seat Gentei counter; Saturday lunch omakase. Mon–Sat 6pm & 8:30pm seatings. Williamsburg."},
+{name:"Restaurant Yuu",rating:4.7,reviews:0,address:"55 Nassau Ave, Brooklyn, NY 11222",url:"https://www.restaurantyuu.com/",
+ratingNote:"PROVISIONAL. No public aggregate star surfaced; OAD #12 Top Restaurants North America, Robb Report Best New Restaurant in America. One MICHELIN Star (new star Nov 2023, held 2026). Yuu Shimano (ex-Guy Savoy Paris, ex-Mifune) — 18-seat black-stone counter, French-Japanese omakase ~$250. Greenpoint/Williamsburg border."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='brooklyn')return;
+var v=by[norm(r.name)];if(!v||r.__v486)return;r.__v486=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-chicago-batch1-v487-script">(function(){
+/* v487: Chicago ratings-verification pass, batch 1 (2026-09-02). Badge
+corrections: Kasama is now TWO MICHELIN Stars (2025 guide); EL Ideas holds
+ONE star — both were carrying James Beard only. */
+var ROWS=[
+{name:"Smyth",rating:4.8,reviews:0,address:"177 N Ada St, Chicago, IL 60607",url:"https://www.smythandtheloyalist.com/",
+ratingNote:"PROVISIONAL. Tripadvisor/RG star not surfaced; La Liste 2026 scores it 95/100 (#2 in Chicago behind Ever). Three MICHELIN Stars since 2023 — and since Alinea's demotion to two stars (Nov 2025) the ONLY three-star restaurant in Chicago. John & Karen Urie Shields; 12-course tasting from their own farm. Tue–Sat 5–9pm, above The Loyalist. West Loop."},
+{name:"Monteverde Restaurant & Pastificio",rating:4.6,reviews:425,address:"1020 W Madison St, Chicago, IL 60607",url:"https://www.monteverdechicago.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (425 reviews; #6 of 5,220 in Chicago) = 4.6; Yelp star to confirm. Sarah Grueneberg = James Beard Best Chef: Great Lakes 2017; MICHELIN Guide. Handmade pasta at the in-room pastificio. Tue–Thu 11–9:30, Fri–Sat 11–10:30. West Loop."},
+{name:"Kasama",rating:4.7,reviews:0,address:"1001 N Winchester Ave, Chicago, IL 60622",url:"https://www.kasamachicago.com/",stars:2,
+ratingNote:"PROVISIONAL — mirrors the 4.7 already on the Kasama Bakery listing (same room: Filipino bakery by day, tasting menu by night). BADGE UPDATE: TWO MICHELIN Stars as of the 2025 guide (up from one); James Beard winners Genie Kwon & Tim Flores. Ukrainian Village."},
+{name:"EL Ideas",rating:null,reviews:0,address:"2419 W 14th St, Chicago, IL 60608",url:"https://www.elideas.com/",stars:1,
+ratingNote:"Rating pending — star pull next pass. BADGE UPDATE: ONE MICHELIN Star (held in the 2026 guide) alongside James Beard recognition. Phillip Foss's BYOB counter tasting menu in a Douglas garage. Note: this is the Chicago EL Ideas, not a Vegas listing."},
+{name:"Daisies",rating:null,reviews:0,address:"2523 N Milwaukee Ave, Chicago, IL 60647",url:"https://www.daisieschicago.com/",
+ratingNote:"Rating pending — star pull next pass. James Beard Best Chef: Great Lakes (Joe Frillman, 2024). Midwestern pasta, Logan Square."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='chicago')return;
+var v=by[norm(r.name)];if(!v||r.__v487)return;r.__v487=true;hit=true;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;}
+r.ratingNote=v.ratingNote;
+if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}
+if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-verified-ratings-sd-batch1-v488-script">(function(){
+/* v488: San Diego ratings-verification pass, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"Addison",rating:4.5,reviews:313,address:"5200 Grand Del Mar Way, San Diego, CA 92130",url:"https://www.addisondelmar.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (313 reviews) = 4.5; OpenTable Top 100 (2024); OpenTable star to confirm. Three MICHELIN Stars (since 2022 — first in SoCal); only San Diego restaurant on La Liste; 4x James Beard nominee; William Bradley since 2006. Nine-course, 10,000-bottle cellar, overlooks the Grand Del Mar 18th hole. Booked months out."},
+{name:"Jeune et Jolie",rating:4.5,reviews:94,address:"2659 State St, Ste 102, Carlsbad, CA 92008",url:"https://www.jeune-et-jolie.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (94 reviews, docked to 4.4) + OpenTable Top 100 (2024) = 4.5. One MICHELIN Star. Andrew Bachelier (ex-Addison) French bistronomy; ~$120 four-course set menu; sister spot Campfire next door. Carlsbad Village."},
+{name:"Lucien",rating:4.6,reviews:0,url:"https://www.lucienrestaurant.com/",
+ratingNote:"PROVISIONAL. Too new for a public aggregate. One MICHELIN Star (new). Sushi-counter / kappo-style tasting in the East Village."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='sandiego')return;
+var v=by[norm(r.name)];if(!v||r.__v488)return;r.__v488=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-bibs-and-category-fill-v489-script">(function(){
+/* v489: San Diego pass, batch 2 (2026-09-02). Rates Mabel's; files the Bib
+Gourmands and Realm into the cuisine tiles they belong in (they only sat in
+Michelin / James Beard), starting the "3 per category" build-out. */
+var ROWS=[
+{name:"Mabel's Gone Fishing",rating:4.2,reviews:14,addCats:["seafoodcasual","sandiego"],
+ratingNote:"PROVISIONAL. Tripadvisor 4.0 (14 reviews, docked to 3.9) lifted by Yelp/Bib consensus; Yelp star to confirm. MICHELIN Bib Gourmand (since 2023, held 2026). Cal-Iberian seafood bar in North Park — swordfish schnitzel, crudos, gin cocktails. Mon–Sat 4–11pm; closed Sunday."},
+{name:"Lola 55",rating:null,reviews:0,addCats:["tacos","mexicancasual","sandiego"],
+ratingNote:"Rating pending — star pull next pass. MICHELIN Bib Gourmand (held 2026). Wood-fired East Village taqueria with a full mezcal/tequila bar."},
+{name:"Morning Glory",rating:null,reviews:0,addCats:["breakfasthighend","brunch","sandiego"],
+ratingNote:"Rating pending — star pull next pass. MICHELIN Bib Gourmand (held 2026). Little Italy's design-forward breakfast room — shakshuka, soufflé pancakes."},
+{name:"Dija Mara",rating:null,reviews:0,addCats:["asianfusion","sandiego"],
+ratingNote:"Rating pending — star pull next pass. MICHELIN Bib Gourmand (held 2026). Balinese-inspired, Oceanside."},
+{name:"Realm of the 52 Remedies",rating:null,reviews:0,addCats:["bars","sandiego"],
+ratingNote:"Rating pending — star pull next pass. James Beard 2026 Outstanding Bar semifinalist. Speakeasy behind Common Theory on Convoy St (Kearny Mesa) — note: currently filed under La Jolla, it isn't in La Jolla."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='sandiego')return;
+var v=by[norm(r.name)];if(!v||r.__v489)return;r.__v489=true;hit=true;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;}
+r.ratingNote=v.ratingNote;if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){var src=proto[norm(v.name)];if(!src||!v.addCats)return;
+v.addCats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;
+var copy=JSON.parse(JSON.stringify(src));copy.__v489=true;arr.push(copy);});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-steak-casual-italian-v491-script">(function(){
+/* v491: San Diego — Steak Casual + Italian verification (2026-09-02). Cucina
+Urbana / Cesarina / Ciccia were on the site with unsourced 4.6–4.8s; now real
+aggregates. Cesarina is Point Loma, not Pacific Beach (flagged in note). */
+var ROWS=[
+{name:"Lou & Mickey's",rating:4.5,reviews:14732,city:"sandiego",create:true,cats:["steakcasual","sandiego"],phone:"(619) 650-6230",address:"224 Fifth Ave, San Diego, CA 92101",url:"https://www.louandmickeys.com/",
+why:"Gaslamp's gateway chophouse since 1945 — prime and dry-aged steaks by the ounce (30/45/60-day), oysters from three coasts, exotic drinks, and the best people-watching patio downtown.",
+ratingNote:"BJS aggregate: Restaurant Guru 4.8 (14,732 reviews) + Birdeye 4.5 (2,193) + Tripadvisor 4.1 (1,197) = 4.5, volume-weighted and held under RG's rounding; TA runs notably lower (upselling complaints). Yelp volume 3,005. Daily 11:30am–10/11pm."},
+{name:"Cucina Urbana",rating:4.5,reviews:948,aliases:["cucina urbana"],
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (948 reviews; #26 of 3,215 in San Diego) = 4.5; Yelp star to confirm. MICHELIN Bib Gourmand (held 2026). Cal-Italian in Bankers Hill; wine at retail price + corkage. Daily 4–9/10pm. Replaces an unsourced 4.6."},
+{name:"Cesarina",rating:4.6,reviews:108,
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (108 reviews, docked to 4.5) + OpenTable Top 100 (2024) = 4.6. MICHELIN Bib Gourmand (held 2026). Handmade pasta, Point Loma (4161 Voltaire St) — NOTE: currently filed under Pacific Beach; it is not in PB. Replaces an unsourced 4.8."},
+{name:"Ciccia Osteria",rating:4.5,reviews:29,
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (29 reviews, docked to 4.5) = 4.5; Yelp star to confirm. MICHELIN Bib Gourmand (held 2026). Francesca & Mario's Barrio Logan osteria; tomahawk ribeye a house favorite. Replaces an unsourced 4.8."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(city))return;
+var v=by[norm(r.name)];if(!v||r.__v491)return;r.__v491=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;
+if(v.phone&&!r.phone)r.phone=v.phone;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;
+if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){var src=proto[norm(v.name)];
+if(!src&&v.create){src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone||'',why:v.why,note:v.why,__v491:true};}
+if(!src)return;
+(v.cats||[]).forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;
+var copy=JSON.parse(JSON.stringify(src));copy.__v491=true;arr.push(copy);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-italian-dive-v493-script">(function(){
+/* v493: San Diego Italian Dive — Filippi's Pizza Grotto Little Italy (2026-09-02). */
+var ROWS=[
+{name:"Filippi's Pizza Grotto Little Italy",rating:4.3,reviews:2047,city:"sandiego",cats:["italiandive","sandiego","sddowntown"],address:"1747 India St, San Diego, CA 92101",url:"https://realcheesepizza.com/",
+why:"The DePhilippis family's original since 1950 — walk through the Italian deli to a checkered-tablecloth grotto for thick-crust pies, lasagna and half-carafes of house Chianti at old-school prices. Own parking lot; expect a line.",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (2,047 reviews; #108 of 5,266 in San Diego) = 4.3; Yelp star to confirm. Low cost, high ratings — the definitive San Diego Italian dive. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(r&&r.name&&norm(r.name)===norm(v.name)&&!src)src=r;});});
+if(src&&!src.__v493){src.__v493=true;src.rating=v.rating.toFixed(1)+' / 5';src.ratingSource='BJS aggregate';src.reviews=v.reviews;src.ratingNote=v.ratingNote;if(!src.address)src.address=v.address;if(!src.url)src.url=v.url;hit=true;}
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v493:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v493=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-mexican-v494-script">(function(){
+/* v494: San Diego Mexican tiers, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"Lola 55",rating:4.6,reviews:43,cats:[],
+ratingNote:"BJS aggregate: Tripadvisor 4.7 (43 reviews, docked to 4.6) = 4.6; Yelp star to confirm (Yelp calls it one of the best taco spots in SD). MICHELIN Bib Gourmand (held 2026). Mesquite-grilled ribeye carne asada, pork belly adobada, posole verde; full mezcal bar. Tue–Sun 11:30–9/10; closed Monday."},
+{name:"Puesto La Jolla",rating:4.4,reviews:1086,city:"sandiego",create:true,cats:["mexicancasual","tacos","sandiego","sdlajolla"],address:"1026 Wall St, La Jolla, CA 92037",url:"https://www.eatpuesto.com/",
+why:"The flagship of San Diego's homegrown taco empire — filet mignon and lobster tacos on blue-corn tortillas, half-price Taco Tuesday, killer margaritas, and a patio in the heart of La Jolla Village.",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (1,086 reviews; #15 of 561 in La Jolla) = 4.4; Yelp star to confirm. Everything runs spicy by default. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v494){r.__v494=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;hit=true;}if(!src)src=r;});});
+if(!src&&v.create)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v494:true};
+if(!src)return;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v494=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-mexican-dive-v495-script">(function(){
+/* v495: San Diego Mexican Dive tier (2026-09-02) — low cost, high ratings. */
+var ROWS=[
+{name:"El Indio Mexican Restaurant",rating:4.2,reviews:612,city:"sandiego",cats:["mexicandive","sandiego"],address:"3695 India St, San Diego, CA 92103",url:"https://www.el-indio.com/",
+why:"Since 1940 and the birthplace of the taquito — counter-service combo plates, rolled tacos with guac, hand-made tortillas and a bag of chips to go, at prices San Diegans have relied on for 85 years. Free parking, Mission Hills.",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (612 reviews; #111 of 3,215; Travelers' Choice) = 4.2; Yelp star to confirm. Low cost, high ratings. Phone to confirm."},
+{name:"Oscar's Mexican Seafood — Pacific Beach",rating:4.5,reviews:433,city:"sandiego",cats:["mexicandive","seafoodcasual","tacos","sandiego","sdpacificbeach"],address:"703 Turquoise St, San Diego, CA 92109",url:"https://oscarsmexicanseafood.com/",
+why:"The original hole-in-the-wall north of the PB pier — smoked-fish and beer-battered fish tacos, surf-and-turf tacos, mixed ceviche, and the pink and white sauces from the cooler. 99-cent fish tacos at happy hour.",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (433 reviews; #62 in San Diego) = 4.5; Yelp star to confirm. Outdoor-counter seating only; parking is tough. Other Oscar's locations (Hillcrest, downtown J St) are separate listings. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name).indexOf(norm(v.name).split(' - ')[0])!==0)return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v495){r.__v495=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url)r.url=v.url;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,__v495:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(src.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v495=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-sushi-highend-v496-script">(function(){
+/* v496: San Diego Fine Sushi tier (2026-09-02). */
+var ROWS=[
+{name:"Sushi Tadokoro",rating:4.6,reviews:0,city:"sandiego",cats:["sushihighend","sandiego","michelin"],address:"2244 San Diego Ave, San Diego, CA 92110",url:"https://www.sushitadokoro.com/",guide:true,
+why:"A ~20-seat Edomae counter hidden in an Old Town strip mall — Chef Takeaki Tadokoro's omakase (~$165) of Hokkaido scallop, Santa Barbara-and-Hokkaido uni with ikura, goldeneye snapper. Reservation required; parking is scarce.",
+ratingNote:"PROVISIONAL. Tripadvisor star not surfaced; Yelp star to confirm. Held a MICHELIN Star 2021–2023, now Guide Recommended. Tue–Sat lunch 11:30–2 and dinner 5–10; closed Sun–Mon. Phone to confirm."},
+{name:"Hidden Fish",rating:4.6,reviews:0,city:"sandiego",cats:["sushihighend","sandiego","michelin"],address:"4764 Convoy St, San Diego, CA 92111",url:"https://www.hiddenfishsd.com/",guide:true,
+why:"Convoy's tiny timed-omakase counter — a dollar a minute: 12 nigiri in 50 minutes or 18 in 90 — with Peruvian scallop, Santa Barbara uni and Japanese fish flown in. Seats are hard to get; book ahead.",
+ratingNote:"PROVISIONAL. No public aggregate surfaced; Yelp star to confirm. MICHELIN Guide Recommended. Phone to confirm."},
+{name:"Kaito Sushi",rating:4.4,reviews:33,city:"sandiego",cats:["sushihighend","sandiego","sdencinitas"],address:"130 N El Camino Real, Ste A, Encinitas, CA 92024",
+why:"Encinitas' trust-the-chef sushi bar — Eater once named it the best restaurant in San Diego, full stop. Sit at the bar and say omakase; light, artful nigiri at reasonable prices.",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (33 reviews, docked to 4.4) = 4.4; Yelp star to confirm. Phone to confirm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v496){r.__v496=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(v.guide)r.michelinGuide=true;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:'',why:v.why,note:v.why,michelinGuide:!!v.guide,__v496:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v496=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-sushi-casual-v497-script">(function(){
+/* v497: San Diego Casual Sushi tier (2026-09-02). */
+var ROWS=[
+{name:"Sushi Ota",rating:4.6,reviews:889,city:"sandiego",cats:["sushicasual","sandiego","sdpacificbeach"],address:"4529 Mission Bay Dr, San Diego, CA 92109",url:"https://www.sushiota.com/",
+why:"The San Diego institution — Yukito Ota's strip-mall counter next to a gas station in Pacific Beach has been the city's benchmark for pristine nigiri and uni since 1990. Book ahead; ask for the bar.",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (889 reviews; #18 of 3,217 in San Diego) = 4.6; Yelp star to confirm. Phone to confirm."},
+{name:"Harney Sushi",rating:4.5,reviews:436,city:"sandiego",cats:["sushicasual","sandiego"],address:"3964 Harney St, San Diego, CA 92110",url:"https://www.harneysushi.com/",
+why:"Old Town's party sushi bar since 2001 — 30-plus loyalist-named specialty rolls, sustainable fish, a sake bar and DJs on weekends. Daily 4–10pm, happy hour.",
+ratingNote:"PROVISIONAL. Tripadvisor 436 reviews (#13 in San Diego at the time of listing) — star to confirm; Yelp star to confirm. Recent TA reviews note slow service on busy nights."},
+{name:"Wrench & Rodent Seabasstropub",rating:4.6,reviews:0,city:"sandiego",cats:["sushicasual","sandiego","sdoceanside"],address:"1815 S Coast Hwy, Oceanside, CA 92054",phone:"(760) 453-2738",url:"https://www.seabasstropub.com/",
+why:"Oceanside's cult sushi pub from Chef Davin Waite — Eater's pick for the best sushi in San Diego County. Local, whole-fish, zero-waste cooking: dry-aged fish, daily specials, backyard-garden garnishes, and a proper omakase.",
+ratingNote:"PROVISIONAL. OpenTable Diners' Choice (2026); Tripadvisor/Yelp star to confirm. Eater San Diego #1 sushi."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v497){r.__v497=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url&&v.url)r.url=v.url;if(!r.phone&&v.phone)r.phone=v.phone;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone||'',why:v.why,note:v.why,__v497:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v497=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-seafood-fine-v498-script">(function(){
+/* v498: San Diego Fine Seafood tier (2026-09-02). */
+var ROWS=[
+{name:"Ironside Fish & Oyster",rating:4.3,reviews:6208,city:"sandiego",cats:["seafoodhighend","seafood","sandiego","sddowntown"],phone:"(619) 269-3033",address:"1654 India St, San Diego, CA 92101",url:"https://www.ironsidefishandoyster.com/",
+why:"CH Projects' soaring nautical room in Little Italy — a wall of piranha skulls, daily-flown oysters, brown-butter lobster rolls and raw-bar platters that climb from Big to Biggest. Happy hour $1 oysters Mon–Fri 3–6.",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (1,058 reviews; #72 of 3,216 in San Diego) = 4.3; Yelp volume 6,208, star to confirm. TripExpert 80 (Gayot/Zagat/Condé Nast). Daily 11:30am–10/11pm."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var src=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||norm(r.name)!==norm(v.name))return;var c=r.city||r.parentCity||'';if(!/^s(andiego|d)/.test(c))return;if(!r.__v498){r.__v498=true;r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(!r.address)r.address=v.address;if(!r.url)r.url=v.url;if(!r.phone)r.phone=v.phone;hit=true;}if(!src)src=r;});});
+if(!src)src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,phone:v.phone,why:v.why,note:v.why,__v498:true};
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))return;var c=JSON.parse(JSON.stringify(src));c.__v498=true;arr.push(c);hit=true;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sd-steak-tiers-v490-script">(function(){
+/* v490: San Diego steak tiers (2026-09-02) + site-wide sync. Also fixes a
+data-drift problem found here: the same restaurant carried different
+ratings in different category copies (Born & Raised 4.7 in Fine Steak vs
+4.0 elsewhere; Cowboy Star 4.8 vs 4.6). Whenever any copy has a verified
+BJS aggregate, every copy of that restaurant now gets the same numbers. */
+var ROWS=[
+{name:"Cowboy Star",rating:4.5,reviews:510,addCats:["steakhighend"],
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (510 reviews; #56 of 3,218 in San Diego) = 4.5; Yelp star to confirm. Infatuation-recommended; in-house butcher shop; Certified Humane Angus. East Village. Replaces an unsourced 4.8/4.6 that differed by category."},
+{name:"Born & Raised",rating:4.0,reviews:257,addCats:["steakhighend"],
+ratingNote:"BJS aggregate: Tripadvisor 4.0 (257 reviews) = 4.0; Yelp star to confirm. MICHELIN Guide Recommended. Art-deco Little Italy steakhouse with tableside carts and a rooftop; recent TA reviews flag long waits and a 4% surcharge. Replaces an unsourced 4.7 in Fine Steak — sits at the floor of the site's range, flag for review."},
+{name:"Turf Supper Club",rating:4.2,reviews:67,city:"sandiego",create:true,cats:["steakdive","sandiego"],address:"1116 25th St, San Diego, CA 92102",url:"https://www.turfsupperclub.com/",
+why:"San Diego's original grill-your-own supper club (1950s) atop Golden Hill — pick a marinated steak, cook it yourself on the communal grill, cocktails and a jukebox at one of the city's oldest lounges.",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (67 reviews, docked to 4.1) = 4.2; Yelp star to confirm. The definitive San Diego steak dive. Phone to confirm."},
+{name:"Animae",rating:4.5,reviews:0,city:"sandiego",create:true,cats:["steakhighend","sandiego"],address:"969 Pacific Hwy, San Diego, CA 92101",url:"https://www.animaesd.com/",
+why:"Marina District showpiece from James Beard-nominated chef Tara Monsod — Japanese wagyu seared over robata, Filipino-Asian fine dining in one of the city's grandest rooms.",
+ratingNote:"PROVISIONAL. Tripadvisor star not surfaced; Restaurant Review ranks it San Diego's #1 steakhouse. James Beard nominee (Tara Monsod). Phone to confirm."},
+{name:"Rare Society — Solana Beach",rating:null,addCats:["steakcasual"],ratingNote:null}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;var proto={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var city=r.city||r.parentCity||'';if(city!=='sandiego')return;
+var v=by[norm(r.name)];if(!v||r.__v490)return;r.__v490=true;hit=true;
+if(v.rating!=null){r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;}
+if(!proto[norm(r.name)])proto[norm(r.name)]=r;});});
+ROWS.forEach(function(v){var src=proto[norm(v.name)];
+if(!src&&v.create){src={name:v.name,city:v.city,rating:v.rating.toFixed(1)+' / 5',reviews:v.reviews||undefined,ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,url:v.url,why:v.why,note:v.why,phone:'',__v490:true};}
+if(!src)return;
+(v.addCats||v.cats||[]).forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var arr=boCategoryData[cat];
+if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&(r.city||'')===(src.city||'');}))return;
+var copy=JSON.parse(JSON.stringify(src));copy.__v490=true;arr.push(copy);hit=true;});});
+/* ---- site-wide sync: one restaurant, one verified number ---- */
+function region(r){var c=String(r.parentCity||r.city||'');if(/^sd/.test(c))return 'sandiego';if(/^la(?!s)/.test(c))return 'losangeles';return c;}
+var verified={};
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name||r.ratingSource!=='BJS aggregate')return;var k=norm(r.name)+'|'+region(r);if(!verified[k])verified[k]=r;});});
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;var k=norm(r.name)+'|'+region(r);var s=verified[k];if(!s||s===r)return;
+r.rating=s.rating;r.reviews=s.reviews;r.ratingSource=s.ratingSource;r.ratingNote=s.ratingNote;
+if(!r.phone&&s.phone)r.phone=s.phone;if(!r.address&&s.address)r.address=s.address;if(!r.url&&s.url)r.url=s.url;
+if(s.michelinStars!==undefined)r.michelinStars=s.michelinStars;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<style id="bop-dive-tagline-v492">
+#bopDiveTagline{display:block;margin:10px auto 2px;padding:6px 14px;width:max-content;max-width:92%;border:1.5px solid rgba(245,158,11,.75);border-radius:999px;color:#F59E0B;font:900 .78rem/1.2 'Archivo Black',Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-align:center;text-shadow:0 0 8px rgba(245,158,11,.45)}
+</style>
+<script id="bop-dive-tagline-v492-script">(function(){
+/* v492: Every DIVE tier page (steak / italian / breakfast / mexican, any
+city) carries a "LOW COST · HIGH RATINGS" line under the hero title. Skips
+pages whose copy already says it. */
+var TXT='LOW COST \u00b7 HIGH RATINGS';
+function isDive(){var c=(typeof boCurrentCat==='string'&&boCurrentCat)||(typeof window.boCurrentCat==='string'&&window.boCurrentCat)||'';return /dive$/i.test(c);}
+function ensure(){
+var hero=document.getElementById('boHeroTitle');var tag=document.getElementById('bopDiveTagline');
+if(!hero||!isDive()){if(tag)tag.remove();return;}
+/* the hero sub already explains 'dive' in prose on some pages; the pill
+   is the explicit line and shows on every dive page regardless */
+if(!tag){tag=document.createElement('div');tag.id='bopDiveTagline';tag.textContent=TXT;}
+if(hero.nextSibling!==tag)hero.parentNode.insertBefore(tag,hero.nextSibling);
+}
+function hook(){
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__v492){
+var orig=window.boRenderCategory;var w=function(){var r=orig.apply(this,arguments);setTimeout(ensure,0);setTimeout(ensure,400);return r;};w.__v492=true;window.boRenderCategory=w;
+try{boRenderCategory=w;}catch(e){}
+}
+}
+hook();
+var n=0,t=setInterval(function(){n++;hook();ensure();if(n>60)clearInterval(t);},500);
+new MutationObserver(function(){ensure();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+})();</script>
+
 </body></html>
