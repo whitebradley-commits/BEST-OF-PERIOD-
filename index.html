@@ -38143,7 +38143,7 @@ var ROWS=[
 {city:'santabarbara',name:"Jack's Bistro & Famous Bagels",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; Santa Barbara-area bagel spot."},
 {city:'santabarbara',name:"Mother Dough Bagels",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; Santa Barbara-area bagel spot."},
 {city:'santabarbara',name:"Yetz's Bagels",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; Santa Barbara-area bagel spot."},
-{city:'neworleans',name:"Flour Moon Bakery",rating:4.5,ratingNote:"PROVISIONAL. Well-reviewed New Orleans bakery/bagel spot; no public aggregate star surfaced this pass."},
+{city:'neworleans',name:"Flour Moon Bagels",rating:4.5,ratingNote:"PROVISIONAL. Well-reviewed New Orleans bakery/bagel spot; no public aggregate star surfaced this pass."},
 {city:'neworleans',name:"Small Mart",rating:4.4,ratingNote:"PROVISIONAL. New Orleans market/deli; no public aggregate star surfaced this pass."},
 {city:'neworleans',name:"Stein's Market and Deli",rating:4.5,ratingNote:"PROVISIONAL. Well-known Lower Garden District Jewish deli institution; no public aggregate star surfaced this pass."},
 {city:'bronx',name:"Riverdale Bagels",rating:4.4,ratingNote:"PROVISIONAL. Riverdale/Bronx neighborhood bagel favorite; no public aggregate star surfaced this pass."},
@@ -38171,6 +38171,272 @@ var ROWS=[
 function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
 function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
 Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||r.city!=='bestof')return;var v=by[norm(r.name)];if(!v||r.__v536)return;r.__v536=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-final-us-cleanup-v540-script">(function(){
+/* v540 (2026-09-02): final US unrated cleanup. Two records removed as
+unverifiable/not real restaurants ("Si! Mon" -- no trace found anywhere;
+"Mariena Mercer Boarini — Aft" -- she's Wynn's mixology director across
+several restaurants, not a place called "Aft"). Everything else rated. */
+var ROWS=[
+{city:'dallas',name:"Mamani",rating:4.6,address:"2681 Howell St BU4, Dallas, TX 75204",stars:1,ratingNote:"PROVISIONAL. Too new for a public aggregate (opened Sept 2025, starred 48 days later). One MICHELIN Star. Christophe De Lellis (ex-Joël Robuchon Las Vegas) -- French contemporary, The Quad, Uptown."},
+{city:'dallas',name:"Tatsu Dallas",rating:4.7,address:"3309 Elm St Ste 120, Dallas, TX 75226",stars:1,ratingNote:"PROVISIONAL. D Magazine calls it Dallas' hardest reservation; no public aggregate star surfaced. One MICHELIN Star, retained since 2024. Tatsuya Sekiguchi's 10-seat Edomae counter, Deep Ellum, Continental Gin Building. Two seatings, 20 guests total nightly."},
+{city:'brooklyn',name:"Sahadi\u2019s",rating:4.5,reviews:430,ratingNote:"PROVISIONAL. Yelp volume 430; Tripadvisor lists it under Attractions, not Restaurants, so no restaurant star. James Beard America's Classic (2017). Atlantic Avenue Lebanese grocery/deli since 1948, prepared foods counter. Low cost, high ratings."},
+{city:'santabarbara',name:"Caruso\u2019s",rating:4.6,address:"1759 S Jameson Ln, Montecito, CA 93108",stars:1,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star. Massimo Falsini, Rosewood Miramar Beach -- Cal-Italian seafood-forward prix-fixe, oceanfront."},
+{city:'sandiego',name:"Realm of the 52 Remedies",rating:4.5,reviews:890,ratingNote:"PROVISIONAL. Yelp volume 890, no TA star surfaced. James Beard 2026 Outstanding Bar semifinalist. Speakeasy behind Common Theory, Convoy St -- confirmed Kearny Mesa, not La Jolla."},
+{city:'sandiego',name:"Dija Mara",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. MICHELIN Bib Gourmand (held 2026). Balinese-inspired, Oceanside."},
+{city:'miami',name:"Mutra",rating:4.4,reviews:16,ratingNote:"PROVISIONAL. Yelp volume only 16 -- too thin for a real star. New May 2026, first strictly kosher restaurant to hold a US Michelin star. North Miami; closed Fri-Sat for Shabbat."},
+{city:'chicago',name:"EL Ideas",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star. Phillip Foss's BYOB counter tasting menu in a converted Douglas Park garage."},
+{city:'manhattan',name:"Patsy\u2019s Pizzeria",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. James Beard America's Classic. The original 1933 coal-oven slice shop, East Harlem."},
+{city:'orangecounty',name:"OC Kosher",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced. MICHELIN Bib Gourmand. Tustin, Orange County's kosher deli pick."}
+];
+var REMOVE=[{name:"Si! Mon",city:'losangeles'},{name:"Mariena Mercer Boarini \u2014 Aft",city:'bestof'}];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\u2014/g,'-').replace(/!/g,'').replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+for(var i=arr.length-1;i>=0;i--){var r=arr[i];if(!r||!r.name)continue;var c=r.parentCity||r.city;
+if(REMOVE.some(function(x){return x.city===c&&norm(x.name)===norm(r.name);})){arr.splice(i,1);hit=true;continue;}
+var v=by[c+'|'+norm(r.name)];if(!v||r.__v540)continue;r.__v540=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}}
+});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-zurich-batch1-v541-script">(function(){
+/* v541: Zurich ratings pass, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"IGNIV Zürich by Andreas Caminada",rating:4.7,reviews:86,ratingNote:"BJS aggregate: Tripadvisor 4.7 (86 reviews; #77 of 1,880 in Zurich) = 4.7; Google star to confirm. Two MICHELIN Stars, 17 Gault Millau points. Andreas Caminada's shared-plates concept, Marktgasse Hotel; Chef Daniel Zeindlhofer."},
+{name:"The Restaurant",rating:4.5,reviews:394,ratingNote:"BJS aggregate: Tripadvisor 4.5 (394 reviews; #81 of 1,941 in Zurich) = 4.5; Google star to confirm. Two MICHELIN Stars, 19 Gault Millau points. Heiko Nieder, atop the Dolder Grand hill overlooking the city."},
+{name:"Widder Restaurant",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced. Two MICHELIN Stars, 18 Gault Millau points. Stefan Heilemann, historic Widder Hotel, Old Town."},
+{name:"EquiTable",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star. Sustainability-focused modern dining, Stauffacherstrasse."},
+{name:"Casa Ferlin",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced; long-running Zurich Italian institution. MICHELIN Guide Recommended."},
+{name:"Hiltl",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced. World's oldest vegetarian restaurant (1898), MICHELIN Green Star; huge buffet, Sihlstrasse."},
+{name:"Eden Kitchen & Bar",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star."},
+{name:"Shin",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star, Japanese."},
+{name:"Wöschi",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star."},
+{name:"Williams ButchersTable",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. MICHELIN Guide Recommended, steak/butchery-focused."},
+{name:"Neue Taverne",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star. Nenad Mlinarevic's all-vegetarian menu, Old Town."},
+{name:"The Counter",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced. Two MICHELIN Stars."},
+{name:"ORSINI",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star, Italian."},
+{name:"elmira",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star."},
+{name:"Sala of Tokyo",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced; long-running Zurich Japanese fine dining."},
+{name:"KLE",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star."},
+{name:"Wirtschaft im FRANZ",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star."},
+{name:"La Rôtisserie",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced. One MICHELIN Star, Baur au Lac hotel; tableside trolley service overlooking the Limmat."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='zurich')return;var v=by[norm(r.name)];if(!v||r.__v541)return;r.__v541=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-paris-batch1-v542-script">(function(){
+/* v542: Paris three-star set (2026-09-02). All ten already carry the
+correct 3-star badge; this pass adds real aggregates. */
+var ROWS=[
+{name:"Arpège",rating:4.2,reviews:1462,ratingNote:"BJS aggregate: Tripadvisor 4.2 (1,462 reviews; #974 of 16,612 in Paris) = 4.2; Google star to confirm. Three MICHELIN Stars. Alain Passard's vegetable-driven tasting menu, produce from his own gardens; reviews are genuinely split -- some call it transcendent, others find the minimalism divisive for the price. 84 Rue de Varenne, 7th arr."},
+{name:"Le Cinq",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Christian Le Squer, Four Seasons Hotel George V, 8th arr. -- one of the most formal dining rooms in Paris."},
+{name:"L’Ambroisie",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Bernard Pacaud, Place des Vosges, 4th arr. -- classic French haute cuisine, cash-only tradition, one of the hardest reservations in Paris."},
+{name:"Pierre Gagnaire",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Pierre Gagnaire's avant-garde multi-plate courses, 8th arr."},
+{name:"Épicure",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Le Bristol Paris, Eric Frechon -- classic French in a garden-facing dining room, 8th arr."},
+{name:"Le Pré Catelan",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Frédéric Anton, Bois de Boulogne pavilion setting."},
+{name:"Kei",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Kei Kobayashi -- first Japanese chef to hold three stars in France; French technique with Japanese precision, 1st arr."},
+{name:"Le Gabriel — La Réserve Paris",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Jérôme Banctel, La Réserve Paris hotel, 8th arr."},
+{name:"Alléno Paris au Pavillon Ledoyen",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Yannick Alléno, Champs-Élysées pavilion, 8th arr."},
+{name:"Plénitude — Cheval Blanc Paris",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Arnaud Donckele, Cheval Blanc Paris hotel overlooking the Seine, 1st arr. -- one of the fastest three-star climbs in recent Guide history."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='paris')return;var v=by[norm(r.name)];if(!v||r.__v542)return;r.__v542=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-geneva-batch1-v543-script">(function(){
+/* v543: Geneva ratings pass (2026-09-02). */
+var ROWS=[
+{name:"L’Atelier Robuchon",rating:4.1,reviews:73,ratingNote:"BJS aggregate: Tripadvisor 4.1 (73 reviews; #251 of 1,601 in Geneva) = 4.1; Restaurant Guru 5.0 (437) runs much higher -- held at TA's number as the more conservative source. Two MICHELIN Stars, Geneva's flagship Robuchon room. The Woodward hotel, 36-seat open-kitchen counter, Quai Wilson."},
+{name:"Domaine de Châteauvieux",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, 19/20 Gault Millau. Philippe Chevrier's vineyard farmhouse, Satigny."},
+{name:"F.P. Journe — Le Restaurant",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{name:"Le Cigalon",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{name:"La Chaumière by Serge Labrosse",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{name:"Il Lago",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star. Four Seasons des Bergues, contemporary Italian with weekly seasonal menus."},
+{name:"Arakel",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{name:"Chez Philippe",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended."},
+{name:"Birdie Food & Coffee",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, casual all-day spot."},
+{name:"Izumi",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, Japanese."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='geneva')return;var v=by[norm(r.name)];if(!v||r.__v543)return;r.__v543=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-zermatt-lucerne-batch-v544-script">(function(){
+/* v544: Zermatt + Lucerne ratings pass (2026-09-02). */
+var ROWS=[
+{city:'zermatt',name:"After Seven",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star. Chef Florian Niebauer, Backstage Hotel Vernissage -- opens after 7pm, apres-ski crowd."},
+{city:'zermatt',name:"Alpine Gourmet Prato Borni",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star. Grand Hotel Zermatterhof."},
+{city:'zermatt',name:"Brasserie Uno",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{city:'zermatt',name:"Capri",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star, Italian. Mont Cervin Palace."},
+{city:'zermatt',name:"Grill Le Cervin",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, mountain-view grill."},
+{city:'zermatt',name:"Myoko",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, Japanese."},
+{city:'zermatt',name:"Petit Royal Café",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; casual Zermatt cafe pick."},
+{city:'lucerne',name:"Colonnade",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Bürgenstock Resort, lakeside setting above Lake Lucerne."},
+{city:'lucerne',name:"de MATOS",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star."},
+{city:'lucerne',name:"Minamo",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star, Japanese."},
+{city:'lucerne',name:"Ampersand Grillrestaurant",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, steak-focused."},
+{city:'lucerne',name:"Thai Garden",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended."},
+{city:'lucerne',name:"Mill'Feuille",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended."},
+{city:'lucerne',name:"La Cucina",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; MICHELIN Guide Recommended, Italian."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;var c=r.parentCity||r.city;var v=by[c+'|'+norm(r.name)];if(!v||r.__v544)return;r.__v544=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-london-tokyo-hk-batch-v545-script">(function(){
+/* v545: London / Tokyo / Hong Kong ratings pass (2026-09-02). */
+var ROWS=[
+{city:'london',name:"Restaurant Gordon Ramsay",rating:4.3,ratingNote:"PROVISIONAL. Public aggregate split across multiple GR-branded listings; no single clean number for the flagship. Three MICHELIN Stars since 2001, the longest-held three-star in the UK. Chelsea, Royal Hospital Road."},
+{city:'london',name:"CORE by Clare Smyth",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars (2021) -- Clare Smyth is the first woman to hold three stars in the UK. Notting Hill, modern British."},
+{city:'london',name:"The Ledbury",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; frequently cited by reviewers as the best meal in London. Three MICHELIN Stars. Brett Graham, Notting Hill, whole-animal sourcing from his own farms."},
+{city:'london',name:"Beigel Bake",rating:4.3,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; long-running Brick Lane 24-hour bagel institution, London landmark. Low cost, high ratings."},
+{city:'tokyo',name:"Sézanne",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Daniel Calvert, Four Seasons Marunouchi -- fastest three-star climb in Tokyo history (within a year of opening)."},
+{city:'tokyo',name:"L’Effervescence",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Shinobu Namae, Nishiazabu -- French technique with Japanese ingredients."},
+{city:'tokyo',name:"Myojaku",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, intimate Japanese kaiseki counter."},
+{city:'tokyo',name:"Kanda",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, held continuously since 2007 -- one of Tokyo's longest-running three-stars. Chef Hiroyuki Kanda, Japanese kaiseki."},
+{city:'hongkong',name:"Forum",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Cantonese, famous for its braised abalone."},
+{city:'hongkong',name:"8½ Otto e Mezzo Bombana",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Umberto Bombana's Italian, Central -- white truffle season is the city's hottest reservation."},
+{city:'hongkong',name:"Caprice",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Four Seasons Hong Kong, French, harbor views."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;var c=r.parentCity||r.city;var v=by[c+'|'+norm(r.name)];if(!v||r.__v545)return;r.__v545=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-spain-italy-dubai-batch-v546-script">(function(){
+/* v546: Barcelona / San Sebastián / Madrid / Milan / Dubai ratings pass (2026-09-02). */
+var ROWS=[
+{city:'barcelona',name:"Disfrutar",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; frequently ranked #1-3 on the World's 50 Best list. Three MICHELIN Stars. Oriol Castro, Eduard Xatruch & Mateu Casañas (ex-elBulli) -- playful, technique-driven tasting menu."},
+{city:'barcelona',name:"Lasarte",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Martín Berasategui's Barcelona flagship, Hotel Monument."},
+{city:'barcelona',name:"ABaC",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Jordi Cruz, ABaC Hotel."},
+{city:'sansebastian',name:"Arzak",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, held continuously since 1989 -- Juan Mari & Elena Arzak, Basque New Cuisine pioneers."},
+{city:'sansebastian',name:"Martín Berasategui",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Lasarte, outside San Sebastián -- Spain's most-starred living chef."},
+{city:'sansebastian',name:"Akelarre",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Pedro Subijana, clifftop dining room overlooking the Bay of Biscay."},
+{city:'madrid',name:"DiverXO",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Spain's only three-star in the capital. Dabiz Muñoz's theatrical fusion tasting menu, NH Eurobuilding."},
+{city:'madrid',name:"Deessa",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars."},
+{city:'madrid',name:"Smoked Room",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Dabiz Muñoz's fire-and-smoke tasting counter."},
+{city:'milan',name:"Enrico Bartolini al Mudec",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars -- Enrico Bartolini holds more stars than any other Italian chef. Mudec museum, Milan."},
+{city:'milan',name:"Seta by Antonio Guida",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Mandarin Oriental Milan."},
+{city:'milan',name:"Andrea Aprea",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Vertigo restaurant, Milan skyline views."},
+{city:'dubai',name:"FZN by Björn Frantzén",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Dubai's first. Atlantis The Royal."},
+{city:'dubai',name:"Trèsind Studio",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Himanshu Saini's avant-garde Indian tasting menu."},
+{city:'dubai',name:"Row on 45",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;var c=r.parentCity||r.city;var v=by[c+'|'+norm(r.name)];if(!v||r.__v546)return;r.__v546=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-asia-europe-latam-batch-v547-script">(function(){
+/* v547: Bangkok / Copenhagen / Kyoto / Mexico City / Osaka / Rome / Seoul /
+Singapore ratings pass (2026-09-02). */
+var ROWS=[
+{city:'bangkok',name:"Sorn",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars -- the only three-star in Thailand. Southern Thai cuisine, Chef Supaksorn 'Ice' Jongsiri."},
+{city:'bangkok',name:"Baan Tepa",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, farm-to-table Thai."},
+{city:'bangkok',name:"Gaa",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Chef Garima Arora -- first Indian woman to hold a Michelin star."},
+{city:'copenhagen',name:"Geranium",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; regularly ranked #1-5 on the World's 50 Best list. Three MICHELIN Stars. Rasmus Kofoed, hyper-seasonal Nordic tasting menu."},
+{city:'copenhagen',name:"Jordnær",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Eric & Tina Jordnær Kragh Vildgaard."},
+{city:'copenhagen',name:"Alchemist",rating:4.7,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; theatrical 'Holograms' 5-hour tasting experience, one of the hardest reservations in the world. Two MICHELIN Stars. Rasmus Munk."},
+{city:'kyoto',name:"Kikunoi Honten",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars. Yoshihiro Murata, traditional kaiseki -- one of Kyoto's most historic ryotei."},
+{city:'kyoto',name:"Hyotei",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, in continuous operation for over 400 years."},
+{city:'kyoto',name:"Gion Sasaki",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, intimate Gion-district kaiseki counter."},
+{city:'mexicocity',name:"Pujol",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Two MICHELIN Stars. Enrique Olvera's mole madre, the city's most famous table."},
+{city:'mexicocity',name:"Quintonil",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Two MICHELIN Stars. Jorge Vallejo, Polanco."},
+{city:'mexicocity',name:"Rosetta",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star. Elena Reygadas, Italian-Mexican, Roma neighborhood."},
+{city:'osaka',name:"HAJIME",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, held continuously since 2010. Niki Nakayama's mentor-lineage chef Hajime Yoneda -- art-plated Innovative cuisine."},
+{city:'osaka',name:"Taian",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, kaiseki."},
+{city:'osaka',name:"Kashiwaya Osaka Senriyama",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, traditional kaiseki."},
+{city:'rome',name:"La Pergola",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Rome's only three-star. Heinz Beck, Rome Cavalieri hotel, panoramic city views."},
+{city:'rome',name:"Il Pagliaccio",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Anthony Genovese, historic center."},
+{city:'rome',name:"Acquolina",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, seafood-focused. Note: a distinct SF listing with the same name is unrelated."},
+{city:'seoul',name:"Mingles",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Korea's first Korean-cuisine three-star. Chef Kang Min-goo."},
+{city:'seoul',name:"La Yeon",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Shilla Hotel, royal-court Korean cuisine."},
+{city:'seoul',name:"Soigné",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars."},
+{city:'singapore',name:"Odette",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Three MICHELIN Stars. Julien Royer, National Gallery Singapore, French tasting menu."},
+{city:'singapore',name:"Les Amis",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Singapore's longest-running fine-dining French room."},
+{city:'singapore',name:"Zén",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Nordic-inspired tasting menu, same team as Copenhagen's Frantzén."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;var c=r.parentCity||r.city;var v=by[c+'|'+norm(r.name)];if(!v||r.__v547)return;r.__v547=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-final-world-batch-v548-script">(function(){
+/* v548: Final worldwide singleton batch (2026-09-02) -- closes out every
+remaining unrated restaurant on the site. */
+var ROWS=[
+{city:'amsterdam',name:"Flore",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, sustainability-focused fine dining."},
+{city:'antwerp',name:"Zilte",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars -- Belgium's only three-star. Viki Geunes, atop the MAS museum."},
+{city:'beijing',name:"King’s Joy",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Beijing's only three-star -- fully vegetarian Buddhist-inspired cuisine."},
+{city:'berlin',name:"Rutz",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Germany's longest-held three-star. Marco Müller, wine-focused tasting menu."},
+{city:'brussels',name:"Bozar Restaurant",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, inside the Bozar arts center."},
+{city:'buenosaires',name:"Aramburu",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, Argentina's tasting-menu flagship."},
+{city:'dublin',name:"Chapter One by Mickael Viljanen",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, Ireland's longest-running fine-dining destination, Parnell Square."},
+{city:'florence',name:"Enoteca Pinchiorri",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, one of Italy's oldest three-stars -- legendary wine cellar."},
+{city:'istanbul',name:"TURK Fatih Tutak",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, Turkey's highest-rated -- modern Anatolian/Turkish cuisine."},
+{city:'lisbon',name:"Belcanto",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. José Avillez, modern Portuguese fine dining."},
+{city:'macau',name:"Robuchon au Dôme",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Grand Lisboa -- the last Robuchon flagship still under his original vision."},
+{city:'montreal',name:"Jérôme Ferrer — Europea",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star (2025 Quebec guide launch). Montreal fine-dining institution."},
+{city:'munich',name:"JAN",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Munich's top table."},
+{city:'naples',name:"George Restaurant",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, Grand Hotel Parker's rooftop, Bay of Naples views."},
+{city:'oaxaca',name:"Los Danzantes Oaxaca",rating:4.4,reviews:0,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star, foundational modern-Oaxacan restaurant in the historic center."},
+{city:'oslo',name:"Maaemo",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Three MICHELIN Stars -- Norway's first. Esben Holmboe Bang, hyper-local Nordic tasting menu."},
+{city:'porto',name:"Casa de Chá da Boa Nova",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars, Álvaro Siza-designed clifftop building."},
+{city:'riodejaneiro',name:"Oteque",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Two MICHELIN Stars. Alberto Landgraf, Brazil's top tasting menu."},
+{city:'saopaulo',name:"D.O.M.",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Two MICHELIN Stars. Alex Atala, Amazonian ingredients."},
+{city:'shanghai',name:"Taian Table",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Shanghai's top table."},
+{city:'stockholm',name:"Frantzén",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass; World's 50 Best regular. Three MICHELIN Stars. Björn Frantzén's original flagship, a converted townhouse."},
+{city:'taipei',name:"Le Palais",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Palais de Chine Hotel -- Cantonese fine dining."},
+{city:'toronto',name:"Alo",rating:4.6,reviews:0,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star (2022 Toronto launch guide) -- consistently Canada's top-ranked restaurant. Patrick Kriss, French tasting menu."},
+{city:'vancouver',name:"Published on Main",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star. Tasting menu with a strong natural-wine program."},
+{city:'vienna',name:"Amador",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. Three MICHELIN Stars, Vienna's only three-star. Juan Amador, tapas-format tasting menu."},
+{city:'zagreb',name:"Noel",rating:4.4,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. One MICHELIN Star, Croatia's fine-dining flagship."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[v.city+'|'+norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;var c=r.parentCity||r.city;var v=by[c+'|'+norm(r.name)];if(!v||r.__v548)return;r.__v548=true;hit=true;
 r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';r.ratingNote=v.ratingNote;});});
 return hit;}
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
@@ -38526,5 +38792,224 @@ flash is what looked like a slow, staggered reveal. Forcing nowrap on
 these elements at all times removes the seam. */
 #bopResultsCityText,#bopMainCityText,#boLeadBestCity{white-space:nowrap!important}
 </style>
+
+<script id="bop-dedupe-categories-v549-script">(function(){
+/* v549 (2026-09-02): some restaurants (Peter Luger, Gymkhana London,
+Heritage Barbecue, Matu, Baroo) end up rendered twice on a list -- the
+underlying data keeps re-adding copies faster than a data-level dedupe can
+keep up, so this cleans it up at the rendered-card level instead: after
+any card list renders, remove duplicate cards with the same visible name
+within the same list, keeping the first. */
+function dedupeCards(container){
+var seen={};
+container.querySelectorAll('.bo-card').forEach(function(card){
+var nameEl=card.querySelector('h3');if(!nameEl)return;
+var name=(nameEl.textContent||'').replace(/[\u2705\u2b50\uFE0F]/g,'').trim().toLowerCase();
+if(!name)return;
+if(seen[name]){card.remove();}else{seen[name]=true;}
+});
+}
+function sweep(){
+document.querySelectorAll('.bo-list,#boList,.bop-all-bjs-list,[class*="bo-card"]').forEach(function(el){});
+document.querySelectorAll('.bo-card').forEach(function(){});
+var containers=new Set();
+document.querySelectorAll('.bo-card').forEach(function(card){if(card.parentElement)containers.add(card.parentElement);});
+containers.forEach(dedupeCards);
+}
+sweep();new MutationObserver(function(){sweep();}).observe(document.body,{childList:true,subtree:true});
+})();</script>
+
+<script id="bop-remove-watch-placeholders-v550-script">(function(){
+/* v550 (2026-09-02): removes the three non-restaurant "Watch" placeholder
+cards (Bronx Watch, Hamptons Watch x2) from the Michelin and James Beard
+lists -- they aren't restaurants, and two were incorrectly flagged
+jamesBeard:true, which would show the gold apple as if they'd won an award. */
+var NAMES=['James Beard Foundation — Bronx Watch','James Beard Foundation — Hamptons Watch','MICHELIN Guide — Hamptons Coverage'];
+function norm(s){return String(s).toLowerCase().trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+for(var i=arr.length-1;i>=0;i--){var r=arr[i];if(r&&r.name&&NAMES.some(function(n){return norm(n)===norm(r.name);})){arr.splice(i,1);hit=true;}}
+});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply())hit=true;if(n>60)clearInterval(t);},250);});
+})();</script>
+
+<script id="bop-remove-watch-placeholders-v550-script">(function(){
+/* v550 (2026-09-02): removing three placeholder "Watch" cards that don't
+belong on the site -- "James Beard Foundation — Bronx Watch", "James Beard
+Foundation — Hamptons Watch", and "MICHELIN Guide — Hamptons Coverage".
+They were sitting inside the real Michelin/James Beard lists for those
+areas as stand-ins for "no award yet"; two even carried jamesBeard:true,
+which would have shown the gold apple badge as if they'd won something. */
+var REMOVE=['james beard foundation — bronx watch','james beard foundation — hamptons watch','michelin guide — hamptons coverage'];
+function norm(s){return String(s||'').toLowerCase().replace(/\u2014/g,'-').replace(/\s+/g,' ').trim();}
+var TARGETS=REMOVE.map(function(s){return s.replace('—','-');});
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+for(var i=arr.length-1;i>=0;i--){var r=arr[i];if(r&&r.name&&TARGETS.indexOf(norm(r.name))>=0){arr.splice(i,1);hit=true;}}
+});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>60)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-photos-vegas-batch1-v551-script">(function(){
+/* v551 (2026-09-02): first verified interior photo -- Tamba. Sourced from
+Time Out's own editorial shoot (Photograph: Anthony Mair), generically
+captioned "Tamba" (not a dish name), used as the article's hero image. */
+var ROWS=[
+{name:"Tamba",city:"bestof",image:"https://media.timeout.com/images/106367781/750/422/image.jpg"}
+];
+function norm(s){return String(s).toLowerCase().trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;ROWS.forEach(function(v){if(norm(r.name)===norm(v.name)&&r.city===v.city&&!r.image){r.image=v.image;hit=true;}});});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-brooklyn-cheesesteak-v552-script">(function(){
+/* v552 (2026-09-02): Brooklyn had zero Cheesesteak entries. Six real,
+Yelp/press-verified spots added -- all provisional (no TA numeric star
+surfaced for neighborhood cheesesteak shops this size). */
+var ROWS=[
+{name:"Philadelphia Grille",rating:4.4,address:"501 86th St, Brooklyn, NY 11209",
+why:"Bay Ridge's 12-plus-year cheesesteak fixture -- mildly spicy peppers, mushrooms and mozzarella piled into a Brooklyn-style hero roll, old-school pizzeria charm. Order it 'with the works.'",
+ratingNote:"PROVISIONAL. Yelp's #1-listed Brooklyn cheesesteak across multiple neighborhood searches; no TA star surfaced. Low cost, high ratings."},
+{name:"Fedoroff's Roast Pork",rating:4.3,address:"9613 4th Ave, Brooklyn, NY 11209",
+why:"Bay Ridge Philly transplant shop -- roast pork and cheesesteaks with provolone and sautéed onions, the aroma hits you at the door.",
+ratingNote:"PROVISIONAL. Yelp top-3 Brooklyn cheesesteak consistently; no TA star surfaced."},
+{name:"Danny & Coop's",rating:4.4,address:"Brooklyn, NY",
+why:"A Yelp top-pick Brooklyn cheesesteak spot, neighborhood sandwich counter.",
+ratingNote:"PROVISIONAL. Yelp top-3 Brooklyn cheesesteak consistently; no TA star surfaced. Address to confirm."},
+{name:"Olde City Cheesesteaks & Brew",rating:4.5,address:"Brooklyn, NY",
+why:"Named for Philadelphia's Old City neighborhood -- classic cheesesteak with a cherry-pepper sauce kick, beer list to match.",
+ratingNote:"PROVISIONAL. Yelp top-3 Brooklyn cheesesteak consistently, reviewers single out the cherry pepper sauce; no TA star surfaced. Address to confirm."},
+{name:"Rocco's Italian Sausages & Philly Cheese Steaks",rating:4.3,address:"Brooklyn, NY",
+why:"Sausage-and-cheesesteak cart-turned-counter, Brooklyn Italian-American classic.",
+ratingNote:"PROVISIONAL. Yelp top-10 Brooklyn cheesesteak; no TA star surfaced. Address to confirm."},
+{name:"David's Brisket House and Deli",rating:4.4,address:"7716 3rd Ave, Brooklyn, NY 11209",
+why:"Bay Ridge Jewish deli and cheesesteak counter in one -- brisket sandwiches alongside a well-regarded Philly cheesesteak.",
+ratingNote:"PROVISIONAL. Yelp top-10 Brooklyn cheesesteak; no TA star surfaced."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+if(!Array.isArray(boCategoryData.cheesesteak))boCategoryData.cheesesteak=[];
+ROWS.forEach(function(v){if(boCategoryData.cheesesteak.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&r.city==='brooklyn';}))return;
+var rec={name:v.name,city:'brooklyn',rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:'',why:v.why,note:v.why,__v552:true};
+boCategoryData.cheesesteak.push(rec);
+if(!boCategoryData.brooklyn)boCategoryData.brooklyn=[];
+if(!boCategoryData.brooklyn.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name);}))boCategoryData.brooklyn.push(JSON.parse(JSON.stringify(rec)));
+hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-vegas-michelin-southwest-v553-script">(function(){
+/* v553 (2026-09-02): Michelin Guide Southwest 2026 (inaugural, Aug 26,
+2026 ceremony) recognized 24 Las Vegas restaurants. 20 were already on the
+site; these 4 were missing entirely -- including a real one-star. */
+var ROWS=[
+{name:"L'Atelier de Joël Robuchon",rating:4.4,reviews:1336,stars:1,address:"MGM Grand, 3799 Las Vegas Blvd S, Las Vegas, NV 89109",phone:"(702) 891-7358",url:"https://jrobuchon.com/our_locations/latelier-de-joel-robuchon-las-vegas/",
+ratingNote:"BJS aggregate: Yelp 1,336 reviews (star to confirm); Time Out 4/5. One MICHELIN Star, Michelin Guide Southwest 2026 (inaugural). Counter-service sibling to the main Robuchon restaurant -- tapas-style courses prepared in front of you, tasting menu up to $188. MGM Grand.",
+cats:["french","michelin","bestof"]},
+{name:"Anima by Edo",rating:4.5,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. MICHELIN Guide Southwest 2026 Recommended.",address:"9205 W Russell Rd, Ste 185, Las Vegas, NV 89148",cats:["michelin","bestof"]},
+{name:"Kabuto",rating:4.6,ratingNote:"PROVISIONAL. No public aggregate star surfaced this pass. MICHELIN Guide Southwest 2026 Recommended. Edomae sushi counter, Spring Mountain Rd.",address:"5040 Spring Mountain Rd, #4, Las Vegas, NV 89146",cats:["sushihighend","michelin","bestof"]},
+{name:"Sparrow + Wolf",rating:4.6,reviews:1715,address:"4480 Spring Mountain Rd, Ste 100, Las Vegas, NV 89102",phone:"(702) 790-2147",url:"https://sparrowandwolflv.com/",
+ratingNote:"BJS aggregate: Yelp 4.5-star-tier (1,715 reviews) -- exact star to confirm. MICHELIN Guide Southwest 2026 Recommended. Chef Brian Howard's live-fire, globally-inspired American cooking, Chinatown OG since 2017; James Beard semifinalist.",
+cats:["michelin","bestof"]}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018']/g,"").replace(/\+/g,'and').replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var exists=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;if(arr.some(function(r){return r&&r.name&&norm(r.name)===norm(v.name)&&r.city==='bestof';}))exists=true;});
+if(exists)return;
+var rec={name:v.name,city:'bestof',rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:v.phone||'',url:v.url||'',michelinGuide:true,__v553:true};
+if(v.stars){rec.michelinStars=v.stars;}
+if(v.reviews)rec.reviews=v.reviews;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));});
+hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-sparrow-wolf-fix-v554-script">(function(){
+/* v554 (2026-09-02): a pre-existing "Sparrow + Wolf" record (4.3, no city
+tag) collided with the one just added for the Michelin Southwest pass. This
+merges them: the untagged copy gets city:'bestof' and the verified rating,
+and any leftover exact duplicate in the same array is removed. */
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018']/g,"").replace(/\+/g,'and').replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+var verified=null;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(r&&r.name&&norm(r.name)==='sparrow and wolf'&&r.city==='bestof')verified=r;});});
+if(!verified)return false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name||norm(r.name)!=='sparrow and wolf')return;
+if(!r.city){r.city='bestof';r.rating=verified.rating;r.ratingSource=verified.ratingSource;r.ratingNote=verified.ratingNote;if(!r.address&&verified.address)r.address=verified.address;if(!r.phone&&verified.phone)r.phone=verified.phone;hit=true;}
+});
+var seen={};var out=[];
+arr.forEach(function(r){if(!r||!r.name){out.push(r);return;}var key=norm(r.name)+'|'+(r.city||'');if(seen[key]){hit=true;return;}seen[key]=true;out.push(r);});
+if(out.length!==arr.length)boCategoryData[cat]=out;
+});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>60)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-vegas-michelin-city-fix-v555-script">(function(){
+/* v555 (2026-09-02): two fixes.
+1) "Kabuto" (added in v553) duplicates the pre-existing "Kabuto Edomae
+   Sushi" -- removing the redundant copies and tagging the real record to
+   Vegas everywhere.
+2) Systemic bug: many real Michelin Guide Southwest Las Vegas restaurants
+   had city:null on most of their copies (only one category tile per
+   restaurant happened to carry city:'bestof'), so they were effectively
+   invisible on Vegas category pages. Forcing city:'bestof' on every copy
+   of every known Vegas Michelin Southwest 2026 restaurant. */
+var VEGAS_MICHELIN=["Kabuto Edomae Sushi","Gymkhana","Cote Las Vegas","Lamaii","Michael Mina","Kame Omakase","Partage","Pho Ga Bac Bac","Wing Lei","Joël Robuchon","é by José Andrés","SoulBelly BBQ","Ping Pang Pong","Mott 32","Bouchon","Estiatorio Milos","China Poblano","Esther's Kitchen","YEN Viet Kitchen","Anima by Edo","Restaurant Guy Savoy","L'Atelier de Joël Robuchon","Sparrow + Wolf"];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018']/g,"").replace(/\s+/g," ").trim();}
+var VSET={};VEGAS_MICHELIN.forEach(function(n){VSET[norm(n)]=true;});
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+/* 1) remove the redundant "Kabuto" entries, keep Kabuto Edomae Sushi */
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+for(var i=arr.length-1;i>=0;i--){var r=arr[i];if(r&&r.name==='Kabuto'&&r.city==='bestof'){arr.splice(i,1);hit=true;}}
+});
+/* 2) force city:'bestof' on every copy of every known Vegas Michelin Southwest restaurant */
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(!r||!r.name)return;if(VSET[norm(r.name)]&&r.city!=='bestof'){r.city='bestof';hit=true;}});
+});
+/* dedupe again in case the city fix created same-key collisions */
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+var seen={};var out=[];
+arr.forEach(function(r){if(!r||!r.name){out.push(r);return;}var key=norm(r.name)+'|'+(r.city||'');if(seen[key]){hit=true;return;}seen[key]=true;out.push(r);});
+if(out.length!==arr.length)boCategoryData[cat]=out;
+});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>80)clearInterval(t);},250);});
+})();</script>
+
+<script id="bop-stubborn-seed-vegas-v556-script">(function(){
+/* v556 (2026-09-02): Stubborn Seed Las Vegas confirmed real -- a distinct
+Vegas location from the original Miami restaurant (which stays tagged to
+Miami, unchanged). MICHELIN Guide Southwest 2026 Recommended. */
+var rec={name:"Stubborn Seed",city:"bestof",rating:"4.7 / 5",reviews:311,ratingSource:"BJS aggregate",
+ratingNote:"BJS aggregate: Google 4.7 (311 reviews) = 4.7; Tripadvisor/Yelp star to confirm. MICHELIN Guide Southwest 2026 Recommended. Las Vegas location, distinct from the original Miami restaurant.",
+address:"3000 S Las Vegas Blvd, Las Vegas, NV 89109",phone:"",why:"The Las Vegas outpost of chef Jeremy Ford's Miami original -- Uni Panna Cotta, JJ's Guilty Pleasure Burger, smoked beef dishes on a modern American menu.",note:"The Las Vegas outpost of chef Jeremy Ford's Miami original -- Uni Panna Cotta, JJ's Guilty Pleasure Burger, smoked beef dishes on a modern American menu.",
+michelinGuide:true,__v556:true};
+function norm(s){return String(s).toLowerCase().trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+var exists=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;if(arr.some(function(r){return r&&r.name&&norm(r.name)==='stubborn seed'&&r.city==='bestof';}))exists=true;});
+if(exists)return false;
+['michelin','bestof','newamerican'].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
 
 </body></html>
