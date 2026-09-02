@@ -19549,7 +19549,7 @@ const compactFooter='<footer class="bop-best-ending-standard-footer"><strong>Bes
 function openBadges(){
 const movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
 window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
-if(typeof boOpenBadgesPage==='function'){boOpenBadgesPage();return;}
+if(typeof boOpenBadgesPage==='function'&&boOpenBadgesPage!==openBadges){boOpenBadgesPage();return;}
 if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
 const legend=document.getElementById('legendOverlay');if(legend){legend.classList.add('open');legend.scrollTop=0;}
 }
@@ -36921,6 +36921,7 @@ if(!btn)return;
 e.preventDefault();e.stopImmediatePropagation();
 var legend=document.getElementById('legendOverlay');
 if(legend)legend.classList.remove('open');
+window.__bopPizzaFromLegend=true;
 if(typeof window.boOpenAllPizzaScores==='function'){window.boOpenAllPizzaScores();return;}
 /* fallback: tap the One Bite mark if the list opener isn't ready */
 var mark=document.querySelector('.bo-onebite-mark');if(mark)mark.click();
@@ -37934,6 +37935,93 @@ function ready(fn){if(document.readyState==='loading')document.addEventListener(
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
 
+<script id="bop-dc-batch1-v525-script">(function(){
+/* v525: Washington DC ratings pass, batch 1 (2026-09-02). Inn at Little
+Washington corrected 3 stars -> 2 stars (Nov 2025 guide). */
+var ROWS=[
+{name:"The Inn at Little Washington",rating:4.6,reviews:0,stars:2,url:"https://www.theinnatlittlewashington.com/",address:"309 Middle St, Washington, VA 22747",
+ratingNote:"PROVISIONAL. TA star not surfaced on the restaurant listing (hotel side shows mixed reviews); recent reviews split on consistency for a $375 tasting menu. BADGE UPDATE: demoted from THREE to TWO Michelin Stars in the Nov 2025 guide — the only star loss in this pass affecting a three-star; still the sole Michelin entry located outside DC city limits (70 mi away, Rappahannock County), Forbes/AAA Five Star, Green Star, Relais & Ch\u00e2teaux since 1987, Patrick O'Connell since 1978."},
+{name:"Bresca",rating:4.1,reviews:108,url:"https://brescadc.com/",address:"1906 14th St NW, Washington, DC 20009",
+ratingNote:"BJS aggregate: Tripadvisor 4.1 (108 reviews; #438 of 3,133 in DC) = 4.1; Yelp star to confirm. One MICHELIN Star. Ryan Ratino's bistronomy on 14th Street — foie gras 'negroni,' pappardelle with lamb rag\u00f9; living moss wall. James Beard recognition."},
+{name:"Centrolina",rating:4.3,reviews:273,url:"https://www.centrolinadc.com/",address:"1600 K St NW, Washington, DC 20006",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (273 reviews; #177 of 1,934 in DC) = 4.3; Yelp star to confirm. Amy Brandwein's Italian market-osteria at CityCenterDC. James Beard recognition; recent reviews flag steep upcharges on Restaurant Week menus."},
+{name:"Marcus DC",rating:4.0,reviews:0,address:"301 Tingey St SE, Washington, DC 20003",
+ratingNote:"PROVISIONAL. Tripadvisor volume only 6 reviews, too thin for a real star. Marcus Samuelsson's modern American with Black-diaspora traditions — mambo-sauced roast chicken, dry-aged tomahawk — Union Market/NoMA. James Beard recognition. Recent reviews report inconsistent service; flag for follow-up."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='washingtondc')return;var v=by[norm(r.name)];if(!v||r.__v525)return;r.__v525=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-boston-batch1-v526-script">(function(){
+/* v526: Boston ratings pass, batch 1 (2026-09-02). */
+var ROWS=[
+{name:"311 Omakase",rating:4.7,reviews:5,stars:1,address:"605 Tremont St, Boston, MA 02118",url:"https://311boston.com/home",
+ratingNote:"PROVISIONAL. Tripadvisor 5.0 but only 5 reviews \u2014 too thin to trust at face value, docked to 4.7; Infatuation calls it a game-changer. One MICHELIN Star \u2014 Boston's first and, as of this guide, only star (Nov 2025). Wei Fa Chen & Carrie Ko; 10 seats, 18-course $250 tasting, South End rowhouse."},
+{name:"Ostra",rating:4.6,reviews:1137,address:"1 Charles St S, Boston, MA 02116",url:"https://www.ostraboston.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (1,137 reviews; #13 of 2,045 in Boston) = 4.6; Yelp star to confirm. James Beard 2026 semifinalist, Outstanding Hospitality. Jamie Mammano's Mediterranean seafood house, Back Bay \u2014 whole salt-crusted branzino, paella, king crab. Some price/portion pushback in recent reviews."},
+{name:"Gaaeng Supper Club",rating:4.6,reviews:0,
+ratingNote:"PROVISIONAL. Too new/pop-up-format for a public aggregate. James Beard 2026 semifinalist (Pao Thampitak). Rotating themed Thai supper-club events \u2014 'Lanna 2.0,' 'Monsoon Season' \u2014 among the hardest tickets in Boston; Boston Magazine Best of Boston. No fixed address; check current pop-up schedule."}
+];
+function norm(s){return String(s).toLowerCase().replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='boston')return;var v=by[norm(r.name)];if(!v||r.__v526)return;r.__v526=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-philly-batch1-v527-script">(function(){
+/* v527: Philadelphia ratings pass, batch 1 (2026-09-02). Her Place Supper
+Club gets its star badge (was James Beard only). */
+var ROWS=[
+{name:"Friday Saturday Sunday",rating:4.5,reviews:107,stars:1,address:"261 S 21st St, Philadelphia, PA 19103",url:"https://www.fridaysaturdaysunday.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (107 reviews; #150 of 2,569 in Philadelphia) = 4.5; Yelp star to confirm. One MICHELIN Star (Nov 2025); James Beard Outstanding Restaurant 2023; North America's 50 Best #40 (2026, down from #16). Chad & Hanna Williams' Franco-African diasporic tasting menu, Rittenhouse, since 1973 (under their ownership since 2016)."},
+{name:"Her Place Supper Club",rating:4.7,reviews:0,stars:1,
+ratingNote:"PROVISIONAL. Supper-club format (all diners served together) with no public aggregate. One MICHELIN Star (Nov 2025) \u2014 badge added, was James Beard-only. Amanda Shulman & Alex Kemp; started as a pop-up in Shulman's Penn apartment. Rittenhouse. 2026 James Beard finalist."},
+{name:"Kalaya",rating:4.1,reviews:65,address:"2924 Frankford Ave, Philadelphia, PA 19134",url:"https://www.kalayaphilly.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.1 (65 reviews; #295 of 2,569 in Philadelphia) = 4.1; Yelp star to confirm. MICHELIN Guide Recommended; James Beard Outstanding Restaurant 2026, Best New Restaurant 2020; North America's 50 Best #11. Chutatip 'Nok' Suntaranon's Southern Thai, Fishtown \u2014 the only Southern Thai restaurant on the NA 50 Best list."},
+{name:"Royal Sushi & Izakaya",rating:4.5,reviews:0,address:"780 S 2nd St, Philadelphia, PA 19147",
+ratingNote:"PROVISIONAL. Related listing 'Royal Izakaya' scores well on TA but review count too thin to merge confidently; Yelp star to confirm. MICHELIN Bib Gourmand; James Beard Best Chef Mid-Atlantic 2026 (Jesse Ito); North America's 50 Best #32 (2025). Queen Village \u2014 walk-in izakaya out front, $355 17-course omakase counter in back."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='philadelphia')return;var v=by[norm(r.name)];if(!v||r.__v527)return;r.__v527=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;if(v.stars){r.michelinStars=v.stars;r.michelinGuide=true;}});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-idaho-batch1-v528-script">(function(){
+/* v528: Sun Valley/Idaho ratings pass, batch 1 (2026-09-02) — Boise's 2026
+James Beard set. */
+var ROWS=[
+{name:"Ansots Basque Chorizos & Catering",rating:4.6,reviews:0,address:"560 W Main St, Boise, ID 83702",
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced; Wanderlog reviews uniformly glowing. James Beard 2026 finalist, Outstanding Hospitality. Dan Ansotegui's Basque small plates and house-cured chorizos on Boise's Basque Block \u2014 40+ years in the city's Basque food scene (Bar Gernika 1991, The Basque Market 1999)."},
+{name:"Bar, Please!",rating:4.5,reviews:0,
+ratingNote:"PROVISIONAL. Too new for a public aggregate. James Beard 2026 finalist, Best New Bar \u2014 Idaho's first-ever Beard bar nomination. Amanda & Adam Hanby's neighborhood cocktail bar, opened 2024; inventive cocktails and small plates."},
+{name:"Susina",rating:4.4,reviews:0,
+ratingNote:"PROVISIONAL. Too new for a public aggregate; site lists as 'Susina' \u2014 local press spells it 'Sunisa.' James Beard 2026 semifinalist (Alex Cardoza). European-inspired rotating three-course prix-fixe."},
+{name:"Terroir",rating:4.5,reviews:0,address:"160 N 8th St, Boise, ID 83702",
+ratingNote:"PROVISIONAL. Traveling Spud calls it a top Boise pick; public aggregate star not surfaced. James Beard 2025 semifinalist (R\u00e9mi Courcenet & Nathan Whitley). Started as a food trailer at Telaya Wine Co. (the cult dill burger), now also a brick-and-mortar bistro. Seasonal small plates, steak frites, wild-caught fish."},
+{name:"The Avery",rating:4.7,reviews:0,address:"1010 W Main St, Boise, ID 83702",url:"https://theaveryboise.com/",
+ratingNote:"PROVISIONAL. Public aggregate star not surfaced (hotel side scores well); OpenTable reviews consistently strong. Chef Cal Elliott \u2014 James Beard semifinalist multiple years, most recently 2026; helped earn Brooklyn's Dressler a Michelin star and ran the Bib Gourmand Rye in Williamsburg before returning to Boise. French-American brasserie in a restored 1905 building, downtown."}
+];
+function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018,!]/g,"").replace(/\s+/g," ").trim();}
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var by={};ROWS.forEach(function(v){by[norm(v.name)]=v;});var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name)return;if((r.parentCity||r.city)!=='idaho')return;var v=by[norm(r.name)];if(!v||r.__v528)return;r.__v528=true;hit=true;
+r.rating=v.rating.toFixed(1)+' / 5';r.ratingSource='BJS aggregate';if(v.reviews)r.reviews=v.reviews;r.ratingNote=v.ratingNote;if(v.address&&!r.address)r.address=v.address;if(v.url&&!r.url)r.url=v.url;});});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
 <script id="bop-sd-steak-tiers-v490-script">(function(){
 /* v490: San Diego steak tiers (2026-09-02) + site-wide sync. Also fixes a
 data-drift problem found here: the same restaurant carried different
@@ -38198,6 +38286,28 @@ return out.filter(function(r){if(!r)return false;if(ex[norm(r.name)])return fals
 w.__v524=true;window.boRankedRestaurantList=w;try{boRankedRestaurantList=w;}catch(e){}}
 function hook(){hookRender();hookRank();}
 hook();var n=0,t=setInterval(function(){n++;hook();if(n>40)clearInterval(t);},300);
+})();</script>
+
+<script id="bop-pizza-scores-back-to-legend-v529-script">(function(){
+/* v529 (2026-09-02): The Analog Pizza List (One Bite scores) is a full page,
+not a popup. When it was opened from the Legend page (which closes Legend
+first, then opens the list), the list's own \u00d7 button only restored scroll
+position -- it never reopened Legend, so the user landed on a blank screen.
+The real "open from Legend" handler now sets window.__bopPizzaFromLegend;
+here we make the list's back button consult that flag and reopen Legend. */
+function tryFix(){
+var overlay=document.getElementById('bopAllPizzaScores');var backBtn=overlay&&overlay.querySelector('.bop-all-pizza-back');
+if(!backBtn||backBtn.__v529)return;backBtn.__v529=true;
+backBtn.addEventListener('click',function(){
+if(!window.__bopPizzaFromLegend)return;
+window.__bopPizzaFromLegend=false;
+requestAnimationFrame(function(){
+var legend=document.getElementById('legendOverlay');
+if(legend&&!legend.classList.contains('open')){legend.classList.add('open');legend.scrollTop=0;}
+});
+},false);
+}
+tryFix();new MutationObserver(tryFix).observe(document.body,{childList:true,subtree:true});
 })();</script>
 
 </body></html>
