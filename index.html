@@ -38179,4 +38179,25 @@ function fix(){var sec=document.querySelector('#legendOverlay .bo-legend-price')
 fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
 })();</script>
 
+<script id="bop-bestof-list-rules-v524-script">(function(){
+/* v524 (2026-09-02) — worldwide rule for every "Best Of <city/area>" ranked
+list (the main city and neighborhood pages): only $$$ and $$$$ restaurants
+qualify, and pizza, bagel and cheesesteak places never appear there — they
+live in their own categories (and BJS Picks). Category tiles, Michelin,
+James Beard and BJS Picks lists are untouched. */
+var EXCL=['pizza','bagels','cheesesteak'];
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function excludedNames(){var set={};EXCL.forEach(function(cat){var arr=boCategoryData&&boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(r&&r.name)set[norm(r.name)]=1;});});return set;}
+function priceNum(r){var p=r&&r.price;if(p==null||p==='')return null;if(typeof p==='number')return p;var s=String(p).trim();if(/^\$+$/.test(s))return s.length;var n=parseInt(s,10);return isNaN(n)?null:n;}
+function isBestOfPage(cat){if(!cat)return false;if(cat==='bestof'||cat==='otheroptions')return true;try{if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[cat])return true;}catch(e){}return false;}
+var renderingCat='';
+function hookRender(){if(typeof window.boRenderCategory!=='function'||window.boRenderCategory.__v524)return;var orig=window.boRenderCategory;var w=function(cat){renderingCat=cat;return orig.apply(this,arguments);};w.__v524=true;window.boRenderCategory=w;try{boRenderCategory=w;}catch(e){}}
+function hookRank(){if(typeof window.boRankedRestaurantList!=='function'||window.boRankedRestaurantList.__v524)return;var orig=window.boRankedRestaurantList;
+var w=function(list){var out=orig.apply(this,arguments);var cat=renderingCat||(typeof boCurrentCat!=='undefined'?boCurrentCat:'');if(!isBestOfPage(cat)||!Array.isArray(out))return out;var ex=excludedNames();
+return out.filter(function(r){if(!r)return false;if(ex[norm(r.name)])return false;var p=priceNum(r);if(p!=null&&p<3)return false;return true;});};
+w.__v524=true;window.boRankedRestaurantList=w;try{boRankedRestaurantList=w;}catch(e){}}
+function hook(){hookRender();hookRank();}
+hook();var n=0,t=setInterval(function(){n++;hook();if(n>40)clearInterval(t);},300);
+})();</script>
+
 </body></html>
