@@ -10063,6 +10063,24 @@ price: 2,
 instagram: null,
 facebook: null
 }
+,
+{
+rank: 0,
+name: "Factor's Famous Deli",
+city: "losangeles",
+rating: "4.3 / 5",
+ratingNote: "Aggregate of Google (4.3), TripAdvisor (4.1 from 249 reviews) and DoorDash (4.5 from 4,000+ ratings); 927+ Yelp reviews.",
+why: "West LA institution since 1948, one of the last real old-school Jewish delis on the Westside.",
+note: "Pico-Robertson landmark serving roasted-in-house pastrami and corned beef, matzo ball soup, and a 100-plus item menu in a classic mid-century deli room. Family-owned by the Markowitz family since 1969.",
+url: "https://www.factorsdeli.com/",
+address: "9420 W Pico Blvd, Los Angeles, CA 90035",
+phone: "",
+hours: [{ days: [0,1,2,3,4,5,6], open: '08:00', close: '19:40' }],
+hue: "28, 32%, 26%",
+price: 2,
+instagram: null,
+facebook: null
+}
 ];
 boCategoryData.crepes = [
 {
@@ -40088,6 +40106,70 @@ modal.querySelector('.bop-cf-close').addEventListener('click',close);
 modal.addEventListener('click',function(e){if(e.target===modal)close()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close()});
 window.bopShowCannabisFallback=open;
+})();</script>
+
+
+<script id="bop-dantanas-weho-bjs-pick-v312-script">(function(){
+/* v312: Make Dan Tana's the explicit BJS Pick for Best Italian and Best
+Steak in West Hollywood, on top of its existing general BJS Pick listing.
+Runs after the address classifier so city is already 'laweho' by the time
+this fires; also handles the pre-classifier 'losangeles' state as a fallback. */
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var cats=['italianhighend','steakhighend'];
+var found=false;
+cats.forEach(function(cat){
+var list=boCategoryData[cat];
+if(!Array.isArray(list))return;
+var idx=list.findIndex(function(r){return r&&r.name==="Dan Tana's"&&(r.city==='laweho'||r.city==='losangeles')});
+if(idx<0)return;
+found=true;
+var entry=list[idx];
+entry.bjsPick=true;
+entry.rank=1;
+entry.goldApple=true;
+entry.photoRequired=true;
+if(!entry.image&&!entry.photoAuditStatus)entry.photoAuditStatus='awaiting-verified-interior';
+list.splice(idx,1);
+list.unshift(entry);
+list.forEach(function(r,i){if(r)r.rank=i+1});
+});
+return found;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},300);});
+})();</script>
+
+
+<script id="bop-gold-apple-final-worldwide-sweep-v313-script">(function(){
+/* v313: True final gold-apple sweep, worldwide. The v466 sweep was written
+to be "the last script in the document" but that assumption keeps breaking
+every time a new patch gets appended after it -- including several from
+today's session (v300/v301/v310/v312). This runs the identical rule one
+more time, now placed after every other script, so nothing added today
+or in any future session before this point falls through the cracks.
+Idempotent -- only fills what's missing, never overwrites a correct record. */
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var stamped=0,checked=0;
+Object.keys(boCategoryData).forEach(function(cat){
+(boCategoryData[cat]||[]).forEach(function(r){
+if(!r)return;
+checked++;
+var rating=parseFloat(r.rating);
+var qualifies=r.bjsPick===true||(Number.isFinite(rating)&&rating>=4.9)||(Number(r.michelinStars)>0)||r.michelinGuide===true||r.jamesBeard===true;
+if(!qualifies)return;
+if(!r.goldApple){r.goldApple=true;stamped++;}
+if(!r.photoRequired)r.photoRequired=true;
+if(!r.image&&!r.photoAuditStatus)r.photoAuditStatus='awaiting-verified-interior';
+});
+});
+window.BOP_V313_CHECKED=checked;
+window.BOP_V313_STAMPED=stamped;
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},300);});
 })();</script>
 
 </body></html>
