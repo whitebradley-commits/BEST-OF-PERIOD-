@@ -12399,12 +12399,14 @@ if(nearTitle){
 const closestTitle=document.createElement('strong');
 closestTitle.className='bo-near-closest-title';
 closestTitle.id='boNearClosestTitle';
-closestTitle.textContent='CLOSEST 5';
+closestTitle.textContent='CLOSEST';
 nearTitle.insertBefore(closestTitle,nearTitle.querySelector('span'));
 const closestSubtitle=document.createElement('div');
 closestSubtitle.className='bo-near-osm-heading';
 closestSubtitle.id='boNearClosestSubtitle';
 closestSubtitle.style.marginTop='-2px';
+closestSubtitle.style.textAlign='center';
+closestSubtitle.style.width='100%';
 closestSubtitle.textContent='YUMMY SPOTS NEAR YOU!';
 closestTitle.insertAdjacentElement('afterend',closestSubtitle);
 const priceKey=document.createElement('div');
@@ -12424,7 +12426,7 @@ closest.querySelectorAll('[data-near-tier]').forEach(btn=>btn.addEventListener('
 boNearClosestTier=btn.dataset.nearTier||'';
 closest.querySelectorAll('[data-near-tier]').forEach(item=>item.setAttribute('aria-pressed',String(item===btn)));
 const closestTitle=document.getElementById('boNearClosestTitle');
-if(closestTitle) closestTitle.textContent=boNearClosestTier==='all'?'CLOSEST 15':'CLOSEST 5';
+if(closestTitle) closestTitle.textContent='CLOSEST';
 boRenderNearClosestFive();
 }));
 closest.querySelectorAll('[data-near-osm-tier]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -12871,7 +12873,7 @@ const closestStatus=document.getElementById('boNearClosestStatus');
 if(closestList) closestList.innerHTML='';
 if(closestStatus) closestStatus.textContent='Choose Dive, Casual, Fine, or All 15.';
 const closestTitle=document.getElementById('boNearClosestTitle');
-if(closestTitle) closestTitle.textContent='CLOSEST 5';
+if(closestTitle) closestTitle.textContent='CLOSEST';
 document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(btn=>btn.setAttribute('aria-pressed','false'));
 const nearRadiusCountEl=document.getElementById('boNearRadiusCount');
 if(nearRadiusCountEl) nearRadiusCountEl.textContent='0';
@@ -21441,15 +21443,25 @@ new MutationObserver(function(){requestAnimationFrame(decorate)}).observe(docume
   <div class="bop-ny-gateway-inner">
     <div class="bop-ny-gateway-kicker">CHOOSE YOUR DESTINATION</div>
     <h1 class="bop-ny-gateway-title">Best Of<span class="bop-ny-title-city">New York</span><span class="bop-ny-title-period">Period<span class="period-mark">©</span></span></h1>
-    <div class="bop-ny-gateway-grid">
-      <button type="button" class="bop-ny-gateway-tile" data-number="01" data-ny-destination="manhattan"><strong>Manhattan</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-faint" d="M3 53h114M8 53V39h11v14M23 53V31h10v22M37 53V36h9v17M75 53V34h9v19M88 53V28h11v25M103 53V38h10v15"/><path class="art-fill" d="M50 53V20h5v-8h3V6h4v6h3v8h5v33z"/><path class="art-main" d="M60 6V1M54 26h12M54 33h12M54 40h12M58 20v33M62 20v33"/></svg></button>
-      <button type="button" class="bop-ny-gateway-tile" data-number="02" data-ny-destination="brooklyn"><strong>Brooklyn</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-main" d="M5 51h110M18 51V18h12v33M90 51V18h12v33M18 26h12M90 26h12M24 18V10M96 18V10M24 10l-5 8M24 10l6 8M96 10l-6 8M96 10l6 8M30 28c15-20 45-20 60 0M30 32c17-16 43-16 60 0M5 40h110"/><path class="art-faint" d="M11 40l7-12M109 40l-7-12M38 40V28M48 40V22M60 40V20M72 40V22M82 40V28"/></svg></button>
-      <button type="button" class="bop-ny-gateway-tile" data-number="03" data-ny-destination="queens"><strong>Queens</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><circle class="art-main" cx="60" cy="26" r="20"/><path class="art-main" d="M60 6c-7 7-10 13-10 20s3 14 10 20M60 6c7 7 10 13 10 20s-3 14-10 20M41 20c12 4 26 4 38 0M41 32c12-4 26-4 38 0M37 26h46M60 46v7M46 53h28"/><path class="art-faint" d="M30 53h60M60 3v3"/></svg></button>
-      <button type="button" class="bop-ny-gateway-tile" data-number="04" data-ny-destination="bronx"><strong>The Bronx</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-fill" d="M16 51V25l9-12h70l9 12v26z"/><path class="art-main" d="M16 25h88M25 13l8 12M95 13l-8 12M32 51V33h56v18M42 51V39h36v12M56 39v12M64 39v12M22 31h10M88 31h10"/><path class="art-faint" d="M8 51h104M39 13V7h42v6M47 7V3h26v4"/></svg></button>
-      <button type="button" class="bop-ny-gateway-tile" data-number="05" data-ny-destination="hamptons"><strong>The Hamptons</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-main" d="M45 46h30L70 17H50zM48 17h24l-4-7H52zM56 10V5h8v5M54 25h12M55 33h10M60 17v29M5 49c10-5 20-5 30 0s20 5 30 0 20-5 30 0 15 4 20 1M5 55c10-5 20-5 30 0"/><path class="art-faint" d="M74 17l16-7M74 20l20-2M46 17l-16-7M46 20l-20-2"/><path class="art-fill" d="M54 46V35h12v11z"/></svg></button>
-<button type="button" class="bop-ny-gateway-tile" data-number="06" data-ny-destination="northshoreli"><strong>North Shore</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-main" d="M45 46h30L70 17H50zM48 17h24l-4-7H52zM56 10V5h8v5M54 25h12M55 33h10M60 17v29M5 49c10-5 20-5 30 0s20 5 30 0 20-5 30 0 15 4 20 1M5 55c10-5 20-5 30 0"/><path class="art-faint" d="M74 17l16-7M74 20l20-2M46 17l-16-7M46 20l-20-2"/><path class="art-fill" d="M54 46V35h12v11z"/></svg></button>
-<button type="button" class="bop-ny-gateway-tile" data-number="07" data-ny-destination="southshoreli"><strong>South Shore</strong><svg class="bop-ny-place-art" viewBox="0 0 120 58" aria-hidden="true"><path class="art-main" d="M45 46h30L70 17H50zM48 17h24l-4-7H52zM56 10V5h8v5M54 25h12M55 33h10M60 17v29M5 49c10-5 20-5 30 0s20 5 30 0 20-5 30 0 15 4 20 1M5 55c10-5 20-5 30 0"/><path class="art-faint" d="M74 17l16-7M74 20l20-2M46 17l-16-7M46 20l-20-2"/><path class="art-fill" d="M54 46V35h12v11z"/></svg></button>
+    
+    <div class="bop-map-wrap" style="width:min(100%,420px)">
+      <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M118,10 L150,6 L165,32 L152,58 L120,54 L105,32 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M112,54 L134,58 L145,90 L128,132 L100,140 L88,112 L96,78 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M150,60 L260,48 L340,52 L400,60 C430,64 460,68 490,74 L520,70 L560,66 C575,72 580,84 570,92 L540,96 L510,86 C500,92 502,104 512,110 L560,110 C575,118 572,132 558,136 L520,130 C505,124 498,112 486,108 L440,120 L380,132 L320,150 L220,140 L165,120 L140,95 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M20,120 L70,112 L82,150 L55,180 L14,160 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
+        <g fill="#3b9dff" opacity=".28"><circle cx="118" cy="95" r="3"/><circle cx="320" cy="95" r="3"/><circle cx="45" cy="145" r="3"/><circle cx="500" cy="95" r="2.6"/></g>
+      </svg>
+      <div class="bop-map-pin" style="top:14%;left:21%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="bronx"><strong>The Bronx</strong></button></div>
+      <div class="bop-map-pin" style="top:52%;left:17%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="manhattan"><strong>Manhattan</strong></button></div>
+      <div class="bop-map-pin" style="top:38%;left:47%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="queens"><strong>Queens</strong></button></div>
+      <div class="bop-map-pin" style="top:70%;left:44%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="brooklyn"><strong>Brooklyn</strong></button></div>
+      <div class="bop-map-pin" style="top:82%;left:9%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="manhattan"><strong>Staten Island</strong></button></div>
+      <div class="bop-map-pin" style="top:20%;left:75%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="northshoreli"><strong>North Shore</strong></button></div>
+      <div class="bop-map-pin" style="top:78%;left:78%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="southshoreli"><strong>South Shore</strong></button></div>
+      <div class="bop-map-pin" style="top:42%;left:92%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="hamptons"><strong>The Hamptons</strong></button></div>
     </div>
+
   </div>
 </div>
 <div id="bopNewYorkComing" class="bop-ny-coming" aria-hidden="true" role="dialog" aria-modal="true">
@@ -23192,7 +23204,7 @@ document.addEventListener("click",function(e){var btn=e.target.closest&&e.target
 overlay.querySelector(".bop-hotel-close").addEventListener("click",closeHotels);notice.querySelector(".bop-hotel-note-close").addEventListener("click",function(){notice.classList.remove("open");});notice.querySelector(".bop-hotel-note-continue").addEventListener("click",function(){notice.classList.remove("open");});
 document.addEventListener("keydown",function(e){if(e.key!=="Escape"||!document.documentElement.classList.contains("bop-hotels-open"))return;if(notice.classList.contains("open"))notice.classList.remove("open");else closeHotels();});
 })();</script>
-<style id="bop-all-bjs-picks-style">#bopAllBjsPicks{position:fixed;inset:0;z-index:13000;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}.bop-all-bjs-open #bopAllBjsPicks{display:block}.bop-all-bjs-shell{width:min(1180px,100%);min-height:100%;margin:auto;padding:18px 16px 34px}.bop-all-bjs-back{position:sticky;top:8px;z-index:3;display:grid;place-items:center;width:50px;height:50px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#ef3340;font-size:34px;font-weight:900;line-height:1;box-shadow:0 0 15px rgba(245,158,11,.35)}.bop-all-bjs-title{margin:8px 0 2px;text-align:center;color:#f59e0b;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(25px,5vw,54px);line-height:.95;letter-spacing:.02em}.bop-all-bjs-sub{margin:5px 0 12px;text-align:center;color:#9d8f72;font-size:9px;font-weight:800;letter-spacing:.22em}.bop-all-bjs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-items:start}.bop-all-bjs-group{min-width:0;border:1px solid #493a1d;background:#0b0b0b;padding:7px}.bop-all-bjs-city{margin:0 0 5px;padding-bottom:4px;border-bottom:1px solid #f59e0b;color:#f59e0b;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.bop-all-bjs-list{margin:0;padding:0;list-style:none}.bop-all-bjs-item{display:grid;grid-template-columns:14px minmax(0,1fr);gap:3px;padding:3px 0;border-bottom:1px solid #1d1d1d;font-size:8px;line-height:1.08}.bop-all-bjs-num{color:#7e35e8;font-weight:900}.bop-all-bjs-name{overflow-wrap:anywhere;font-weight:800}.bop-all-bjs-source{display:block;margin-top:1px;color:#9f947d;font-size:6px;font-weight:600;letter-spacing:.03em}.bo-all-bjs-globe-launch{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:116px;margin:18px auto;padding:0;border:0;background:transparent;cursor:pointer}.bo-all-bjs-red-globe{position:relative;display:block;width:58px;height:58px;border:3px solid #ef3340;border-radius:50%;box-shadow:0 0 12px rgba(239,51,64,.72),inset 0 0 10px rgba(239,51,64,.22)}.bo-all-bjs-red-globe:before,.bo-all-bjs-red-globe:after,.bo-all-bjs-globe-lat,.bo-all-bjs-globe-lon{content:'';position:absolute;border:1.7px solid #ef3340;border-radius:50%}.bo-all-bjs-red-globe:before{inset:8px -2px}.bo-all-bjs-red-globe:after{inset:-2px 12px}.bo-all-bjs-globe-lat{left:2px;right:2px;top:26px;height:0;border-width:1.7px 0 0;border-radius:0}.bo-all-bjs-globe-lon{top:2px;bottom:2px;left:26px;width:0;border-width:0 0 0 1.7px;border-radius:0}.bo-all-bjs-globe-label{color:#ef3340;font:900 11px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.035em;text-align:center;text-shadow:0 0 7px rgba(239,51,64,.48)}.bo-worldwide-bjs-icons{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:4px}.bo-all-bjs-red-globe-tile{width:34px;height:34px;border-width:2px;box-shadow:0 0 8px rgba(239,51,64,.7),inset 0 0 6px rgba(239,51,64,.2)}.bo-all-bjs-red-globe-tile:before{inset:5px -1px}.bo-all-bjs-red-globe-tile:after{inset:-1px 7px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lat{top:15px;left:1px;right:1px;border-top-width:1px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lon{left:15px;top:1px;bottom:1px;border-left-width:1px}.bo-bjs-outline-flame{width:20px;height:25px;color:#ef3340;filter:drop-shadow(0 0 4px rgba(239,51,64,.65))}.bo-worldwide-bjs-label{color:#ef3340;font:900 clamp(.58rem,1.72vw,.78rem)/1.05 'Archivo Black',sans-serif;text-shadow:0 0 5px rgba(239,51,64,.4)}.bo-all-bjs-globe-launch:hover .bo-all-bjs-red-globe,.bo-all-bjs-globe-launch:focus-visible .bo-all-bjs-red-globe{box-shadow:0 0 20px rgba(239,51,64,.95),inset 0 0 12px rgba(239,51,64,.3)}.bo-all-bjs-globe-launch:focus-visible{outline:1px solid #ef3340;outline-offset:5px}@media(min-width:800px){.bop-all-bjs-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.bop-all-bjs-item{font-size:9px}.bop-all-bjs-source{font-size:7px}}@media(max-width:420px){.bop-all-bjs-shell{padding-inline:8px}.bop-all-bjs-grid{gap:4px}.bop-all-bjs-group{padding:5px}.bop-all-bjs-city{font-size:8px}.bop-all-bjs-item{font-size:6.8px;grid-template-columns:11px minmax(0,1fr)}.bop-all-bjs-source{font-size:5.5px}}</style>
+<style id="bop-all-bjs-picks-style">#bopAllBjsPicks{position:fixed;inset:0;z-index:2147483005;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}.bop-all-bjs-open #bopAllBjsPicks{display:block}.bop-all-bjs-shell{width:min(1180px,100%);min-height:100%;margin:auto;padding:18px 16px 34px}.bop-all-bjs-back{position:sticky;top:8px;z-index:3;display:grid;place-items:center;width:50px;height:50px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#ef3340;font-size:34px;font-weight:900;line-height:1;box-shadow:0 0 15px rgba(245,158,11,.35)}.bop-all-bjs-title{margin:8px 0 2px;text-align:center;color:#f59e0b;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(25px,5vw,54px);line-height:.95;letter-spacing:.02em}.bop-all-bjs-sub{margin:5px 0 12px;text-align:center;color:#9d8f72;font-size:9px;font-weight:800;letter-spacing:.22em}.bop-all-bjs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-items:start}.bop-all-bjs-group{min-width:0;border:1px solid #493a1d;background:#0b0b0b;padding:7px}.bop-all-bjs-city{margin:0 0 5px;padding-bottom:4px;border-bottom:1px solid #f59e0b;color:#f59e0b;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.bop-all-bjs-list{margin:0;padding:0;list-style:none}.bop-all-bjs-item{display:grid;grid-template-columns:14px minmax(0,1fr);gap:3px;padding:3px 0;border-bottom:1px solid #1d1d1d;font-size:8px;line-height:1.08}.bop-all-bjs-num{color:#7e35e8;font-weight:900}.bop-all-bjs-name{overflow-wrap:anywhere;font-weight:800}.bop-all-bjs-source{display:block;margin-top:1px;color:#9f947d;font-size:6px;font-weight:600;letter-spacing:.03em}.bo-all-bjs-globe-launch{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:116px;margin:18px auto;padding:0;border:0;background:transparent;cursor:pointer}.bo-all-bjs-red-globe{position:relative;display:block;width:58px;height:58px;border:3px solid #ef3340;border-radius:50%;box-shadow:0 0 12px rgba(239,51,64,.72),inset 0 0 10px rgba(239,51,64,.22)}.bo-all-bjs-red-globe:before,.bo-all-bjs-red-globe:after,.bo-all-bjs-globe-lat,.bo-all-bjs-globe-lon{content:'';position:absolute;border:1.7px solid #ef3340;border-radius:50%}.bo-all-bjs-red-globe:before{inset:8px -2px}.bo-all-bjs-red-globe:after{inset:-2px 12px}.bo-all-bjs-globe-lat{left:2px;right:2px;top:26px;height:0;border-width:1.7px 0 0;border-radius:0}.bo-all-bjs-globe-lon{top:2px;bottom:2px;left:26px;width:0;border-width:0 0 0 1.7px;border-radius:0}.bo-all-bjs-globe-label{color:#ef3340;font:900 11px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.035em;text-align:center;text-shadow:0 0 7px rgba(239,51,64,.48)}.bo-worldwide-bjs-icons{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:4px}.bo-all-bjs-red-globe-tile{width:34px;height:34px;border-width:2px;box-shadow:0 0 8px rgba(239,51,64,.7),inset 0 0 6px rgba(239,51,64,.2)}.bo-all-bjs-red-globe-tile:before{inset:5px -1px}.bo-all-bjs-red-globe-tile:after{inset:-1px 7px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lat{top:15px;left:1px;right:1px;border-top-width:1px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lon{left:15px;top:1px;bottom:1px;border-left-width:1px}.bo-bjs-outline-flame{width:20px;height:25px;color:#ef3340;filter:drop-shadow(0 0 4px rgba(239,51,64,.65))}.bo-worldwide-bjs-label{color:#ef3340;font:900 clamp(.58rem,1.72vw,.78rem)/1.05 'Archivo Black',sans-serif;text-shadow:0 0 5px rgba(239,51,64,.4)}.bo-all-bjs-globe-launch:hover .bo-all-bjs-red-globe,.bo-all-bjs-globe-launch:focus-visible .bo-all-bjs-red-globe{box-shadow:0 0 20px rgba(239,51,64,.95),inset 0 0 12px rgba(239,51,64,.3)}.bo-all-bjs-globe-launch:focus-visible{outline:1px solid #ef3340;outline-offset:5px}@media(min-width:800px){.bop-all-bjs-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.bop-all-bjs-item{font-size:9px}.bop-all-bjs-source{font-size:7px}}@media(max-width:420px){.bop-all-bjs-shell{padding-inline:8px}.bop-all-bjs-grid{gap:4px}.bop-all-bjs-group{padding:5px}.bop-all-bjs-city{font-size:8px}.bop-all-bjs-item{font-size:6.8px;grid-template-columns:11px minmax(0,1fr)}.bop-all-bjs-source{font-size:5.5px}}</style>
 <section id="bopAllBjsPicks" role="dialog" aria-modal="true" aria-label="All BJS Picks"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to BJS Picks">×</button><h2 class="bop-all-bjs-title">ALL BJS PICKS</h2><p class="bop-all-bjs-sub">EVERY CURRENT BJS SELECTION · ONE PAGE</p><div class="bop-all-bjs-grid"></div></div></section>
 <script id="bop-all-bjs-picks-script">(function(){
 var overlay=document.getElementById('bopAllBjsPicks');
@@ -29908,10 +29920,11 @@ window.addEventListener('resize',function(){document.querySelectorAll('.bop-spla
 arrival -> check-in -> Back -> map -> Back), go to the rotating
 landing page instead of a black screen. */
 function visible(el){
-if(!el||el.id==='bopFoodTruckOverlay')return false;
+if(!el||el.id==='bopFoodTruckOverlay'||el.id==='siteFrame')return false;
 var cs=getComputedStyle(el);
 if(cs.display==='none'||cs.visibility==='hidden'||cs.opacity==='0')return false;
-var r=el.getBoundingClientRect();return r.width>0&&r.height>0;
+var r=el.getBoundingClientRect();
+return r.width>window.innerWidth*0.5&&r.height>window.innerHeight*0.5;
 }
 function wireMapBack(){
 var page=document.getElementById('bopFoodTruckOverlay');
@@ -29920,7 +29933,7 @@ if(!back||back.dataset.bopV423)return;
 back.dataset.bopV423='1';
 back.addEventListener('click',function(){
 setTimeout(function(){
-var anyOpen=Array.prototype.slice.call(document.querySelectorAll('body>.open, body>section.open, body>div.open')).some(visible);
+var anyOpen=Array.prototype.slice.call(document.querySelectorAll('.open')).some(visible);
 if(anyOpen)return;
 var gate=document.getElementById('bopExclusiveInvitation');
 if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
@@ -30192,11 +30205,12 @@ page.innerHTML =
 document.body.appendChild(page);
 page.querySelector('.bo-ft-back').addEventListener('click', function(){
 setTimeout(function(){
-var anyOpen=Array.prototype.slice.call(document.querySelectorAll('body>.open, body>section.open, body>div.open')).some(function(el){
-if(!el||el.id==='bopVendorStandOverlay')return false;
+var anyOpen=Array.prototype.slice.call(document.querySelectorAll('.open')).some(function(el){
+if(!el||el.id==='bopVendorStandOverlay'||el.id==='siteFrame')return false;
 var cs=getComputedStyle(el);
 if(cs.display==='none'||cs.visibility==='hidden'||cs.opacity==='0')return false;
-var r=el.getBoundingClientRect();return r.width>0&&r.height>0;
+var r=el.getBoundingClientRect();
+return r.width>window.innerWidth*0.5&&r.height>window.innerHeight*0.5;
 });
 page.classList.remove('open'); document.body.style.overflow='';
 if(window.bopVsMapInstance){ window.bopVsMapInstance.remove(); window.bopVsMapInstance=null; }
@@ -39874,4 +39888,250 @@ if(frame)frame.src='';
 window.addEventListener('popstate',closeStrayPopups);
 window.addEventListener('pageshow',closeStrayPopups);
 })();</script>
+
+
+<style id="bop-gateway-map-art-v302-style">.bop-map-wrap{position:relative;width:min(100%,360px);margin:22px auto 0}.bop-map-wrap svg{width:100%;height:auto;display:block}.bop-map-ocean{position:absolute;top:6px;left:8px;font:900 .58rem/1 'Archivo Black',Arial;letter-spacing:.24em;color:#3b9dff;opacity:.85;pointer-events:none}.bop-map-pin{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;flex-direction:row-reverse;pointer-events:none}.bop-map-pin-dot{width:9px;height:9px;border-radius:50%;background:#F59E0B;flex:0 0 auto;box-shadow:0 0 6px rgba(245,158,11,.95)}.bop-map-pin-btn{pointer-events:auto;min-height:0!important;min-width:0!important;padding:5px 11px!important;border:1.3px solid rgba(245,158,11,.7)!important;border-radius:999px!important;background:#0a0a0a!important;color:#fff!important;font:700 .66rem/1 'Archivo Narrow',Arial,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;white-space:nowrap;cursor:pointer;box-shadow:0 0 6px rgba(245,158,11,.25)!important;-webkit-tap-highlight-color:transparent}.bop-map-pin-btn::before{content:none!important}.bop-map-pin-btn strong{display:inline!important;color:#fff!important;text-shadow:none!important;font:inherit!important}.bop-map-pin-btn:active{border-color:#F59E0B!important;background:#161616!important}.bop-map-inland{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px auto 0;width:100%}.bop-map-inland .bop-map-pin-btn{position:static;transform:none;padding:9px 14px!important;font-size:.74rem!important}.bop-map-inland-label{width:100%;text-align:center;color:#F59E0B;font:900 .58rem/1 'Archivo Black',Arial;letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin-bottom:2px}</style>
+<style id="bop-san-diego-gateway-v300-style">#bopSanDiegoGateway{position:fixed;inset:0;z-index:2147483600;display:none;overflow:auto;background:radial-gradient(circle at 50% 18%,rgba(245,158,11,.18),transparent 35%),#020202;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))}#bopSanDiegoGateway.open{display:block}.bop-sd-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}.bop-sd-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}.bop-sd-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}.bop-sd-gateway-title{margin:0;text-align:center;font:900 clamp(2.3rem,10vw,4.4rem)/1.05 'Fraunces',serif;text-transform:none;letter-spacing:-.01em;text-shadow:0 0 24px rgba(255,255,255,.18);white-space:normal}.bop-sd-gateway-title .bop-sd-title-city{display:block;color:#E4002B;font-style:italic;text-shadow:0 0 12px rgba(228,0,43,.34)}.bop-sd-gateway-title .bop-sd-title-period{display:block;color:#F59E0B}.bop-sd-gateway-title .bop-sd-title-period .period-mark{font-family:Arial,sans-serif!important;font-style:normal!important;font-size:.4em!important;vertical-align:super!important}.bop-sd-gateway-prompt{margin:24px 0 16px;color:#f3e7cf;text-align:center;font:800 clamp(.78rem,3vw,1rem)/1.35 'Archivo Black',Arial;letter-spacing:.08em;text-transform:uppercase}.bop-sd-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}.bop-sd-gateway-tile{position:relative;min-height:120px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(.95rem,4vw,1.3rem)/1.1 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em;cursor:pointer}.bop-sd-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}.bop-sd-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.28)}@media(max-width:370px){.bop-sd-gateway-grid{gap:8px}.bop-sd-gateway-tile{min-height:105px}}</style>
+<div id="bopSanDiegoGateway" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Choose a San Diego area">
+  <button type="button" class="bop-sd-gateway-close" aria-label="Close San Diego areas">×</button>
+  <div class="bop-sd-gateway-inner">
+    <div class="bop-sd-gateway-kicker">CHOOSE YOUR AREA</div>
+    <h1 class="bop-sd-gateway-title">Best Of<span class="bop-sd-title-city">San Diego</span><span class="bop-sd-title-period">Period<span class="period-mark">&copy;</span></span></h1>
+    
+    <div class="bop-map-wrap">
+      <span class="bop-map-ocean">PACIFIC</span>
+      <svg viewBox="0 0 220 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M100,8 C94,60 98,90 90,120 C84,160 92,190 86,230 C80,270 90,300 84,340 C78,375 82,395 74,415 C84,440 90,455 92,472 C70,485 60,500 56,522 C60,540 78,545 92,552 C86,565 78,578 82,596 C86,615 80,630 84,648 C88,662 92,668 96,678 L100,692" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <g fill="#3b9dff" opacity=".28"><circle cx="55" cy="70" r="2.4"/><circle cx="45" cy="190" r="2"/><circle cx="50" cy="320" r="2.6"/><circle cx="42" cy="440" r="2.2"/><circle cx="40" cy="530" r="2.4"/><circle cx="46" cy="620" r="2"/></g>
+      </svg>
+      <div class="bop-map-pin" style="top:1%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="oceanside"><strong>Oceanside / Vista / San Marcos</strong></button></div>
+      <div class="bop-map-pin" style="top:12%;left:41%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="carlsbad"><strong>Carlsbad</strong></button></div>
+      <div class="bop-map-pin" style="top:24%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="encinitas"><strong>Encinitas / Cardiff</strong></button></div>
+      <div class="bop-map-pin" style="top:36%;left:37%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="delmar"><strong>Del Mar / Solana Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:52%;left:33%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="lajolla"><strong>La Jolla</strong></button></div>
+      <div class="bop-map-pin" style="top:63%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Pacific Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:68%;left:42%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Mission Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:72%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Ocean Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:76%;left:25%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Point Loma</strong></button></div>
+      <div class="bop-map-pin" style="top:80%;left:52%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Downtown San Diego</strong></button></div>
+      <div class="bop-map-pin" style="top:85%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Coronado</strong></button></div>
+      <div class="bop-map-pin" style="top:89%;left:55%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>National City / Chula Vista</strong></button></div>
+      <div class="bop-map-pin" style="top:94%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Imperial Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:99%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Tijuana</strong></button></div>
+    </div>
+    <p class="fine-print" style="margin-top:36px;padding:0 8px;"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span><span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg height="20" viewBox="0 0 40 40" width="20"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11" text-anchor="middle" x="20" y="18">BJS</text><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8" text-anchor="middle" x="20" y="28">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice &mdash; always confirm details directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p>
+  </div>
+</div>
+<script id="bop-san-diego-gateway-v300-script">(function(){
+if(typeof boRenderCategory!=='function'||typeof boCategoryData==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;
+var childCities={
+oceanside:{displayName:'Oceanside',landingName:'Oceanside',areaList:['Oceanside'],tickerMessages:['Best Of OCEANSIDE','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksoceanside',sanDiegoSubcity:true},
+carlsbad:{displayName:'Carlsbad',landingName:'Carlsbad',areaList:['Carlsbad'],tickerMessages:['Best Of CARLSBAD','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickscarlsbad',sanDiegoSubcity:true},
+encinitas:{displayName:'Encinitas',landingName:'Encinitas',areaList:['Encinitas','Cardiff-by-the-Sea'],tickerMessages:['Best Of ENCINITAS','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksencinitas',sanDiegoSubcity:true},
+delmar:{displayName:'Del Mar',landingName:'Del Mar',areaList:['Del Mar','Solana Beach'],tickerMessages:['Best Of DEL MAR','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdelmar',sanDiegoSubcity:true},
+lajolla:{displayName:'La Jolla',landingName:'La Jolla',areaList:['La Jolla'],tickerMessages:['Best Of LA JOLLA','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslajolla',sanDiegoSubcity:true},
+pacificbeach:{displayName:'Pacific Beach',landingName:'PB',areaList:['Pacific Beach','Mission Beach','Ocean Beach','Point Loma'],tickerMessages:['Best Of PACIFIC BEACH','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickspacificbeach',sanDiegoSubcity:true},
+downtownsd:{displayName:'Downtown San Diego',landingName:'Downtown',areaList:['Gaslamp Quarter','Little Italy','East Village','Hillcrest','Coronado','Imperial Beach','Chula Vista','National City'],tickerMessages:['Best Of DOWNTOWN','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdowntownsd',sanDiegoSubcity:true}
+};
+Object.keys(childCities).forEach(function(key){
+BO_CITY_CONFIG[key]=childCities[key];
+if(Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);
+boCategoryData[childCities[key].bjsPicksCat]=[];
+});
+/* Real street addresses exist on every San Diego record, so areas are
+assigned by matching neighborhood keywords in the address rather than
+a hand-built name list. Order matters: more specific keywords first. */
+var areaKeywords=[
+['oceanside',['oceanside']],
+['carlsbad',['carlsbad']],
+['encinitas',['encinitas','cardiff']],
+['delmar',['del mar','solana beach']],
+['lajolla',['la jolla']],
+['pacificbeach',['pacific beach','mission beach','ocean beach','point loma']],
+['downtownsd',['coronado','imperial beach','chula vista','national city','gaslamp','little italy','hillcrest','east village','downtown']]
+];
+function areaFor(address){
+var addr=String(address||'').toLowerCase();
+for(var i=0;i<areaKeywords.length;i++){
+var key=areaKeywords[i][0],words=areaKeywords[i][1];
+for(var j=0;j<words.length;j++){if(addr.indexOf(words[j])>-1)return key;}
+}
+return 'downtownsd';
+}
+Object.values(boCategoryData).forEach(function(list){
+if(!Array.isArray(list))return;
+list.forEach(function(r){
+if(r&&r.city==='sandiego'){
+r.city=areaFor(r.address);
+if(r.bjsPickCity==='sandiego')r.bjsPickCity=r.city;
+}
+});
+});
+var allAreaRecords=[];
+Object.values(boCategoryData).forEach(function(list){if(Array.isArray(list))list.forEach(function(r){if(r&&childCities[r.city])allAreaRecords.push(r)})});
+Object.keys(childCities).forEach(function(city){
+var seen=new Map();allAreaRecords.forEach(function(r){if(r.city===city&&!seen.has(r.name.toLowerCase()))seen.set(r.name.toLowerCase(),Object.assign({},r))});
+boCategoryData[city]=Array.from(seen.values());
+boCategoryData[childCities[city].bjsPicksCat]=boCategoryData[city].filter(function(r){return r.bjsPick});
+});
+var gateway=document.getElementById('bopSanDiegoGateway');
+var originalRender=boRenderCategory,bypassSD=false;
+function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
+function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
+function closeGateway(returnToSearch){
+gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false);
+if(returnToSearch){
+var landing=document.getElementById('bopLandingOverlay');
+if(landing)landing.classList.add('open');
+if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
+window.scrollTo(0,0);
+}
+}
+boRenderCategory=function(cat){
+if(cat==='sandiego'&&!bypassSD){openGateway();return}
+return originalRender.apply(this,arguments);
+};
+gateway.querySelector('.bop-sd-gateway-close').addEventListener('click',function(){closeGateway(true)});
+gateway.addEventListener('click',function(event){
+var tile=event.target.closest('.bop-sd-gateway-tile');if(!tile)return;
+var dest=tile.dataset.sdDestination;
+if(childCities[dest]){
+closeGateway(false);
+boCityContext=dest;
+if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
+var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+originalRender('otheroptions');
+window.scrollTo(0,0);
+return;
+}
+});
+document.addEventListener('keydown',function(event){if(event.key==='Escape'&&gateway.classList.contains('open'))closeGateway(true)});
+window.bopOpenSanDiegoGateway=openGateway;
+})();</script>
+
+
+<style id="bop-los-angeles-gateway-v301-style">#bopLosAngelesGateway{position:fixed;inset:0;z-index:2147483600;display:none;overflow:auto;background:radial-gradient(circle at 50% 18%,rgba(245,158,11,.18),transparent 35%),#020202;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))}#bopLosAngelesGateway.open{display:block}.bop-la-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}.bop-la-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}.bop-la-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}.bop-la-gateway-title{margin:0;text-align:center;font:900 clamp(2.3rem,10vw,4.4rem)/1.05 'Fraunces',serif;text-transform:none;letter-spacing:-.01em;text-shadow:0 0 24px rgba(255,255,255,.18);white-space:normal}.bop-la-gateway-title .bop-la-title-city{display:block;color:#E4002B;font-style:italic;text-shadow:0 0 12px rgba(228,0,43,.34)}.bop-la-gateway-title .bop-la-title-period{display:block;color:#F59E0B}.bop-la-gateway-title .bop-la-title-period .period-mark{font-family:Arial,sans-serif!important;font-style:normal!important;font-size:.4em!important;vertical-align:super!important}.bop-la-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin-top:24px}.bop-la-gateway-tile{position:relative;min-height:120px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(.88rem,3.6vw,1.2rem)/1.1 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em;cursor:pointer}.bop-la-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}.bop-la-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.28)}@media(max-width:370px){.bop-la-gateway-grid{gap:8px}.bop-la-gateway-tile{min-height:105px}}</style>
+<div id="bopLosAngelesGateway" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Choose a Los Angeles area">
+  <button type="button" class="bop-la-gateway-close" aria-label="Close Los Angeles areas">×</button>
+  <div class="bop-la-gateway-inner">
+    <div class="bop-la-gateway-kicker">CHOOSE YOUR AREA</div>
+    <h1 class="bop-la-gateway-title">Best Of<span class="bop-la-title-city">Los Angeles</span><span class="bop-la-title-period">Period<span class="period-mark">&copy;</span></span></h1>
+    
+    <div class="bop-map-wrap">
+      <span class="bop-map-ocean">PACIFIC</span>
+      <svg viewBox="0 0 220 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M70,6 C88,32 66,54 82,80 C96,102 76,122 90,146 C100,164 84,182 96,204 C104,220 92,236 100,256 C106,270 96,284 102,300 C106,312 98,324 104,338 C108,350 100,362 106,376 C110,388 132,404 152,428 C168,448 158,470 138,486 C118,500 96,494 82,514 C72,528 78,548 96,560 L118,566 C128,554 122,538 128,520 C132,506 118,494 122,478 C124,466 112,456 112,442 C110,428 100,416 98,400 C96,386 92,372 90,358 C88,344 84,330 84,316 C82,300 78,286 78,270 C76,254 72,240 74,224 C76,206 68,192 72,176 C74,158 66,144 70,126 C72,108 62,92 66,72 C68,54 58,36 58,18 C58,10 64,6 70,6 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <g fill="#3b9dff" opacity=".28"><circle cx="45" cy="55" r="2.4"/><circle cx="50" cy="180" r="2"/><circle cx="60" cy="310" r="2.6"/><circle cx="65" cy="420" r="2.2"/><circle cx="75" cy="540" r="2.4"/></g>
+      </svg>
+      <div class="bop-map-pin" style="top:1%;left:30%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="malibu"><strong>Malibu</strong></button></div>
+      <div class="bop-map-pin" style="top:12%;left:38%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Pacific Palisades</strong></button></div>
+      <div class="bop-map-pin" style="top:22%;left:42%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Santa Monica</strong></button></div>
+      <div class="bop-map-pin" style="top:31%;left:44%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Venice</strong></button></div>
+      <div class="bop-map-pin" style="top:40%;left:46%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Marina del Rey</strong></button></div>
+      <div class="bop-map-pin" style="top:49%;left:46%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>El Segundo</strong></button></div>
+      <div class="bop-map-pin" style="top:57%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Manhattan Beach</strong></button></div>
+      <div class="bop-map-pin" style="top:63%;left:44%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Hermosa / Redondo</strong></button></div>
+      <div class="bop-map-pin" style="top:71%;left:33%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Palos Verdes</strong></button></div>
+      <div class="bop-map-pin" style="top:79%;left:60%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>San Pedro</strong></button></div>
+      <div class="bop-map-pin" style="top:91%;left:50%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="longbeach"><strong>Long Beach</strong></button></div>
+    </div>
+    <div class="bop-map-inland">
+      <div class="bop-map-inland-label">Inland</div>
+      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="downtownla"><strong>Downtown LA</strong></button>
+      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="hollywood"><strong>Hollywood</strong></button>
+      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="sanfernandovalley"><strong>San Fernando Valley</strong></button>
+      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="sangabrielvalley"><strong>Pasadena / SGV</strong></button>
+    </div>
+    <p class="fine-print" style="margin-top:36px;padding:0 8px;"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span><span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg height="20" viewBox="0 0 40 40" width="20"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11" text-anchor="middle" x="20" y="18">BJS</text><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8" text-anchor="middle" x="20" y="28">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice &mdash; always confirm details directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p>
+  </div>
+</div>
+<script id="bop-los-angeles-gateway-v301-script">(function(){
+if(typeof boRenderCategory!=='function'||typeof boCategoryData==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;
+var childCities={
+malibu:{displayName:'Malibu',landingName:'Malibu',areaList:['Malibu'],tickerMessages:['Best Of MALIBU','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksmalibu',losAngelesSubcity:true},
+westsidela:{displayName:'Santa Monica',landingName:'Westside',areaList:['Santa Monica','Venice','Marina del Rey','Pacific Palisades','Culver City','West LA'],tickerMessages:['Best Of THE WESTSIDE','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickswestsidela',losAngelesSubcity:true},
+downtownla:{displayName:'Downtown LA',landingName:'DTLA',areaList:['Downtown LA','Arts District','Chinatown','Koreatown','Highland Park','Silver Lake','Echo Park'],tickerMessages:['Best Of DOWNTOWN LA','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdowntownla',losAngelesSubcity:true},
+hollywood:{displayName:'Hollywood',landingName:'Hollywood',areaList:['Hollywood','West Hollywood','Beverly Hills','Los Feliz','Mid-City'],tickerMessages:['Best Of HOLLYWOOD','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickshollywood',losAngelesSubcity:true},
+sanfernandovalley:{displayName:'San Fernando Valley',landingName:'The Valley',areaList:['Sherman Oaks','Studio City','North Hollywood','Burbank','Glendale','Encino'],tickerMessages:['Best Of THE VALLEY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssanfernandovalley',losAngelesSubcity:true},
+southbayla:{displayName:'South Bay',landingName:'South Bay',areaList:['El Segundo','Manhattan Beach','Hermosa Beach','Redondo Beach','Torrance','Palos Verdes','San Pedro'],tickerMessages:['Best Of THE SOUTH BAY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssouthbayla',losAngelesSubcity:true},
+longbeach:{displayName:'Long Beach',landingName:'Long Beach',areaList:['Long Beach'],tickerMessages:['Best Of LONG BEACH','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslongbeach',losAngelesSubcity:true},
+sangabrielvalley:{displayName:'Pasadena',landingName:'Pasadena / SGV',areaList:['Pasadena','Alhambra','Monterey Park','Arcadia','San Marino'],tickerMessages:['Best Of PASADENA','SAN GABRIEL VALLEY'],useNameCycler:true,bjsPicksCat:'bjspickssangabrielvalley',losAngelesSubcity:true}
+};
+Object.keys(childCities).forEach(function(key){
+BO_CITY_CONFIG[key]=childCities[key];
+if(Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(key)<0)BO_MAIN_CITY_CATS.push(key);
+boCategoryData[childCities[key].bjsPicksCat]=[];
+});
+/* Real street addresses exist on every LA record, so areas are assigned
+by matching neighborhood/city keywords in the address. Order matters:
+more specific keywords first, broad "los angeles" catch-all last. */
+var areaKeywords=[
+['malibu',['malibu']],
+['westsidela',['santa monica','venice','marina del rey','pacific palisades','culver city']],
+['hollywood',['hollywood','beverly hills','los feliz']],
+['downtownla',['downtown la','arts district','chinatown','koreatown','highland park','silver lake','echo park','downtown los angeles']],
+['sanfernandovalley',['sherman oaks','studio city','north hollywood','burbank','glendale','encino','van nuys','tarzana','woodland hills']],
+['southbayla',['el segundo','manhattan beach','hermosa beach','redondo beach','torrance','palos verdes','san pedro','playa del rey']],
+['longbeach',['long beach']],
+['sangabrielvalley',['pasadena','alhambra','monterey park','arcadia','san marino','san gabriel']]
+];
+function areaFor(address){
+var addr=String(address||'').toLowerCase();
+for(var i=0;i<areaKeywords.length;i++){
+var key=areaKeywords[i][0],words=areaKeywords[i][1];
+for(var j=0;j<words.length;j++){if(addr.indexOf(words[j])>-1)return key;}
+}
+return 'downtownla';
+}
+Object.values(boCategoryData).forEach(function(list){
+if(!Array.isArray(list))return;
+list.forEach(function(r){
+if(r&&r.city==='losangeles'){
+r.city=areaFor(r.address);
+if(r.bjsPickCity==='losangeles')r.bjsPickCity=r.city;
+}
+});
+});
+var allAreaRecords=[];
+Object.values(boCategoryData).forEach(function(list){if(Array.isArray(list))list.forEach(function(r){if(r&&childCities[r.city])allAreaRecords.push(r)})});
+Object.keys(childCities).forEach(function(city){
+var seen=new Map();allAreaRecords.forEach(function(r){if(r.city===city&&!seen.has(r.name.toLowerCase()))seen.set(r.name.toLowerCase(),Object.assign({},r))});
+boCategoryData[city]=Array.from(seen.values());
+boCategoryData[childCities[city].bjsPicksCat]=boCategoryData[city].filter(function(r){return r.bjsPick});
+});
+var gateway=document.getElementById('bopLosAngelesGateway');
+var originalRender=boRenderCategory,bypassLA=false;
+function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
+function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
+function closeGateway(returnToSearch){
+gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false);
+if(returnToSearch){
+var landing=document.getElementById('bopLandingOverlay');
+if(landing)landing.classList.add('open');
+if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
+window.scrollTo(0,0);
+}
+}
+boRenderCategory=function(cat){
+if(cat==='losangeles'&&!bypassLA){openGateway();return}
+return originalRender.apply(this,arguments);
+};
+gateway.querySelector('.bop-la-gateway-close').addEventListener('click',function(){closeGateway(true)});
+gateway.addEventListener('click',function(event){
+var tile=event.target.closest('.bop-la-gateway-tile');if(!tile)return;
+var dest=tile.dataset.laDestination;
+if(childCities[dest]){
+closeGateway(false);
+boCityContext=dest;
+if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
+var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+originalRender('otheroptions');
+window.scrollTo(0,0);
+return;
+}
+});
+document.addEventListener('keydown',function(event){if(event.key==='Escape'&&gateway.classList.contains('open'))closeGateway(true)});
+window.bopOpenLosAngelesGateway=openGateway;
+})();</script>
+
 </body></html>
