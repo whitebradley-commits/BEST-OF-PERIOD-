@@ -4736,6 +4736,25 @@ instagram: "joeandthejuice",
 facebook: null
 }
 ,
+,
+{
+rank: 0,
+name: "Community Goods",
+city: "losangeles",
+specialNote: "There's always a line, but worth standing in \u2014 the coffee, sure, but also the beautiful people.",
+rating: "4.8 / 5",
+ratingNote: "Google, widely reviewed — one of the most talked-about matcha and coffee spots in LA.",
+why: "Design-forward cafe known for its matcha einspanner and breakfast sliders \u2014 this location sits at the Pacific Design Center on Melrose Ave.",
+note: "Specialty coffee, ceremonial-grade matcha, pistachio toast, and breakfast sliders in a minimalist, design-forward space.",
+url: "https://communitygoodsla.com/",
+address: "8687 Melrose Ave, West Hollywood, CA 90069",
+phone: "",
+hours: [{ days: [0,1,2,3,4,5,6], open: '07:00', close: '18:00' }],
+hue: "28, 35%, 32%",
+price: 2,
+instagram: null,
+facebook: null
+}
 ],
 '24hours': [
 {
@@ -15114,7 +15133,6 @@ const specialCirclesHTML = cat === 'otheroptions' ? `
 ` : '';
 let pickerOptions = boPickerConfig[cat].filter(opt => {
 if(cat !== 'otheroptions') return true;
-if(opt.cat === 'cannabisinfused') return boCannabisCategoryAvailable(boCityContext);
 return true;
 });
 const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','foodtrucks','streetvendors','cheesesteak','bjspicks'];
@@ -15205,6 +15223,10 @@ return;
 }
 if(requestedCat === 'foodtrucks'){
 if(typeof boOpenFoodTruckMap === 'function') boOpenFoodTruckMap();
+return;
+}
+if(requestedCat === 'cannabisinfused' && typeof boCannabisCategoryAvailable === 'function' && !boCannabisCategoryAvailable(boCityContext)){
+if(typeof window.bopShowCannabisFallback === 'function') window.bopShowCannabisFallback();
 return;
 }
 boRenderCategory(requestedCat);
@@ -20653,7 +20675,7 @@ moving=true;map.insertAdjacentElement('afterend',note);moving=false;
 function start(){lock();new MutationObserver(function(){requestAnimationFrame(lock)}).observe(document.getElementById('ocWorldOverlay')||document.body,{childList:true,subtree:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();</script>
-<style id="direct-city-routing-and-leaf-removal-v227">.mini-leaf,.bo-cannabis-tile svg,svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!important;visibility:hidden!important}</style>
+<style id="direct-city-routing-and-leaf-removal-v227">.mini-leaf,svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]{display:none!important;visibility:hidden!important}</style>
 <script id="direct-city-routing-and-leaf-removal-v227-script">(function(){
 var fixed={London:'london',Paris:'paris',Zurich:'zurich','Zürich':'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
 function destinationFor(button){
@@ -20691,7 +20713,7 @@ var destination=destinationFor(button);if(!destination)return;
 event.preventDefault();event.stopImmediatePropagation();openCity(destination);
 },true);
 function removeLeafArtwork(){
-document.querySelectorAll('.mini-leaf,.bo-cannabis-tile svg,svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]').forEach(function(node){node.remove()});
+document.querySelectorAll('.mini-leaf,svg[aria-label*="marijuana" i],svg[aria-label*="cannabis" i],svg[aria-label*="weed" i],img[alt*="marijuana" i],img[alt*="cannabis" i],img[alt*="weed" i]').forEach(function(node){node.remove()});
 var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),nodes=[],node;
 while((node=walker.nextNode()))if(/[🌿🍃☘]/u.test(node.nodeValue||''))nodes.push(node);
 nodes.forEach(function(textNode){textNode.nodeValue=textNode.nodeValue.replace(/[🌿🍃☘]/gu,'')});
@@ -27410,21 +27432,21 @@ svg: ''+
 '<svg viewBox="0 -44 400 590" role="img" aria-label="Los Angeles to San Juan Capistrano area selector"><g class="bop-lamap-all"><polygon points="90,-38 328,-40 330,-12 88,-8"/><text x="209" y="-19" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">ALL OF LOS ANGELES \u2014 CITYWIDE</text></g>'+
 '<text x="10" y="20" fill="#d5a654" font="800 11px Arial,sans-serif">N \u2191</text>'+
 '<text x="24" y="326" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 326)">PACIFIC OCEAN</text>'+
-'<g class="bop-lamap-zone"><polygon points="90,8 328,6 330,34 88,38"/><text x="95" y="27" fill="#f6a014" font="900 10.5px Arial,sans-serif">HIGHLAND PARK &amp; EAGLE ROCK</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="86,42 330,40 332,68 84,72"/><text x="208" y="61" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">N.H. &amp; BURBANK</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="80,74 332,72 334,100 78,104"/><text x="154" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">WEST HOLLYWOOD</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="76,108 334,106 336,134 74,138"/><text x="158" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">BEVERLY HILLS</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="72,142 336,140 338,168 70,172"/><text x="137" y="161" fill="#f6a014" font="900 10.5px Arial,sans-serif">SANTA MONICA &amp; VENICE</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="68,176 338,174 340,202 66,206"/><text x="164" y="195" fill="#f6a014" font="900 11px Arial,sans-serif">CULVER CITY</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="64,210 340,208 342,236 62,240"/><text x="143" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN LOS ANGELES</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="60,244 342,242 344,270 58,274"/><text x="151" y="263" fill="#f6a014" font="900 10.5px Arial,sans-serif">SOUTH BAY &amp; LAX</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="56,278 344,276 346,304 54,308"/><text x="166" y="297" fill="#f6a014" font="900 11px Arial,sans-serif">LONG BEACH</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="52,312 346,310 348,338 50,342"/><text x="150" y="331" fill="#f6a014" font="900 10.5px Arial,sans-serif">HUNTINGTON BEACH</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="48,346 348,344 350,372 46,376"/><text x="159" y="365" fill="#f6a014" font="900 11px Arial,sans-serif">NEWPORT BEACH</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="44,380 350,378 352,406 42,410"/><text x="170" y="399" fill="#f6a014" font="900 11px Arial,sans-serif">COSTA MESA</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="40,414 352,412 354,440 38,444"/><text x="188" y="433" fill="#f6a014" font="900 11px Arial,sans-serif">IRVINE</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="36,448 354,446 356,474 34,478"/><text x="139" y="467" fill="#f6a014" font="900 10.5px Arial,sans-serif">LAGUNA BEACH &amp; DANA POINT</text></g>'+
-'<g class="bop-lamap-zone"><polygon points="32,482 356,480 358,508 30,512"/><text x="137" y="501" fill="#f6a014" font="900 10.5px Arial,sans-serif">SAN JUAN CAPISTRANO</text></g>'+
+'<g class="bop-lamap-zone" data-dest="ladowntown"><polygon points="90,8 328,6 330,34 88,38"/><text x="95" y="27" fill="#f6a014" font="900 10.5px Arial,sans-serif">HIGHLAND PARK &amp; EAGLE ROCK</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lavalley"><polygon points="86,42 330,40 332,68 84,72"/><text x="208" y="61" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">N.H. &amp; BURBANK</text></g>'+
+'<g class="bop-lamap-zone" data-dest="laweho"><polygon points="80,74 332,72 334,100 78,104"/><text x="154" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">WEST HOLLYWOOD</text></g>'+
+'<g class="bop-lamap-zone" data-dest="labeveryhillswestside"><polygon points="76,108 334,106 336,134 74,138"/><text x="158" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">BEVERLY HILLS</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lasantamonicavenice"><polygon points="72,142 336,140 338,168 70,172"/><text x="137" y="161" fill="#f6a014" font="900 10.5px Arial,sans-serif">SANTA MONICA &amp; VENICE</text></g>'+
+'<g class="bop-lamap-zone" data-dest="laculvercity"><polygon points="68,176 338,174 340,202 66,206"/><text x="164" y="195" fill="#f6a014" font="900 11px Arial,sans-serif">CULVER CITY</text></g>'+
+'<g class="bop-lamap-zone" data-dest="ladowntown"><polygon points="64,210 340,208 342,236 62,240"/><text x="143" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN LOS ANGELES</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lasouthbaylax"><polygon points="60,244 342,242 344,270 58,274"/><text x="151" y="263" fill="#f6a014" font="900 10.5px Arial,sans-serif">SOUTH BAY &amp; LAX</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lalongbeach"><polygon points="56,278 344,276 346,304 54,308"/><text x="166" y="297" fill="#f6a014" font="900 11px Arial,sans-serif">LONG BEACH</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lahuntingtonbeach"><polygon points="52,312 346,310 348,338 50,342"/><text x="150" y="331" fill="#f6a014" font="900 10.5px Arial,sans-serif">HUNTINGTON BEACH</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lanewportbeach"><polygon points="48,346 348,344 350,372 46,376"/><text x="159" y="365" fill="#f6a014" font="900 11px Arial,sans-serif">NEWPORT BEACH</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lacostamesa"><polygon points="44,380 350,378 352,406 42,410"/><text x="170" y="399" fill="#f6a014" font="900 11px Arial,sans-serif">COSTA MESA</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lairvine"><polygon points="40,414 352,412 354,440 38,444"/><text x="188" y="433" fill="#f6a014" font="900 11px Arial,sans-serif">IRVINE</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lalagunadanapoint"><polygon points="36,448 354,446 356,474 34,478"/><text x="139" y="467" fill="#f6a014" font="900 10.5px Arial,sans-serif">LAGUNA BEACH &amp; DANA POINT</text></g>'+
+'<g class="bop-lamap-zone" data-dest="lasanjuancapistrano"><polygon points="32,482 356,480 358,508 30,512"/><text x="137" y="501" fill="#f6a014" font="900 10.5px Arial,sans-serif">SAN JUAN CAPISTRANO</text></g>'+
 '</svg>'
 },
 sandiego: {
@@ -27434,14 +27456,14 @@ svg: ''+
 '<svg viewBox="0 -44 400 350" role="img" aria-label="Map of the San Diego coastline"><g class="bop-lamap-all"><polygon points="90,-38 328,-40 330,-12 88,-8"/><text x="209" y="-19" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">ALL OF SAN DIEGO \u2014 CITYWIDE</text></g>'+
 '<text x="10" y="20" fill="#d5a654" font="800 11px Arial,sans-serif">N \u2191</text>'+
 '<text x="24" y="180" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 180)">PACIFIC OCEAN</text>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="86,8 330,6 332,34 84,38"/><text x="208" y="27" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">OCEANSIDE</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="80,40 332,38 334,66 78,70"/><text x="164" y="59" fill="#f6a014" font="900 11px Arial,sans-serif">CARLSBAD</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="76,74 334,72 336,100 74,104"/><text x="162" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">ENCINITAS</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="72,108 336,106 338,134 70,138"/><text x="166" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">DEL MAR</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="68,142 338,140 340,168 66,172"/><text x="164" y="161" fill="#f6a014" font="900 11px Arial,sans-serif">LA JOLLA</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="64,176 340,174 342,202 62,206"/><text x="118" y="195" fill="#f6a014" font="900 10.5px Arial,sans-serif">PACIFIC BEACH &amp; MISSION BAY</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="60,210 342,208 344,236 58,240"/><text x="122" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN &amp; GASLAMP</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sandiego"><polygon points="56,244 344,242 346,270 54,274"/><text x="164" y="263" fill="#f6a014" font="900 11px Arial,sans-serif">CORONADO</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdoceanside"><polygon points="86,8 330,6 332,34 84,38"/><text x="208" y="27" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">OCEANSIDE</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdcarlsbad"><polygon points="80,40 332,38 334,66 78,70"/><text x="164" y="59" fill="#f6a014" font="900 11px Arial,sans-serif">CARLSBAD</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdencinitas"><polygon points="76,74 334,72 336,100 74,104"/><text x="162" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">ENCINITAS</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sddelmar"><polygon points="72,108 336,106 338,134 70,138"/><text x="166" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">DEL MAR</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdlajolla"><polygon points="68,142 338,140 340,168 66,172"/><text x="164" y="161" fill="#f6a014" font="900 11px Arial,sans-serif">LA JOLLA</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdpacificbeach"><polygon points="64,176 340,174 342,202 62,206"/><text x="118" y="195" fill="#f6a014" font="900 10.5px Arial,sans-serif">PACIFIC BEACH &amp; MISSION BAY</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sddowntown"><polygon points="60,210 342,208 344,236 58,240"/><text x="122" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN &amp; GASLAMP</text></g>'+
+'<g class="bop-lamap-zone" data-dest="sdcoronado"><polygon points="56,244 344,242 346,270 54,274"/><text x="164" y="263" fill="#f6a014" font="900 11px Arial,sans-serif">CORONADO</text></g>'+
 '<g class="bop-lamap-soon"><polygon points="52,278 346,276 348,302 50,304"/><text x="118" y="295" font="900 10.5px Arial,sans-serif">TIJUANA \u2014 COMING SOON</text></g>'+
 '</svg>'
 }
@@ -39891,47 +39913,17 @@ window.addEventListener('pageshow',closeStrayPopups);
 
 
 <style id="bop-gateway-map-art-v302-style">.bop-map-wrap{position:relative;width:min(100%,360px);margin:22px auto 0}.bop-map-wrap svg{width:100%;height:auto;display:block}.bop-map-ocean{position:absolute;top:6px;left:8px;font:900 .58rem/1 'Archivo Black',Arial;letter-spacing:.24em;color:#3b9dff;opacity:.85;pointer-events:none}.bop-map-pin{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;flex-direction:row-reverse;pointer-events:none}.bop-map-pin-dot{width:9px;height:9px;border-radius:50%;background:#F59E0B;flex:0 0 auto;box-shadow:0 0 6px rgba(245,158,11,.95)}.bop-map-pin-btn{pointer-events:auto;min-height:0!important;min-width:0!important;padding:5px 11px!important;border:1.3px solid rgba(245,158,11,.7)!important;border-radius:999px!important;background:#0a0a0a!important;color:#fff!important;font:700 .66rem/1 'Archivo Narrow',Arial,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;white-space:nowrap;cursor:pointer;box-shadow:0 0 6px rgba(245,158,11,.25)!important;-webkit-tap-highlight-color:transparent}.bop-map-pin-btn::before{content:none!important}.bop-map-pin-btn strong{display:inline!important;color:#fff!important;text-shadow:none!important;font:inherit!important}.bop-map-pin-btn:active{border-color:#F59E0B!important;background:#161616!important}.bop-map-inland{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px auto 0;width:100%}.bop-map-inland .bop-map-pin-btn{position:static;transform:none;padding:9px 14px!important;font-size:.74rem!important}.bop-map-inland-label{width:100%;text-align:center;color:#F59E0B;font:900 .58rem/1 'Archivo Black',Arial;letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin-bottom:2px}</style>
-<style id="bop-san-diego-gateway-v300-style">#bopSanDiegoGateway{position:fixed;inset:0;z-index:2147483600;display:none;overflow:auto;background:radial-gradient(circle at 50% 18%,rgba(245,158,11,.18),transparent 35%),#020202;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))}#bopSanDiegoGateway.open{display:block}.bop-sd-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}.bop-sd-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}.bop-sd-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}.bop-sd-gateway-title{margin:0;text-align:center;font:900 clamp(2.3rem,10vw,4.4rem)/1.05 'Fraunces',serif;text-transform:none;letter-spacing:-.01em;text-shadow:0 0 24px rgba(255,255,255,.18);white-space:normal}.bop-sd-gateway-title .bop-sd-title-city{display:block;color:#E4002B;font-style:italic;text-shadow:0 0 12px rgba(228,0,43,.34)}.bop-sd-gateway-title .bop-sd-title-period{display:block;color:#F59E0B}.bop-sd-gateway-title .bop-sd-title-period .period-mark{font-family:Arial,sans-serif!important;font-style:normal!important;font-size:.4em!important;vertical-align:super!important}.bop-sd-gateway-prompt{margin:24px 0 16px;color:#f3e7cf;text-align:center;font:800 clamp(.78rem,3vw,1rem)/1.35 'Archivo Black',Arial;letter-spacing:.08em;text-transform:uppercase}.bop-sd-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}.bop-sd-gateway-tile{position:relative;min-height:120px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(.95rem,4vw,1.3rem)/1.1 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em;cursor:pointer}.bop-sd-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}.bop-sd-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.28)}@media(max-width:370px){.bop-sd-gateway-grid{gap:8px}.bop-sd-gateway-tile{min-height:105px}}</style>
-<div id="bopSanDiegoGateway" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Choose a San Diego area">
-  <button type="button" class="bop-sd-gateway-close" aria-label="Close San Diego areas">×</button>
-  <div class="bop-sd-gateway-inner">
-    <div class="bop-sd-gateway-kicker">CHOOSE YOUR AREA</div>
-    <h1 class="bop-sd-gateway-title">Best Of<span class="bop-sd-title-city">San Diego</span><span class="bop-sd-title-period">Period<span class="period-mark">&copy;</span></span></h1>
-    
-    <div class="bop-map-wrap">
-      <span class="bop-map-ocean">PACIFIC</span>
-      <svg viewBox="0 0 220 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M100,8 C94,60 98,90 90,120 C84,160 92,190 86,230 C80,270 90,300 84,340 C78,375 82,395 74,415 C84,440 90,455 92,472 C70,485 60,500 56,522 C60,540 78,545 92,552 C86,565 78,578 82,596 C86,615 80,630 84,648 C88,662 92,668 96,678 L100,692" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <g fill="#3b9dff" opacity=".28"><circle cx="55" cy="70" r="2.4"/><circle cx="45" cy="190" r="2"/><circle cx="50" cy="320" r="2.6"/><circle cx="42" cy="440" r="2.2"/><circle cx="40" cy="530" r="2.4"/><circle cx="46" cy="620" r="2"/></g>
-      </svg>
-      <div class="bop-map-pin" style="top:1%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="oceanside"><strong>Oceanside / Vista / San Marcos</strong></button></div>
-      <div class="bop-map-pin" style="top:12%;left:41%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="carlsbad"><strong>Carlsbad</strong></button></div>
-      <div class="bop-map-pin" style="top:24%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="encinitas"><strong>Encinitas / Cardiff</strong></button></div>
-      <div class="bop-map-pin" style="top:36%;left:37%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="delmar"><strong>Del Mar / Solana Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:52%;left:33%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="lajolla"><strong>La Jolla</strong></button></div>
-      <div class="bop-map-pin" style="top:63%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Pacific Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:68%;left:42%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Mission Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:72%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Ocean Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:76%;left:25%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="pacificbeach"><strong>Point Loma</strong></button></div>
-      <div class="bop-map-pin" style="top:80%;left:52%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Downtown San Diego</strong></button></div>
-      <div class="bop-map-pin" style="top:85%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Coronado</strong></button></div>
-      <div class="bop-map-pin" style="top:89%;left:55%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>National City / Chula Vista</strong></button></div>
-      <div class="bop-map-pin" style="top:94%;left:39%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Imperial Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:99%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-sd-gateway-tile bop-map-pin-btn" data-sd-destination="downtownsd"><strong>Tijuana</strong></button></div>
-    </div>
-    <p class="fine-print" style="margin-top:36px;padding:0 8px;"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span><span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg height="20" viewBox="0 0 40 40" width="20"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11" text-anchor="middle" x="20" y="18">BJS</text><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8" text-anchor="middle" x="20" y="28">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice &mdash; always confirm details directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p>
-  </div>
-</div>
 <script id="bop-san-diego-gateway-v300-script">(function(){
 if(typeof boRenderCategory!=='function'||typeof boCategoryData==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;
 var childCities={
-oceanside:{displayName:'Oceanside',landingName:'Oceanside',areaList:['Oceanside'],tickerMessages:['Best Of OCEANSIDE','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksoceanside',sanDiegoSubcity:true},
-carlsbad:{displayName:'Carlsbad',landingName:'Carlsbad',areaList:['Carlsbad'],tickerMessages:['Best Of CARLSBAD','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickscarlsbad',sanDiegoSubcity:true},
-encinitas:{displayName:'Encinitas',landingName:'Encinitas',areaList:['Encinitas','Cardiff-by-the-Sea'],tickerMessages:['Best Of ENCINITAS','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksencinitas',sanDiegoSubcity:true},
-delmar:{displayName:'Del Mar',landingName:'Del Mar',areaList:['Del Mar','Solana Beach'],tickerMessages:['Best Of DEL MAR','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdelmar',sanDiegoSubcity:true},
-lajolla:{displayName:'La Jolla',landingName:'La Jolla',areaList:['La Jolla'],tickerMessages:['Best Of LA JOLLA','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslajolla',sanDiegoSubcity:true},
-pacificbeach:{displayName:'Pacific Beach',landingName:'PB',areaList:['Pacific Beach','Mission Beach','Ocean Beach','Point Loma'],tickerMessages:['Best Of PACIFIC BEACH','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickspacificbeach',sanDiegoSubcity:true},
-downtownsd:{displayName:'Downtown San Diego',landingName:'Downtown',areaList:['Gaslamp Quarter','Little Italy','East Village','Hillcrest','Coronado','Imperial Beach','Chula Vista','National City'],tickerMessages:['Best Of DOWNTOWN','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdowntownsd',sanDiegoSubcity:true}
+sdoceanside:{displayName:'Oceanside',landingName:'Oceanside',areaList:['Oceanside','Vista','San Marcos'],tickerMessages:['Best Of OCEANSIDE','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdoceanside',sanDiegoSubcity:true},
+sdcarlsbad:{displayName:'Carlsbad',landingName:'Carlsbad',areaList:['Carlsbad'],tickerMessages:['Best Of CARLSBAD','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdcarlsbad',sanDiegoSubcity:true},
+sdencinitas:{displayName:'Encinitas',landingName:'Encinitas',areaList:['Encinitas','Cardiff-by-the-Sea'],tickerMessages:['Best Of ENCINITAS','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdencinitas',sanDiegoSubcity:true},
+sddelmar:{displayName:'Del Mar',landingName:'Del Mar',areaList:['Del Mar','Solana Beach'],tickerMessages:['Best Of DEL MAR','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssddelmar',sanDiegoSubcity:true},
+sdlajolla:{displayName:'La Jolla',landingName:'La Jolla',areaList:['La Jolla'],tickerMessages:['Best Of LA JOLLA','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdlajolla',sanDiegoSubcity:true},
+sdpacificbeach:{displayName:'Pacific Beach',landingName:'PB',areaList:['Pacific Beach','Mission Beach','Ocean Beach','Point Loma'],tickerMessages:['Best Of PACIFIC BEACH','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdpacificbeach',sanDiegoSubcity:true},
+sddowntown:{displayName:'Downtown San Diego',landingName:'Downtown',areaList:['Gaslamp Quarter','Little Italy','East Village','Hillcrest','Imperial Beach','Chula Vista','National City'],tickerMessages:['Best Of DOWNTOWN','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssddowntown',sanDiegoSubcity:true},
+sdcoronado:{displayName:'Coronado',landingName:'Coronado',areaList:['Coronado','Silver Strand'],tickerMessages:['Best Of CORONADO','SAN DIEGO COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssdcoronado',sanDiegoSubcity:true}
 };
 Object.keys(childCities).forEach(function(key){
 BO_CITY_CONFIG[key]=childCities[key];
@@ -39942,13 +39934,14 @@ boCategoryData[childCities[key].bjsPicksCat]=[];
 assigned by matching neighborhood keywords in the address rather than
 a hand-built name list. Order matters: more specific keywords first. */
 var areaKeywords=[
-['oceanside',['oceanside']],
-['carlsbad',['carlsbad']],
-['encinitas',['encinitas','cardiff']],
-['delmar',['del mar','solana beach']],
-['lajolla',['la jolla']],
-['pacificbeach',['pacific beach','mission beach','ocean beach','point loma']],
-['downtownsd',['coronado','imperial beach','chula vista','national city','gaslamp','little italy','hillcrest','east village','downtown']]
+['sdoceanside',['oceanside','vista','san marcos']],
+['sdcarlsbad',['carlsbad']],
+['sdencinitas',['encinitas','cardiff']],
+['sddelmar',['del mar','solana beach']],
+['sdlajolla',['la jolla']],
+['sdpacificbeach',['pacific beach','mission beach','ocean beach','point loma']],
+['sdcoronado',['coronado','silver strand']],
+['sddowntown',['imperial beach','chula vista','national city','gaslamp','little italy','hillcrest','east village','downtown']]
 ];
 function areaFor(address){
 var addr=String(address||'').toLowerCase();
@@ -39956,7 +39949,7 @@ for(var i=0;i<areaKeywords.length;i++){
 var key=areaKeywords[i][0],words=areaKeywords[i][1];
 for(var j=0;j<words.length;j++){if(addr.indexOf(words[j])>-1)return key;}
 }
-return 'downtownsd';
+return 'sddowntown';
 }
 Object.values(boCategoryData).forEach(function(list){
 if(!Array.isArray(list))return;
@@ -39974,87 +39967,33 @@ var seen=new Map();allAreaRecords.forEach(function(r){if(r.city===city&&!seen.ha
 boCategoryData[city]=Array.from(seen.values());
 boCategoryData[childCities[city].bjsPicksCat]=boCategoryData[city].filter(function(r){return r.bjsPick});
 });
-var gateway=document.getElementById('bopSanDiegoGateway');
-var originalRender=boRenderCategory,bypassSD=false;
-function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
-function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
-function closeGateway(returnToSearch){
-gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false);
-if(returnToSearch){
-var landing=document.getElementById('bopLandingOverlay');
-if(landing)landing.classList.add('open');
-if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
-window.scrollTo(0,0);
-}
-}
-boRenderCategory=function(cat){
-if(cat==='sandiego'&&!bypassSD){openGateway();return}
-return originalRender.apply(this,arguments);
-};
-gateway.querySelector('.bop-sd-gateway-close').addEventListener('click',function(){closeGateway(true)});
-gateway.addEventListener('click',function(event){
-var tile=event.target.closest('.bop-sd-gateway-tile');if(!tile)return;
-var dest=tile.dataset.sdDestination;
-if(childCities[dest]){
-closeGateway(false);
-boCityContext=dest;
-if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
-var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
-originalRender('otheroptions');
-window.scrollTo(0,0);
-return;
-}
-});
-document.addEventListener('keydown',function(event){if(event.key==='Escape'&&gateway.classList.contains('open'))closeGateway(true)});
-window.bopOpenSanDiegoGateway=openGateway;
+/* This city already has a real zone-map gate (CITY_MAPS/bopShowCityGate) that
+routes taps to these exact sub-city keys, and the back-button logic already
+expects them (areaGateParents). No new gateway UI needed here — this script
+only supplies the BO_CITY_CONFIG entries and the address-based data split. */
 })();</script>
 
 
-<style id="bop-los-angeles-gateway-v301-style">#bopLosAngelesGateway{position:fixed;inset:0;z-index:2147483600;display:none;overflow:auto;background:radial-gradient(circle at 50% 18%,rgba(245,158,11,.18),transparent 35%),#020202;color:#fff;padding:calc(26px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom))}#bopLosAngelesGateway.open{display:block}.bop-la-gateway-inner{width:min(760px,100%);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:center}.bop-la-gateway-close{position:fixed;z-index:2;right:18px;top:calc(18px + env(safe-area-inset-top));width:52px;height:52px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 30px/1 Arial;box-shadow:0 0 18px rgba(245,158,11,.5)}.bop-la-gateway-kicker{margin:0 0 8px;color:#E4002B;font:900 clamp(.72rem,2.5vw,.95rem)/1 'Archivo Black',Arial;letter-spacing:.18em}.bop-la-gateway-title{margin:0;text-align:center;font:900 clamp(2.3rem,10vw,4.4rem)/1.05 'Fraunces',serif;text-transform:none;letter-spacing:-.01em;text-shadow:0 0 24px rgba(255,255,255,.18);white-space:normal}.bop-la-gateway-title .bop-la-title-city{display:block;color:#E4002B;font-style:italic;text-shadow:0 0 12px rgba(228,0,43,.34)}.bop-la-gateway-title .bop-la-title-period{display:block;color:#F59E0B}.bop-la-gateway-title .bop-la-title-period .period-mark{font-family:Arial,sans-serif!important;font-style:normal!important;font-size:.4em!important;vertical-align:super!important}.bop-la-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin-top:24px}.bop-la-gateway-tile{position:relative;min-height:120px;padding:18px 10px;border:2px solid #F59E0B;border-radius:20px;background:linear-gradient(145deg,#111,#030303);color:#fff;box-shadow:0 0 18px rgba(245,158,11,.22),inset 0 0 28px rgba(245,158,11,.04);font:900 clamp(.88rem,3.6vw,1.2rem)/1.1 'Archivo Black',Arial;text-transform:uppercase;letter-spacing:.02em;cursor:pointer}.bop-la-gateway-tile::before{content:attr(data-number);position:absolute;left:11px;top:9px;color:#E4002B;font:900 .72rem/1 'Archivo Black',Arial}.bop-la-gateway-tile strong{display:block;color:#F59E0B;text-shadow:0 0 5px rgba(245,158,11,.28)}@media(max-width:370px){.bop-la-gateway-grid{gap:8px}.bop-la-gateway-tile{min-height:105px}}</style>
-<div id="bopLosAngelesGateway" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Choose a Los Angeles area">
-  <button type="button" class="bop-la-gateway-close" aria-label="Close Los Angeles areas">×</button>
-  <div class="bop-la-gateway-inner">
-    <div class="bop-la-gateway-kicker">CHOOSE YOUR AREA</div>
-    <h1 class="bop-la-gateway-title">Best Of<span class="bop-la-title-city">Los Angeles</span><span class="bop-la-title-period">Period<span class="period-mark">&copy;</span></span></h1>
-    
-    <div class="bop-map-wrap">
-      <span class="bop-map-ocean">PACIFIC</span>
-      <svg viewBox="0 0 220 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M70,6 C88,32 66,54 82,80 C96,102 76,122 90,146 C100,164 84,182 96,204 C104,220 92,236 100,256 C106,270 96,284 102,300 C106,312 98,324 104,338 C108,350 100,362 106,376 C110,388 132,404 152,428 C168,448 158,470 138,486 C118,500 96,494 82,514 C72,528 78,548 96,560 L118,566 C128,554 122,538 128,520 C132,506 118,494 122,478 C124,466 112,456 112,442 C110,428 100,416 98,400 C96,386 92,372 90,358 C88,344 84,330 84,316 C82,300 78,286 78,270 C76,254 72,240 74,224 C76,206 68,192 72,176 C74,158 66,144 70,126 C72,108 62,92 66,72 C68,54 58,36 58,18 C58,10 64,6 70,6 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <g fill="#3b9dff" opacity=".28"><circle cx="45" cy="55" r="2.4"/><circle cx="50" cy="180" r="2"/><circle cx="60" cy="310" r="2.6"/><circle cx="65" cy="420" r="2.2"/><circle cx="75" cy="540" r="2.4"/></g>
-      </svg>
-      <div class="bop-map-pin" style="top:1%;left:30%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="malibu"><strong>Malibu</strong></button></div>
-      <div class="bop-map-pin" style="top:12%;left:38%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Pacific Palisades</strong></button></div>
-      <div class="bop-map-pin" style="top:22%;left:42%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Santa Monica</strong></button></div>
-      <div class="bop-map-pin" style="top:31%;left:44%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Venice</strong></button></div>
-      <div class="bop-map-pin" style="top:40%;left:46%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="westsidela"><strong>Marina del Rey</strong></button></div>
-      <div class="bop-map-pin" style="top:49%;left:46%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>El Segundo</strong></button></div>
-      <div class="bop-map-pin" style="top:57%;left:45%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Manhattan Beach</strong></button></div>
-      <div class="bop-map-pin" style="top:63%;left:44%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Hermosa / Redondo</strong></button></div>
-      <div class="bop-map-pin" style="top:71%;left:33%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>Palos Verdes</strong></button></div>
-      <div class="bop-map-pin" style="top:79%;left:60%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="southbayla"><strong>San Pedro</strong></button></div>
-      <div class="bop-map-pin" style="top:91%;left:50%"><div class="bop-map-pin-dot"></div><button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="longbeach"><strong>Long Beach</strong></button></div>
-    </div>
-    <div class="bop-map-inland">
-      <div class="bop-map-inland-label">Inland</div>
-      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="downtownla"><strong>Downtown LA</strong></button>
-      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="hollywood"><strong>Hollywood</strong></button>
-      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="sanfernandovalley"><strong>San Fernando Valley</strong></button>
-      <button type="button" class="bop-la-gateway-tile bop-map-pin-btn" data-la-destination="sangabrielvalley"><strong>Pasadena / SGV</strong></button>
-    </div>
-    <p class="fine-print" style="margin-top:36px;padding:0 8px;"><span style="color:#fff;font-weight:700;font-family:'Fraunces',serif;">Best of</span><span style="color:var(--gold);font-weight:700;font-family:'Fraunces',serif;">Period<span class="period-mark">&copy;</span></span> is an independent listing service developed by <span aria-label="BJS CO." style="vertical-align:-6px;display:inline-block;"><svg height="20" viewBox="0 0 40 40" width="20"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="11" text-anchor="middle" x="20" y="18">BJS</text><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="8" text-anchor="middle" x="20" y="28">CO.</text></svg></span> and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice &mdash; always confirm details directly.</p><p class="fine-print" style="margin-top:14px;">For further information <a href="mailto:info@bestofperiod.com" style="color:#F59E0B;text-decoration:underline;">info@bestofperiod.com</a></p>
-  </div>
-</div>
 <script id="bop-los-angeles-gateway-v301-script">(function(){
 if(typeof boRenderCategory!=='function'||typeof boCategoryData==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;
 var childCities={
-malibu:{displayName:'Malibu',landingName:'Malibu',areaList:['Malibu'],tickerMessages:['Best Of MALIBU','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksmalibu',losAngelesSubcity:true},
-westsidela:{displayName:'Santa Monica',landingName:'Westside',areaList:['Santa Monica','Venice','Marina del Rey','Pacific Palisades','Culver City','West LA'],tickerMessages:['Best Of THE WESTSIDE','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickswestsidela',losAngelesSubcity:true},
-downtownla:{displayName:'Downtown LA',landingName:'DTLA',areaList:['Downtown LA','Arts District','Chinatown','Koreatown','Highland Park','Silver Lake','Echo Park'],tickerMessages:['Best Of DOWNTOWN LA','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspicksdowntownla',losAngelesSubcity:true},
-hollywood:{displayName:'Hollywood',landingName:'Hollywood',areaList:['Hollywood','West Hollywood','Beverly Hills','Los Feliz','Mid-City'],tickerMessages:['Best Of HOLLYWOOD','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickshollywood',losAngelesSubcity:true},
-sanfernandovalley:{displayName:'San Fernando Valley',landingName:'The Valley',areaList:['Sherman Oaks','Studio City','North Hollywood','Burbank','Glendale','Encino'],tickerMessages:['Best Of THE VALLEY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssanfernandovalley',losAngelesSubcity:true},
-southbayla:{displayName:'South Bay',landingName:'South Bay',areaList:['El Segundo','Manhattan Beach','Hermosa Beach','Redondo Beach','Torrance','Palos Verdes','San Pedro'],tickerMessages:['Best Of THE SOUTH BAY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickssouthbayla',losAngelesSubcity:true},
-longbeach:{displayName:'Long Beach',landingName:'Long Beach',areaList:['Long Beach'],tickerMessages:['Best Of LONG BEACH','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslongbeach',losAngelesSubcity:true},
+lavalley:{displayName:'San Fernando Valley',landingName:'The Valley',areaList:['Sherman Oaks','Studio City','Burbank','Glendale','Encino','Van Nuys','Tarzana','Woodland Hills'],tickerMessages:['Best Of THE VALLEY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslavalley',losAngelesSubcity:true},
+lanorthhollywood:{displayName:'North Hollywood',landingName:'NoHo',areaList:['North Hollywood','NoHo Arts District'],tickerMessages:['Best Of NORTH HOLLYWOOD','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslanorthhollywood',losAngelesSubcity:true},
+laweho:{displayName:'West Hollywood',landingName:'WeHo',areaList:['West Hollywood','Melrose'],tickerMessages:['Best Of WEST HOLLYWOOD','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslaweho',losAngelesSubcity:true},
+lahollywood:{displayName:'Hollywood',landingName:'Hollywood',areaList:['Hollywood'],tickerMessages:['Best Of HOLLYWOOD','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslahollywood',losAngelesSubcity:true},
+lalosfelizsilverlake:{displayName:'Los Feliz / Silver Lake',landingName:'Los Feliz / Silver Lake',areaList:['Los Feliz','Silver Lake','Echo Park'],tickerMessages:['Best Of LOS FELIZ','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslalosfelizsilverlake',losAngelesSubcity:true},
+lasantamonicavenice:{displayName:'Santa Monica',landingName:'Santa Monica / Venice',areaList:['Malibu','Pacific Palisades','Santa Monica','Venice','Marina del Rey','Playa del Rey'],tickerMessages:['Best Of SANTA MONICA','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslasantamonicavenice',losAngelesSubcity:true},
+labeveryhillswestside:{displayName:'Beverly Hills',landingName:'Beverly Hills / Westside',areaList:['Beverly Hills','West LA','Westwood','Brentwood','Bel Air','Century City'],tickerMessages:['Best Of BEVERLY HILLS','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslabeveryhillswestside',losAngelesSubcity:true},
+ladowntown:{displayName:'Downtown LA',landingName:'DTLA',areaList:['Downtown LA','Arts District','Chinatown','Koreatown','Highland Park','Eagle Rock'],tickerMessages:['Best Of DOWNTOWN LA','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickskladowntown',losAngelesSubcity:true},
+laculvercity:{displayName:'Culver City',landingName:'Culver City',areaList:['Culver City'],tickerMessages:['Best Of CULVER CITY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslaculvercity',losAngelesSubcity:true},
+lasouthbaylax:{displayName:'South Bay',landingName:'South Bay / LAX',areaList:['El Segundo','Manhattan Beach','Hermosa Beach','Redondo Beach','Torrance','Palos Verdes','San Pedro','Inglewood','Hawthorne'],tickerMessages:['Best Of THE SOUTH BAY','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslasouthbaylax',losAngelesSubcity:true},
+lalongbeach:{displayName:'Long Beach',landingName:'Long Beach',areaList:['Long Beach'],tickerMessages:['Best Of LONG BEACH','LOS ANGELES COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslalongbeach',losAngelesSubcity:true},
+lahuntingtonbeach:{displayName:'Huntington Beach',landingName:'Huntington Beach',areaList:['Huntington Beach'],tickerMessages:['Best Of HUNTINGTON BEACH','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslahuntingtonbeach',losAngelesSubcity:true},
+lanewportbeach:{displayName:'Newport Beach',landingName:'Newport Beach',areaList:['Newport Beach'],tickerMessages:['Best Of NEWPORT BEACH','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslanewportbeach',losAngelesSubcity:true},
+lacostamesa:{displayName:'Costa Mesa',landingName:'Costa Mesa',areaList:['Costa Mesa'],tickerMessages:['Best Of COSTA MESA','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslacostamesa',losAngelesSubcity:true},
+lairvine:{displayName:'Irvine',landingName:'Irvine',areaList:['Irvine'],tickerMessages:['Best Of IRVINE','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslairvine',losAngelesSubcity:true},
+lalagunadanapoint:{displayName:'Laguna Beach',landingName:'Laguna Beach / Dana Point',areaList:['Laguna Beach','Dana Point'],tickerMessages:['Best Of LAGUNA BEACH','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslalagunadanapoint',losAngelesSubcity:true},
+lasanjuancapistrano:{displayName:'San Juan Capistrano',landingName:'San Juan Capistrano',areaList:['San Juan Capistrano'],tickerMessages:['Best Of SAN JUAN CAPISTRANO','ORANGE COUNTY'],useNameCycler:true,bjsPicksCat:'bjspickslasanjuancapistrano',losAngelesSubcity:true},
 sangabrielvalley:{displayName:'Pasadena',landingName:'Pasadena / SGV',areaList:['Pasadena','Alhambra','Monterey Park','Arcadia','San Marino'],tickerMessages:['Best Of PASADENA','SAN GABRIEL VALLEY'],useNameCycler:true,bjsPicksCat:'bjspickssangabrielvalley',losAngelesSubcity:true}
 };
 Object.keys(childCities).forEach(function(key){
@@ -40066,13 +40005,23 @@ boCategoryData[childCities[key].bjsPicksCat]=[];
 by matching neighborhood/city keywords in the address. Order matters:
 more specific keywords first, broad "los angeles" catch-all last. */
 var areaKeywords=[
-['malibu',['malibu']],
-['westsidela',['santa monica','venice','marina del rey','pacific palisades','culver city']],
-['hollywood',['hollywood','beverly hills','los feliz']],
-['downtownla',['downtown la','arts district','chinatown','koreatown','highland park','silver lake','echo park','downtown los angeles']],
-['sanfernandovalley',['sherman oaks','studio city','north hollywood','burbank','glendale','encino','van nuys','tarzana','woodland hills']],
-['southbayla',['el segundo','manhattan beach','hermosa beach','redondo beach','torrance','palos verdes','san pedro','playa del rey']],
-['longbeach',['long beach']],
+['laweho',['west hollywood']],
+['lahollywood',['hollywood']],
+['lasantamonicavenice',['malibu','pacific palisades','santa monica','venice','marina del rey','playa del rey']],
+['labeveryhillswestside',['beverly hills','westwood','brentwood','bel air','century city']],
+['laculvercity',['culver city']],
+['lalosfelizsilverlake',['los feliz','silver lake','silverlake','echo park']],
+['lanorthhollywood',['north hollywood','noho']],
+['lavalley',['sherman oaks','studio city','burbank','glendale','encino','van nuys','tarzana','woodland hills']],
+['ladowntown',['downtown la','downtown los angeles','arts district','chinatown','koreatown','highland park','eagle rock']],
+['lasouthbaylax',['el segundo','manhattan beach','hermosa beach','redondo beach','torrance','palos verdes','san pedro','inglewood','hawthorne']],
+['lalongbeach',['long beach']],
+['lahuntingtonbeach',['huntington beach']],
+['lanewportbeach',['newport beach']],
+['lacostamesa',['costa mesa']],
+['lairvine',['irvine']],
+['lalagunadanapoint',['laguna beach','dana point']],
+['lasanjuancapistrano',['san juan capistrano']],
 ['sangabrielvalley',['pasadena','alhambra','monterey park','arcadia','san marino','san gabriel']]
 ];
 function areaFor(address){
@@ -40081,7 +40030,7 @@ for(var i=0;i<areaKeywords.length;i++){
 var key=areaKeywords[i][0],words=areaKeywords[i][1];
 for(var j=0;j<words.length;j++){if(addr.indexOf(words[j])>-1)return key;}
 }
-return 'downtownla';
+return 'ladowntown';
 }
 Object.values(boCategoryData).forEach(function(list){
 if(!Array.isArray(list))return;
@@ -40099,39 +40048,46 @@ var seen=new Map();allAreaRecords.forEach(function(r){if(r.city===city&&!seen.ha
 boCategoryData[city]=Array.from(seen.values());
 boCategoryData[childCities[city].bjsPicksCat]=boCategoryData[city].filter(function(r){return r.bjsPick});
 });
-var gateway=document.getElementById('bopLosAngelesGateway');
-var originalRender=boRenderCategory,bypassLA=false;
-function lock(on){document.documentElement.style.overflow=on?'hidden':'';document.body.style.overflow=on?'hidden':''}
-function openGateway(){gateway.classList.add('open');gateway.setAttribute('aria-hidden','false');lock(true)}
-function closeGateway(returnToSearch){
-gateway.classList.remove('open');gateway.setAttribute('aria-hidden','true');lock(false);
-if(returnToSearch){
-var landing=document.getElementById('bopLandingOverlay');
-if(landing)landing.classList.add('open');
-if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
-window.scrollTo(0,0);
-}
-}
-boRenderCategory=function(cat){
-if(cat==='losangeles'&&!bypassLA){openGateway();return}
-return originalRender.apply(this,arguments);
-};
-gateway.querySelector('.bop-la-gateway-close').addEventListener('click',function(){closeGateway(true)});
-gateway.addEventListener('click',function(event){
-var tile=event.target.closest('.bop-la-gateway-tile');if(!tile)return;
-var dest=tile.dataset.laDestination;
-if(childCities[dest]){
-closeGateway(false);
-boCityContext=dest;
-if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('otheroptions',dest);
-var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
-originalRender('otheroptions');
-window.scrollTo(0,0);
-return;
-}
-});
-document.addEventListener('keydown',function(event){if(event.key==='Escape'&&gateway.classList.contains('open'))closeGateway(true)});
-window.bopOpenLosAngelesGateway=openGateway;
+/* This city already has a real zone-map gate (CITY_MAPS/bopShowCityGate) that
+routes taps to these exact sub-city keys, and the back-button logic already
+expects them (areaGateParents). No new gateway UI needed here — this script
+only supplies the BO_CITY_CONFIG entries and the address-based data split. */
+})();</script>
+
+
+<style id="bop-cannabis-fallback-and-wtfdd-badge-v310">
+#bopCannabisFallback{position:fixed;inset:0;z-index:2147483300;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
+#bopCannabisFallback.open{display:flex}
+.bop-cf-panel{position:relative;width:min(360px,92vw);padding:30px 24px 26px;border:2px solid #35c96f;border-radius:20px;background:#050505;text-align:center;box-shadow:0 0 26px rgba(53,201,111,.4)}
+.bop-cf-close{position:absolute;top:10px;right:10px;width:34px;height:34px;border:1.5px solid #35c96f;border-radius:50%;background:#000;color:#35c96f;font:900 18px/1 Arial;cursor:pointer}
+.bop-cf-title{margin:6px 26px 12px;color:#35c96f;font-family:'Archivo Black',sans-serif;font-size:1.1rem;line-height:1.3;text-shadow:0 0 8px rgba(53,201,111,.5)}
+.bop-cf-body{margin:0 0 20px;color:#ddd;font-family:'Archivo Narrow',sans-serif;font-size:.9rem;line-height:1.5}
+.bop-cf-link{display:inline-flex;align-items:center;gap:8px;background:#35c96f;color:#000;text-decoration:none;font-family:'Archivo Black',sans-serif;font-size:.85rem;letter-spacing:.02em;padding:12px 22px;border-radius:999px;box-shadow:0 0 14px rgba(53,201,111,.55)}
+.bop-cf-link:hover{background:#4fe085}
+.bop-wtfdd-badge{position:fixed;left:14px;bottom:14px;z-index:400;display:block;width:64px;height:auto;border-radius:8px;overflow:hidden;border:1px solid rgba(53,201,111,.55);box-shadow:0 0 10px rgba(53,201,111,.35);opacity:.92;transition:transform .15s ease,opacity .15s ease}
+.bop-wtfdd-badge:hover,.bop-wtfdd-badge:active{opacity:1;transform:scale(1.05)}
+.bop-wtfdd-badge img{display:block;width:100%;height:auto}
+</style>
+<div id="bopCannabisFallback" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="bop-cf-panel">
+    <button type="button" class="bop-cf-close" aria-label="Close">&times;</button>
+    <div class="bop-cf-title">No verified cannabis-infused dining here yet</div>
+    <p class="bop-cf-body">We haven't independently verified a cannabis-infused restaurant or lounge in this city yet. For the closest dispensary or edibles, check WTFDD.</p>
+    <a class="bop-cf-link" href="https://wtfdd.com" target="_blank" rel="noopener">Open WTFDD.com &rarr;</a>
+  </div>
+</div>
+<a class="bop-wtfdd-badge" href="https://wtfdd.com" target="_blank" rel="noopener" aria-label="Visit WTFDD.com">
+  <img src="data:image/jpeg;base64,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" alt="WTFDD — Weed, Tobacco, Food"/>
+</a>
+<script id="bop-cannabis-fallback-and-wtfdd-badge-v310-script">(function(){
+var modal=document.getElementById('bopCannabisFallback');
+if(!modal)return;
+function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false')}
+function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}
+modal.querySelector('.bop-cf-close').addEventListener('click',close);
+modal.addEventListener('click',function(e){if(e.target===modal)close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close()});
+window.bopShowCannabisFallback=open;
 })();</script>
 
 </body></html>
