@@ -11400,15 +11400,10 @@ Object.keys(swiss[category]).forEach(city=>{
 swiss[category][city].forEach((item,index)=>add(category,city,item,index));
 });
 });
-['zurich','lucerne','geneva','zermatt'].forEach(city=>{
-const picksCategory=BO_CITY_CONFIG[city]&&BO_CITY_CONFIG[city].bjsPicksCat;
-if(!picksCategory)return;
-['steak','italian','breakfast','asian'].forEach((category,index)=>{
-const item=swiss[category][city][0];
-const source=(boCategoryData[category]||[]).find(r=>r&&r.city===city&&r.name===item[0]);
-if(source)place(picksCategory,Object.assign({},source,{rank:index+1,bjsPick:true}));
-});
-});
+/* v341: removed the auto-seeding of "BJS Picks" for the Swiss cities. It
+flagged the first starter entry of four categories as a pick, so the
+All BJS Picks page listed Zermatt/Zurich/Lucerne/Geneva restaurants nobody
+had actually picked. BJS Picks are hand-designated only. */
 })();
 boCategoryData.michelin = (() => {
 const seen = new Map();
@@ -12912,7 +12907,62 @@ boNearLoadingStartedAt = Date.now();
 if(loading) loading.classList.remove('is-hidden');
 status.style.display='block'; status.classList.add('is-loading'); status.textContent='LOADING...';
 const run=++boNearMapGeocodeRun;
-try{ await boLoadLeaflet(); }catch(e){ status.textContent='The map could not load. Check your internet connection.'; return; }
+try{ await boLoadLeaflet(); }catch(e){
+/* v330: the visual map failing to load used to abort this ENTIRE function --
+which also killed the "Closest -- BJS Directory" text list, even though
+that list needs geolocation and our own restaurant data, not the map
+library at all. Now: if Leaflet genuinely won't load, swap in a harmless
+stand-in that safely no-ops for every map call (pan, markers, tiles...)
+so the actual restaurant list still finds and shows real results. Only
+the visual pin canvas is skipped -- the text list Brad actually reads
+keeps working regardless of the map. */
+if(typeof window.L==='undefined'||!window.L){
+/* Minimal real (not proxy) shim -- geometry helpers return true numbers
+so distance math and the restaurant list keep working correctly; only
+the actual visual map drawing is a no-op. */
+function BopShimLayer(){this._center=null;}
+BopShimLayer.prototype.addTo=function(){return this;};
+BopShimLayer.prototype.on=function(){return this;};
+BopShimLayer.prototype.off=function(){return this;};
+BopShimLayer.prototype.bindTooltip=function(){return this;};
+BopShimLayer.prototype.bindPopup=function(){return this;};
+BopShimLayer.prototype.openPopup=function(){return this;};
+BopShimLayer.prototype.setLatLng=function(ll){this._center=ll;return this;};
+BopShimLayer.prototype.setView=function(c){this._center=Array.isArray(c)?{lat:c[0],lng:c[1]}:c;return this;};
+BopShimLayer.prototype.getCenter=function(){return this._center||{lat:0,lng:0};};
+BopShimLayer.prototype.getZoom=function(){return 13;};
+BopShimLayer.prototype.getBounds=function(){return {contains:function(){return true;}};};
+BopShimLayer.prototype.invalidateSize=function(){return this;};
+BopShimLayer.prototype.removeLayer=function(){return this;};
+BopShimLayer.prototype.remove=function(){return this;};
+BopShimLayer.prototype.clearLayers=function(){return this;};
+BopShimLayer.prototype.addLayer=function(){return this;};
+BopShimLayer.prototype.eachLayer=function(){return this;};
+BopShimLayer.prototype.setIcon=function(){return this;};
+BopShimLayer.prototype.setStyle=function(){return this;};
+BopShimLayer.prototype.getLatLng=function(){return this._center||{lat:0,lng:0};};
+BopShimLayer.prototype.closePopup=function(){return this;};
+BopShimLayer.prototype.unbindPopup=function(){return this;};
+BopShimLayer.prototype.fire=function(){return this;};
+BopShimLayer.prototype.panTo=function(c){this._center=Array.isArray(c)?{lat:c[0],lng:c[1]}:c;return this;};
+BopShimLayer.prototype.flyTo=function(c){this._center=Array.isArray(c)?{lat:c[0],lng:c[1]}:c;return this;};
+BopShimLayer.prototype.setZoom=function(){return this;};
+BopShimLayer.prototype.setRadius=function(){return this;};
+BopShimLayer.prototype.setLatLngs=function(){return this;};
+window.L={
+map:function(){return new BopShimLayer();},
+tileLayer:function(){return new BopShimLayer();},
+marker:function(latlng){var m=new BopShimLayer();m._center=Array.isArray(latlng)?{lat:latlng[0],lng:latlng[1]}:latlng;return m;},
+circle:function(latlng){var m=new BopShimLayer();m._center=Array.isArray(latlng)?{lat:latlng[0],lng:latlng[1]}:latlng;return m;},
+divIcon:function(){return {};},
+icon:function(){return {};},
+latLng:function(lat,lng){return {lat:lat,lng:lng};},
+layerGroup:function(){return new BopShimLayer();},
+control:{zoom:function(){return new BopShimLayer();}}
+};
+if(status)status.textContent='Map preview unavailable -- showing the list below.';
+}
+}
 if(run!==boNearMapGeocodeRun) return;
 if(!boNearMap){
 boNearMap=L.map('boNearMapCanvas',{zoomControl:true,closePopupOnClick:false}).setView(defaults.center,defaults.zoom);
@@ -15153,8 +15203,9 @@ const boSectionHeadEl2 = document.getElementById('boSectionHead');
 if(boSectionHeadEl2) boSectionHeadEl2.classList.toggle('bo-section-head-tight', BO_MAIN_CITY_CATS.includes(cat));
 if(boExpandBtnTopEl) boExpandBtnTopEl.style.display = (cat === 'bestof') ? 'flex' : 'none';
 if(botrToLandingBtnEl) botrToLandingBtnEl.style.display = (cat === 'bestof') ? 'flex' : 'none';
-if(boPickerConfig[cat] || BO_CITY_CONFIG[cat]){
-/* v325: BO_CITY_CONFIG[cat] added -- the main city landing page (cat==='bestof',
+if(boPickerConfig[cat]){
+/* v325 reverted in v343: adding BO_CITY_CONFIG[cat] here sent every city's Best Of list down the picker path (empty grid). Tile-page header hiding now lives in bop-tile-page-cleanup-v335.
+   original v325 note: BO_CITY_CONFIG[cat] added -- the main city landing page (cat==='bestof',
 or any sub-area) was falling through this check since it isn't a key in
 boPickerConfig, leaving the ranked-list header ('The Top N, Right Now')
 visible above the tile grid on the very first page of every city. */
@@ -15363,6 +15414,9 @@ const isMainCityPage = !!BO_CITY_CONFIG[cat];
 let boScopedCategoryList = (!isMainCityPage && !isBjsPicksCat(cat) && Array.isArray(boCategoryData[cat]))
 ? boCategoryData[cat].filter(r => (r.city || 'bestof') === boCityContext)
 : boCategoryData[cat];
+/* v344: the shared 'bestof' list has picked up records from NYC boroughs and LA
+areas over time; the Las Vegas Best Of page must only show Las Vegas records. */
+if(cat === 'bestof' && Array.isArray(boScopedCategoryList)) boScopedCategoryList = boScopedCategoryList.filter(r => r && (r.city || 'bestof') === 'bestof');
 if(cat === 'asianbestofrest'){
 const asianSourceCats = ['korean','sushi','chinese','thai','vietnamese','pho','indian','asianfusion','combo'];
 const seenAsian = new Map();
@@ -16472,7 +16526,8 @@ const cityCtx = (typeof boCityContext !== 'undefined') ? boCityContext : 'bestof
 const searchSource = (cityCtx !== 'bestof' && boCityRestaurantsFlat[cityCtx])
 ? boCityRestaurantsFlat[cityCtx]
 : boAllRestaurantsFlat;
-const matches = searchSource.filter(r => r.name.toLowerCase().includes(q)).slice(0, 8);
+const nq = q.replace(/[^a-z0-9]/g,''); /* v333: punctuation-tolerant -- 'dan tanas' finds "Dan Tana's" */
+const matches = searchSource.filter(r => r.name.toLowerCase().includes(q) || String(r.name).toLowerCase().replace(/[^a-z0-9]/g,'').includes(nq)).slice(0, 8);
 if(matches.length === 0){
 resultsEl.innerHTML = '<div class="bo-search-no-results">No matches found</div>';
 } else {
@@ -21548,7 +21603,7 @@ new MutationObserver(function(){requestAnimationFrame(decorate)}).observe(docume
       <div class="bop-map-pin" style="top:82%;left:9%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="manhattan"><strong>Staten Island</strong></button></div>
       <div class="bop-map-pin" style="top:20%;left:75%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="northshoreli"><strong>North Shore</strong></button></div>
       <div class="bop-map-pin" style="top:78%;left:78%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="southshoreli"><strong>South Shore</strong></button></div>
-      <div class="bop-map-pin" style="top:42%;left:92%"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="hamptons"><strong>The Hamptons</strong></button></div>
+      <div class="bop-map-pin" style="top:42%;left:88%;transform:translate(-100%,-50%)"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="hamptons"><strong>The Hamptons</strong></button></div>
     </div>
 
   </div>
@@ -22735,12 +22790,10 @@ var cities=[
 {name:'Lucerne',region:'Switzerland',dest:'lucerne',aliases:['Luzern']},
 {name:'Geneva',region:'Switzerland',dest:'geneva',aliases:['Genève','Geneve']},
 {name:'Zermatt',region:'Switzerland',dest:'zermatt'},
-{name:'San Diego',region:'California',dest:'sandiego'},
-{name:'San Diego Directory',region:'California \u2014 Neighborhoods',dest:'sandiegodirectory',aliases:['SD Directory','S.D. Directory']},
+{name:'San Diego Directory',region:'California \u2014 Neighborhoods',dest:'sandiegodirectory',aliases:['San Diego','SD Directory','S.D. Directory','S.D.','SD']},
 {name:'Austin',region:'Texas',dest:'austin',aliases:['Austin, Texas','ATX']},
 {name:'Silicon Valley',region:'California',dest:'siliconvalley',aliases:['S.V.','SV']},
-{name:'Los Angeles',region:'California',dest:'losangeles',aliases:['L.A.','LA']},
-{name:'Los Angeles Directory',region:'California \u2014 Neighborhoods',dest:'losangelesdirectory',aliases:['LA Directory','L.A. Directory']},
+{name:'Los Angeles Directory',region:'California \u2014 Neighborhoods',dest:'losangelesdirectory',aliases:['Los Angeles','L.A.','LA','LA Directory','L.A. Directory']},
 {name:'Santa Barbara',region:'California',dest:'santabarbara'},
 {name:'San Francisco',region:'California',dest:'sanfrancisco',aliases:['S.F.','SF']},
 {name:'New York',region:'State Directory',dest:'newyork',aliases:['New York State']},
@@ -22774,8 +22827,26 @@ var cities=[
 {name:'Dubai',region:'United Arab Emirates',dest:'dubai',aliases:['UAE']}
 ];
 function norm(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
-function openCity(dest){
+function openCity(dest,btn){
 var landing=document.getElementById('bopLandingOverlay'),results=document.getElementById('bopLandingResults');
+if(dest==='__suggest__'){
+var cityTyped=(btn&&btn.dataset.suggestCity)||'this city';
+if(results){results.classList.remove('open');results.innerHTML=''}
+var scrim=document.getElementById('bopUnbuiltCityScrim');
+if(!scrim){scrim=document.createElement('div');scrim.id='bopUnbuiltCityScrim';scrim.style.cssText='position:fixed;inset:0;background:#000;z-index:2147483390;';document.body.appendChild(scrim);}
+scrim.style.display='block';
+var cityEl=document.getElementById('bopEcsCity'),catEl=document.getElementById('bopEcsCat'),mail=document.getElementById('bopEcsMail'),modal=document.getElementById('bopEmptyCatSuggest');
+if(modal){
+if(catEl)catEl.textContent='everything';if(cityEl)cityEl.textContent=cityTyped;
+if(mail)mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Please add '+cityTyped+' to Best of Period');
+modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+var closeBtn=modal.querySelector('.bop-ecs-close');
+var done=function(){scrim.style.display='none';closeBtn.removeEventListener('click',done);modal.removeEventListener('click',bg);};
+var bg=function(e){if(e.target===modal)done();};
+closeBtn.addEventListener('click',done);modal.addEventListener('click',bg);
+}
+return;
+}
 if(dest==='newyork'&&typeof window.bopOpenNewYorkGateway==='function'){
 if(landing)landing.classList.remove('open');if(results){results.classList.remove('open');results.innerHTML=''}
 window.bopOpenNewYorkGateway();return;
@@ -22805,16 +22876,30 @@ function paint(){
 var q=norm(input.value);
 results.classList.remove('bop-ny-search-results');
 if(!q){results.innerHTML='';results.classList.remove('open');return}
-var found=cities.filter(function(city){return [city.name].concat(city.aliases||[]).some(function(name){return norm(name).startsWith(q)})}).slice(0,6);
-if(!found.length){results.innerHTML='<div class="bop-landing-results-label">No live city matches yet</div>';results.classList.add('open');return}
-results.innerHTML='<div class="bop-landing-results-label">Live Cities</div>'+found.map(function(city){return '<button type="button" class="bop-landing-result" data-authoritative-city="'+city.dest+'"><span class="bop-landing-result-dot"></span> '+city.name+', '+city.region+'</button>'}).join('');
+/* v332: include every live city from BO_CITY_CONFIG (Amsterdam, Zagreb, ...) not already in the hand-list; skip sub-areas and gateway-only parents. */
+var listed={};cities.forEach(function(c){listed[c.dest]=1});
+var extra=[];
+if(typeof BO_CITY_CONFIG!=='undefined'){Object.keys(BO_CITY_CONFIG).forEach(function(k){
+if(listed[k]||k==='bestof'||k==='losangeles'||k==='sandiego'||k==='newyork')return;
+if(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k])return;
+if(/^(sd|la)[a-z]/.test(k))return;
+var cfg=BO_CITY_CONFIG[k]||{};
+var nm=cfg.displayName||cfg.landingName||k;
+extra.push({name:nm,region:cfg.region||cfg.country||'',dest:k});
+});}
+var all=cities.concat(extra);
+var found=all.filter(function(city){return [city.name].concat(city.aliases||[]).some(function(name){return norm(name).startsWith(q)})}).slice(0,6);
+if(!found.length){
+results.innerHTML='<div class="bop-landing-results-label">Not on the platform yet</div><button type="button" class="bop-landing-result" data-authoritative-city="__suggest__" data-suggest-city="'+input.value.replace(/"/g,'&quot;')+'"><span class="bop-landing-result-dot"></span> Tell us to add '+input.value.replace(/</g,'&lt;')+'</button>';
+results.classList.add('open');return}
+results.innerHTML='<div class="bop-landing-results-label">Live Cities</div>'+found.map(function(city){return '<button type="button" class="bop-landing-result" data-authoritative-city="'+city.dest+'"><span class="bop-landing-result-dot"></span> '+city.name+(city.region?', '+city.region:'')+'</button>'}).join('');
 results.classList.add('open');
 }
 function repaintLast(){setTimeout(paint,0)}
 input.addEventListener('input',repaintLast);
 input.addEventListener('compositionend',repaintLast);
 input.addEventListener('keyup',repaintLast);
-results.addEventListener('click',function(event){var button=event.target.closest('[data-authoritative-city]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();openCity(button.dataset.authoritativeCity)},true);
+results.addEventListener('click',function(event){var button=event.target.closest('[data-authoritative-city]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();openCity(button.dataset.authoritativeCity,button)},true);
 input.addEventListener('keydown',function(event){if(event.key!=='Enter')return;setTimeout(function(){var first=results.querySelector('[data-authoritative-city]');if(first)openCity(first.dataset.authoritativeCity)},0)},true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
@@ -25300,7 +25385,13 @@ function render(){
 var list=document.getElementById('boNearClosestList'),status=document.getElementById('boNearClosestStatus');
 if(!list||!status||!boNearClosestTier)return;
 if(!boNearUserLatLng){list.innerHTML='';status.textContent='LOCATING YOUR POSITION…';status.classList.add('is-locating');return;}
-if(!boNearGeocodingComplete){
+/* v331: this used to wait for the WHOLE city to finish geocoding before
+showing anything -- for a big city that's minutes of "locating..." even
+once plenty of nearby restaurants are already mapped. Now: only block
+when we have nothing at all yet. The logic further down already knows
+how to show a proper "still mapping, showing N so far" partial state
+once real candidates exist. */
+if(!boNearGeocodingComplete && boNearMappedRestaurants.length===0){
 list.innerHTML='';
 status.textContent='LOCATING AND MAPPING THE CLOSEST '+(boNearClosestTier==='all'?'RESTAURANTS':boNearClosestTier.toUpperCase()+' RESTAURANTS')+'…';
 status.classList.add('is-locating');
@@ -27501,44 +27592,12 @@ var CITY_MAPS = {
 losangeles: {
 title: 'LOS ANGELES',
 sub: 'From Highland Park to San Juan Capistrano.',
-svg: ''+
-'<svg viewBox="0 -44 400 590" role="img" aria-label="Los Angeles to San Juan Capistrano area selector"><g class="bop-lamap-all"><polygon points="90,-38 328,-40 330,-12 88,-8"/><text x="209" y="-19" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">ALL OF LOS ANGELES \u2014 CITYWIDE</text></g>'+
-'<g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g>'+
-'<text x="24" y="326" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 326)">PACIFIC OCEAN</text>'+
-'<g class="bop-lamap-zone" data-dest="ladowntown"><polygon points="90,8 328,6 330,34 88,38"/><text x="95" y="27" fill="#f6a014" font="900 10.5px Arial,sans-serif">HIGHLAND PARK &amp; EAGLE ROCK</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lavalley"><polygon points="86,42 330,40 332,68 84,72"/><text x="208" y="61" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">N.H. &amp; BURBANK</text></g>'+
-'<g class="bop-lamap-zone" data-dest="laweho"><polygon points="80,74 332,72 334,100 78,104"/><text x="154" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">WEST HOLLYWOOD</text></g>'+
-'<g class="bop-lamap-zone" data-dest="labeveryhillswestside"><polygon points="76,108 334,106 336,134 74,138"/><text x="158" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">BEVERLY HILLS</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lasantamonicavenice"><polygon points="72,142 336,140 338,168 70,172"/><text x="137" y="161" fill="#f6a014" font="900 10.5px Arial,sans-serif">SANTA MONICA &amp; VENICE</text></g>'+
-'<g class="bop-lamap-zone" data-dest="laculvercity"><polygon points="68,176 338,174 340,202 66,206"/><text x="164" y="195" fill="#f6a014" font="900 11px Arial,sans-serif">CULVER CITY</text></g>'+
-'<g class="bop-lamap-zone" data-dest="ladowntown"><polygon points="64,210 340,208 342,236 62,240"/><text x="143" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN LOS ANGELES</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lasouthbaylax"><polygon points="60,244 342,242 344,270 58,274"/><text x="151" y="263" fill="#f6a014" font="900 10.5px Arial,sans-serif">SOUTH BAY &amp; LAX</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lalongbeach"><polygon points="56,278 344,276 346,304 54,308"/><text x="166" y="297" fill="#f6a014" font="900 11px Arial,sans-serif">LONG BEACH</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lahuntingtonbeach"><polygon points="52,312 346,310 348,338 50,342"/><text x="150" y="331" fill="#f6a014" font="900 10.5px Arial,sans-serif">HUNTINGTON BEACH</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lanewportbeach"><polygon points="48,346 348,344 350,372 46,376"/><text x="159" y="365" fill="#f6a014" font="900 11px Arial,sans-serif">NEWPORT BEACH</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lacostamesa"><polygon points="44,380 350,378 352,406 42,410"/><text x="170" y="399" fill="#f6a014" font="900 11px Arial,sans-serif">COSTA MESA</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lairvine"><polygon points="40,414 352,412 354,440 38,444"/><text x="188" y="433" fill="#f6a014" font="900 11px Arial,sans-serif">IRVINE</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lalagunadanapoint"><polygon points="36,448 354,446 356,474 34,478"/><text x="139" y="467" fill="#f6a014" font="900 10.5px Arial,sans-serif">LAGUNA BEACH &amp; DANA POINT</text></g>'+
-'<g class="bop-lamap-zone" data-dest="lasanjuancapistrano"><polygon points="32,482 356,480 358,508 30,512"/><text x="137" y="501" fill="#f6a014" font="900 10.5px Arial,sans-serif">SAN JUAN CAPISTRANO</text></g>'+
-'</svg>'
+svg: '<svg viewBox="0 -44 400 640" role="img" aria-label="Map of the Los Angeles and Orange County coastline"><path d="M20,60 C40,110 60,140 70,170 C80,210 70,240 100,270 C130,300 160,320 190,345 C215,365 235,400 250,440 C262,475 285,500 310,530 C330,555 350,590 360,640 L0,640 L0,60 Z" fill="#0a2540" opacity=".85"/><path d="M20,60 C40,110 60,140 70,170 C80,210 70,240 100,270 C130,300 160,320 190,345 C215,365 235,400 250,440 C262,475 285,500 310,530 C330,555 350,590 360,640" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><text x="60" y="420" fill="#5fb3ff" font="900 13px Arial,sans-serif" letter-spacing="4" opacity=".6" transform="rotate(-62 60 420)" text-anchor="middle">PACIFIC OCEAN</text><g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g><g class="bop-lamap-zone" data-dest="lahighlandpark"><circle cx="300" cy="5" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="194" y="15" width="213" height="22" rx="11"/><text x="300" y="30" text-anchor="middle" font="900 10px Arial,sans-serif">HIGHLAND PARK & EAGLE ROCK</text></g><g class="bop-lamap-zone" data-dest="lanorthhollywood"><circle cx="175" cy="-12" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="114" y="-2" width="122" height="22" rx="11"/><text x="175" y="13" text-anchor="middle" font="900 10px Arial,sans-serif">N.H. & BURBANK</text></g><g class="bop-lamap-zone" data-dest="laweho"><circle cx="200" cy="60" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="139" y="70" width="122" height="22" rx="11"/><text x="200" y="85" text-anchor="middle" font="900 10px Arial,sans-serif">WEST HOLLYWOOD</text></g><g class="bop-lamap-zone" data-dest="labeveryhillswestside"><circle cx="130" cy="95" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="73" y="105" width="114" height="22" rx="11"/><text x="130" y="120" text-anchor="middle" font="900 10px Arial,sans-serif">BEVERLY HILLS</text></g><g class="bop-lamap-zone" data-dest="lasantamonicavenice"><circle cx="72" cy="175" r="6" class="bop-pin-dot"/><rect x="84" y="164" width="175" height="22" rx="11"/><text x="172" y="179" text-anchor="middle" font="900 10px Arial,sans-serif">SANTA MONICA & VENICE</text></g><g class="bop-lamap-zone" data-dest="laculvercity"><circle cx="160" cy="205" r="6" class="bop-pin-dot"/><rect x="172" y="194" width="99" height="22" rx="11"/><text x="222" y="209" text-anchor="middle" font="900 10px Arial,sans-serif">CULVER CITY</text></g><g class="bop-lamap-zone" data-dest="ladowntown"><circle cx="290" cy="150" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="206" y="160" width="168" height="22" rx="11"/><text x="290" y="175" text-anchor="middle" font="900 10px Arial,sans-serif">DOWNTOWN LOS ANGELES</text></g><g class="bop-lamap-zone" data-dest="lasouthbaylax"><circle cx="96" cy="262" r="6" class="bop-pin-dot"/><rect x="108" y="251" width="130" height="22" rx="11"/><text x="173" y="266" text-anchor="middle" font="900 10px Arial,sans-serif">SOUTH BAY & LAX</text></g><g class="bop-lamap-zone" data-dest="lalongbeach"><circle cx="188" cy="343" r="6" class="bop-pin-dot"/><rect x="200" y="332" width="92" height="22" rx="11"/><text x="246" y="347" text-anchor="middle" font="900 10px Arial,sans-serif">LONG BEACH</text></g><g class="bop-lamap-zone" data-dest="lahuntingtonbeach"><circle cx="238" cy="415" r="6" class="bop-pin-dot"/><rect x="250" y="404" width="137" height="22" rx="11"/><text x="318" y="419" text-anchor="middle" font="900 10px Arial,sans-serif">HUNTINGTON BEACH</text></g><g class="bop-lamap-zone" data-dest="lanewportbeach"><circle cx="256" cy="460" r="6" class="bop-pin-dot"/><rect x="268" y="449" width="114" height="22" rx="11"/><text x="325" y="464" text-anchor="middle" font="900 10px Arial,sans-serif">NEWPORT BEACH</text></g><g class="bop-lamap-zone" data-dest="lacostamesa"><circle cx="330" cy="395" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="284" y="405" width="92" height="22" rx="11"/><text x="330" y="420" text-anchor="middle" font="900 10px Arial,sans-serif">COSTA MESA</text></g><g class="bop-lamap-zone" data-dest="lairvine"><circle cx="360" cy="445" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="330" y="455" width="61" height="22" rx="11"/><text x="360" y="470" text-anchor="middle" font="900 10px Arial,sans-serif">IRVINE</text></g><g class="bop-lamap-zone" data-dest="lalagunadanapoint"><circle cx="300" cy="515" r="6" class="bop-pin-dot"/><rect x="82" y="504" width="206" height="22" rx="11"/><text x="185" y="519" text-anchor="middle" font="900 10px Arial,sans-serif">LAGUNA BEACH & DANA POINT</text></g><g class="bop-lamap-zone" data-dest="lasanjuancapistrano"><circle cx="345" cy="570" r="6" class="bop-pin-dot"/><rect x="173" y="559" width="160" height="22" rx="11"/><text x="253" y="574" text-anchor="middle" font="900 10px Arial,sans-serif">SAN JUAN CAPISTRANO</text></g></svg>'
 },
 sandiego: {
 title: 'SAN DIEGO',
 sub: 'The coastline. Oceanside to the border.',
-svg: ''+
-'<svg viewBox="0 -44 400 350" role="img" aria-label="Map of the San Diego coastline"><rect x="0" y="-44" width="76" height="350" fill="#0a2540" opacity=".85"/><g class="bop-lamap-all"><polygon points="90,-38 328,-40 330,-12 88,-8"/><text x="209" y="-19" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">ALL OF SAN DIEGO \u2014 CITYWIDE</text></g>'+
-'<g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g>'+
-'<text x="24" y="180" fill="#8aa4bd" font="800 8px Arial,sans-serif" letter-spacing=".3em" opacity=".55" transform="rotate(-90 24 180)">PACIFIC OCEAN</text>'+
-'<g class="bop-lamap-zone" data-dest="sdoceanside"><polygon points="86,8 330,6 332,34 84,38"/><text x="208" y="27" text-anchor="middle" fill="#f6a014" font="900 11px Arial,sans-serif">OCEANSIDE</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sdcarlsbad"><polygon points="80,40 332,38 334,66 78,70"/><text x="164" y="59" fill="#f6a014" font="900 11px Arial,sans-serif">CARLSBAD</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sdencinitas"><polygon points="76,74 334,72 336,100 74,104"/><text x="162" y="93" fill="#f6a014" font="900 11px Arial,sans-serif">ENCINITAS</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sddelmar"><polygon points="72,108 336,106 338,134 70,138"/><text x="166" y="127" fill="#f6a014" font="900 11px Arial,sans-serif">DEL MAR</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sdlajolla"><polygon points="68,142 338,140 340,168 66,172"/><text x="164" y="161" fill="#f6a014" font="900 11px Arial,sans-serif">LA JOLLA</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sdpacificbeach"><polygon points="64,176 340,174 342,202 62,206"/><text x="118" y="195" fill="#f6a014" font="900 10.5px Arial,sans-serif">PACIFIC BEACH &amp; MISSION BAY</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sddowntown"><polygon points="60,210 342,208 344,236 58,240"/><text x="122" y="229" fill="#f6a014" font="900 10.5px Arial,sans-serif">DOWNTOWN &amp; GASLAMP</text></g>'+
-'<g class="bop-lamap-zone" data-dest="sdcoronado"><polygon points="56,244 344,242 346,270 54,274"/><text x="164" y="263" fill="#f6a014" font="900 11px Arial,sans-serif">CORONADO</text></g>'+
-'<g class="bop-lamap-soon"><polygon points="52,278 346,276 348,302 50,304"/><text x="118" y="295" font="900 10.5px Arial,sans-serif">TIJUANA \u2014 COMING SOON</text></g>'+
-'</svg>'
+svg: '<svg viewBox="0 -44 400 640" role="img" aria-label="Map of the San Diego coastline"><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600 L0,600 L0,-44 Z" fill="#0a2540" opacity=".85"/><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><text x="22" y="300" fill="#5fb3ff" font="900 13px Arial,sans-serif" letter-spacing="4" opacity=".6" transform="rotate(-90 22 300)" text-anchor="middle">PACIFIC OCEAN</text><g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g><g class="bop-lamap-zone" data-dest="sdoceanside"><circle cx="52" cy="20" r="6" class="bop-pin-dot"/><rect x="64" y="9" width="244" height="22" rx="11"/><text x="186" y="24" text-anchor="middle" font="900 10px Arial,sans-serif">OCEANSIDE · VISTA · SAN MARCOS</text></g><g class="bop-lamap-zone" data-dest="sdcarlsbad"><circle cx="56" cy="85" r="6" class="bop-pin-dot"/><rect x="68" y="74" width="76" height="22" rx="11"/><text x="106" y="89" text-anchor="middle" font="900 10px Arial,sans-serif">CARLSBAD</text></g><g class="bop-lamap-zone" data-dest="sdencinitas"><circle cx="58" cy="150" r="6" class="bop-pin-dot"/><rect x="70" y="139" width="84" height="22" rx="11"/><text x="112" y="154" text-anchor="middle" font="900 10px Arial,sans-serif">ENCINITAS</text></g><g class="bop-lamap-zone" data-dest="sddelmar"><circle cx="56" cy="215" r="6" class="bop-pin-dot"/><rect x="68" y="204" width="69" height="22" rx="11"/><text x="102" y="219" text-anchor="middle" font="900 10px Arial,sans-serif">DEL MAR</text></g><g class="bop-lamap-zone" data-dest="sdlajolla"><circle cx="52" cy="285" r="6" class="bop-pin-dot"/><rect x="64" y="274" width="76" height="22" rx="11"/><text x="102" y="289" text-anchor="middle" font="900 10px Arial,sans-serif">LA JOLLA</text></g><g class="bop-lamap-zone" data-dest="sdpacificbeach"><circle cx="84" cy="360" r="6" class="bop-pin-dot"/><rect x="96" y="349" width="221" height="22" rx="11"/><text x="206" y="364" text-anchor="middle" font="900 10px Arial,sans-serif">PACIFIC BEACH & MISSION BAY</text></g><g class="bop-lamap-zone" data-dest="sddowntown"><circle cx="118" cy="430" r="6" class="bop-pin-dot"/><rect x="130" y="419" width="152" height="22" rx="11"/><text x="206" y="434" text-anchor="middle" font="900 10px Arial,sans-serif">DOWNTOWN & GASLAMP</text></g><g class="bop-lamap-zone" data-dest="sdcoronado"><circle cx="100" cy="478" r="6" class="bop-pin-dot"/><rect x="112" y="467" width="76" height="22" rx="11"/><text x="150" y="482" text-anchor="middle" font="900 10px Arial,sans-serif">CORONADO</text></g><g class="bop-lamap-soon"><circle cx="130" cy="545" r="6" class="bop-pin-dot"/><rect x="142" y="534" width="175" height="22" rx="11" stroke-dasharray="5 4"/><text x="230" y="549" text-anchor="middle" font="900 10px Arial,sans-serif" fill="#E4002B">TIJUANA \u2014 COMING SOON</text></g></svg>'
 }
 };
 var CSS_ZONE = '.bop-lamap-all polygon{fill:rgba(246,160,20,.18);stroke:#f6a014;stroke-width:2.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(246,160,20,.7));cursor:pointer}.bop-lamap-all:active polygon{fill:rgba(246,160,20,.36)}'+'.bop-lamap-zone polygon{fill:rgba(246,160,20,.10);stroke:#f6a014;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(246,160,20,.5));cursor:pointer}.bop-lamap-zone:active polygon{fill:rgba(246,160,20,.28)}.bop-lamap-soon polygon{fill:rgba(228,0,43,.05);stroke:#8a570d;stroke-width:2;stroke-dasharray:7 5;cursor:default}.bop-lamap-soon text{fill:#E4002B;opacity:.85}';
@@ -32779,7 +32838,7 @@ var NOTE="Open since 1964 on Santa Monica Boulevard next to the Troubadour \u201
 function apply(){
 if(typeof boCategoryData!=='object'||!boCategoryData)return false;
 var base=null;
-Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(r&&r.city==='losangeles'&&r.name==="Dan Tana's"){r.specialNote=SPECIAL;if(!r.note||/^Hollywood institution since 1964/.test(r.note))r.note=NOTE;if(!r.phone)r.phone="(310) 275-9444";if(!r.url)r.url="https://dantanasrestaurant.com/";r.image="https://dantanasrestaurant.com/wp-content/uploads/2020/11/JSB_5093.jpg";r.imagePosition="center";r.why="Old-Hollywood Italian since 1964. The Dabney Coleman \u2014 a steak so good it brought this Italian restaurant into the Best Steak, Period category.";r.bjsTip="The chicken parm may be the greatest chicken parm in the history of chicken parms.";if(!base)base=r;}});});
+Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(r&&(r.city==='losangeles'||r.city==='laweho')&&r.name==="Dan Tana's"){r.specialNote=SPECIAL;if(!r.note||/^Hollywood institution since 1964/.test(r.note))r.note=NOTE;if(!r.phone)r.phone="(310) 275-9444";if(!r.url)r.url="https://dantanasrestaurant.com/";r.image="https://dantanasrestaurant.com/wp-content/uploads/2020/11/JSB_5093.jpg";r.imagePosition="center";r.why="Old-Hollywood Italian since 1964. The Dabney Coleman \u2014 a steak so good it brought this Italian restaurant into the Best Steak, Period category.";r.bjsTip="The chicken parm may be the greatest chicken parm in the history of chicken parms.";if(!base)base=r;}});});
 if(!base)return false;
 ['italianhighend','steakhighend'].forEach(function(cat){
 var list=boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];
@@ -40060,6 +40119,7 @@ found=true;
 var entry=list[idx];
 entry.bjsPick=true;
 entry.rank=1;
+entry.bjsPickLabel='BJS Steak Pick \u00b7 BJS Italian Pick';
 entry.goldApple=true;
 entry.photoRequired=true;
 if(!entry.image&&!entry.photoAuditStatus)entry.photoAuditStatus='awaiting-verified-interior';
@@ -40067,6 +40127,8 @@ list.splice(idx,1);
 list.unshift(entry);
 list.forEach(function(r,i){if(r)r.rank=i+1});
 });
+/* label every copy of Dan Tana's (All BJS Picks page shows bjsPickLabel under the name) */
+Object.keys(boCategoryData).forEach(function(c){(boCategoryData[c]||[]).forEach(function(r){if(r&&r.name==="Dan Tana's"){r.bjsPickLabel='BJS Steak Pick \u00b7 BJS Italian Pick';}});});
 return found;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
@@ -40300,7 +40362,9 @@ var cat=btn.dataset.pickerCat||'';
 if(/^(cannabisinfused|foodtrucks|streetvendors|bestof|bjspicks|allbjspicks|nearme|closest|24hours|nations?|teen|notquiteopen|newrestaurants|dogfriendly|offstrip|undernewownership)$/.test(cat))return;
 var badge=btn.querySelector('.bo-tile-count');
 if(!badge||badge.textContent.trim()!=='?')return;
-var label=(btn.textContent||'').replace(/\?/g,'').replace(/\s+/g,' ').trim();
+var label=(btn.textContent||'').replace(/\?/g,'').replace(/BJS\s*VS\s*ONE\s*BITE/ig,'').replace(/\s+/g,' ').trim();
+if(cat==='pizza')label='Pizza';
+if(!label)label=cat.charAt(0).toUpperCase()+cat.slice(1);
 /* let the (empty) page render underneath, then fog it with the popup */
 setTimeout(function(){open(label);},220);
 },true);
@@ -40315,15 +40379,7 @@ boTileRestaurantCount=function(){window.__bopTileCounting=true;try{return orig.a
 })();</script>
 
 
-<style id="bop-apple-i-final-v327">
-/* Apple-dot over the "i" in Period had grown across past patches and was
-overlapping "Best of" on the line above. Smaller, and nudged further down
-away from the line above. (The corner BJS/mail icons are sized directly
-in bop-gate-corner-icons-v261-script -- fixed there since a setInterval
-in that script re-applies inline pixel sizes every 500ms, so a CSS
-override alone can't win against it.) */
-.bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{width:.22em!important;height:.22em!important;top:calc(.04em + 22px)!important}
-</style>
+
 
 
 <script id="bop-why-popup-unstick-v328-script">(function(){
@@ -40347,6 +40403,219 @@ if(e.key!=='Escape')return;
 var overlay=document.getElementById('bjsWhyOverlay');
 if(overlay&&overlay.classList.contains('open'))closeWhy();
 });
+})();</script>
+
+
+<style id="bop-vote-card-no-overlap-v334">
+/* "Should Dave score this?" vote card was absolutely positioned over the card
+and covered the purple specials box (e.g. King Umberto). When a card has a
+specials callout, the vote card flows below the content instead. Fallback:
+the callout always stacks above the vote card so its text is never hidden. */
+.bo-red-callout{position:relative;z-index:9}
+:is(article,div,li):has(.bo-red-callout):has(> .bo-pizza-vote) > .bo-pizza-vote,
+:is(article,div,li):has(.bo-red-callout) .bo-pizza-vote{position:static!important;right:auto!important;top:auto!important;left:auto!important;width:min(220px,100%)!important;margin:10px auto 0!important;animation:none!important}
+</style>
+
+
+<style id="bop-tile-page-cleanup-v335-style">
+/* Long city names (e.g. Brooklyn's "The Brook, The Bridge & The Limb"):
+"Best Of" / city / "Period" on three lines. */
+#boHeroTitle.bo-hero-long-city .bo-line2{display:block!important;margin-right:0!important}
+#boHeroTitle.bo-hero-long-city .bo-period{display:block!important;text-align:center!important;margin-top:.04em}
+</style>
+<script id="bop-tile-page-cleanup-v335-script">(function(){
+/* v335: belt-and-suspenders for tile (picker) pages, whatever category key
+reached them (bestof, otheroptions, hamptons, laweho, brooklyn...):
+- never show the ranked-list header ("The Top N, Right Now") or its
+  "Ranked by aggregate review data" paragraph
+- never show an empty "Hot List" kicker
+- long city names get the three-line hero lockup */
+function tidy(){
+var list=document.getElementById('boList');
+var isTilePage=!!(list&&list.querySelector('.bo-picker-btn'));
+var head=document.getElementById('boSectionHead'),kick=document.getElementById('boKickerHero');
+if(isTilePage){
+if(head)head.style.setProperty('display','none','important');
+if(kick)kick.style.setProperty('display','none','important');
+}else{
+if(kick&&kick.style.getPropertyValue('display')==='none')kick.style.removeProperty('display');
+}
+var h1=document.getElementById('boHeroTitle');
+if(h1){
+var city=h1.querySelector('.bo-line2');
+var txt=city?city.textContent.trim():'';
+var ctx=(typeof boCityContext!=='undefined')?boCityContext:'';
+h1.classList.toggle('bo-hero-long-city',txt.length>13||ctx==='brooklyn'||!!(city&&city.querySelector('svg,img')));
+}
+}
+function install(){
+if(typeof window.boRenderCategory!=='function'||window.__bopTidyInstalled)return false;
+window.__bopTidyInstalled=true;
+var prev=window.boRenderCategory;
+window.boRenderCategory=function(){var r=prev.apply(this,arguments);try{tidy();setTimeout(tidy,80);setTimeout(tidy,400);}catch(e){}return r;};
+tidy();
+return true;
+}
+var n=0;var t=setInterval(function(){n++;if(install()||n>80)clearInterval(t);},250);
+})();</script>
+
+
+<style id="bop-pizza-tile-legible-v336">
+/* Pizza tile "BJS vs ONE BITE" badge: was clipping its own text. Bigger ring,
+readable type, a real glow, and a few pepperoni slices so it reads as pizza. */
+.bo-pizza-tile{gap:8px!important}
+.bo-pizza-tile-duel{width:62px!important;height:62px!important;flex:0 0 62px!important;grid-template-columns:1fr 10px 1fr!important;padding:8px 5px!important;overflow:visible!important;background:radial-gradient(circle at 50% 50%,#3a1a08 0,#1d0d05 62%,#050505 100%)!important;border:2px solid #F59E0B!important;box-shadow:0 0 10px rgba(245,158,11,.75),0 0 22px rgba(245,158,11,.35),inset 0 0 8px rgba(245,158,11,.25)!important;filter:none!important;animation:bop-pizza-ring-glow 2.4s ease-in-out infinite}
+.bo-pizza-tile-duel::before,.bo-pizza-tile-duel::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff5a5a,#9e0f0f 70%);box-shadow:0 0 0 1px rgba(0,0,0,.45);z-index:1;pointer-events:none}
+.bo-pizza-tile-duel::before{top:5px;left:9px}
+.bo-pizza-tile-duel::after{bottom:6px;right:8px}
+.bo-pizza-tile-bjs{width:24px!important;height:24px!important;font-size:.5rem!important;background:#050505!important}
+.bo-pizza-tile-vs{font-size:.42rem!important;color:#fff!important;text-shadow:0 0 4px rgba(228,0,43,.9)!important}
+.bo-pizza-tile-ob{width:24px!important;height:16px!important;font-size:.3rem!important;line-height:.9!important;border-radius:9px!important}
+.bo-badge-tabs{display:none!important}
+@keyframes bop-pizza-ring-glow{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.6),0 0 18px rgba(245,158,11,.28),inset 0 0 8px rgba(245,158,11,.22)}50%{box-shadow:0 0 14px rgba(245,158,11,.95),0 0 30px rgba(245,158,11,.5),inset 0 0 10px rgba(245,158,11,.35)}}
+</style>
+
+
+<script id="bop-manhattan-pizza-top11-v337">(function(){
+/* v337 (2026-09-03): MANHATTAN PIZZA TOP 11. Brad: "how do we not have
+Manhattan pizza -- immediately." Google ratings + counts pulled live today;
+BJS score = Google rating x2 (same convention as the Brooklyn buildout).
+One Bite / Dave scores left null on purpose -- the site's own "Should Dave
+score this?" card shows until a real score is confirmed (no invented numbers). */
+function pizzaRec(name,city,bjs,ob,dave,address,phone,why,note,extra){
+var blended=ob!=null?(bjs+ob)/2:bjs;
+return Object.assign({rank:null,name:name,city:city,image:'',imagePosition:'center',
+rating:(blended/2).toFixed(2)+' / 5',reviews:null,price:1,hue:'18, 42%, 27%',
+why:why,note:note,url:'',address:address,phone:phone||'',hours:[],
+bjsPizzaScore:blended.toFixed(1),oneBiteScore:ob,oneBiteReviews:null,oneBiteDaveScore:dave,ratingSource:'Google'},extra||{});
+}
+var ROWS=[
+pizzaRec("L'industrie Pizzeria \u2014 West Village",'manhattan',9.4,null,null,'104 Christopher St, New York, NY 10014','+1 212-256-0648',"4.7/5 from 3,900+ Google reviews \u2014 the burrata slice people cross boroughs for","Line moves fast; crisp, airy crust, and the burrata and tartufo slices are the ones to get. Noon\u201310pm daily.",{reviews:'3,962 reviews',bjsPick:true,bjsPickCity:'manhattan',bjsPickLabel:'BJS Pizza Pick'}),
+pizzaRec("Rubirosa",'manhattan',9.4,null,null,'235 Mulberry St, New York, NY 10012','+1 212-965-0500',"4.7/5 from 7,600+ Google reviews \u2014 the tie-dye pie is a Nolita rite of passage","Ultra-thin Staten Island-style crust; the tie-dye (vodka, pesto, mozz) is the order. Reservations open at midnight and go instantly. 11am\u201311pm daily.",{reviews:'7,624 reviews',price:2}),
+pizzaRec("John's of Bleecker Street",'manhattan',9.2,null,null,'278 Bleecker St, New York, NY 10014','+1 212-243-1680',"4.6/5 from 8,500+ Google reviews \u2014 coal-oven whole pies since 1929, no slices","No slices, cash-friendly, carved-up wooden booths. Coal-fired, cracker-thin. 11:30am\u201310pm, 11pm Fri\u2013Sat.",{reviews:'8,580 reviews'}),
+pizzaRec("NY Pizza Suprema",'manhattan',9.2,null,null,'413 8th Ave, New York, NY 10001','+1 212-594-8939',"4.6/5 from 8,800+ Google reviews \u2014 the best slice within a block of Penn Station, since 1964","Plain, upside-down Sicilian, and the burrata slice. Across from MSG; know your order before you hit the counter. 10:30am\u2013midnight daily.",{reviews:'8,813 reviews'}),
+pizzaRec("Patsy's Pizzeria \u2014 East Harlem",'manhattan',9.0,null,null,'2287 1st Ave, New York, NY 10035','+1 212-534-9783',"4.5/5 from 3,700+ Google reviews \u2014 coal-oven original open since 1933","The slice counter next door is cash only and fast; the dining room does full Italian. Thin, charred, and historic. 11am\u201310pm.",{reviews:'3,715 reviews'}),
+pizzaRec("Bleecker Street Pizza",'manhattan',9.0,null,null,'69 7th Ave S, New York, NY 10014','+1 212-924-4466',"4.5/5 from 6,500+ Google reviews \u2014 the Nonna Maria slice is the move","Big slices, late hours (to 5am Fri\u2013Sat). Order it well-done. 10am\u20132am most nights.",{reviews:'6,516 reviews'}),
+pizzaRec("Joe's Pizza",'manhattan',8.8,null,null,'7 Carmine St, New York, NY 10014','+1 212-366-1182',"4.4/5 from 10,500+ Google reviews \u2014 the benchmark New York plain slice since 1975","Cash only, no seats, always a line, always worth it. Plain slice is the test. 10am\u20133am, 4am Fri\u2013Sat.",{reviews:'10,577 reviews'}),
+pizzaRec("Prince Street Pizza",'manhattan',8.8,null,null,'27 Prince St, New York, NY 10012','+1 212-966-4100',"4.4/5 from 9,200+ Google reviews \u2014 the spicy spring pepperoni square","The cupped-pepperoni Sicilian square that launched a thousand copies. Expect a line on Prince St. Open until 5am Thu\u2013Sat.",{reviews:'9,201 reviews'}),
+pizzaRec("Scarr's Pizza",'manhattan',8.8,null,null,'35 Orchard St, New York, NY 10002','+1 212-334-3481',"4.4/5 from 4,900+ Google reviews \u2014 house-milled flour on the Lower East Side","Plain and Hotboi (jalape\u00f1o, honey) slices; retro slice-shop room. Reservations for the dining side. 11:30am\u201311pm.",{reviews:'4,892 reviews'}),
+pizzaRec("Una Pizza Napoletana",'manhattan',8.6,null,null,'175 Orchard St, New York, NY 10002','+1 646-476-4457',"4.3/5 from 940 Google reviews \u2014 Anthony Mangieri's Neapolitan, ranked #1 in the world by 50 Top Pizza","Naturally leavened dough, wood-fired, served uncut. Thu\u2013Sat 5\u20139:30pm only; reservations are tough. $40+ a pie.",{reviews:'940 reviews',price:3}),
+pizzaRec("Lombardi's",'manhattan',8.4,null,null,'32 Spring St, New York, NY 10012','+1 212-941-7994',"4.2/5 from 9,000+ Google reviews \u2014 America's first pizzeria, coal-fired since 1905","Whole pies only, cash only, old-school room on Spring St. Fresh-mozz margherita is the classic. Noon\u201310pm, midnight Fri\u2013Sat.",{reviews:'9,042 reviews',price:2})
+];
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData||!Array.isArray(boCategoryData.pizza))return false;
+var list=boCategoryData.pizza;var added=0;
+ROWS.forEach(function(r){
+if(list.some(function(x){return x&&x.city==='manhattan'&&String(x.name).toLowerCase()===r.name.toLowerCase()}))return;
+list.push(r);added++;
+});
+window.BOP_V337_ADDED=added;
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},300);});
+})();</script>
+
+
+<style id="bop-analog-pennant-legible-v338">
+/* Analog Pizza List pennant: text was clipped by the triangle's left point.
+Wrap in a glowing slice: keep the wedge, push the text into the wide end,
+add a crust edge glow and pepperoni. */
+.bo-all-pizza-scores-btn.bo-bottom-tile-fixed{width:150px!important;min-width:150px!important;max-width:150px!important;height:92px!important;min-height:92px!important;padding:8px 10px 8px 58px!important;clip-path:polygon(0% 50%,100% 3%,100% 97%)!important;background:radial-gradient(circle at 80% 50%,#3a1a08 0,#1d0d05 55%,#050505 100%)!important;box-shadow:inset 0 0 0 3px rgba(245,158,11,.9),inset 0 0 18px rgba(245,158,11,.35)!important;filter:drop-shadow(0 0 8px rgba(245,158,11,.75)) drop-shadow(0 0 18px rgba(245,158,11,.35))!important;font-size:.66rem!important;text-align:center!important;position:relative;overflow:visible!important}
+.bo-all-pizza-scores-btn.bo-bottom-tile-fixed>span{display:block;width:100%;text-align:center;text-shadow:0 0 6px rgba(245,158,11,.6)}
+.bo-all-pizza-scores-btn.bo-bottom-tile-fixed::before,.bo-all-pizza-scores-btn.bo-bottom-tile-fixed::after{content:"";position:absolute;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff5a5a,#9e0f0f 70%);box-shadow:0 0 0 1px rgba(0,0,0,.5);pointer-events:none}
+.bo-all-pizza-scores-btn.bo-bottom-tile-fixed::before{left:40px;top:22px}
+.bo-all-pizza-scores-btn.bo-bottom-tile-fixed::after{left:46px;bottom:20px}
+</style>
+
+
+<style id="bop-coast-pin-maps-v339">
+.bop-lamap-zone .bop-pin-dot{fill:#F59E0B;stroke:#050505;stroke-width:1.5;filter:drop-shadow(0 0 5px rgba(245,158,11,.95));pointer-events:none}
+.bop-lamap-zone .bop-pin-dot-inland{fill:#f6c26b}
+.bop-lamap-zone rect{fill:rgba(5,5,5,.92)!important;stroke:#F59E0B!important;stroke-width:1.6!important;filter:drop-shadow(0 0 5px rgba(245,158,11,.55))!important;cursor:pointer}
+.bop-lamap-zone:active rect,.bop-lamap-zone:hover rect{fill:rgba(246,160,20,.32)!important}
+.bop-lamap-zone text{fill:#fff2da;font-weight:900;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.bop-lamap-soon rect{fill:rgba(228,0,43,.08);stroke:#E4002B;stroke-width:1.4}
+.bop-lamap-soon .bop-pin-dot{fill:#E4002B;opacity:.7}
+.bop-lamap-soon text{pointer-events:none;font-weight:900}
+</style>
+
+
+<script id="bop-bestof-list-rebuild-v340-script">(function(){
+/* v340: "Best Of <City>" must never be empty when the city has $$$/$$$$
+restaurants. The area list-builder (v343) only pools records still tagged
+with the PARENT city, but an earlier classifier already re-tags them to
+the neighborhood, so it overwrote every LA/SD neighborhood list with an
+empty array. Same shape of problem for world cities whose Best Of list
+was never seeded. Rebuild any city's Best Of list from every record tagged
+to that city across all categories: dedupe, $$$+ first, ranked. Leaves
+curated lists alone (only fires when the list has zero $$$+ entries). */
+var META=/^(bjspicks|newrestaurants|nations?|offstrip|undernewownership|cannabisinfused|dogfriendly|24hours|foodtrucks|streetvendors|bestof|teen|notquiteopen)$/;
+function isPicksCat(c){return /bjspick/i.test(c)}
+function score(r){var n=parseFloat(r&&r.rating);return Number.isFinite(n)?n:0}
+function priced(r){var p=Number(r&&r.price);return !(Number.isFinite(p)&&p<3)}
+function badge(r){return !!(r&&(r.bjsPick===true||Number(r.michelinStars)>0||r.michelinGuide===true||r.michelinBibGourmand===true||r.jamesBeard===true))}
+function rebuild(){
+if(typeof boCategoryData!=='object'||!boCategoryData||typeof BO_MAIN_CITY_CATS==='undefined')return false;
+var touched=0;
+BO_MAIN_CITY_CATS.forEach(function(city){
+if(city==='bestof'||city==='losangeles'||city==='sandiego'||city==='newyork')return;
+var cur=(boCategoryData[city]||[]).filter(function(r){return r&&r.name});
+if(cur.filter(priced).length>=6)return; /* already a real $$$+ list -- curated, leave it */
+var pool=new Map();
+Object.keys(boCategoryData).forEach(function(c){
+if(c===city||META.test(c)||isPicksCat(c)||(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[c]))return;
+(boCategoryData[c]||[]).forEach(function(r){
+if(!r||!r.name||(r.city||'bestof')!==city)return;
+var id=String(r.name).toLowerCase().replace(/[^a-z0-9]/g,'');
+var old=pool.get(id);
+if(!old||score(r)>score(old))pool.set(id,r);
+});
+});
+/* keep whatever is already there (curated Michelin entries etc.), then add the rest */
+cur.forEach(function(r){var id=String(r.name).toLowerCase().replace(/[^a-z0-9]/g,'');if(!pool.has(id))pool.set(id,r)});
+var rows=Array.from(pool.values()).filter(function(r){return score(r)>=3.8||badge(r)});
+if(!rows.some(priced))return; /* nothing at $$$+ in this city yet -- genuinely empty */
+if(rows.filter(priced).length<=cur.filter(priced).length)return; /* no improvement */
+rows.sort(function(a,b){var pa=priced(a)?1:0,pb=priced(b)?1:0;if(pa!==pb)return pb-pa;return score(b)-score(a)});
+rows=rows.slice(0,18).map(function(r,i){return Object.assign({},r,{rank:i+1,city:city})});
+boCategoryData[city]=rows;
+var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[city])||{};
+if(cfg.bjsPicksCat){var picks=rows.filter(function(r){return r.bjsPick===true}).map(function(r){return Object.assign({},r)});if(picks.length||!(boCategoryData[cfg.bjsPicksCat]||[]).length)boCategoryData[cfg.bjsPicksCat]=picks;}
+touched++;
+});
+window.BOP_V340_REBUILT=(window.BOP_V340_REBUILT||0)+touched;
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;rebuild();if(n>80)clearInterval(t);},500);});
+})();</script>
+
+
+<script id="bop-search-index-refresh-v342-script">(function(){
+/* v342: the restaurant search index was frozen at first paint, so every
+restaurant added by a later script (neighborhood copies, Amsterdam, the
+Manhattan pizza list...) was unsearchable -- "DAN TANAS" in West Hollywood
+returned nothing. Rebuild the index in place after the data settles. */
+function rebuild(){
+if(typeof boCategoryData!=='object'||typeof boAllRestaurantsFlat==='undefined'||typeof boCityRestaurantsFlat==='undefined')return false;
+var picks=new Set(Object.keys(BO_CITY_CONFIG).map(function(k){return BO_CITY_CONFIG[k].bjsPicksCat}));
+var excluded=new Set(BO_MAIN_CITY_CATS.concat(Array.from(picks),['asianbestofrest','michelin','jamesbeard']));
+var seen=new Map();
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(excluded.has(cat)||!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var v=r.rating?parseFloat(r.rating):null;var ex=seen.get(r.name);if(!ex||(v!==null&&(ex.rating===null||v>ex.rating)))seen.set(r.name,{name:r.name,rating:v,cat:cat})})});
+var all=Array.from(seen.values()).sort(function(a,b){return a.name.localeCompare(b.name)});
+boAllRestaurantsFlat.length=0;Array.prototype.push.apply(boAllRestaurantsFlat,all);
+Object.keys(BO_CITY_CONFIG).forEach(function(cityCat){
+if(cityCat==='bestof')return;
+var names=new Set(),combined=[];
+(boCategoryData[cityCat]||[]).forEach(function(r){if(r&&r.name&&!names.has(r.name)){names.add(r.name);combined.push({name:r.name,rating:r.rating?parseFloat(r.rating):null,cat:cityCat})}});
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(cat===cityCat||!Array.isArray(list))return;list.forEach(function(r){if(r&&r.name&&r.city===cityCat&&!names.has(r.name)){names.add(r.name);combined.push({name:r.name,rating:r.rating?parseFloat(r.rating):null,cat:cat})}})});
+boCityRestaurantsFlat[cityCat]=combined;
+});
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){[3000,8000,15000,25000,40000].forEach(function(ms){setTimeout(rebuild,ms)});});
 })();</script>
 
 </body></html>
