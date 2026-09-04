@@ -40429,14 +40429,12 @@ if(overlay&&overlay.classList.contains('open'))closeWhy();
 
 <style id="bop-vote-card-no-overlap-v334">
 /* "Should Dave score this?" vote card was absolutely positioned over the card
-and covered the purple specials box (e.g. King Umberto). When a card has a
-specials callout, the vote card flows below the content instead. Fallback:
-the callout always stacks above the vote card so its text is never hidden. */
+and covered whatever was underneath it -- the photo on most cards, or a
+specials box like King Umberto's. v353: always flow it in-document instead
+of overlaying, so it never sits on top of a photo or any other content. */
 .bo-red-callout{position:relative;z-index:9}
-:is(article,div,li):has(.bo-red-callout):has(> .bo-pizza-vote) > .bo-pizza-vote,
-:is(article,div,li):has(.bo-red-callout) .bo-pizza-vote{position:static!important;right:auto!important;top:auto!important;left:auto!important;width:min(220px,100%)!important;margin:10px auto 0!important;animation:none!important}
+.bo-pizza-vote{position:static!important;right:auto!important;top:auto!important;left:auto!important;width:min(220px,100%)!important;margin:10px auto 0!important;animation:none!important}
 </style>
-
 
 <style id="bop-tile-page-cleanup-v335-style">
 /* Long city names (e.g. Brooklyn's "The Brook, The Bridge & The Limb"):
@@ -40768,7 +40766,7 @@ var ROWS=[
 ['steakhighend', r('steakhighend',"Rare Society \u2014 Solana Beach",4.5,321,"330 S Cedros Ave, Solana Beach, CA 92075","+1 858-771-0181",32.9884,-117.2696,4,"8, 40%, 26%","Solana Beach's dry-aged steakhouse \u2014 the boards (35-day dry-aged, Wagyu) are the move","Steak boards with truffle butter, blue crab dip, and a sundae cart; brunch and dinner both draw a crowd. Book ahead weekends.",{ratingNote:"Google (4.5, 321 reviews). TripAdvisor sample too small (3 reviews) to weight."})],
 ['steakhighend', r('steakhighend',"Red Tracton's Steakhouse",4.1,580,"550 Via De La Valle, Solana Beach, CA 92075","+1 858-724-4400",32.9805,-117.2584,4,"10, 38%, 25%","Old-school steakhouse across from Del Mar Racetrack, running since the 1970s","Piano lounge most nights, classic house salad, dry-aged cuts. Closed Monday.",{ratingSource:"Aggregate",ratingNote:"Aggregate of Google (4.2, 580) and TripAdvisor (3.9, 232 reviews)."})],
 ['pizza', r('pizza',"Del Mar Pizza",4.5,686,"211 15th St, Del Mar, CA 92014","+1 858-481-8088",32.9593,-117.2660,1,"18, 45%, 28%","The neighborhood NY-style slice shop a few minutes' walk from the beach","Sausage and Aloha pies are the standouts; small space, busy, worth the wait. Open to 9\u201310pm.",{ratingNote:"Google (4.5, 686 reviews); no second aggregator with a comparable sample found this pass."})],
-['pizza', r('pizza',"Bongiorno's New York Pizzeria",4.7,906,"524 Stevens Ave Suite 10, Solana Beach, CA 92075","+1 858-755-2646",32.9906,-117.2608,1,"20, 46%, 29%","Real thin-crust NY pizza \u2014 by-the-slice variety, 8 flavors for the price of a whole pie","Crispy, not soggy, real sauce tang. Garlic knots and draft beer too. Open 10am\u201310pm daily.",{ratingSource:"Aggregate",ratingNote:"Aggregate of Google (4.7, 906) and TripAdvisor (4.7, 68 reviews)."})],
+['pizza', r('pizza',"Bongiorno's New York Pizzeria",4.7,906,"524 Stevens Ave Suite 10, Solana Beach, CA 92075","+1 858-755-2646",32.9906,-117.2608,1,"20, 46%, 29%","Real thin-crust NY pizza \u2014 by-the-slice variety, 8 flavors for the price of a whole pie","Crispy, not soggy, real sauce tang. Garlic knots and draft beer too. Open 10am\u201310pm daily.",{ratingSource:"Aggregate",ratingNote:"Aggregate of Google (4.7, 906) and TripAdvisor (4.7, 68 reviews).",specialNote:"We usually go right for the cheese... But at Bongiorno's, you have to try the Crime Scene \u2014 garlic sauce, mozzarella, meatballs, ricotta, and splashes of tomato sauce on top."})],
 ['pizza', r('pizza',"Chauncey's Pizza & Bar",4.7,103,"221 N Hwy 101, Solana Beach, CA 92075","+1 619-739-4422",32.9938,-117.2724,2,"22, 44%, 27%","Sourdough-crust pizza bar with a self-serve soda tap and big group energy","Ask for the sourdough crust over the thin \u2014 the owner Rich swears by it. Closed Monday.",{ratingNote:"Google (4.7, 103 reviews); no second aggregator with a comparable sample found this pass."})],
 ['pizza', r('pizza',"Buonasera New York Pizzeria",4.4,340,"2212 Carmel Valley Rd Suite 1, Del Mar, CA 92014","+1 858-925-7136",32.9342,-117.2550,1,"16, 42%, 27%","Casual NY pizza near Torrey Pines with lagoon and ocean views from the patio","White pie with ricotta and pepperoni; dog-friendly deck. Open 10am\u201310pm daily.",{ratingNote:"Google (4.4, 340 reviews); no second aggregator with a comparable sample found this pass."})],
 ['mexicancasual', r('mexicancasual',"En Fuego Cantina & Grill",4.1,1391,"1342 Camino Del Mar, Del Mar, CA 92014","+1 858-792-6551",32.9583,-117.2651,2,"14, 44%, 28%","Upscale-feel Mexican cantina right on Camino Del Mar \u2014 the Cardiff Crack tacos are the draw","Endless chips and salsa, upstairs patio seating, downstairs bar with games on. Open to 9\u201310pm.",{ratingSource:"Aggregate",ratingNote:"Aggregate of Google (4.3, 1,391) and TripAdvisor (3.9, 304 reviews)."})],
