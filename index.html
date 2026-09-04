@@ -13160,6 +13160,14 @@ if(distance<=0.35) return -1000+distance;
 if(distance<=3) return -500+distance;
 return distance;
 }
+/* v351: a restaurant's OWN saved lat/lon (instant, no network needed) always
+wins the queue-order race -- this used to only check the city's fallback
+center, and sub-areas like Del Mar aren't in that lookup table at all, so
+they scored as if near Las Vegas and got pushed to the back of a slow
+network queue behind restaurants that actually needed geocoding. */
+if(r.lat!=null && r.lon!=null && Number.isFinite(Number(r.lat)) && Number.isFinite(Number(r.lon))){
+return milesBetween(boNearUserLatLng,L.latLng(Number(r.lat),Number(r.lon)));
+}
 if(cityKey==='bestof' && nearestZone){
 if(nearestZone==='downtown' && (/89101/.test(r.address)||r.downtown)) return 50;
 if(r[nearestZone]) return 50;
@@ -25410,7 +25418,12 @@ var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)
 return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
 }).filter(function(item){return Number.isFinite(item.distance)}).sort(function(a,b){return a.distance-b.distance});
 /* v320: always deliver 5 per tier -- nearest OPEN ones first, then backfill with closed ones. Distance never disqualifies. */
-function pick(tier){var pool=available.filter(function(item){return boNearMatchesTier(item.restaurant,tier)});var open=pool.filter(function(i){return i.hoursState.state!=='closed'}),closed=pool.filter(function(i){return i.hoursState.state==='closed'});return open.concat(closed).slice(0,5);}
+function pick(tier){var pool=available.filter(function(item){return boNearMatchesTier(item.restaurant,tier)});var open=pool.filter(function(i){return i.hoursState.state!=='closed'}),closed=pool.filter(function(i){return i.hoursState.state==='closed'});
+/* v352: closed spots only fill a slot once mapping has actually finished --
+otherwise a closed place gets shown ahead of an open one that just hasn't
+been geocoded yet. Reserved for when there's truly nothing else nearby. */
+if(open.length>=5||!boNearGeocodingComplete)return open.slice(0,5);
+return open.concat(closed).slice(0,5);}
 var candidates=[];
 if(boNearClosestTier==='all'){
 ['dive','casual','fine'].forEach(function(tier){pick(tier).forEach(function(item){candidates.push(Object.assign({},item,{nearTier:tier}))})});
