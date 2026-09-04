@@ -761,6 +761,28 @@ var pad = SF_CELLS - t.length;
 var left = Math.floor(pad / 2);
 return ' '.repeat(left) + t + ' '.repeat(pad - left);
 }
+var BOP_SPLASH_CITIES = [
+"Vegas", "Miami", "LA", "Tokyo", "N.Y.C.", "Dubai", "London",
+"Paris", "Ibiza", "Monaco",
+"Hong Kong", "Bangkok", "Berlin", "Milan",
+"Sydney", "Chicago",
+"Toronto", "Zagreb",
+"Beijing", "Athens", "Lisbon",
+"Cape Town",
+"Rome", "Madrid", "Dublin",
+"Vancouver", "Boston", "S.D.",
+"Shanghai", "Tel Aviv", "Abu Dhabi"
+];
+/* v329: moved earlier -- this used to be declared far later in the file
+(originally at what is now ~line 15850+), but boRenderCategory('bestof')
+runs synchronously during initial page load, well before that point, and
+reads this array (line ~15025) to build the rotating-city hero. Reading
+it before assignment crashed that whole script block, which is why the
+landing page's city text got stuck instead of rotating -- the crash
+happened before the cycler further down in the same block ever started.
+The later declaration (further down, unchanged) just re-assigns the same
+values -- harmless with var, and kept so nothing else has to change. */
+
 const BOP_LANDING_CITIES = [
 "Las Vegas", "Miami", "S.V.", "Los Angeles", "Santa Barbara", "N.Y.C.", "Chicago", "Austin",
 "Nashville", "New Orleans", "San Francisco", "S.D.", "Dallas",
@@ -15022,7 +15044,7 @@ const cityElId = cityCfg.useNameCycler ? ' id="bopResultsCityText"' : '';
 const sanDiegoHeroClass = '';
 const heroDisplayName = cityCfg.landingName || cityCfg.displayName;
 const cyclerCities = [heroDisplayName].concat(
-BOP_SPLASH_CITIES.filter(c => c !== cityCfg.displayName && c !== heroDisplayName)
+(typeof BOP_SPLASH_CITIES!=='undefined'&&BOP_SPLASH_CITIES?BOP_SPLASH_CITIES:['Vegas','Miami','LA','Tokyo','N.Y.C.','Dubai','London','Paris','Ibiza','Monaco']).filter(c => c !== cityCfg.displayName && c !== heroDisplayName)
 );
 const startingName = cityCfg.useNameCycler
 ? cyclerCities[1 + Math.floor(Math.random() * (cyclerCities.length - 1))]
@@ -15059,7 +15081,7 @@ boCityContext = cat;
 const otherBestsCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
 const otherBestsCity = otherBestsCfg.landingName || otherBestsCfg.displayName;
 const mainCyclerCities = [otherBestsCity].concat(
-BOP_SPLASH_CITIES.filter(c => c !== otherBestsCity)
+(typeof BOP_SPLASH_CITIES!=='undefined'&&BOP_SPLASH_CITIES?BOP_SPLASH_CITIES:['Vegas','Miami','LA','Tokyo','N.Y.C.','Dubai','London','Paris','Ibiza','Monaco']).filter(c => c !== otherBestsCity)
 );
 const mainStartingName = mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
@@ -15160,7 +15182,7 @@ const specialCirclesHTML = cat === 'otheroptions' ? `
 <div class="bo-main-picker-scroll-cue" aria-hidden="true">SCROLL&nbsp;&nbsp;↓</div>
 </div>
 ` : '';
-let pickerOptions = boPickerConfig[cat].filter(opt => {
+let pickerOptions = (boPickerConfig[cat]||[]).filter(opt => {
 if(cat !== 'otheroptions') return true;
 /* v318: hide category tiles that have zero restaurants for the current city.
 Umbrella tiles (steak, italian...) resolve to their tier sub-keys first.
@@ -15848,7 +15870,7 @@ return;
 revealSharedBestOfPage();
 boRenderCategory('bestof');
 })();
-const BOP_SPLASH_CITIES = [
+var BOP_SPLASH_CITIES = [
 "Vegas", "Miami", "LA", "Tokyo", "N.Y.C.", "Dubai", "London",
 "Paris", "Ibiza", "Monaco",
 "Hong Kong", "Bangkok", "Berlin", "Milan",
@@ -15913,10 +15935,11 @@ setTimeout(swap, getNextHold());
 }
 setTimeout(swap, firstHold);
 }
-const bopCyclerGenerations = {};
+if(typeof bopCyclerGenerations==='undefined')var bopCyclerGenerations={};
 function startBopVegasSlotCycler(elId, cities, spinHold, vegasHold, outMs, inMs, spinCount, oneShot){
 const el = document.getElementById(elId);
 if(!el) return;
+if(typeof bopCyclerGenerations==='undefined')window.bopCyclerGenerations=bopCyclerGenerations={};
 const vegas = cities[0];
 const others = cities.slice(1);
 bopCyclerGenerations[elId] = (bopCyclerGenerations[elId] || 0) + 1;
@@ -16914,7 +16937,7 @@ const target = document.querySelector('.join-box-wrap');
 if(target) target.scrollIntoView({ behavior:'smooth', block:'start' });
 });
 }
-const BUSINESS_PHOTOS = {};
+var BUSINESS_PHOTOS = {};
 Object.values(boCategoryData).forEach(function(list){
 if(!Array.isArray(list)) return;
 list.forEach(function(restaurant){
