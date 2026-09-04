@@ -15589,6 +15589,9 @@ ${s.oneBiteDaveScore != null ? `<div class="bo-pizza-dave" aria-label="Dave scor
 </div>
 <div class="bo-card-body">
 ${cat === 'pizza' && s.oneBiteDaveScore == null && (Number(s.bjsPizzaScore) >= 8.4 || Number(s.oneBiteScore) >= 8.4) ? `<div class="bo-pizza-vote" aria-label="Vote on whether Dave should score ${s.name.replace(/"/g, '&quot;')}">
+<button type="button" class="bo-pizza-vote-trigger" aria-expanded="false" aria-label="Should Dave score ${s.name.replace(/\"/g,'&quot;')}? Tap to vote"><svg class="bo-pizza-vote-trigger-face" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#f0b184" stroke="#F59E0B" stroke-width="2"/><path d="M8 18c0-9 5-14 12-14 8 0 13 5 13 14-4-4-8-6-13-6-5 0-9 2-12 6z" fill="#211610"/><path d="M8 14c1-7 5-11 12-11s11 4 12 11H8z" fill="#00274C"/><path d="M7 14h27c-2 3-7 4-14 3-6 0-10-1-13-3z" fill="#00274C" stroke="#FFCB05" stroke-width=".8"/><path d="M15 6h3l2 3 2-3h3v7h-2V9l-3 4-3-4v4h-2V6z" fill="#FFCB05"/><path d="M10 24c2 8 6 12 10 12s9-4 11-12c-3 3-6 4-11 4s-8-1-10-4z" fill="#3a2418"/><path d="M14 21h4M23 21h4" stroke="#211610" stroke-width="2" stroke-linecap="round"/><path d="M17 28c2 1 4 1 6 0" fill="none" stroke="#f4d0b2" stroke-width="1.5" stroke-linecap="round"/><path d="M18.5 23.5l1.5 2 1.5-2" fill="none" stroke="#9a5e3c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bo-pizza-vote-trigger-badge" aria-hidden="true">?</span></button>
+<div class="bo-pizza-vote-panel">
+<button type="button" class="bo-pizza-vote-panel-close" aria-label="Close">&times;</button>
 <div class="bo-pizza-vote-question">SHOULD DAVE SCORE<br>${s.name.toUpperCase()}?</div>
 <div class="bo-pizza-vote-buttons">
 <button type="button" class="bo-pizza-vote-btn bo-pizza-vote-up" data-vote-choice="up" aria-label="Thumbs up" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L14.2.9 7.6 7.6C7.2 8 7 8.5 7 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c.1-.2.2-.5.2-.8v-2z"/></svg><span class="bo-pizza-vote-count">0</span></button>
@@ -15596,6 +15599,7 @@ ${cat === 'pizza' && s.oneBiteDaveScore == null && (Number(s.bjsPizzaScore) >= 8
 </div>
 <button type="button" class="bo-tell-dave" data-dave-message="${('Hey Dave! Check out ' + s.name + '!').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" aria-label="Choose where to message Dave about ${s.name.replace(/"/g, '&quot;')}"><span class="bo-tell-dave-arrow" aria-hidden="true">&#8250;</span><span>TELL DAVE</span><span class="bo-tell-dave-arrow" aria-hidden="true">&#8249;</span></button>
 <div class="bo-pizza-vote-status" aria-live="polite"></div>
+</div>
 </div>` : ''}
 
 ${s.bjsPick ? (() => {
@@ -40798,6 +40802,80 @@ return true;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>60)clearInterval(t);},300);});
+})();</script>
+
+
+<style id="bop-vote-card-collapsible-v354">
+/* v354: "Should Dave score this?" is now a small clickable Dave-face button
+by default (obviously tappable, gently pulsing), expanding into the full
+vote panel on tap and collapsing again on tap of the X or the face. Much
+less obtrusive than the always-open card. */
+.bo-pizza-vote{padding:0!important;border:none!important;background:none!important;box-shadow:none!important;animation:none!important;overflow:visible}
+.bo-pizza-vote-trigger{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin:10px 0 0 auto;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;cursor:pointer;box-shadow:0 0 8px rgba(245,158,11,.55),0 3px 8px rgba(0,0,0,.5);animation:bo-vote-trigger-pulse 1.8s ease-in-out infinite}
+.bo-pizza-vote-trigger-face{width:40px;height:40px;pointer-events:none}
+.bo-pizza-vote-trigger-badge{position:absolute;top:-4px;right:-4px;width:19px;height:19px;border-radius:50%;background:#E4002B;color:#fff;font:900 .68rem/19px 'Archivo Black',sans-serif;text-align:center;box-shadow:0 0 6px rgba(228,0,43,.75);pointer-events:none}
+@keyframes bo-vote-trigger-pulse{0%,100%{box-shadow:0 0 6px rgba(245,158,11,.45),0 3px 8px rgba(0,0,0,.5);transform:scale(1)}50%{box-shadow:0 0 16px rgba(245,158,11,.95),0 3px 8px rgba(0,0,0,.5);transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.bo-pizza-vote-trigger{animation:none}}
+.bo-pizza-vote-panel{display:none;position:relative;margin:10px 0 0 auto;width:min(220px,100%);padding:8px 8px 6px;border:1px solid rgba(245,158,11,.68);border-radius:9px;background:linear-gradient(145deg,rgba(5,5,5,.98),rgba(26,13,8,.96));box-shadow:inset 0 0 15px rgba(245,158,11,.10),0 4px 12px rgba(0,0,0,.50),0 0 8px rgba(245,158,11,.34);text-align:center;animation:bo-vote-panel-in .18s ease-out}
+.bo-pizza-vote.is-open .bo-pizza-vote-trigger{display:none}
+.bo-pizza-vote.is-open .bo-pizza-vote-panel{display:block}
+@keyframes bo-vote-panel-in{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+.bo-pizza-vote-panel-close{position:absolute;top:4px;right:5px;width:19px;height:19px;border:1px solid #F59E0B;border-radius:50%;background:#000;color:#E4002B;font:900 12px/1 Arial,sans-serif;line-height:17px;padding:0;cursor:pointer}
+</style>
+<script id="bop-vote-card-collapsible-v354-script">(function(){
+document.addEventListener('click',function(e){
+var trigger=e.target.closest('.bo-pizza-vote-trigger');
+if(trigger){var card=trigger.closest('.bo-pizza-vote');if(card){card.classList.add('is-open');trigger.setAttribute('aria-expanded','true');}return;}
+var close=e.target.closest('.bo-pizza-vote-panel-close');
+if(close){var card2=close.closest('.bo-pizza-vote');if(card2){card2.classList.remove('is-open');var t=card2.querySelector('.bo-pizza-vote-trigger');if(t)t.setAttribute('aria-expanded','false');}return;}
+});
+})();</script>
+
+
+<script id="bop-pizza-bjs-score-fill-v354-script">(function(){
+/* v354 (2026-09-03): fills real BJS pizza scores for entries that had none
+("BJS should always have a score"). Aggregate sources per restaurant, One
+Bite now included as the 4th source going forward per Brad. Calibrated
+against the site's existing pizza scale (most solid places sit 7.6-8.7;
+9.0+ reserved for genuine national icons), not a mechanical rating x2. */
+var FIXES = [
+{name:"Rainbow Bar & Grill",city:null,bjs:7.4,note:"Yelp 3.7 (1,150+ reviews), TripAdvisor 4.6 (500+). A legendary rock bar first -- pizza is solid casual bar food, not the destination."},
+{name:"King Umberto",city:"southshoreli",bjs:8.7,ob:8.1,dave:8.1,note:"Aggregate of Google (4.6-4.7), TripAdvisor (4.4-4.5, 200+ reviews), and One Bite -- Dave 8.1, Community 8.1 (119 reviews)."},
+{name:"Trattoria Zero Otto Nove",city:"bronx",bjs:7.6,note:"Yelp (1,000+ reviews, mixed on the pizza specifically -- one detailed review flagged over-salting), OpenTable (2,200+ reviews). Solid Arthur Ave institution, not top-tier on the pie itself."},
+{name:"Truly Pizza — Dana Point",city:"lalagunadanapoint",bjs:8.7,note:"TripAdvisor 4.6 (32 reviews), Yelp (1,700+ reviews). Ranked #48 in the world by 50 Top Pizza; founded by a World Pizza Champion team."},
+{name:"Truly Pizza — Laguna Beach",city:"lalagunadanapoint",bjs:8.5,note:"Same team/standard as the Dana Point flagship (#48 in the world per 50 Top Pizza); newer location, smaller review base so far."},
+{name:"Bella Ciao Amsterdam",city:"amsterdam",bjs:7.6,note:"TripAdvisor ~4.4 (mid-pack ranking among Amsterdam restaurants). Decent, not a standout."},
+{name:"Verona Ristorante Italiano",city:"amsterdam",bjs:7.5,note:"Estimate -- a clean multi-source aggregate wasn't found this pass; revisit when more review data surfaces."},
+{name:"La Zoccola del Pacioccone",city:"amsterdam",bjs:8.4,note:"TripAdvisor 4.5 (2,450+ reviews, ranked in the top ~4% of Amsterdam restaurants), Restaurant Guru 4.9 (8,400+ reviews). Genuine Neapolitan wood-fired pizzeria."},
+{name:"Quarter Sheets",city:"lalosfelizsilverlake",bjs:8.7,note:"MICHELIN Bib Gourmand, Google 4.6 (387 reviews), James Beard semifinalist mention. Acclaimed Detroit-style pan pizza."}
+];
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData||!Array.isArray(boCategoryData.pizza))return false;
+var n=0,remaining=0;
+FIXES.forEach(function(f){
+var matched=false;
+boCategoryData.pizza.forEach(function(r){
+if(r&&r.name===f.name&&(f.city===null||r.city===f.city)){
+matched=true;
+if(r.bjsPizzaScore==null){
+r.bjsPizzaScore=f.bjs;
+if(f.ob!=null)r.oneBiteScore=f.ob;
+if(f.dave!=null)r.oneBiteDaveScore=f.dave;
+r.ratingSource='Aggregate';
+r.ratingNote=f.note;
+n++;
+}
+}
+});
+if(!matched)remaining++;
+});
+window.BOP_V354_FILLED=(window.BOP_V354_FILLED||0)+n;
+return remaining===0; /* v354 fix: some restaurants get added to boCategoryData.pizza by a
+later-running script, so keep retrying until every one of them has actually been found,
+not just until the array itself exists. */
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>120)clearInterval(t);},400);});
 })();</script>
 
 </body></html>
