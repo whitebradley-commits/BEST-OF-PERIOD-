@@ -40302,4 +40302,28 @@ override alone can't win against it.) */
 .bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{width:.22em!important;height:.22em!important;top:calc(.04em + 22px)!important}
 </style>
 
+
+<script id="bop-why-popup-unstick-v328-script">(function(){
+/* v328: the Why-BJS popup's close button was only ever bound once, to
+whatever element existed at that moment -- if the food-trucks page (or
+any other entry point) built its own instance later, or the button got
+replaced/re-rendered, that one-time binding went stale and the X stopped
+responding, leaving Brad stuck. This uses event delegation (works no
+matter how many times the button gets rebuilt) plus backdrop-click and
+Escape-key as guaranteed fallbacks, so there's always a way out. */
+function closeWhy(){
+var overlay=document.getElementById('bjsWhyOverlay');
+if(overlay)overlay.classList.remove('open');
+}
+document.addEventListener('click',function(e){
+if(e.target&&e.target.closest&&e.target.closest('#bjsWhyCloseBtn')){closeWhy();return;}
+if(e.target&&e.target.id==='bjsWhyOverlay'){closeWhy();}
+},true);
+document.addEventListener('keydown',function(e){
+if(e.key!=='Escape')return;
+var overlay=document.getElementById('bjsWhyOverlay');
+if(overlay&&overlay.classList.contains('open'))closeWhy();
+});
+})();</script>
+
 </body></html>
