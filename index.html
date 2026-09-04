@@ -15131,7 +15131,11 @@ const boSectionHeadEl2 = document.getElementById('boSectionHead');
 if(boSectionHeadEl2) boSectionHeadEl2.classList.toggle('bo-section-head-tight', BO_MAIN_CITY_CATS.includes(cat));
 if(boExpandBtnTopEl) boExpandBtnTopEl.style.display = (cat === 'bestof') ? 'flex' : 'none';
 if(botrToLandingBtnEl) botrToLandingBtnEl.style.display = (cat === 'bestof') ? 'flex' : 'none';
-if(boPickerConfig[cat]){
+if(boPickerConfig[cat] || BO_CITY_CONFIG[cat]){
+/* v325: BO_CITY_CONFIG[cat] added -- the main city landing page (cat==='bestof',
+or any sub-area) was falling through this check since it isn't a key in
+boPickerConfig, leaving the ranked-list header ('The Top N, Right Now')
+visible above the tile grid on the very first page of every city. */
 if(boSectionHeadEl) boSectionHeadEl.style.display = 'none';
 if(boScrollCueEl){
 boScrollCueEl.style.display = BO_CITY_CONFIG[cat] ? 'flex' : 'none';
