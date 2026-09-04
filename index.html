@@ -12411,9 +12411,14 @@ return aliases[raw]||raw;
 };
 const requestedCity=normalizeCity(cityKey)||'bestof';
 const cityConfig=BO_CITY_CONFIG[requestedCity]||BO_CITY_CONFIG.bestof;
+/* v348: a parent city (San Diego, Los Angeles, New York) owns every one of its
+neighborhoods. After the area classifier runs, restaurants carry the neighborhood
+key (sdlajolla, laweho, brooklyn...), so a Near-Me pool keyed on the parent came
+back empty for anyone actually standing in that city. */
+const parentOf=k=>{if(!k)return k;const cfg=BO_CITY_CONFIG[k];if(cfg&&cfg.parentCity)return normalizeCity(cfg.parentCity);if(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k])return normalizeCity(areaGateParents[k]);if(/^sd[a-z]/.test(k))return 'sandiego';if(/^la[a-z]/.test(k))return 'losangeles';if(/^(manhattan|brooklyn|queens|bronx|statenisland|hamptons|northshoreli|southshoreli)$/.test(k))return 'newyork';return k;};
 const belongsToRequestedCity=(restaurant,cat)=>{
 const explicit=normalizeCity(restaurant&&restaurant.city);
-if(explicit) return explicit===requestedCity;
+if(explicit) return explicit===requestedCity || parentOf(explicit)===requestedCity;
 const categoryCity=normalizeCity(cat);
 if(categoryCity===requestedCity) return true;
 if(cityConfig && cat===cityConfig.bjsPicksCat) return true;
@@ -22881,10 +22886,13 @@ var listed={};cities.forEach(function(c){listed[c.dest]=1});
 var extra=[];
 if(typeof BO_CITY_CONFIG!=='undefined'){Object.keys(BO_CITY_CONFIG).forEach(function(k){
 if(listed[k]||k==='bestof'||k==='losangeles'||k==='sandiego'||k==='newyork')return;
-if(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k])return;
-if(/^(sd|la)[a-z]/.test(k))return;
 var cfg=BO_CITY_CONFIG[k]||{};
 var nm=cfg.displayName||cfg.landingName||k;
+var isArea=/^(sd|la)[a-z]/.test(k)||(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k]);
+if(isArea){ /* v345: neighborhoods searchable by every sub-city in them (Solana Beach -> Del Mar page, Kearny Mesa -> Convoy...) */
+var parent=/^sd/.test(k)?'San Diego':(/^la/.test(k)?'Los Angeles':'');
+extra.push({name:nm,region:parent,dest:k,aliases:(cfg.areaList||[]).slice()});
+return;}
 extra.push({name:nm,region:cfg.region||cfg.country||'',dest:k});
 });}
 var all=cities.concat(extra);
@@ -27597,7 +27605,7 @@ svg: '<svg viewBox="0 -44 400 640" role="img" aria-label="Map of the Los Angeles
 sandiego: {
 title: 'SAN DIEGO',
 sub: 'The coastline. Oceanside to the border.',
-svg: '<svg viewBox="0 -44 400 640" role="img" aria-label="Map of the San Diego coastline"><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600 L0,600 L0,-44 Z" fill="#0a2540" opacity=".85"/><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><text x="22" y="300" fill="#5fb3ff" font="900 13px Arial,sans-serif" letter-spacing="4" opacity=".6" transform="rotate(-90 22 300)" text-anchor="middle">PACIFIC OCEAN</text><g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g><g class="bop-lamap-zone" data-dest="sdoceanside"><circle cx="52" cy="20" r="6" class="bop-pin-dot"/><rect x="64" y="9" width="244" height="22" rx="11"/><text x="186" y="24" text-anchor="middle" font="900 10px Arial,sans-serif">OCEANSIDE · VISTA · SAN MARCOS</text></g><g class="bop-lamap-zone" data-dest="sdcarlsbad"><circle cx="56" cy="85" r="6" class="bop-pin-dot"/><rect x="68" y="74" width="76" height="22" rx="11"/><text x="106" y="89" text-anchor="middle" font="900 10px Arial,sans-serif">CARLSBAD</text></g><g class="bop-lamap-zone" data-dest="sdencinitas"><circle cx="58" cy="150" r="6" class="bop-pin-dot"/><rect x="70" y="139" width="84" height="22" rx="11"/><text x="112" y="154" text-anchor="middle" font="900 10px Arial,sans-serif">ENCINITAS</text></g><g class="bop-lamap-zone" data-dest="sddelmar"><circle cx="56" cy="215" r="6" class="bop-pin-dot"/><rect x="68" y="204" width="69" height="22" rx="11"/><text x="102" y="219" text-anchor="middle" font="900 10px Arial,sans-serif">DEL MAR</text></g><g class="bop-lamap-zone" data-dest="sdlajolla"><circle cx="52" cy="285" r="6" class="bop-pin-dot"/><rect x="64" y="274" width="76" height="22" rx="11"/><text x="102" y="289" text-anchor="middle" font="900 10px Arial,sans-serif">LA JOLLA</text></g><g class="bop-lamap-zone" data-dest="sdpacificbeach"><circle cx="84" cy="360" r="6" class="bop-pin-dot"/><rect x="96" y="349" width="221" height="22" rx="11"/><text x="206" y="364" text-anchor="middle" font="900 10px Arial,sans-serif">PACIFIC BEACH & MISSION BAY</text></g><g class="bop-lamap-zone" data-dest="sddowntown"><circle cx="118" cy="430" r="6" class="bop-pin-dot"/><rect x="130" y="419" width="152" height="22" rx="11"/><text x="206" y="434" text-anchor="middle" font="900 10px Arial,sans-serif">DOWNTOWN & GASLAMP</text></g><g class="bop-lamap-zone" data-dest="sdcoronado"><circle cx="100" cy="478" r="6" class="bop-pin-dot"/><rect x="112" y="467" width="76" height="22" rx="11"/><text x="150" y="482" text-anchor="middle" font="900 10px Arial,sans-serif">CORONADO</text></g><g class="bop-lamap-soon"><circle cx="130" cy="545" r="6" class="bop-pin-dot"/><rect x="142" y="534" width="175" height="22" rx="11" stroke-dasharray="5 4"/><text x="230" y="549" text-anchor="middle" font="900 10px Arial,sans-serif" fill="#E4002B">TIJUANA \u2014 COMING SOON</text></g></svg>'
+svg: '<svg viewBox="0 -44 400 640" role="img" aria-label="Map of the San Diego coastline"><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600 L0,600 L0,-44 Z" fill="#0a2540" opacity=".85"/><path d="M40,-44 C36,20 44,60 52,110 C60,170 58,230 52,280 C48,320 70,345 96,380 C120,405 130,430 108,455 C90,475 100,500 128,520 L140,560 L128,600" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/><text x="22" y="300" fill="#5fb3ff" font="900 13px Arial,sans-serif" letter-spacing="4" opacity=".6" transform="rotate(-90 22 300)" text-anchor="middle">PACIFIC OCEAN</text><g aria-hidden="true"><circle cx="370" cy="-16" r="20" fill="#050505" stroke="#F59E0B" stroke-width="1.3"/><path d="M370,-32 L373,-18 L370,-21 L367,-18 Z" fill="#F59E0B"/><text x="370" y="-30" text-anchor="middle" fill="#F59E0B" font="900 6px Arial,sans-serif">N</text><text x="370" y="-1" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">S</text><text x="352" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">W</text><text x="388" y="-13" text-anchor="middle" fill="#888" font="900 5.5px Arial,sans-serif">E</text></g><g class="bop-lamap-zone" data-dest="sdoceanside"><circle cx="52" cy="15" r="6" class="bop-pin-dot"/><rect x="64" y="4" width="244" height="22" rx="11"/><text x="186" y="19" text-anchor="middle" font="900 10px Arial,sans-serif">OCEANSIDE · VISTA · SAN MARCOS</text></g><g class="bop-lamap-zone" data-dest="sdcarlsbad"><circle cx="56" cy="75" r="6" class="bop-pin-dot"/><rect x="68" y="64" width="221" height="22" rx="11"/><text x="178" y="79" text-anchor="middle" font="900 10px Arial,sans-serif">CARLSBAD · CARLSBAD VILLAGE</text></g><g class="bop-lamap-zone" data-dest="sdencinitas"><circle cx="58" cy="135" r="6" class="bop-pin-dot"/><rect x="70" y="124" width="244" height="22" rx="11"/><text x="192" y="139" text-anchor="middle" font="900 10px Arial,sans-serif">ENCINITAS · CARDIFF · LEUCADIA</text></g><g class="bop-lamap-zone" data-dest="sddelmar"><circle cx="56" cy="195" r="6" class="bop-pin-dot"/><rect x="68" y="184" width="183" height="22" rx="11"/><text x="160" y="199" text-anchor="middle" font="900 10px Arial,sans-serif">DEL MAR · SOLANA BEACH</text></g><g class="bop-lamap-zone" data-dest="sdlajolla"><circle cx="52" cy="265" r="6" class="bop-pin-dot"/><rect x="64" y="254" width="122" height="22" rx="11"/><text x="125" y="269" text-anchor="middle" font="900 10px Arial,sans-serif">LA JOLLA · UTC</text></g><g class="bop-lamap-zone" data-dest="sdpacificbeach"><circle cx="84" cy="345" r="6" class="bop-pin-dot"/><rect x="96" y="334" width="236" height="22" rx="11"/><text x="214" y="349" text-anchor="middle" font="900 10px Arial,sans-serif">PACIFIC BEACH · MISSION BEACH</text></g><g class="bop-lamap-zone" data-dest="sddowntown"><circle cx="118" cy="440" r="6" class="bop-pin-dot"/><rect x="130" y="429" width="266" height="22" rx="11"/><text x="263" y="444" text-anchor="middle" font="900 10px Arial,sans-serif">DOWNTOWN · GASLAMP · LITTLE ITALY</text></g><g class="bop-lamap-zone" data-dest="sdcoronado"><circle cx="100" cy="485" r="6" class="bop-pin-dot"/><rect x="112" y="474" width="206" height="22" rx="11"/><text x="215" y="489" text-anchor="middle" font="900 10px Arial,sans-serif">CORONADO · IMPERIAL BEACH</text></g><g class="bop-lamap-zone" data-dest="sdconvoy"><circle cx="386" cy="225" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="218" y="214" width="156" height="22" rx="11"/><text x="296" y="229" text-anchor="middle" font="900 9px Arial,sans-serif">CONVOY · KEARNY MESA</text></g><g class="bop-lamap-zone" data-dest="sduptown"><circle cx="386" cy="300" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="204" y="289" width="170" height="22" rx="11"/><text x="289" y="304" text-anchor="middle" font="900 9px Arial,sans-serif">HILLCREST · NORTH PARK</text></g><g class="bop-lamap-zone" data-dest="sdobpointloma"><circle cx="110" cy="398" r="6" class="bop-pin-dot"/><rect x="122" y="387" width="198" height="22" rx="11"/><text x="221" y="402" text-anchor="middle" font="900 10px Arial,sans-serif">OCEAN BEACH · POINT LOMA</text></g><g class="bop-lamap-zone" data-dest="sdsouthpark"><circle cx="386" cy="375" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="190" y="364" width="184" height="22" rx="11"/><text x="282" y="379" text-anchor="middle" font="900 9px Arial,sans-serif">SOUTH PARK · GOLDEN HILL</text></g><g class="bop-lamap-zone" data-dest="sdeastcounty"><circle cx="386" cy="530" r="5" class="bop-pin-dot bop-pin-dot-inland"/><rect x="211" y="519" width="163" height="22" rx="11"/><text x="292" y="534" text-anchor="middle" font="900 9px Arial,sans-serif">EAST COUNTY · LA MESA</text></g><g class="bop-lamap-soon"><circle cx="130" cy="560" r="6" class="bop-pin-dot"/><rect x="142" y="549" width="175" height="22" rx="11" stroke-dasharray="5 4"/><text x="230" y="564" text-anchor="middle" font="900 10px Arial,sans-serif" fill="#E4002B">TIJUANA \u2014 COMING SOON</text></g></svg>'
 }
 };
 var CSS_ZONE = '.bop-lamap-all polygon{fill:rgba(246,160,20,.18);stroke:#f6a014;stroke-width:2.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(246,160,20,.7));cursor:pointer}.bop-lamap-all:active polygon{fill:rgba(246,160,20,.36)}'+'.bop-lamap-zone polygon{fill:rgba(246,160,20,.10);stroke:#f6a014;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 5px rgba(246,160,20,.5));cursor:pointer}.bop-lamap-zone:active polygon{fill:rgba(246,160,20,.28)}.bop-lamap-soon polygon{fill:rgba(228,0,43,.05);stroke:#8a570d;stroke-width:2;stroke-dasharray:7 5;cursor:default}.bop-lamap-soon text{fill:#E4002B;opacity:.85}';
@@ -40616,6 +40624,118 @@ return true;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){[3000,8000,15000,25000,40000].forEach(function(ms){setTimeout(rebuild,ms)});});
+})();</script>
+
+
+<script id="bop-tile-page-price-key-v346-script">(function(){
+/* v346: the price key on tile pages ("$ DIVE  $$-$$$ CASUAL  $$$$ FINE",
+orange signs + white words) now matches the Closest page key exactly:
+flat gold caps with thin dividers -- DIVE $ | CASUAL $$-$$$ | FINE $$$$. */
+function fix(){
+document.querySelectorAll('#bestOfOverlay .bo-price-legend').forEach(function(old){
+if(old.dataset.bopKeyed==='1')return;
+/* only the Dive/Casual/Fine price row, not the OTS/DT or Verified rows */
+var t=(old.textContent||'').replace(/\s+/g,' ');
+if(!/DIVE/i.test(t)||!/FINE/i.test(t)||/OFF THE STRIP|VERIFIED|NEW/i.test(t))return;
+old.dataset.bopKeyed='1';
+var k=document.createElement('div');k.className='bop-legend-price-key';
+k.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine four dollar signs');
+k.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$\u2013$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$$</span>';
+old.parentNode.insertBefore(k,old);old.style.display='none';
+});
+}
+fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
+})();</script>
+
+
+<script id="bop-closest-directory-selfheal-v347-script">(function(){
+/* v347: the Closest -- BJS Directory list is self-healing. If the map
+pipeline finishes with nothing mapped (or with no position of its own),
+we rebuild the pool directly: any restaurant with a saved property
+location, a stored lat/lon, or a cached geocode gets placed instantly --
+no network, no map. Position comes from whichever geolocation call last
+succeeded on this page (the OSM section below already proves GPS works). */
+var lastPos=null;
+try{
+var geo=navigator.geolocation;
+if(geo&&geo.getCurrentPosition&&!geo.__bopWrapped){
+var orig=geo.getCurrentPosition.bind(geo);
+geo.getCurrentPosition=function(ok,err,opts){return orig(function(p){try{lastPos={lat:p.coords.latitude,lng:p.coords.longitude};window.__bopLastPos=lastPos;}catch(e){}if(ok)ok(p);},err,opts);};
+geo.__bopWrapped=true;
+}
+}catch(e){}
+function heal(){
+if(typeof boNearMappedRestaurants==='undefined'||typeof boGetMapRestaurants!=='function')return;
+if(!window.boNearUserLatLng&&typeof boNearUserLatLng!=='undefined'&&!boNearUserLatLng&&lastPos){
+try{boNearUserLatLng={lat:lastPos.lat,lng:lastPos.lng};}catch(e){}
+}
+if(boNearMappedRestaurants.length)return;
+var page=document.getElementById('boNearMapPage');if(!page||!page.classList.contains('open'))return;
+var cityKey=(typeof boCityContext!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';
+var pos=(typeof boNearUserLatLng!=='undefined'&&boNearUserLatLng)||lastPos;
+if(pos&&typeof boNearClosestPlatformCity==='function'){var phys=boNearClosestPlatformCity(pos);if(phys)cityKey=phys;}
+var defaults=(typeof boNearCityDefaults==='function')?boNearCityDefaults(cityKey):{label:cityKey};
+var list=boGetMapRestaurants(cityKey)||[];
+var placed=0;
+list.forEach(function(r){
+var geo=null;
+try{var prop=(typeof boNearPropertyRuleForRestaurant==='function')&&boNearPropertyRuleForRestaurant(r,(r.city&&BO_CITY_CONFIG[r.city])?r.city:cityKey);if(prop)geo={lat:Number(prop.lat),lon:Number(prop.lon)};}catch(e){}
+if(!geo&&r.lat!=null&&r.lon!=null&&Number.isFinite(Number(r.lat))&&Number.isFinite(Number(r.lon)))geo={lat:Number(r.lat),lon:Number(r.lon)};
+if(!geo&&r.address){try{var c=localStorage.getItem('boGeo:'+String(defaults.label||cityKey).toLowerCase()+'|'+String(r.address).toLowerCase());if(c){var o=JSON.parse(c);if(o&&o.lat&&o.lon)geo={lat:Number(o.lat),lon:Number(o.lon)};}}catch(e){}}
+if(geo){r.__boNearGeo=geo;boNearMappedRestaurants.push({restaurant:r,geo:geo});placed++;}
+});
+if(placed){
+try{boNearGeocodingComplete=true;}catch(e){}
+try{if(typeof window.boRenderNearClosestFive==='function')window.boRenderNearClosestFive();}catch(e){}
+try{if(typeof renderVisibleRestaurants==='function')renderVisibleRestaurants();}catch(e){}
+window.BOP_V347_HEALED=placed;
+}
+}
+setInterval(heal,2500);
+})();</script>
+
+
+<script id="bop-closest-worldwide-v349-script">(function(){
+/* v349: Closest -- BJS Directory is worldwide. Whoever taps it, wherever they
+are, gets the nearest city IN OUR SYSTEM (could be hundreds of miles away --
+that's fine, it's the closest BJS listing to them), and that city's whole
+pool including its neighborhoods. Previously only 22 hardcoded cities were
+eligible, so a visitor in Tokyo was snapped to San Francisco. */
+function install(){
+if(typeof boNearClosestPlatformCity!=='function'||typeof boNearCityDefaults!=='function'||typeof BO_CITY_CONFIG==='undefined'||window.__bopWorldClosest)return false;
+window.__bopWorldClosest=true;
+var origDefaults=boNearCityDefaults, origPlatform=boNearClosestPlatformCity;
+var VEGAS='36.1699,-115.1398';
+function isArea(k){var c=BO_CITY_CONFIG[k]||{};if(c.parentCity||c.areaSubpage)return true;if(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k])return true;return /^(sd|la)[a-z]/.test(k)||/^(manhattan|brooklyn|queens|bronx|statenisland|hamptons|northshoreli|southshoreli)$/.test(k);}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+function pinFor(k){if(typeof OC_CITIES==='undefined')return null;var cfg=BO_CITY_CONFIG[k]||{};var names=[k,cfg.displayName,cfg.landingName].filter(Boolean).map(norm);
+var p=OC_CITIES.find(function(x){return x&&x.dest===k&&Number.isFinite(Number(x.la))&&Number.isFinite(Number(x.lo))})
+||OC_CITIES.find(function(x){return x&&Number.isFinite(Number(x.la))&&Number.isFinite(Number(x.lo))&&names.indexOf(norm(x.n))>=0});
+return p?{la:Number(p.la),lo:Number(p.lo),name:p.n}:null;}
+function centerFor(k){
+var d=origDefaults(k);
+if(k==='bestof'||d.center.join(',')!==VEGAS)return d;
+var p=pinFor(k);var cfg=BO_CITY_CONFIG[k]||{};
+if(p)return {center:[p.la,p.lo],zoom:11,label:cfg.displayName||p.name||k};
+return null;
+}
+/* nearest city that has at least one MAPPABLE listing (an address we can place). A city with only address-less placeholder records can't produce a Closest list, so we keep going outward -- 'closest BJS listing to them', however far. */
+function hasListings(k){var n=0;Object.keys(boCategoryData).forEach(function(c){(boCategoryData[c]||[]).forEach(function(r){if(r&&r.name&&r.address&&(r.city||'bestof')===k)n++;});});return n>0;}
+window.boNearCityDefaults=boNearCityDefaults=function(k){return centerFor(k)||origDefaults(k);};
+window.boNearClosestPlatformCity=boNearClosestPlatformCity=function(point){
+if(!point)return null;
+var best=null,bestMiles=Infinity;
+Object.keys(BO_CITY_CONFIG).forEach(function(k){
+if(isArea(k))return;
+var d=centerFor(k);if(!d)return;
+var miles=boNearDistanceMiles(point,{lat:d.center[0],lng:d.center[1]});
+if(miles<bestMiles&&(k==='bestof'||hasListings(k)||/^(sandiego|losangeles|newyork)$/.test(k))){bestMiles=miles;best=k;}
+});
+return best||origPlatform(point);
+};
+return true;
+}
+var n=0;var t=setInterval(function(){n++;if(install()||n>80)clearInterval(t);},250);
 })();</script>
 
 </body></html>
