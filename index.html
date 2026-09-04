@@ -13368,7 +13368,7 @@ boCategoryData.cheesesteak = [
 {rank:1,name:"Amato's Cheesesteaks",city:"siliconvalley",address:"1162 Saratoga Ave, San Jose, CA 95129",phone:"(408) 246-4007",url:"https://www.amatoscheesesteaks.com/"},
 {rank:2,name:"The Cheese Steak Shop — San Jose",city:"siliconvalley",address:"832 W El Camino Real, Sunnyvale, CA 94087",phone:"(408) 530-8159",url:"https://cheesesteakshop.com/"},
 {rank:3,name:"Jake's of Sunnyvale",city:"siliconvalley",address:"1074 N Mathilda Ave, Sunnyvale, CA 94089",phone:"(408) 734-8124",url:"https://jakesrestaurants.com/"},
-{rank:1,name:"Matū",city:"losangeles",address:"239 S Beverly Dr #100, Beverly Hills, CA 90212",phone:"(424) 317-5031",url:"https://www.matusteak.com/matu/matu-lunch-menu/",price:4,bjsPickCity:"losangeles",bjsPickLabel:"BJS Pick — Wagyu Cheesesteak"},
+{rank:1,name:"Matū",city:"losangeles",address:"239 S Beverly Dr #100, Beverly Hills, CA 90212",phone:"(424) 317-5031",url:"https://www.matusteak.com/matu/matu-lunch-menu/",price:4,bjsPickCity:"losangeles",bjsPickLabel:"BJS Pick — Wagyu Cheesesteak",otherLocations:[{name:"Cheesesteaks by Matū — Pasadena",address:"625B E Colorado Blvd Ste 100, Pasadena, CA 91101",url:"https://www.matusteak.com/cheesesteaks-by-matu/pasadena/"}]},
 {rank:2,name:"Boo's Philly Cheesesteaks — Silver Lake",city:"losangeles",address:"4501 Fountain Ave, Los Angeles, CA 90029",phone:"(323) 661-1955",url:"https://boosphilly.com/"},
 {rank:3,name:"South Philly Experience",city:"losangeles",address:"5401 W Pico Blvd, Los Angeles, CA 90019",phone:"(323) 424-3055",url:"https://southphillyexperience.com/"},
 {rank:1,name:"South Coast Deli — Chapala",city:"santabarbara",address:"10 E Carrillo St, Santa Barbara, CA 93101",phone:"(805) 845-4600",url:"https://southcoastdeli.com/"},
@@ -19514,7 +19514,7 @@ return '<span class="bo-apple-badge bo-apple-'+status+(large?' is-guide':'')+'" 
 function verificationKey(){return '<div class="bo-verification-key">'+
 '<div class="bo-verification-key-item">'+badge('gold',true)+'<b class="bo-key-label-gold">GOLDEN APPLE</b><small class="bo-key-desc-gray"><span class="bo-legend-bjs bo-legend-bjs-inline">BJS PICK</span> &amp; 4.9+</small></div>'+
 '<div class="bo-verification-key-item">'+badge('verified',true)+'<b class="bo-key-label-verified">VERIFIED</b><small class="bo-key-desc-gray">Michelin, James Beard, or Verified 4.4+</small></div>'+
-'<div class="bo-verification-key-item">'+badge('unverified',true)+'<b class="bo-key-label-verified">UNVERIFIED</b><small class="bo-key-desc-gray">New or not yet verified.</small></div></div>';}
+'<div class="bo-verification-key-item">'+badge('unverified',true)+'<b class="bo-key-label-verified">PROCESSING</b><small class="bo-key-desc-gray">New or not yet verified.</small></div></div>';}
 function vendorLink(){return '<div class="bo-legend-vendor-row"><button type="button" class="bo-verified-vendor-link" data-dest="vendor"><span>Become a verified vendor</span>'+badge('verified',false)+'</button></div>';}
 function upgradeLegend(){
 const section=document.getElementById('boLegendBadges');if(!section)return;
@@ -19548,7 +19548,7 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape'&&tha
 if(typeof BO_BADGE_GUIDE!=='undefined'){
 BO_BADGE_GUIDE.verified={title:'VERIFIED',copy:'Automatically applied to ratings of 4.9 or 5.0, and to other businesses individually verified by BJS.'};
 BO_BADGE_GUIDE.processing={title:'PROCESSING',copy:'Applied while a listing with a rating from 4.4 through 4.8 is being processed for verification.'};
-BO_BADGE_GUIDE.unverified={title:'UNVERIFIED',copy:'Applied to listings rated 4.3 or below unless BJS later verifies the business individually.'};
+BO_BADGE_GUIDE.unverified={title:'PROCESSING',copy:'Applied to listings rated 4.3 or below unless BJS later verifies the business individually.'};
 }
 function refresh(){upgradeLegend();upgradeBadgesDirectory();upgradeExistingCards();setupThanks();}
 function install(){refresh();new MutationObserver(function(){requestAnimationFrame(refresh);}).observe(document.body,{childList:true,subtree:true});}
@@ -19713,6 +19713,8 @@ const compactFooter='<footer class="bop-best-ending-standard-footer"><strong>Bes
 function openBadges(){
 const movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
 window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
+window.bopLegendReturnOpenIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='legendOverlay';});
+window.bopLegendReturnScroll=window.scrollY||0;
 if(typeof boOpenBadgesPage==='function'&&boOpenBadgesPage!==openBadges){boOpenBadgesPage();return;}
 if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
 const legend=document.getElementById('legendOverlay');if(legend){legend.classList.add('open');legend.scrollTop=0;}
@@ -19847,8 +19849,9 @@ document.addEventListener('click',function(event){
 const back=event.target.closest&&event.target.closest('#legendBack');if(!back)return;
 event.preventDefault();event.stopImmediatePropagation();
 const legend=document.getElementById('legendOverlay');if(legend)legend.classList.remove('open');
-const returnId=window.bopLegendReturnPage||'bestOfOverlay';const page=document.getElementById(returnId);
-if(page)page.classList.add('open');window.scrollTo(0,0);
+const snap=window.bopLegendReturnOpenIds;
+if(snap&&snap.length){snap.forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('open');});window.scrollTo(0,window.bopLegendReturnScroll||0);}
+else{const returnId=window.bopLegendReturnPage||'bestOfOverlay';const page=document.getElementById(returnId);if(page)page.classList.add('open');window.scrollTo(0,0);}
 },true);
 function install(){removeMemberLinks();upgradeLegendLinks();new MutationObserver(function(){removeMemberLinks();upgradeLegendLinks();}).observe(document.body,{childList:true,subtree:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -20449,6 +20452,8 @@ var button=event.target.closest&&event.target.closest('.bop-footer-legend-icon')
 event.preventDefault();event.stopImmediatePropagation();
 var movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
 window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
+window.bopLegendReturnOpenIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='legendOverlay';});
+window.bopLegendReturnScroll=window.scrollY||0;
 if(typeof closeAllPageOverlays==='function')closeAllPageOverlays();
 var legend=document.getElementById('legendOverlay');if(legend){legend.classList.add('open');legend.scrollTop=0;}
 },true);
@@ -34350,7 +34355,7 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
     <div class="bo-ft-live-badge">&#9679;&nbsp;LIVE FEED</div>
     <div id="bopRealtorOverlayMapEl"></div>
     <button type="button" class="bo-rt-checkin-cta" id="bopRtCheckinCta"><span>Hosting an open house?</span><span class="bo-rt-cta-line2">Click here to go live</span></button>
-    <p class="bo-rt-note">Price, beds/baths, and date filters are coming soon — for now, add those details in the notes when you go live.</p>
+    <p class="bo-rt-note">Price, beds/baths, and date filters are coming soon — for now, add those details in the notes when you go <span class="bo-live-glow-word">live!</span></p>
   </div>
 </div>
 <script id="bop-realtor-map-script-v499">(function(){
@@ -34434,6 +34439,7 @@ page.innerHTML =
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Beds</label><input type="number" min="0" step="1" id="bopRtBeds" class="bo-ftc-field" style="margin-bottom:0;"></div><div class="bo-ft-hours-field"><label>Baths</label><input type="number" min="0" step="0.5" id="bopRtBaths" class="bo-ftc-field" style="margin-bottom:0;"></div></div>'+
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopRtLiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopRtLiveUntil"></div></div>'+
 '<div class="bo-ft-hours-hint">Your open house hours for today. You can always take it down early.</div>'+
+'<button type="button" id="bopRtForSaleToggle" class="bo-rt-forsale-toggle"><span class="bo-rt-forsale-text">THIS IS NOT AN OPEN HOUSE BUT FOR SALE.</span><span class="bo-rt-forsale-cta">LIST IT NOW!</span></button>'+
 '<button type="button" id="bopRtNotHereToggle" style="display:block;margin:14px auto 6px;background:none;border:none;color:#E4002B;font:800 .82rem/1.3 Arial,sans-serif;text-decoration:underline;cursor:pointer;">Not at the location right now?</button>'+
 '<div id="bopRtAddressOverrideWrap" style="display:none;margin-bottom:14px;">'+
 '<input class="bo-ftc-field" id="bopRtAddressOverride" type="text" placeholder="Enter the property address" />'+
@@ -34488,6 +34494,16 @@ previewImg.style.display='block';
 })
 .catch(function(){ statusEl.style.display='none'; });
 });
+window.bopRtForSale=false;
+document.getElementById('bopRtForSaleToggle').addEventListener('click', function(){
+window.bopRtForSale=!window.bopRtForSale;
+this.classList.toggle('is-on',window.bopRtForSale);
+var hint=document.querySelector('#bopRealtorCheckin .bo-ft-hours-hint');
+if(hint)hint.textContent=window.bopRtForSale?'For-sale listings stay up until you take them down.':'Your open house hours for today. You can always take it down early.';
+var submitBtn=document.getElementById('bopRtCheckinSubmit');
+var overrideOpen=document.getElementById('bopRtAddressOverrideWrap').style.display!=='none';
+if(window.bopRtForSale)submitBtn.textContent='LIST IT NOW';else submitBtn.textContent=overrideOpen?'Go Live at This Address':"I'm Here — Go Live";
+});
 document.getElementById('bopRtNotHereToggle').addEventListener('click', function(){
 var wrap=document.getElementById('bopRtAddressOverrideWrap');
 var submitBtn=document.getElementById('bopRtCheckinSubmit');
@@ -34515,6 +34531,7 @@ window.bopFtDb.collection('realtors').doc(id).set({
 name:name,
 phone:phoneEl.value.trim(),
 phoneVisible:!!window.bopRtPhoneVisible,
+listingType:window.bopRtForSale?'forsale':'openhouse',
 website:websiteEl.value.trim(),
 description:descEl.value.trim(),
 price:priceEl?priceEl.value.trim():'',
@@ -35913,7 +35930,7 @@ return '<span class="bo-golive-big-line1">PUT YOUR '+noun+' ON THE MAP. <span cl
 '<span class="bo-golive-big-line2">GO LIVE NOW!</span>';
 }
 var TARGETS=[
-{sel:'#bopRealtorOverlay .bo-rt-sub',noun:'HOUSE'},
+{sel:'#bopRealtorOverlay .bo-rt-sub',noun:'OPEN HOUSE'},
 {sel:'#bopCarForSaleOverlay .bo-cfs-sub',noun:'CAR'},
 {sel:'#bopYardSaleOverlay .bo-ys-sub',noun:'GARAGE SALE'},
 {sel:'#bopSafeMeetupOverlay .bo-sm-sub',noun:'ITEM'}
@@ -36192,7 +36209,7 @@ function fixDisclaimerText(){
 var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
 if(!note||note.dataset.bopV527text)return;
 note.dataset.bopV527text='1';
-note.innerHTML='*Going <span class="bo-live-glow-word">live</span> targets and isolates your position. By going <span class="bo-live-glow-word">live</span>, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five recommended drop locations. If an item is for sale or is <span class="bo-live-glow-word">live</span> and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and proximity.';
+note.innerHTML='*Going <span class="bo-live-glow-word">live</span> targets and isolates your position. By going <span class="bo-live-glow-word">live</span>, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five recommended drop locations. If an item is for sale or is <span class="bo-live-glow-word">live</span> and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and close proximity to all parties.';
 }
 function fixFourHeadlines(){
 document.querySelectorAll('.bo-golive-period-word').forEach(function(el){
@@ -36277,7 +36294,7 @@ L.tileLayer(ESRI_URL,{attribution:'&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',ma
 }
 setInterval(fixExistingTiles,500);
 var HEADLINES=[
-{sel:'#bopRealtorOverlay .bo-rt-sub',line1:'PUT YOUR HOUSE ON THE MAP.'},
+{sel:'#bopRealtorOverlay .bo-rt-sub',line1:'PUT YOUR OPEN HOUSE ON THE MAP.'},
 {sel:'#bopCarForSaleOverlay .bo-cfs-sub',line1:'PUT YOUR CAR ON THE MAP.'},
 {sel:'#bopYardSaleOverlay .bo-ys-sub',line1:'PUT YOUR GARAGE SALE ON THE MAP.'},
 {sel:'#bopSafeMeetupOverlay .bo-sm-sub',line1:'PUT YOUR ITEM ON THE MAP.'}
@@ -36460,7 +36477,7 @@ new MutationObserver(install).observe(document.documentElement,{childList:true,s
 <script id="bop-headline-definitive-fix-v531">
 (function(){
   var HEADLINES=[
-    {sel:'#bopRealtorOverlay .bo-golive-big-heading',line1:'PUT YOUR HOUSE ON THE MAP.'},
+    {sel:'#bopRealtorOverlay .bo-golive-big-heading',line1:'PUT YOUR OPEN HOUSE ON THE MAP.'},
     {sel:'#bopCarForSaleOverlay .bo-golive-big-heading',line1:'PUT YOUR CAR ON THE MAP.'},
     {sel:'#bopYardSaleOverlay .bo-golive-big-heading',line1:'PUT YOUR GARAGE SALE ON THE MAP.'},
     {sel:'#bopSafeMeetupOverlay .bo-golive-big-heading',line1:'PUT YOUR ITEM ON THE MAP.'}
@@ -36613,8 +36630,8 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
       var m=html.match(/Looking for (Street Vendors|Food Trucks)\?/);
       if(!m)return;
       el.dataset.bopV527='1';
-      var singular=m[1]==='Street Vendors'?'a street vendor':'a food truck';
-      el.innerHTML='Are you '+singular+'?<small style="color:#F59E0B;font-weight:900;">Go live now!</small>';
+      var singular=m[1]==='Street Vendors'?'a STREET VENDOR':'a FOOD TRUCK';
+      el.innerHTML='Are you '+singular+'?<small style="font-weight:900;"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></small>';
     });
   }
   function install(){
@@ -36789,7 +36806,7 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
       if(el.dataset.bopV531)return;
       if(el.textContent.indexOf('LIVE')===-1)return;
       el.dataset.bopV531='1';
-      el.innerHTML=el.innerHTML.replace('LIVE','<span class="bo-live-glow-word">LIVE</span>');
+      el.innerHTML=el.innerHTML.replace('LIVE!','<span class="bo-live-glow-word">LIVE!</span>').replace(/LIVE(?!<)/,'<span class="bo-live-glow-word">LIVE</span>');
     });
   }
   function install(){
@@ -41074,5 +41091,83 @@ font-size:10px!important;line-height:1.1!important
 .bop-golive-lockup-sub{margin:70px 0 0!important;font-size:clamp(2.4rem,11vw,3.6rem)!important;padding-bottom:28px!important}
 .bop-golive-lockup-sub::after{content:"";display:block;width:min(78%,320px);height:3px;margin:14px auto 0;background:#F59E0B;border-radius:2px;box-shadow:0 0 14px rgba(245,158,11,.85),0 0 26px rgba(245,158,11,.5)}
 </style>
+
+
+<style id="bop-rt-forsale-toggle-v364">
+.bo-rt-forsale-toggle{display:block;width:100%;margin:10px 0 4px;padding:12px 14px;border:2px solid #F59E0B;border-radius:12px;background:#0a0a0a;cursor:pointer;text-align:center}
+.bo-rt-forsale-toggle .bo-rt-forsale-text{display:block;color:#fff;font:900 .8rem/1.3 'Archivo Black',sans-serif;letter-spacing:.02em}
+.bo-rt-forsale-toggle .bo-rt-forsale-cta{display:block;margin-top:4px;color:#F59E0B;font:900 .95rem/1.2 'Archivo Black',sans-serif;letter-spacing:.03em}
+.bo-rt-forsale-toggle.is-on{background:#F59E0B;box-shadow:0 0 14px rgba(245,158,11,.6)}
+.bo-rt-forsale-toggle.is-on .bo-rt-forsale-text,.bo-rt-forsale-toggle.is-on .bo-rt-forsale-cta{color:#000}
+.bo-rt-forsale-toggle.is-on .bo-rt-forsale-cta::after{content:" ✓"}
+</style>
+
+
+<script id="bop-matu-cheesesteak-bh-v365">(function(){
+/* v365 (2026-09-04): the BJS Pick "Matū" (Beverly Hills) was only surviving in
+bjspickslosangeles — it had dropped out of the cheesesteak category, so the
+Beverly Hills cheesesteak page never showed it. Re-seed it from the picks list
+into cheesesteak for both LA-wide and the Beverly Hills & Westside area page. */
+function norm(s){return String(s||'').toLowerCase().replace(/[^a-z]/g,'');}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var picks=boCategoryData.bjspickslosangeles||[];
+var src=picks.find(function(r){return r&&norm(r.name)==='mat';})||picks.find(function(r){return r&&/^mat[uū]$/i.test(r.name||'');});
+if(!src)return false;
+var cs=boCategoryData.cheesesteak;if(!Array.isArray(cs))return false;
+var changed=false;
+['losangeles','labeveryhillswestside'].forEach(function(city){
+var exists=cs.some(function(r){return r&&/^mat[uū]$/i.test(r.name||'')&&r.city===city;});
+if(exists)return;
+var clone=Object.assign({},src,{city:city,parentCity:'losangeles',bjsPick:true,bjsPickCity:'losangeles',bjsPickLabel:src.bjsPickLabel||'BJS Pick — Wagyu Cheesesteak',rank:1});
+delete clone.__v463;
+cs.unshift(clone);changed=true;
+});
+return changed;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>80)clearInterval(t);},250);});
+})();</script>
+
+
+<script id="bop-sd-address-rehome-v366">(function(){
+/* v366 (2026-09-04): San Diego entries were landing in the wrong town
+(Hillcrest/North Park places under Downtown & Gaslamp, Ocean Beach places
+under Pacific Beach, Convoy/Clairemont places under La Jolla). The v590
+reassign only worked by exact name and only from city==='sandiego'. This
+re-homes by ADDRESS for any SD town key. */
+function txt(r){return String((r.address||'')+' '+(r.neighborhood||'')).toLowerCase();}
+function town(t){
+if(/ocean beach|point loma|shelter island|old town|sports arena|rosecrans|voltaire st|newport ave|\b92107\b|\b92106\b|\b92110\b/.test(t))return'sdobpointloma';
+if(/hillcrest|north park|mission hills|university heights|bankers hill|city heights|normal heights|\b92103\b|\b92104\b|\b92116\b|\b92115\b/.test(t))return'sduptown';
+if(/south park|golden hill|barrio logan|national city|\b92102\b|\b92113\b/.test(t))return'sdsouthpark';
+if(/convoy|kearny mesa|clairemont|mira mesa|\b92111\b|\b92117\b|\b92126\b|\b92123\b/.test(t))return'sdconvoy';
+if(/la mesa|el cajon, ca|tierrasanta|santee|\b92124\b|\b91941\b|\b91942\b|\b92020\b|\b92021\b/.test(t))return'sdeastcounty';
+if(/la jolla|university city|\b92037\b|\b92122\b/.test(t))return'sdlajolla';
+if(/pacific beach|mission beach|mission bay|\b92109\b/.test(t))return'sdpacificbeach';
+if(/coronado|\b92118\b/.test(t))return'sdcoronado';
+if(/gaslamp|little italy|east village|downtown san diego|\b92101\b/.test(t))return'sddowntown';
+return'';
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData||typeof BO_CITY_CONFIG!=='object')return false;
+var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var c=String(r.city||'');
+if(!(c==='sandiego'||/^sd[a-z]+$/.test(c)))return;
+var to=town(txt(r));
+if(!to||to===c||!BO_CITY_CONFIG[to])return;
+if(r.__v366===to)return;
+r.__v366=to;r.city=to;r.areaPage=to;hit=true;
+});
+});
+return hit;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>80)clearInterval(t);},250);});
+})();</script>
 
 </body></html>
