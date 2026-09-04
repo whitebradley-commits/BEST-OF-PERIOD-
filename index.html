@@ -12859,8 +12859,10 @@ localStorage.removeItem(cacheKey);
 }
 }catch(e){}
 const q=encodeURIComponent(r.address+', '+cityLabel);
-const res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json'}});
-if(!res.ok) return null;
+let res;
+try{res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json'}});}
+catch(networkErr){window.__bopGeoServiceErrors=(window.__bopGeoServiceErrors||0)+1;return null;}
+if(!res.ok){window.__bopGeoServiceErrors=(window.__bopGeoServiceErrors||0)+1;return null;}
 const data=await res.json();
 if(!data || !data[0]) return null;
 const obj={lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon)};
@@ -12903,6 +12905,7 @@ if(boNearUserMarker){ boNearMap.removeLayer(boNearUserMarker); boNearUserMarker=
 if(boNearAccuracyCircle){ boNearMap.removeLayer(boNearAccuracyCircle); boNearAccuracyCircle=null; }
 boNearMappedRestaurants=[];
 boNearClosestTier='';
+window.__bopGeoServiceErrors=0;
 boNearOsmTier='all';
 boNearOsmAllPlaces=[];
 const closestList=document.getElementById('boNearClosestList');
@@ -13103,7 +13106,7 @@ const usedSavedPropertyLocation=!!property;
 if(property){
 geo={lat:Number(property.lat),lon:Number(property.lon)};
 }else{
-try{geo=await boGeocodeRestaurant(r,defaults.label,defaults);}catch(e){}
+try{geo=await boGeocodeRestaurant(r,defaults.label,defaults);}catch(e){window.__bopGeoServiceErrors=(window.__bopGeoServiceErrors||0)+1;}
 }
 if(geo){
 r.__boNearGeo=geo;
@@ -25286,7 +25289,11 @@ var candidates=[];
 if(boNearClosestTier==='all'){
 ['dive','casual','fine'].forEach(function(tier){pick(tier).forEach(function(item){candidates.push(Object.assign({},item,{nearTier:tier}))})});
 }else candidates=pick(boNearClosestTier);
-if(!candidates.length){list.innerHTML='';status.textContent=boNearGeocodingComplete?'No '+(boNearClosestTier==='all'?'':boNearClosestTier+' ')+'restaurants are mapped near this location yet.':'LOCATING AND MAPPING THE CLOSEST '+boNearClosestTier.toUpperCase()+' RESTAURANTS…';status.classList.toggle('is-locating',!boNearGeocodingComplete);return;}
+/* v324: if this is empty because the geocoding service failed (not because
+there's genuinely nothing nearby), say so plainly instead of implying the
+directory has no coverage here. */
+var geoFailed=!candidates.length && (window.__bopGeoServiceErrors||0)>0 && boNearMappedRestaurants.length===0;
+if(!candidates.length){list.innerHTML='';status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST '+boNearClosestTier.toUpperCase()+' RESTAURANTS\u2026':(geoFailed?'Could not check nearby restaurants right now \u2014 check your connection and try again.':'No '+(boNearClosestTier==='all'?'':boNearClosestTier+' ')+'restaurants are mapped near this location yet.');status.classList.toggle('is-locating',!boNearGeocodingComplete);return;}
 status.classList.remove('is-locating');
 status.textContent=(boNearGeocodingComplete?'Showing ':'Still mapping — currently showing ')+candidates.length+(boNearClosestTier==='all'?' closest restaurants.':' closest '+boNearClosestTier+' restaurants.');
 list.innerHTML=candidates.map(function(item,index){var r=item.restaurant,level=boNearPriceLevel(r),distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi',tier=item.nearTier?'<span class="bo-near-closest-tier">'+esc(item.nearTier.toUpperCase())+'</span> · ':'',hours=item.hoursState,hoursLabel=hours.known?'<span class="bo-near-hours-status '+hours.state+'">'+hours.label+'</span>':'<span class="bo-near-hours-status">HOURS: CONFIRM DIRECTLY</span>';return '<button type="button" class="bo-near-closest-row'+(hours.state==='closing'?' is-closing':'')+'" data-near-v211="'+index+'"><span><span class="bo-near-closest-name">'+esc(r.name)+'</span><span class="bo-near-closest-meta">'+tier+'$'.repeat(level||1)+' · ★ '+esc(r.ratingText||item.rating.toFixed(1))+'</span>'+hoursLabel+'</span><span class="bo-near-closest-distance">'+distance+'</span></button>'}).join('');
@@ -29996,6 +30003,11 @@ if(!back||back.dataset.bopV423)return;
 back.dataset.bopV423='1';
 back.addEventListener('click',function(){
 setTimeout(function(){
+if(window.__bopCameFromGoLive){
+window.__bopCameFromGoLive=false;
+var gl=document.getElementById('bopGoLiveOverlay');
+if(gl){gl.classList.add('open');try{gl.scrollTop=0;}catch(e){}document.body.style.overflow='';try{window.scrollTo(0,0);}catch(e){}return;}
+}
 var anyOpen=Array.prototype.slice.call(document.querySelectorAll('.open')).some(visible);
 if(anyOpen)return;
 var gate=document.getElementById('bopExclusiveInvitation');
@@ -30280,6 +30292,11 @@ var txt=(el.innerText||'').replace(/\s+/g,' ').trim();return txt.length>30;
 page.classList.remove('open'); document.body.style.overflow='';
 if(window.bopVsMapInstance){ window.bopVsMapInstance.remove(); window.bopVsMapInstance=null; }
 if(window.bopVsUnsub){ window.bopVsUnsub(); window.bopVsUnsub=null; }
+if(window.__bopCameFromGoLive){
+window.__bopCameFromGoLive=false;
+var gl2=document.getElementById('bopGoLiveOverlay');
+if(gl2){gl2.classList.add('open');try{gl2.scrollTop=0;}catch(e){}try{window.scrollTo(0,0);}catch(e){}return;}
+}
 if(anyOpen)return;
 var gate=document.getElementById('bopExclusiveInvitation');
 if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true');}
@@ -34197,8 +34214,8 @@ dock.insertBefore(btn,world);
 btn.addEventListener('click',openGoLive);
 }
 var back=document.getElementById('bopGoLiveBack');if(back&&!back.dataset.wired){back.dataset.wired='1';back.addEventListener('click',closeGoLive);}
-var ft=document.getElementById('bopGoLiveFoodTruck');if(ft&&!ft.dataset.wired){ft.dataset.wired='1';ft.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenFoodTruckMap==='function')window.boOpenFoodTruckMap();});}
-var vs=document.getElementById('bopGoLiveVendorStand');if(vs&&!vs.dataset.wired){vs.dataset.wired='1';vs.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenVendorStandMap==='function')window.boOpenVendorStandMap();});}
+var ft=document.getElementById('bopGoLiveFoodTruck');if(ft&&!ft.dataset.wired){ft.dataset.wired='1';ft.addEventListener('click',function(){closeGoLive();window.__bopCameFromGoLive=true;if(typeof window.boOpenFoodTruckMap==='function')window.boOpenFoodTruckMap();});}
+var vs=document.getElementById('bopGoLiveVendorStand');if(vs&&!vs.dataset.wired){vs.dataset.wired='1';vs.addEventListener('click',function(){closeGoLive();window.__bopCameFromGoLive=true;if(typeof window.boOpenVendorStandMap==='function')window.boOpenVendorStandMap();});}
 var rt=document.getElementById('bopGoLiveRealtor');if(rt&&!rt.dataset.wired){rt.dataset.wired='1';rt.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenRealtorMap==='function')window.boOpenRealtorMap();});}
 var ys=document.getElementById('bopGoLiveYardSale');if(ys&&!ys.dataset.wired){ys.dataset.wired='1';ys.addEventListener('click',function(){closeGoLive();if(typeof window.boOpenYardSaleMap==='function')window.boOpenYardSaleMap();});}
 }
