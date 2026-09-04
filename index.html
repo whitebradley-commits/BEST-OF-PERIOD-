@@ -26262,7 +26262,7 @@ page.innerHTML =
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 2 minutes.</div>'+
-'<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+'<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone (your ID — used every time)" />'+
 '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
 '<input class="bo-ftc-field" id="bopFtWebsite" type="text" placeholder="Website or ordering link (optional)" />'+
 '<div class="bo-ftc-status" id="bopFtPreviewStatus" style="display:none;"></div>'+
@@ -30202,7 +30202,7 @@ status.textContent='Putting your truck on the live map\u2026';
 var id=key+'_'+slug(truck);
 var timer=setTimeout(function(){btn.disabled=false;status.textContent='The live map did not confirm your check-in. Please try again.';},15000);
 window.bopFtDb.collection('foodtrucks').doc(id).set({
-name:truck,phone:(phone.value||'').trim(),phoneDigits:key,
+name:truck,phone:(phone.value||'').trim(),phoneDigits:key,phoneVisible:!!window.bopFtPhoneVisible,
 website:(website&&website.value||'').trim(),
 instagram:(instagram&&instagram.value||'').trim(),
 description:(description&&description.value||'').trim(),
@@ -30574,7 +30574,7 @@ page.innerHTML =
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 2 minutes.</div>'+
-'<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+'<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone (your ID — used every time)" />'+
 '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
 '<label class="bo-vs-field-label">What do you sell?</label>'+
 '<select class="bo-ftc-field" id="bopVsCategory">'+options+'</select>'+
@@ -30634,7 +30634,7 @@ status.textContent='Putting your stand on the live map\u2026';
 var id=key+'_'+vsSlug(name);
 var timer=setTimeout(function(){btn.disabled=false;status.textContent='The live map did not confirm your check-in. Please try again.';},15000);
 window.bopFtDb.collection('vendorstands').doc(id).set({
-name:name,phone:phoneEl.value.trim(),category:catEl.value,
+name:name,phone:phoneEl.value.trim(),phoneVisible:!!window.bopVsPhoneVisible,category:catEl.value,
 website:(websiteEl.value||'').trim(),instagram:(instaEl.value||'').trim(),description:(descEl.value||'').trim(),
 photo:window.bopVsPhotoUrl||'',
 lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy||null,
@@ -34420,8 +34420,7 @@ page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
-'<input class="bo-ftc-field" id="bopRtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
-'<input class="bo-ftc-field" id="bopRtName" type="text" placeholder="Listing name or address" />'+
+'<input class="bo-ftc-field" id="bopRtPhone" type="tel" placeholder="Phone (your ID — used every time)" />'+
 '<input class="bo-ftc-field" id="bopRtWebsite" type="text" placeholder="Listing link or website (optional)" />'+
 '<div class=\"bo-vs-photo-row\"><label class=\"bo-vs-photo-btn\" id=\"bopRtPhotoBtn\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#F59E0B\" stroke-width=\"2\"><path d=\"M4 8h3l2-3h6l2 3h3v11H4z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/></svg><span>Add Photo</span><input type=\"file\" accept=\"image/*\" id=\"bopRtPhotoInput\" style=\"display:none;\"></label><div class=\"bo-vs-photo-hint\">(Optional — but it increases viewership)</div></div>'+
 '<div class="bo-ftc-status" id="bopRtPreviewStatus" style="display:none;"></div>'+
@@ -34434,6 +34433,11 @@ page.innerHTML =
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopRtLiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopRtLiveUntil"></div></div>'+
 '<div class="bo-ft-hours-hint">Your open house hours for today. You can always take it down early.</div>'+
 '<button type="button" class="bo-ftc-btn" id="bopRtCheckinSubmit">I\'m Here — Go Live</button>'+
+'<button type="button" id="bopRtNotHereToggle" style="display:block;margin:10px auto 0;background:none;border:none;color:#E4002B;font:800 .78rem/1.3 Arial,sans-serif;text-decoration:underline;cursor:pointer;">Not at the location?</button>'+
+'<div id="bopRtAddressOverrideWrap" style="display:none;margin-top:10px;">'+
+'<input class="bo-ftc-field" id="bopRtAddressOverride" type="text" placeholder="Enter the property address" />'+
+'<div style="color:#E4002B;font:700 .74rem/1.35 Arial,sans-serif;margin-top:4px;">Go Live with this address instead — it overrides your current location.</div>'+
+'</div>'+
 '<div class="bo-ftc-status" id="bopRtCheckinStatus"></div>'+
 '</div>';
 document.body.appendChild(page);
@@ -34445,7 +34449,6 @@ document.getElementById('bopRtLiveFrom').value=hhmmNow(now);
 document.getElementById('bopRtLiveUntil').value=hhmmNow(new Date(now.getTime()+4*3600000));
 window.bopRtPhotoUrl='';
 var websiteEl=document.getElementById('bopRtWebsite');
-var nameEl=document.getElementById('bopRtName');
 var phoneEl=document.getElementById('bopRtPhone');
 var descEl=document.getElementById('bopRtDescription');
 var previewImg=document.getElementById('bopRtPreviewImg');
@@ -34483,41 +34486,62 @@ previewImg.style.display='block';
 })
 .catch(function(){ statusEl.style.display='none'; });
 });
+document.getElementById('bopRtNotHereToggle').addEventListener('click', function(){
+var wrap=document.getElementById('bopRtAddressOverrideWrap');
+var open=wrap.style.display!=='none';
+wrap.style.display=open?'none':'block';
+this.textContent=open?'Not at the location?':'I am at the location';
+});
 document.getElementById('bopRtCheckinSubmit').addEventListener('click', function(){
 var status=document.getElementById('bopRtCheckinStatus');
-var name=nameEl.value.trim();
 var key=digitsOf(phoneEl.value);
 if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
-if(!name){ status.textContent='Please enter the listing name or address.'; return; }
-if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
 var fromEl=document.getElementById('bopRtLiveFrom'), untilEl=document.getElementById('bopRtLiveUntil');
 var liveUntil=computeRtLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
 var priceEl=document.getElementById('bopRtPrice'), bedsEl=document.getElementById('bopRtBeds'), bathsEl=document.getElementById('bopRtBaths');
 var bedsVal=bedsEl&&bedsEl.value!==''?parseFloat(bedsEl.value):null;
 var bathsVal=bathsEl&&bathsEl.value!==''?parseFloat(bathsEl.value):null;
-status.textContent='Getting your location…';
-navigator.geolocation.getCurrentPosition(function(pos){
+var name=(window.bopRtAutoName&&window.bopRtAutoName.trim())||(priceEl&&priceEl.value.trim()?'Open House \\u2014 '+priceEl.value.trim():'Open House');
+function saveWithCoords(lat,lng){
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 var id=key+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
 window.bopFtDb.collection('realtors').doc(id).set({
 name:name,
 phone:phoneEl.value.trim(),
+phoneVisible:!!window.bopRtPhoneVisible,
 website:websiteEl.value.trim(),
 description:descEl.value.trim(),
 price:priceEl?priceEl.value.trim():'',
 beds:(bedsVal!==null&&!isNaN(bedsVal))?bedsVal:null,
 baths:(bathsVal!==null&&!isNaN(bathsVal))?bathsVal:null,
 photo:window.bopRtPhotoUrl||'',
-lat:pos.coords.latitude,
-lng:pos.coords.longitude,
+lat:lat,
+lng:lng,
 checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
 liveUntil:liveUntil
-},{merge:true}).then(function(){
-status.textContent="You're live! Tap Back to see your open house on the map.";
+}).then(function(){
+status.textContent="You're live! Tap Back to see it on the map.";
 }).catch(function(){
 status.textContent='Something went wrong — try again.';
 });
+}
+var overrideWrap=document.getElementById('bopRtAddressOverrideWrap');
+var overrideAddr=(overrideWrap&&overrideWrap.style.display!=='none')?document.getElementById('bopRtAddressOverride').value.trim():'';
+if(overrideAddr){
+status.textContent='Looking up that address…';
+fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(overrideAddr),{headers:{'Accept':'application/json'}})
+.then(function(r){return r.json();})
+.then(function(rows){
+if(!rows||!rows.length){ status.textContent="Couldn't find that address — try adding city and state."; return; }
+saveWithCoords(parseFloat(rows[0].lat),parseFloat(rows[0].lon));
+}).catch(function(){ status.textContent='Address lookup failed — try again.'; });
+return;
+}
+if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
+status.textContent='Getting your location…';
+navigator.geolocation.getCurrentPosition(function(pos){
+saveWithCoords(pos.coords.latitude,pos.coords.longitude);
 }, function(){
 status.textContent='Location permission is needed to check in.';
 }, {enableHighAccuracy:true, timeout:10000});
@@ -34617,7 +34641,7 @@ page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
-'<input class="bo-ftc-field" id="bopYsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
+'<input class="bo-ftc-field" id="bopYsPhone" type="tel" placeholder="Phone (your ID — used every time)" />'+
 '<input class="bo-ftc-field" id="bopYsName" type="text" placeholder="Sale name or address" />'+
 '<input class="bo-ftc-field" id="bopYsWebsite" type="text" placeholder="Website or listing link (optional)" />'+
 '<div class="bo-ftc-status" id="bopYsPreviewStatus" style="display:none;"></div>'+
@@ -34684,6 +34708,7 @@ var id=key+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,
 window.bopFtDb.collection('yardsales').doc(id).set({
 name:name,
 phone:phoneEl.value.trim(),
+phoneVisible:!!window.bopYsPhoneVisible,
 website:websiteEl.value.trim(),
 description:descEl.value.trim(),
 photo:window.bopYsPhotoUrl||'',
@@ -34771,6 +34796,7 @@ page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
+'<input class="bo-ftc-field" id="bopYs2Phone" type="tel" placeholder="Phone (your ID \u2014 used every time)" />'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopYs2PhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopYs2PreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopYs2PhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">(Optional — but it increases viewership)</div></div>'+
 '<textarea class="bo-ftc-field" id="bopYs2Description" rows="3" placeholder="What are you selling? Anything shoppers should know."></textarea>'+
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Open From</label><input type="time" id="bopYs2LiveFrom"></div><div class="bo-ft-hours-field"><label>Open Until</label><input type="time" id="bopYs2LiveUntil"></div></div>'+
@@ -34798,6 +34824,9 @@ previewImg.src=data;previewImg.style.display='block';
 });
 document.getElementById('bopYs2CheckinSubmit').addEventListener('click', function(){
 var status=document.getElementById('bopYs2CheckinStatus');
+var phoneEl=document.getElementById('bopYs2Phone');
+var key=digitsOf(phoneEl.value);
+if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
 if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
 var fromEl=document.getElementById('bopYs2LiveFrom'), untilEl=document.getElementById('bopYs2LiveUntil');
 var liveUntil=computeLiveUntil(fromEl&&fromEl.value, untilEl&&untilEl.value);
@@ -34806,6 +34835,8 @@ navigator.geolocation.getCurrentPosition(function(pos){
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 window.bopFtDb.collection('yardsales').add({
+phone:phoneEl.value.trim(),
+phoneVisible:!!window.bopYs2PhoneVisible,
 description:descEl.value.trim(),
 photo:window.bopYs2PhotoUrl||'',
 lat:pos.coords.latitude,
@@ -34916,14 +34947,16 @@ page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
+'<input class="bo-ftc-field" id="bopCfsPhone" type="tel" placeholder="Phone (your ID — used every time)" />'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopCfsPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopCfsPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopCfsPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">(Optional — but it increases viewership)</div></div>'+
+'<textarea class="bo-ftc-field" id="bopCfsDescription" rows="3" placeholder="Notes — anything buyers should know"></textarea>'+
+'<input class="bo-ftc-field" id="bopCfsPrice" type="text" inputmode="numeric" placeholder="Price (e.g. $25,000)" />'+
 '<input class="bo-ftc-field" id="bopCfsYear" type="text" inputmode="numeric" placeholder="Year (e.g. 2018)" />'+
 '<input class="bo-ftc-field" id="bopCfsMake" type="text" placeholder="Make (e.g. Honda)" />'+
 '<input class="bo-ftc-field" id="bopCfsModel" type="text" placeholder="Model (e.g. Accord)" />'+
 '<input class="bo-ftc-field" id="bopCfsMileage" type="text" inputmode="numeric" placeholder="Mileage" />'+
 '<select class="bo-ftc-field" id="bopCfsCondition"><option value="">Condition (optional)</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Needs Work</option></select>'+
 '<select class="bo-ftc-field" id="bopCfsSpot"><option value="">Choose a recommended location</option><option>Target</option><option>7-Eleven</option><option>Police Station</option><option>Public Library</option><option>Walmart</option><option>Tesla Supercharger</option></select>'+
-'<textarea class="bo-ftc-field" id="bopCfsDescription" rows="3" placeholder="Notes — anything buyers should know"></textarea>'+
 '<div class="bo-ft-hours-row"><div class="bo-ft-hours-field"><label>Here From</label><input type="time" id="bopCfsLiveFrom"></div><div class="bo-ft-hours-field"><label>Here Until</label><input type="time" id="bopCfsLiveUntil"></div></div>'+
 '<div class="bo-ft-hours-hint">The hours you and the car will be at this location today. You can always take it down early.</div>'+
 '<button type="button" class="bo-ftc-btn" id="bopCfsCheckinSubmit">I\'m Here — Go Live</button>'+
@@ -34948,6 +34981,10 @@ previewImg.src=data;previewImg.style.display='block';
 });
 document.getElementById('bopCfsCheckinSubmit').addEventListener('click', function(){
 var status=document.getElementById('bopCfsCheckinStatus');
+var phoneEl=document.getElementById('bopCfsPhone');
+var key=digitsOf(phoneEl.value);
+if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
+var price=document.getElementById('bopCfsPrice').value.trim();
 var year=document.getElementById('bopCfsYear').value.trim();
 var make=document.getElementById('bopCfsMake').value.trim();
 var model=document.getElementById('bopCfsModel').value.trim();
@@ -34964,7 +35001,7 @@ navigator.geolocation.getCurrentPosition(function(pos){
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 window.bopFtDb.collection('carsforsale').add({
-year:year,make:make,model:model,mileage:mileage,condition:condition,spot:spot,
+phone:phoneEl.value.trim(),price:price,year:year,make:make,model:model,mileage:mileage,condition:condition,spot:spot,
 description:description,
 photo:window.bopCfsPhotoUrl||'',
 lat:pos.coords.latitude,
@@ -35189,7 +35226,8 @@ page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
 '<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
-'<input class="bo-ftc-field" id="bopSmName" type="text" placeholder="What are you selling?" />'+
+'<input class="bo-ftc-field" id="bopSmPhone" type="tel" placeholder="Phone (your ID \u2014 used every time)" />'+
+'<label class="bo-vs-field-label">What are you selling?</label>'+
 '<select class="bo-ftc-field" id="bopSmCategory">'+categoryOptions+'</select>'+
 '<input class="bo-ftc-field" id="bopSmPrice" type="text" placeholder="Price (e.g. $40)" />'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">(Optional — but it increases viewership)</div></div>'+
@@ -35214,12 +35252,14 @@ previewImg.src=data;previewImg.style.display='block';
 });
 document.getElementById('bopSmCheckinSubmit').addEventListener('click', function(){
 var status=document.getElementById('bopSmCheckinStatus');
-var name=document.getElementById('bopSmName').value.trim();
+var phoneEl=document.getElementById('bopSmPhone');
+var key=digitsOf(phoneEl.value);
+if(!key||key.length<7){ status.textContent='Please enter a valid phone number — it keeps your profile so you only fill this out once.'; return; }
 var category=document.getElementById('bopSmCategory').value;
+var name=category;
 var price=document.getElementById('bopSmPrice').value.trim();
 var description=document.getElementById('bopSmDescription').value.trim();
 var spot=document.getElementById('bopSmSpot').value;
-if(!name){ status.textContent='Please say what you\'re selling.'; return; }
 if(!spot){ status.textContent='Please choose one of the safe meet-up locations.'; return; }
 if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
 status.textContent='Getting your location…';
@@ -35227,7 +35267,7 @@ navigator.geolocation.getCurrentPosition(function(pos){
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 window.bopFtDb.collection('safemeetups').add({
-name:name,category:category,price:price,description:description,spot:spot,
+phone:phoneEl.value.trim(),name:name,category:category,price:price,description:description,spot:spot,
 photo:window.bopSmPhotoUrl||'',
 lat:pos.coords.latitude,
 lng:pos.coords.longitude,
@@ -40883,7 +40923,7 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>120)clea
 <style id="bop-golive-flash-title-v356">
 .bop-golive-title,.bo-ftc-title{text-transform:uppercase!important}
 .bop-golive-gold{color:#F59E0B;text-shadow:0 0 8px rgba(245,158,11,.6),0 0 18px rgba(245,158,11,.3)}
-.bop-golive-red{display:inline-block;color:#E4002B;text-shadow:0 0 10px rgba(228,0,43,.85),0 0 22px rgba(228,0,43,.5);animation:bopGoLiveFlash 1s steps(1,end) infinite}
+.bop-golive-red{display:inline-block;color:#E4002B;text-shadow:0 0 10px rgba(228,0,43,.85),0 0 22px rgba(228,0,43,.5)}
 @keyframes bopGoLiveFlash{0%,49%{opacity:1}50%,100%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.bop-golive-red{animation:none}}
 </style>
@@ -40958,8 +40998,52 @@ if(e.target&&e.target.id==='bopAnalogInfoBackdrop')close();
 
 
 <style id="bop-golive-divider-v359">
-.bo-ftc-title{margin-bottom:14px!important}
-.bo-ftc-title::after{content:"";display:block;width:64px;height:2px;margin:14px auto 0;background:#F59E0B;border-radius:2px;box-shadow:0 0 8px rgba(245,158,11,.65),0 0 3px rgba(245,158,11,.9)}
+.bo-ftc-title{margin-bottom:36px!important}
+.bo-ftc-title::after{content:"";display:block;width:min(88%,380px);height:3px;margin:22px auto 0;background:#F59E0B;border-radius:2px;box-shadow:0 0 20px rgba(245,158,11,.95),0 0 38px rgba(245,158,11,.6),0 0 8px rgba(245,158,11,1)}
+</style>
+
+
+<style id="bop-phone-visibility-toggle-v360">
+.bop-phone-vis-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 14px;padding:8px 12px;border:1px solid rgba(245,158,11,.4);border-radius:10px;background:#0a0a0a}
+.bop-phone-vis-label{color:#F59E0B;font:800 .74rem/1.3 Arial,sans-serif;letter-spacing:.02em}
+.bop-phone-vis-switch{position:relative;display:inline-flex;align-items:center;width:52px;height:28px;border-radius:999px;background:#1a1a1a;border:1.5px solid #F59E0B;cursor:pointer;flex-shrink:0}
+.bop-phone-vis-switch .bop-phone-vis-knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#F59E0B;transition:transform .18s ease;box-shadow:0 0 6px rgba(245,158,11,.6)}
+.bop-phone-vis-switch[aria-checked="true"] .bop-phone-vis-knob{transform:translateX(24px)}
+.bop-phone-vis-state{color:#F59E0B;font:900 .7rem/1 'Archivo Black',Arial,sans-serif;letter-spacing:.04em;min-width:26px;text-align:center}
+</style>
+<script id="bop-phone-visibility-toggle-script-v360">(function(){
+window.bopMakePhoneVisToggle=function(inputId){
+var wrap=document.createElement('div');wrap.className='bop-phone-vis-row';
+wrap.innerHTML='<span class="bop-phone-vis-label">Make number visible?</span><span class="bop-phone-vis-state" id="'+inputId+'VisState">NO</span><button type="button" class="bop-phone-vis-switch" id="'+inputId+'VisSwitch" role="switch" aria-checked="false"><span class="bop-phone-vis-knob"></span></button>';
+var input=document.getElementById(inputId);
+if(input&&input.parentNode)input.parentNode.insertBefore(wrap,input.nextSibling);
+var btn=wrap.querySelector('.bop-phone-vis-switch'),state=wrap.querySelector('.bop-phone-vis-state');
+btn.addEventListener('click',function(){
+var on=btn.getAttribute('aria-checked')==='true';
+btn.setAttribute('aria-checked',on?'false':'true');
+state.textContent=on?'NO':'YES';
+window[inputId+'Visible']=!on;
+});
+window[inputId+'Visible']=false;
+};
+['bopFtPhone','bopVsPhone','bopRtPhone','bopYsPhone','bopYs2Phone'].forEach(function(id){
+var tries=0;var t=setInterval(function(){
+tries++;
+var el=document.getElementById(id);
+if(el&&!el.dataset.bopVisWired){el.dataset.bopVisWired='1';window.bopMakePhoneVisToggle(id);}
+if(tries>200)clearInterval(t);
+},300);
+});
+})();</script>
+
+
+<style id="bop-unified-red-back-buttons-v361">
+/* v361: Brad wants every Back button's text+arrow in red, not gold.
+Several classes (and one duplicate cascade override) were still gold —
+force them all red here, last in source order so it always wins. */
+.bo-cfs-back,.bo-golive-back,.bo-rt-back,.bo-sm-back,.bo-ys-back,
+.bo-near-cluster-back,.bo-near-map-back,.bop-city-gate-back,.cp-back,
+.bo-ft-back{color:#E4002B!important}
 </style>
 
 </body></html>
