@@ -24169,10 +24169,17 @@ function scoreChip(val){
 var has=val!=null;
 return '<span class="bop-all-pizza-row-score'+(has?'':' is-dash')+'">'+(has?Number(val).toFixed(1):'\u2014')+'</span>';
 }
-overlay.querySelector('.bop-all-pizza-grid').innerHTML=rows.map(function(r){
+overlay.querySelector('.bop-all-pizza-grid').innerHTML=rows.map(function(r,i){
 var phoneHTML=r.phone?' <span class="bop-all-pizza-row-dash">\u2014</span> <a class="bop-all-pizza-row-phone" href="tel:'+String(r.phone).replace(/[^0-9+]/g,'')+'">'+esc(r.phone)+'</a>':'';
-return '<div class="bop-all-pizza-row"><span class="bop-all-pizza-row-name">'+esc(r.name)+phoneHTML+'</span><span class="bop-all-pizza-row-scores">'+scoreChip(r.bjsPizzaScore)+scoreChip(r.oneBiteScore)+scoreChip(r.oneBiteDaveScore)+'</span></div>';
+return '<div class="bop-all-pizza-row" data-analog-index="'+i+'" style="cursor:pointer"><span class="bop-all-pizza-row-name">'+esc(r.name)+phoneHTML+'</span><span class="bop-all-pizza-row-scores">'+scoreChip(r.bjsPizzaScore)+scoreChip(r.oneBiteScore)+scoreChip(r.oneBiteDaveScore)+'</span></div>';
 }).join('');
+overlay.querySelector('.bop-all-pizza-grid').querySelectorAll('[data-analog-index]').forEach(function(el){
+el.addEventListener('click',function(evt){
+if(evt.target.closest('a'))return;
+var r=rows[Number(el.dataset.analogIndex)];
+if(r&&typeof window.bopShowAnalogInfoCard==='function')window.bopShowAnalogInfoCard(r);
+});
+});
 }
 function open(){savedY=window.scrollY;build();document.documentElement.classList.add('bop-all-pizza-open');document.body.style.overflow='hidden';overlay.scrollTop=0}
 function close(){document.documentElement.classList.remove('bop-all-pizza-open');document.body.style.overflow='';requestAnimationFrame(function(){window.scrollTo(0,savedY)})}
@@ -26253,7 +26260,7 @@ page.setAttribute('aria-label','Food Truck Go Live');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub" id="bopFtCheckinSub">Go live on the Best of Period food truck map. Takes 2 minutes.</div>'+
 '<input class="bo-ftc-field" id="bopFtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
 '<input class="bo-ftc-field" id="bopFtName" type="text" placeholder="Truck name" />'+
@@ -30565,7 +30572,7 @@ var options=CATEGORIES.map(function(c){return '<option value="'+c.id+'">'+c.labe
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub" id="bopVsCheckinSub">Go live on the Best of Period street-vendor map. Takes 2 minutes.</div>'+
 '<input class="bo-ftc-field" id="bopVsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
 '<input class="bo-ftc-field" id="bopVsName" type="text" placeholder="Stand name (e.g. Rosa\u2019s Fruit Cart)" />'+
@@ -34275,7 +34282,7 @@ fresh.forEach(function(m){BO_MOVIES_CURRENT.push(m);});
 <div id="bopGoLiveOverlay" aria-label="Go Live">
   <div class="bo-golive-shell">
     <button class="bo-golive-back" id="bopGoLiveBack" type="button">&larr;<br>Back</button>
-    <div class="bop-golive-title">Go Live!</div>
+    <div class="bop-golive-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>
     <div class="bop-golive-lockup"><span class="bo-golive-best">Best Of</span> <span class="bo-golive-period">PERIOD<span class="period-mark">&copy;</span></span></div>
     <div class="bop-golive-tiles">
       <button class="bop-golive-tile" id="bopGoLiveRealtor" type="button" aria-label="Realtor, Open House">
@@ -34412,7 +34419,7 @@ page.setAttribute('aria-label','Realtor Go Live');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub">Go live on the Best of Period open house map. Takes 2 minutes.</div>'+
 '<input class="bo-ftc-field" id="bopRtPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
 '<input class="bo-ftc-field" id="bopRtName" type="text" placeholder="Listing name or address" />'+
@@ -34610,7 +34617,7 @@ page.setAttribute('aria-label','Yard Sale Go Live');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub">Go live on the Best of Period yard sale map. Takes 2 minutes.</div>'+
 '<input class="bo-ftc-field" id="bopYsPhone" type="tel" placeholder="Phone number (this is your ID — used every time you check in)" />'+
 '<input class="bo-ftc-field" id="bopYsName" type="text" placeholder="Sale name or address" />'+
@@ -34765,7 +34772,7 @@ page.setAttribute('aria-label','Yard Sale Go Live');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub">Go live on the Best of Period yard sale map. Your location is used automatically.</div>'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopYs2PhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopYs2PreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopYs2PhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of your sale (optional, but it helps people spot you).</div></div>'+
 '<textarea class="bo-ftc-field" id="bopYs2Description" rows="3" placeholder="What are you selling? Anything shoppers should know."></textarea>'+
@@ -34911,7 +34918,7 @@ page.setAttribute('aria-label','Sell Your Car Live');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<div class="bo-ftc-sub">Go live on the Best of Period car-for-sale map. Your location is used automatically.</div>'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopCfsPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopCfsPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopCfsPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">One photo of the car (optional, but it increases your viewership).</div></div>'+
 '<input class="bo-ftc-field" id="bopCfsYear" type="text" inputmode="numeric" placeholder="Year (e.g. 2018)" />'+
@@ -35185,8 +35192,7 @@ var spotOptions='<option value="">Choose a recommended location</option>'+SPOTS.
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
-'<div class="bo-ftc-title">Go Live!</div>'+
-'<div class="bo-ftc-sub">Go live on the Best of Period safe meet-up map. Your location is used automatically.</div>'+
+'<div class="bo-ftc-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>'+
 '<input class="bo-ftc-field" id="bopSmName" type="text" placeholder="What are you selling?" />'+
 '<select class="bo-ftc-field" id="bopSmCategory">'+categoryOptions+'</select>'+
 '<input class="bo-ftc-field" id="bopSmPrice" type="text" placeholder="Price (e.g. $40)" />'+
@@ -40875,6 +40881,83 @@ not just until the array itself exists. */
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>120)clearInterval(t);},400);});
+})();</script>
+
+
+<style id="bop-golive-flash-title-v356">
+.bop-golive-title,.bo-ftc-title{text-transform:uppercase!important}
+.bop-golive-gold{color:#F59E0B;text-shadow:0 0 8px rgba(245,158,11,.6),0 0 18px rgba(245,158,11,.3)}
+.bop-golive-red{display:inline-block;color:#E4002B;text-shadow:0 0 10px rgba(228,0,43,.85),0 0 22px rgba(228,0,43,.5);animation:bopGoLiveFlash 1s steps(1,end) infinite}
+@keyframes bopGoLiveFlash{0%,49%{opacity:1}50%,100%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.bop-golive-red{animation:none}}
+</style>
+
+
+<style id="bop-analog-list-popup-mode-v357">
+/* v357: reuse the Closest page's rich restaurant popup on the Analog Pizza
+List. When opened from there, hide the map/search behind it and lift the
+popup above the Analog List overlay so it's the only thing visible. */
+.bop-analog-popup-mode #boNearMapCanvas,.bop-analog-popup-mode #boNearMapLoading,.bop-analog-popup-mode #boNearMapBack,.bop-analog-popup-mode .bo-near-map-other-cities,.bop-analog-popup-mode .bo-near-map-meta,.bop-analog-popup-mode .bo-near-map-lower{display:none!important}
+.bop-analog-popup-mode{background:rgba(0,0,0,.86)!important}
+.bop-analog-popup-mode #boNearInfoCard{z-index:13200!important}
+</style>
+
+
+<style id="bop-analog-info-card-v358">
+.bop-analog-info-backdrop{position:fixed;inset:0;z-index:13200;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
+.bop-analog-info-backdrop.open{display:flex}
+.bop-analog-info-card{position:relative;width:min(400px,92vw);max-height:82vh;overflow:auto;display:grid;grid-template-columns:1fr;border:1px solid rgba(245,158,11,.9);border-radius:13px;background:#06090d;color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.9),0 0 22px rgba(245,158,11,.32)}
+.bop-analog-info-media{width:100%;height:160px;background:radial-gradient(ellipse at 30% 30%,hsl(18,45%,26%) 0%,hsl(18,58%,10%) 70%);position:relative;overflow:hidden}
+.bop-analog-info-media img{width:100%;height:100%;object-fit:cover;display:block}
+.bop-analog-info-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font:900 3rem 'Fraunces',serif}
+.bop-analog-info-copy{padding:16px 44px 18px 18px;display:flex;flex-direction:column;gap:6px}
+.bop-analog-info-name{margin:0;color:#fff;font:800 20px/1.1 'Archivo Narrow',sans-serif}
+.bop-analog-info-scores{display:flex;gap:14px;margin:2px 0 4px}
+.bop-analog-info-score{display:flex;flex-direction:column;align-items:center}
+.bop-analog-info-score small{color:#F59E0B;font:900 8px/1 'Archivo Black',sans-serif;letter-spacing:.05em}
+.bop-analog-info-score strong{margin-top:2px;color:#fff;font:900 16px/1 'Archivo Black',sans-serif}
+.bop-analog-info-address{color:#e8e8e8;font:600 12px/1.4 'Archivo Narrow',sans-serif}
+.bop-analog-info-phone{width:max-content;color:#55a9ff;font:800 13px 'Archivo Narrow',sans-serif;text-decoration:none}
+.bop-analog-info-actions{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap}
+.bop-analog-info-actions a{border:0;border-radius:8px;background:#F59E0B;color:#000;padding:9px 12px;font:900 11px 'Archivo Narrow',sans-serif;text-decoration:none}
+.bop-analog-info-close{position:absolute;right:8px;top:8px;z-index:2;width:30px;height:30px;border:1px solid rgba(245,158,11,.65);border-radius:50%;background:#000;color:#fff;font-size:20px;line-height:27px;text-align:center;cursor:pointer}
+</style>
+<div id="bopAnalogInfoBackdrop" class="bop-analog-info-backdrop">
+<div class="bop-analog-info-card" role="dialog" aria-modal="true" aria-label="Restaurant information">
+<button id="bopAnalogInfoClose" class="bop-analog-info-close" type="button" aria-label="Close">&times;</button>
+<div id="bopAnalogInfoMedia" class="bop-analog-info-media"></div>
+<div id="bopAnalogInfoCopy" class="bop-analog-info-copy"></div>
+</div>
+</div>
+<script id="bop-analog-info-card-script-v358">(function(){
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+window.bopShowAnalogInfoCard=function(r){
+var backdrop=document.getElementById('bopAnalogInfoBackdrop');
+var media=document.getElementById('bopAnalogInfoMedia');
+var copy=document.getElementById('bopAnalogInfoCopy');
+if(!backdrop||!media||!copy||!r)return;
+if(r.image){
+var img=document.createElement('img');
+img.src=r.image;img.alt=r.name;img.style.objectPosition=r.imagePosition||'center';
+img.onerror=function(){media.innerHTML='<div class="bop-analog-info-placeholder">&#10022;</div>';};
+media.innerHTML='';media.appendChild(img);
+}else{
+media.innerHTML='<div class="bop-analog-info-placeholder">&#10022;</div>';
+}
+function chip(label,val){return '<div class="bop-analog-info-score"><small>'+label+'</small><strong>'+(val!=null?Number(val).toFixed(1):'\\u2014')+'</strong></div>';}
+var phone=r.phone?'<a class="bop-analog-info-phone" href="tel:'+esc(String(r.phone).replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a>':'';
+var directions=r.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address)+'" target="_blank" rel="noopener">GET DIRECTIONS \\u2197</a>':'';
+copy.innerHTML='<h3 class="bop-analog-info-name">'+esc(r.name)+'</h3>'+
+'<div class="bop-analog-info-scores">'+chip('BJS',r.bjsPizzaScore)+chip('ONE BITE',r.oneBiteScore)+chip('DAVE',r.oneBiteDaveScore)+'</div>'+
+(r.address?'<div class="bop-analog-info-address">'+esc(r.address)+'</div>':'')+phone+
+'<div class="bop-analog-info-actions">'+directions+'</div>';
+backdrop.classList.add('open');
+};
+function close(){var b=document.getElementById('bopAnalogInfoBackdrop');if(b)b.classList.remove('open');}
+document.addEventListener('click',function(e){
+if(e.target&&e.target.id==='bopAnalogInfoClose')close();
+if(e.target&&e.target.id==='bopAnalogInfoBackdrop')close();
+});
 })();</script>
 
 </body></html>
