@@ -42597,6 +42597,53 @@ new MutationObserver(sync).observe(document.documentElement,{attributes:true,att
 new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
 setInterval(sync,500);
 })();</script>
+<style id="bop-worldwide-tiles-restore-v414">
+#bopWorldwideLanding .bop-world-tile.bop-world-all-cities{border-color:#7CFC00;background:#070707;color:#7CFC00;text-shadow:0 0 5px rgba(124,252,0,.45)}
+#bopWorldwideLanding .bop-world-all-cities .bop-world-lime-globe{display:block;position:relative;width:39px;height:39px;margin:0 auto 9px;border:3px solid #7CFC00;border-radius:50%;box-sizing:border-box;box-shadow:0 0 8px rgba(124,252,0,.6)}
+#bopWorldwideLanding .bop-world-all-cities .bop-world-lime-globe:before{content:'';position:absolute;left:7px;right:7px;top:-3px;bottom:-3px;border:2px solid #7CFC00;border-radius:50%}
+#bopWorldwideLanding .bop-world-all-cities .bop-world-lime-globe:after{content:'';position:absolute;left:2px;right:2px;top:16px;border-top:2px solid #7CFC00;box-shadow:0 -9px 0 -1px #7CFC00,0 9px 0 -1px #7CFC00}
+#bopWorldwideLanding .bop-world-tile.bop-world-live{border-color:#F59E0B;background:#070707;color:#E4002B;text-shadow:0 0 6px rgba(228,0,43,.5);animation:bopWorldLivePulse 2.6s ease-in-out infinite}
+#bopWorldwideLanding .bop-world-live .bop-world-live-dot{display:block;width:14px;height:14px;margin:0 auto 10px;border-radius:50%;background:#E4002B;box-shadow:0 0 10px rgba(228,0,43,.9)}
+@keyframes bopWorldLivePulse{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.35)}50%{box-shadow:0 0 16px rgba(245,158,11,.7)}}
+</style>
+<script id="bop-worldwide-tiles-restore-v414-script">(function(){
+var RESTAURANT_ICON='<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4v13M8 4v9c0 3 2 5 5 5s5-2 5-5V4M13 22v14"/><path d="M33 4c-4 0-6 5-6 10s2 8 6 8v14M33 4v18"/></g></svg>';
+function grid(){return document.querySelector('#bopWorldwideLanding .bop-world-tiles');}
+function mk(cls,key,label,inner){
+var b=document.createElement('button');b.type='button';b.className='bop-world-tile'+(cls?' '+cls:'');
+if(key)b.dataset.worldwideKey=key;
+b.setAttribute('aria-label',label);
+b.innerHTML=inner;
+return b;
+}
+function ensure(){
+var g=grid();if(!g)return;
+var restaurants=g.querySelector('[data-worldwide-key="restaurants"]');
+if(!restaurants){restaurants=mk('','restaurants','Restaurants — Best of Period',RESTAURANT_ICON+'RESTAURANTS');g.insertBefore(restaurants,g.firstChild);}
+else if(g.firstElementChild!==restaurants)g.insertBefore(restaurants,g.firstChild);
+var allBjs=g.querySelector('.bop-world-all-bjs');
+if(!allBjs){allBjs=mk('bop-world-all-bjs','','Open All BJS Picks','<span class="bop-world-red-globe" aria-hidden="true"></span>ALL BJS<br>PICKS');}
+if(restaurants.nextElementSibling!==allBjs)restaurants.insertAdjacentElement('afterend',allBjs);
+var allCities=g.querySelector('.bop-world-all-cities');
+if(!allCities){allCities=mk('bop-world-all-cities','','Open Best Of All Cities','<span class="bop-world-lime-globe" aria-hidden="true"></span>BEST OF<br>ALL CITIES');}
+if(allBjs.nextElementSibling!==allCities)allBjs.insertAdjacentElement('afterend',allCities);
+var live=g.querySelector('.bop-world-live');
+if(!live){live=mk('bop-world-live','','Go Live','<span class="bop-world-live-dot" aria-hidden="true"></span>LIVE!');}
+if(allCities.nextElementSibling!==live)allCities.insertAdjacentElement('afterend',live);
+}
+document.addEventListener('click',function(e){
+var t=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-cities');
+if(t){e.preventDefault();e.stopImmediatePropagation();
+var w=document.getElementById('bopWorldwideLanding');if(w)w.classList.remove('open');document.body.style.overflow='';
+if(typeof window.openBopBestOfBest==='function')window.openBopBestOfBest();return;}
+var l=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-live');
+if(l){e.preventDefault();e.stopImmediatePropagation();
+var w2=document.getElementById('bopWorldwideLanding');if(w2)w2.classList.remove('open');document.body.style.overflow='';
+if(typeof window.bopOpenGoLivePage==='function')window.bopOpenGoLivePage();return;}
+},true);
+setInterval(ensure,400);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
+})();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
 var lugerLocations=[
