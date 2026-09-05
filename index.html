@@ -34692,10 +34692,6 @@ fresh.forEach(function(m){BO_MOVIES_CURRENT.push(m);});
         <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#000"/></svg>
         <span>REALTOR<span class="bo-golive-tile-sub">OPEN HOUSE</span></span>
       </button>
-      <button class="bop-golive-tile" id="bopGoLiveHomesForSale" type="button" aria-label="Homes For Sale By State">
-        <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#000"/><rect x="30" y="52" width="10" height="10" fill="#000"/><rect x="60" y="52" width="10" height="10" fill="#000"/></svg>
-        <span>HOMES FOR SALE<span class="bo-golive-tile-sub">BY STATE</span></span>
-      </button>
       <button class="bop-golive-tile" id="bopGoLiveFoodTruck" type="button" aria-label="Food Truck">
         <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/><circle cx="25" cy="66" r="9" fill="#000"/><circle cx="76" cy="66" r="9" fill="#000"/></svg>
         <span>FOOD TRUCK</span>
@@ -34758,6 +34754,7 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
     <div id="bopRealtorOverlayMapEl"></div>
     <button type="button" class="bo-rt-checkin-cta" id="bopRtCheckinCta"><span>Hosting an open house?</span><span class="bo-rt-cta-line2">Click here to go live</span></button>
     <p class="bo-rt-note">Price, beds/baths, and date filters are coming soon — for now, add those details in the notes when you go <span class="bo-live-glow-word">live!</span></p>
+    <button type="button" class="bo-rt-checkin-cta" id="bopHomesForSaleEntry" style="margin-top:14px;"><span>HOMES FOR SALE</span><span class="bo-rt-cta-line2">BY STATE</span></button>
   </div>
 </div>
 <script id="bop-realtor-map-script-v499">(function(){
@@ -42535,12 +42532,14 @@ render();
 function close_(){
 var o=document.getElementById('bopHomesForSaleOverlay');if(!o)return;
 o.classList.remove('open');document.body.style.overflow='';
+var rt=document.getElementById('bopRealtorOverlay');
+if(rt)rt.classList.add('open');
 }
 window.boOpenHomesForSale=open_;
 function install(){
-var tile=document.getElementById('bopGoLiveHomesForSale');
-if(tile&&!tile.dataset.wired){tile.dataset.wired='1';tile.addEventListener('click',function(){
-var golive=document.getElementById('bopGoLiveOverlay');if(golive)golive.classList.remove('open');
+var entry=document.getElementById('bopHomesForSaleEntry');
+if(entry&&!entry.dataset.wired){entry.dataset.wired='1';entry.addEventListener('click',function(){
+var rt=document.getElementById('bopRealtorOverlay');if(rt)rt.classList.remove('open');
 open_();
 });}
 var back=document.getElementById('bopHomesForSaleBack');
