@@ -14328,6 +14328,10 @@ london: {
 title: 'Best Of',
 sub: ""
 },
+hotelslosangeles: {
+title: 'BEST L.A. HOTELS',
+sub: ""
+},
 bjspicks: {
 title: '<svg viewBox="0 0 40 40" width="52" height="52" style="vertical-align:-11px;margin-right:9px;" aria-label="BJS"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"/><text x="20" y="24" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="12" fill="#F59E0B">BJS</text></svg><span style="color:#F59E0B;">PICKS</span>',
 sub: "\u2b50 Possible underrated gems \u2014 huge reputations, passionate regulars, and ratings that don't always tell the whole story."
@@ -23401,10 +23405,11 @@ idaho:{name:"Idaho",areas:"Boise · Sun Valley · Coeur d’Alene · Teton Valle
 };
 var overlay=document.getElementById("bopUnifiedHotels"),notice=document.getElementById("bopHotelNotice"),savedY=0,currentKey="bestof";
 function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]+/g,"");}
-function resolve(btn){var k=btn&&btn.dataset&&btn.dataset.hotelCity;if(hotels[k])return k;try{k=new URLSearchParams(location.search).get("city");if(hotels[k])return k;}catch(e){}var title=document.querySelector(".bo-main-hub-city-name");var wanted=norm(title&&title.textContent);return Object.keys(hotels).find(function(x){return norm(hotels[x].name)===wanted;})||"bestof";}
+function parentOf(k){if(!k)return k;if(hotels[k])return k;try{var c=(typeof BO_CITY_CONFIG==="object"&&BO_CITY_CONFIG&&BO_CITY_CONFIG[k])||null;if(c&&c.parent&&hotels[c.parent])return c.parent;}catch(e){}if(/^la/.test(k)&&hotels.losangeles)return "losangeles";if(/^sd/.test(k)&&hotels.sandiego)return "sandiego";return k;}
+function resolve(btn){var k=parentOf(btn&&btn.dataset&&btn.dataset.hotelCity);if(hotels[k])return k;try{k=parentOf(new URLSearchParams(location.search).get("city"));if(hotels[k])return k;}catch(e){}var title=document.querySelector(".bo-main-hub-city-name");var wanted=norm(title&&title.textContent);return Object.keys(hotels).find(function(x){return norm(hotels[x].name)===wanted;})||"bestof";}
 function mapLink(name,city){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(name+" "+city);}
 function render(key){var d=hotels[key]||hotels.bestof;currentKey=key;overlay.querySelector(".bop-hotel-city").textContent=d.name;overlay.querySelector(".bop-hotel-coverage").textContent="COVERAGE: "+d.areas+" · "+d.count+" CURRENT PICKS";overlay.querySelector(".bop-hotel-list").innerHTML=d.n.slice(0,d.count).map(function(v,i){var p=v.split("|");return '<article class="bop-hotel-card"><div class="bop-hotel-rank">'+String(i+1).padStart(2,"0")+'</div><div><h3 class="bop-hotel-name">'+p[0]+'</h3><div class="bop-hotel-area">'+p[1]+'</div></div><a class="bop-hotel-link" href="'+mapLink(p[0],d.name)+'" target="_blank" rel="noopener" aria-label="View '+p[0]+'"><span class="bop-hotel-arrow" aria-hidden="true"></span></a></article>';}).join("");notice.querySelector("h3").textContent="Best Of "+d.name+".";notice.querySelector("p").textContent=d.name+" is currently offering Best Of, Period recommendations selected for exceptional quality. More hotel categories are coming soon.";}
-function openHotels(btn){savedY=window.scrollY;render(resolve(btn));document.documentElement.classList.add("bop-hotels-open");document.body.style.overflow="hidden";overlay.scrollTop=0;notice.classList.add("open");}
+function openHotels(btn){var key=resolve(btn);if(key==="losangeles"&&typeof boRenderCategory==="function"&&typeof boCategoryData==="object"&&Array.isArray(boCategoryData.hotelslosangeles)){try{boCityContext="losangeles";}catch(e){}boRenderCategory("hotelslosangeles");return;}savedY=window.scrollY;render(key);document.documentElement.classList.add("bop-hotels-open");document.body.style.overflow="hidden";overlay.scrollTop=0;notice.classList.add("open");}
 function closeHotels(){notice.classList.remove("open");document.documentElement.classList.remove("bop-hotels-open");document.body.style.overflow="";requestAnimationFrame(function(){window.scrollTo(0,savedY);});}
 document.addEventListener("click",function(e){var btn=e.target.closest&&e.target.closest("#boBestHotelsPreviewBtn");if(btn){e.preventDefault();e.stopImmediatePropagation();openHotels(btn);}},true);
 overlay.querySelector(".bop-hotel-close").addEventListener("click",closeHotels);notice.querySelector(".bop-hotel-note-close").addEventListener("click",function(){notice.classList.remove("open");});notice.querySelector(".bop-hotel-note-continue").addEventListener("click",function(){notice.classList.remove("open");});
@@ -28886,8 +28891,8 @@ var ROWS=[
 {city:'bronx',name:"Enzo's of Williamsbridge",rating:4.7,reviews:365,price:3,genre:'Italian',address:'1998 Williamsbridge Rd, Bronx, NY 10461',source:'BJS aggregate: OpenTable 4.9 (329) + Tripadvisor 4.4 (36)',why:'One of Morris Park’s strongest current Italian dining rooms'},
 {city:'bronx',name:"Roberto's Restaurant",rating:4.5,reviews:1628,price:4,genre:'Italian',address:'603 Crescent Ave, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.8 (1,344) + Tripadvisor 4.2 (284)',why:'Arthur Avenue destination cooking rooted in Salerno'},
 {city:'bronx',name:"Emilia's Restaurant",rating:4.5,reviews:747,price:3,genre:'Italian',address:'2331 Arthur Ave, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.7 (460) + Tripadvisor 4.3 (287)',why:'A warm Arthur Avenue classic with sustained diner support'},
-{city:'bronx',name:"Mario's Restaurant — Arthur Avenue",rating:4.8,reviews:1196,price:3,genre:'Neapolitan Italian',address:'2342 Arthur Ave, Bronx, NY 10458',source:'OpenTable verified diners: 4.8 (1,196)',why:'Five generations of Neapolitan cooking and a James Beard America’s Classics honor'},
-{city:'bronx',name:"Jake's Steakhouse",rating:4.7,reviews:1733,price:4,genre:'Steakhouse',address:'6031 Broadway, Bronx, NY 10471',source:'OpenTable verified diners: 4.7 (1,733)',why:'Riverdale’s long-running neighborhood steakhouse'},
+{city:'bronx',name:"Mario's Restaurant — Arthur Avenue",rating:4.4,reviews:1460,price:3,genre:'Neapolitan Italian',address:'2342 Arthur Ave, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.8 (1,196) + Tripadvisor 3.9 (264)',why:'Five generations of Neapolitan cooking and a James Beard America’s Classics honor'},
+{city:'bronx',name:"Jake's Steakhouse",rating:4.6,reviews:1866,price:4,genre:'Steakhouse',address:'6031 Broadway, Bronx, NY 10471',source:'BJS aggregate: OpenTable 4.7 (1,733) + Tripadvisor 4.5 (133)',why:'Riverdale’s long-running neighborhood steakhouse'},
 {city:'bronx',name:"Antonio's Trattoria",rating:4.6,reviews:252,price:2,genre:'Italian',address:'2370 Belmont Ave, Bronx, NY 10458',source:'Tripadvisor public rating: 4.6 (252)',why:'Arthur Avenue comfort cooking built around fresh pasta'},
 {city:'bronx',name:'Trattoria Zero Otto Nove',rating:4.4,reviews:1445,price:3,genre:'Italian and Pizza',address:'2357 Arthur Ave, Bronx, NY 10458',source:'BJS aggregate: public 4.5 (1,000) + Tripadvisor 4.3 (445)',why:'Inventive Sorrento-style pizza and pasta from a wood-burning oven'},
 {city:'bronx',name:'Hudson Garden Grill',rating:4.4,reviews:4132,price:4,genre:'New American',address:'2900 Southern Blvd, Bronx, NY 10458',source:'BJS aggregate: OpenTable 4.5 (3,942) + Tripadvisor 4.3 (190)',why:'Seasonal Hudson Valley cooking inside the New York Botanical Garden'},
@@ -28896,13 +28901,13 @@ var ROWS=[
 {city:'queens',name:'Meju',rating:4.9,reviews:86,price:4,genre:'Korean Tasting Menu',address:'5-28 49th Ave, Long Island City, NY 11101',source:'BJS aggregate: Google 4.8 (86) + Resy 5.0 + Tripadvisor 5.0 (small sample)',why:'An eight-seat Michelin-starred Korean fermentation counter from Chef Hooni Kim'},
 {city:'queens',name:'Taverna Kyclades',rating:4.6,reviews:6035,price:2,genre:'Greek Seafood',address:'36-01 Ditmars Blvd, Astoria, NY 11105',source:'Current public rating: 4.6 (6,035)',why:'Astoria seafood institution with exceptional review depth'},
 {city:'queens',name:'Il Bambino',rating:4.6,reviews:92,price:2,genre:'Italian Small Plates',address:'34-08 31st Ave, Astoria, NY 11106',source:'Tripadvisor public rating: 4.6 (92)',why:'Astoria panini and small plates with a devoted neighborhood following'},
-{city:'queens',name:'Sushi on Me — Jackson Heights',rating:4.9,reviews:695,price:4,genre:'Omakase Sushi',address:'71-26 Roosevelt Ave, Jackson Heights, NY 11372',source:'OpenTable verified diners: 4.9 (695)',why:'A one-hour omakase experience with serious sushi and playful speakeasy energy'},
+{city:'queens',name:'Sushi on Me — Jackson Heights',rating:4.9,reviews:1239,price:4,genre:'Omakase Sushi',address:'71-26 Roosevelt Ave, Jackson Heights, NY 11372',source:'BJS aggregate: OpenTable 4.9 (695) + Google 4.8 (544)',why:'A one-hour omakase experience with serious sushi and playful speakeasy energy'},
 {city:'queens',name:'Soothr LIC',rating:4.7,reviews:184,price:3,genre:'Thai',address:'Long Island City, Queens, NY',source:'OpenTable verified diners: 4.7 (184)',why:'Bangkok Chinatown-inspired Thai cooking in an immersive Long Island City room'},
 {city:'queens',name:'Zaab Zaab — Queens',rating:4.5,reviews:28,price:2,genre:'Isaan Thai',address:'Elmhurst, Queens, NY',source:'OpenTable verified diners: 4.5 (28); Michelin Bib Gourmand',why:'Bold Isaan cooking recognized by Michelin and the James Beard Foundation'},
 {city:'queens',name:'Christos Steak House',rating:4.8,reviews:1201,price:4,genre:'Steakhouse',address:'41-08 23rd Ave, Astoria, NY 11105',source:'OpenTable verified diners: 4.8 (1,201)',why:'Astoria steakhouse combining prime cuts with Greek hospitality'},
 {city:'queens',name:'Gyu-Kaku Japanese BBQ — Flushing',rating:4.8,reviews:943,price:3,genre:'Japanese BBQ',address:'Flushing, Queens, NY',source:'OpenTable verified diners: 4.8 (943)',why:'Interactive Japanese barbecue backed by substantial verified-diner volume'},
-{city:'queens',name:"Vetro by Russo's on the Bay",rating:4.9,reviews:1705,price:4,genre:'Italian',address:'164-49 Cross Bay Blvd, Howard Beach, NY 11414',source:'OpenTable verified diners: 4.9 (1,705)',why:'Polished Howard Beach Italian dining with one of Queens’ deepest high-score records'},
-{city:'queens',name:'Papazzio Italian Restaurant',rating:5.0,reviews:423,price:3,genre:'Italian',address:'39-38 Bell Blvd, Bayside, NY 11361',source:'OpenTable verified diners: 5.0 (423)',why:'A Bayside neighborhood favorite with an exceptional verified-diner record'}
+{city:'queens',name:"Vetro by Russo's on the Bay",rating:4.8,reviews:1857,price:4,genre:'Italian',address:'164-49 Cross Bay Blvd, Howard Beach, NY 11414',source:'BJS aggregate: OpenTable 4.9 (1,705) + Tripadvisor 4.6 (152)',why:'Polished Howard Beach Italian dining with one of Queens’ deepest high-score records'},
+{city:'queens',name:'Papazzio Italian Restaurant',rating:4.6,reviews:483,price:3,genre:'Italian',address:'39-38 Bell Blvd, Bayside, NY 11361',source:'BJS aggregate: OpenTable 5.0 (423) + Tripadvisor 4.2 (60)',why:'A Bayside neighborhood favorite with an exceptional verified-diner record'}
 ];
 function key(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
 function apply(){
@@ -29345,7 +29350,7 @@ function distribute(){
 if(typeof boCategoryData!=='object'||!boCategoryData)return false;
 var cats=Object.keys(boCategoryData),pools={};Object.keys(AREAS).forEach(function(k){pools[k]=new Map()});
 cats.forEach(function(cat){
-var list=boCategoryData[cat];if(!Array.isArray(list)||AREAS[cat])return;
+var list=boCategoryData[cat];if(!Array.isArray(list)||AREAS[cat]||cat==='hotelslosangeles')return;
 var additions=[];
 list.forEach(function(r){if(!r||!r.name||(r.city!=='losangeles'&&r.city!=='sandiego'))return;var area=classify(r,r.city);if(!area)return;var clone=Object.assign({},r,{city:area,parentCity:r.city,areaPage:area});if(r.bjsPickCity===r.city)clone.bjsPickCity=area;var exists=list.some(function(x){return x&&x.city===area&&same(x.name,r.name)&&same(x.address,r.address)});if(!exists)additions.push(clone);var id=String(r.name).toLowerCase()+'|'+String(r.address||'').toLowerCase(),old=pools[area].get(id);if(!old||parseFloat(r.rating)>parseFloat(old.rating))pools[area].set(id,clone)});
 if(additions.length)Array.prototype.push.apply(list,additions);
@@ -32891,6 +32896,14 @@ note:"Pintxo-style shareable plates \u2014 wood-fired pulpo (octopus), croquetas
 url:"https://ctzn-sd.com/",address:"343 S Hwy 101 Ste 110, Solana Beach, CA 92075",phone:"",hue:"25, 40%, 26%",price:3,openedDate:"2026"}}
 ];
 SD_NEWSPOTS_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_MARKET_ROWS=[
+{cats:['newamerican'],r:{name:"Market Restaurant + Bar",city:"sddelmar",rating:"4.7 / 5",reviews:339,ratingSource:"Tripadvisor",
+ratingNote:"Tripadvisor 4.7 (339 reviews). Recognized by the Michelin Guide, Wine Spectator Award of Excellence. Founded 2006 by three-time James Beard semifinalist chef Carl Schroeder; sold to new owners (the Brust family) in September 2025, who kept the entire kitchen team \u2014 including chef de cuisine John Thompson, on board since day one \u2014 fully intact.",
+why:"A Del Mar institution since 2006 on Via De La Valle \u2014 seasonal, locally sourced fine dining that helped define San Diego's modern restaurant scene",
+note:"Daily-evolving seasonal menu built around local farms; internationally influenced dishes alongside California technique. Praised over the years by Bon App\u00e9tit, the New York Times, and San Diego Magazine. Dark, elegant, unpretentious dining room on the Rancho Santa Fe corridor.",
+url:"https://marketdelmar.com/",address:"3702 Via De La Valle, Del Mar, CA 92014",phone:"",hue:"25, 40%, 26%",price:4,openedDate:"2006"}}
+];
+SD_MARKET_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
 var SD_ENCINITAS2_ROWS=[
 {cats:['steak'],r:{name:"Pacific Coast Grill",city:"sdencinitas",rating:"4.7 / 5",reviews:2202,ratingSource:"BJS aggregate",
 ratingNote:"Google 4.6 and Restaurant Guru 4.9 (21,662 reviews) averaged for a 4.7 BJS aggregate.",
@@ -40141,7 +40154,7 @@ Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if
 arr.forEach(function(r){if(!r||!r.name||!r.city)return;
 Object.keys(BROAD_TO_GRANULAR).forEach(function(broad){if(BROAD_TO_GRANULAR[broad][r.city]){granularNames[broad][norm(r.name)]=1;}});
 });});
-Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr)||cat==='hotelslosangeles')return;
 var out=arr.filter(function(r){
 if(!r||!r.name||!r.city)return true;
 if(BROAD_TO_GRANULAR[r.city]&&granularNames[r.city][norm(r.name)])return false;
@@ -41531,6 +41544,7 @@ if(typeof boCategoryData!=='object'||!boCategoryData)return;
 var dm=[
 {name:"Steak 48",rating:"4.9 / 5",price:4,address:"12995 El Camino Real, Del Mar, CA 92130"},
 {name:"Ruth's Chris Steak House — Del Mar",rating:"4.8 / 5",price:4,address:"11582 El Camino Real, San Diego, CA 92130",phone:"(858) 755-1454",url:"https://ruthschris.com/del-mar"},
+{name:"Market Restaurant + Bar",rating:"4.7 / 5",price:4,address:"3702 Via De La Valle, Del Mar, CA 92014",url:"https://marketdelmar.com/",ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (339 reviews). Recognized by the Michelin Guide, Wine Spectator Award of Excellence. Founded 2006 by three-time James Beard semifinalist chef Carl Schroeder; kitchen team kept fully intact under 2025 ownership change."},
 {name:"Rare Society — Solana Beach",rating:"4.7 / 5",price:4,address:"330 S Cedros Ave Ste 104, Solana Beach, CA 92075"},
 {name:"Addison",rating:"4.5 / 5",price:4,address:"5200 Grand Del Mar Way, San Diego, CA 92130"},
 {name:"Samurai Japanese Restaurant",rating:"4.4 / 5",price:3,address:"979 Lomas Santa Fe Dr, Solana Beach, CA 92075",phone:"+1 858-481-0032"},
@@ -41768,7 +41782,7 @@ boCategoryData.bjspicksnewdelhi=build(ndl,'newdelhi');
 var nyc=[
 {name:"Le Bernardin",rating:"4.6 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.6 (3,701 reviews). 3 Michelin stars, chef Eric Ripert. New York's benchmark seafood temple since 1986, more James Beard Awards than any other NYC restaurant.",openedDate:"1986",address:"155 W 51st St, New York, NY 10019"},
 {name:"Eleven Madison Park",rating:"4.4 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.4 (2,782 reviews). 3 Michelin stars, chef Daniel Humm. World's 50 Best #1 (2017), now an entirely plant-based tasting menu in an art deco Flatiron space overlooking Madison Square Park.",openedDate:"1998",address:"11 Madison Ave, New York, NY 10010"},
-{name:"Carbone",rating:"4.0 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.0 (527 reviews). Red-sauce Italian-American theater in Greenwich Village \u2014 spicy rigatoni vodka is the signature dish; famously hard reservation.",address:"181 Thompson St, New York, NY 10012"}
+{name:"Carbone",rating:"4.4 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.0 (527 reviews), Google 4.3 (2,122 reviews), and Restaurant Guru 4.9 (7,006 reviews) averaged for a 4.4 BJS aggregate. Red-sauce Italian-American theater in Greenwich Village \u2014 spicy rigatoni vodka is the signature dish; famously hard reservation.",address:"181 Thompson St, New York, NY 10012"}
 ];
 boCategoryData.bjspicksnewyork=build(nyc,'newyork');
 var nhb=[
@@ -41852,6 +41866,19 @@ setInterval(apply,500);
 .bobb-pop-x{position:absolute;top:6px;right:8px;background:none;border:0;color:#E4002B;font-size:16px;font-weight:900;cursor:pointer;line-height:1}
 .bobb-pop b{color:#F59E0B}
 .bobb-pop-src{display:block;margin-top:5px;color:#9a9a9a;font-size:.72rem}
+.bobb-card{padding:0!important;overflow:hidden;border-left:3px solid #f59e0b;background:#0b0b0b}
+.bobb-card-media{width:100%;height:120px;background:#151515;display:flex;align-items:center;justify-content:center}
+.bobb-card-media img{width:100%;height:100%;object-fit:cover;display:block}
+.bobb-card-ph{color:#f59e0b;font-size:26px;opacity:.7}
+.bobb-card-body{padding:10px 12px 12px}
+.bobb-card-name{font-weight:700;font-size:15px;color:#fff;margin-bottom:3px;padding-right:22px}
+.bobb-card-meta{display:flex;gap:10px;align-items:center;font-size:12px;margin-bottom:6px}
+.bobb-card-rating{color:#f59e0b;font-weight:700}
+.bobb-card-price{color:#bbb;letter-spacing:1px}
+.bobb-card-stars{color:#f59e0b}
+.bobb-card-desc{font-size:12px;line-height:1.45;color:#ddd;margin-bottom:6px}
+.bobb-card-line{font-size:11.5px;color:#aaa;line-height:1.5}
+.bobb-card-line a{color:#f59e0b;text-decoration:none}
 </style>
 <div id="bopBestOfBestOverlay" aria-hidden="true">
 <button type="button" class="bobb-close" id="bopBestOfBestClose">←<br>Back</button>
@@ -41893,6 +41920,18 @@ return vb-va;
 }
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function price(p){p=parseInt(p,10);return p>0?'$'.repeat(Math.min(4,p)):'';}
+var SRC_RE=/(google|yelp|tripadvisor|trip\.com|opentable|restaurant guru|restaurantji|wanderlog|sirved|zagat|thefork|uber eats|doordash|facebook|la liste|aggregate|averaged|reviews?\b|\brated\b|surfaced this pass|provisional|placeholder|\d(?:\.\d)?\s*\/\s*5|\(\s*[\d,]+\s*(?:reviews?|votes?)\s*\))/i;
+function cleanDesc(r){
+var parts=[];
+if(r.why)parts.push(String(r.why));
+if(r.note)parts.push(String(r.note));
+if(!parts.length&&r.ratingNote)parts.push(String(r.ratingNote));
+var text=parts.join(' ');
+var sentences=text.split(/(?<=[.!?])\s+/).filter(function(s){return s&&!SRC_RE.test(s);});
+var out=sentences.join(' ').replace(/\s+/g,' ').trim();
+if(out&&!/[.!?]$/.test(out))out+='.';
+return out;
+}
 var openPop=null;
 function build(){
 if(typeof BO_CITY_CONFIG!=='object'||!BO_CITY_CONFIG||typeof boCategoryData!=='object')return;
@@ -41913,15 +41952,19 @@ if(!top.length){html+='<div class="bobb-empty"></div>';}
 top.forEach(function(r,i){
 var id=c.key+'-'+i;
 html+='<div class="bobb-row" data-id="'+id+'"><span class="bobb-rank">'+(i+1)+'.</span><span class="bobb-name">'+esc(r.name)+'</span><span class="bobb-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span><span class="bobb-price">'+price(r.price)+'</span></div>';
-html+='<div class="bobb-pop" id="bobbpop-'+id+'" style="display:none"><button type="button" class="bobb-pop-x" aria-label="Close">×</button>';
-var why=r.why||'',note=r.note||'',addr=r.address||'';
-if(why)html+='<div><b>'+esc(why)+'</b></div>';
-if(note)html+='<div>'+esc(note)+'</div>';
-if(addr)html+='<div style="margin-top:4px;color:#bbb">'+esc(addr)+'</div>';
-var src=r.ratingSource?('Rating: '+esc(r.ratingSource)):'';
-var rn=r.ratingNote?esc(r.ratingNote):'';
-if(src||rn)html+='<span class="bobb-pop-src">'+src+(src&&rn?' — ':'')+rn+'</span>';
-html+='</div>';
+html+='<div class="bobb-pop bobb-card" id="bobbpop-'+id+'" style="display:none"><button type="button" class="bobb-pop-x" aria-label="Close">×</button>';
+var img=r.image||'';
+html+='<div class="bobb-card-media">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" onerror="this.parentElement.innerHTML=\'<span class=&quot;bobb-card-ph&quot;>✦</span>\'">':'<span class="bobb-card-ph">✦</span>')+'</div>';
+html+='<div class="bobb-card-body">';
+html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
+var stars=parseInt(r.michelinStars,10)||0;
+html+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span>'+(price(r.price)?'<span class="bobb-card-price">'+price(r.price)+'</span>':'')+(stars?'<span class="bobb-card-stars">'+'\u2605'.repeat(stars)+' Michelin</span>':'')+'</div>';
+var desc=cleanDesc(r);
+if(desc)html+='<div class="bobb-card-desc">'+esc(desc)+'</div>';
+if(r.address)html+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
+if(r.phone)html+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>';
+if(r.url)html+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
+html+='</div></div>';
 });
 html+='</div>';
 });
@@ -41955,6 +41998,31 @@ window.closeBopBestOfBest=close;
 .bo-all-cities-globe-launch:focus-visible{outline:1px solid #7CFC00;outline-offset:5px}
 .bo-all-cities-globe-label{color:#7CFC00!important;text-shadow:0 0 7px rgba(124,252,0,.48);white-space:nowrap;line-height:1.25}
 </style>
+<script id="bop-la-hotels-cards-v375">(function(){
+var H=[
+{name:"The Beverly Hills Hotel",rating:"4.8 / 5",reviews:2389,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (1,556 reviews) and Hotels.com 9.8/10 (833 reviews) averaged for a 4.8 BJS aggregate.",why:"The Pink Palace \u2014 the Sunset Boulevard original that has defined Hollywood glamour since 1912",note:"Dorchester Collection. Bungalows, the Polo Lounge, the banana-leaf wallpaper, the pool where deals still get done. Beverly Hills' true north.",address:"9641 Sunset Blvd, Beverly Hills, CA 90210",phone:"(310) 276-2251",url:"https://www.dorchestercollection.com/los-angeles/the-beverly-hills-hotel",openedDate:"1912"},
+{name:"L'Ermitage Beverly Hills",rating:"4.8 / 5",reviews:2777,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (1,776 reviews) and Hotels.com 9.6/10 (1,001 reviews) averaged for a 4.8 BJS aggregate.",why:"The longest-running all-suite Forbes Five-Star hotel in the world, tucked on a residential Beverly Hills street",note:"116 suites, a rooftop pool over the city, Michelin Two Keys and AAA Five Diamonds. Quiet, understated, the insider's Beverly Hills stay.",address:"9291 Burton Way, Beverly Hills, CA 90210",phone:"(310) 278-3344",url:"https://www.lermitagebeverlyhills.com/",openedDate:"1975"},
+{name:"Hotel Bel-Air",rating:"4.8 / 5",reviews:1328,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (892 reviews) and Hotels.com 9.8/10 (436 reviews) averaged for a 4.8 BJS aggregate.",why:"Twelve acres of canyon gardens, swans on the lake, and the most private address in Los Angeles",note:"Dorchester Collection. A Spanish-mission hideaway in Stone Canyon since 1946 \u2014 fireplaces, a jazz bar, a spa, and the kind of discretion the industry pays for.",address:"701 Stone Canyon Rd, Los Angeles, CA 90077",phone:"(310) 472-1211",url:"https://www.dorchestercollection.com/los-angeles/hotel-bel-air",openedDate:"1946"},
+{name:"The Peninsula Beverly Hills",rating:"4.8 / 5",reviews:1809,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (1,168 reviews) and Hotels.com 9.6/10 (641 reviews) averaged for a 4.8 BJS aggregate.",why:"The polished, walkable Beverly Hills grand hotel at the edge of the Golden Triangle",note:"Rooftop garden pool and cabanas, the Belvedere, a house fleet of Rolls-Royces, and service that has stayed at the very top of the city since 1991.",address:"9882 S Santa Monica Blvd, Beverly Hills, CA 90212",phone:"(310) 551-2888",url:"https://www.peninsula.com/en/beverly-hills",openedDate:"1991"},
+{name:"Fairmont Century Plaza",rating:"4.8 / 5",reviews:1619,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.9 (950 reviews, #1 of 381 Los Angeles hotels) and Hotels.com 9.4/10 (669 reviews) averaged for a 4.8 BJS aggregate.",why:"The reborn Century City landmark \u2014 the current #1 hotel in Los Angeles by traveler ranking",note:"A 2021 top-to-bottom rebuild of the 1966 crescent tower. Rooftop pool, a 14,000-square-foot spa, Lumi\u00e8re brasserie, and the Fairmont Gold floors that guests rave about.",address:"2025 Avenue of the Stars, Los Angeles, CA 90067",phone:"(310) 424-3030",url:"https://www.fairmont.com/century-plaza/",openedDate:"2021"},
+{name:"The Maybourne Beverly Hills",rating:"4.8 / 5",reviews:600,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.8 (275 reviews) and Hotels.com 9.6/10 (325 reviews) averaged for a 4.8 BJS aggregate.",why:"Claridge's and The Connaught's owners brought their London polish to Canon Drive",note:"Rooftop pool and Dante bar, a whisky-and-cigar room, Terrace dining under the trees. The newest of the Beverly Hills grande dames and already among the best.",address:"225 N Canon Dr, Beverly Hills, CA 90210",phone:"(310) 860-7800",url:"https://www.maybournebeverlyhills.com/",openedDate:"2021"},
+{name:"The London West Hollywood at Beverly Hills",rating:"4.7 / 5",reviews:3888,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.6 (2,883 reviews) and Hotels.com 9.6/10 (1,005 reviews) averaged for a 4.7 BJS aggregate.",why:"All-suite luxury on the Sunset Strip border with the deepest review record of any hotel on this list",note:"Oversized suites with terraces, a rooftop pool with a Hollywood Hills view, and a location that puts Beverly Hills and West Hollywood both on foot.",address:"1020 N San Vicente Blvd, West Hollywood, CA 90069",phone:"(310) 854-1111",url:"https://www.thelondonwesthollywood.com/"},
+{name:"Four Seasons Hotel Los Angeles at Beverly Hills",rating:"4.7 / 5",reviews:2803,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.6 (1,950 reviews) and Hotels.com 9.6/10 (853 reviews) averaged for a 4.7 BJS aggregate.",why:"The industry's press-junket hotel, with a garden pool that feels a world away from Doheny Drive",note:"Four Seasons service, Culina for Italian, a fourth-floor pool deck under the palms. The reliable choice for anyone who wants Beverly Hills without the fuss.",address:"300 S Doheny Dr, Los Angeles, CA 90048",phone:"(310) 273-2222",url:"https://www.fourseasons.com/losangeles/"},
+{name:"The Sun Rose West Hollywood",rating:"4.7 / 5",reviews:1400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (573 reviews) and Hotels.com 9.4/10 (827 reviews) averaged for a 4.7 BJS aggregate.",why:"West Hollywood's relaxed, stylish newcomer that guests keep calling a start-to-finish five-star experience",note:"Generous rooms, a lush courtyard, and a lower-key energy than the Strip's scene hotels. The current sleeper pick on the Westside.",address:"8490 Sunset Blvd, West Hollywood, CA 90069",phone:"",url:"",openedDate:"2024"},
+{name:"Beverly Wilshire, A Four Seasons Hotel",rating:"4.6 / 5",reviews:3812,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (2,810 reviews) and Hotels.com 9.4/10 (1,002 reviews) averaged for a 4.6 BJS aggregate.",why:"The Pretty Woman hotel at the foot of Rodeo Drive, a Beverly Hills landmark since 1928",note:"Wolfgang Puck's CUT, THEBlvd, a Sophia Loren-inspired Mediterranean pool, and the single most famous address on Wilshire. Centennial in 2028.",address:"9500 Wilshire Blvd, Beverly Hills, CA 90212",phone:"(310) 275-5200",url:"https://www.fourseasons.com/beverlywilshire/",openedDate:"1928"},
+{name:"Waldorf Astoria Beverly Hills",rating:"4.6 / 5",reviews:1308,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (973 reviews) and Hotels.com 9.4/10 (335 reviews) averaged for a 4.6 BJS aggregate.",why:"Pierre-Yves Rochon's ivory-and-gold tower at Wilshire and Santa Monica, with a rooftop that owns the sunset",note:"Rooftop by JG, a house Rolls-Royce, marble baths, and a spa that lives up to the name. Modern Beverly Hills luxury at its most gilded.",address:"9850 Wilshire Blvd, Beverly Hills, CA 90210",phone:"(310) 860-6666",url:"https://www.waldorfastoriabeverlyhills.com/",openedDate:"2017"},
+{name:"Chateau Marmont",rating:"4.4 / 5",reviews:908,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (695 reviews) and Booking.com 9.1/10 (213 verified guests) averaged for a 4.4 BJS aggregate. Michelin Guide Two Keys. Not the highest-rated hotel in Los Angeles by the numbers \u2014 it is our pick for what it is.",why:"The most storied hotel in America \u2014 a Loire-inspired castle above the Sunset Strip that has hosted nearly every Hollywood legend since 1929",note:"Bungalows, garden cottages and the famous phone-free discretion. Where the industry has hidden out for almost a century. Our BJS Pick for Los Angeles, period.",address:"8221 Sunset Blvd, Los Angeles, CA 90046",phone:"(323) 656-1010",url:"https://www.chateaumarmont.com/",openedDate:"1929",bjsPick:true,bjsPickCity:"losangeles",goldApple:true}
+];
+function build(){
+if(typeof boCategoryData!=="object"||!boCategoryData)return false;
+boCategoryData.hotelslosangeles=H.map(function(h,i){
+return Object.assign({rank:i+1,city:"losangeles",price:4,hue:"38, 45%, 26%",image:"",phone:"",url:""},h);
+});
+return true;
+}
+function ready(fn){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(build()||n>60)clearInterval(t);},300);});
+})();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
 var lugerLocations=[
@@ -41995,7 +42063,7 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(sync()||n>60)clearI
 .bo-section-divider-hotels{margin-top:44px}
 </style>
 <script id="bop-la-hotels-bjs-pick-v380">(function(){
-var HOTEL={name:"Chateau Marmont",city:"losangeles",rating:"4.6 / 5",reviews:3000,ratingSource:"Current verified-guest rating",ratingNote:"Google guest rating around 4.6 on 3,000+ reviews; Michelin Guide Two Keys. Not the highest-rated hotel in Los Angeles by the numbers \u2014 it is our pick for what it is.",why:"The most storied hotel in America \u2014 a Loire-inspired castle above the Sunset Strip that has hosted nearly every Hollywood legend since 1929",note:"Bungalows, garden cottages and the famously discreet main house. Old-Hollywood mythology, a guest list that reads like film history, and a fiercely private staff. The BJS pick for hotels across all of L.A.",url:"https://www.chateaumarmont.com/",address:"8221 Sunset Blvd, Los Angeles, CA 90046",phone:"(323) 656-1010",hue:"28, 40%, 26%",price:4,openedDate:"1929",bjsPick:true,bjsPickCity:"losangeles",bjsPickLabel:"BJS Hotel Pick \u2014 Los Angeles",bjsVerified:true,goldApple:true,isHotel:true,redCalloutLabel:"BJS HOTEL PICK",redCallout:"Our single hotel pick for all of Los Angeles. Not the top-rated by the numbers \u2014 chosen for history, privacy, and pure Hollywood mythology."};
+var HOTEL={name:"Chateau Marmont",city:"losangeles",rating:"4.3 / 5",reviews:696,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.0 (696 reviews, #94 of 381 LA hotels) and Booking.com 9.1/10 (213 verified guest reviews) averaged. Michelin Guide Two Keys. Not the highest-rated hotel in Los Angeles by the numbers \u2014 it is our pick for what it is.",why:"The most storied hotel in America \u2014 a Loire-inspired castle above the Sunset Strip that has hosted nearly every Hollywood legend since 1929",note:"Bungalows, garden cottages and the famously discreet main house. Old-Hollywood mythology, a guest list that reads like film history, and a fiercely private staff. The BJS pick for hotels across all of L.A.",url:"https://www.chateaumarmont.com/",address:"8221 Sunset Blvd, Los Angeles, CA 90046",phone:"(323) 656-1010",hue:"28, 40%, 26%",price:4,openedDate:"1929",bjsPick:true,bjsPickCity:"losangeles",bjsPickLabel:"BJS Hotel Pick \u2014 Los Angeles",bjsVerified:true,goldApple:true,isHotel:true,redCalloutLabel:"BJS HOTEL PICK",redCallout:"Our single hotel pick for all of Los Angeles. Not the top-rated by the numbers \u2014 chosen for history, privacy, and pure Hollywood mythology."};
 function ensureHotel(){
 if(typeof boCategoryData!=="object"||!boCategoryData)return false;
 var list=boCategoryData.bjspickslosangeles;
