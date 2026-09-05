@@ -13305,9 +13305,10 @@ boCategoryData.bagels = [
 {rank:2,name:"Papo's Bagels",city:"london",price:1,url:"https://www.paposbagels.com/",address:"Amhurst Rd, London E8 2AJ, United Kingdom",phone:"+44 7537 997767",rating:"4.2 / 5",reviews:6,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (6 reviews, docked to 4.2 for very thin volume \u2014 RECHECK as it accrues reviews). The Infatuation calls it the finest NY-style bagel in London; a real gap between critical acclaim and review count."},
 {rank:3,name:"B Bagel — Soho",city:"london",price:1,url:"https://www.bbagel.co.uk/",address:"54 Wardour St, London W1D 4JF, United Kingdom",phone:"+44 20 7287 0420",rating:"4.8 / 5",reviews:2297,ratingSource:"BJS aggregate",ratingNote:"Restaurant Guru 4.8 (2,297 reviews). Soho grab-and-go, 30 years of family recipes, vegan and gluten-free options."},
 {rank:1,name:"Marigold Bagels",city:"sandiego",price:1,url:"https://www.marigoldbagels.com/",address:"2850 El Cajon Blvd, San Diego, CA 92104",phone:"(781) 819-4525"},
-{rank:2,name:"Mission Bagel",city:"sandiego",price:1,url:"https://missionbagel.com/",address:"1344 Garnet Ave, San Diego, CA 92109",phone:"(858) 522-0389"},
+{rank:2,name:"Mission Bagel",city:"sandiego",price:1,url:"https://missionbagel.com/",address:"1344 Garnet Ave, San Diego, CA 92109",phone:"(858) 522-0389",rating:"4.1 / 5",reviews:20,ratingSource:"DoorDash",ratingNote:"DoorDash 4.1 (20+ ratings) \u2014 the only numeric aggregate available so far. Kosher family-run bagel shop, opened as a brick-and-mortar in fall 2025 after starting as a food truck; tied for Rising Star at BagelFest West 2026.",openedDate:"2025-09"},
 {rank:3,name:"Big City Bagel Cafe",city:"sandiego",price:1,url:"https://www.bcbcafesd.com/",address:"1010 University Ave, San Diego, CA 92103",phone:"(619) 574-7878"},
-{rank:4,name:"Pop Up Bagels",city:"sandiego",price:1,url:"https://www.popupbagels.com/",address:"637 Pearl St, La Jolla, CA 92037",phone:""},
+{rank:4,name:"Pop Up Bagels — La Jolla",city:"sandiego",price:1,url:"https://www.popupbagels.com/",address:"637 Pearl St, La Jolla, CA 92037",phone:"(855) 747-6347",rating:"4.8 / 5",reviews:430,ratingSource:"BJS aggregate",ratingNote:"DoorDash 4.8 (200+ ratings) and Uber Eats 4.7 (430+ ratings) averaged for a 4.8 BJS aggregate. Yelp shows real volume (312 reviews) but doesn't expose its exact star figure to automated tools, so this aggregate is built from two sources rather than three.",openedDate:"2025-11",otherLocations:[{name:"Pop Up Bagels — Oceanside",address:"510 Vista Way Ste 102, Oceanside, CA 92054",phone:"(855) 747-6347",url:"https://www.popupbagels.com/"}]},
+{rank:5,name:"Pop Up Bagels — Oceanside",city:"sdoceanside",price:1,url:"https://www.popupbagels.com/",address:"510 Vista Way Ste 102, Oceanside, CA 92054",phone:"(855) 747-6347",rating:"4.7 / 5",reviews:20,ratingSource:"DoorDash",ratingNote:"DoorDash 4.7 (20+ ratings). Just opened May 2026 — too new for a full multi-source aggregate yet; this score will firm up as more reviews come in.",openedDate:"2026-05",otherLocations:[{name:"Pop Up Bagels — La Jolla",address:"637 Pearl St, La Jolla, CA 92037",phone:"(855) 747-6347",url:"https://www.popupbagels.com/"}]},
 {rank:1,name:"Boichik Bagels — Palo Alto",city:"siliconvalley",price:1,url:"https://boichikbagels.com/",address:"855 El Camino Real #115, Palo Alto, CA 94301",phone:"(650) 352-5995"},
 {rank:2,name:"Izzy's Brooklyn Bagels",city:"siliconvalley",price:1,url:"https://www.izzysbrooklynbagels.com/",address:"477 S California Ave, Palo Alto, CA 94306",phone:"(650) 329-0700"},
 {rank:3,name:"House of Bagels — San Jose",city:"siliconvalley",price:1,url:"https://www.houseofbagels.com/",address:"505 E San Carlos St, San Jose, CA 95112",phone:"(408) 286-1776"},
@@ -14737,6 +14738,15 @@ allBjsBtn.addEventListener('click', function(){
 if(typeof window.boOpenAllBjsPicks === 'function') window.boOpenAllBjsPicks();
 });
 row.appendChild(allBjsBtn);
+const allCitiesBtn = document.createElement('button');
+allCitiesBtn.type = 'button';
+allCitiesBtn.className = 'bo-all-bjs-globe-launch bo-all-cities-globe-launch';
+allCitiesBtn.setAttribute('aria-label','Open All Best of Period Cities');
+allCitiesBtn.innerHTML = '<span class="bo-all-bjs-red-globe bo-all-cities-lime-globe" aria-hidden="true"><span class="bo-all-bjs-globe-lat"></span><span class="bo-all-bjs-globe-lon"></span></span><span class="bo-all-bjs-globe-label bo-all-cities-globe-label"><span class="bo-ac-lime">ALL </span><span class="bo-ac-white">BEST OF </span><span class="bo-ac-gold">PERIOD</span><span class="bo-ac-lime"> CITIES</span></span>';
+allCitiesBtn.addEventListener('click', function(){
+if(typeof window.openBopBestOfBest === 'function') window.openBopBestOfBest();
+});
+row.appendChild(allCitiesBtn);
 }
 if(cat==='pizza'){
 const allPizzaBtn=document.createElement('button');
@@ -14754,16 +14764,7 @@ const all = boCategoryData[(cityCfgForFooter && cityCfgForFooter.bjsPicksCat) ||
 const picks = BO_CITY_CONFIG[cat]
 ? all.filter(p => p.bjsPickCity === cat)
 : all.filter(p => p.bjsFromCat === cat || p.bjsFromCat === cat + 'bjspick');
-if(picks.length || BO_CITY_CONFIG[cat]){
-const bjsBtn = document.createElement('button');
-bjsBtn.type = 'button';
-bjsBtn.className = 'bo-picker-btn bo-picker-btn-bjs bo-bottom-tile-fixed';
-bjsBtn.innerHTML = BJS_PICKS_BUTTON_LABEL;
-bjsBtn.addEventListener('click', function(){
-boRenderCategory('bjspicks');
-});
-row.appendChild(bjsBtn);
-}
+if(false){}
 }
 boListEl.appendChild(row);
 }
@@ -22054,7 +22055,9 @@ boHeroCopy.foodtrucks={title:'BEST FOOD TRUCKS',sub:'The live food-truck directo
 boCategoryData.notquiteopen=[
 {rank:1,name:'Le Colonial — Midtown Manhattan',city:'newyork',image:photos[0],why:'Announced for summer 2027',note:'French-Vietnamese restaurant announced for 50 West 57th Street. This listing is clearly marked future and is not yet operating.',url:'https://investors.vno.com/news-releases/news-release-details/vornado-realty-trust-and-lefrak-welcome-return-french-vietnamese',price:4,hue:'28, 34%, 24%'},
 {rank:2,name:'L’Artusi — Midtown',city:'newyork',image:photos[1],why:'Announced — opening date to be confirmed',note:'A second L’Artusi location has been announced for 1271 Avenue of the Americas.',url:'https://www.rockefellergroup.com/news/lartusi-to-open-midtown-location-at-1271-avenue-of-the-americas/',price:4,hue:'28, 34%, 24%'},
-{rank:1,name:'The Polo Bar Ralph Lauren — London',city:'london',image:photos[2],why:'Announced for 2028',note:'Ralph Lauren has announced a London Polo Bar at 1 Hanover Square. It is not yet operating.',url:'https://investor.ralphlauren.com/news-releases/news-release-details/ralph-lauren-open-polo-bar-ralph-lauren-london',price:4,hue:'28, 34%, 24%'}
+{rank:1,name:'The Polo Bar Ralph Lauren — London',city:'london',image:photos[2],why:'Announced for 2028',note:'Ralph Lauren has announced a London Polo Bar at 1 Hanover Square. It is not yet operating.',url:'https://investor.ralphlauren.com/news-releases/news-release-details/ralph-lauren-open-polo-bar-ralph-lauren-london',price:4,hue:'28, 34%, 24%'},
+{rank:1,name:'PopUp Bagels — North Park',city:'sduptown',image:'',why:'Announced — opening date to be confirmed',note:'PopUp Bagels (the "Grip, Rip, and Dip" chain already open in La Jolla and Oceanside) has a North Park shop planned for 3727 30th St, part of the upcoming Amani San Diego development.',url:'https://www.popupbagels.com/',price:1,hue:'28, 34%, 24%'},
+{rank:2,name:'PopUp Bagels — Encinitas',city:'sdencinitas',image:'',why:'Announced — opening date to be confirmed',note:'PopUp Bagels has filed county paperwork for a shop at 1044 S Coast Highway 101 in Encinitas, adding to its existing La Jolla and Oceanside locations.',url:'https://www.popupbagels.com/',price:1,hue:'28, 34%, 24%'}
 ];
 boCategoryData.foodtrucks=[];
 var foodLabel='<span class="bo-food-truck-label"><span class="bo-food-truck-icon" aria-hidden="true"><i class="bo-food-truck-cab"></i></span><strong>FOOD TRUCKS</strong></span>';
@@ -26523,7 +26526,7 @@ if(typeof boCategoryData !== 'object' || !boCategoryData) return;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr = boCategoryData[cat];
 if(!Array.isArray(arr) || !arr.length) return;
-var isAwardPage = (cat === 'michelin' || cat === 'jamesbeard' || cat === 'bagels');
+var isAwardPage = (cat === 'michelin' || cat === 'jamesbeard' || cat === 'bagels' || cat === 'notquiteopen');
 var groups = {}, order = [];
 arr.forEach(function(r){
 var city = (r && r.city) || 'bestof';
@@ -26973,7 +26976,7 @@ if(!applied)return false;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr=boCategoryData[cat];
 if(!Array.isArray(arr)||!arr.length)return;
-var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels');
+var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels'||cat==='notquiteopen');
 var groups={},order=[];
 arr.forEach(function(r){
 var city=(r&&r.city)||'bestof';
@@ -27062,7 +27065,7 @@ if(!applied)return false;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr=boCategoryData[cat];
 if(!Array.isArray(arr)||!arr.length)return;
-var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels');
+var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels'||cat==='notquiteopen');
 var groups={},order=[];
 arr.forEach(function(r){
 var city=(r&&r.city)||'bestof';
@@ -27146,7 +27149,7 @@ if(!applied)return false;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr=boCategoryData[cat];
 if(!Array.isArray(arr)||!arr.length)return;
-var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels');
+var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels'||cat==='notquiteopen');
 var groups={},order=[];
 arr.forEach(function(r){
 var city=(r&&r.city)||'bestof';
@@ -27270,7 +27273,7 @@ if(!applied)return false;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr=boCategoryData[cat];
 if(!Array.isArray(arr)||!arr.length)return;
-var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels');
+var isAwardPage=(cat==='michelin'||cat==='jamesbeard'||cat==='bagels'||cat==='notquiteopen');
 var groups={},order=[];
 arr.forEach(function(r){
 var city=(r&&r.city)||'bestof';
@@ -32706,6 +32709,161 @@ otherLocations:[
 {name:"HiHo Cheeseburger \u2014 Studio City",address:"Studio City, Los Angeles, CA",url:"https://www.hiho.la/hh-studio-city/"}
 ]}}
 ];
+var GARDEN_STATE_BAGELS_ROWS=[
+{cats:['bagels'],r:{name:"Garden State Bagels",city:"sdencinitas",rating:"4.4 / 5",reviews:791,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.3 and Restaurant Guru 4.2 (791 reviews) averaged with DoorDash 4.7 (500+ ratings) for a 4.4 BJS aggregate.",
+why:"A 40-year family bagel recipe brought west from New Jersey — Encinitas' original bagel shop, open since the 1980s",
+note:"Boiled and baked fresh in-house daily, 25+ bagel flavors, Nova Scotia lox, and housemade salads and cream cheeses. Same recipe under new ownership as of 2022.",
+url:"https://gardenstatebagels.com/",address:"191 N El Camino Real Ste 106, Encinitas, CA 92024",phone:"(760) 942-2435",hue:"32, 45%, 24%",price:1}}
+];
+GARDEN_STATE_BAGELS_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_ITALIAN_ROWS=[
+{cats:['italian'],r:{name:"RoVino Restaurant + Bar",city:"sddowntown",rating:"4.7 / 5",reviews:1286,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.6 (613 reviews) and Yelp 4.7 (1,286 reviews) averaged for a 4.7 BJS aggregate. Tripadvisor ranks it #318 of 3,217 San Diego restaurants but doesn't expose a clean 3rd star figure alongside those two.",
+why:"A family-owned Little Italy spot built around a wood-fired rotisserie and handmade pasta — Chef Frank Anctil's cacio e pepe and rotisserie chicken are the draw",
+note:"Rotisserie chicken, house-made pastas including cacio e pepe and pasta al sugo, Roman-style pinsa, and a curated Italian wine list. Small room with sidewalk patio seating; reservations recommended.",
+url:"https://rovinosd.com/",address:"2034 Kettner Blvd, San Diego, CA 92101",phone:"(619) 269-9341",hue:"5, 45%, 24%",price:3}},
+{cats:['italian'],r:{name:"Monello",city:"sddowntown",rating:"4.4 / 5",reviews:2311,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.4, OpenTable 4.6, and Tripadvisor 4.3 (324 reviews) averaged for a 4.4 BJS aggregate.",
+why:"Bencotto's Little Italy sister restaurant — Northern Italian street food built around a tableside cheese-wheel pasta and a 26-ingredient house vermouth",
+note:"Handmade pasta including the signature cheese wheel pasta, gourmet pizzas, and Milanese-style aperitivo small plates. Weekly Wednesday-night risotto served from a wheel of Lodigiano cheese.",
+url:"https://monellosd.com/",address:"750 W Fir St, San Diego, CA 92101",phone:"(619) 501-0030",hue:"5, 45%, 24%",price:3}}
+];
+SD_ITALIAN_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_SUSHI_ROWS=[
+{cats:['sushi'],r:{name:"Sushi Ota",city:"sdpacificbeach",rating:"4.6 / 5",reviews:889,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.6 (889 reviews) and Yelp 4.5 (4,826 reviews) averaged for a 4.6 BJS aggregate. Long a San Diego institution; some recent reviews note service has slipped since a change in ownership, worth watching.",
+why:"A long-running San Diego sushi institution off Mission Bay Drive, tucked in a strip mall but famous for its omakase and sushi-bar seating",
+note:"Full omakase (5-course, $85) and a la carte nigiri, rolls, and sashimi. Reservations strongly recommended, especially for sushi-bar seats.",
+url:"https://sushi-ota.com/",address:"4529 Mission Bay Dr, San Diego, CA 92109",phone:"(858) 880-8778",hue:"215, 35%, 22%",price:3}},
+{cats:['sushi'],r:{name:"Sushi Mori",city:"sdlajolla",rating:"4.2 / 5",reviews:515,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.3 (92 reviews) and Yelp roughly 4.0 (515 reviews) averaged for a 4.2 BJS aggregate.",
+why:"A steps-from-the-sand La Jolla Shores sushi spot known for fresh fish and a relaxed patio just off the beach",
+note:"Sashimi, specialty rolls, teriyaki, and noodle dishes; clearly marked gluten-free options and gluten-free soy sauce. Indoor dining or patio seating a block from La Jolla Shores.",
+url:"https://lajollasushimori.com/",address:"2161 Avenida De La Playa, La Jolla, CA 92037",phone:"(858) 551-8481",hue:"215, 35%, 22%",price:2}}
+];
+SD_SUSHI_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_DELMAR_ROWS=[
+{cats:['mexican'],r:{name:"Mia's",city:"sddelmar",rating:"3.9 / 5",reviews:null,ratingSource:"Ranch & Coast Magazine",
+ratingNote:"Ranch & Coast Magazine's critic review (the only public numeric score found so far \\u2014 no Yelp/Google star has surfaced yet for this very new restaurant): Food 4, Service 4, Ambience 4, Culinary Innovation 3.5, Cocktails 4, Value 4.5, averaged to 3.9. Opened November 2025 from the Bluewater Grill team \\u2014 worth revisiting once it has real review volume.",
+why:"A brand-new Baja-Mediterranean spot on Highway 101 from the Bluewater Grill team, blending Baja California flavors with Mediterranean technique",
+note:"Baja-Mediterranean small plates \\u2014 hibiscus tataki hamachi, snapper ceviche, fish tacos, half chicken \\u2014 cooked with zero seed oils. Extensive tequila and cocktail program; patio seating in the Cedros Design District.",
+url:"https://www.mias101.com/",address:"243 N Hwy 101, Solana Beach, CA 92075",phone:"(858) 947-6427",hue:"5, 45%, 22%",price:3,openedDate:"2025-11"}}
+];
+SD_DELMAR_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_ENCINITAS_ROWS=[
+{cats:['sushi'],r:{name:"Sushi Lounge",city:"sdencinitas",rating:"4.3 / 5",reviews:921,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.5 (30 reviews) and Yelp 4.1 (921 reviews) averaged for a 4.3 BJS aggregate.",
+why:"A locals' pick tucked into Encinitas, known for made-from-scratch sauces and daily-delivered fish",
+note:"Traditional and inventive rolls, sashimi, and nigiri; jalapeño-stuffed specialty rolls are a house favorite.",
+url:"",address:"461 Santa Fe Dr, Encinitas, CA 92024",phone:"",hue:"215, 35%, 22%",price:2}},
+{cats:['indian'],r:{name:"Royal India — Del Mar",city:"sddelmar",rating:"4.2 / 5",reviews:34,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.5 (34 reviews) and Sirved 4.0 averaged for a 4.3 BJS aggregate. Multi-award-winning North Indian chain with three San Diego locations; this is the Del Mar/Carmel Valley outpost.",
+why:"Fine-dining North Indian in a Carmel Valley shopping center, complete with an indoor water wall and a patio",
+note:"Tandoori specialties, curries, biryani, and a full bar; large vegan menu available. Weekday lunch buffet.",
+url:"https://royalindiadelmar.com/",address:"3860 Valley Centre Dr Ste 402, San Diego, CA 92130",phone:"(858) 792-1111",hue:"25, 45%, 24%",price:3}}
+];
+SD_ENCINITAS_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_CARLSBAD_STEAK_ROWS=[
+{cats:['steak'],r:{name:"Bob's Steak & Chop House — La Costa",city:"sdcarlsbad",rating:"4.4 / 5",reviews:106,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.4 (106 reviews) and Sirved 4.3 averaged for a 4.4 BJS aggregate. Texas-born chain (Dallas, 1993) now with 10 locations; this outpost is inside the Omni La Costa Resort & Spa.",
+why:"A Texas steakhouse institution inside the Omni La Costa Resort, hand-cutting the top 2% of USDA prime beef since 1993",
+note:"Hand-cut steaks and chops served with glazed carrot and choice of potato, plus daily seafood specials and an award-winning wine list. Resort-casual dress recommended; fire pits and outdoor lounge seating.",
+url:"https://www.bobs-steakandchop.com/bobs-steak-and-chop-house-location/carlsbad",address:"2100 Costa Del Mar Rd, Carlsbad, CA 92009",phone:"(760) 929-6346",hue:"5, 45%, 22%",price:4}},
+{cats:['steak'],r:{name:"Nick's On State",city:"sdcarlsbad",rating:"4.7 / 5",reviews:4061,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.6 and Restaurant Guru 4.8 (4,061 reviews) averaged for a 4.7 BJS aggregate. Winner, Best Of Taste of Carlsbad Village 2024.",
+why:"A Carlsbad Village steakhouse-and-seafood spot famous for its Prime Rib Dip, maple-glazed meatloaf, and warm butter cake",
+note:"Steaks, prime rib, and seafood alongside deviled eggs, shrimp taquitos, and a hand-crafted cocktail list. Heated outdoor patio on State Street; reservations recommended.",
+url:"",address:"2742 State St Ste 100, Carlsbad, CA 92008",phone:"(760) 696-3593",hue:"5, 45%, 22%",price:3}}
+];
+SD_CARLSBAD_STEAK_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_DELMAR3_ROWS=[
+{cats:['sushi'],r:{name:"Shimbashi Izakaya",city:"sddelmar",rating:"4.3 / 5",reviews:639,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.2 (85 reviews), Sirved 4.2, and Uber Eats 4.4 averaged for a 4.3 BJS aggregate.",
+why:"A Japanese izakaya on the Terrace Level at Del Mar Plaza, pairing fresh sushi and sashimi with sweeping Pacific Ocean views",
+note:"Multi-faceted izakaya-style menu \\u2014 sushi, sashimi, small plates, sake, and Japanese beer. Heated, dog-friendly patio with ocean views. Open since 2009.",
+url:"",address:"1555 Camino Del Mar Ste 201, Del Mar, CA 92014",phone:"(858) 523-0479",hue:"215, 35%, 22%",price:3,openedDate:"2009"}}
+];
+SD_DELMAR3_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_ENCINITAS2_ROWS=[
+{cats:['steak'],r:{name:"Pacific Coast Grill",city:"sdencinitas",rating:"4.7 / 5",reviews:2202,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.6 and Restaurant Guru 4.9 (21,662 reviews) averaged for a 4.7 BJS aggregate.",
+why:"An oceanfront Cardiff spot pairing steaks and sushi rolls with sunset views over the water",
+note:"Cowboy steak, seafood paella, coconut crab-crusted mahi mahi, and specialty rolls like the Cardiff Reef and Sunshine roll. Valet-only parking; can get loud on busy nights.",
+url:"",address:"2526 S Coast Hwy 101, Cardiff, CA 92007",phone:"(760) 479-0721",hue:"5, 45%, 22%",price:3}}
+];
+SD_ENCINITAS2_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+function bopCurateTownPicks(cityKey,bjsCat,minPrice,cap){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+var seen={},list=[];
+Object.keys(boCategoryData).forEach(function(cat){
+if(cat===bjsCat)return;
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name||r.city!==cityKey)return;
+if(!(r.price>=minPrice))return;
+var key=r.name.toLowerCase();
+if(seen[key])return;
+seen[key]=true;
+list.push(r);
+});
+});
+list.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);});
+list=list.slice(0,cap);
+boCategoryData[bjsCat]=Array.isArray(boCategoryData[bjsCat])?boCategoryData[bjsCat]:[];
+list.forEach(function(r,i){
+r.bjsPick=true;
+r.bjsPickCity=cityKey;
+if(!boCategoryData[bjsCat].some(function(x){return x&&x.name&&x.name.toLowerCase()===r.name.toLowerCase();})){
+boCategoryData[bjsCat].push(Object.assign({},r,{rank:i+1}));
+}
+});
+}
+bopCurateTownPicks('sddelmar','bjspickssddelmar',3,9);
+var SD_ENCINITAS3_ROWS=[
+{cats:['newamerican'],r:{name:"Valentina",city:"sdencinitas",rating:"4.5 / 5",reviews:675,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.3 (15 reviews), Google 4.5, and Restaurant Guru 4.7 (2,927 reviews) averaged for a 4.5 BJS aggregate.",
+why:"A small, candlelit Spanish wine bar and bistro in Leucadia, built on patatas bravas, tapas, and a can't-miss Basque cake",
+note:"Spanish and Mediterranean-leaning small plates, paella, and a curated wine list beyond just Spanish selections. Small room, reservations essential.",
+url:"",address:"810 N Coast Hwy 101, Encinitas, CA 92024",phone:"(760) 943-6686",hue:"5, 45%, 22%",price:3}},
+{cats:['newamerican'],r:{name:"Atelier Manna",city:"sdencinitas",rating:"4.5 / 5",reviews:null,ratingSource:"Michelin Guide (Bib Gourmand)",
+ratingNote:"Named a Bib Gourmand (good quality, good value) in the 2025 MICHELIN Guide USA. Tripadvisor shows 5.0 but on only 4 reviews, too thin to average in \\u2014 the Michelin recognition is the strongest signal here.",
+why:"Chef Andrew Bachelier's seasonally-driven breakfast-and-lunch spot in a recycled-materials covered patio, earning a Michelin Bib Gourmand",
+note:"Shareable, seasonally-focused plates \\u2014 locally caught halibut with sudachi, Salmon Creek Farms pork rack \\u2014 plus a standout nonalcoholic drinks program. Limited seating; reservations strongly encouraged.",
+url:"",address:"1076 N Coast Hwy 101, Encinitas, CA 92024",phone:"",hue:"5, 45%, 22%",price:3,michelinBibGourmand:true}}
+];
+SD_ENCINITAS3_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+bopCurateTownPicks('sdencinitas','bjspickssdencinitas',3,9);
+var LOBSTER_WEST_ROWS=[
+{cats:['seafood','sandwich'],r:{name:"Lobster West — Encinitas",city:"sdencinitas",rating:"4.4 / 5",reviews:718,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.4 (718 reviews), Yelp 4.5 (596 reviews), and Tripadvisor 4.3 (147 reviews) averaged for a 4.4 BJS aggregate. Flagship location, opened 2013 — Tripadvisor ranks it #21 of 197 Encinitas restaurants.",
+why:"The original Lobster West — a small, casual counter on Highway 101 credited with bringing East Coast-style Maine lobster rolls to the San Diego coast",
+note:"Maine lobster, crab, and shrimp rolls served Maine-style (cold, mayo) or Connecticut-style (warm, butter), plus lobster bisque and New England clam chowder. Gluten-free and Paleo options available.",
+url:"https://lobsterwest.com/",address:"765 S Coast Hwy 101, Encinitas, CA 92024",phone:"(760) 634-1684",hue:"200, 45%, 30%",price:3,openedDate:"2013",
+otherLocations:[
+{name:"Lobster West — Coronado",address:"1033 B Ave Ste 102, Coronado, CA 92118",phone:"(619) 675-0002",url:"https://lobsterwest.com/"},
+{name:"Lobster West — La Jolla",address:"1237 Prospect St, La Jolla, CA 92037",phone:"(858) 352-6075",url:"https://lobsterwest.com/"}
+]}},
+{cats:['seafood','sandwich'],r:{name:"Lobster West — Coronado",city:"sdcoronado",rating:"4.4 / 5",reviews:1572,ratingSource:"BJS aggregate",
+ratingNote:"Yelp 4.3 (1,572 reviews), Tripadvisor 4.5 (166 reviews), and Google 4.4 (205 reviews) averaged for a 4.4 BJS aggregate. Second location, opened 2016, a short walk from the Hotel Del.",
+why:"Lobster West's Coronado outpost, a short walk from the Hotel Del — Maine lobster rolls with a casual, patio-seating beach-town feel",
+note:"Same Maine lobster, crab, and shrimp roll menu as the flagship, plus the Dueling Claws (half lobster, half crab roll) and Maryland crab soup. 10% military discount daily.",
+url:"https://lobsterwest.com/",address:"1033 B Ave Ste 102, Coronado, CA 92118",phone:"(619) 675-0002",hue:"200, 45%, 30%",price:3,openedDate:"2016",
+otherLocations:[
+{name:"Lobster West — Encinitas",address:"765 S Coast Hwy 101, Encinitas, CA 92024",phone:"(760) 634-1684",url:"https://lobsterwest.com/"},
+{name:"Lobster West — La Jolla",address:"1237 Prospect St, La Jolla, CA 92037",phone:"(858) 352-6075",url:"https://lobsterwest.com/"}
+]}},
+{cats:['seafood','sandwich'],r:{name:"Lobster West — La Jolla",city:"sdlajolla",rating:"4.7 / 5",reviews:300,ratingSource:"BJS aggregate",
+ratingNote:"DoorDash 4.5 (300+ ratings), Sirved 4.8, and Tripadvisor 4.7 averaged for a 4.7 BJS aggregate. Newest location, in the International Shops on Prospect St — Tripadvisor\u2019s number is on only 3 reviews so far and Yelp does not expose its exact star figure, so this score carries more uncertainty than the other two locations until more review volume comes in.",
+why:"The newest Lobster West, right in the heart of La Jolla Cove across from George's — same Maine lobster roll menu in a smaller counter format",
+note:"Maine lobster, crab, and shrimp rolls, lobster bisque and clam chowder. Newer opening means a thinner review sample than the other two locations, but consistently high marks so far.",
+url:"https://lobsterwest.com/",address:"1237 Prospect St, La Jolla, CA 92037",phone:"(858) 352-6075",hue:"200, 45%, 30%",price:3,
+otherLocations:[
+{name:"Lobster West — Encinitas",address:"765 S Coast Hwy 101, Encinitas, CA 92024",phone:"(760) 634-1684",url:"https://lobsterwest.com/"},
+{name:"Lobster West — Coronado",address:"1033 B Ave Ste 102, Coronado, CA 92118",phone:"(619) 675-0002",url:"https://lobsterwest.com/"}
+]}}
+];
+LOBSTER_WEST_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
 function key(city,name){return String(city||'bestof')+'|'+String(name).trim().toLowerCase();}
 function addTo(cat,r){
 var list=boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];
@@ -41203,4 +41361,343 @@ setInterval(apply,300);
 apply();
 })();</script>
 
+
+
+
+<div id="bopNotQuiteOpenNotice" role="dialog" aria-modal="true" aria-label="Not Quite Open notice" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:24px;">
+<div style="max-width:380px;width:100%;background:#0a0a0a;border:2px solid #F59E0B;border-radius:16px;padding:26px 22px 22px;text-align:center;box-shadow:0 0 30px rgba(245,158,11,.35);position:relative;">
+<button type="button" id="bopNotQuiteOpenClose" aria-label="Close" style="position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:1.5px solid #F59E0B;background:none;color:#F59E0B;font:900 1rem/1 Arial,sans-serif;cursor:pointer;">&times;</button>
+<div style="font:900 .95rem/1.3 'Archivo Black',sans-serif;color:#F59E0B;letter-spacing:.03em;margin-bottom:10px;">YOU'RE ENTERING "NOT QUITE OPEN"</div>
+<p style="color:#ddd;font:500 .88rem/1.5 Arial,sans-serif;margin:0 0 18px;">Everything on this list has been publicly announced but hasn't opened yet. Opening dates, addresses, and menus can change without notice — check the restaurant's own website or contact them directly before making plans around it.</p>
+<button type="button" id="bopNotQuiteOpenGotIt" style="background:#F59E0B;color:#000;border:none;border-radius:10px;padding:10px 22px;font:900 .85rem/1 'Archivo Black',sans-serif;letter-spacing:.03em;cursor:pointer;">GOT IT</button>
+</div>
+</div>
+<script id="bop-notquiteopen-notice-v369">(function(){
+var notice=document.getElementById('bopNotQuiteOpenNotice');
+if(!notice)return;
+function close(){notice.style.display='none';}
+document.getElementById('bopNotQuiteOpenClose').addEventListener('click',close);
+document.getElementById('bopNotQuiteOpenGotIt').addEventListener('click',close);
+notice.addEventListener('click',function(e){if(e.target===notice)close();});
+var wasShowing=false;
+function checkTitle(){
+var title=document.getElementById('boHeroTitle');
+var isOpen=!!(title&&/NOT QUITE OPEN/.test(title.textContent||''));
+if(isOpen&&!wasShowing){
+notice.style.display='flex';
+}
+wasShowing=isOpen;
+}
+new MutationObserver(checkTitle).observe(document.body,{childList:true,subtree:true,characterData:true});
+setInterval(checkTitle,400);
+})();</script>
+<script id="bop-town-picks-final-pass-v370">(function(){
+function run(){
+if(typeof bopCurateTownPicks!=='function')return;
+bopCurateTownPicks('sddelmar','bjspickssddelmar',3,9);
+bopCurateTownPicks('sdencinitas','bjspickssdencinitas',3,9);
+if(typeof boCategoryData==='object'&&boCategoryData){
+var dm=boCategoryData.bjspickssddelmar=boCategoryData.bjspickssddelmar||[];
+var haveDm={};dm.forEach(function(x){if(x&&x.name)haveDm[x.name.toLowerCase()]=true;});
+['Ruth\\u2019s Chris Steak House \\u2014 Del Mar',"Ruth's Chris Steak House \\u2014 Del Mar",'Samurai Japanese Restaurant',"Red Tracton's Steakhouse"].forEach(function(nm){
+if(haveDm[nm.toLowerCase()])return;
+var src=null;
+Object.keys(boCategoryData).forEach(function(cat){
+if(src||cat==='bjspickssddelmar')return;
+(boCategoryData[cat]||[]).forEach(function(r){if(!src&&r&&r.name&&r.name.toLowerCase()===nm.toLowerCase()&&r.city==='sddelmar')src=r;});
+});
+if(src&&!haveDm[src.name.toLowerCase()]){
+dm.push(Object.assign({},src,{rank:dm.length+1,bjsPick:true,bjsPickCity:'sddelmar'}));
+haveDm[src.name.toLowerCase()]=true;
+}
+});
+dm.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);});
+dm.forEach(function(r,i){r.rank=i+1;});
+}
+}
+run();
+setTimeout(run,1500);
+setTimeout(run,4000);
+})();</script>
+<script id="bop-town-picks-hardcoded-v371">(function(){
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+var dm=[
+{name:"Steak 48",rating:"4.9 / 5",price:4,address:"12995 El Camino Real, Del Mar, CA 92130"},
+{name:"Ruth's Chris Steak House — Del Mar",rating:"4.8 / 5",price:4,address:"11582 El Camino Real, San Diego, CA 92130",phone:"(858) 755-1454",url:"https://ruthschris.com/del-mar"},
+{name:"Rare Society — Solana Beach",rating:"4.7 / 5",price:4,address:"330 S Cedros Ave Ste 104, Solana Beach, CA 92075"},
+{name:"Addison",rating:"4.5 / 5",price:4,address:"5200 Grand Del Mar Way, San Diego, CA 92130"},
+{name:"Samurai Japanese Restaurant",rating:"4.4 / 5",price:3,address:"979 Lomas Santa Fe Dr, Solana Beach, CA 92075",phone:"+1 858-481-0032"},
+{name:"Shimbashi Izakaya",rating:"4.3 / 5",price:3,address:"1555 Camino Del Mar Ste 201, Del Mar, CA 92014"},
+{name:"Royal India — Del Mar",rating:"4.2 / 5",price:3,address:"3860 Valley Centre Dr Ste 402, San Diego, CA 92130"},
+{name:"Red Tracton's Steakhouse",rating:"4.1 / 5",price:4,address:"550 Via De La Valle, Solana Beach, CA 92075",phone:"+1 858-724-4400"},
+{name:"Mia's",rating:"3.9 / 5",price:3,address:"243 N Hwy 101, Solana Beach, CA 92075"}
+];
+var en=[
+{name:"Pacific Coast Grill",rating:"4.7 / 5",price:3,address:"2526 S Coast Hwy 101, Cardiff, CA 92007",phone:"(760) 479-0721"},
+{name:"Valentina",rating:"4.5 / 5",price:3,address:"810 N Coast Hwy 101, Encinitas, CA 92024",phone:"(760) 943-6686"},
+{name:"Atelier Manna",rating:"4.5 / 5",price:3,address:"1076 N Coast Hwy 101, Encinitas, CA 92024"},
+{name:"Sushi Lounge",rating:"4.3 / 5",price:2,address:"461 Santa Fe Dr, Encinitas, CA 92024"}
+];
+function build(rows,cityKey,rankOffset){
+return rows.map(function(row,i){
+return {rank:(rankOffset||0)+i+1,name:row.name,city:cityKey,rating:row.rating,price:row.price,
+address:row.address,phone:row.phone||"",url:row.url||"",bjsPick:true,bjsPickCity:cityKey,
+ratingSource:row.ratingSource||"BJS aggregate",ratingNote:row.ratingNote||"",hue:"5, 45%, 22%",
+michelinStars:row.michelinStars||null};
+});
+}
+boCategoryData.bjspickssddelmar=build(dm,'sddelmar');
+boCategoryData.bjspickssdencinitas=build(en,'sdencinitas');
+var am=[
+{name:"Omakase Amsterdam",rating:"4.9 / 5",price:4},
+{name:"Ken Sushi",rating:"4.8 / 5",price:4},
+{name:"Mr. Meat Steakhouse",rating:"4.7 / 5",price:3},
+{name:"Ku Kitchen & Bar",rating:"4.7 / 5",price:3},
+{name:"The Seafood Bar",rating:"4.7 / 5",price:3},
+{name:"Visaandeschelde",rating:"4.7 / 5",price:4},
+{name:"Pesca Amsterdam",rating:"4.6 / 5",price:3},
+{name:"Flore",rating:"4.5 / 5",price:4},
+{name:"Brut de Mer",rating:"4.5 / 5",price:3}
+];
+var an=[
+{name:"Sombat Thai Cuisine",rating:"4.7 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (431 reviews)."},
+{name:"Bistrot du Nord",rating:"4.7 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (172 reviews)."},
+{name:"The Jane",rating:"4.6 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.6 (1,689 reviews). Set in a restored chapel; chef Nick Bril."},
+{name:"'t Fornuis",rating:"4.4 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (291 reviews) and Restaurant Guru 4.6 (630 reviews) averaged. One Michelin star since 1973; no written menu, chef Johan Segers explains dishes tableside.",michelinStars:1},
+{name:"Zilte",rating:"4.5 / 5",price:4,michelinStars:1},
+{name:"Nathan",rating:"4.5 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.5 (227 reviews). One Michelin star.",michelinStars:1},
+{name:"Kommilfoo",rating:"4.3 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.3 (403 reviews). One Michelin star.",michelinStars:1},
+{name:"Sir Anthony Van Dijck",rating:"4.2 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.2 (503 reviews)."}
+];
+var at=[
+{name:"Bones",rating:"4.8 / 5",price:4},
+{name:"Kevin Rathbun Steak",rating:"4.7 / 5",price:4},
+{name:"Marcel",rating:"4.7 / 5",price:4},
+{name:"Chops Lobster Bar",rating:"4.6 / 5",price:4},
+{name:"Hal's The Steakhouse",rating:"4.6 / 5",price:4},
+{name:"Atlas",rating:"4.6 / 5",price:4},
+{name:"Aria",rating:"4.6 / 5",price:3},
+{name:"New York Prime Atlanta",rating:"4.5 / 5",price:4},
+{name:"Kimball House",rating:"4.5 / 5",price:3}
+];
+boCategoryData.bjspicksamsterdam=build(am,'amsterdam');
+boCategoryData.bjspicksantwerp=build(an,'antwerp');
+boCategoryData.bjspicksatlanta=build(at,'atlanta');
+var bj=[
+{name:"Xin Rong Ji",rating:"4.9 / 5",price:4,ratingSource:"Michelin Guide",ratingNote:"3 Michelin stars \\u2014 the only Taizhou-cuisine restaurant in the world to hold them.",michelinStars:3},
+{name:"King's Joy",rating:"4.9 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.9 (1,547 reviews). Vegetarian tasting-menu restaurant, previously 3 Michelin stars, currently 2.",michelinStars:2},
+{name:"TRB Hutong",rating:"4.8 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.8 (2,201 reviews). Contemporary European cuisine inside a 600-year-old temple complex near the Forbidden City.",michelinStars:1}
+];
+boCategoryData.bjspicksbeijing=build(bj,'beijing');
+var brl=[
+{name:"Restaurant Tim Raue",rating:"4.7 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,226 reviews) and Restaurant Guru 5.0 (4,452 reviews) averaged. 2 Michelin stars, consistently in the World's 50 Best.",michelinStars:2},
+{name:"Rutz",rating:"4.3 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.3 (758 reviews). Berlin's first 3-Michelin-star restaurant, chef Marco M\\u00fcller.",michelinStars:3},
+{name:"Restaurant FACIL",rating:"4.5 / 5",price:4,ratingSource:"Michelin Guide",ratingNote:"2 Michelin stars; no clean public star aggregate surfaced this pass.",michelinStars:2}
+];
+boCategoryData.bjspicksberlin=build(brl,'berlin');
+var bg=[
+{name:"Harry Sasson",rating:"4.4 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.4 (2,031 reviews). One of Bogot\\u00e1's most iconic restaurants, over two decades in Zona G."},
+{name:"El Chato",rating:"4.0 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.0 (542 reviews). Ranked #25 in the World's 50 Best Restaurants 2025 \\u2014 the first Colombian restaurant ever on the list."},
+{name:"Leo Cocina y Cava",rating:"4.3 / 5",price:4,ratingSource:"World's 50 Best",ratingNote:"World's 50 Best Latin America #2. Chef Leonor Espinosa's flagship, built around Colombian ingredients and Indigenous culinary traditions; no clean public star aggregate surfaced this pass."}
+];
+boCategoryData.bjspicksbogota=build(bg,'bogota');
+var bru=[
+{name:"Comme chez Soi",rating:"4.5 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.5 (1,112 reviews). Founded 1926; 2 Michelin stars; Art Nouveau Horta interior on Place Rouppe.",michelinStars:2,openedDate:"1926"},
+{name:"Bon Bon",rating:"4.5 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.5 (616 reviews). Brussels' only 3-Michelin-star restaurant; chef Christophe Hardiquest, opened 2001.",michelinStars:3,openedDate:"2001"},
+{name:"Bozar Restaurant",rating:"4.4 / 5",price:4,michelinStars:1}
+];
+boCategoryData.bjspicksbrussels=build(bru,'brussels');
+var ba=[
+{name:"Don Julio",rating:"4.5 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.5 (12,945 reviews). #1 Latin America's 50 Best 2024; World's 50 Best #10 (2025). Palermo parrilla with in-house aged Aberdeen Angus and Hereford beef.",openedDate:"1999"},
+{name:"Aramburu",rating:"4.4 / 5",price:4,ratingNote:"2 Michelin stars; Latin America's 50 Best #46. Sixteen-course tasting menu in Recoleta.",michelinStars:2},
+{name:"Trescha",rating:"4.5 / 5",price:4,ratingSource:"Latin America's 50 Best",ratingNote:"Latin America's 50 Best #33 (2024); Michelin-starred. Chef Tom\u00e1s Treschanski's tasting-menu counter; no clean public star aggregate surfaced this pass.",michelinStars:1}
+];
+boCategoryData.bjspicksbuenosaires=build(ba,'buenosaires');
+var ct=[
+{name:"Carmen",rating:"4.5 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.5 (3,576 reviews). Contemporary Colombian, seafood-forward, inside the walled city."},
+{name:"Alma",rating:"4.4 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.4 (2,085 reviews). Enclosed courtyard dining in the Old City; smart-formal dress code."},
+{name:"Celele",rating:"4.2 / 5",price:4,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (90 reviews). Latin America's 50 Best #6 (2024). Chefs Jaime Rodr\u00edguez and Sebasti\u00e1n Pinz\u00f3n's Caribbean tasting menu in Getseman\u00ed; opened 2018.",openedDate:"2018"}
+];
+boCategoryData.bjspickscartagena=build(ct,'cartagena');
+var cv=[
+{name:"Hidden Fish",rating:"4.6 / 5",price:4,ratingNote:"Omakase counter on Convoy; reservation-only tasting menu."},
+{name:"Realm of the 52 Remedies",rating:"4.5 / 5",price:3,ratingNote:"Speakeasy cocktail bar hidden behind Common Theory; apothecary-themed."}
+];
+boCategoryData.bjspickssdconvoy=build(cv,'sdconvoy');
+var cor=[
+{name:"Lobster West \u2014 Coronado",rating:"4.4 / 5",price:3},
+{name:"Chez Loma",rating:"4.3 / 5",price:3,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.3 (396 reviews). French bistro in the 1889 Carez Hizar House on Loma Ave.",openedDate:"1889"},
+{name:"Serea Coastal Cuisine",rating:"4.0 / 5",price:4,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.0 (81 reviews). Michelin-selected sea-to-table restaurant inside the Hotel del Coronado; chef JoJo Ruiz.",address:"1500 Orange Ave, Coronado, CA 92118"}
+];
+boCategoryData.bjspickssdcoronado=build(cor,'sdcoronado');
+var cul=[
+{name:"n/naka",rating:"4.7 / 5",price:4,michelinStars:2},
+{name:"Vespertine",rating:"4.5 / 5",price:4,ratingSource:"Michelin Guide",ratingNote:"2 Michelin stars; chef Jordan Kahn's tasting-menu experience in the Waffle building. No clean public star aggregate surfaced this pass.",michelinStars:2,address:"3599 Hayden Ave, Culver City, CA 90232"},
+{name:"Hatchet Hall",rating:"3.9 / 5",price:3,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 3.9 (98 reviews). Wood-fire Southern cooking; held a Michelin star in 2022. Opened 2015.",openedDate:"2015",address:"12517 W Washington Blvd, Los Angeles, CA 90066"}
+];
+boCategoryData.bjspickslaculvercity=build(cul,'laculvercity');
+if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG){
+Object.keys(BO_CITY_CONFIG).forEach(function(cityKey){
+var cfg=BO_CITY_CONFIG[cityKey]||{};
+var bjsCat=cfg.bjsPicksCat||cfg.bjs||('bjspicks'+cityKey);
+if(bjsCat==='bjspickssddelmar'||bjsCat==='bjspickssdencinitas'||bjsCat==='bjspicksamsterdam'||bjsCat==='bjspicksantwerp'||bjsCat==='bjspicksatlanta'||bjsCat==='bjspicksbeijing'||bjsCat==='bjspicksberlin'||bjsCat==='bjspicksbogota'||bjsCat==='bjspicksbrussels'||bjsCat==='bjspicksbuenosaires'||bjsCat==='bjspickscartagena'||bjsCat==='bjspickssdconvoy'||bjsCat==='bjspickssdcoronado'||bjsCat==='bjspickslaculvercity')return;
+var existing=Array.isArray(boCategoryData[bjsCat])?boCategoryData[bjsCat]:[];
+if(existing.length>=3)return;
+var seen={},pool=[];
+Object.keys(boCategoryData).forEach(function(cat){
+if(cat===bjsCat)return;
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name||r.city!==cityKey)return;
+if(!(r.price>=3))return;
+var key=r.name.toLowerCase().replace(/[’']/g,"'");
+if(seen[key])return;
+seen[key]=r;
+});
+});
+pool=Object.keys(seen).map(function(k){return seen[k];});
+if(!pool.length)return;
+pool.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);});
+pool=pool.slice(0,3);
+boCategoryData[bjsCat]=pool.map(function(r,i){
+return Object.assign({},r,{rank:i+1,bjsPick:true,bjsPickCity:cityKey});
+});
+});
+}
+}
+apply();
+setInterval(apply,500);
+})();</script>
+<style id="bop-bestofbest-style">
+#bopBestOfBestOverlay{display:none;position:fixed;inset:0;z-index:2147483000;background:#000;color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#bopBestOfBestOverlay.open{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.bobb-shell{width:min(560px,100%);margin:0 auto;padding:72px 22px 90px;box-sizing:border-box}
+.bobb-close{position:fixed;top:36px;left:20px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;font:900 9px/1.15 'Archivo Narrow',sans-serif;cursor:pointer;box-shadow:0 0 14px rgba(245,158,11,.5)}
+.bobb-title{text-align:center;font-family:'Fraunces',serif;font-weight:900;line-height:.92;letter-spacing:-.02em;margin:24px auto 0}
+.bobb-title .bobb-l1,.bobb-title .bobb-l2,.bobb-title .bobb-l3{display:block;font-size:clamp(3.2rem,15vw,5.4rem);white-space:nowrap}
+.bobb-title .bobb-l1{color:#fff;text-shadow:0 0 16px rgba(255,255,255,.35)}
+.bobb-title .bobb-l2{color:#E4002B;text-shadow:0 0 16px rgba(228,0,43,.5)}
+.bobb-title .bobb-l3{color:#F59E0B;text-shadow:0 0 16px rgba(245,158,11,.45)}
+.bobb-sub{text-align:center;margin:18px auto 0;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.38em;color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.5)}
+.bobb-rule{width:100%;height:1px;margin:28px auto 44px;background:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.7)}
+.bobb-city{margin:0 0 42px;text-align:left}
+.bobb-city-name{font-family:'Archivo Black',sans-serif;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin:0 0 8px}
+.bobb-empty{min-height:18px}
+.bobb-row{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-family:'Archivo Narrow',sans-serif;font-size:.86rem;color:#ddd}
+.bobb-rank{color:#F59E0B;font-weight:900;flex:0 0 14px}
+.bobb-name{flex:1;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.22);text-underline-offset:3px}
+.bobb-name:hover{color:#F59E0B}
+.bobb-rating{color:#F59E0B;font-weight:700;white-space:nowrap}
+.bobb-price{color:#9a9a9a;font-size:.75rem;white-space:nowrap}
+.bobb-pop{position:relative;margin:6px 0 4px 22px;padding:10px 32px 10px 12px;border-left:2px solid #F59E0B;background:rgba(245,158,11,.06);font-family:'Archivo Narrow',sans-serif;font-size:.8rem;line-height:1.45;color:#eee}
+.bobb-pop-x{position:absolute;top:6px;right:8px;background:none;border:0;color:#E4002B;font-size:16px;font-weight:900;cursor:pointer;line-height:1}
+.bobb-pop b{color:#F59E0B}
+.bobb-pop-src{display:block;margin-top:5px;color:#9a9a9a;font-size:.72rem}
+</style>
+<div id="bopBestOfBestOverlay" aria-hidden="true">
+<button type="button" class="bobb-close" id="bopBestOfBestClose">←<br>Back</button>
+<div class="bobb-shell">
+<h1 class="bobb-title"><span class="bobb-l1">Best Of</span><span class="bobb-l2">Best Of</span><span class="bobb-l3">Period</span></h1>
+<div class="bobb-sub">TOP THREES</div>
+<div class="bobb-rule"></div>
+<div id="bopBestOfBestList"></div>
+</div>
+</div>
+<script id="bop-bestofbest-v372">(function(){
+var overlay=document.getElementById('bopBestOfBestOverlay');
+var list=document.getElementById('bopBestOfBestList');
+var closeBtn=document.getElementById('bopBestOfBestClose');
+if(!overlay||!list)return;
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n;}
+function reviews(r){var n=parseInt(r&&r.reviews,10);return isNaN(n)?0:n;}
+function years(r){
+if(!r)return 0;
+var y=null;
+var src=r.openedDate||r.opened||r.since||r.established||'';
+var m=String(src).match(/(18|19|20)\d{2}/);
+if(m)y=parseInt(m[0],10);
+if(!y){var n=String(r.note||'').match(/since (18|19|20)\d{2}/i);if(n){var mm=n[0].match(/\d{4}/);if(mm)y=parseInt(mm[0],10);}}
+if(!y)return 0;
+return Math.max(0,new Date().getFullYear()-y);
+}
+function cmp(a,b){
+var ra=num(a.rating),rb=num(b.rating);
+if(rb!==ra)return rb-ra;
+var va=reviews(a),vb=reviews(b);
+var ya=years(a),yb=years(b);
+var rd=Math.abs(va-vb);
+if(rd<=500){
+if(ya!==yb)return yb-ya;
+return vb-va;
+}
+return vb-va;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function price(p){p=parseInt(p,10);return p>0?'$'.repeat(Math.min(4,p)):'';}
+var openPop=null;
+function build(){
+if(typeof BO_CITY_CONFIG!=='object'||!BO_CITY_CONFIG||typeof boCategoryData!=='object')return;
+var cities=Object.keys(BO_CITY_CONFIG).map(function(k){
+var c=BO_CITY_CONFIG[k]||{};
+return {key:k,name:c.displayName||k,cat:c.bjsPicksCat||c.bjs||('bjspicks'+k)};
+});
+cities.sort(function(a,b){return a.name.localeCompare(b.name);});
+var html='';
+cities.forEach(function(c){
+var arr=Array.isArray(boCategoryData[c.cat])?boCategoryData[c.cat].filter(function(r){return r&&r.name;}):[];
+var seen={},uniq=[];
+arr.forEach(function(r){var k=r.name.toLowerCase();if(seen[k])return;seen[k]=1;uniq.push(r);});
+uniq.sort(cmp);
+var top=uniq.slice(0,3);
+html+='<div class="bobb-city"><div class="bobb-city-name">'+esc(c.name)+'</div>';
+if(!top.length){html+='<div class="bobb-empty"></div>';}
+top.forEach(function(r,i){
+var id=c.key+'-'+i;
+html+='<div class="bobb-row" data-id="'+id+'"><span class="bobb-rank">'+(i+1)+'.</span><span class="bobb-name">'+esc(r.name)+'</span><span class="bobb-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span><span class="bobb-price">'+price(r.price)+'</span></div>';
+html+='<div class="bobb-pop" id="bobbpop-'+id+'" style="display:none"><button type="button" class="bobb-pop-x" aria-label="Close">×</button>';
+var why=r.why||'',note=r.note||'',addr=r.address||'';
+if(why)html+='<div><b>'+esc(why)+'</b></div>';
+if(note)html+='<div>'+esc(note)+'</div>';
+if(addr)html+='<div style="margin-top:4px;color:#bbb">'+esc(addr)+'</div>';
+var src=r.ratingSource?('Rating: '+esc(r.ratingSource)):'';
+var rn=r.ratingNote?esc(r.ratingNote):'';
+if(src||rn)html+='<span class="bobb-pop-src">'+src+(src&&rn?' — ':'')+rn+'</span>';
+html+='</div>';
+});
+html+='</div>';
+});
+list.innerHTML=html;
+}
+list.addEventListener('click',function(e){
+var x=e.target.closest('.bobb-pop-x');
+if(x){var p=x.closest('.bobb-pop');if(p){p.style.display='none';if(openPop===p)openPop=null;}return;}
+var row=e.target.closest('.bobb-row');
+if(!row)return;
+var pop=document.getElementById('bobbpop-'+row.getAttribute('data-id'));
+if(!pop)return;
+if(openPop&&openPop!==pop)openPop.style.display='none';
+var show=pop.style.display==='none';
+pop.style.display=show?'block':'none';
+openPop=show?pop:null;
+});
+function open(){build();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;document.body.style.overflow='hidden';document.documentElement.classList.add('bop-qr-bypass-active');}
+function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow='';document.documentElement.classList.remove('bop-qr-bypass-active');}
+if(closeBtn)closeBtn.addEventListener('click',close);
+window.openBopBestOfBest=open;
+window.closeBopBestOfBest=close;
+})();</script>
+
+<style id="bop-all-cities-lime-globe-v373">
+.bo-bottom-tile-row{display:flex;justify-content:center;align-items:flex-start;gap:26px;flex-wrap:nowrap}
+.bo-bottom-tile-row .bo-all-bjs-globe-launch{margin:18px 0}
+.bo-all-cities-lime-globe{border-color:#7CFC00!important;box-shadow:0 0 12px rgba(124,252,0,.72),inset 0 0 10px rgba(124,252,0,.22)!important}
+.bo-all-cities-lime-globe:before,.bo-all-cities-lime-globe:after,.bo-all-cities-lime-globe .bo-all-bjs-globe-lat,.bo-all-cities-lime-globe .bo-all-bjs-globe-lon{border-color:#7CFC00!important}
+.bo-all-cities-globe-launch:hover .bo-all-cities-lime-globe,.bo-all-cities-globe-launch:focus-visible .bo-all-cities-lime-globe{box-shadow:0 0 20px rgba(124,252,0,.95),inset 0 0 12px rgba(124,252,0,.3)!important}
+.bo-all-cities-globe-launch:focus-visible{outline:1px solid #7CFC00;outline-offset:5px}
+.bo-all-cities-globe-label{color:#7CFC00;text-shadow:0 0 7px rgba(124,252,0,.48);white-space:nowrap}
+.bo-all-cities-globe-label .bo-ac-lime{color:#7CFC00;text-shadow:0 0 7px rgba(124,252,0,.48)}
+.bo-all-cities-globe-label .bo-ac-white{color:#fff;text-shadow:0 0 7px rgba(255,255,255,.45)}
+.bo-all-cities-globe-label .bo-ac-gold{color:#F59E0B;text-shadow:0 0 7px rgba(245,158,11,.5)}
+</style>
 </body></html>
