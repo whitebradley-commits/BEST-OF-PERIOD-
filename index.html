@@ -43965,6 +43965,7 @@ new MutationObserver(function(){apply()}).observe(document.body,{childList:true,
 body:has(#bopLandingOverlay.open) #bopStaticLandingDock{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
 body:has(#bopLandingOverlay.open) #bopStaticLandingDock #bopStaticShare{display:flex!important;visibility:visible!important;opacity:1!important}
 #bopStaticVoiceMic{display:flex!important;align-items:center;justify-content:center}
+#bopStaticVoiceMic svg,#bopExclusiveVoiceMic svg,#bopVoiceMicBtn svg,#bopVoiceResults .bop-voice-retry svg{stroke:#FF2D95!important}
 /* Landing corner cluster: [BJS] [mail] ... gap ... [MIC alone in the corner] */
 body:has(#bopLandingOverlay.open) #bopInviteCornerRow2{right:92px!important;bottom:24px!important;gap:16px!important}
 body:has(#bopLandingOverlay.open) #bopCornerBjsBadge{display:none!important}
@@ -43977,18 +43978,27 @@ body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:none!important}
 #bopVoiceMicBtn.is-busy{opacity:.6}
 @keyframes bopVoiceIdle{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.5)}50%{box-shadow:0 0 16px rgba(245,158,11,.95)}}
 @keyframes bopVoiceLive{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-#bopVoiceBubble{position:fixed;right:14px;bottom:78px;z-index:2147483647;display:none;max-width:min(320px,calc(100vw - 28px));padding:10px 14px;border:1.5px solid #F59E0B;border-radius:14px;background:#050505;color:#fff;font:700 .82rem/1.35 'Archivo Narrow',Arial,sans-serif;box-shadow:0 0 14px rgba(245,158,11,.4)}
+#bopVoiceBubble{position:fixed;right:14px;bottom:78px;z-index:2147483647;display:none;max-width:min(320px,calc(100vw - 28px));padding:10px 14px;border:1.5px solid #FF2D95;border-radius:14px;background:#050505;color:#fff;font:700 .82rem/1.35 'Archivo Narrow',Arial,sans-serif;box-shadow:0 0 10px rgba(255,45,149,.55),0 0 26px rgba(255,45,149,.32)}
 #bopVoiceBubble.open{display:block}
-#bopVoiceBubble .bop-voice-bubble-label{display:block;margin-bottom:3px;color:#F59E0B;font:900 .62rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-transform:uppercase}
-#bopVoiceBubble.is-live .bop-voice-bubble-label{color:#E4002B}
-#bopVoiceBubble .bop-voice-bubble-text{color:#fff;font-style:italic}
+#bopVoiceBubble .bop-voice-bubble-label{display:block;margin-bottom:3px;color:#FF2D95;font:900 .62rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-transform:uppercase;text-shadow:0 0 8px rgba(255,45,149,.7)}
+#bopVoiceBubble.is-live .bop-voice-bubble-label{color:#FF2D95}
+#bopVoiceBubble .bop-voice-bubble-text{color:#E8B9CE;font-style:italic}
 #bopVoiceBubble .bop-voice-bubble-text:empty::before{content:'…';color:#777}
 #bopVoiceResults{position:fixed;inset:0;z-index:2147483647;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000;color:#fff}
 #bopVoiceResults.open{display:block}
 #bopVoiceResults .bop-voice-shell{width:min(560px,100%);margin:0 auto;padding:26px 16px 110px;box-sizing:border-box}
 #bopVoiceResults .bop-voice-close{position:sticky;top:14px;float:right;z-index:2;width:44px;height:44px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 1.2rem/1 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.55)}
-#bopVoiceResults .bop-voice-said-label{clear:both;margin:54px 0 4px;color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.12em;text-transform:uppercase}
-#bopVoiceResults .bop-voice-said{margin:0 0 14px;color:#fff;font:italic 700 1.05rem/1.3 'Archivo Narrow',Arial,sans-serif}
+#bopVoiceResults .bop-voice-controls{clear:both;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding-top:14px}
+#bopVoiceResults .bop-voice-toggle-wrap{display:inline-flex;align-items:center;gap:8px;cursor:pointer;-webkit-user-select:none;user-select:none}
+#bopVoiceResults .bop-voice-toggle{position:relative;display:inline-block;width:44px;height:26px;border-radius:999px;background:#1a1a1a;border:1.5px solid #555;transition:background .18s ease,border-color .18s ease}
+#bopVoiceResults .bop-voice-toggle input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+#bopVoiceResults .bop-voice-toggle-knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#888;transition:transform .18s ease,background .18s ease}
+#bopVoiceResults .bop-voice-toggle:has(input:checked){background:rgba(245,158,11,.18);border-color:#F59E0B}
+#bopVoiceResults .bop-voice-toggle:has(input:checked) .bop-voice-toggle-knob{transform:translateX(18px);background:#F59E0B;box-shadow:0 0 8px rgba(245,158,11,.75)}
+#bopVoiceResults .bop-voice-toggle-label{color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.08em}
+#bopVoiceResults .bop-voice-voice-btn{padding:6px 12px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:700 .74rem/1 'Archivo Narrow',Arial,sans-serif;cursor:pointer}
+#bopVoiceResults .bop-voice-said-label{clear:both;margin:54px 0 4px;color:#FF2D95;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 0 10px rgba(255,45,149,.65)}
+#bopVoiceResults .bop-voice-said{margin:0 0 14px;color:#E8B9CE;font:italic 700 1.05rem/1.3 'Archivo Narrow',Arial,sans-serif}
 #bopVoiceResults .bop-voice-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
 #bopVoiceResults .bop-voice-chip{padding:5px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .66rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase}
 #bopVoiceResults .bop-voice-chip.is-dim{border-color:#444;color:#999}
@@ -44018,6 +44028,10 @@ body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:none!important}
 <div id="bopVoiceResults" aria-label="Voice search results">
   <div class="bop-voice-shell">
     <button type="button" class="bop-voice-close" id="bopVoiceClose" aria-label="Close">&times;</button>
+    <div class="bop-voice-controls">
+      <label class="bop-voice-toggle-wrap"><span class="bop-voice-toggle" id="bopVoiceToggleTrack"><input type="checkbox" id="bopVoiceToggle" aria-label="Voice replies on or off"><span class="bop-voice-toggle-knob"></span></span><span class="bop-voice-toggle-label">VOICE</span></label>
+      <button type="button" class="bop-voice-voice-btn" id="bopVoiceCycle" aria-label="Cycle voice">🔊 <span id="bopVoiceCycleLabel">Voice</span></button>
+    </div>
     <div class="bop-voice-said-label">ASK US ANYTHING!</div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
@@ -44169,6 +44183,7 @@ if(!q.labels.length&&!q.tier)chips.push('<span class="bop-voice-chip is-dim">No 
 chips.push('<span class="bop-voice-chip is-dim">'+rows.length+' spot'+(rows.length===1?'':'s')+'</span>');
 summary.innerHTML=chips.join('');
 note.textContent=scope;
+speakResults(q,rows,scope);
 if(!rows.length){list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';return;}
 list.innerHTML=rows.map(function(x,i){
 var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
@@ -44179,6 +44194,27 @@ var dist=(x.d==null||!x.exact)?'':(x.d<.1?'<0.1':x.d.toFixed(1))+' mi';
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
 list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
+});
+}
+function speakSummary(q,rows,scope){
+if(!rows.length){
+var bits=['I couldn\u2019t find anything matching that.'];
+if(scope)bits.push(scope);
+bits.push('Try something like cheesesteak, or fine dining steak.');
+return bits.join(' ');
+}
+var top=rows[0].r,lvl=0;try{lvl=boNearPriceLevel(top)||0;}catch(e){}
+var what=q.labels.length?q.labels.join(' or ')+' spots':'spots';
+var count=rows.length+' '+what+(q.tier?' \u2014 '+(q.tier==='fine'?'fine dining':q.tier==='dive'?'dive':'casual'):'');
+var pieces=['Found '+count+'.'];
+pieces.push('Top pick: '+top.name+(top.rating?', rated '+top.rating+' stars':'')+'.');
+if(rows[0].d!=null&&rows[0].exact)pieces.push('It\u2019s about '+(rows[0].d<1?'under a mile':Math.round(rows[0].d)+' miles')+' away.');
+return pieces.join(' ');
+}
+function speakResults(q,rows,scope){
+var text=speakSummary(q,rows,scope);
+speak(text,function(){
+if(voiceOn()&&panel.classList.contains('open'))setTimeout(function(){if(panel.classList.contains('open'))startListening();},500);
 });
 }
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
