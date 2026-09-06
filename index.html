@@ -43515,6 +43515,55 @@ if(im.dataset.bobbPhoto){media.classList.add('bobb-card-media-placeholder');medi
 else if(im.classList.contains('bobb-card-placeholder')){media.innerHTML='<span class="bobb-card-brandmark"><span class="bobb-brand-white">Best of</span><span class="bobb-brand-gold">Per<span class="bobb-brand-apple-i-wrap">i<span class="bobb-brand-pin">\u2022</span></span>od</span></span>';}
 },true);
 })();</script>
+<style id="bop-legend-layout-v428">
+#bjsWhyOverlay.open{z-index:2147483450!important}
+#legendOverlay .bo-legend-vendors > h3{font-size:clamp(1.6rem,7.5vw,2.8rem)!important;letter-spacing:.08em}
+#legendOverlay .bop-nb-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:14px auto 0}
+#legendOverlay .bop-nb-pair .bo-neighborhood-key-item{margin:0!important;flex-direction:column;text-align:center;gap:8px!important;padding:14px 10px!important}
+#legendOverlay .bop-nb-pair .bo-neighborhood-key-item small{display:none!important}
+#legendOverlay .bop-nb-note{max-width:520px;margin:8px auto 0;text-align:center;color:#9a9a9a;font:700 .78rem/1.3 Arial,sans-serif;letter-spacing:.04em}
+#legendOverlay .bop-live-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px;margin:12px auto 0}
+#legendOverlay .bop-live-badge{border:1.5px solid #493a1d;border-radius:14px;background:#0b0b0b;padding:12px 6px 10px;text-align:center;color:#fff}
+#legendOverlay .bop-live-badge svg{width:34px;height:34px;display:block;margin:0 auto 6px}
+#legendOverlay .bop-live-badge b{display:block;font:900 .62rem/1.15 'Archivo Black',sans-serif;letter-spacing:.06em;color:#F59E0B;text-transform:uppercase}
+#legendOverlay .bop-live-badge small{display:block;color:#bbb;font:600 .66rem/1.3 Arial,sans-serif;margin-top:4px}
+</style>
+<script id="bop-legend-layout-v428-script">(function(){
+function txt(el){return (el.textContent||'').replace(/\s+/g,' ').trim();}
+function findRow(list,re){return Array.from(list.children).find(function(c){return re.test(txt(c));});}
+function layoutBadges(){
+var list=document.querySelector('#boLegendBadges .bo-legend-list');if(!list||list.dataset.v428==='1')return;
+var italy=list.querySelector('.bo-neighborhood-key-item[data-neighborhood="Little Italy"]'),china=list.querySelector('.bo-neighborhood-key-item[data-neighborhood="Chinatown"]');
+var sticker=list.querySelector('.bo-legend-sticker-preview'),vendor=list.querySelector('.bo-legend-vendor-row');
+var bestOf=findRow(list,/^Best of\s*City|Best of.*highest-rated in the category/i),bjs=findRow(list,/^BJS PICK/i),mich=findRow(list,/Michelin Stars/i),jb=findRow(list,/James Beard/i);
+if(!(italy&&china&&sticker&&vendor&&bestOf&&bjs&&mich&&jb))return;
+list.dataset.v428='1';
+var order=[sticker,vendor,bestOf,bjs,mich,jb];
+order.forEach(function(el){list.appendChild(el);});
+Array.from(list.children).forEach(function(c){if(order.indexOf(c)===-1&&c!==italy&&c!==china&&!c.classList.contains('bop-nb-pair')&&!c.classList.contains('bop-nb-note'))list.appendChild(c);});
+var pair=document.createElement('div');pair.className='bop-nb-pair';pair.appendChild(italy);pair.appendChild(china);list.appendChild(pair);
+var note=document.createElement('div');note.className='bop-nb-note';note.textContent='Not available in every city.';list.appendChild(note);
+}
+function liveSection(){
+var sec=document.querySelector('#legendOverlay .bo-legend-vendors');if(!sec)return;
+var h=sec.querySelector(':scope > h3');if(h&&txt(h)!=='GOING LIVE'){h.textContent='GOING LIVE';h.removeAttribute('style');}
+if(sec.querySelector('.bop-live-grid'))return;
+var list=sec.querySelector('.bo-legend-list');if(!list)return;
+function icon(id){var t=document.getElementById(id);var s=t&&t.querySelector('svg');return s?s.outerHTML:'';}
+var items=[
+['bopGoLiveSafeMeetup','MEET-UP','Safe buy/sell drops'],
+['bopGoLiveRealtor','OPEN HOUSES & LISTINGS','Homes live on the map'],
+['bopGoLiveCarForSale','CARS FOR SALE','Autos live on the map'],
+['bopGoLiveFoodTruck','FOOD TRUCKS','Live truck pins'],
+['bopGoLiveVendorStand','STREET VENDORS','Live vendor pins'],
+['bopGoLiveYardSale','GARAGE SALES','Weekend sales, live']
+];
+var grid=document.createElement('div');grid.className='bop-live-grid';
+items.forEach(function(it){var ic=icon(it[0]);if(!ic)return;var b=document.createElement('div');b.className='bop-live-badge';b.innerHTML=ic+'<b>'+it[1]+'</b><small>'+it[2]+'</small>';grid.appendChild(b);});
+if(grid.children.length)list.insertAdjacentElement('beforebegin',grid);
+}
+setInterval(function(){layoutBadges();liveSection();},600);
+})();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
 var lugerLocations=[
