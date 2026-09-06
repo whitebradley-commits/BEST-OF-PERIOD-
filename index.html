@@ -16951,6 +16951,8 @@ if(el&&el.classList.contains('open')) return candidates[i];
 return 'bestOfOverlay';
 })();
 window.bopLegendReturnPage = window.__bopLegendOrigin;
+window.bopLegendReturnOpenIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='legendOverlay';});
+window.bopLegendReturnScroll=window.scrollY||0;
 closeAllPageOverlays();
 const legend = document.getElementById('legendOverlay');
 if(legend){ legend.classList.add('open'); legend.scrollTop = 0; }
@@ -18825,7 +18827,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       </div>
       <p class="vendor-copy">Someone from <strong>BJS</strong> will be with you shortly.</p>
       <input class="vendor-website" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
-      <button class="vendor-submit" type="submit">ENTER</button>
+      <button class="vendor-submit" type="submit">SUBMIT</button>
       <p class="vendor-status" aria-live="polite"></p>
     </form>
   </div>
@@ -20962,6 +20964,10 @@ if(dock.parentElement!==host)host.appendChild(dock);
 function closePages(){document.querySelectorAll('.open,.active,.is-open,.tg-open').forEach(function(page){if(page.id&&(/Overlay$|Page$/.test(page.id)||page.id==='bopWorldwideLanding'))page.classList.remove('open','active','is-open','tg-open')})}
 function openLegend(event){
 if(event){event.preventDefault();event.stopImmediatePropagation()}
+window.bopLegendReturnOpenIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='legendOverlay';});
+window.bopLegendReturnScroll=window.scrollY||0;
+var movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
+window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
 closePages();var page=document.getElementById('legendOverlay');if(page){page.classList.add('open');page.setAttribute('aria-hidden','false');page.scrollTop=0}window.scrollTo(0,0);
 }
 document.addEventListener('click',function(event){var button=event.target.closest&&event.target.closest('.bop-icons-only-legend');if(button)openLegend(event)},true);
@@ -28662,6 +28668,10 @@ p.classList.remove('open','active','is-open','tg-open');
 function openLegendFromBadge(event){
 event.preventDefault();
 event.stopPropagation();
+window.bopLegendReturnOpenIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='legendOverlay';});
+window.bopLegendReturnScroll=window.scrollY||0;
+var movies=document.getElementById('boMoviesPage'),worldwide=document.getElementById('boWorldwidePage'),best=document.getElementById('bestOfOverlay');
+window.bopLegendReturnPage=movies&&movies.classList.contains('open')?'boMoviesPage':(worldwide&&worldwide.classList.contains('open')?'boWorldwidePage':(best&&best.classList.contains('open')?'bestOfOverlay':'bopLandingOverlay'));
 closeOtherOverlays();
 var page = document.getElementById('legendOverlay');
 if(page){ page.classList.add('open'); page.scrollTop = 0; }
