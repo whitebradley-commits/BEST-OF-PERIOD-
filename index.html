@@ -42486,15 +42486,16 @@ var seen={},uniq=[];
 arr.forEach(function(r){var k=r.name.toLowerCase();if(seen[k])return;seen[k]=1;uniq.push(r);});
 uniq.sort(cmp);
 var top=uniq.slice(0,3);
-html+='<div class="bobb-city"><div class="bobb-city-name">'+esc(c.name)+'</div>';
+html+='<div class="bobb-city"><div class="bobb-city-name bobb-city-link" role="button" tabindex="0" data-city-key="'+esc(c.key)+'">'+esc(c.name)+' \u2192</div>';
 if(!top.length){html+='<div class="bobb-empty"></div>';}
 top.forEach(function(r,i){
 var id=c.key+'-'+i;
 html+='<div class="bobb-row" data-id="'+id+'"><span class="bobb-rank">'+(i+1)+'.</span><span class="bobb-name">'+esc(r.name)+'</span><span class="bobb-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span><span class="bobb-price">'+price(r.price)+'</span></div>';
 html+='<div class="bobb-pop bobb-card" id="bobbpop-'+id+'" style="display:none"><div class="bobb-pop-inner bobb-card-inner"><button type="button" class="bobb-pop-x" aria-label="Close">×</button>';
 var img=r.image||((typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'');
-var brandPlaceholder='<span class="bobb-card-brandmark"><span class="bobb-brand-white">Best of</span><span class="bobb-brand-gold">Per<span class="bobb-brand-apple-i-wrap">i<span class="bobb-brand-pin">\u2022</span></span>od</span></span>';
-html+='<div class="bobb-card-media">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" onerror="this.parentElement.innerHTML=\''+brandPlaceholder.replace(/'/g,"\\'")+'\'">':brandPlaceholder)+'</div>';
+if(!img){var wantN=String(r.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim();Object.keys(boCategoryData).some(function(cc){var L=boCategoryData[cc];if(!Array.isArray(L))return false;return L.some(function(x){if(x&&x.image&&String(x.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim()===wantN){img=x.image;return true;}return false;});});}
+var brandPlaceholder='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period \u2014 Verified Location" loading="lazy">';
+html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1">':brandPlaceholder)+'</div>';
 html+='<div class="bobb-card-body">';
 html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
 var stars=parseInt(r.michelinStars,10)||0;
@@ -43310,6 +43311,7 @@ if(hit)return hit;
 }
 return 'otheroptions';
 }
+window.bopGoToCityFull=function(k){goToCity(k);};
 function goToCity(cityKey){
 if(!cityKey||typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[cityKey])return;
 var allbjs=document.getElementById('bopAllBjsPicks');if(allbjs)allbjs.classList.remove('open');
@@ -43487,6 +43489,28 @@ wrap.insertAdjacentElement('afterend',hint);
 }
 setInterval(build,600);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
+})();</script>
+<style id="bop-bobb-links-placeholder-v427">
+#bopBestOfBestOverlay .bobb-city-link{cursor:pointer}
+#bopBestOfBestOverlay .bobb-city-link:active{color:#fff}
+#bopBestOfBestOverlay .bobb-card-media-placeholder{background:#000;height:190px}
+#bopBestOfBestOverlay .bobb-card-media-placeholder img.bobb-card-placeholder{width:100%;height:100%;object-fit:contain;padding:8px;box-sizing:border-box;display:block}
+</style>
+<script id="bop-bobb-links-placeholder-v427-script">(function(){
+document.addEventListener('click',function(e){
+var h=e.target.closest&&e.target.closest('#bopBestOfBestOverlay .bobb-city-link');if(!h)return;
+e.preventDefault();e.stopImmediatePropagation();
+var o=document.getElementById('bopBestOfBestOverlay');if(o){o.classList.remove('open');o.style.display='';}
+document.documentElement.classList.remove('bop-bobb-open');document.body.style.overflow='';
+if(typeof window.bopGoToCityFull==='function')window.bopGoToCityFull(h.dataset.cityKey);
+},true);
+/* If a real photo fails to load in a Top Threes popup, fall back to the badge, then to the text mark. */
+document.addEventListener('error',function(e){
+var im=e.target;if(!(im&&im.tagName==='IMG'))return;
+var media=im.closest&&im.closest('#bopBestOfBestOverlay .bobb-card-media');if(!media)return;
+if(im.dataset.bobbPhoto){media.classList.add('bobb-card-media-placeholder');media.innerHTML='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period" loading="lazy">';}
+else if(im.classList.contains('bobb-card-placeholder')){media.innerHTML='<span class="bobb-card-brandmark"><span class="bobb-brand-white">Best of</span><span class="bobb-brand-gold">Per<span class="bobb-brand-apple-i-wrap">i<span class="bobb-brand-pin">\u2022</span></span>od</span></span>';}
+},true);
 })();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
