@@ -43213,12 +43213,13 @@ ready(function(){apply();setInterval(apply,250);});
 <style id="bop-live-page-titles-v420">
 .bop-world-divider+.bo-live-page-title{margin-top:10px}
 .bo-live-page-title{margin:-16px auto 26px;padding:0 10px;text-align:center;font:900 clamp(1.55rem,7.6vw,2.5rem)/1.05 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 12px rgba(245,158,11,.55)}
+.bo-meetup-title-hand{display:inline-block;margin:0 .12em;font-size:.62em;line-height:1;vertical-align:middle;transform:translateY(-.05em);text-shadow:none}
 </style>
 <script id="bop-live-page-titles-v420-script">(function(){
 var TITLES=[
 {root:'#bopRealtorOverlay',title:'OPEN HOUSES AND LISTINGS'},
 {root:'#bopCarForSaleOverlay',title:'AUTOS'},
-{root:'#bopSafeMeetupOverlay',title:'MEETUP'},
+{root:'#bopSafeMeetupOverlay',title:'MEETUP',html:'MEET<span class="bo-meetup-title-hand" aria-hidden="true">\ud83e\udd1d</span>UP'},
 {root:'#bopYardSaleOverlay',title:'YARD SALES'}
 ];
 function ensure(){
@@ -43227,7 +43228,8 @@ var root=document.querySelector(t.root);if(!root)return;
 var lock=root.querySelector('.bop-golive-lockup-sub')||root.querySelector('.bop-golive-lockup')||root.querySelector('.bop-world-divider');if(!lock)return;
 var h=root.querySelector('.bo-live-page-title');
 if(!h){h=document.createElement('h2');h.className='bo-live-page-title';lock.insertAdjacentElement('afterend',h);}
-if(h.textContent!==t.title)h.textContent=t.title;
+var want=t.html||t.title;
+if(h.dataset.want!==want){h.dataset.want=want;if(t.html)h.innerHTML=t.html;else h.textContent=t.title;}
 if(lock.nextElementSibling!==h)lock.insertAdjacentElement('afterend',h);
 });
 }
