@@ -23490,7 +23490,7 @@ var name=String(item&&item.name||'').trim().toLowerCase();
 var explicitlyChosen=!!(item&&(item.bjsPick===true||item.bjsPickCity===city));
 var allow=explicitlyChosen||(approved[city]||[]).indexOf(name)>-1;
 if(!allow)return false;
-var key=String(item&&item.name||'').toLowerCase()+'|'+String(item&&item.address||'').toLowerCase();
+var key=String(item&&item.name||'').toLowerCase().replace(/[\u2019']/g,"'").replace(/\s+/g,' ').trim();
 if(!item||!item.name||seen.has(key))return false;seen.add(key);return true;
 });
 if(picks.length)groups.push({city:cityForCategory(cat),picks:picks});
@@ -23498,7 +23498,7 @@ if(picks.length)groups.push({city:cityForCategory(cat),picks:picks});
 groups.sort(function(a,b){return a.city.localeCompare(b.city);});
 var appleSvg='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/><path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
 var restaurantsHTML=groups.map(function(group){
-return '<section class="bop-all-bjs-group"><h3 class="bop-all-bjs-city">'+esc(group.city)+'</h3><ol class="bop-all-bjs-list">'+group.picks.map(function(item,i){var sources=(item.bjsSources||[]).join(' · ');return '<li class="bop-all-bjs-item"><span class="bop-all-bjs-num">'+String(i+1).padStart(2,'0')+'</span><span class="bop-all-bjs-name">'+esc(item.name)+(sources?'<small class="bop-all-bjs-source">'+esc(sources)+'</small>':'')+'</span></li>';}).join('')+'</ol></section>';
+return '<section class="bop-all-bjs-group"><h3 class="bop-all-bjs-city">'+esc(group.city)+'</h3><ol class="bop-all-bjs-list">'+group.picks.map(function(item,i){var sources=(item.bjsSources||[]).join(' · ');return '<li class="bop-all-bjs-item bop-all-bjs-tap" data-pick-name="'+esc(item.name)+'" data-pick-city="'+esc(item.city||item.bjsPickCity||'')+'" role="button" tabindex="0"><span class="bop-all-bjs-num">'+String(i+1).padStart(2,'0')+'</span><span class="bop-all-bjs-name">'+esc(item.name)+(sources?'<small class="bop-all-bjs-source">'+esc(sources)+'</small>':'')+'</span></li>';}).join('')+'</ol></section>';
 }).join('');
 var hotelPicks=[{city:'Los Angeles',name:'Chateau Marmont',area:'West Hollywood',note:'BJS Hotel Pick'}];
 var hotelsHTML=hotelPicks.map(function(h){
@@ -41691,11 +41691,22 @@ var en=[
 {name:"Atelier Manna",rating:"4.5 / 5",price:3,address:"1076 N Coast Hwy 101, Encinitas, CA 92024"},
 {name:"Sushi Lounge",rating:"4.3 / 5",price:2,address:"461 Santa Fe Dr, Encinitas, CA 92024"}
 ];
+var __contactIdx=null,__contactIdxAt=0;
+function __norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function __contactFor(name){
+var now=Date.now();
+if(!__contactIdx||now-__contactIdxAt>5000){
+__contactIdx={};__contactIdxAt=now;
+if(typeof boCategoryData==='object'&&boCategoryData){Object.keys(boCategoryData).forEach(function(cat){if(/^bestof/.test(cat))return;var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var k=__norm(r.name);var b=__contactIdx[k]||(__contactIdx[k]={});if(r.address&&!b.address)b.address=r.address;if(r.phone&&!b.phone)b.phone=r.phone;if(r.url&&!b.url)b.url=r.url;if(r.image&&!b.image)b.image=r.image;});});}
+}
+return __contactIdx[__norm(name)]||{};
+}
 function build(rows,cityKey,rankOffset){
 return rows.map(function(row,i){
-var addr=row.address||"";
+var cx=__contactFor(row.name);
+var addr=row.address||cx.address||"";
 return {rank:(rankOffset||0)+i+1,name:row.name,city:cityKey,rating:row.rating,price:row.price,
-address:addr,phone:row.phone||"",url:row.url||"",
+address:addr,phone:row.phone||cx.phone||"",url:row.url||cx.url||"",image:row.image||cx.image||"",
 directionsUrl:addr?("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(addr)):"",
 why:row.why||"",note:row.note||"",openedDate:row.openedDate||"",
 ratingSource:row.ratingSource||"BJS aggregate",ratingNote:row.ratingNote||"",hue:"5, 45%, 22%",
@@ -42687,6 +42698,125 @@ var h=document.getElementById('webPopupFallbackHost');if(h)h.textContent=host;
 if(!timer&&!f.classList.contains('show')){timer=setTimeout(function(){timer=null;if(o.classList.contains('open'))f.classList.add('show');},2500);}
 }
 setInterval(sync,300);
+})();</script>
+<script id="bop-photo-overrides-v416">(function(){
+/* Exact-venue photo overrides, keyed by restaurant name. Sources: the
+restaurant's own gallery or its OpenTable profile hero. Reviewed by Brad. */
+var PHOTOS={
+"market restaurant + bar":"https://marketdelmar.com/wp-content/uploads/2023/03/1.jpg",
+"sushi ota":"https://resizer.otstatic.com/v4/photos/92734779-1?width=1280&height=720"
+};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;
+list.forEach(function(r){if(!r||!r.name)return;var u=PHOTOS[norm(r.name)];if(u&&!r.image){r.image=u;r.imagePosition=r.imagePosition||'center';r.photoPolicy='exact-venue-approved';}});});
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){apply();setInterval(apply,600);});
+})();</script>
+<style id="bop-all-bjs-pick-card-v417">
+#bopAllBjsPicks .bop-all-bjs-tap{cursor:pointer}
+#bopAllBjsPicks .bop-all-bjs-tap:active{background:rgba(245,158,11,.08)}
+#bopAllBjsPicks .bop-all-bjs-hotel-item{cursor:pointer}
+#bopPickCardPop{position:fixed;inset:0;z-index:2147483300;display:none;background:rgba(0,0,0,.84);padding:14px;box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Archivo Narrow',Arial,sans-serif}
+#bopPickCardPop.open{display:block}
+#bopPickCardPop .bobb-pop-inner{width:min(440px,100%);margin:8vh auto 0;position:relative;padding:0;border-left:3px solid #F59E0B;background:#0b0b0b;overflow:hidden;color:#eee}
+#bopPickCardPop .bobb-pop-x{position:absolute;top:6px;right:8px;background:none;border:0;color:#E4002B;font-size:22px;font-weight:900;line-height:1;cursor:pointer;z-index:2}
+#bopPickCardPop .bobb-card-media{width:100%;height:150px;background:#151515;display:flex;align-items:center;justify-content:center}
+#bopPickCardPop .bobb-card-media img{width:100%;height:100%;object-fit:cover;display:block}
+#bopPickCardPop .bobb-card-body{padding:12px 14px 14px}
+#bopPickCardPop .bobb-card-name{font-weight:800;font-size:1.05rem;color:#fff;margin-bottom:3px;padding-right:22px}
+#bopPickCardPop .bobb-card-meta{display:flex;gap:10px;align-items:center;font-size:.85rem;margin-bottom:8px}
+#bopPickCardPop .bobb-card-rating{color:#F59E0B;font-weight:700}
+#bopPickCardPop .bobb-card-price{color:#bbb;letter-spacing:1px}
+#bopPickCardPop .bobb-card-stars{color:#F59E0B}
+#bopPickCardPop .bobb-card-desc{font-size:.9rem;line-height:1.45;color:#ddd;margin-bottom:8px}
+#bopPickCardPop .bobb-card-line{font-size:.86rem;color:#bbb;line-height:1.6}
+#bopPickCardPop .bobb-card-line a{color:#F59E0B;text-decoration:none;font-weight:800}
+#bopPickCardPop .bop-pick-badge{display:inline-block;margin-bottom:8px;padding:2px 8px;border:1.5px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .62rem/1.5 'Archivo Black',Arial,sans-serif;letter-spacing:.1em}
+#bopPickCardPop .bobb-card-brandmark{font-family:'Archivo Black',Arial,sans-serif;font-size:17px;line-height:1.15;text-align:center;display:flex;flex-direction:column;align-items:center}
+#bopPickCardPop .bobb-brand-white{color:#fff}#bopPickCardPop .bobb-brand-gold{color:#F59E0B;position:relative}
+#bopPickCardPop .bobb-brand-apple-i-wrap{position:relative;display:inline-block}
+#bopPickCardPop .bobb-brand-pin{position:absolute;left:50%;top:-0.42em;transform:translateX(-50%);font-size:.42em;color:#F59E0B;line-height:1}
+</style>
+<div id="bopPickCardPop" role="dialog" aria-modal="true" aria-label="BJS Pick"><div class="bobb-pop-inner"><button type="button" class="bobb-pop-x" aria-label="Close">&times;</button><div id="bopPickCardBody"></div></div></div>
+<script id="bop-all-bjs-pick-card-v417-script">(function(){
+var pop=document.getElementById('bopPickCardPop'),body=document.getElementById('bopPickCardBody');if(!pop||!body)return;
+var SRC_RE=/(\bgoogle\b|\byelp\b|\btripadvisor\b|trip\.com|\bopentable\b|restaurant guru|restaurantji|wanderlog|\bsirved\b|\bzagat\b|thefork|uber eats|doordash|\bfacebook\b|hotels\.com|booking\.com|\baggregate\b|\baveraged?\b|\brated\b|surfaced this pass|\bprovisional\b|\bplaceholder\b|\d(?:\.\d)?\s*\/\s*5|\(\s*[\d,]+\+?\s*(?:reviews?|votes?)\s*\))/i;
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function price(p){p=parseInt(p,10);return p>0?'$'.repeat(Math.min(4,p)):'';}
+function strip(s){return String(s||'').replace(/<[^>]+>/g,'');}
+function desc(r){var parts=[];if(r.why)parts.push(strip(r.why));if(r.note&&norm(strip(r.note))!==norm(strip(r.why||'')))parts.push(strip(r.note));if(!parts.length&&r.ratingNote)parts.push(String(r.ratingNote));var s=parts.join(' ').split(/(?<=[.!?])\s+/).filter(function(t){return t&&!SRC_RE.test(t);});var seen={};s=s.filter(function(t){var k=norm(t);if(seen[k])return false;seen[k]=1;return true;});var out=s.join(' ').replace(/\s+/g,' ').trim();if(out&&!/[.!?]$/.test(out))out+='.';return out;}
+function find(name,city){
+var want=norm(name),best=null,fallback=null;
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||norm(r.name)!==want)return;if(city&&(r.city===city||r.bjsPickCity===city)){if(!best||(!best.address&&r.address)||(!best.phone&&r.phone))best=r;}else if(!fallback||(!fallback.address&&r.address))fallback=r;});});
+return best||fallback;
+}
+function show(r,label){
+var img=r.image||((typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'');
+var brand='<span class="bobb-card-brandmark"><span class="bobb-brand-white">Best of</span><span class="bobb-brand-gold">Per<span class="bobb-brand-apple-i-wrap">i<span class="bobb-brand-pin">\u2022</span></span>od</span></span>';
+var h='<div class="bobb-card-media">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy">':brand)+'</div>';
+h+='<div class="bobb-card-body">';
+h+='<span class="bop-pick-badge">'+esc(label||'BJS PICK')+'</span>';
+h+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
+var stars=parseInt(r.michelinStars,10)||0;
+h+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span>'+(price(r.price)?'<span class="bobb-card-price">'+price(r.price)+'</span>':'')+(stars?'<span class="bobb-card-stars">'+'\u2605'.repeat(stars)+' Michelin</span>':'')+'</div>';
+var dd=desc(r);if(dd)h+='<div class="bobb-card-desc">'+esc(dd)+'</div>';
+if(r.address)h+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
+if(r.phone)h+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">Call '+esc(r.phone)+'</a></div>';
+if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener">Directions</a></div>';
+if(r.url)h+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
+h+='</div>';
+body.innerHTML=h;var im=body.querySelector('.bobb-card-media img');if(im)im.addEventListener('error',function(){im.parentElement.innerHTML=brand;});pop.classList.add('open');pop.scrollTop=0;
+}
+function close(){pop.classList.remove('open');}
+document.addEventListener('click',function(e){
+var t=e.target;
+if(t.closest&&t.closest('#bopPickCardPop .bobb-pop-x')){close();return;}
+if(t===pop){close();return;}
+var item=t.closest&&t.closest('#bopAllBjsPicks .bop-all-bjs-tap');
+if(item){e.preventDefault();var r=find(item.dataset.pickName,item.dataset.pickCity);if(r)show(r,r.bjsPickLabel||'BJS PICK');return;}
+var hotel=t.closest&&t.closest('#bopAllBjsPicks .bop-all-bjs-hotel-item');
+if(hotel){e.preventDefault();var hr=find('Chateau Marmont','losangeles');if(hr)show(hr,'BJS HOTEL PICK');return;}
+},true);
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close();var k=e.target&&e.target.closest&&e.target.closest('#bopAllBjsPicks .bop-all-bjs-tap');if(k&&(e.key==='Enter'||e.key===' ')){e.preventDefault();k.click();}});
+})();</script>
+<script id="bop-contact-crossfill-v418">(function(){
+/* If any copy of a restaurant anywhere on the site has an address, phone or
+website, every other copy of that restaurant gets it too. */
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+var best={};
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var k=norm(r.name);var b=best[k]||(best[k]={});if(r.address&&!b.address)b.address=r.address;if(r.phone&&!b.phone)b.phone=r.phone;if(r.url&&!b.url)b.url=r.url;});});
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var b=best[norm(r.name)];if(!b)return;if(!r.address&&b.address)r.address=b.address;if(!r.phone&&b.phone)r.phone=b.phone;if(!r.url&&b.url)r.url=b.url;if(r.address&&!r.directionsUrl)r.directionsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r.address);});});
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){apply();setInterval(apply,700);});
+})();</script>
+<script id="bop-contact-patch-v419">(function(){
+/* Verified contact fills (home markets). Phone numbers only where confirmed. */
+var C={
+"chez loma":{address:"1132 Loma Ave, Coronado, CA 92118",phone:"(619) 435-0661",url:"https://www.chezloma.com/"},
+"bali hai":{url:"https://www.balihairestaurant.com/"},
+"coasterra":{url:"https://www.cohnrestaurants.com/coasterra"},
+"solare ristorante":{url:"https://www.solarelounge.com/"},
+"kindred":{url:"https://www.barkindred.com/"},
+"nick's on state":{url:"https://www.nicksonstate.com/"},
+"pacific coast grill":{url:"https://pacificcoastgrill.com/"},
+"valentina":{url:"https://restaurantvalentina.com/"},
+"barona oaks steakhouse":{url:"https://www.barona.com/dining/barona-oaks-steakhouse"},
+"watertable":{phone:"(714) 698-1234",url:"https://www.hyatt.com/en-US/hotel/california/hyatt-regency-huntington-beach-resort-and-spa/hunrh"}
+};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var c=C[norm(r.name)];if(!c)return;if(c.address&&!r.address)r.address=c.address;if(c.phone&&!r.phone)r.phone=c.phone;if(c.url&&!r.url)r.url=c.url;if(r.address&&!r.directionsUrl)r.directionsUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r.address);});});
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){apply();setInterval(apply,250);});
 })();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
