@@ -1903,9 +1903,10 @@ document.addEventListener('click', function(e){
 var link = e.target.closest('a[target="_blank"]');
 if(!link) return;
 if(e.target.closest('.fb-btn, .ig-btn, .bo-fb-btn, .bo-ig-btn')) return;
-if(link.id === 'webPopupOpenTab' || link.id === 'socialPopupOpen') return;
+if(link.id === 'webPopupOpenTab' || link.id === 'socialPopupOpen' || link.id === 'webPopupFallbackOpen' || link.hasAttribute('data-no-popup')) return;
 var href = link.getAttribute('href');
 if(!href) return;
+if(/google\.[a-z.]+\/maps|maps\.apple\.com|goo\.gl|maps\.app/i.test(href)) return;
 e.preventDefault();
 openInPopup(href);
 });
@@ -3764,7 +3765,8 @@ rating: "4.4", ratingNote: "Tripadvisor 4.4 (712 reviews). Reviews run genuinely
 why: "A Little Italy spot known for its large selection of fresh, hand-made pastas",
 note: "Offers roughly 75 fresh pasta recipes made in-house daily, from a sister concept to Monello next door. Try the cheese-wheel pasta prepared tableside.",
 url: "https://www.lovebencotto.com/", address: "750 W Fir St, San Diego, CA 92101",
-phone: "(619) 450-4786", hours: [{ days: [1], open: '16:00', close: '21:30' }, { days: [2,3,4,5,6,0], open: '12:00', close: '21:30' }], hue: "35, 30%, 24%", price: 3, instagram: null, facebook: null
+phone: "(619) 450-4786", hours: [{ days: [1], open: '16:00', close: '21:30' }, { days: [2,3,4,5,6,0], open: '12:00', close: '21:30' }], hue: "35, 30%, 24%", price: 3, instagram: null, facebook: null,
+neighborhood: "Little Italy", neighborhoodCity: "sddowntown"
 }
 ],
 tacos: [
@@ -21070,9 +21072,11 @@ before every other link handler, so this one decision wins everywhere. */
 window.addEventListener('click',function(event){
 if(event.defaultPrevented||event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
 var link=event.target.closest&&event.target.closest('a[href]');if(!link)return;
-if(link.id==='webPopupOpenTab'||link.id==='socialPopupOpen')return;
+if(link.id==='webPopupOpenTab'||link.id==='socialPopupOpen'||link.id==='webPopupFallbackOpen'||link.hasAttribute('data-no-popup'))return;
 var url;try{url=new URL(link.href,location.href)}catch(_error){return}
 if(!/^https?:$/.test(url.protocol)||url.origin===location.origin)return;
+/* Maps and app-store style links refuse to be framed; let them open natively. */
+if(/(^|\.)google\.[a-z.]+$/i.test(url.host)&&/\/maps/i.test(url.pathname+url.search)||/maps\.apple\.com|goo\.gl|maps\.app/i.test(url.host))return;
 event.preventDefault();event.stopImmediatePropagation();
 if(typeof window.openInPopup==='function'){window.openInPopup(url.href);return;}
 var popup=null;try{popup=window.open(url.href,'_blank')}catch(_error){}
@@ -23458,6 +23462,11 @@ if(typeof BO_CITY_CONFIG==='undefined')return 'BJS PICKS';
 var key=Object.keys(BO_CITY_CONFIG).find(function(k){return BO_CITY_CONFIG[k]&&BO_CITY_CONFIG[k].bjsPicksCat===cat;});
 return key&&BO_CITY_CONFIG[key] ? BO_CITY_CONFIG[key].displayName : 'Las Vegas';
 }
+function cityKeyForCategory(cat){
+if(typeof BO_CITY_CONFIG==='undefined')return 'bestof';
+var key=Object.keys(BO_CITY_CONFIG).find(function(k){return BO_CITY_CONFIG[k]&&BO_CITY_CONFIG[k].bjsPicksCat===cat;});
+return key||'bestof';
+}
 function build(){
 if(typeof boCategoryData==='undefined')return;
 /* All BJS Picks is a strict editorial directory. A city's broader Best
@@ -23493,12 +23502,12 @@ if(!allow)return false;
 var key=String(item&&item.name||'').toLowerCase().replace(/[\u2019']/g,"'").replace(/\s+/g,' ').trim();
 if(!item||!item.name||seen.has(key))return false;seen.add(key);return true;
 });
-if(picks.length)groups.push({city:cityForCategory(cat),picks:picks});
+if(picks.length)groups.push({city:cityForCategory(cat),cityKey:cityKeyForCategory(cat),picks:picks});
 });
 groups.sort(function(a,b){return a.city.localeCompare(b.city);});
 var appleSvg='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/><path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
 var restaurantsHTML=groups.map(function(group){
-return '<section class="bop-all-bjs-group"><h3 class="bop-all-bjs-city">'+esc(group.city)+'</h3><ol class="bop-all-bjs-list">'+group.picks.map(function(item,i){var sources=(item.bjsSources||[]).join(' · ');return '<li class="bop-all-bjs-item bop-all-bjs-tap" data-pick-name="'+esc(item.name)+'" data-pick-city="'+esc(item.city||item.bjsPickCity||'')+'" role="button" tabindex="0"><span class="bop-all-bjs-num">'+String(i+1).padStart(2,'0')+'</span><span class="bop-all-bjs-name">'+esc(item.name)+(sources?'<small class="bop-all-bjs-source">'+esc(sources)+'</small>':'')+'</span></li>';}).join('')+'</ol></section>';
+return '<section class="bop-all-bjs-group"><h3 class="bop-all-bjs-city bop-all-bjs-city-link" role="button" tabindex="0" data-city-key="'+esc(group.cityKey)+'">'+esc(group.city)+'</h3><ol class="bop-all-bjs-list">'+group.picks.map(function(item,i){var sources=(item.bjsSources||[]).join(' · ');return '<li class="bop-all-bjs-item bop-all-bjs-tap" data-pick-name="'+esc(item.name)+'" data-pick-city="'+esc(item.city||item.bjsPickCity||'')+'" role="button" tabindex="0"><span class="bop-all-bjs-num">'+String(i+1).padStart(2,'0')+'</span><span class="bop-all-bjs-name">'+esc(item.name)+(sources?'<small class="bop-all-bjs-source">'+esc(sources)+'</small>':'')+'</span></li>';}).join('')+'</ol></section>';
 }).join('');
 var hotelPicks=[{city:'Los Angeles',name:'Chateau Marmont',area:'West Hollywood',note:'BJS Hotel Pick'}];
 var hotelsHTML=hotelPicks.map(function(h){
@@ -27072,7 +27081,7 @@ groups[city].forEach(function(r){
 var rating=parseRating(r);
 var meetsFloor=rating!==null&&rating>=FLOOR;
 if(meetsFloor)qualifies.push(r);
-else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+else exemptOnly.push(r);
 });
 qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
 rebuilt=rebuilt.concat(qualifies,exemptOnly);
@@ -27161,7 +27170,7 @@ groups[city].forEach(function(r){
 var rating=parseRating(r);
 var meetsFloor=rating!==null&&rating>=FLOOR;
 if(meetsFloor)qualifies.push(r);
-else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+else exemptOnly.push(r);
 });
 qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
 rebuilt=rebuilt.concat(qualifies,exemptOnly);
@@ -27245,7 +27254,7 @@ groups[city].forEach(function(r){
 var rating=parseRating(r);
 var meetsFloor=rating!==null&&rating>=FLOOR;
 if(meetsFloor)qualifies.push(r);
-else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+else exemptOnly.push(r);
 });
 qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
 rebuilt=rebuilt.concat(qualifies,exemptOnly);
@@ -27369,7 +27378,7 @@ groups[city].forEach(function(r){
 var rating=parseRating(r);
 var meetsFloor=rating!==null&&rating>=FLOOR;
 if(meetsFloor)qualifies.push(r);
-else if(isAwardPage||isExempt(r))exemptOnly.push(r);
+else exemptOnly.push(r);
 });
 qualifies.sort(function(a,b){return (parseRating(b)||0)-(parseRating(a)||0);});
 rebuilt=rebuilt.concat(qualifies,exemptOnly);
@@ -31022,7 +31031,7 @@ function linksFor(d){
 var out=[];
 if(d.website)out.push('<a class="bo-near-osm-item-link" href="'+d.website+'" target="_blank" rel="noopener">Website</a>');
 if(d.phone)out.push('<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call</a>');
-if(!out.length&&typeof d.lat==='number')out.push('<a class="bo-near-osm-item-link" href="https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng+'" target="_blank" rel="noopener">Directions</a>');
+if(!out.length&&typeof d.lat==='number')out.push('<a class="bo-near-osm-item-link" href="https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a>');
 return out.join('');
 }
 function openDirectory(opts){
@@ -31359,7 +31368,7 @@ function analogRow(d){
 var links=[];
 if(d.phone)links.push('<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call</a>');
 var order=orderLinkFor(d);if(order)links.push(order);
-links.push('<a class="bo-near-osm-item-link" href="https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng+'" target="_blank" rel="noopener">Directions</a>');
+links.push('<a class="bo-near-osm-item-link" href="https://www.google.com/maps/search/?api=1&query='+d.lat+','+d.lng+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a>');
 var photo=d.photo?'<img src="'+d.photo+'" alt="" class="bo-ft-pin-thumb">':'';
 var catIcon=(d.category&&typeof window.bopVsCatIcon==='function')?window.bopVsCatIcon(d.category):'';
 var iconSpan=catIcon?'<span style="display:inline-flex;width:15px;height:15px;vertical-align:-3px;margin-right:5px;">'+catIcon+'</span>':'';
@@ -33031,6 +33040,184 @@ note:"Same Famous Layered Doughnuts and rotating seasonal flavors as the rest of
 url:"https://www.parlordoughnuts.com/shops/laguna-niguel-ca",address:"23870 Aliso Creek Rd Ste B, Laguna Niguel, CA 92677",phone:"(949) 328-9112",hue:"25, 40%, 26%",price:1,otherLocations:[{name:"Parlor Doughnuts — Oceanside",address:"331 N Cleveland St, Oceanside, CA 92054",phone:"(760) 231-5150",rating:"4.6 / 5"}]}}
 ];
 SD_PARLOR_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SD_RWPH_ROWS=[
+{cats:['breakfast'],r:{name:"Richard Walker's Pancake House \u2014 Downtown San Diego",city:"sddowntown",rating:"4.5 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending per the current standard \u2014 provisional. Family-owned since 1989 (Walker family in the pancake business since 1948).",why:"The Walker family's gourmet pancake house \u2014 oven-baked apple pancakes, German pancakes, and baked omelettes under Chicago-style stained glass.",note:"The Baked Apple Pancake and the German Pancake are the signatures; batters made fresh daily, lingonberries imported from Sweden, custom-cured bacon and ham. Breakfast and lunch only; expect a weekend line. The 2006 flagship on the ground floor of the Pinnacle Museum Tower in the Marina District.",url:"https://www.richardwalkers.com/",address:"520 Front St, San Diego, CA 92101",phone:"(619) 231-7777",hue:"35, 45%, 28%",price:2,openedDate:"2006",otherLocations:[{name:"Richard Walker's Pancake House \u2014 La Jolla",address:"909 Prospect St, La Jolla, CA 92037"},{name:"Richard Walker's Pancake House \u2014 Carlsbad",address:"The Square at Bressi Ranch, Carlsbad, CA 92009"},{name:"Richard Walker's Pancake House \u2014 Del Mar",address:"Del Mar, CA 92014"}]}},
+{cats:['breakfast'],r:{name:"Richard Walker's Pancake House \u2014 La Jolla",city:"sdlajolla",rating:"4.5 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending per the current standard \u2014 provisional. Family-owned since 1989 (Walker family in the pancake business since 1948).",why:"The Walker family's gourmet pancake house \u2014 oven-baked apple pancakes, German pancakes, and baked omelettes under Chicago-style stained glass.",note:"The Baked Apple Pancake and the German Pancake are the signatures; batters made fresh daily, lingonberries imported from Sweden, custom-cured bacon and ham. Breakfast and lunch only; expect a weekend line. Richard Walker Jr.'s first location, with a 25-foot 'Pacific Sunrise' stained-glass transom over the entrance.",url:"https://www.richardwalkers.com/",address:"909 Prospect St, La Jolla, CA 92037",phone:"",hue:"35, 45%, 28%",price:2,openedDate:"",otherLocations:[{name:"Richard Walker's Pancake House \u2014 Downtown San Diego",address:"520 Front St, San Diego, CA 92101",phone:"(619) 231-7777"},{name:"Richard Walker's Pancake House \u2014 Carlsbad",address:"The Square at Bressi Ranch, Carlsbad, CA 92009"},{name:"Richard Walker's Pancake House \u2014 Del Mar",address:"Del Mar, CA 92014"}]}},
+{cats:['breakfast'],r:{name:"Richard Walker's Pancake House \u2014 Carlsbad",city:"sdcarlsbad",rating:"4.5 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending per the current standard \u2014 provisional. Family-owned since 1989 (Walker family in the pancake business since 1948).",why:"The Walker family's gourmet pancake house \u2014 oven-baked apple pancakes, German pancakes, and baked omelettes under Chicago-style stained glass.",note:"The Baked Apple Pancake and the German Pancake are the signatures; batters made fresh daily, lingonberries imported from Sweden, custom-cured bacon and ham. Breakfast and lunch only; expect a weekend line. Inside The Square at Bressi Ranch; the stained-glass 'Walker Rabbit' hides in the corner booth windows.",url:"https://www.richardwalkers.com/",address:"The Square at Bressi Ranch, Carlsbad, CA 92009",phone:"",hue:"35, 45%, 28%",price:2,openedDate:"",otherLocations:[{name:"Richard Walker's Pancake House \u2014 Downtown San Diego",address:"520 Front St, San Diego, CA 92101",phone:"(619) 231-7777"},{name:"Richard Walker's Pancake House \u2014 La Jolla",address:"909 Prospect St, La Jolla, CA 92037"},{name:"Richard Walker's Pancake House \u2014 Del Mar",address:"Del Mar, CA 92014"}]}},
+{cats:['breakfast'],r:{name:"Richard Walker's Pancake House \u2014 Del Mar",city:"sddelmar",rating:"4.5 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending per the current standard \u2014 provisional. Family-owned since 1989 (Walker family in the pancake business since 1948).",why:"The Walker family's gourmet pancake house \u2014 oven-baked apple pancakes, German pancakes, and baked omelettes under Chicago-style stained glass.",note:"The Baked Apple Pancake and the German Pancake are the signatures; batters made fresh daily, lingonberries imported from Sweden, custom-cured bacon and ham. Breakfast and lunch only; expect a weekend line. Opened in 2020, the newest of the four San Diego County locations.",url:"https://www.richardwalkers.com/",address:"Del Mar, CA 92014",phone:"",hue:"35, 45%, 28%",price:2,openedDate:"2020",otherLocations:[{name:"Richard Walker's Pancake House \u2014 Downtown San Diego",address:"520 Front St, San Diego, CA 92101",phone:"(619) 231-7777"},{name:"Richard Walker's Pancake House \u2014 La Jolla",address:"909 Prospect St, La Jolla, CA 92037"},{name:"Richard Walker's Pancake House \u2014 Carlsbad",address:"The Square at Bressi Ranch, Carlsbad, CA 92009"}]}}
+];
+SD_RWPH_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var PUESTO_ROWS=[
+{cats:['tacos','mexicancasual'],r:{name:"Puesto Headquarters — Seaport",city:"sddowntown",rating:"4.4 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Carried on the group's La Jolla aggregate pending its own three-source check \u2014 provisional.",why:"The Adler family's Mexico City-style taqueria \u2014 crispy melted-cheese tacos on handmade blue-corn tortillas, Michelin Guide-featured and a three-time Tacolandia winner.",note:"Filet mignon and chicken al pastor tacos with the signature crispy cheese, wood-oven enchiladas, and an agave-driven bar program. The group's flagship on the Seaport Village waterfront, with a 300-person event capacity.",url:"https://www.eatpuesto.com/",address:"789 W Harbor Dr Ste 155, San Diego, CA 92101",phone:"(619) 233-8880",hue:"10, 45%, 26%",price:2,otherLocations:[{name:"Puesto La Jolla",address:"1026 Wall St, La Jolla, CA 92037",phone:"(858) 454-1260"},{name:"Puesto Park Place — Irvine",address:"3311 Michelson Dr, Irvine, CA 92612"},{name:"Puesto Santa Clara",address:"2752 Augustine Dr Ste 110, Santa Clara, CA 95054",phone:"(408) 333-9750"},{name:"Puesto Bella Terra — Huntington Beach",address:"Bella Terra, Huntington Beach, CA 92647"},{name:"Puesto Anaheim",address:"The Westin Anaheim Resort, Anaheim, CA 92802"}]}},
+{cats:['tacos','mexicancasual'],r:{name:"Puesto Park Place — Irvine",city:"irvine",rating:"4.4 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Carried on the group's La Jolla aggregate pending its own three-source check \u2014 provisional.",why:"The Adler family's Mexico City-style taqueria \u2014 crispy melted-cheese tacos on handmade blue-corn tortillas, Michelin Guide-featured and a three-time Tacolandia winner.",note:"Filet mignon and chicken al pastor tacos with the signature crispy cheese, wood-oven enchiladas, and an agave-driven bar program. The Irvine location at Park Place, one of four Puestos in Orange County.",url:"https://www.eatpuesto.com/",address:"3311 Michelson Dr, Irvine, CA 92612",phone:"",hue:"10, 45%, 26%",price:2,otherLocations:[{name:"Puesto La Jolla",address:"1026 Wall St, La Jolla, CA 92037",phone:"(858) 454-1260"},{name:"Puesto Headquarters — Seaport",address:"789 W Harbor Dr Ste 155, San Diego, CA 92101",phone:"(619) 233-8880"},{name:"Puesto Santa Clara",address:"2752 Augustine Dr Ste 110, Santa Clara, CA 95054",phone:"(408) 333-9750"},{name:"Puesto Bella Terra — Huntington Beach",address:"Bella Terra, Huntington Beach, CA 92647"},{name:"Puesto Anaheim",address:"The Westin Anaheim Resort, Anaheim, CA 92802"}]}},
+{cats:['tacos','mexicancasual'],r:{name:"Puesto Santa Clara",city:"siliconvalley",rating:"4.4 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Carried on the group's La Jolla aggregate pending its own three-source check \u2014 provisional.",why:"The Adler family's Mexico City-style taqueria \u2014 crispy melted-cheese tacos on handmade blue-corn tortillas, Michelin Guide-featured and a three-time Tacolandia winner.",note:"Filet mignon and chicken al pastor tacos with the signature crispy cheese, wood-oven enchiladas, and an agave-driven bar program. The group's Bay Area outpost in Santa Clara.",url:"https://www.eatpuesto.com/",address:"2752 Augustine Dr Ste 110, Santa Clara, CA 95054",phone:"(408) 333-9750",hue:"10, 45%, 26%",price:2,otherLocations:[{name:"Puesto La Jolla",address:"1026 Wall St, La Jolla, CA 92037",phone:"(858) 454-1260"},{name:"Puesto Headquarters — Seaport",address:"789 W Harbor Dr Ste 155, San Diego, CA 92101",phone:"(619) 233-8880"},{name:"Puesto Park Place — Irvine",address:"3311 Michelson Dr, Irvine, CA 92612"},{name:"Puesto Bella Terra — Huntington Beach",address:"Bella Terra, Huntington Beach, CA 92647"},{name:"Puesto Anaheim",address:"The Westin Anaheim Resort, Anaheim, CA 92802"}]}}
+];
+PUESTO_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var MYKA_ROWS=[
+{cats:['dessert'],r:{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",city:"sdlajolla",rating:"4.9 / 5",reviews:0,ratingSource:"BJS provisional",
+ratingNote:"Opened 2026 \u2014 too new for a public sample. BJS starting mark of 4.9, to be replaced by a three-source aggregate as reviews accumulate. Provisional.",
+why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 from one shop to 40-plus stores and 270 signed franchises across 26 countries in under three years \u2014 lands on Prospect Street.",
+note:"Real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh every morning in the in-store workshop. Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus rotating seasonal flavors and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy; not a fro-yo machine.",
+redCalloutLabel:"BJS NOTE",redCallout:"This isn\u2019t your typical line... it\u2019s much, much longer. However, it moves fast, it\u2019s well worth it, and all you need is to do it once and you\u2019ll know for the next time.",
+url:"https://www.mykagreek.com/",address:"1273½ Prospect St, La Jolla, CA 92037",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2026",
+bjsPick:true,bjsPickCity:"sdlajolla",bjsPickLabel:"BJS Pick \u2014 Dessert",goldApple:true,
+otherLocations:[
+{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},
+{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},
+{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London"},
+{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},
+{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"},
+{name:"MYKA \u2014 Paris",address:"Paris, France"}
+]}}
+];
+MYKA_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var MYKA_WORLD_ROWS=[
+{cats:['dessert'],r:{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",city:"miami",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. The first U.S. location, inside Miami Beach\u2019s Art Deco Lincoln Theatre on Lincoln Road.",url:"https://www.mykagreek.com/",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2025-12",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London W1U"},{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"},{name:"MYKA \u2014 Paris",address:"Paris, France"}]}},
+{cats:['dessert'],r:{name:"MYKA \u2014 New York (Greenwich Village)",city:"manhattan",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. The second U.S. location, in Greenwich Village.",url:"https://www.mykagreek.com/",address:"Greenwich Village, New York, NY",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2026",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London W1U"},{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"},{name:"MYKA \u2014 Paris",address:"Paris, France"}]}},
+{cats:['dessert'],r:{name:"MYKA \u2014 London",city:"london",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. The first UK store, on the pedestrian lane of St Christopher\u2019s Place off Oxford Street.",url:"https://www.mykagreek.com/",address:"St Christopher\u2019s Place, London W1U",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2026-07",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"},{name:"MYKA \u2014 Paris",address:"Paris, France"}]}},
+{cats:['dessert'],r:{name:"MYKA \u2014 Madrid (original)",city:"madrid",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. Where it started \u2014 the founders cooked, cleaned and served the first shop themselves in Salamanca in July 2023.",url:"https://www.mykagreek.com/",address:"Calle de Padilla 41, 28006 Madrid",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2023-07",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London W1U"},{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"},{name:"MYKA \u2014 Paris",address:"Paris, France"}]}},
+{cats:['dessert'],r:{name:"MYKA \u2014 Mexico City (Polanco)",city:"mexicocity",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. The Polanco location, reviewed by Time Out M\u00e9xico.",url:"https://www.mykagreek.com/",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2025",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London W1U"},{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},{name:"MYKA \u2014 Paris",address:"Paris, France"}]}},
+{cats:['dessert'],r:{name:"MYKA \u2014 Paris",city:"paris",rating:"4.8 / 5",reviews:0,ratingSource:"Provisional",ratingNote:"Three-source aggregate pending \u2014 provisional.",why:"The Madrid-born Greek frozen yogurt phenomenon \u2014 real Greek yogurt imported weekly from Greece, blended with goat\u2019s-milk kefir and made fresh daily in an in-store workshop.",note:"Thirty-plus handmade toppings \u2014 the baklava is the one \u2014 plus two seasonal flavors that change monthly and vegan, lactose-free fruit sorbets. Dense, creamy, slightly tangy. The Paris opening, part of the 2026 European expansion.",url:"https://www.mykagreek.com/",address:"Paris, France",phone:"",hue:"200, 45%, 30%",price:1,openedDate:"2026",otherLocations:[{name:"MYKA Greek Frozen Yogurt \u2014 La Jolla",address:"1273\u00bd Prospect St, La Jolla, CA 92037"},{name:"MYKA \u2014 Miami Beach (Lincoln Theatre)",address:"551 Lincoln Rd Unit 5, Miami Beach, FL 33139"},{name:"MYKA \u2014 New York (Greenwich Village)",address:"Greenwich Village, New York, NY"},{name:"MYKA \u2014 London",address:"St Christopher\u2019s Place, London W1U"},{name:"MYKA \u2014 Madrid (original)",address:"Calle de Padilla 41, 28006 Madrid"},{name:"MYKA \u2014 Mexico City (Polanco)",address:"Polanco IV, Miguel Hidalgo, Ciudad de M\u00e9xico 11550"}]}}
+];
+MYKA_WORLD_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var BEESIDE_ROWS=[
+{cats:['mediterranean','newamericancasual'],r:{name:"Beeside Balcony \u2014 La Jolla",city:"sdlajolla",rating:"4.4 / 5",reviews:304,ratingSource:"Provisional",
+ratingNote:"OpenTable 4.3\u20134.4 (304 reviews) referenced; two more sources pending per standard \u2014 provisional.",
+why:"Chef-owner Christophe Cevasco\u2019s global Mediterranean room in La Jolla Village, with ocean views from the covered balcony and a speakeasy tucked inside.",
+note:"A third-generation chef of Spanish and Italian descent who started at 17 in his father\u2019s Pasadena kitchen, then spent eight years as managing partner of Eddie V\u2019s La Jolla before opening his own. Organic free-range lamb, sushi-grade salmon, prime steak and imported Mediterranean specialties; casual elegant, resort-casual dress. Ask about the speakeasy.",
+redCalloutLabel:"BJS NOTE",redCallout:"Family owned and operated, and it\u2019s very apparent in the incredible cuisine and service. Definitely a go-to worth keeping on the list.",
+url:"https://www.beesidebalcony.com/",address:"1025 Prospect St Ste 250, La Jolla, CA 92037",phone:"(858) 833-0471",hue:"200, 40%, 28%",price:3,
+otherLocations:[{name:"Beeside Balcony \u2014 Del Mar",address:"Old Del Mar, Del Mar, CA 92014"}]}},
+{cats:['mediterranean','newamericancasual'],r:{name:"Beeside Balcony \u2014 Del Mar",city:"sddelmar",rating:"4.5 / 5",reviews:1448,ratingSource:"Provisional",
+ratingNote:"OpenTable 4.4\u20134.6 (1,412\u20131,448 reviews) referenced; two more sources pending per standard \u2014 provisional.",
+why:"The original Beeside Balcony \u2014 chef-owner Christophe Cevasco\u2019s global Mediterranean hideaway in old Del Mar, with ocean views from the covered outside balcony.",
+note:"A third-generation chef of Spanish and Italian descent, born in Paris, who spent eight years as managing partner of Eddie V\u2019s La Jolla before opening here. Organic free-range lamb, sushi-grade salmon, prime steak and imported Mediterranean specialties in a relaxed seaside-chic room.",
+redCalloutLabel:"BJS NOTE",redCallout:"Family owned and operated, and it\u2019s very apparent in the incredible cuisine and service. Definitely a go-to worth keeping on the list.",
+url:"https://www.beesidebalcony.com/",address:"Old Del Mar, Del Mar, CA 92014",phone:"",hue:"200, 40%, 28%",price:3,
+otherLocations:[{name:"Beeside Balcony \u2014 La Jolla",address:"1025 Prospect St Ste 250, La Jolla, CA 92037",phone:"(858) 833-0471"}]}},
+{cats:['seafoodfine','seafoodhighend','steakhighend'],r:{name:"Eddie V\u2019s Prime Seafood \u2014 La Jolla",city:"sdlajolla",rating:"4.8 / 5",reviews:6300,ratingSource:"BJS aggregate",
+ratingNote:"OpenTable 4.8\u20134.9 (6,300+ reviews, Diners\u2019 Choice), Wine Spectator 2026 award, Franki and Pearl listings referenced for a 4.8 BJS aggregate.",
+why:"Prime seafood flown in daily and hand-carved steaks over La Jolla Cove \u2014 one of the strongest showings in San Diego, holding at 4.8 across more than six thousand verified diners.",
+note:"Raw oysters, Pacific ahi, center-cut prime steaks broiled to order, and a Wine Spectator-recognized list of 300-plus bottles curated by an Advanced Sommelier. Indoor and rooftop seating with sunset views; the V Lounge at the entrance does cocktails and appetizers with live music. Part of a national fine-dining group \u2014 listed here for the room and the view, not as a Best Of entry.",
+url:"https://www.eddiev.com/locations/ca/la-jolla/la-jolla/8511",address:"1270 Prospect St, La Jolla, CA 92037",phone:"(858) 459-5500",hue:"215, 40%, 26%",price:4,xrefAliases:["Eddie V\u2019s","Eddie V's"]}}
+];
+BEESIDE_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var LJ_MEXFINE_ROWS=[
+{cats:['mexicanhighend'],r:{name:"Mustangs & Burros \u2014 Estancia La Jolla",city:"sdlajolla",rating:"4.4 / 5",reviews:1378,ratingSource:"BJS aggregate",
+ratingNote:"Google 4.4 (1,378 hotel reviews) and OpenTable Best Outdoor Dining 2022 referenced; third independent restaurant-specific source pending \u2014 provisional.",
+why:"Estancia La Jolla's hacienda-style signature restaurant \u2014 OpenTable's Best Outdoor Dining winner, inside a converted 1880s tack room.",
+note:"Chef Kaitlyn Weber's Baja-inspired, seasonally-sourced California ranch cooking, a deep tequila collection, and wines from Valle de Guadalupe. Fireplace-lit patio and dining room; Taco Tuesdays pair handmade tacos with hand-shaken margaritas.",
+redCalloutLabel:"BJS TIP",redCallout:"If available, Mary's chicken mole is a must-have. Complemented with a side of perfectly cooked risotto, this is one of the greatest dishes in the history of chicken.",
+url:"https://www.estancialajolla.com/mustangs-and-burros/",address:"9700 N Torrey Pines Rd, La Jolla, CA 92037",phone:"(858) 964-6537",hue:"275, 48%, 30%",price:3,
+bjsPick:true,bjsPickCity:"sdlajolla",bjsPickLabel:"BJS Pick \u2014 Fine Mexican",goldApple:true}},
+{cats:['mexicanhighend'],r:{name:"RED O Taste of Mexico \u2014 La Jolla",city:"sdlajolla",rating:"4.4 / 5",reviews:2700,ratingSource:"BJS aggregate",
+ratingNote:"OpenTable 4.3\u20134.5 (2,650\u20132,730 reviews across regional listings) and AAA Diamond inspection referenced for a 4.4 BJS aggregate.",
+why:"Chef Rick Bayless's contemporary Mexican room at Westfield UTC, pairing prime steak and seafood with authentic Mexican technique.",
+note:"Sustainably sourced, locally driven menu with an award-winning wine list and an extensive tequila selection. The Sunday brunch mix-and-match bottomless beverage program and the passion fruit butter cake both come up often in reviews.",
+url:"https://redorestaurant.com/",address:"4340 La Jolla Village Dr, San Diego, CA 92122",phone:"(858) 291-8360",hue:"5, 45%, 30%",price:3}},
+{cats:['mexicanhighend'],r:{name:"Javier's \u2014 La Jolla",city:"sdlajolla",rating:"4.6 / 5",reviews:3494,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.6 (3,494 reviews); two more sources pending per standard \u2014 provisional.",
+why:"A family-run Southern California Mexican institution at Westfield UTC, known for hand-shaken margaritas and a deep tequila list.",
+note:"Elevated Mexican classics \u2014 the carne asada and lobster enchiladas are the two dishes reviewers single out most \u2014 in a vibrant, festive dining room.",
+url:"",address:"4545 La Jolla Village Dr, San Diego, CA 92122",phone:"",hue:"5, 45%, 30%",price:2}}
+];
+LJ_MEXFINE_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var BARBUSA_ROWS=[
+{cats:['italianhighend'],r:{name:"Barbusa",city:"sddowntown",rating:"4.7 / 5",reviews:4800,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.7 (4,700\u20134,800 reviews); two more sources pending per standard \u2014 provisional.",
+why:"Chef Joe Busalacchi and Nino Zizzo's award-winning modern Sicilian room in the heart of Little Italy.",
+note:"Homemade pasta daily, authentic Sicilian specialties, the signature Sicilian Ribeye, and stone-fired pizza, with a lively, buzzy dining room that gets loud after 7pm on weekends.",
+redCalloutLabel:"BJS TIP",redCallout:"The homemade pesto gnocchi fell from the heavens of Italy. Go right in for the bone marrow. Order seconds \u2014 don't be shy.",
+url:"",address:"1917 India St, San Diego, CA 92101",phone:"",hue:"5, 45%, 30%",price:3,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown",
+bjsPick:true,bjsPickCity:"sddowntown",bjsPickLabel:"BJS Pick \u2014 Little Italy",goldApple:true}}
+];
+BARBUSA_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var LITTLEITALY_SD_ROWS=[
+{cats:['italiancasual'],r:{name:"Civico 1845",city:"sddowntown",rating:"4.4 / 5",reviews:2450,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.3\u20134.4 (2,400\u20132,650 reviews); two more sources pending per standard \u2014 provisional.",
+why:"A Calabrian-rooted Little Italy anchor from chef Pietro Gallo, and the first restaurant in the U.S. with a full vegan Italian menu, since 2015.",
+note:"Handmade pasta \u2014 the gnocchi and pappardelle brasato get singled out most \u2014 alongside Southern Italian seafood, plus a genuinely complete vegan menu (lasagna, fusilli, fettuccine) built from the same kitchen, not an afterthought.",
+url:"https://www.civico1845.com/",address:"1845 India St, San Diego, CA 92101",phone:"(619) 431-5990",hue:"5, 45%, 30%",price:2,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}},
+{cats:['italianhighend'],r:{name:"Monello",city:"sddowntown",rating:"4.6 / 5",reviews:2790,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.6 (2,680\u20132,800 reviews); two more sources pending per standard \u2014 provisional.",
+why:"Bencotto's sibling restaurant next door, handmaking roughly 800 lbs of pasta a week across 27 recipes.",
+note:"Mediterranean-style seafood and gourmet pizza alongside the pasta program; Wednesday nights bring risotto finished tableside in a wheel of Parmigiano. Weekend Italian-style brunch, and a Milanese Aperitivo happy hour with small plates on the house.",
+url:"",address:"750 W Fir St Ste 103B, San Diego, CA 92101",phone:"",hue:"5, 45%, 30%",price:3,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}},
+{cats:['newamericanfine'],r:{name:"Herb & Wood",city:"sddowntown",rating:"4.7 / 5",reviews:6500,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.7 (6,400\u20136,600 reviews) and OpenTable Icons 2024\u20132026 referenced; third source pending.",
+why:"Chef Brian Malarkey's wood-fired Little Italy icon \u2014 an OpenTable Diners' Choice Icon three years running.",
+note:"Live-fire cooking drives the menu: housemade pastas, wood-grilled meats and seafood, and a bone-marrow-topped pizza reviewers keep coming back for. Design-forward dining room with an open hearth; the bourbon cocktail finished with burnt rosemary is a bit of theater at the table.",
+url:"https://www.herbandwood.com/",address:"2210 Kettner Blvd, San Diego, CA 92101",phone:"(619) 955-8495",hue:"30, 40%, 28%",price:3,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}},
+{cats:['newamericanfine'],r:{name:"Juniper & Ivy",city:"sddowntown",rating:"4.6 / 5",reviews:0,ratingSource:"Provisional",
+ratingNote:"Widely cited 4.6 aggregate; verified source count pending per standard \u2014 provisional.",
+why:"Top Chef alum Richard Blais's modernist Californian kitchen in a converted 1920s sawtooth warehouse on Kettner.",
+note:"Playful, technique-driven Californian plates; the bar's snack menu is the most affordable way in. Chef Anthony Wells now runs the kitchen day to day.",
+url:"",address:"2228 Kettner Blvd, San Diego, CA 92101",phone:"",hue:"30, 40%, 28%",price:3,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}},
+{cats:['pizza'],r:{name:"Filippi's Pizza Grotto \u2014 Little Italy",city:"sddowntown",rating:"4.6 / 5",reviews:0,ratingSource:"Provisional",
+ratingNote:"4.6 referenced across review aggregators; verified source count pending per standard \u2014 provisional.",
+why:"A San Diego institution since 1950 \u2014 walk through the attached Italian grocery to reach the dining room.",
+note:"Red-and-white checkered tablecloths, hanging salamis, and classic New York-style pies that have barely changed in decades. The original Little Italy location and the one that started the local chain.",
+url:"",address:"1747 India St, San Diego, CA 92101",phone:"",hue:"5, 45%, 30%",price:1,
+neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}}
+];
+LITTLEITALY_SD_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var SHUNLEE_ROWS=[
+{cats:['chinese'],r:{name:"Shun Lee Palace",city:"newyork",rating:"4.3 / 5",reviews:1690,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.2\u20134.5 (1,680\u20131,702 reviews); two more sources pending per standard \u2014 provisional.",
+why:"Michael Tong's Midtown East institution since 1965 \u2014 the first Chinese restaurant in America to earn four stars from The New York Times' Craig Claiborne.",
+note:"General Tso's Chicken, Crisp Sea Bass Hunan Style, and Crisp Orange-Flavored Beef were all introduced or refined here by Chef Wang. Adam Tihany-designed dining room, two private rooms for up to 30 guests, and a legacy as one of the city's defining upscale Chinese tables.",
+redCalloutLabel:"BJS TIP",redCallout:"\u201cBlue Horseshoe loves Shun Lee.\u201d \u2014 GG",
+url:"http://www.shunlee-palace.com/",address:"155 E 55th St, New York, NY 10022",phone:"(212) 371-8844",hue:"5, 45%, 28%",price:3,
+bjsPick:true,bjsPickCity:"newyork",bjsPickLabel:"BJS Pick \u2014 Chinese",goldApple:true,xrefAliases:["Shun Lee"]}}
+];
+SHUNLEE_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var NYC_CHINESE_ROWS=[
+{cats:['chinese'],r:{name:"Wa Jeal",city:"newyork",rating:"4.8 / 5",reviews:380,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.7\u20134.8 (338\u2013382 reviews); two more sources pending per standard \u2014 provisional.",
+why:"A pioneering Upper East Side Sichuan Chili House credited with bringing genuinely authentic Sichuan heat to a part of Manhattan that didn't have it.",
+note:"Numbing mala dishes, dry-fried specialties, and a cozy, family-style dining room. Consistently one of the highest-rated Chinese restaurants in Manhattan by volume of reviews, not just a handful of raves.",
+url:"",address:"1588 2nd Ave, New York, NY 10028",phone:"",hue:"5, 45%, 28%",price:2}},
+{cats:['chinese'],r:{name:"Hutong",city:"newyork",rating:"4.5 / 5",reviews:330,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.1\u20134.6 (212\u2013339 reviews across regional listings); two more sources pending per standard \u2014 provisional.",
+why:"A Hong Kong-born Northern Chinese brand's Manhattan outpost, inside the soaring Art Deco room that once housed Le Cirque.",
+note:"Famous for a theatrical flaming duck and Sichuan grilled prawns, plus artisanal dim sum. Four private dining rooms inside Bloomberg Tower's Beacon Court; elegant-casual dress code, cocktail lounge that turns into a nightlife spot after dinner.",
+url:"",address:"731 Lexington Ave, New York, NY 10022",phone:"(212) 758-4800",hue:"5, 45%, 28%",price:4}},
+{cats:['chinese'],r:{name:"Peking Duck House",city:"newyork",rating:"4.5 / 5",reviews:29,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.4\u20134.5 (25\u201333 reviews, thin volume); two more sources pending per standard \u2014 provisional.",
+why:"A Chinatown institution built entirely around one dish, carved tableside \u2014 the late Mayor Ed Koch's regular lunch spot.",
+note:"Duck carved right at the table over crispy skin and thin house-made pancakes; BYOB keeps it a favorite for big group dinners. Also does dim sum, mala chicken, and a seafood platter, but nobody's really there for those.",
+url:"",address:"28 Mott St, New York, NY 10013",phone:"(212) 227-1810",hue:"5, 45%, 28%",price:2}}
+];
+NYC_CHINESE_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+var NYC_CHINESE_ROWS2=[
+{cats:['chinese'],r:{name:"Nom Wah Tea Parlor",city:"newyork",rating:"4.0 / 5",reviews:0,ratingSource:"Critic consensus",
+ratingNote:"TripExpert 8/10 critic aggregate (Top 1% of NYC restaurants) and Michelin Guide-listed; no clean public star-review count surfaced \u2014 provisional.",
+why:"The oldest continuously operating restaurant in Chinatown \u2014 a dim sum parlor since 1920, on the once-notorious \u2018Bloody Angle\u2019 of Doyers Street.",
+note:"Cantonese classics ordered off a tear-off paper menu: shrimp siu mai, pork-and-crab soup dumplings, and the shop's famous original egg roll. Third-generation owner Wilson Tang has kept the vintage tin ceiling and old-school pace intact while expanding to Philadelphia and beyond.",
+url:"https://nomwah.com/",address:"13 Doyers St, New York, NY 10013",phone:"(212) 962-6047",hue:"5, 45%, 28%",price:1}},
+{cats:['chinese'],r:{name:"Caf\u00e9 China",city:"newyork",rating:"4.4 / 5",reviews:273,ratingSource:"Foursquare/critic aggregate",
+ratingNote:"Frequently cited as a Michelin Bib Gourmand selection; consumer review count thin \u2014 provisional.",
+why:"An Art Deco-styled Sichuan room in the Garment District, styled after 1930s Shanghai, built around genuinely fiery regional cooking rather than Americanized standards.",
+note:"Dry-fried string beans, mapo tofu, and cumin lamb draw regulars back; a small, tightly-run room that punches well above its size for authentic Sichuan heat in Midtown.",
+url:"",address:"13 E 37th St, New York, NY 10016",phone:"",hue:"5, 45%, 28%",price:2}},
+{cats:['chinese'],r:{name:"Great N.Y. Noodletown",city:"newyork",rating:"4.3 / 5",reviews:288,ratingSource:"Foursquare/critic aggregate",
+ratingNote:"Long-running Chinatown favorite, widely cited across critic lists; a clean 5-point consumer aggregate wasn't surfaced this pass \u2014 provisional.",
+why:"A no-frills, late-night Chinatown institution famous for roast meats hanging in the window and salt-baked seafood.",
+note:"Salt-baked shrimp, roast baby pig, and noodle soups draw a mixed crowd of chefs getting off shift and neighborhood regulars alike. Cash-friendly, fluorescent-lit, open into the early morning.",
+url:"",address:"28 Bowery, New York, NY 10013",phone:"",hue:"5, 45%, 28%",price:1}},
+{cats:['chinese'],r:{name:"Xi'an Famous Foods \u2014 East Village",city:"newyork",rating:"4.4 / 5",reviews:314,ratingSource:"Foursquare/critic aggregate",
+ratingNote:"Widely cited across best-of lists as one of NYC's defining casual Chinese counters; a clean 5-point consumer aggregate wasn't surfaced this pass \u2014 provisional.",
+why:"The counter-service chain that introduced New York to hand-ripped biang biang noodles and Xi'an street food, now with locations across the city.",
+note:"Spicy cumin lamb noodles and the tingly-numbing 'Liang Pi' cold-skin noodles are the two dishes that built the brand's reputation. No frills, order at the counter, eat fast.",
+url:"",address:"81 St Marks Pl, New York, NY 10009",phone:"",hue:"5, 45%, 28%",price:1}}
+];
+NYC_CHINESE_ROWS2.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
+(function(){var OL=[{name:"Puesto Headquarters — Seaport",address:"789 W Harbor Dr Ste 155, San Diego, CA 92101",phone:"(619) 233-8880"},{name:"Puesto Park Place — Irvine",address:"3311 Michelson Dr, Irvine, CA 92612"},{name:"Puesto Santa Clara",address:"2752 Augustine Dr Ste 110, Santa Clara, CA 95054",phone:"(408) 333-9750"},{name:"Puesto Bella Terra — Huntington Beach",address:"Bella Terra, Huntington Beach, CA 92647"},{name:"Puesto Anaheim",address:"The Westin Anaheim Resort, Anaheim, CA 92802"}];function fix(){Object.keys(boCategoryData).forEach(function(c){(boCategoryData[c]||[]).forEach(function(r){if(r&&r.name==='Puesto La Jolla'){if(!r.phone)r.phone='(858) 454-1260';if(!r.url)r.url='https://www.eatpuesto.com/';if(!r.otherLocations||!r.otherLocations.length)r.otherLocations=OL;if(!r.why)r.why="The original 2012 Puesto, two blocks from La Jolla Cove \u2014 Mexico City-style crispy melted-cheese tacos on handmade blue-corn tortillas.";if(!r.note)r.note="The dining-room walls flip open to the street; Chor Boogie murals, a long concrete bar, and an exhibition kitchen turning out the tacos that launched a six-location group.";}});});}fix();setInterval(fix,800);})();
 var SD_ENCINITAS2_ROWS=[
 {cats:['steak'],r:{name:"Pacific Coast Grill",city:"sdencinitas",rating:"4.7 / 5",reviews:2202,ratingSource:"BJS aggregate",
 ratingNote:"Google 4.6 and Restaurant Guru 4.9 (21,662 reviews) averaged for a 4.7 BJS aggregate.",
@@ -34156,7 +34343,13 @@ ratingNote:"Tripadvisor 4.3 (50 reviews, #785 of 5,711 in LA).",
 why:"Family-run Italian in the same hillside center \u2014 thin-crust pizza, house-made pasta, and a patio regulars have kept quiet about for years",
 note:"Antipasto salad, house focaccia, carbonara, cioppino, thin-crust pizza. Indoor and heated-tent patio seating. A neighborhood favorite that's been feeding the Beverly Glen hillside for years, easy to miss unless someone points the way.",
 specialNote:TAGLINE,
-url:"https://fabrocinibeverlyglen.com/",address:"2960 N Beverly Glen Cir, Los Angeles, CA 90077",phone:"(310) 475-7404",hue:"5, 50%, 30%",price:2,neighborhood:"Bel-Air / Beverly Glen"}}
+url:"https://fabrocinibeverlyglen.com/",address:"2960 N Beverly Glen Cir, Los Angeles, CA 90077",phone:"(310) 475-7404",hue:"5, 50%, 30%",price:2,neighborhood:"Bel-Air / Beverly Glen"}},
+{cats:['steakhighend','labeveryhillswestside'],r:{name:"The Grill on the Alley",city:"losangeles",
+rating:"4.8 / 5",reviews:2046,ratingSource:"OpenTable",
+ratingNote:"OpenTable 4.8\u20134.9 (1,888\u20132,046 reviews); two more sources pending per standard \u2014 provisional.",
+why:"The Beverly Hills power-lunch institution since 1984 \u2014 half a block off Rodeo Drive, ranked in the Fine Dining Hall of Fame by Nation's Restaurant News.",
+note:"Un-ironic American grill classics \u2014 prime steaks, jumbo lump crab cakes, chicken pot pie, meatloaf \u2014 served by white-jacketed waiters, many of whom have worked the room for decades. The infamous corner booths are where entertainment-industry deals actually get made.",
+url:"",address:"9560 Dayton Way, Beverly Hills, CA 90210",phone:"(310) 276-0615",hue:"25, 40%, 26%",price:4}}
 ];
 function has(list,r){return list.some(function(x){return x&&x.name===r.name&&String(x.city||'bestof')===r.city;});}
 function push(cat,r){var list=boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];if(has(list,r))return;list.push(Object.assign({rank:list.length+1},r));}
@@ -34695,9 +34888,9 @@ fresh.forEach(function(m){BO_MOVIES_CURRENT.push(m);});
     <div class="bop-golive-lockup bop-golive-lockup-sub"><span class="bo-golive-best">Best Of</span> <span class="bo-golive-period">PERIOD<span class="period-mark">&copy;</span></span></div>
     <div class="bop-golive-title"><span class="bop-golive-gold">GO</span> <span class="bop-golive-red">LIVE</span> <span class="bop-golive-gold">NOW!</span></div>
     <div class="bop-golive-tiles">
-      <button class="bop-golive-tile" id="bopGoLiveRealtor" type="button" aria-label="Realtor, Open House">
+      <button class="bop-golive-tile" id="bopGoLiveRealtor" type="button" aria-label="Open Houses and Listings">
         <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 52 L50 18 L90 52"/><path d="M22 44 V88 H78 V44"/><rect x="43" y="60" width="14" height="28" fill="#000"/></svg>
-        <span>REALTOR<span class="bo-golive-tile-sub">OPEN HOUSE</span></span>
+        <span>OPEN HOUSES<span class="bo-golive-tile-sub">AND LISTINGS</span></span>
       </button>
       <button class="bop-golive-tile" id="bopGoLiveFoodTruck" type="button" aria-label="Food Truck">
         <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 62 L8 36 L54 36 L54 28 L73 28 L90 47 L90 62 Z"/><line x1="54" y1="36" x2="54" y2="62"/><rect x="60" y="36" width="11" height="10"/><circle cx="25" cy="66" r="9" fill="#000"/><circle cx="76" cy="66" r="9" fill="#000"/></svg>
@@ -35588,7 +35781,7 @@ if(s3[1]&&s3[1].innerHTML!==GOLIVE_HTML)s3[1].innerHTML=GOLIVE_HTML;
 }
 }
 function install(){
-setTileLabel('bopGoLiveRealtor','HOUSES FOR SALE');
+setTileLabel('bopGoLiveRealtor','OPEN HOUSES<span class="bo-golive-tile-sub">AND LISTINGS</span>');
 setTileLabel('bopGoLiveCarForSale','CARS FOR SALE');
 setTileLabel('bopGoLiveFoodTruck','FOOD TRUCKS');
 setTileLabel('bopGoLiveVendorStand','STREET VENDORS');
@@ -41939,8 +42132,7 @@ var nhb=[
 boCategoryData.bestoflanorthhollywood=build(nhb,'lanorthhollywood');
 var occ=[
 {name:"Knife Pleat",rating:"3.9 / 5",price:4,ratingSource:"BJS aggregate",why:"Chef Tony Esnault\'s French fine-dining room on the penthouse level of South Coast Plaza in Costa Mesa.",note:"One Michelin star \u2014 a formal, contemporary French dining room atop one of the country\'s premier shopping centers.",ratingNote:"Tripadvisor 3.4 (26 reviews) and Yelp (430 reviews) referenced. 1 Michelin star, chef Tony Esnault, penthouse level of South Coast Plaza \u2014 contemporary French cuisine.",address:"3333 S Bristol St Ste 3001, Costa Mesa, CA 92626"},
-{name:"March\u00e9 Moderne",rating:"4.4 / 5",price:3,ratingNote:"Michelin-recognized modern French from chef-owners Florent and Am\u00e9lia Marneau, Crystal Cove Shopping Center \u2014 coq au vin, Maine lobster tail flamb\u00e9ed in Courvoisier. No clean public star aggregate surfaced this pass \u2014 provisional.",address:"7862 E Pacific Coast Hwy, Newport Beach, CA 92657"},
-{name:"Taco Mar\u00eda",rating:"4.3 / 5",price:3,why:"Chef Carlos Salgado's Mexican heritage-cuisine restaurant at SOCO & The OC Mix in Costa Mesa.",note:"One Michelin star \u2014 widely credited as one of the first Orange County restaurants to earn one \u2014 served chef's-counter style.",ratingNote:"1 Michelin star, chef Carlos Salgado. Widely credited as one of the first Orange County restaurants to earn a star, reinterpreting Mexican heritage cuisine with a chef's-counter feel at SOCO & The OC Mix. No clean public star aggregate surfaced this pass \u2014 provisional.",address:"3313 Hyland Ave, Costa Mesa, CA 92626"}
+{name:"March\u00e9 Moderne",rating:"4.4 / 5",price:3,ratingNote:"Michelin-recognized modern French from chef-owners Florent and Am\u00e9lia Marneau, Crystal Cove Shopping Center \u2014 coq au vin, Maine lobster tail flamb\u00e9ed in Courvoisier. No clean public star aggregate surfaced this pass \u2014 provisional.",address:"7862 E Pacific Coast Hwy, Newport Beach, CA 92657"}
 ];
 boCategoryData.bestoforangecounty=build(occ,'orangecounty');
 var oax=[
@@ -42240,7 +42432,7 @@ var desc=cleanDesc(r);
 if(desc)html+='<div class="bobb-card-desc">'+esc(desc)+'</div>';
 if(r.address)html+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
 if(r.phone)html+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>';
-if(r.address)html+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener">Directions</a></div>';
+if(r.address)html+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)html+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
 html+='</div></div></div>';
 });
@@ -42766,12 +42958,13 @@ h+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.ra
 var dd=desc(r);if(dd)h+='<div class="bobb-card-desc">'+esc(dd)+'</div>';
 if(r.address)h+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
 if(r.phone)h+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">Call '+esc(r.phone)+'</a></div>';
-if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener">Directions</a></div>';
+if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)h+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
 h+='</div>';
 body.innerHTML=h;var im=body.querySelector('.bobb-card-media img');if(im)im.addEventListener('error',function(){im.parentElement.innerHTML=brand;});pop.classList.add('open');pop.scrollTop=0;
 }
 function close(){pop.classList.remove('open');}
+window.bopShowPickCard=function(r,label){show(r,label||(r.bjsPick?'BJS PICK':'BEST OF PERIOD'));};
 document.addEventListener('click',function(e){
 var t=e.target;
 if(t.closest&&t.closest('#bopPickCardPop .bobb-pop-x')){close();return;}
@@ -42800,15 +42993,36 @@ ready(function(){apply();setInterval(apply,700);});
 /* Verified contact fills (home markets). Phone numbers only where confirmed. */
 var C={
 "chez loma":{address:"1132 Loma Ave, Coronado, CA 92118",phone:"(619) 435-0661",url:"https://www.chezloma.com/"},
-"bali hai":{url:"https://www.balihairestaurant.com/"},
-"coasterra":{url:"https://www.cohnrestaurants.com/coasterra"},
-"solare ristorante":{url:"https://www.solarelounge.com/"},
+"bali hai":{phone:"(619) 222-1181",url:"https://www.balihairestaurant.com/"},
+"coasterra":{phone:"(619) 814-1300",url:"https://www.cohnrestaurants.com/coasterra"},
+"solare ristorante":{phone:"(619) 270-9670",url:"https://www.solarelounge.com/"},
+"hidden fish":{phone:"(858) 210-5056"},
+"serea coastal cuisine":{phone:"(619) 435-6611",url:"https://www.sereasandiego.com/"},
 "kindred":{url:"https://www.barkindred.com/"},
 "nick's on state":{url:"https://www.nicksonstate.com/"},
 "pacific coast grill":{url:"https://pacificcoastgrill.com/"},
 "valentina":{url:"https://restaurantvalentina.com/"},
 "barona oaks steakhouse":{url:"https://www.barona.com/dining/barona-oaks-steakhouse"},
-"watertable":{phone:"(714) 698-1234",url:"https://www.hyatt.com/en-US/hotel/california/hyatt-regency-huntington-beach-resort-and-spa/hunrh"}
+"watertable":{phone:"(714) 698-1234",url:"https://www.hyatt.com/en-US/hotel/california/hyatt-regency-huntington-beach-resort-and-spa/hunrh"},
+"cut beverly hills":{address:"9500 Wilshire Blvd, Beverly Hills, CA 90212",url:"https://wolfgangpuck.com/dining/cut-beverly-hills/"},
+"mastro's steakhouse beverly hills":{address:"246 N Canon Dr, Beverly Hills, CA 90210",url:"https://www.mastrosrestaurants.com/"},
+"mastro's ocean club — irvine":{url:"https://www.mastrosrestaurants.com/"},
+"boa steakhouse west hollywood":{address:"9200 W Sunset Blvd, West Hollywood, CA 90069",url:"https://boasteak.com/"},
+"gracias madre":{url:"https://www.graciasmadre.com/"},
+"vespertine":{url:"https://vespertine.la/"},
+"hatchet hall":{url:"https://www.hatchethallla.com/"},
+"bistango":{url:"https://www.bistango.com/"},
+"andrei's conscious cuisine & cocktails":{url:"https://andreisrestaurant.com/"},
+"bluegold":{url:"https://www.bluegoldhb.com/"},
+"lsxo":{url:"https://www.lsxohb.com/"},
+"splashes restaurant":{url:"https://www.surfandsandresort.com/dining/splashes"},
+"studio":{url:"https://www.montage.com/lagunabeach/dining/studio/"},
+"castaway burbank":{url:"https://www.castawayburbank.com/"},
+"555 east american steakhouse":{url:"https://www.555east.com/"},
+"l'opera ristorante":{url:"https://www.lopera.com/"},
+"taco maría":{url:"https://www.tacomaria.com/"},
+"heritage":{address:"1421 Redondo Ave, Long Beach, CA 90804",url:"https://www.heritage-lb.com/"},
+"bacari silverlake":{address:"3626 Sunset Blvd, Los Angeles, CA 90026",phone:"(323) 928-2098",url:"https://www.bacari.us/silverlake"}
 };
 function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
 function apply(){
@@ -42817,6 +43031,231 @@ Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];i
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){apply();setInterval(apply,250);});
+})();</script>
+<style id="bop-live-page-titles-v420">
+.bop-world-divider+.bo-live-page-title{margin-top:10px}
+.bo-live-page-title{margin:-16px auto 26px;padding:0 10px;text-align:center;font:900 clamp(1.55rem,7.6vw,2.5rem)/1.05 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 12px rgba(245,158,11,.55)}
+</style>
+<script id="bop-live-page-titles-v420-script">(function(){
+var TITLES=[
+{root:'#bopRealtorOverlay',title:'OPEN HOUSES AND LISTINGS'},
+{root:'#bopCarForSaleOverlay',title:'AUTOS'},
+{root:'#bopSafeMeetupOverlay',title:'MEETUP'},
+{root:'#bopYardSaleOverlay',title:'YARD SALES'}
+];
+function ensure(){
+TITLES.forEach(function(t){
+var root=document.querySelector(t.root);if(!root)return;
+var lock=root.querySelector('.bop-golive-lockup-sub')||root.querySelector('.bop-golive-lockup')||root.querySelector('.bop-world-divider');if(!lock)return;
+var h=root.querySelector('.bo-live-page-title');
+if(!h){h=document.createElement('h2');h.className='bo-live-page-title';lock.insertAdjacentElement('afterend',h);}
+if(h.textContent!==t.title)h.textContent=t.title;
+if(lock.nextElementSibling!==h)lock.insertAdjacentElement('afterend',h);
+});
+}
+setInterval(ensure,400);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
+})();</script>
+<script id="bop-verification-registry-v421">(function(){
+/* BJS verification standard (Sept 2026): a restaurant is "done" only when it has
+   open-status verified, address, phone, website, 3+ rating sources (4-5 when the
+   numbers disagree), real why/note copy, and a photo. This registry records what
+   has passed; bopAuditReport() lists what has not. */
+var VERIFIED={
+"market restaurant + bar":{on:"2026-09-05",sources:3},
+"sushi ota":{on:"2026-09-05",sources:2},
+"chez loma":{on:"2026-09-05",sources:2},
+"serea coastal cuisine":{on:"2026-09-05",sources:3},
+"bali hai":{on:"2026-09-05",sources:3},
+"coasterra":{on:"2026-09-05",sources:3},
+"solare ristorante":{on:"2026-09-05",sources:2},
+"hidden fish":{on:"2026-09-05",sources:1},
+"bones":{on:"2026-09-05",sources:2},"kevin rathbun steak":{on:"2026-09-05",sources:2},"marcel":{on:"2026-09-05",sources:2},"chops lobster bar":{on:"2026-09-05",sources:2},"hal's the steakhouse":{on:"2026-09-05",sources:2},"atlas":{on:"2026-09-05",sources:2},"aria":{on:"2026-09-05",sources:2},"new york prime atlanta":{on:"2026-09-05",sources:2},"kimball house":{on:"2026-09-05",sources:2},
+"steak 48":{on:"2026-09-05",sources:2},"rare society — solana beach":{on:"2026-09-05",sources:2},"addison":{on:"2026-09-05",sources:2},"shimbashi izakaya":{on:"2026-09-05",sources:2},"royal india — del mar":{on:"2026-09-05",sources:2},"red tracton's steakhouse":{on:"2026-09-05",sources:2},"mia's":{on:"2026-09-05",sources:2},"samurai japanese restaurant":{on:"2026-09-05",sources:2},
+"chateau marmont":{on:"2026-09-05",sources:3}
+};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function countSources(r){var t=String(r.ratingNote||'')+' '+String(r.ratingSource||'');var hits=0;[/tripadvisor/i,/\bgoogle\b/i,/\byelp\b/i,/opentable/i,/restaurant guru/i,/trip\.com/i,/thefork/i,/michelin/i,/james beard/i,/world's 50 best|asia's 50 best|latin america's 50 best/i,/zagat/i,/booking\.com/i,/hotels\.com/i,/tripexpert/i,/doordash|uber eats/i,/time out/i,/fodor/i].forEach(function(re){if(re.test(t))hits++;});return hits;}
+function status(r){var v=VERIFIED[norm(r.name)]||null;var s=Math.max(countSources(r),v?v.sources:0);var img=r.image||(typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'';var missing=[];if(!v)missing.push('open-check');if(!r.address)missing.push('address');if(!r.phone)missing.push('phone');if(!r.url)missing.push('website');if(s<3)missing.push('sources('+s+'/3)');if(!r.why&&!r.note)missing.push('copy');if(!img)missing.push('photo');return {verified:!!v,sources:s,missing:missing,done:missing.length===0};}
+window.bopVerificationStatus=status;
+window.bopAuditReport=function(scope){
+var out=[];var seen=new Set();
+function add(r,where){if(!r||!r.name)return;var k=norm(r.name);if(seen.has(k))return;seen.add(k);var st=status(r);if(!st.done)out.push({where:where,name:r.name,missing:st.missing.join(', ')});}
+if(!scope||scope==='top3'){Object.keys(BO_CITY_CONFIG).forEach(function(k){var c=BO_CITY_CONFIG[k];var bo=boCategoryData['bestof'+k];var arr=(Array.isArray(bo)&&bo.length)?bo:(boCategoryData[c.bjsPicksCat||c.bjs||('bjspicks'+k)]||[]);arr.slice(0,3).forEach(function(r){add(r,'Top3 '+(c.displayName||k));});});}
+if(!scope||scope==='picks'){Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(r&&r.bjsPick)add(r,'BJS Pick');});});}
+if(scope==='all'){Object.keys(boCategoryData).forEach(function(cat){if(/^bestof|^bjspicks/.test(cat))return;(boCategoryData[cat]||[]).forEach(function(r){add(r,cat);});});}
+return out;
+};
+})();</script>
+<style id="bop-xref-links-v421">
+a.bo-xref{color:#F59E0B;font-weight:800;text-decoration:none;border-bottom:1.5px solid rgba(245,158,11,.55);cursor:pointer}
+a.bo-xref:active{color:#fff}
+</style>
+<script id="bop-xref-links-v421-script">(function(){
+/* Any restaurant name mentioned inside another card's copy becomes a gold
+hot link to that restaurant's card. Closing the card returns to the page
+the reader was on \u2014 nothing underneath is touched. */
+var idx=null,names=[],builtAt=0;
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function build(){
+var now=Date.now();if(idx&&now-builtAt<8000)return;
+idx={};names=[];
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(c){var list=boCategoryData[c];if(!Array.isArray(list))return;list.forEach(function(r){if(!r||!r.name)return;var full=String(r.name);var base=full.replace(/\s+[\u2014\u2013-]\s+.*$/,'').trim();[full,base].concat(Array.isArray(r.xrefAliases)?r.xrefAliases:[]).forEach(function(n){var k=norm(n);if(k.length<5)return;if(!idx[k]){idx[k]=r;names.push(n);}else if(!idx[k].address&&r.address)idx[k]=r;});});});
+names.sort(function(a,b){return b.length-a.length;});
+builtAt=now;
+}
+function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+var SKIP=/^(the|steak|sushi|pizza|tacos|market|studio|heritage|verse|hippo|kindred|atlas|noel|alo|jan|vaca|carbone|studio|solare)$/i;
+function linkify(el){
+if(!el||el.dataset.xrefDone)return;
+var card=el.closest('.bo-card');var pop=el.closest('.bobb-pop-inner');
+var selfName=norm(card?((card.querySelector('.bo-name, .bo-card-name, h3, h4')||{}).textContent||''):(pop?((pop.querySelector('.bobb-card-name')||{}).textContent||''):''));
+var html=el.innerHTML;if(!html||/<a\b/i.test(html)&&el.querySelector('a.bo-xref'))return;
+var changed=false;
+names.forEach(function(n){
+var k=norm(n);if(SKIP.test(k))return;if(selfName&&(selfName===k||selfName.indexOf(k)===0))return;
+var re=new RegExp('(^|[^\\w>])('+esc(n).replace(/'/g,"['\u2019]")+")(?=$|[^\\w<])",'g');
+if(re.test(html)){html=html.replace(re,function(m,pre,name){return pre+'<a class="bo-xref" data-xref="'+n.replace(/"/g,'&quot;')+'">'+name+'</a>';});changed=true;}
+});
+if(changed)el.innerHTML=html;
+el.dataset.xrefDone='1';
+}
+function sweep(){
+build();if(!names.length)return;
+document.querySelectorAll('.bo-why, .bo-note, .bo-red-callout-copy, .bobb-card-desc').forEach(linkify);
+}
+document.addEventListener('click',function(e){
+var a=e.target.closest&&e.target.closest('a.bo-xref');if(!a)return;
+e.preventDefault();e.stopImmediatePropagation();
+build();var r=idx[norm(a.dataset.xref)];if(!r)return;
+if(typeof window.bopShowPickCard==='function')window.bopShowPickCard(r,r.bjsPickLabel||'');
+},true);
+setInterval(sweep,700);
+})();</script>
+<style id="bop-neighborhood-flag-v422">
+.bo-neighborhood-flag{display:inline-flex;align-items:center;justify-content:center;width:18px;height:13px;margin-left:5px;vertical-align:2px;cursor:pointer;border-radius:2px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.35);flex-shrink:0}
+.bo-flag-italy{background:linear-gradient(to right,#009246 0 33%,#fff 33% 66%,#CE2B37 66% 100%)}
+.bo-flag-chinatown{background:#DE2910;display:inline-flex;align-items:center;justify-content:center;color:#FFDE00;font-size:9px;font-weight:900;line-height:1}
+#bopNeighborhoodPop{position:fixed;inset:0;z-index:2147483350;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);padding:20px}
+#bopNeighborhoodPop.open{display:flex}
+#bopNeighborhoodPop .bo-nb-card{position:relative;max-width:320px;background:#0b0b0b;border:2px solid #F59E0B;border-radius:14px;padding:24px 20px;text-align:center;color:#eee;font-family:'Archivo Narrow',Arial,sans-serif}
+#bopNeighborhoodPop .bo-nb-flag{width:52px;height:36px;margin:0 auto 12px;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+#bopNeighborhoodPop .bo-nb-title{font:900 1.05rem 'Archivo Black',sans-serif;color:#F59E0B;margin-bottom:8px;letter-spacing:.03em}
+#bopNeighborhoodPop .bo-nb-text{font-size:.88rem;line-height:1.45;color:#ddd}
+#bopNeighborhoodPop .bo-nb-x{position:absolute;top:6px;right:10px;background:none;border:0;color:#E4002B;font-size:22px;font-weight:900;cursor:pointer}
+.bo-verification-key-item.bo-neighborhood-key-item small a{color:#F59E0B}
+</style>
+<div id="bopNeighborhoodPop" role="dialog" aria-modal="true"><div class="bo-nb-card"><button type="button" class="bo-nb-x" aria-label="Close">&times;</button><div class="bo-nb-flag" id="bopNbFlag"></div><div class="bo-nb-title" id="bopNbTitle"></div><div class="bo-nb-text" id="bopNbText"></div></div></div>
+<script id="bop-neighborhood-flag-v422-script">(function(){
+var ITALY_FLAG='<div class="bo-nb-flag" style="background:linear-gradient(to right,#009246 0 33%,#fff 33% 66%,#CE2B37 66% 100%)"></div>';
+var CHINATOWN_FLAG='<div class="bo-nb-flag" style="background:#DE2910;display:flex;align-items:center;justify-content:center;color:#FFDE00;font:900 20px/1 Arial,sans-serif">\u4e2d</div>';
+var INFO={
+"Little Italy":{flag:'<span class="bo-neighborhood-flag bo-flag-italy" aria-hidden="true"></span>',big:ITALY_FLAG,title:"LITTLE ITALY",text:"This restaurant is located in the Little Italy section of its city."},
+"Chinatown":{flag:'<span class="bo-neighborhood-flag bo-flag-chinatown" aria-hidden="true">\u4e2d</span>',big:CHINATOWN_FLAG,title:"CHINATOWN",text:"This restaurant is located in the Chinatown section of its city."}
+};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s+/g,' ').trim();}
+function findByCardName(name){
+var want=norm(name);var hit=null;
+Object.keys(boCategoryData).forEach(function(cat){if(hit)return;var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(hit)return;if(r&&norm(r.name)===want&&r.neighborhood)hit=r;});});
+return hit;
+}
+function tagCards(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+document.querySelectorAll('#boList .bo-card, #bopAllBjsPicks .bop-all-bjs-hotel-item').forEach(function(card){
+if(card.dataset.nbTagged)return;
+var h3=card.querySelector('h3');if(!h3)return;
+var nameNode=h3.childNodes[0];var name=nameNode?nameNode.textContent.trim():h3.textContent.trim();
+var r=findByCardName(name);
+if(r&&r.neighborhood&&INFO[r.neighborhood]){
+var span=document.createElement('span');span.innerHTML=INFO[r.neighborhood].flag;var el=span.firstChild;
+el.dataset.neighborhood=r.neighborhood;
+h3.appendChild(el);
+card.dataset.nbTagged='1';
+}else{card.dataset.nbTagged='1';}
+});
+}
+function openPop(nb){
+var info=INFO[nb];if(!info)return;
+var flagEl=document.getElementById('bopNbFlag');
+if(flagEl)flagEl.innerHTML='';
+var wrap=document.createElement('div');wrap.innerHTML=info.big;
+var inner=wrap.firstChild;
+if(flagEl&&inner){flagEl.style.cssText=inner.style.cssText;flagEl.textContent=inner.textContent;flagEl.className=inner.className;}
+document.getElementById('bopNbTitle').textContent=info.title;
+document.getElementById('bopNbText').textContent=info.text;
+document.getElementById('bopNeighborhoodPop').classList.add('open');
+}
+document.addEventListener('click',function(e){
+var f=e.target.closest&&e.target.closest('.bo-neighborhood-flag');
+if(f){e.preventDefault();e.stopPropagation();openPop(f.dataset.neighborhood);return;}
+var k=e.target.closest&&e.target.closest('.bo-neighborhood-key-item');
+if(k){e.preventDefault();openPop(k.dataset.neighborhood);return;}
+if(e.target.closest&&e.target.closest('#bopNeighborhoodPop .bo-nb-x')){document.getElementById('bopNeighborhoodPop').classList.remove('open');return;}
+if(e.target.id==='bopNeighborhoodPop')document.getElementById('bopNeighborhoodPop').classList.remove('open');
+},true);
+function addLegendEntry(){
+var list=document.querySelector('.bo-verification-key');if(!list||list.dataset.nbLegend)return;
+list.dataset.nbLegend='1';
+var row=document.createElement('div');
+row.className='bo-verification-key-item bo-neighborhood-key-item';
+row.setAttribute('role','button');row.setAttribute('tabindex','0');
+row.dataset.neighborhood='Little Italy';
+row.innerHTML='<span class="bo-neighborhood-flag bo-flag-italy" style="width:25px;height:18px;margin:0 10px 0 0" aria-hidden="true"></span><b class="bo-key-label-gold">LITTLE ITALY / CHINATOWN</b><small class="bo-key-desc-gray">Flags mark restaurants in a city\u2019s Little Italy or Chinatown \u2014 tap to learn more.</small>';
+list.appendChild(row);
+}
+setInterval(function(){tagCards();addLegendEntry();},500);
+})();</script>
+<style id="bop-all-bjs-city-link-v423">
+.bop-all-bjs-city-link{cursor:pointer;text-decoration:none;position:relative;display:inline-block}
+.bop-all-bjs-city-link:after{content:'\2192';margin-left:8px;color:#F59E0B;font-weight:900}
+.bop-all-bjs-city-link:active{opacity:.7}
+</style>
+<script id="bop-all-bjs-city-link-v423-script">(function(){
+function findLandingCategory(cityKey){
+var cfg=BO_CITY_CONFIG[cityKey];var bjsCat=cfg&&cfg.bjsPicksCat;
+var picks=(bjsCat&&boCategoryData[bjsCat])||[];
+var SKIP=/^(bjspicks|livemusic|michelin|jamesbeard|notquiteopen|teen|brunch|24hours|nation)/i;
+function norm(s){return String(s||'').toLowerCase().trim();}
+for(var i=0;i<picks.length;i++){
+var item=picks[i];if(!item||!item.name)continue;
+var want=norm(item.name);
+var hit=null;
+Object.keys(boCategoryData).forEach(function(c){if(hit)return;if(SKIP.test(c))return;if(c===bjsCat)return;var list=boCategoryData[c];if(!Array.isArray(list))return;if(list.some(function(x){return x&&norm(x.name)===want;}))hit=c;});
+if(hit)return hit;
+}
+return 'otheroptions';
+}
+function goToCity(cityKey){
+if(!cityKey||typeof BO_CITY_CONFIG==='undefined'||!BO_CITY_CONFIG[cityKey])return;
+var allbjs=document.getElementById('bopAllBjsPicks');if(allbjs)allbjs.classList.remove('open');
+document.body.style.overflow='';
+var overlay=document.getElementById('bestOfOverlay');
+if(overlay){window.boCityContext=cityKey;overlay.classList.add('open');
+var landCat=findLandingCategory(cityKey);
+if(typeof window.boRenderCategory==='function'){
+window.boRenderCategory(landCat);
+setTimeout(function(){
+if(landCat!=='otheroptions'&&document.querySelectorAll('#boList .bo-card').length===0){
+window.boRenderCategory('otheroptions');
+}
+},250);
+}
+}
+}
+document.addEventListener('click',function(e){
+var h=e.target.closest&&e.target.closest('.bop-all-bjs-city-link');
+if(!h)return;
+e.preventDefault();e.stopPropagation();
+goToCity(h.dataset.cityKey);
+},true);
+document.addEventListener('keydown',function(e){
+if(e.key!=='Enter'&&e.key!==' ')return;
+var h=e.target&&e.target.closest&&e.target.closest('.bop-all-bjs-city-link');
+if(!h)return;
+e.preventDefault();
+goToCity(h.dataset.cityKey);
+});
 })();</script>
 <script id="bop-sibling-locations-late-sync">(function(){
 var lugerNote="Take the waiter\u2019s advice... If it\u2019s too rare, don\u2019t worry, they\u2019ll just cook it on the side of your plate.";
