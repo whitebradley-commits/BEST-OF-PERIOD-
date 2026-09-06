@@ -35724,7 +35724,7 @@ var factsParts=[];
 if(d.mileage) factsParts.push(d.mileage+' mi');
 if(d.condition) factsParts.push(d.condition);
 var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
-var cfsSpotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
+var cfsSpotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span class="bop-sm-spot-hotlink" onclick="event.stopPropagation();window.boShowSpotCompanyInfo(\''+d.spot.replace(/'/g,"\\'")+'\')" style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;cursor:pointer;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
 var cfsSpotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">'+cfsSpotLogoHTML+'Meet at: '+d.spot+'</div>':'';
 var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
 var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
@@ -35964,7 +35964,7 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
 </div>
 <script id="bop-safemeetup-script-v505">(function(){
 var CATEGORIES=['Phone','Computer','Clothes','Furniture','Electronics','Appliances','Toys & Games','Sporting Goods','Books & Media','Vehicles & Parts','Tools','Jewelry','Miscellaneous'];
-var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart','Tesla Supercharger'];
+var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart','Lidl','Aldi','IKEA','Tesla Supercharger'];
 var smIconHTML = '<div style="width:34px;height:34px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(245,158,11,.7);"><svg width="20" height="20" viewBox="0 0 100 100" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><path d="M50 12 L84 26 V50 C84 72 68 86 50 92 C32 86 16 72 16 50 V26 Z"/><path d="M34 50 L45 62 L68 38"/></svg></div>';
 function compressToDataUrl(file,onDone){
 var img=new Image(),url=URL.createObjectURL(file);
@@ -36004,7 +36004,7 @@ var factsParts=[];
 if(d.price) factsParts.push(d.price);
 if(d.category) factsParts.push(d.category);
 var factsHTML=factsParts.length?'<div style="font:800 .8rem Arial;color:#8fbf6f;margin-bottom:4px;">'+factsParts.join(' &middot; ')+'</div>':'';
-var spotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
+var spotLogoHTML=(d.spot&&window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[d.spot])?'<span class="bop-sm-spot-hotlink" onclick="event.stopPropagation();window.boShowSpotCompanyInfo(\''+d.spot.replace(/'/g,"\\'")+'\')" style="display:inline-block;width:16px;height:16px;border-radius:50%;overflow:hidden;vertical-align:-3px;margin-right:5px;cursor:pointer;">'+window.bopSmSpotLogoSVG[d.spot]+'</span>':'';
 var spotHTML=d.spot?'<div style="font:700 .7rem Arial;color:#F59E0B;margin-bottom:4px;">'+spotLogoHTML+'Meet at: '+d.spot+'</div>':'';
 var photoHTML=d.photo?'<img src="'+d.photo+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;">':'';
 var descHTML=d.description?'<div style="font:600 .78rem/1.4 Arial;color:#ccc;margin:4px 0 6px;">'+d.description+'</div>':'';
@@ -36134,7 +36134,7 @@ function install(){
 var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
 if(!note||note.dataset.bopV506)return;
 note.dataset.bopV506='1';
-note.innerHTML='*Going live targets and isolates your position. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If you\'d like to meet somewhere other than what\'s available in the drop-down, please ask for a proper MEETUP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these locations for their unmistakable security and proximity.';
+note.innerHTML='*Going live targets and isolates your position. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the nine approved drop locations. If you\'d like to meet somewhere other than what\'s available in the drop-down, please ask for a proper MEETUP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these locations for their unmistakable security and proximity.';
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
@@ -36145,7 +36145,7 @@ function install(){
 var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
 if(!note||note.dataset.bopV507)return;
 note.dataset.bopV507='1';
-note.innerHTML='*Going live targets and isolates your position. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five approved drop locations. If you\'d like to meet somewhere other than these locations, please request a proper MEET🤝UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and proximity.';
+note.innerHTML='*Going live targets and isolates your position. By going live, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the nine approved drop locations. If you\'d like to meet somewhere other than these locations, please request a proper MEET🤝UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and proximity.';
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
@@ -36989,7 +36989,7 @@ function fixDisclaimerText(){
 var note=document.querySelector('#bopSafeMeetupOverlay .bo-sm-note');
 if(!note||note.dataset.bopV527text)return;
 note.dataset.bopV527text='1';
-note.innerHTML='*Going <span class="bo-live-glow-word">live</span> targets and isolates your position. By going <span class="bo-live-glow-word">live</span>, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the five recommended drop locations. If an item is for sale or is <span class="bo-live-glow-word">live</span> and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and close proximity to all parties.';
+note.innerHTML='*Going <span class="bo-live-glow-word">live</span> targets and isolates your position. By going <span class="bo-live-glow-word">live</span>, you agree to follow the <span class="bo-sm-rules-link">RULES</span>: you must be at one of the nine recommended drop locations. If an item is for sale or is <span class="bo-live-glow-word">live</span> and is not at one of our suggested locations, please request a proper MEET'+HANDSHAKE_HTML+'UP. <span style="color:#fff;font-weight:700;font-family:Fraunces,serif;">Best of </span><span style="color:var(--gold);font-weight:700;font-family:Fraunces,serif;">Period</span> has chosen these drop spots for their security and close proximity to all parties.';
 }
 function fixFourHeadlines(){
 document.querySelectorAll('.bo-golive-period-word').forEach(function(el){
@@ -37620,6 +37620,15 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
 #bopSmHqByStateEl .bo-rt-hq-logo svg{width:100%;height:100%}
 #bopSmHqByStateEl .bo-rt-hq-name{color:#eee;font:700 .9rem Arial,sans-serif;flex:1;min-width:0}
 #bopSmHqByStateEl .bo-rt-hq-city{display:block;color:#888;font:600 .68rem Arial,sans-serif;margin-top:1px}
+#bopSpotCompanyModal{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:20px;box-sizing:border-box}
+#bopSpotCompanyModal.open{display:flex}
+#bopSpotCompanyModal .bop-sci-card{position:relative;width:min(320px,100%);background:#0a0a0a;border:2px solid #F59E0B;border-radius:14px;padding:26px 20px 20px;text-align:center;box-shadow:0 0 20px rgba(245,158,11,.4)}
+#bopSpotCompanyModal .bop-sci-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#F59E0B;font-size:1.4rem;line-height:1;cursor:pointer}
+#bopSpotCompanyModal .bop-sci-logo{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;overflow:hidden}
+#bopSpotCompanyModal .bop-sci-logo svg{display:block;width:100%;height:100%}
+#bopSpotCompanyModal .bop-sci-name{color:#F59E0B;font:900 1.1rem 'Archivo Black',sans-serif;letter-spacing:.02em;margin-bottom:8px}
+#bopSpotCompanyModal .bop-sci-blurb{color:#ccc;font:500 .85rem/1.5 Arial,sans-serif;margin-bottom:16px}
+#bopSpotCompanyModal .bop-sci-link{display:inline-block;padding:10px 20px;border:2px solid #F59E0B;border-radius:10px;color:#F59E0B;font:800 .8rem Arial,sans-serif;text-decoration:none}
 </style>
 <script id="bop-sm-map-logos-and-hq-v532">(function(){
   var LOGO_SVG={
@@ -37628,9 +37637,44 @@ html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
     'Walmart':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0071CE"/><g stroke="#FFC220" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="4.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="19.5" y2="12"/><line x1="6.9" y1="6.9" x2="17.1" y2="17.1"/><line x1="17.1" y1="6.9" x2="6.9" y2="17.1"/></g></svg>',
     'Tesla Supercharger':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#000"/><path d="M6.5 7h11l-1 2.2h-4v9.3h-2.2V9.2h-4.8z" fill="#E82127"/></svg>',
     'Police Station':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0a0a0a"/><path d="M12 3.5 L19 6 V12 C19 16.5 16 20 12 21.5 C8 20 5 16.5 5 12 V6 Z" fill="none" stroke="#8FB8E8" stroke-width="1.6"/><path d="M8.5 12 L11 14.5 L15.5 9" fill="none" stroke="#8FB8E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    'Public Library':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0a0a0a"/><path d="M5 5.5 h8 a1.6 1.6 0 0 1 1.6 1.6 v11.4 h-8 a1.6 1.6 0 0 1 -1.6 -1.6 z" fill="none" stroke="#C9A66B" stroke-width="1.4"/><path d="M14.6 5.5 h4.4 v13 h-4.4" fill="none" stroke="#C9A66B" stroke-width="1.4"/><line x1="7" y1="9" x2="10.5" y2="9" stroke="#C9A66B" stroke-width="1.2"/><line x1="7" y1="12.2" x2="10.5" y2="12.2" stroke="#C9A66B" stroke-width="1.2"/></svg>'
+    'Public Library':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0a0a0a"/><path d="M5 5.5 h8 a1.6 1.6 0 0 1 1.6 1.6 v11.4 h-8 a1.6 1.6 0 0 1 -1.6 -1.6 z" fill="none" stroke="#C9A66B" stroke-width="1.4"/><path d="M14.6 5.5 h4.4 v13 h-4.4" fill="none" stroke="#C9A66B" stroke-width="1.4"/><line x1="7" y1="9" x2="10.5" y2="9" stroke="#C9A66B" stroke-width="1.2"/><line x1="7" y1="12.2" x2="10.5" y2="12.2" stroke="#C9A66B" stroke-width="1.2"/></svg>',
+    'Lidl':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0050AA"/><circle cx="12" cy="12" r="8.6" fill="#FFF200"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#E4002B" stroke-width="2.3"/><text x="12" y="15.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="7.2" fill="#0050AA">LIDL</text></svg>',
+    'Aldi':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#00543D"/><text x="12" y="15.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="7.4" fill="#F58220">ALDI</text></svg>',
+    'IKEA':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0058A3"/><text x="12" y="15.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="7" fill="#FFDA1A">IKEA</text></svg>'
   };
   window.bopSmSpotLogoSVG = LOGO_SVG;
+
+  var COMPANY_INFO={
+    'Target':{blurb:'Big-box general retailer with grocery, electronics and home goods \u2014 well-lit entryways and steady foot traffic make it a solid public meet-up choice.',url:'https://www.target.com/store-locator/find-stores'},
+    '7-Eleven':{blurb:'24-hour convenience store chain \u2014 usually staffed and camera-covered around the clock, good for late or early check-ins.',url:'https://www.7-eleven.com/locations'},
+    'Walmart':{blurb:'Large retail chain with big, well-lit parking lots and long operating hours.',url:'https://www.walmart.com/store/finder'},
+    'Tesla Supercharger':{blurb:'Public EV charging stations \u2014 typically well-lit at night with cameras and steady visitor traffic.',url:'https://www.tesla.com/findus'},
+    'Police Station':{blurb:'The safest possible option for an in-person exchange \u2014 many departments have a designated "safe exchange" spot out front.',url:'https://www.usa.gov/local-governments'},
+    'Public Library':{blurb:'Public building with regular staff and visitor traffic during open hours.',url:'https://www.usa.gov/libraries'},
+    'Lidl':{blurb:'Grocery chain with bright, camera-covered parking lots.',url:'https://www.lidl.com/stores'},
+    'Aldi':{blurb:'Grocery chain with well-lit, well-trafficked parking lots.',url:'https://stores.aldi.us/'},
+    'IKEA':{blurb:'Large home-goods retailer with big, well-lit lots and heavy foot traffic.',url:'https://www.ikea.com/us/en/stores/'}
+  };
+  window.boShowSpotCompanyInfo=function(spotKey){
+    if(!spotKey)return;
+    var info=COMPANY_INFO[spotKey];
+    var logo=LOGO_SVG[spotKey]||'';
+    var modal=document.getElementById('bopSpotCompanyModal');
+    if(!modal){
+      modal=document.createElement('div');
+      modal.id='bopSpotCompanyModal';
+      modal.innerHTML='<div class="bop-sci-card"><button type="button" class="bop-sci-close" aria-label="Close">&times;</button><div class="bop-sci-logo"></div><div class="bop-sci-name"></div><div class="bop-sci-blurb"></div><a class="bop-sci-link" target="_blank" rel="noopener">Visit Website</a></div>';
+      document.body.appendChild(modal);
+      modal.querySelector('.bop-sci-close').addEventListener('click',function(){modal.classList.remove('open');});
+      modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('open');});
+    }
+    modal.querySelector('.bop-sci-logo').innerHTML=logo;
+    modal.querySelector('.bop-sci-name').textContent=spotKey;
+    modal.querySelector('.bop-sci-blurb').textContent=info?info.blurb:'';
+    var link=modal.querySelector('.bop-sci-link');
+    if(info&&info.url){link.href=info.url;link.style.display='inline-block';}else{link.style.display='none';}
+    modal.classList.add('open');
+  };
 
   var HQ=[
     {name:'Target Corporation',city:'Minneapolis',state:'MN',lat:44.9744,lng:-93.2761,logo:'Target'},
