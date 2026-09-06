@@ -37443,8 +37443,7 @@ new MutationObserver(install).observe(document.documentElement,{childList:true,s
      matter what else on the page shares its z-index. Top row (Enter, Go
      Live, Promo Video) is untouched -- this is only about the corner. -->
 <style id="bop-corner-rebuild-v534">
-#bopInviteCornerRow2{position:fixed;right:14px;bottom:14px;z-index:2147483647;display:none;align-items:center;gap:8px;}
-html.bop-invite-active #bopInviteCornerRow2{display:flex!important;}
+#bopInviteCornerRow2{display:none!important;} /* v542: superseded by #bopGateCorner (v535) — was rendering both at once */
 #bopInviteCornerRow2 button,#bopInviteCornerRow2 a{position:static!important;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;text-decoration:none;margin:0!important;}
 #bopInviteCornerRow2 svg{width:22px;height:22px;}
 #bopInviteCornerRow{display:none!important;}
@@ -44144,11 +44143,17 @@ var rows=[];
 cands.forEach(function(c){
 var rs=[];try{rs=boGetMapRestaurants(c.key);}catch(e){}
 var center=boNearCityDefaults(c.key).center;
+var cityLabelLower=boNearCityDefaults(c.key).label.toLowerCase();
 rs.forEach(function(r){
 if(!matchCat(r,q)||!matchTier(r,q))return;
 var d=null,exact=false;
 if(pos&&r.lat!=null&&r.lon!=null){d=boNearDistanceMiles(pos,{lat:r.lat,lng:r.lon});exact=true;}
-else if(pos){d=boNearDistanceMiles(pos,{lat:center[0],lng:center[1]});}
+else if(pos&&r.address){
+/* Reuse whatever the Near Me map has already geocoded and cached locally —
+   no new network calls here, this only reads what's already on the device. */
+try{var cached=localStorage.getItem('boGeo:'+cityLabelLower+'|'+String(r.address).toLowerCase());if(cached){var obj=JSON.parse(cached);if(obj&&obj.lat&&obj.lon){d=boNearDistanceMiles(pos,{lat:obj.lat,lng:obj.lon});exact=true;}}}catch(e){}
+}
+if(!exact&&pos)d=boNearDistanceMiles(pos,{lat:center[0],lng:center[1]});
 if(pos&&q.miles!=null&&d!=null&&d>q.miles+(exact?0:25))return;
 rows.push({r:r,city:c.key,d:d,exact:exact});
 });
@@ -44171,7 +44176,7 @@ var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
 var meta=[cityLabel(x.city),catLabel(r.cat)];
 if(lvl)meta.push('$'.repeat(lvl));
 if(r.rating)meta.push('\u2605 '+r.rating);
-var dist=x.d==null?'':(x.exact?(x.d<.1?'<0.1':x.d.toFixed(1))+' mi':'~'+Math.round(x.d)+' mi<small>to city</small>');
+var dist=(x.d==null||!x.exact)?'':(x.d<.1?'<0.1':x.d.toFixed(1))+' mi';
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
 list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
