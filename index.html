@@ -43954,4 +43954,264 @@ if(line2&&!line2.classList.contains('bop-brooklyn-3line'))line2.classList.add('b
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
 new MutationObserver(function(){apply()}).observe(document.body,{childList:true,subtree:true});
 })();</script>
+
+<style id="bop-voice-search-v540">
+/* Landing corner cluster: [BJS] [mail] ... gap ... [MIC alone in the corner] */
+html:not(.bop-invite-active) body:has(#bopLandingOverlay.open) #bopInviteCornerRow2{display:flex!important;right:92px!important;bottom:24px!important;gap:16px!important}
+body:has(#bopLandingOverlay.open) #bopCornerBjsBadge{display:none!important}
+#bopVoiceMicBtn{position:fixed;right:14px;bottom:14px;z-index:2147483647;display:none;align-items:center;justify-content:center;width:52px;height:52px;padding:0;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.6);cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;animation:bopVoiceIdle 3s ease-in-out infinite}
+html:not(.bop-invite-active) body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:flex}
+#bopVoiceMicBtn svg{width:24px;height:24px;pointer-events:none}
+#bopVoiceMicBtn.is-listening{border-color:#E4002B;color:#E4002B;box-shadow:0 0 0 6px rgba(228,0,43,.18),0 0 18px rgba(228,0,43,.85);animation:bopVoiceLive .9s ease-in-out infinite}
+#bopVoiceMicBtn.is-busy{opacity:.6}
+@keyframes bopVoiceIdle{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.5)}50%{box-shadow:0 0 16px rgba(245,158,11,.95)}}
+@keyframes bopVoiceLive{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+#bopVoiceBubble{position:fixed;right:14px;bottom:78px;z-index:2147483647;display:none;max-width:min(320px,calc(100vw - 28px));padding:10px 14px;border:1.5px solid #F59E0B;border-radius:14px;background:#050505;color:#fff;font:700 .82rem/1.35 'Archivo Narrow',Arial,sans-serif;box-shadow:0 0 14px rgba(245,158,11,.4)}
+#bopVoiceBubble.open{display:block}
+#bopVoiceBubble .bop-voice-bubble-label{display:block;margin-bottom:3px;color:#F59E0B;font:900 .62rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-transform:uppercase}
+#bopVoiceBubble.is-live .bop-voice-bubble-label{color:#E4002B}
+#bopVoiceBubble .bop-voice-bubble-text{color:#fff;font-style:italic}
+#bopVoiceBubble .bop-voice-bubble-text:empty::before{content:'…';color:#777}
+#bopVoiceResults{position:fixed;inset:0;z-index:2147483200;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#000;color:#fff}
+#bopVoiceResults.open{display:block}
+#bopVoiceResults .bop-voice-shell{width:min(560px,100%);margin:0 auto;padding:26px 16px 110px;box-sizing:border-box}
+#bopVoiceResults .bop-voice-close{position:sticky;top:14px;float:right;z-index:2;width:44px;height:44px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:900 1.2rem/1 Arial,sans-serif;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.55)}
+#bopVoiceResults .bop-voice-said-label{clear:both;margin:54px 0 4px;color:#F59E0B;font:900 .68rem/1 'Archivo Black',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+#bopVoiceResults .bop-voice-said{margin:0 0 14px;color:#fff;font:italic 700 1.05rem/1.3 'Archivo Narrow',Arial,sans-serif}
+#bopVoiceResults .bop-voice-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+#bopVoiceResults .bop-voice-chip{padding:5px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .66rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+#bopVoiceResults .bop-voice-chip.is-dim{border-color:#444;color:#999}
+#bopVoiceResults .bop-voice-note{margin:0 0 16px;color:#bbb;font:600 .8rem/1.4 Arial,sans-serif}
+#bopVoiceResults .bop-voice-list{display:grid;gap:9px}
+#bopVoiceResults .bop-voice-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:12px 13px;border:1px solid rgba(245,158,11,.5);border-radius:12px;background:#0a0a0a;color:#fff;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
+#bopVoiceResults .bop-voice-row:active{background:#151005}
+#bopVoiceResults .bop-voice-row-name{display:block;font:900 .98rem/1.15 'Archivo Narrow',Arial,sans-serif;color:#fff}
+#bopVoiceResults .bop-voice-row-meta{display:block;margin-top:4px;color:#F59E0B;font:700 .72rem/1.3 'Archivo Narrow',Arial,sans-serif;letter-spacing:.03em}
+#bopVoiceResults .bop-voice-row-dist{color:#E4002B;font:900 .78rem/1 'Archivo Black',sans-serif;white-space:nowrap;text-align:right}
+#bopVoiceResults .bop-voice-row-dist small{display:block;margin-top:3px;color:#999;font:700 .58rem/1 Arial,sans-serif;letter-spacing:.06em}
+#bopVoiceResults .bop-voice-empty{padding:26px 14px;border:1px dashed rgba(245,158,11,.5);border-radius:12px;color:#ddd;font:600 .88rem/1.5 Arial,sans-serif;text-align:center}
+#bopVoiceResults .bop-voice-empty strong{color:#F59E0B}
+#bopVoiceResults .bop-voice-retry{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:9px;padding:12px 20px;border:2px solid #F59E0B;border-radius:999px;background:#050505;color:#F59E0B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.06em;box-shadow:0 0 14px rgba(245,158,11,.6);cursor:pointer;-webkit-touch-callout:none;user-select:none;touch-action:none}
+#bopVoiceResults .bop-voice-retry svg{width:18px;height:18px;pointer-events:none}
+#bopVoiceResults .bop-voice-retry.is-listening{border-color:#E4002B;color:#E4002B;box-shadow:0 0 18px rgba(228,0,43,.85)}
+#bopVoiceTypeForm{display:none;gap:8px;margin:0 0 16px}
+#bopVoiceTypeForm.open{display:flex}
+#bopVoiceTypeForm input{flex:1;min-width:0;padding:11px 13px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:700 .9rem Arial,sans-serif}
+#bopVoiceTypeForm button{padding:0 16px;border:2px solid #F59E0B;border-radius:999px;background:#050505;color:#F59E0B;font:900 .72rem 'Archivo Black',sans-serif;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#bopVoiceMicBtn{animation:none}}
+</style>
+<button id="bopVoiceMicBtn" type="button" aria-label="Hold to speak — tell us what you're looking for">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg>
+</button>
+<div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">Listening</span><span class="bop-voice-bubble-text"></span></div>
+<div id="bopVoiceResults" aria-label="Voice search results">
+  <div class="bop-voice-shell">
+    <button type="button" class="bop-voice-close" id="bopVoiceClose" aria-label="Close">&times;</button>
+    <div class="bop-voice-said-label">You said</div>
+    <p class="bop-voice-said" id="bopVoiceSaid"></p>
+    <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
+    <div class="bop-voice-summary" id="bopVoiceSummary"></div>
+    <p class="bop-voice-note" id="bopVoiceNote"></p>
+    <div class="bop-voice-list" id="bopVoiceList"></div>
+    <button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Hold to speak again"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg><span>HOLD TO SPEAK</span></button>
+  </div>
+</div>
+<script id="bop-voice-search-v540-script">(function(){
+/* v540: hold-to-talk voice search on the landing page. Keyword version (no
+backend): the spoken sentence is mapped to the site's own category keys, tier
+words become $-levels, "within an hour" becomes a mile radius from GPS, and
+every city whose center falls inside that radius is searched. Designed so an
+AI parser can later replace parse() without touching the mic or results. */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null;
+var mic=document.getElementById('bopVoiceMicBtn');
+var bubble=document.getElementById('bopVoiceBubble');
+var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
+var bubbleLabel=bubble.querySelector('.bop-voice-bubble-label');
+var panel=document.getElementById('bopVoiceResults');
+var retry=document.getElementById('bopVoiceRetry');
+var typeForm=document.getElementById('bopVoiceTypeForm');
+var typeInput=document.getElementById('bopVoiceTypeInput');
+
+var CAT_WORDS=[
+{re:/cheese ?steaks?|philly/,cats:['cheesesteak'],label:'Cheesesteak'},
+{re:/pizza|pizzeria|\bslice\b|\bpie\b/,cats:['pizza'],label:'Pizza'},
+{re:/\bsteak|steakhouse|rib ?eye|filet|porterhouse/,cats:['steakhighend','steakcasual','steakdive','steakbjspick','steak'],label:'Steak'},
+{re:/italian|pasta|lasagna/,cats:['italianhighend','italiancasual','italian'],label:'Italian'},
+{re:/sushi|omakase|japanese|sashimi/,cats:['sushihighend','sushicasual','sushi','sushibjspick'],label:'Sushi'},
+{re:/ramen/,cats:['ramen'],label:'Ramen'},
+{re:/seafood|oyster|lobster|crab|fish/,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Seafood'},
+{re:/bbq|barbecue|barbeque|brisket|\bribs\b|smokehouse/,cats:['bbq'],label:'BBQ'},
+{re:/bagel/,cats:['bagels'],label:'Bagels'},
+{re:/breakfast|brunch|pancake|waffle|eggs?\b/,cats:['breakfastcasual','steakeggs','bagels','breakfast'],label:'Breakfast'},
+{re:/mexican|tacos?|burrito|taqueria/,cats:['mexicancasual','mexican'],label:'Mexican'},
+{re:/chinese|dim ?sum|dumpling/,cats:['chinese'],label:'Chinese'},
+{re:/\bthai\b/,cats:['thai','nationthai'],label:'Thai'},
+{re:/vietnamese|\bpho\b/,cats:['pho','vietnamese','nationvietnamese','phobjspick'],label:'Vietnamese'},
+{re:/korean|k-?bbq/,cats:['korean'],label:'Korean'},
+{re:/indian|curry/,cats:['indian'],label:'Indian'},
+{re:/\bgreek/,cats:['greek'],label:'Greek'},
+{re:/mediterranean/,cats:['mediterranean'],label:'Mediterranean'},
+{re:/french|bistro|brasserie/,cats:['french','nationfrench'],label:'French'},
+{re:/spanish|tapas/,cats:['spanish','nationspanish'],label:'Spanish'},
+{re:/peruvian/,cats:['peruvian'],label:'Peruvian'},
+{re:/southern|soul food|fried chicken/,cats:['southern'],label:'Southern'},
+{re:/\bwings?\b/,cats:['wings'],label:'Wings'},
+{re:/vegan|vegetarian|plant[- ]based/,cats:['vegan'],label:'Vegan'},
+{re:/dessert|ice cream|gelato|sweets|bakery|cake/,cats:['dessert'],label:'Dessert'},
+{re:/kosher/,cats:['nationkosher'],label:'Kosher'},
+{re:/brewery|craft beer|\bbeer\b/,cats:['brewery'],label:'Brewery'},
+{re:/smoothie|juice/,cats:['smoothies'],label:'Smoothies'},
+{re:/coffee|espresso|cafe|caf\u00e9|latte/,cats:['coffee','coffeenibbles'],label:'Coffee'},
+{re:/michelin/,cats:['michelin'],label:'Michelin'},
+{re:/james beard/,cats:['jamesbeard','jamesbeardverified'],label:'James Beard'},
+{re:/24 ?hour|late night|open late|all night/,cats:['24hours'],label:'24 Hour'},
+{re:/new american|american/,cats:['newamerican','newamericancasual'],label:'American'},
+{re:/asian|fusion/,cats:['asianfusion','asianbestofrest'],label:'Asian'},
+{re:/bjs picks?|your picks?|best picks?/,cats:['bjspicks'],label:'BJS Picks'}
+];
+var NUM={a:1,an:1,one:1,two:2,three:3,four:4,five:5,ten:10,fifteen:15,twenty:20,thirty:30,forty:40,'forty-five':45,'forty five':45,fifty:50,sixty:60,ninety:90,'a couple':2,'a couple of':2,couple:2,'a few':3};
+function wordNum(s){s=String(s||'').trim().toLowerCase();if(/^\d+(\.\d+)?$/.test(s))return parseFloat(s);if(NUM.hasOwnProperty(s))return NUM[s];return null;}
+function parse(text){
+var t=' '+String(text||'').toLowerCase().replace(/[^a-z0-9\s\-']/g,' ').replace(/\s+/g,' ')+' ';
+var out={raw:text,cats:[],labels:[],tier:null,minutes:null,miles:null};
+CAT_WORDS.forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});out.labels.push(w.label);}});
+if(/fine dining|upscale|fancy|high[- ]end|white tablecloth|splurge|tasting menu|michelin|\bnice\b|special occasion|anniversary|date night/.test(t))out.tier='fine';
+else if(/\bdive\b|cheap|hole in the wall|budget|inexpensive|greasy|no frills/.test(t))out.tier='dive';
+else if(/casual|laid[- ]back|moderate|mid[- ]range|family/.test(t))out.tier='casual';
+var m;
+if((m=t.match(/(\d+(?:\.\d+)?|an?|one|two|three|four|five|couple|a couple|a couple of|a few)\s*(?:and a half|and half)?\s*(hours?|hrs?)/))){var h=wordNum(m[1])||1;if(/and a half|and half/.test(m[0]))h+=.5;out.minutes=Math.round(h*60);}
+else if((m=t.match(/half an? hour|half hour/))){out.minutes=30;}
+else if((m=t.match(/(\d+|ten|fifteen|twenty|thirty|forty five|forty-five|forty|fifty|sixty|ninety)\s*(minutes?|mins?)/))){out.minutes=wordNum(m[1])||30;}
+if(/hour and a half|an hour and a half/.test(t))out.minutes=90;
+if((m=t.match(/(\d+(?:\.\d+)?|five|ten|fifteen|twenty|thirty|forty|fifty)\s*miles?/))){out.miles=wordNum(m[1]);}
+if(out.miles==null&&out.minutes!=null)out.miles=Math.max(5,Math.round(out.minutes*0.8));
+if(/near ?me|nearby|around here|close by|walking distance/.test(t)&&out.miles==null)out.miles=8;
+return out;
+}
+function catLabel(key){
+key=String(key||'');
+for(var i=0;i<CAT_WORDS.length;i++){if(CAT_WORDS[i].cats.indexOf(key)>=0){var w=CAT_WORDS[i];var suf=/highend/.test(key)?' · Fine':/casual/.test(key)?' · Casual':/dive/.test(key)?' · Dive':'';return w.label+suf;}}
+if(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[key]&&BO_CITY_CONFIG[key].label)return 'Best Of';
+return key.replace(/highend/,' Fine').replace(/casual/,' Casual').replace(/bjspick/,' BJS Pick').replace(/^(.)/,function(c){return c.toUpperCase();});
+}
+function cityLabel(key){try{return boNearCityDefaults(key).label;}catch(e){return key;}}
+function supportedCities(){return ['bestof','miami','london','sandiego','siliconvalley','losangeles','santabarbara','sanfrancisco','newyork','chicago','washingtondc','boston','philadelphia','atlanta','neworleans','idaho','austin','paris','zurich','lucerne','geneva','zermatt'].filter(function(k){return typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[k];});}
+function getPos(){return new Promise(function(res){if(!navigator.geolocation)return res(null);var done=false;navigator.geolocation.getCurrentPosition(function(p){if(!done){done=true;res({lat:p.coords.latitude,lng:p.coords.longitude});}},function(){if(!done){done=true;res(null);}},{enableHighAccuracy:false,timeout:8000,maximumAge:120000});setTimeout(function(){if(!done){done=true;res(null);}},9000);});}
+function matchCat(r,q){
+if(!q.cats.length)return true;
+var cat=String(r.cat||'').toLowerCase();
+if(q.cats.indexOf(cat)>=0)return true;
+var roots=q.cats.map(function(c){return c.replace(/highend|casual|dive|bjspick|nation|verified/g,'');}).filter(function(x){return x.length>=3;});
+if(roots.some(function(root){return cat.indexOf(root)>=0;}))return true;
+var blob=(String(r.name||'')+' '+String(r.why||'')+' '+String(r.note||'')).toLowerCase();
+return roots.some(function(root){return blob.indexOf(root)>=0;});
+}
+function matchTier(r,q){if(!q.tier)return true;try{return boNearMatchesTier(r,q.tier);}catch(e){return true;}}
+function run(text,opts){
+opts=opts||{};
+var q=parse(text);
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+var summary=document.getElementById('bopVoiceSummary'),note=document.getElementById('bopVoiceNote'),list=document.getElementById('bopVoiceList');
+summary.innerHTML='';note.textContent='Finding your spots\u2026';list.innerHTML='';
+getPos().then(function(pos){
+var cities=supportedCities(),cands=[],nearest=null,nearestMi=Infinity;
+cities.forEach(function(k){
+var c=boNearCityDefaults(k),center={lat:c.center[0],lng:c.center[1]};
+var mi=pos?boNearDistanceMiles(pos,center):null;
+if(mi!=null&&mi<nearestMi){nearestMi=mi;nearest=k;}
+if(pos&&q.miles!=null&&mi<=q.miles+25)cands.push({key:k,mi:mi});
+});
+var scope='';
+if(!pos){var ctx=(typeof boCityContext!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';cands=[{key:ctx,mi:null}];scope='Location is off, so this is '+cityLabel(ctx)+'. Turn on location for drive-time results.';}
+else if(!cands.length){cands=[{key:nearest,mi:nearestMi}];scope=q.miles!=null?'Nothing we cover is within '+q.miles+' miles yet \u2014 showing the closest city, '+cityLabel(nearest)+' ('+Math.round(nearestMi)+' mi).':'Showing '+cityLabel(nearest)+', the closest city we cover.';}
+else{scope=cands.length===1?'Searching '+cityLabel(cands[0].key)+'.':'Searching '+cands.length+' cities within range: '+cands.map(function(c){return cityLabel(c.key);}).join(', ')+'.';}
+var rows=[];
+cands.forEach(function(c){
+var rs=[];try{rs=boGetMapRestaurants(c.key);}catch(e){}
+var center=boNearCityDefaults(c.key).center;
+rs.forEach(function(r){
+if(!matchCat(r,q)||!matchTier(r,q))return;
+var d=null,exact=false;
+if(pos&&r.lat!=null&&r.lon!=null){d=boNearDistanceMiles(pos,{lat:r.lat,lng:r.lon});exact=true;}
+else if(pos){d=boNearDistanceMiles(pos,{lat:center[0],lng:center[1]});}
+if(pos&&q.miles!=null&&d!=null&&d>q.miles+(exact?0:25))return;
+rows.push({r:r,city:c.key,d:d,exact:exact});
+});
+});
+var seen={};rows=rows.filter(function(x){var k=(x.r.name+'|'+x.r.address).toLowerCase();if(seen[k])return false;seen[k]=1;return true;});
+rows.sort(function(a,b){var ra=Number(a.r.rating)||0,rb=Number(b.r.rating)||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return rb-ra;});
+rows=rows.slice(0,30);
+var chips=[];
+q.labels.forEach(function(l){chips.push('<span class="bop-voice-chip">'+esc(l)+'</span>');});
+if(q.tier)chips.push('<span class="bop-voice-chip">'+(q.tier==='fine'?'Fine $$$$':q.tier==='dive'?'Dive $':'Casual $$\u2013$$$')+'</span>');
+if(q.minutes!=null)chips.push('<span class="bop-voice-chip">Up to '+q.minutes+' min drive</span>');
+else if(q.miles!=null)chips.push('<span class="bop-voice-chip">Within '+q.miles+' mi</span>');
+if(!q.labels.length&&!q.tier)chips.push('<span class="bop-voice-chip is-dim">No cuisine caught \u2014 showing everything</span>');
+chips.push('<span class="bop-voice-chip is-dim">'+rows.length+' spot'+(rows.length===1?'':'s')+'</span>');
+summary.innerHTML=chips.join('');
+note.textContent=scope;
+if(!rows.length){list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';return;}
+list.innerHTML=rows.map(function(x,i){
+var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
+var meta=[cityLabel(x.city),catLabel(r.cat)];
+if(lvl)meta.push('$'.repeat(lvl));
+if(r.rating)meta.push('\u2605 '+r.rating);
+var dist=x.d==null?'':(x.exact?(x.d<.1?'<0.1':x.d.toFixed(1))+' mi':'~'+Math.round(x.d)+' mi<small>to city</small>');
+return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
+}).join('');
+list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
+});
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openRestaurant(x){
+closePanel();
+var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+try{boCityContext=x.city;}catch(e){}
+window.boCityContext=x.city;
+if(typeof window.boOpenRestaurantFromMap==='function'){window.boOpenRestaurantFromMap(x.r.cat||x.city,x.r.name);}
+else{var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');}
+}
+function openPanel(){panel.classList.add('open');panel.scrollTop=0;document.body.style.overflow='hidden';}
+function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');}
+document.getElementById('bopVoiceClose').addEventListener('click',closePanel);
+typeForm.addEventListener('submit',function(e){e.preventDefault();var v=typeInput.value.trim();if(v)run(v);});
+
+/* ---- mic control ---- */
+function showBubble(label,text,live){bubbleLabel.textContent=label;bubbleText.textContent=text||'';bubble.classList.toggle('is-live',!!live);bubble.classList.add('open');clearTimeout(bubbleTimer);}
+function hideBubble(delay){clearTimeout(bubbleTimer);bubbleTimer=setTimeout(function(){bubble.classList.remove('open');},delay||0);}
+function setListening(on){listening=on;mic.classList.toggle('is-listening',on);retry.classList.toggle('is-listening',on);}
+function startListening(){
+if(listening)return;
+lastFinal='';
+if(!SR){
+/* No speech engine in this browser (e.g. some in-app browsers): fall back to typing. */
+openPanel();document.getElementById('bopVoiceSaid').textContent='';document.getElementById('bopVoiceSummary').innerHTML='';document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='Voice isn\u2019t available in this browser \u2014 type it instead.';
+typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);return;
+}
+try{
+rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+rec.onstart=function(){setListening(true);showBubble('Listening','',true);};
+rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('Listening',(lastFinal+' '+interim).trim(),true);};
+rec.onerror=function(ev){setListening(false);var msg=ev&&ev.error==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':ev&&ev.error==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';showBubble('Oops',msg,false);hideBubble(2600);};
+rec.onend=function(){setListening(false);clearTimeout(safety);var said=(lastFinal||bubbleText.textContent||'').trim();if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='Listening'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}};
+rec.start();
+}catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
+}
+function stopListening(){clearTimeout(safety);if(rec&&listening){try{rec.stop();}catch(e){}}}
+function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}startListening();}
+function onUp(e){e.preventDefault();if(!listening)return;if(Date.now()-pressAt<350){tapMode=true;clearTimeout(safety);safety=setTimeout(stopListening,8000);return;}stopListening();}
+[mic,retry].forEach(function(btn){
+btn.addEventListener('pointerdown',onDown);
+btn.addEventListener('pointerup',onUp);
+btn.addEventListener('pointercancel',onUp);
+btn.addEventListener('contextmenu',function(e){e.preventDefault();});
+btn.addEventListener('click',function(e){e.preventDefault();});
+});
+/* BJS corner button on the landing must close the landing before opening Founders. */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#bopInviteBjsBtn2');if(!b)return;var landing=document.getElementById('bopLandingOverlay');if(landing&&landing.classList.contains('open')&&!document.documentElement.classList.contains('bop-invite-active'))landing.classList.remove('open');},true);
+window.bopVoiceSearch={run:run,parse:parse};
+})();</script>
 </body></html>
