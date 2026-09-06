@@ -44003,11 +44003,11 @@ html:not(.bop-invite-active) body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{d
 <button id="bopVoiceMicBtn" type="button" aria-label="Hold to speak — tell us what you're looking for">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg>
 </button>
-<div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">Listening</span><span class="bop-voice-bubble-text"></span></div>
+<div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">ASK US ANYTHING!</span><span class="bop-voice-bubble-text"></span></div>
 <div id="bopVoiceResults" aria-label="Voice search results">
   <div class="bop-voice-shell">
     <button type="button" class="bop-voice-close" id="bopVoiceClose" aria-label="Close">&times;</button>
-    <div class="bop-voice-said-label">You said</div>
+    <div class="bop-voice-said-label">ASK US ANYTHING!</div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
@@ -44193,10 +44193,10 @@ typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);ret
 }
 try{
 rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-rec.onstart=function(){setListening(true);showBubble('Listening','',true);};
-rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('Listening',(lastFinal+' '+interim).trim(),true);};
+rec.onstart=function(){setListening(true);showBubble('ASK US ANYTHING!','',true);};
+rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('ASK US ANYTHING!',(lastFinal+' '+interim).trim(),true);};
 rec.onerror=function(ev){setListening(false);var msg=ev&&ev.error==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':ev&&ev.error==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';showBubble('Oops',msg,false);hideBubble(2600);};
-rec.onend=function(){setListening(false);clearTimeout(safety);var said=(lastFinal||bubbleText.textContent||'').trim();if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='Listening'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}};
+rec.onend=function(){setListening(false);clearTimeout(safety);var said=(lastFinal||bubbleText.textContent||'').trim();if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='ASK US ANYTHING!'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}};
 rec.start();
 }catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
 }
