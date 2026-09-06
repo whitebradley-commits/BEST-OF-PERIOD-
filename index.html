@@ -12150,7 +12150,6 @@ var teenOverlay=document.getElementById('teenOverlay');
 if(teenOverlay&&!teenOverlay.classList.contains('open')){
 teenOverlay.classList.add('open');
 }
-var legendEl=document.getElementById('legendOverlay');if(legendEl&&legendEl.classList.contains('open')){legendEl.classList.remove('open');legendEl.setAttribute('aria-hidden','true');}
 var legendEl=document.getElementById('legendOverlay');
 if(legendEl&&legendEl.classList.contains('open')){legendEl.classList.remove('open');legendEl.setAttribute('aria-hidden','true');window.__bopReopenLegendAfterTeen=true;}
 },true);
@@ -20005,7 +20004,7 @@ modal.querySelector('.bop-movie-choice-close').addEventListener('click',close);m
 }
 function openMovie(title){
 const inTheaters=currentTitles().has(title);
-if(inTheaters){openBuyTickets();return;}
+if(inTheaters){openBuyTickets(title);return;}
 const modal=ensureModal(),poster=posterFor(title),message='This movie is available to rent or purchase. Here are your options.';
 modal.querySelector('.bop-movie-choice-content').innerHTML='<div class="bop-fate-decided">FATE HAS DECIDED</div>'+(poster?'<img class="bop-movie-choice-poster" src="'+poster+'" alt="'+title.replace(/"/g,'&quot;')+' poster">':'')+'<h2>'+title+'</h2><p class="bop-movie-choice-message">'+message+'</p>'+providerHTML(homeProviders,title)+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
 modal.classList.add('is-open');
@@ -20015,26 +20014,33 @@ const section=document.querySelector('#boMoviesPage .bo-current-movies');if(!sec
 section.scrollIntoView({behavior:'auto',block:'start'});
 const title=section.querySelector('.bo-current-movies-title');if(title){title.classList.remove('bop-current-jump');void title.offsetWidth;title.classList.add('bop-current-jump');setTimeout(function(){title.classList.remove('bop-current-jump');},1700);}
 }
-function openBuyTickets(){
+function openBuyTickets(title){
 const modal=ensureModal();
-modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>BUY TICKETS</h2><p class="bop-movie-choice-message">Enter your ZIP code to find showtimes near you.</p><form class="bop-zip-form" novalidate><input class="bop-zip-input" type="tel" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button></form>';
+const heading=title?('BUY TICKETS FOR '+title.toUpperCase()):'BUY TICKETS';
+const sub=title?('Enter your ZIP code to find '+title+' playing near you.'):'Enter your ZIP code to find showtimes near you.';
+modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>'+heading+'</h2><p class="bop-movie-choice-message">'+sub+'</p><form class="bop-zip-form" novalidate><input class="bop-zip-input" type="tel" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="ZIP code" aria-label="ZIP code" required><button type="submit" class="bop-zip-submit">FIND TICKETS</button></form>';
 modal.classList.add('is-open');
 const input=modal.querySelector('.bop-zip-input');setTimeout(function(){input.focus();},60);
 modal.querySelector('.bop-zip-form').addEventListener('submit',function(event){
 event.preventDefault();
 const zip=input.value.trim();
 if(!/^\d{5}$/.test(zip)){input.style.borderColor='#E4002B';return;}
-showTicketVendors(zip);
+showTicketVendors(zip,title);
 });
 }
-function showTicketVendors(zip){
+function showTicketVendors(zip,title){
 const modal=ensureModal();
-const ticketVendors=[
+const ticketVendors=title?[
+['FANDANGO','is-fandango','https://www.fandango.com/search?q='+encodeURIComponent(title)+'&zipcode='+encodeURIComponent(zip)],
+['AMC','is-amc','https://www.amctheatres.com/search?q='+encodeURIComponent(title)]
+]:[
 ['FANDANGO','is-fandango','https://www.fandango.com/'+encodeURIComponent(zip)+'_movietimes'],
 ['AMC','is-amc','https://www.amctheatres.com/showtimes/zip/'+encodeURIComponent(zip)+'/default/default']
 ];
-const ticketGrid='<div class="bop-movie-provider-grid">'+ticketVendors.map(function(item){return '<a class="bop-movie-provider '+item[1]+'" href="'+item[2]+'" target="_blank" rel="noopener" aria-label="Find theaters near '+zip+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';
-modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>THEATERS NEAR '+zip+'</h2>'+ticketGrid+'<div class="bop-gold-divider"></div><h3 class="bop-watch-instantly-heading">WATCH INSTANTLY</h3>'+providerHTML(homeProviders,'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
+const ariaSuffix=title?(' for '+title+' near '+zip):(' near '+zip);
+const ticketGrid='<div class="bop-movie-provider-grid">'+ticketVendors.map(function(item){return '<a class="bop-movie-provider '+item[1]+'" href="'+item[2]+'" target="_blank" rel="noopener" aria-label="Find theaters'+ariaSuffix+' on '+item[0]+'">'+item[0]+'</a>';}).join('')+'</div>';
+const heading=title?('TICKETS FOR '+title.toUpperCase()+' NEAR '+zip):('THEATERS NEAR '+zip);
+modal.querySelector('.bop-movie-choice-content').innerHTML='<h2>'+heading+'</h2>'+ticketGrid+'<div class="bop-gold-divider"></div><h3 class="bop-watch-instantly-heading">WATCH INSTANTLY</h3>'+providerHTML(homeProviders,title||'movies')+'<p class="bop-movie-fun">GO HAVE SOME FUN!</p>';
 modal.classList.add('is-open');
 }
 function markup(){
