@@ -35962,6 +35962,22 @@ new MutationObserver(function(){install()}).observe(document.documentElement,{ch
     <p class="bo-sm-note">*We have designated these as "safe" locations — please only meet up at one of them.</p>
   </div>
 </div>
+<style id="bop-sm-geocheck-v1">
+.bo-sm-geozone-label{margin:0 0 4px;color:#F59E0B;font:900 1.05rem/1.1 'Archivo Black',sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.bo-sm-geozone-sub{margin:0 0 12px;color:#999;font:700 .74rem/1.4 Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase}
+.bo-sm-geocheck{margin:0 0 14px}
+.bo-sm-geocheck-status{color:#F59E0B;font:800 .85rem/1.4 Arial,sans-serif}
+.bo-sm-geo-blocked{color:#E4002B;font:800 .85rem/1.4 Arial,sans-serif;margin-bottom:10px}
+.bo-sm-geo-retry{padding:9px 18px;border:2px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#F59E0B;font:800 .8rem Arial,sans-serif;cursor:pointer}
+.bo-sm-geo-found{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;padding:10px 12px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#fff;font:700 .85rem/1.3 Arial,sans-serif}
+.bo-sm-geo-found.is-confirmed{border-color:#8fbf6f}
+.bo-sm-geo-found-logo{display:inline-block;width:22px;height:22px;border-radius:50%;overflow:hidden;flex:none}
+.bo-sm-geo-found-logo svg{display:block;width:100%;height:100%}
+.bo-sm-geo-confirm{width:100%;padding:12px;border:2px solid #F59E0B;border-radius:10px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);color:#F59E0B;font:900 .9rem/1 'Archivo Black',sans-serif;letter-spacing:.03em;cursor:pointer}
+.bo-sm-geo-confirm:disabled{opacity:.5;cursor:default}
+.bo-ftc-btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.bo-sm-geo-note{margin-top:10px;color:#999;font:600 .74rem/1.4 Arial,sans-serif}
+</style>
 <script id="bop-safemeetup-script-v505">(function(){
 var CATEGORIES=['Phone','Computer','Clothes','Furniture','Electronics','Appliances','Toys & Games','Sporting Goods','Books & Media','Vehicles & Parts','Tools','Jewelry','Miscellaneous'];
 var SPOTS=['Target','7-Eleven','Police Station','Public Library','Walmart','Lidl','Aldi','IKEA','Tesla Supercharger'];
@@ -36030,7 +36046,6 @@ page.id='bopSafeMeetupCheckin';
 page.className='bo-ft-overlay';
 page.setAttribute('aria-label','Safe Meet-Up Go Live');
 var categoryOptions=CATEGORIES.map(function(c){return '<option>'+c+'</option>';}).join('');
-var spotOptions='<option value="">Choose a recommended location</option>'+SPOTS.map(function(s){return '<option>'+s+'</option>';}).join('');
 page.innerHTML =
 '<div class="bo-ftc-shell">'+
 '<button class="bo-ft-back" type="button">&larr;<br>Back</button>'+
@@ -36041,8 +36056,10 @@ page.innerHTML =
 '<input class="bo-ftc-field" id="bopSmPrice" type="text" placeholder="Price (e.g. $40)" />'+
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">(Optional — but it increases viewership)</div></div>'+
 '<textarea class="bo-ftc-field" id="bopSmDescription" rows="3" placeholder="Description — condition, details, anything buyers should know"></textarea>'+
-'<select class="bo-ftc-field" id="bopSmSpot">'+spotOptions+'</select>'+
-'<button type="button" class="bo-ftc-btn" id="bopSmCheckinSubmit">I\'m Here — Go Live</button>'+
+'<div class="bo-sm-geozone-label">GET IN THE ZONE</div><div class="bo-sm-geozone-sub">Must be within 500 feet to check in.</div>'+
+'<div class="bo-sm-geocheck" id="bopSmGeoCheck"><div class="bo-sm-geocheck-status" id="bopSmGeoStatus">📍 Checking your location…</div></div>'+
+'<button type="button" class="bo-ftc-btn" id="bopSmCheckinSubmit" disabled>I\'m Here — Go Live</button>'+
+'<div class="bo-sm-geo-note">Check-in only available within 500 feet of an approved location. This applies to Meet-Up only — everything else on Go Live can be posted from anywhere.</div>'+
 '<div class="bo-ftc-status" id="bopSmCheckinStatus"></div>'+
 '</div>';
 document.body.appendChild(page);
@@ -36050,6 +36067,8 @@ page.querySelector('.bo-ft-back').addEventListener('click', function(){
 page.classList.remove('open'); document.body.style.overflow='';
 });
 window.bopSmPhotoUrl='';
+window.bopSmDetectedSpot='';
+window.bopSmLastPos=null;
 var previewImg=document.getElementById('bopSmPreviewImg');
 document.getElementById('bopSmPhotoInput').addEventListener('change',function(e){
 var f=e.target.files&&e.target.files[0];
@@ -36059,6 +36078,76 @@ window.bopSmPhotoUrl=data;
 previewImg.src=data;previewImg.style.display='block';
 });
 });
+var BRAND_MATCHERS=[
+{spot:'Target',test:function(n,t){return n.indexOf('target')>-1;}},
+{spot:'Walmart',test:function(n,t){return n.indexOf('walmart')>-1;}},
+{spot:'7-Eleven',test:function(n,t){return n.indexOf('7-eleven')>-1||n.indexOf('7 eleven')>-1;}},
+{spot:'Lidl',test:function(n,t){return n.indexOf('lidl')>-1;}},
+{spot:'Aldi',test:function(n,t){return n.indexOf('aldi')>-1;}},
+{spot:'IKEA',test:function(n,t){return n.indexOf('ikea')>-1;}},
+{spot:'Tesla Supercharger',test:function(n,t){return n.indexOf('tesla')>-1&&(n.indexOf('supercharg')>-1||t.indexOf('electric_vehicle_charging_station')>-1);}},
+{spot:'Police Station',test:function(n,t){return t.indexOf('police')>-1||n.indexOf('police')>-1;}},
+{spot:'Public Library',test:function(n,t){return t.indexOf('library')>-1||n.indexOf('library')>-1;}}
+];
+function haversineMeters(lat1,lng1,lat2,lng2){
+var R=6371000,toRad=function(d){return d*Math.PI/180;};
+var dLat=toRad(lat2-lat1),dLng=toRad(lng2-lng1);
+var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)*Math.sin(dLng/2);
+return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function renderGeoFound(spot,name){
+var box=document.getElementById('bopSmGeoCheck');
+var logo=(window.bopSmSpotLogoSVG&&window.bopSmSpotLogoSVG[spot])||'';
+box.innerHTML='<div class="bo-sm-geo-found"><span class="bo-sm-geo-found-logo">'+logo+'</span><span>You\u2019re in the zone ✓</span></div><button type="button" class="bo-sm-geo-confirm" id="bopSmGeoConfirm">Tap to Confirm ✓</button>';
+document.getElementById('bopSmGeoConfirm').addEventListener('click',function(){
+window.bopSmDetectedSpot=spot;
+document.getElementById('bopSmCheckinSubmit').disabled=false;
+box.querySelector('.bo-sm-geo-found').classList.add('is-confirmed');
+this.textContent='Confirmed ✓';
+this.disabled=true;
+});
+}
+function renderGeoBlocked(){
+var box=document.getElementById('bopSmGeoCheck');
+box.innerHTML='<div class="bo-sm-geo-blocked">No approved location detected within 500 feet.</div><button type="button" class="bo-sm-geo-retry" id="bopSmGeoRetry">Check Again</button>';
+document.getElementById('bopSmGeoConfirm')&&(document.getElementById('bopSmGeoConfirm').disabled=true);
+document.getElementById('bopSmCheckinSubmit').disabled=true;
+window.bopSmDetectedSpot='';
+document.getElementById('bopSmGeoRetry').addEventListener('click',runGeoCheck);
+}
+function runGeoCheck(){
+var statusBox=document.getElementById('bopSmGeoCheck');
+statusBox.innerHTML='<div class="bo-sm-geocheck-status">📍 Checking your location…</div>';
+document.getElementById('bopSmCheckinSubmit').disabled=true;
+window.bopSmDetectedSpot='';
+if(!navigator.geolocation){ statusBox.innerHTML='<div class="bo-sm-geo-blocked">Location isn\u2019t available on this device/browser.</div>'; return; }
+navigator.geolocation.getCurrentPosition(function(pos){
+window.bopSmLastPos=pos;
+loadGoogleMapsScript().then(function(){
+if(!placesServiceInstance){ placesServiceInstance=new google.maps.places.PlacesService(document.createElement('div')); }
+var latlng=new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+placesServiceInstance.nearbySearch({location:latlng,radius:152},function(results,status){
+if(status!==google.maps.places.PlacesServiceStatus.OK||!results||!results.length){ renderGeoBlocked(); return; }
+var best=null,bestDist=Infinity;
+results.forEach(function(r){
+if(!r.geometry||!r.geometry.location)return;
+var d=haversineMeters(pos.coords.latitude,pos.coords.longitude,r.geometry.location.lat(),r.geometry.location.lng());
+if(d>152)return;
+var name=(r.name||'').toLowerCase();
+var types=(r.types||[]).join(' ');
+for(var i=0;i<BRAND_MATCHERS.length;i++){
+if(BRAND_MATCHERS[i].test(name,types)&&d<bestDist){ best={spot:BRAND_MATCHERS[i].spot,name:r.name,dist:d}; bestDist=d; break; }
+}
+});
+if(best){ renderGeoFound(best.spot,best.name); } else { renderGeoBlocked(); }
+});
+}).catch(function(){ renderGeoBlocked(); });
+}, function(){
+statusBox.innerHTML='<div class="bo-sm-geo-blocked">Location permission is needed to check in.</div>';
+}, {enableHighAccuracy:true, timeout:10000});
+}
+runGeoCheck();
+page._runGeoCheck=runGeoCheck;
 document.getElementById('bopSmCheckinSubmit').addEventListener('click', function(){
 var status=document.getElementById('bopSmCheckinStatus');
 var phoneEl=document.getElementById('bopSmPhone');
@@ -36068,18 +36157,16 @@ var category=document.getElementById('bopSmCategory').value;
 var name=category;
 var price=document.getElementById('bopSmPrice').value.trim();
 var description=document.getElementById('bopSmDescription').value.trim();
-var spot=document.getElementById('bopSmSpot').value;
-if(!spot){ status.textContent='Please choose one of the safe meet-up locations.'; return; }
-if(!navigator.geolocation){ status.textContent="Location isn't available on this device/browser."; return; }
-status.textContent='Getting your location…';
-navigator.geolocation.getCurrentPosition(function(pos){
+var spot=window.bopSmDetectedSpot;
+if(!spot){ status.textContent='You must be within 500 feet of an approved location to check in.'; return; }
+if(!window.bopSmLastPos){ status.textContent="Location isn't available — tap Check Again."; return; }
 if(!window.bopFtDb){ status.textContent='Connection error — try again.'; return; }
 status.textContent='Going live…';
 window.bopFtDb.collection('safemeetups').add({
 phone:phoneEl.value.trim(),name:name,category:category,price:price,description:description,spot:spot,
 photo:window.bopSmPhotoUrl||'',
-lat:pos.coords.latitude,
-lng:pos.coords.longitude,
+lat:window.bopSmLastPos.coords.latitude,
+lng:window.bopSmLastPos.coords.longitude,
 checkedInAt:window.bopFtServerTimestamp?window.bopFtServerTimestamp():null,
 liveUntil:Date.now()+8*3600000
 }).then(function(){
@@ -36087,10 +36174,15 @@ status.textContent="You're live! Tap Back to see your listing on the map.";
 }).catch(function(){
 status.textContent='Something went wrong — try again.';
 });
-}, function(){
-status.textContent='Location permission is needed to check in.';
-}, {enableHighAccuracy:true, timeout:10000});
 });
+}else{
+window.bopSmPhotoUrl='';
+var previewImg2=document.getElementById('bopSmPreviewImg');
+if(previewImg2){previewImg2.style.display='none';previewImg2.src='';}
+var descEl=document.getElementById('bopSmDescription');if(descEl)descEl.value='';
+var priceEl=document.getElementById('bopSmPrice');if(priceEl)priceEl.value='';
+var statusEl=document.getElementById('bopSmCheckinStatus');if(statusEl)statusEl.textContent='';
+if(page._runGeoCheck)page._runGeoCheck();
 }
 page.classList.add('open'); page.scrollTop=0; document.body.style.overflow='hidden';
 };
