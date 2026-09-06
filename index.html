@@ -20931,10 +20931,13 @@ copy.innerHTML='<span class="bop-legend-disclaimer-star" aria-hidden="true">★<
 if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
 }
 function eligible(page){
+if(page&&(page.getAttribute('role')==='dialog'||page.getAttribute('aria-modal')==='true'||/popup|modal|pop$|Pop$/i.test(page.id||'')))return false;
+if(page){var _cs=getComputedStyle(page);if(_cs.position==='fixed'&&_cs.display==='flex'&&_cs.alignItems==='center'&&_cs.justifyContent==='center')return false;}
 if(!page||page.id==='bopLandingOverlay'||page.id==='ocWorldOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.id==='phonePopupOverlay'||page.id==='directionsPopupOverlay'||page.id==='webPopupOverlay'||page.id==='menuPopupOverlay'||page.id==='socialPopupOverlay'||page.id==='restaurantMenuOverlay'||page.matches(retired)||page.closest(retired))return false;
 return true;
 }
 function addDocks(){
+document.querySelectorAll('[role="dialog"] > .bop-icons-only-dock,[aria-modal="true"] > .bop-icons-only-dock,[id*="Popup"] > .bop-icons-only-dock,[id$="Pop"] > .bop-icons-only-dock').forEach(function(dk){dk.remove();});
 document.querySelectorAll('[id$="Overlay"],[id$="Page"],#bopWorldwideLanding').forEach(function(page){
 if(page.id==='bopLandingOverlay'||page.id==='boNearMapPage'||page.id==='boNearInfoCard'||page.id==='vendorOverlay'||page.id==='bjsWhyOverlay'||page.id==='boOtherLeadersOverlay'||page.id==='bopIshOverlay'||page.id==='phonePopupOverlay'||page.id==='directionsPopupOverlay'||page.id==='webPopupOverlay'||page.id==='menuPopupOverlay'||page.id==='socialPopupOverlay'||page.id==='restaurantMenuOverlay'){page.querySelectorAll('.bop-icons-only-dock').forEach(function(dock){dock.remove()});return}
 if(!eligible(page))return;
