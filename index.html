@@ -26832,7 +26832,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 })();</script>
 
-<style id="bop-corner-music-and-promo-fix-v266">#bestOfOverlay>.site-sound-toggle{display:none!important}.site-sound-toggle{display:none!important}.bo-apple-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0}.bo-apple-badge svg{width:100%;height:100%;display:block}.bo-apple-badge.is-guide{width:44px;height:44px}.bop-bjs-co-light{font-weight:400!important;font-size:.62em!important;letter-spacing:.08em;display:inline-block;margin-top:-.15em}#bopMusicCorner{position:fixed;right:18px;bottom:18px;z-index:2147483612;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1.5px solid #F59E0B;background:rgba(6,6,8,.9);color:#F59E0B;font-size:17px;line-height:1;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.55);-webkit-tap-highlight-color:transparent;transition:right .25s ease,bottom .25s ease,opacity .2s ease}#bopMusicCorner.bop-on-landing{right:66px;bottom:14px}#bopMusicCorner[aria-pressed="true"]{opacity:.55;box-shadow:none}#bopMusicCorner.bop-hidden{opacity:0;pointer-events:none}</style>
+<style id="bop-corner-music-and-promo-fix-v266">#bestOfOverlay>.site-sound-toggle{display:none!important}.site-sound-toggle{display:none!important}.bo-apple-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex-shrink:0}.bo-apple-badge svg{width:100%;height:100%;display:block}.bo-apple-badge.is-guide{width:44px;height:44px}.bop-bjs-co-light{font-weight:400!important;font-size:.62em!important;letter-spacing:.08em;display:inline-block;margin-top:-.15em}</style>
 <script id="bop-corner-music-and-promo-fix-v266-script">(function(){
 /* v266: universal corner music toggle (beside BJS on the landing page, alone
 everywhere else) + PROMO VIDEO click resilience on the invitation gate. */
@@ -44742,6 +44742,36 @@ var saidLabel=document.getElementById('bopVoiceSaidLabel');if(saidLabel)saidLabe
 var retryLabel=document.getElementById('bopVoiceRetryLabel');if(retryLabel)retryLabel.textContent=uiText('thumbPress');
 })();
 window.bopVoiceSearch={run:run,parse:parse};
+
+})();</script>
+<script id="bop-landing-mail-corner-v549">(function(){
+/* Music already lives at right:14px on every page. This adds a matching
+   Mail icon on the plain landing page specifically (BJS doesn't need its
+   own copy here — it's already one of the five dock orbs). Gate-only, this
+   would collide with #bopGateCorner, so it's scoped strictly to the landing
+   page with the gate fully closed. */
+function landingOnly(){
+var landing=document.getElementById('bopLandingOverlay');
+var gate=document.getElementById('bopExclusiveInvitation');
+var gateClosed=!gate||gate.classList.contains('bop-invite-closed')||!document.documentElement.classList.contains('bop-invite-active');
+return !!(landing&&landing.classList.contains('open')&&gateClosed);
+}
+function install(){
+var b=document.getElementById('bopLandingMailBtn');
+if(!b){
+b=document.createElement('a');
+b.id='bopLandingMailBtn';
+b.href='mailto:info@bestofperiod.com';
+b.setAttribute('aria-label','Email info at Best Of Period dot com');
+b.style.cssText='position:fixed;right:66px;bottom:14px;z-index:2147483647;width:44px;height:44px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);display:flex;align-items:center;justify-content:center;';
+b.innerHTML='<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#E4002B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>';
+document.body.appendChild(b);
+}
+b.style.display=landingOnly()?'flex':'none';
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+document.addEventListener('click',function(){setTimeout(install,150);},true);
+setInterval(install,600);
 })();</script>
 
 <script id="bop-london-category-buildout-v543">(function(){
@@ -44968,5 +44998,41 @@ return true;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){normalize();setInterval(normalize,1000);});
+})();</script>
+
+<style id="bop-sitewide-music-email-v549">
+#bopSitewideEmail{position:fixed;right:66px;bottom:14px;z-index:2147483647;width:44px;height:44px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);cursor:pointer;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+html:not(.bop-invite-active) #bopSitewideEmail{display:flex}
+</style>
+<script id="bop-sitewide-music-email-v549-script">(function(){
+/* v549: Music + BJS + Email stays exactly as built, but only on the gate.
+   Everywhere else on the site, moving forward, it's just Music + Email —
+   no BJS repeated in the corner on every page. This never touches the
+   5-orb landing dock, which is a separate system. */
+function ensure(){
+if(document.getElementById('bopSitewideEmail'))return;
+if(!document.body)return;
+var b=document.createElement('a');
+b.id='bopSitewideEmail';
+b.href='mailto:info@bestofperiod.com';
+b.setAttribute('aria-label','Email info at Best Of Period dot com');
+b.innerHTML='<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#F59E0B" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+b.addEventListener('click',function(e){
+e.preventDefault();
+var pop=document.getElementById('bopGateEmailPopup');
+if(!pop){
+pop=document.createElement('div');
+pop.id='bopGateEmailPopup';
+pop.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:20px;';
+pop.innerHTML='<div style="position:relative;max-width:300px;width:100%;background:#0a0a0a;border:2px solid #F59E0B;border-radius:14px;padding:24px 20px;text-align:center;box-shadow:0 0 16px rgba(245,158,11,.4);"><button id="bopGateEmailPopupClose" type="button" style="position:absolute;top:8px;right:10px;background:none;border:none;color:#F59E0B;font-size:20px;font-weight:900;cursor:pointer;line-height:1;">&times;</button><div style="color:#F59E0B;font:800 .9rem Arial,sans-serif;margin-bottom:10px;">Email Us</div><a href="mailto:info@bestofperiod.com" style="color:#F59E0B;font-weight:800;font-size:1.05rem;text-decoration:none;">info@bestofperiod.com</a></div>';
+document.body.appendChild(pop);
+pop.addEventListener('click',function(e2){ if(e2.target===pop) pop.remove(); });
+document.getElementById('bopGateEmailPopupClose').addEventListener('click',function(){ pop.remove(); });
+}
+});
+document.body.appendChild(b);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
+window.__bopTick(ensure,1000);
 })();</script>
 </body></html>
