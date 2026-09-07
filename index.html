@@ -44091,7 +44091,7 @@ words become $-levels, "within an hour" becomes a mile radius from GPS, and
 every city whose center falls inside that radius is searched. Designed so an
 AI parser can later replace parse() without touching the mic or results. */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',lastInterim='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false;
 var mic=document.getElementById('bopVoiceMicBtn');
 var bubble=document.getElementById('bopVoiceBubble');
 var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
@@ -44640,7 +44640,7 @@ hideBubble(0);
 }
 function startListening(){
 if(listening)return;
-lastFinal='';
+lastFinal='';lastInterim='';
 if(!SR){
 /* No speech engine in this browser (e.g. some in-app browsers): fall back to typing. */
 openPanel();document.getElementById('bopVoiceSaid').textContent='';document.getElementById('bopVoiceSummary').innerHTML='';document.getElementById('bopVoiceList').innerHTML='';
@@ -44651,7 +44651,7 @@ try{
 rec=new SR();var thisRec=rec;rec.lang=REC_LANG[LANG]||'en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
 hadError=false;startedAt=Date.now();weStopped=false;
 rec.onstart=function(){if(cancelPending){cancelPending=false;weAborted=true;try{rec.abort();}catch(e){}setListening(false);hideBubble(0);return;}setListening(true);showBubble(uiText('askAnything'),'',true);};
-rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble(uiText('askAnything'),(lastFinal+' '+interim).trim(),true);};
+rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();if(interim)lastInterim=interim.trim();showBubble(uiText('askAnything'),(lastFinal+' '+interim).trim(),true);};
 rec.onerror=function(ev){
 setListening(false);
 if(ev&&ev.error==='aborted'&&weAborted){weAborted=false;hideBubble(0);return;} /* genuinely our own cancel */
@@ -44679,7 +44679,11 @@ rec.onend=function(){
 setListening(false);clearTimeout(safety);
 if(hadError)return; /* the error path already handled its own message — never
    treat leftover error text as something the person said. */
-var said=(lastFinal||'').trim();
+/* iOS sometimes ends the session after showing live (interim) words on
+   screen but never actually finalizes them — the bubble clearly heard
+   you, so falling back to that instead of the finalized-only text stops
+   it from wrongly saying "didn't catch that" when it plainly did. */
+var said=(lastFinal||lastInterim||'').trim();
 if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}
 else{if(bubble.classList.contains('open')&&bubbleLabel.textContent===uiText('askAnything')){showBubble('Oops','Didn\u2019t catch that \u2014 press the thumbprint and try again.',false);hideBubble(2200);}else{hideBubble(0);}}
 };
