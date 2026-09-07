@@ -44450,12 +44450,33 @@ if(scope)bits.push(scope);
 bits.push(uiText('tryExample'));
 return bits.join(' ');
 }
+var pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
 var top=rows[0].r,lvl=0;try{lvl=boNearPriceLevel(top)||0;}catch(e){}
 var what=(q.labels.length?q.labels.join(' or ')+' ':'')+(rows.length===1?'spot':'spots');
 var count=rows.length+' '+what+(q.tier?' \u2014 '+(q.tier==='fine'?'fine dining':q.tier==='dive'?'dive':'casual'):'');
-var pieces=['Found '+count+'.'];
-pieces.push('Top pick: '+top.name+(top.rating?', rated '+top.rating+' stars':'')+'.');
-if(rows[0].d!=null&&rows[0].exact)pieces.push('It\u2019s about '+(rows[0].d<1?'under a mile':Math.round(rows[0].d)+' miles')+' away.');
+var openers=[
+'Found '+count+'.',
+'I dug up '+count+'.',
+'Ooh, I found '+count+'.',
+'Here\u2019s what I\u2019ve got \u2014 '+count+'.',
+'I found you '+count+'.',
+'Good news \u2014 '+count+'.'
+];
+var ratingBit=top.rating?', rated '+top.rating+' stars':'';
+var pickPhrases=[
+'Top pick: '+top.name+ratingBit+'.',
+'My favorite of the bunch is '+top.name+ratingBit+'.',
+'If I had to pick one, it\u2019s '+top.name+ratingBit+'.',
+'You can\u2019t go wrong with '+top.name+ratingBit+'.',
+'I\u2019d start with '+top.name+ratingBit+'.',
+'Right at the top: '+top.name+ratingBit+'.'
+];
+var pieces=[pick(openers),pick(pickPhrases)];
+if(rows[0].d!=null&&rows[0].exact){
+var distText=rows[0].d<1?'under a mile':Math.round(rows[0].d)+' miles';
+var distPhrases=['It\u2019s about '+distText+' away.','Just '+distText+' from you.','Only '+distText+' away.'];
+pieces.push(pick(distPhrases));
+}
 return pieces.join(' ');
 }
 function setReply(text){
