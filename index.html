@@ -44010,7 +44010,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-said{margin:0 0 14px;color:#E8C97A;font:italic 400 1.05rem/1.3 'Archivo Narrow',Arial,sans-serif}
 #bopVoiceResults .bop-voice-reply{display:none;margin:-4px 0 16px;padding:12px 14px;border-left:3px solid #F59E0B;background:rgba(245,158,11,.07);border-radius:0 10px 10px 0;color:#fff;font:600 .92rem/1.45 'Archivo Narrow',Arial,sans-serif}
 #bopVoiceResults .bop-voice-reply.open{display:block}
-#bopVoiceResults .bop-voice-reply::before{content:'BJS SAYS';display:block;margin-bottom:4px;color:#F59E0B;font:900 .6rem/1 'Archivo Black',sans-serif;letter-spacing:.14em}
+#bopVoiceResults .bop-voice-reply-label{display:block;margin-bottom:4px;color:#F59E0B;font:900 .6rem/1 'Archivo Black',sans-serif;letter-spacing:.14em}
 #bopVoiceResults .bop-voice-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
 #bopVoiceResults .bop-voice-chip{padding:5px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .66rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase}
 #bopVoiceResults .bop-voice-chip.is-dim{border-color:#444;color:#999}
@@ -44068,9 +44068,9 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
       <label class="bop-voice-toggle-wrap"><span class="bop-voice-toggle" id="bopVoiceToggleTrack"><input type="checkbox" id="bopVoiceToggle" aria-label="Voice replies on or off"><span class="bop-voice-toggle-knob"></span></span><span class="bop-voice-toggle-label">VOICE</span></label>
       <button type="button" class="bop-voice-voice-btn" id="bopVoiceCycle" aria-label="Cycle voice">🔊 <span id="bopVoiceCycleLabel">Voice</span></button>
     </div>
-    <div class="bop-voice-said-label">ASK US ANYTHING!</div>
+    <div class="bop-voice-said-label" id="bopVoiceSaidLabel">ASK US ANYTHING!</div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
-    <p class="bop-voice-reply" id="bopVoiceReply" aria-live="polite"></p>
+    <p class="bop-voice-reply" id="bopVoiceReply" aria-live="polite"><span class="bop-voice-reply-label" id="bopVoiceReplyLabel"></span><span id="bopVoiceReplyText"></span></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
     <p class="bop-voice-note" id="bopVoiceNote"></p>
@@ -44085,7 +44085,7 @@ words become $-levels, "within an hour" becomes a mile radius from GPS, and
 every city whose center falls inside that radius is searched. Designed so an
 AI parser can later replace parse() without touching the mic or results. */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false;
 var mic=document.getElementById('bopVoiceMicBtn');
 var bubble=document.getElementById('bopVoiceBubble');
 var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
@@ -44135,13 +44135,252 @@ var CAT_WORDS=[
 ];
 var NUM={a:1,an:1,one:1,two:2,three:3,four:4,five:5,ten:10,fifteen:15,twenty:20,thirty:30,forty:40,'forty-five':45,'forty five':45,fifty:50,sixty:60,ninety:90,'a couple':2,'a couple of':2,couple:2,'a few':3};
 function wordNum(s){s=String(s||'').trim().toLowerCase();if(/^\d+(\.\d+)?$/.test(s))return parseFloat(s);if(NUM.hasOwnProperty(s))return NUM[s];return null;}
+var LANG=(function(){
+var raw=(navigator.language||'en').toLowerCase();
+if(raw.indexOf('zh')===0)return 'zh';
+if(raw.indexOf('fr')===0)return 'fr';
+if(raw.indexOf('es')===0)return 'es';
+if(raw.indexOf('ja')===0)return 'ja';
+if(raw.indexOf('de')===0)return 'de';
+if(raw.indexOf('it')===0)return 'it';
+if(raw.indexOf('ko')===0)return 'ko';
+if(raw.indexOf('pt')===0)return 'pt';
+if(raw.indexOf('he')===0)return 'he';
+if(raw.indexOf('sv')===0)return 'sv';
+return 'en';
+})();
+var REC_LANG={en:'en-US',fr:'fr-FR',zh:'zh-CN',es:'es-US',ja:'ja-JP',de:'de-DE',it:'it-IT',ko:'ko-KR',pt:'pt-BR',he:'he-IL',sv:'sv-SE'};
+var UI_TEXT={
+en:{askAnything:'ASK US ANYTHING!',thumbPress:'THUMB. PRESS. SPEAK.',release:'RELEASE.',searching:'Finding your spots\u2026',noMatch:'I couldn\u2019t find anything matching that.',tryExample:'Try something like cheesesteak, or fine dining steak.',bjsSays:'BJS SAYS'},
+fr:{askAnything:'DEMANDEZ-NOUS TOUT !',thumbPress:'POUCE. APPUYEZ. PARLEZ.',release:'RELÂCHEZ.',searching:'Recherche en cours\u2026',noMatch:'Je n\u2019ai rien trouv\u00e9 qui corresponde.',tryExample:'Essayez par exemple\u00a0: pizza, ou sushi \u00e9l\u00e9gant.',bjsSays:'BJS DIT'},
+zh:{askAnything:'\u6709\u4ec0\u4e48\u5c31\u95ee\u6211\u4eec\uff01',thumbPress:'\u6309\u4f4f\u62c7\u6307\u3002\u8bf4\u8bdd\u3002',release:'\u677e\u5f00\u3002',searching:'\u6b63\u5728\u4e3a\u60a8\u67e5\u627e\u2026',noMatch:'\u6ca1\u6709\u627e\u5230\u5339\u914d\u7684\u9910\u5385\u3002',tryExample:'\u8bd5\u8bd5\u8bf4\uff1a\u5bff\u53f8\uff0c\u6216\u8005\u9ad8\u6863\u725b\u6392\u3002',bjsSays:'BJS \u8bf4'},
+es:{askAnything:'\u00a1PREG\u00daNTANOS LO QUE SEA!',thumbPress:'PULGAR. PRESIONA. HABLA.',release:'SUELTA.',searching:'Buscando tus lugares\u2026',noMatch:'No encontr\u00e9 nada que coincida.',tryExample:'Prueba algo como pizza, o bistec de alta cocina.',bjsSays:'BJS DICE'},
+ja:{askAnything:'\u4f55\u3067\u3082\u805e\u3044\u3066\u304f\u3060\u3055\u3044\uff01',thumbPress:'\u89aa\u6307\u3002\u62bc\u3059\u3002\u8a71\u3059\u3002',release:'\u96e2\u3059\u3002',searching:'\u304a\u5e97\u3092\u63a2\u3057\u3066\u3044\u307e\u3059\u2026',noMatch:'\u8a72\u5f53\u3059\u308b\u3082\u306e\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f\u3002',tryExample:'\u300c\u5bff\u53f8\u300d\u3084\u300c\u9ad8\u7d1a\u30b9\u30c6\u30fc\u30ad\u300d\u306e\u3088\u3046\u306b\u8a71\u3057\u3066\u307f\u3066\u304f\u3060\u3055\u3044\u3002',bjsSays:'BJS\u3088\u308a'},
+de:{askAnything:'FRAG UNS ALLES!',thumbPress:'DAUMEN. DR\u00dcCKEN. SPRECHEN.',release:'LOSLASSEN.',searching:'Suche nach passenden Orten\u2026',noMatch:'Ich habe nichts Passendes gefunden.',tryExample:'Versuch es mit z.\u00a0B. Pizza oder gehobenem Steak.',bjsSays:'BJS SAGT'},
+it:{askAnything:'CHIEDICI QUALSIASI COSA!',thumbPress:'POLLICE. PREMI. PARLA.',release:'RILASCIA.',searching:'Sto cercando i posti giusti\u2026',noMatch:'Non ho trovato nulla che corrisponda.',tryExample:'Prova con qualcosa come pizza, o bistecca elegante.',bjsSays:'BJS DICE'},
+ko:{askAnything:'\ubb34\uc5c7\uc774\ub4e0 \ubb3c\uc5b4\ubcf4\uc138\uc694!',thumbPress:'\uc5c4\uc9c0. \ub204\ub974\uae30. \ub9d0\ud558\uae30.',release:'\ub193\uae30.',searching:'\uc7a5\uc18c\ub97c \ucc3e\ub294 \uc911\u2026',noMatch:'\uc77c\uce58\ud558\ub294 \uacf3\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.',tryExample:'\uc608: \uc2a4\uc2dc, \ub610\ub294 \uace0\uae09 \uc2a4\ud14c\uc774\ud06c.',bjsSays:'BJS \uc548\ub0b4'},
+pt:{askAnything:'PERGUNTE QUALQUER COISA!',thumbPress:'POLEGAR. PRESSIONE. FALE.',release:'SOLTE.',searching:'Procurando seus lugares\u2026',noMatch:'N\u00e3o encontrei nada correspondente.',tryExample:'Experimente algo como pizza, ou bife sofisticado.',bjsSays:'O BJS DIZ'},
+he:{askAnything:'\u05e9\u05d0\u05dc\u05d5 \u05d0\u05d5\u05ea\u05e0\u05d5 \u05db\u05dc \u05d3\u05d1\u05e8!',thumbPress:'\u05d0\u05d2\u05d5\u05d3\u05dc. \u05dc\u05d7\u05e6\u05d5. \u05d3\u05d1\u05e8\u05d5.',release:'\u05e9\u05d7\u05e8\u05e8\u05d5.',searching:'\u05de\u05d7\u05e4\u05e9\u05d9\u05dd \u05d1\u05e9\u05d1\u05d9\u05dc\u05db\u05dd\u2026',noMatch:'\u05dc\u05d0 \u05de\u05e6\u05d0\u05ea\u05d9 \u05e9\u05d5\u05dd \u05d3\u05d1\u05e8 \u05de\u05ea\u05d0\u05d9\u05dd.',tryExample:'\u05e0\u05e1\u05d5 \u05dc\u05de\u05e9\u05dc: \u05e1\u05d5\u05e9\u05d9, \u05d0\u05d5 \u05e1\u05d8\u05d9\u05d9\u05e7 \u05d9\u05d5\u05e7\u05e8\u05ea\u05d9.',bjsSays:'BJS \u05d0\u05d5\u05de\u05e8\u05d9\u05dd'},
+sv:{askAnything:'FR\u00c5GA OSS VAD SOM HELST!',thumbPress:'TUMME. TRYCK. PRATA.',release:'SL\u00c4PP.',searching:'S\u00f6ker efter dina st\u00e4llen\u2026',noMatch:'Jag hittade inget som matchade.',tryExample:'Prova n\u00e5got som pizza, eller finare biff.',bjsSays:'BJS S\u00c4GER'}
+};
+function uiText(key){return (UI_TEXT[LANG]&&UI_TEXT[LANG][key])||UI_TEXT.en[key];}
+/* A handful of the most-asked-for cuisines in French and Chinese — not a
+   full translation of the site, just enough for someone to get going in
+   their own language, per Brad's request. Falls back to the English
+   CAT_WORDS list too, since loanwords like "pizza" and "sushi" are used
+   as-is in both languages anyway. */
+var FOREIGN_CAT_WORDS={
+fr:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/steak|entrec[oô]te/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Steak'},
+{re:/sushi|japonais/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/fruits? de mer|poisson/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Fruits de mer'},
+{re:/barbecue|barbec/i,cats:['bbq'],label:'Barbecue'},
+{re:/italien/i,cats:['italianhighend','italiancasual','italian'],label:'Italien'},
+{re:/mexicain/i,cats:['mexicancasual','mexican'],label:'Mexicain'},
+{re:/indien/i,cats:['indian'],label:'Indien'},
+{re:/chinois/i,cats:['chinese'],label:'Chinois'},
+{re:/tha[iï]/i,cats:['thai','nationthai'],label:'Tha\u00eflandais'},
+{re:/cor[ée]en/i,cats:['korean'],label:'Cor\u00e9en'},
+{re:/dessert|p[aâ]tisserie/i,cats:['dessert'],label:'Dessert'},
+{re:/caf[ée]/i,cats:['coffee','coffeenibbles'],label:'Caf\u00e9'},
+{re:/v[ée]g[ée]tarien|v[ée]gan/i,cats:['vegan'],label:'V\u00e9gan'},
+{re:/petit[- ]d[ée]jeuner|brunch/i,cats:['breakfastcasual','breakfast'],label:'Petit-d\u00e9jeuner'},
+{re:/fran[çc]ais|bistro/i,cats:['french','nationfrench'],label:'Fran\u00e7ais'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/bi[èe]re|brasserie/i,cats:['brewery'],label:'Bi\u00e8re artisanale'}
+],
+zh:[
+{re:/\u62ab\u8428|\u6ce2\u7f57/,cats:['pizza'],label:'Pizza'},
+{re:/\u725b\u6392/,cats:['steakhighend','steakcasual','steakdive','steak'],label:'\u725b\u6392'},
+{re:/\u5bff\u53f8|\u65e5\u672c\u83dc/,cats:['sushihighend','sushicasual','sushi'],label:'\u5bff\u53f8'},
+{re:/\u6d77\u9c9c/,cats:['seafood','seafoodcasual','seafoodhighend'],label:'\u6d77\u9c9c'},
+{re:/\u70e7\u70e4|\u70e4\u8089/,cats:['bbq'],label:'\u70e7\u70e4'},
+{re:/\u610f\u5927\u5229\u83dc|\u610f\u5f0f/,cats:['italianhighend','italiancasual','italian'],label:'\u610f\u5927\u5229\u83dc'},
+{re:/\u58a8\u897f\u54e5|\u5893\u897f\u54e5/,cats:['mexicancasual','mexican'],label:'\u58a8\u897f\u54e5\u83dc'},
+{re:/\u5370\u5ea6\u83dc/,cats:['indian'],label:'\u5370\u5ea6\u83dc'},
+{re:/\u4e2d\u9910|\u4e2d\u56fd\u83dc/,cats:['chinese'],label:'\u4e2d\u9910'},
+{re:/\u6cf0\u56fd\u83dc|\u6cf0\u5f0f/,cats:['thai','nationthai'],label:'\u6cf0\u56fd\u83dc'},
+{re:/\u97e9\u56fd\u83dc|\u97e9\u5f0f/,cats:['korean'],label:'\u97e9\u56fd\u83dc'},
+{re:/\u751c\u70b9|\u751c\u54c1/,cats:['dessert'],label:'\u751c\u70b9'},
+{re:/\u5496\u5561/,cats:['coffee','coffeenibbles'],label:'\u5496\u5561'},
+{re:/\u7d20\u98df|\u7eaf\u7d20/,cats:['vegan'],label:'\u7d20\u98df'},
+{re:/\u65e9\u9910|\u65e9\u5348\u9910/,cats:['breakfastcasual','breakfast'],label:'\u65e9\u9910'},
+{re:/\u6cd5\u56fd\u83dc|\u6cd5\u5f0f/,cats:['french','nationfrench'],label:'\u6cd5\u56fd\u83dc'},
+{re:/\u62c9\u9762/,cats:['ramen'],label:'\u62c9\u9762'},
+{re:/\u5561\u9152|\u5546\u7528\u5566\u9152/,cats:['brewery'],label:'\u5de5\u5382\u5561\u9152'}
+],
+es:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/bistec|filete|carne asada/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Bistec'},
+{re:/sushi|japon[ée]s/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/mariscos|pescado/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Mariscos'},
+{re:/barbacoa|parrilla/i,cats:['bbq'],label:'Barbacoa'},
+{re:/italiano/i,cats:['italianhighend','italiancasual','italian'],label:'Italiano'},
+{re:/mexicano/i,cats:['mexicancasual','mexican'],label:'Mexicano'},
+{re:/indio|hind[uú]/i,cats:['indian'],label:'Indio'},
+{re:/chino/i,cats:['chinese'],label:'Chino'},
+{re:/tailand[ée]s/i,cats:['thai','nationthai'],label:'Tailand\u00e9s'},
+{re:/coreano/i,cats:['korean'],label:'Coreano'},
+{re:/postre/i,cats:['dessert'],label:'Postre'},
+{re:/caf[ée]/i,cats:['coffee','coffeenibbles'],label:'Caf\u00e9'},
+{re:/vegano|vegetariano/i,cats:['vegan'],label:'Vegano'},
+{re:/desayuno|brunch/i,cats:['breakfastcasual','breakfast'],label:'Desayuno'},
+{re:/franc[ée]s/i,cats:['french','nationfrench'],label:'Franc\u00e9s'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/cervecer[ií]a|cerveza artesanal/i,cats:['brewery'],label:'Cervecer\u00eda'}
+],
+ja:[
+{re:/\u30d4\u30b6/,cats:['pizza'],label:'\u30d4\u30b6'},
+{re:/\u30b9\u30c6\u30fc\u30ad/,cats:['steakhighend','steakcasual','steakdive','steak'],label:'\u30b9\u30c6\u30fc\u30ad'},
+{re:/\u5bff\u53f8|\u3059\u3057|\u5bff\u3057/,cats:['sushihighend','sushicasual','sushi'],label:'\u5bff\u53f8'},
+{re:/\u6d77\u9bae|\u30b7\u30fc\u30d5\u30fc\u30c9/,cats:['seafood','seafoodcasual','seafoodhighend'],label:'\u6d77\u9bae'},
+{re:/\u30d0\u30fc\u30d9\u30ad\u30e5\u30fc|\u713c\u8089/,cats:['bbq'],label:'\u713c\u8089'},
+{re:/\u30a4\u30bf\u30ea\u30a2\u30f3|\u30a4\u30bf\u30ea\u30a2\u6599\u7406/,cats:['italianhighend','italiancasual','italian'],label:'\u30a4\u30bf\u30ea\u30a2\u6599\u7406'},
+{re:/\u30e1\u30ad\u30b7\u30ab\u30f3|\u30e1\u30ad\u30b7\u30b3\u6599\u7406/,cats:['mexicancasual','mexican'],label:'\u30e1\u30ad\u30b7\u30b3\u6599\u7406'},
+{re:/\u30a4\u30f3\u30c9\u6599\u7406/,cats:['indian'],label:'\u30a4\u30f3\u30c9\u6599\u7406'},
+{re:/\u4e2d\u83ef\u6599\u7406|\u4e2d\u56fd\u6599\u7406/,cats:['chinese'],label:'\u4e2d\u83ef\u6599\u7406'},
+{re:/\u30bf\u30a4\u6599\u7406/,cats:['thai','nationthai'],label:'\u30bf\u30a4\u6599\u7406'},
+{re:/\u97d3\u56fd\u6599\u7406/,cats:['korean'],label:'\u97d3\u56fd\u6599\u7406'},
+{re:/\u30c7\u30b6\u30fc\u30c8|\u30b9\u30a4\u30fc\u30c4/,cats:['dessert'],label:'\u30c7\u30b6\u30fc\u30c8'},
+{re:/\u30b3\u30fc\u30d2\u30fc/,cats:['coffee','coffeenibbles'],label:'\u30b3\u30fc\u30d2\u30fc'},
+{re:/\u30d3\u30fc\u30ac\u30f3|\u30d9\u30b8\u30bf\u30ea\u30a2\u30f3/,cats:['vegan'],label:'\u30d3\u30fc\u30ac\u30f3'},
+{re:/\u671d\u98df|\u30d6\u30e9\u30f3\u30c1/,cats:['breakfastcasual','breakfast'],label:'\u671d\u98df'},
+{re:/\u30d5\u30ec\u30f3\u30c1|\u30d5\u30e9\u30f3\u30b9\u6599\u7406/,cats:['french','nationfrench'],label:'\u30d5\u30e9\u30f3\u30b9\u6599\u7406'},
+{re:/\u30e9\u30fc\u30e1\u30f3/,cats:['ramen'],label:'\u30e9\u30fc\u30e1\u30f3'},
+{re:/\u30d3\u30fc\u30eb|\u91b8\u9020\u6240/,cats:['brewery'],label:'\u30d3\u30fc\u30eb'}
+],
+de:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/steak/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Steak'},
+{re:/sushi/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/meeresfr[uü]chte|fisch/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Meeresfr\u00fcchte'},
+{re:/grill|barbecue/i,cats:['bbq'],label:'Grill'},
+{re:/italienisch/i,cats:['italianhighend','italiancasual','italian'],label:'Italienisch'},
+{re:/mexikanisch/i,cats:['mexicancasual','mexican'],label:'Mexikanisch'},
+{re:/indisch/i,cats:['indian'],label:'Indisch'},
+{re:/chinesisch/i,cats:['chinese'],label:'Chinesisch'},
+{re:/thail[aä]ndisch/i,cats:['thai','nationthai'],label:'Thail\u00e4ndisch'},
+{re:/koreanisch/i,cats:['korean'],label:'Koreanisch'},
+{re:/dessert|nachspeise/i,cats:['dessert'],label:'Dessert'},
+{re:/kaffee/i,cats:['coffee','coffeenibbles'],label:'Kaffee'},
+{re:/vegan|vegetarisch/i,cats:['vegan'],label:'Vegan'},
+{re:/fr[uü]hst[uü]ck/i,cats:['breakfastcasual','breakfast'],label:'Fr\u00fchst\u00fcck'},
+{re:/franz[oö]sisch/i,cats:['french','nationfrench'],label:'Franz\u00f6sisch'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/brauerei|craft ?bier/i,cats:['brewery'],label:'Brauerei'}
+],
+it:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/bistecca/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Bistecca'},
+{re:/sushi|giapponese/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/pesce|frutti di mare/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Pesce'},
+{re:/barbecue|grigliata/i,cats:['bbq'],label:'Grigliata'},
+{re:/italiano/i,cats:['italianhighend','italiancasual','italian'],label:'Italiano'},
+{re:/messicano/i,cats:['mexicancasual','mexican'],label:'Messicano'},
+{re:/indiano/i,cats:['indian'],label:'Indiano'},
+{re:/cinese/i,cats:['chinese'],label:'Cinese'},
+{re:/tailandese/i,cats:['thai','nationthai'],label:'Tailandese'},
+{re:/coreano/i,cats:['korean'],label:'Coreano'},
+{re:/dolce|dessert/i,cats:['dessert'],label:'Dolce'},
+{re:/caff[eè]/i,cats:['coffee','coffeenibbles'],label:'Caff\u00e8'},
+{re:/vegano|vegetariano/i,cats:['vegan'],label:'Vegano'},
+{re:/colazione/i,cats:['breakfastcasual','breakfast'],label:'Colazione'},
+{re:/francese/i,cats:['french','nationfrench'],label:'Francese'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/birreria|birra artigianale/i,cats:['brewery'],label:'Birreria'}
+],
+ko:[
+{re:/\ud53c\uc790/,cats:['pizza'],label:'\ud53c\uc790'},
+{re:/\uc2a4\ud14c\uc774\ud06c/,cats:['steakhighend','steakcasual','steakdive','steak'],label:'\uc2a4\ud14c\uc774\ud06c'},
+{re:/\uc2a4\uc2dc|\ucd08\ubc25/,cats:['sushihighend','sushicasual','sushi'],label:'\uc2a4\uc2dc'},
+{re:/\ud574\uc0b0\ubb3c/,cats:['seafood','seafoodcasual','seafoodhighend'],label:'\ud574\uc0b0\ubb3c'},
+{re:/\ubc14\ube44\ud050|\uace0\uae30\uad6c\uc774/,cats:['bbq'],label:'\ubc14\ube44\ud050'},
+{re:/\uc774\ud0c8\ub9ac\uc548|\uc774\ud0c8\ub9ac\uc544 \uc74c\uc2dd/,cats:['italianhighend','italiancasual','italian'],label:'\uc774\ud0c8\ub9ac\uc548'},
+{re:/\uba55\uc2dc\uce78|\uba55\uc2dc\ucf54 \uc74c\uc2dd/,cats:['mexicancasual','mexican'],label:'\uba55\uc2dc\ucf54 \uc74c\uc2dd'},
+{re:/\uc778\ub3c4 \uc74c\uc2dd/,cats:['indian'],label:'\uc778\ub3c4 \uc74c\uc2dd'},
+{re:/\uc911\uc2dd|\uc911\uad6d \uc74c\uc2dd/,cats:['chinese'],label:'\uc911\uc2dd'},
+{re:/\ud0dc\uad6d \uc74c\uc2dd/,cats:['thai','nationthai'],label:'\ud0dc\uad6d \uc74c\uc2dd'},
+{re:/\ud55c\uc2dd|\ud55c\uad6d \uc74c\uc2dd/,cats:['korean'],label:'\ud55c\uc2dd'},
+{re:/\ub514\uc800\ud2b8/,cats:['dessert'],label:'\ub514\uc800\ud2b8'},
+{re:/\ucee4\ud53c/,cats:['coffee','coffeenibbles'],label:'\ucee4\ud53c'},
+{re:/\ube44\uac74|\ucc44\uc2dd/,cats:['vegan'],label:'\ube44\uac74'},
+{re:/\uc544\uce68\uc2dd\uc0ac|\ube0c\ub7f0\uce58/,cats:['breakfastcasual','breakfast'],label:'\uc544\uce68\uc2dd\uc0ac'},
+{re:/\ud504\ub80c\uce58|\ud504\ub791\uc2a4 \uc74c\uc2dd/,cats:['french','nationfrench'],label:'\ud504\ub791\uc2a4 \uc74c\uc2dd'},
+{re:/\ub77c\uba58/,cats:['ramen'],label:'\ub77c\uba58'},
+{re:/\ub9e5\uc8fc|\uc591\uc870\uc7a5/,cats:['brewery'],label:'\ub9e5\uc8fc'}
+],
+pt:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/bife|fil[ée]/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Bife'},
+{re:/sushi|japon[eê]s/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/frutos do mar|peixe/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Frutos do mar'},
+{re:/churrasco/i,cats:['bbq'],label:'Churrasco'},
+{re:/italiano/i,cats:['italianhighend','italiancasual','italian'],label:'Italiano'},
+{re:/mexicano/i,cats:['mexicancasual','mexican'],label:'Mexicano'},
+{re:/indiano/i,cats:['indian'],label:'Indiano'},
+{re:/chin[eê]s/i,cats:['chinese'],label:'Chin\u00eas'},
+{re:/tailand[eê]s/i,cats:['thai','nationthai'],label:'Tailand\u00eas'},
+{re:/coreano/i,cats:['korean'],label:'Coreano'},
+{re:/sobremesa/i,cats:['dessert'],label:'Sobremesa'},
+{re:/caf[eé]/i,cats:['coffee','coffeenibbles'],label:'Caf\u00e9'},
+{re:/vegano|vegetariano/i,cats:['vegan'],label:'Vegano'},
+{re:/caf[eé] da manh[aã]|brunch/i,cats:['breakfastcasual','breakfast'],label:'Caf\u00e9 da manh\u00e3'},
+{re:/franc[eê]s/i,cats:['french','nationfrench'],label:'Franc\u00eas'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/cervejaria/i,cats:['brewery'],label:'Cervejaria'}
+],
+he:[
+{re:/\u05e4\u05d9\u05e6\u05d4/,cats:['pizza'],label:'\u05e4\u05d9\u05e6\u05d4'},
+{re:/\u05e1\u05d8\u05d9\u05d9\u05e7/,cats:['steakhighend','steakcasual','steakdive','steak'],label:'\u05e1\u05d8\u05d9\u05d9\u05e7'},
+{re:/\u05e1\u05d5\u05e9\u05d9/,cats:['sushihighend','sushicasual','sushi'],label:'\u05e1\u05d5\u05e9\u05d9'},
+{re:/\u05e4\u05d9\u05e8\u05d5\u05ea \u05d9\u05dd|\u05d3\u05d2\u05d9\u05dd/,cats:['seafood','seafoodcasual','seafoodhighend'],label:'\u05e4\u05d9\u05e8\u05d5\u05ea \u05d9\u05dd'},
+{re:/\u05e2\u05dc \u05d4\u05d0\u05e9|\u05d1\u05e8\u05d1\u05d9\u05e7\u05d9\u05d5/,cats:['bbq'],label:'\u05e2\u05dc \u05d4\u05d0\u05e9'},
+{re:/\u05d0\u05d9\u05d8\u05dc\u05e7\u05d9/,cats:['italianhighend','italiancasual','italian'],label:'\u05d0\u05d9\u05d8\u05dc\u05e7\u05d9'},
+{re:/\u05de\u05e7\u05e1\u05d9\u05e7\u05e0\u05d9/,cats:['mexicancasual','mexican'],label:'\u05de\u05e7\u05e1\u05d9\u05e7\u05e0\u05d9'},
+{re:/\u05d4\u05d5\u05d3\u05d9/,cats:['indian'],label:'\u05d4\u05d5\u05d3\u05d9'},
+{re:/\u05e1\u05d9\u05e0\u05d9/,cats:['chinese'],label:'\u05e1\u05d9\u05e0\u05d9'},
+{re:/\u05ea\u05d0\u05d9\u05dc\u05e0\u05d3\u05d9/,cats:['thai','nationthai'],label:'\u05ea\u05d0\u05d9\u05dc\u05e0\u05d3\u05d9'},
+{re:/\u05e7\u05d5\u05e8\u05d9\u05d0\u05e0\u05d9/,cats:['korean'],label:'\u05e7\u05d5\u05e8\u05d9\u05d0\u05e0\u05d9'},
+{re:/\u05e7\u05d9\u05e0\u05d5\u05d7/,cats:['dessert'],label:'\u05e7\u05d9\u05e0\u05d5\u05d7'},
+{re:/\u05e7\u05e4\u05d4/,cats:['coffee','coffeenibbles'],label:'\u05e7\u05e4\u05d4'},
+{re:/\u05d8\u05d1\u05e2\u05d5\u05e0\u05d9|\u05e6\u05de\u05d7\u05d5\u05e0\u05d9/,cats:['vegan'],label:'\u05d8\u05d1\u05e2\u05d5\u05e0\u05d9'},
+{re:/\u05d0\u05e8\u05d5\u05d7\u05ea \u05d1\u05d5\u05e7\u05e8|\u05d1\u05e8\u05d0\u05e0\u05e5/,cats:['breakfastcasual','breakfast'],label:'\u05d0\u05e8\u05d5\u05d7\u05ea \u05d1\u05d5\u05e7\u05e8'},
+{re:/\u05e6\u05e8\u05e4\u05ea\u05d9/,cats:['french','nationfrench'],label:'\u05e6\u05e8\u05e4\u05ea\u05d9'},
+{re:/\u05e8\u05d0\u05de\u05df/,cats:['ramen'],label:'\u05e8\u05d0\u05de\u05df'},
+{re:/\u05d1\u05d9\u05e8\u05d4|\u05de\u05d1\u05e9\u05dc\u05ea \u05d1\u05d9\u05e8\u05d4/,cats:['brewery'],label:'\u05d1\u05d9\u05e8\u05d4'}
+],
+sv:[
+{re:/pizza/i,cats:['pizza'],label:'Pizza'},
+{re:/biff|stek/i,cats:['steakhighend','steakcasual','steakdive','steak'],label:'Biff'},
+{re:/sushi|japansk/i,cats:['sushihighend','sushicasual','sushi'],label:'Sushi'},
+{re:/skaldjur|fisk/i,cats:['seafood','seafoodcasual','seafoodhighend'],label:'Skaldjur'},
+{re:/grillat|bbq/i,cats:['bbq'],label:'Grillat'},
+{re:/italiensk/i,cats:['italianhighend','italiancasual','italian'],label:'Italienskt'},
+{re:/mexikansk/i,cats:['mexicancasual','mexican'],label:'Mexikanskt'},
+{re:/indisk/i,cats:['indian'],label:'Indiskt'},
+{re:/kinesisk/i,cats:['chinese'],label:'Kinesiskt'},
+{re:/thail[aä]ndsk/i,cats:['thai','nationthai'],label:'Thail\u00e4ndskt'},
+{re:/koreansk/i,cats:['korean'],label:'Koreanskt'},
+{re:/efterr[aä]tt|dessert/i,cats:['dessert'],label:'Efterr\u00e4tt'},
+{re:/kaffe/i,cats:['coffee','coffeenibbles'],label:'Kaffe'},
+{re:/vegansk|vegetarisk/i,cats:['vegan'],label:'Veganskt'},
+{re:/frukost|brunch/i,cats:['breakfastcasual','breakfast'],label:'Frukost'},
+{re:/fransk/i,cats:['french','nationfrench'],label:'Franskt'},
+{re:/ramen/i,cats:['ramen'],label:'Ramen'},
+{re:/bryggeri|craft ?[oö]l/i,cats:['brewery'],label:'Bryggeri'}
+]
+};
 function parse(text){
-var t=' '+String(text||'').toLowerCase().replace(/[^a-z0-9\s\-']/g,' ').replace(/\s+/g,' ')+' ';
+var t=' '+String(text||'').toLowerCase().replace(/[^\p{L}\p{N}\s\-']/gu,' ').replace(/\s+/g,' ')+' ';
 var out={raw:text,cats:[],labels:[],tier:null,minutes:null,miles:null};
-CAT_WORDS.forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});out.labels.push(w.label);}});
-if(/fine dining|upscale|fancy|high[- ]end|white tablecloth|splurge|tasting menu|michelin|\bnice\b|special occasion|anniversary|date night/.test(t))out.tier='fine';
-else if(/\bdive\b|cheap|hole in the wall|budget|inexpensive|greasy|no frills/.test(t))out.tier='dive';
-else if(/casual|laid[- ]back|moderate|mid[- ]range|family/.test(t))out.tier='casual';
+CAT_WORDS.forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});if(out.labels.indexOf(w.label)<0)out.labels.push(w.label);}});
+if(FOREIGN_CAT_WORDS[LANG]){
+FOREIGN_CAT_WORDS[LANG].forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});if(out.labels.indexOf(w.label)<0)out.labels.push(w.label);}});
+}
+if(/fine dining|upscale|fancy|high[- ]end|white tablecloth|splurge|tasting menu|michelin|\bnice\b|special occasion|anniversary|date night|chic|gastronomique|\u9ad8\u6863|\u9ad8\u7ea7|elegante|[ée]l[ée]gante?|lujo|alta cocina|\u9ad8\u7d1a|\u30d5\u30a1\u30a4\u30f3\u30c0\u30a4\u30cb\u30f3\u30b0|gehoben|feine k\u00fcche|raffinato|alta cucina|\uace0\uae09|\ud30c\uc778\ub2e4\uc774\ub2dd|requintado|alta gastronomia|\u05d9\u05d5\u05e7\u05e8\u05ea\u05d9|\u05de\u05e4\u05d5\u05d0\u05e8|lyxig|exklusiv|fin matlagning/.test(t))out.tier='fine';
+else if(/\bdive\b|cheap|hole in the wall|budget|inexpensive|greasy|no frills|pas cher|bon march[ée]|\u4fbf\u5b9c|\u5c0f\u5403|barato|econ[oó]mico?a?|\u5b89\u3044|\u683c\u5b89|billig|g[uü]nstig|\uc800\ub834\ud55c|\uc2f8\uc9c0|\u05d6\u05d5\u05dc/.test(t))out.tier='dive';
+else if(/casual|laid[- ]back|moderate|mid[- ]range|family|d[ée]contract[ée]|\u666e\u901a|\u4f11\u95f2|informal|\u30ab\u30b8\u30e5\u30a2\u30eb|zwanglos|leger|\uce90\uc8fc\uc5bc|\u05e7\u05d6\u05d5\u05d0\u05dc|avslappnad/.test(t))out.tier='casual';
 var m;
 if((m=t.match(/(\d+(?:\.\d+)?|an?|one|two|three|four|five|couple|a couple|a couple of|a few)\s*(?:and a half|and half)?\s*(hours?|hrs?)/))){var h=wordNum(m[1])||1;if(/and a half|and half/.test(m[0]))h+=.5;out.minutes=Math.round(h*60);}
 else if((m=t.match(/half an? hour|half hour/))){out.minutes=30;}
@@ -44149,7 +44388,7 @@ else if((m=t.match(/(\d+|ten|fifteen|twenty|thirty|forty five|forty-five|forty|f
 if(/hour and a half|an hour and a half/.test(t))out.minutes=90;
 if((m=t.match(/(\d+(?:\.\d+)?|five|ten|fifteen|twenty|thirty|forty|fifty)\s*miles?/))){out.miles=wordNum(m[1]);}
 if(out.miles==null&&out.minutes!=null)out.miles=Math.max(5,Math.round(out.minutes*0.8));
-if(/near ?me|nearby|around here|close by|walking distance/.test(t)&&out.miles==null)out.miles=8;
+if(/near ?me|nearby|around here|close by|walking distance|pr[eè]s de moi|\u9644\u8fd1|cerca de m[ií]|\u8fd1\u304f|in der n[aä]he|vicino a me|\uadfc\ucc98|perto de mim|\u05dc\u05d9\u05d3\u05d9|\u05e7\u05e8\u05d5\u05d1|n[aä]ra mig/.test(t)&&out.miles==null)out.miles=8;
 return out;
 }
 function catLabel(key){
@@ -44177,7 +44416,7 @@ var q=parse(text);
 openPanel();
 document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
 var summary=document.getElementById('bopVoiceSummary'),note=document.getElementById('bopVoiceNote'),list=document.getElementById('bopVoiceList');
-summary.innerHTML='';note.textContent='Finding your spots\u2026';list.innerHTML='';
+summary.innerHTML='';note.textContent=uiText('searching');list.innerHTML='';
 getPos().then(function(pos){
 var cities=supportedCities(),cands=[],nearest=null,nearestMi=Infinity;
 cities.forEach(function(k){
@@ -44240,9 +44479,9 @@ list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventList
 }
 function speakSummary(q,rows,scope){
 if(!rows.length){
-var bits=['I couldn\u2019t find anything matching that.'];
+var bits=[uiText('noMatch')];
 if(scope)bits.push(scope);
-bits.push('Try something like cheesesteak, or fine dining steak.');
+bits.push(uiText('tryExample'));
 return bits.join(' ');
 }
 var top=rows[0].r,lvl=0;try{lvl=boNearPriceLevel(top)||0;}catch(e){}
@@ -44253,10 +44492,15 @@ pieces.push('Top pick: '+top.name+(top.rating?', rated '+top.rating+' stars':'')
 if(rows[0].d!=null&&rows[0].exact)pieces.push('It\u2019s about '+(rows[0].d<1?'under a mile':Math.round(rows[0].d)+' miles')+' away.');
 return pieces.join(' ');
 }
+function setReply(text){
+var label=document.getElementById('bopVoiceReplyLabel'),body=document.getElementById('bopVoiceReplyText'),reply=document.getElementById('bopVoiceReply');
+if(label)label.textContent=uiText('bjsSays');
+if(body)body.textContent=text;
+if(reply)reply.classList.add('open');
+}
 function speakResults(q,rows,scope){
 var text=speakSummary(q,rows,scope);
-var reply=document.getElementById('bopVoiceReply');
-if(reply){reply.textContent=text;reply.classList.add('open');}
+setReply(text);
 try{
 /* No auto-relisten: iOS only lets the mic start from a real tap, so trying
    to reopen it programmatically left the button stuck on "listening".
@@ -44333,7 +44577,7 @@ var next=voiceList[(idx+1)%voiceList.length];
 try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
-var reply=document.getElementById('bopVoiceReply');if(reply){reply.textContent='Voice test: \u201cHello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.';reply.classList.add('open');}
+setReply('Voice test: \u201cHello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
 speak('Hello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.',function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
 });
 if(synth){
@@ -44365,14 +44609,16 @@ listening=on;
 mic.classList.toggle('is-listening',on);
 retry.classList.toggle('is-listening',on);var wrap=retry.parentElement;if(wrap&&wrap.classList.contains('bop-voice-retry-wrap'))wrap.classList.toggle('is-listening',on);
 var label=document.getElementById('bopVoiceRetryLabel');
-if(label)label.textContent=on?'RELEASE.':'THUMB. PRESS. SPEAK.';
+if(label)label.textContent=on?uiText('release'):uiText('thumbPress');
 }
 function forceReset(){
 /* Hard reset used by the safety timer and error paths, so the button can
    never stay stuck in the listening state. */
 clearTimeout(safety);
+weAborted=true;
 if(rec){try{rec.abort();}catch(e){try{rec.stop();}catch(e2){}}}
 setListening(false);
+hideBubble(0);
 }
 function startListening(){
 if(listening)return;
@@ -44384,25 +44630,31 @@ document.getElementById('bopVoiceNote').textContent='Voice isn\u2019t available 
 typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);return;
 }
 try{
-rec=new SR();var thisRec=rec;rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-hadError=false;startedAt=Date.now();
-rec.onstart=function(){if(cancelPending){cancelPending=false;try{rec.abort();}catch(e){}setListening(false);return;}setListening(true);showBubble('ASK US ANYTHING!','',true);};
-rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('ASK US ANYTHING!',(lastFinal+' '+interim).trim(),true);};
+rec=new SR();var thisRec=rec;rec.lang=REC_LANG[LANG]||'en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+hadError=false;startedAt=Date.now();weStopped=false;
+rec.onstart=function(){if(cancelPending){cancelPending=false;weAborted=true;try{rec.abort();}catch(e){}setListening(false);hideBubble(0);return;}setListening(true);showBubble(uiText('askAnything'),'',true);};
+rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble(uiText('askAnything'),(lastFinal+' '+interim).trim(),true);};
 rec.onerror=function(ev){
-hadError=true;setListening(false);
-if(ev&&ev.error==='aborted')return; /* our own cancel — nothing to report */
-/* iOS sometimes fumbles the very first grant of mic permission — the
-   session that was starting while the OS prompt was up comes back with a
-   one-off error even though access is now actually allowed. Retry once,
-   silently, instead of showing an alarming message for what is really
-   just permission finishing up. */
+setListening(false);
+if(ev&&ev.error==='aborted'&&weAborted){weAborted=false;hideBubble(0);return;} /* genuinely our own cancel */
+if(weStopped){ /* the person already released their thumb and we called
+   .stop() — some browsers confirm that via an "error" instead of a clean
+   end. That's not a failure; let onend process whatever was captured. */
+return;
+}
+hadError=true;
+/* iOS sometimes fumbles the very first grant of mic permission, or aborts a
+   session for its own reasons mid-listen — the earlier version silently gave
+   up here whenever the error happened to be "aborted", leaving the bubble
+   frozen on screen forever with no feedback. Now every genuinely unexpected
+   error, "aborted" included, gets one retry, then tells the person plainly. */
 var errType=ev&&ev.error;
 if(!autoRetried&&errType!=='not-allowed'&&(Date.now()-startedAt)<4000){
 autoRetried=true;
 setTimeout(function(){startListening();},250);
 return;
 }
-var msg=errType==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':errType==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';
+var msg=errType==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':errType==='no-speech'?'Didn\u2019t catch that \u2014 press the thumbprint and try again.':'Voice hiccup \u2014 press the thumbprint and try again.';
 showBubble('Oops',msg,false);hideBubble(2600);
 };
 rec.onend=function(){
@@ -44411,7 +44663,7 @@ if(hadError)return; /* the error path already handled its own message — never
    treat leftover error text as something the person said. */
 var said=(lastFinal||'').trim();
 if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}
-else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='ASK US ANYTHING!'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}
+else{if(bubble.classList.contains('open')&&bubbleLabel.textContent===uiText('askAnything')){showBubble('Oops','Didn\u2019t catch that \u2014 press the thumbprint and try again.',false);hideBubble(2200);}else{hideBubble(0);}}
 };
 rec.start();
 /* Watchdog: if the mic hasn't reported in after 5s, it isn't coming. */
@@ -44420,7 +44672,7 @@ setTimeout(function(){if(!listening&&!hadError&&rec===thisRec&&!cancelPending){h
 clearTimeout(safety);safety=setTimeout(function(){if(listening)forceReset();},15000);
 }catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
 }
-function stopListening(){clearTimeout(safety);if(rec&&listening){try{rec.stop();}catch(e){}}
+function stopListening(){clearTimeout(safety);weStopped=true;autoRetried=true;if(rec&&listening){try{rec.stop();}catch(e){}}
 /* If the engine doesn't confirm the stop within 2s, force it. */
 safety=setTimeout(function(){if(listening)forceReset();},4500);}
 var synthPrimed=false;
@@ -44435,7 +44687,7 @@ var fingerDown=false,cancelPending=false;
 function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;fingerDown=true;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}
 cancelPending=false;autoRetried=false;
 if(listening){forceReset();return;} /* pressing while stuck = release it */
-showBubble('ASK US ANYTHING!','',true);
+showBubble(uiText('askAnything'),'',true);
 startListening();}
 function onUp(e){e.preventDefault();fingerDown=false;
 if(!listening){if(Date.now()-pressAt<250)cancelPending=true;return;}
@@ -44454,7 +44706,7 @@ retry.addEventListener('contextmenu',function(e){e.preventDefault();});
 retry.addEventListener('click',function(e){e.preventDefault();});
 function openVoicePageReady(){
 document.getElementById('bopVoiceSaid').textContent='';
-var reply=document.getElementById('bopVoiceReply');if(reply){reply.textContent='';reply.classList.remove('open');}
+var reply=document.getElementById('bopVoiceReply');if(reply)reply.classList.remove('open');var replyText=document.getElementById('bopVoiceReplyText');if(replyText)replyText.textContent='';
 document.getElementById('bopVoiceSummary').innerHTML='';
 document.getElementById('bopVoiceNote').textContent='';
 document.getElementById('bopVoiceList').innerHTML='';
@@ -44467,6 +44719,10 @@ btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();
 });
 /* BJS corner button on the landing must close the landing before opening Founders. */
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#bopInviteBjsBtn2');if(!b)return;var landing=document.getElementById('bopLandingOverlay');if(landing&&landing.classList.contains('open')&&!document.documentElement.classList.contains('bop-invite-active'))landing.classList.remove('open');},true);
+(function initLangUI(){
+var saidLabel=document.getElementById('bopVoiceSaidLabel');if(saidLabel)saidLabel.textContent=uiText('askAnything');
+var retryLabel=document.getElementById('bopVoiceRetryLabel');if(retryLabel)retryLabel.textContent=uiText('thumbPress');
+})();
 window.bopVoiceSearch={run:run,parse:parse};
 })();</script>
 
