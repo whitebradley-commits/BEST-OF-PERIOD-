@@ -44079,7 +44079,7 @@ words become $-levels, "within an hour" becomes a mile radius from GPS, and
 every city whose center falls inside that radius is searched. Designed so an
 AI parser can later replace parse() without touching the mic or results. */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false;
 var mic=document.getElementById('bopVoiceMicBtn');
 var bubble=document.getElementById('bopVoiceBubble');
 var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
@@ -44373,10 +44373,33 @@ typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);ret
 }
 try{
 rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-rec.onstart=function(){if(!fingerDown){try{rec.abort();}catch(e){}setListening(false);return;}setListening(true);showBubble('ASK US ANYTHING!','',true);};
+hadError=false;startedAt=Date.now();
+rec.onstart=function(){if(!fingerDown){try{rec.abort();}catch(e){}setListening(false);return;}autoRetried=false;setListening(true);showBubble('ASK US ANYTHING!','',true);};
 rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('ASK US ANYTHING!',(lastFinal+' '+interim).trim(),true);};
-rec.onerror=function(ev){setListening(false);var msg=ev&&ev.error==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':ev&&ev.error==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';showBubble('Oops',msg,false);hideBubble(2600);};
-rec.onend=function(){setListening(false);clearTimeout(safety);var said=(lastFinal||bubbleText.textContent||'').trim();if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='ASK US ANYTHING!'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}};
+rec.onerror=function(ev){
+hadError=true;setListening(false);
+/* iOS sometimes fumbles the very first grant of mic permission — the
+   session that was starting while the OS prompt was up comes back with a
+   one-off error even though access is now actually allowed. Retry once,
+   silently, instead of showing an alarming message for what is really
+   just permission finishing up. */
+var errType=ev&&ev.error;
+if(!autoRetried&&errType!=='not-allowed'&&(Date.now()-startedAt)<4000){
+autoRetried=true;
+setTimeout(function(){if(fingerDown)startListening();},250);
+return;
+}
+var msg=errType==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':errType==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';
+showBubble('Oops',msg,false);hideBubble(2600);
+};
+rec.onend=function(){
+setListening(false);clearTimeout(safety);
+if(hadError)return; /* the error path already handled its own message — never
+   treat leftover error text as something the person said. */
+var said=(lastFinal||'').trim();
+if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}
+else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='ASK US ANYTHING!'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}
+};
 rec.start();
 /* Safety net: if iOS never reports the end (happens when the mic was started
    oddly), force it back to idle after 15s instead of staying stuck. */
