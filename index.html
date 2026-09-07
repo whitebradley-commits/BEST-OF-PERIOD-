@@ -44073,7 +44073,31 @@ words become $-levels, "within an hour" becomes a mile radius from GPS, and
 every city whose center falls inside that radius is searched. Designed so an
 AI parser can later replace parse() without touching the mic or results. */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',lastInterim='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',lastInterim='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false,missStreak=0;
+function showConfused(text){
+openPanel();
+if(text)document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+missStreak++;
+var line;
+if(missStreak>=3){
+line='My goal here is to keep you focused on food. So\u2026 think food. You must be hungry, so let me have it!';
+missStreak=0;
+}else{
+var confusedLines=[
+'I\u2019m not quite prepared to have this conversation\u2026 let\u2019s talk about food, baby!',
+'Let\u2019s talk about food, baby\u2026 let\u2019s not talk about you and me\u2026 what are you in the mood for?',
+'Hmm, let\u2019s talk about franks and beans and your culinary hopes and dreams\u2026 what are you craving?',
+'I didn\u2019t catch a craving in there \u2014 give me a cuisine, like sushi or tacos.',
+'That one\u2019s outside my wheelhouse \u2014 I only know food. Try me again with a craving!'
+];
+line=confusedLines[Math.floor(Math.random()*confusedLines.length)];
+}
+setReply(line);
+speak(line,null);
+}
 var mic=document.getElementById('bopVoiceMicBtn');
 var bubble=document.getElementById('bopVoiceBubble');
 var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
@@ -44377,6 +44401,17 @@ if(/hour and a half|an hour and a half/.test(t))out.minutes=90;
 if((m=t.match(/(\d+(?:\.\d+)?|five|ten|fifteen|twenty|thirty|forty|fifty)\s*miles?/))){out.miles=wordNum(m[1]);}
 if(out.miles==null&&out.minutes!=null)out.miles=Math.max(5,Math.round(out.minutes*0.8));
 if(/near ?me|nearby|around here|close by|walking distance|pr[eè]s de moi|\u9644\u8fd1|cerca de m[ií]|\u8fd1\u304f|in der n[aä]he|vicino a me|\uadfc\ucc98|perto de mim|\u05dc\u05d9\u05d3\u05d9|\u05e7\u05e8\u05d5\u05d1|n[aä]ra mig/.test(t)&&out.miles==null)out.miles=8;
+/* No recognized cuisine — pull out the actual food word so we can still
+   search for it directly (name/description) instead of giving up. Strips
+   the usual wrapper phrases ("I have a craving for", "give me", "I want",
+   distance/tier words already parsed above, filler words) and keeps
+   whatever's left as a free-text search term. */
+if(!out.cats.length){
+var ft=t;
+ft=ft.replace(/\b(i(?:'m| am)?|we|you|craving|crave|have|has|had|a|an|the|some|really|kinda|kind of|sort of|want|wants|wanted|would like|like|looking for|look for|find me|get me|give me|show me|near ?me|nearby|around here|close by|within|an? hour|minutes?|miles?|please|for|to eat|to have|hungry for|in the mood for|mood for)\b/g,' ');
+ft=ft.replace(/\s+/g,' ').trim();
+if(ft.length>=3&&ft.length<=40&&!/^(something|anything|food|place|places|restaurant|restaurants|eat|eating|dinner|lunch|breakfast|meal|thing|stuff|options|somewhere|good)$/i.test(ft))out.freeText=ft;
+}
 return out;
 }
 function catLabel(key){
@@ -44389,7 +44424,17 @@ function cityLabel(key){try{return boNearCityDefaults(key).label;}catch(e){retur
 function supportedCities(){return ['bestof','miami','london','sandiego','siliconvalley','losangeles','santabarbara','sanfrancisco','newyork','chicago','washingtondc','boston','philadelphia','atlanta','neworleans','idaho','austin','paris','zurich','lucerne','geneva','zermatt'].filter(function(k){return typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[k];});}
 function getPos(){return new Promise(function(res){if(!navigator.geolocation)return res(null);var done=false;navigator.geolocation.getCurrentPosition(function(p){if(!done){done=true;res({lat:p.coords.latitude,lng:p.coords.longitude});}},function(){if(!done){done=true;res(null);}},{enableHighAccuracy:false,timeout:8000,maximumAge:120000});setTimeout(function(){if(!done){done=true;res(null);}},9000);});}
 function matchCat(r,q){
-if(!q.cats.length)return true;
+if(!q.cats.length){
+/* No recognized cuisine category — if there's a free-text leftover
+   ("pickles," "truffle fries," anything not on our cuisine list), search
+   for it directly in the name and description instead of matching
+   everything, which is what used to happen here. */
+if(q.freeText){
+var blob0=(String(r.name||'')+' '+String(r.why||'')+' '+String(r.note||'')).toLowerCase();
+return blob0.indexOf(q.freeText.toLowerCase())>=0;
+}
+return true;
+}
 var cat=String(r.cat||'').toLowerCase();
 if(q.cats.indexOf(cat)>=0)return true;
 var roots=q.cats.map(function(c){return c.replace(/highend|casual|dive|bjspick|nation|verified/g,'');}).filter(function(x){return x.length>=3;});
@@ -44419,6 +44464,41 @@ runNow(text,opts);
 }
 function runNow(text,opts){
 opts=opts||{};
+/* Fun brand questions — "who's BJS", "what's Best of Period" — get a short,
+   personality-driven answer instead of falling through to a food search
+   that would never match them anyway. */
+if(/who(\u2019s|\s+is)\s+bjs|what(\u2019s|\s+is)\s+bjs/i.test(text)){
+var bjsLines=[
+'BJS? The genius behind the best directory in the world. Duh!',
+'That\u2019s the brains behind this whole operation. You\u2019re welcome.',
+'BJS built this so you\u2019d never have to eat somewhere mediocre again.'
+];
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+var bjsLine=bjsLines[Math.floor(Math.random()*bjsLines.length)];
+setReply(bjsLine);
+speak(bjsLine,null);
+return;
+}
+if(/what(\u2019s|\s+is)\s+best\s+of\s+period|who(\u2019s|\s+is)\s+best\s+of\s+period/i.test(text)){
+var bopLines=[
+'The best directory in the world. Period!',
+'We did the digging, you do the dining. That\u2019s the whole philosophy.',
+'Only the most obsessively curated food guide out there \u2014 no filler, just the best.'
+];
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+var bopLine=bopLines[Math.floor(Math.random()*bopLines.length)];
+setReply(bopLine);
+speak(bopLine,null);
+return;
+}
 /* Meta questions ("what can I ask you", "how does this work") aren't food
    requests — answer them directly instead of running a search and dumping
    every restaurant in the nearest city, which is what used to happen. */
@@ -44433,26 +44513,12 @@ speak('Ask me for a type of food, how fancy or cheap you want it, and how far yo
 return;
 }
 var q=parse(text);
-/* Nothing recognized at all (no cuisine, no tier, no distance) — this used
-   to silently fall through to "show everything in the nearest city," a
-   30-restaurant flood with no real filter. Now it just says so, playfully,
-   and asks again instead of guessing. */
-if(!q.cats.length&&!q.tier&&q.miles==null){
-openPanel();
-document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
-document.getElementById('bopVoiceSummary').innerHTML='';
-document.getElementById('bopVoiceList').innerHTML='';
-document.getElementById('bopVoiceNote').textContent='';
-var confusedLines=[
-'I\u2019m not quite prepared to have this conversation\u2026 let\u2019s talk about food, baby!',
-'Let\u2019s talk about food, baby\u2026 let\u2019s not talk about you and me\u2026 what are you in the mood for?',
-'Hmm, let\u2019s talk about franks and beans and your culinary hopes and dreams\u2026 what are you craving?',
-'I didn\u2019t catch a craving in there \u2014 give me a cuisine, like sushi or tacos.',
-'That one\u2019s outside my wheelhouse \u2014 I only know food. Try me again with a craving!'
-];
-var line=confusedLines[Math.floor(Math.random()*confusedLines.length)];
-setReply(line);
-speak(line,null);
+/* Nothing recognized at all (no cuisine, no tier, no distance, AND no
+   usable free-text leftover after stripping filler words) — a genuine
+   miss. Three of these in a row gets a different, pointed line instead of
+   the usual playful rotation; any real result resets the streak. */
+if(!q.cats.length&&!q.tier&&q.miles==null&&!q.freeText){
+showConfused(text);
 return;
 }
 openPanel();
@@ -44521,6 +44587,10 @@ list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventList
 }
 function speakSummary(q,rows,scope){
 if(!rows.length){
+if(missStreak>=3){
+missStreak=0;
+return'My goal here is to keep you focused on food. So\u2026 think food. You must be hungry, so let me have it!';
+}
 var bits=[uiText('noMatch')];
 if(scope)bits.push(scope);
 bits.push(uiText('tryExample'));
@@ -44562,6 +44632,7 @@ if(body)body.textContent=text;
 if(reply)reply.classList.add('open');
 }
 function speakResults(q,rows,scope){
+missStreak=rows.length?0:missStreak+1; /* real results reset the streak; empty ones count toward it */
 var text=speakSummary(q,rows,scope);
 setReply(text);
 try{
