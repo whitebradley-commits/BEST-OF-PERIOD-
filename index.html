@@ -44005,6 +44005,9 @@ body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:none!important}
 #bopVoiceResults .bop-voice-voice-btn{padding:6px 12px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:700 .74rem/1 'Archivo Narrow',Arial,sans-serif;cursor:pointer}
 #bopVoiceResults .bop-voice-said-label{clear:both;margin:54px 0 4px;color:#F59E0B;font:900 .74rem/1 'Archivo Black',sans-serif;letter-spacing:.14em;text-transform:uppercase;text-shadow:0 0 11px rgba(245,158,11,.85)}
 #bopVoiceResults .bop-voice-said{margin:0 0 14px;color:#E8C97A;font:italic 400 1.05rem/1.3 'Archivo Narrow',Arial,sans-serif}
+#bopVoiceResults .bop-voice-reply{display:none;margin:-4px 0 16px;padding:12px 14px;border-left:3px solid #F59E0B;background:rgba(245,158,11,.07);border-radius:0 10px 10px 0;color:#fff;font:600 .92rem/1.45 'Archivo Narrow',Arial,sans-serif}
+#bopVoiceResults .bop-voice-reply.open{display:block}
+#bopVoiceResults .bop-voice-reply::before{content:'BJS SAYS';display:block;margin-bottom:4px;color:#F59E0B;font:900 .6rem/1 'Archivo Black',sans-serif;letter-spacing:.14em}
 #bopVoiceResults .bop-voice-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
 #bopVoiceResults .bop-voice-chip{padding:5px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .66rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase}
 #bopVoiceResults .bop-voice-chip.is-dim{border-color:#444;color:#999}
@@ -44043,6 +44046,7 @@ body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:none!important}
     </div>
     <div class="bop-voice-said-label">ASK US ANYTHING!</div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
+    <p class="bop-voice-reply" id="bopVoiceReply" aria-live="polite"></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
     <p class="bop-voice-note" id="bopVoiceNote"></p>
@@ -44226,10 +44230,87 @@ return pieces.join(' ');
 }
 function speakResults(q,rows,scope){
 var text=speakSummary(q,rows,scope);
+var reply=document.getElementById('bopVoiceReply');
+if(reply){reply.textContent=text;reply.classList.add('open');}
+try{
 speak(text,function(){
 if(voiceOn()&&panel.classList.contains('open'))setTimeout(function(){if(panel.classList.contains('open'))startListening();},500);
 });
+}catch(e){}
 }
+
+/* ---- text-to-speech: voice on/off toggle + voice picker (British male first) ---- */
+var VOICE_ON_KEY='bopVoiceOn',VOICE_NAME_KEY='bopVoiceName';
+var synth=('speechSynthesis' in window)?window.speechSynthesis:null;
+var voiceList=[],currentUtter=null;
+function voiceOn(){try{var v=localStorage.getItem(VOICE_ON_KEY);return v===null?true:v==='yes';}catch(e){return true;}}
+function setVoiceOn(on){try{localStorage.setItem(VOICE_ON_KEY,on?'yes':'no');}catch(e){}if(!on&&synth){try{synth.cancel();}catch(e2){}}}
+function loadVoices(){
+if(!synth)return [];
+var all=synth.getVoices()||[];
+var en=all.filter(function(v){return /^en/i.test(v.lang);});
+/* Rank: British male first (Daniel is the iOS en-GB male), then other British, then the rest of English. */
+en.sort(function(a,b){return rank(a)-rank(b);});
+function rank(v){
+var gb=/en[-_]GB/i.test(v.lang);
+if(gb&&/daniel|arthur|oliver|george|james|rishi/i.test(v.name))return 0;
+if(gb)return 1;
+if(/en[-_]US/i.test(v.lang)&&/alex|aaron|fred|tom|daniel/i.test(v.name))return 2;
+return 3;
+}
+voiceList=en.length?en:all;
+return voiceList;
+}
+function pickVoice(){
+if(!synth)return null;
+if(!voiceList.length)loadVoices();
+if(!voiceList.length)return null;
+var want='';try{want=localStorage.getItem(VOICE_NAME_KEY)||'';}catch(e){}
+if(want){for(var i=0;i<voiceList.length;i++){if(voiceList[i].name===want)return voiceList[i];}}
+return voiceList[0];
+}
+function voiceLabel(v){if(!v)return 'Voice';var gb=/en[-_]GB/i.test(v.lang);return v.name+(gb?' (British)':'');}
+function refreshVoiceUI(){
+var t=document.getElementById('bopVoiceToggle');if(t)t.checked=voiceOn();
+var l=document.getElementById('bopVoiceCycleLabel');if(l)l.textContent=synth?voiceLabel(pickVoice()):'No voice on this browser';
+}
+function speak(text,done){
+var finish=function(){if(typeof done==='function')done();};
+if(!voiceOn()||!synth||!text){finish();return;}
+try{
+synth.cancel();
+var u=new SpeechSynthesisUtterance(text);
+var v=pickVoice();if(v)u.voice=v;
+u.lang=v?v.lang:'en-GB';u.rate=1;u.pitch=1;u.volume=1;
+var ended=false;var wrap=function(){if(ended)return;ended=true;finish();};
+u.onend=wrap;u.onerror=wrap;
+/* Safety: some browsers never fire onend if the tab loses focus. */
+setTimeout(wrap,Math.min(20000,2500+text.length*70));
+currentUtter=u;
+synth.speak(u);
+}catch(e){finish();}
+}
+(function wireVoiceControls(){
+var t=document.getElementById('bopVoiceToggle');
+if(t)t.addEventListener('change',function(){setVoiceOn(t.checked);refreshVoiceUI();if(t.checked)speak('Voice is on.');});
+var c=document.getElementById('bopVoiceCycle');
+if(c)c.addEventListener('click',function(){
+if(!synth){refreshVoiceUI();return;}
+loadVoices();
+if(!voiceList.length){refreshVoiceUI();return;}
+var cur=pickVoice(),idx=Math.max(0,voiceList.indexOf(cur));
+var next=voiceList[(idx+1)%voiceList.length];
+try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
+refreshVoiceUI();
+var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
+speak('Hello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.',function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
+});
+if(synth){
+loadVoices();
+if(typeof synth.onvoiceschanged!=='undefined')synth.onvoiceschanged=function(){loadVoices();refreshVoiceUI();};
+}
+refreshVoiceUI();
+})();
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function openRestaurant(x){
 closePanel();
@@ -44274,7 +44355,15 @@ rec.start();
 }catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
 }
 function stopListening(){clearTimeout(safety);if(rec&&listening){try{rec.stop();}catch(e){}}}
-function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}startListening();}
+var synthPrimed=false;
+function primeSynth(){
+/* iOS only lets speech start from a real tap. Priming with a silent utterance
+   inside the mic press means the spoken reply is allowed later, after the
+   search finishes asynchronously. */
+if(synthPrimed||!synth)return;
+try{var p=new SpeechSynthesisUtterance(' ');p.volume=0;synth.speak(p);synthPrimed=true;}catch(e){}
+}
+function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}primeSynth();startListening();}
 function onUp(e){e.preventDefault();if(!listening)return;if(Date.now()-pressAt<350){tapMode=true;clearTimeout(safety);safety=setTimeout(stopListening,8000);return;}stopListening();}
 [mic,retry,document.getElementById('bopExclusiveVoiceMic'),document.getElementById('bopStaticVoiceMic')].filter(Boolean).forEach(function(btn){
 btn.addEventListener('pointerdown',onDown);
