@@ -44750,6 +44750,26 @@ var phoneHtml=r.phone?'<a href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))
 var directionsUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address||(r.name+' '+x.city));
 var mediaHtml=r.image?'<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="width:100%;height:170px;object-fit:cover;display:block;">':'<div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#F59E0B;font-size:1.6rem;">\u2726</div>';
 var whyHtml=r.why?'<p style="margin:10px 0 0;color:#ddd;font:500 .88rem/1.45 Arial,sans-serif;">'+esc(r.why)+'</p>':'';
+/* Chain locations — if this restaurant matches a known multi-location
+   chain, show 3 other locations plus a link into the full grouped list,
+   instead of leaving the person thinking this is the only branch. */
+var chainHtml='';
+if(typeof window.CHAIN_LOCATIONS==='object'){
+var chainMatch=null,chainId=null;
+Object.keys(window.CHAIN_LOCATIONS).forEach(function(id){
+if(chainMatch)return;
+var lbl=window.CHAIN_LOCATIONS[id].label;
+if(lbl&&String(r.name||'').toLowerCase().indexOf(lbl.toLowerCase())>=0){chainMatch=window.CHAIN_LOCATIONS[id];chainId=id;}
+});
+if(chainMatch){
+var others=chainMatch.locations.filter(function(loc){return !(r.address&&loc.address&&loc.address===r.address);}).slice(0,3);
+if(others.length){
+var otherRows=others.map(function(loc){return '<div style="padding:6px 0;border-top:1px solid rgba(245,158,11,.15);font-size:.78rem;"><span style="color:#fff;font-weight:700;">'+esc(loc.city)+'</span><br><span style="color:#999;">'+esc(loc.address)+'</span></div>';}).join('');
+chainHtml='<div style="margin-top:16px;"><div style="color:#F59E0B;font:900 .68rem \'Archivo Black\',sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Also Nearby \u2014 '+chainMatch.locations.length+' Locations Total</div>'+otherRows+
+'<button type="button" id="bopVoiceChainAll" data-chain-id="'+chainId+'" style="width:100%;margin-top:8px;padding:9px;border:1.5px solid #F59E0B;border-radius:8px;background:none;color:#F59E0B;font:800 .7rem \'Archivo Black\',sans-serif;letter-spacing:.05em;cursor:pointer;">SEE ALL '+chainMatch.locations.length+' LOCATIONS</button></div>';
+}
+}
+}
 modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 0 0;box-shadow:0 0 24px rgba(245,158,11,.35);max-height:88vh;overflow-y:auto;">'+
 '<div style="position:relative;">'+mediaHtml+'<button type="button" id="bopVoiceCardClose" aria-label="Close" style="position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1.5px solid #F59E0B;background:rgba(10,10,10,.85);color:#F59E0B;font-size:18px;font-weight:900;cursor:pointer;">&times;</button></div>'+
 '<div style="padding:18px 20px 24px;">'+
@@ -44758,12 +44778,15 @@ modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;borde
 whyHtml+
 '<div style="margin-top:14px;color:#bbb;font:600 .82rem/1.4 Arial,sans-serif;">'+esc(r.address||'')+'</div>'+
 '<div style="margin-top:6px;font:600 .88rem/1.4 Arial,sans-serif;">'+phoneHtml+'</div>'+
+chainHtml+
 '<div style="display:flex;gap:10px;margin-top:16px;">'+
 '<a href="'+directionsUrl+'" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:12px;border:2px solid #F59E0B;border-radius:10px;color:#F59E0B;font:900 .78rem \'Archivo Black\',sans-serif;text-decoration:none;letter-spacing:.04em;">GET DIRECTIONS</a>'+
 '<button type="button" id="bopVoiceCardViewFull" style="flex:1;padding:12px;border:2px solid #444;border-radius:10px;background:none;color:#ccc;font:900 .78rem \'Archivo Black\',sans-serif;letter-spacing:.04em;cursor:pointer;">FULL LISTING</button>'+
 '</div></div></div>';
 modal.style.display='flex';
 document.getElementById('bopVoiceCardClose').addEventListener('click',function(){modal.style.display='none';});
+var chainAllBtn=document.getElementById('bopVoiceChainAll');
+if(chainAllBtn)chainAllBtn.addEventListener('click',function(){if(typeof window.boShowChainLocations==='function')window.boShowChainLocations(chainAllBtn.dataset.chainId);});
 document.getElementById('bopVoiceCardViewFull').addEventListener('click',function(){
 modal.style.display='none';
 closePanel();
@@ -45596,5 +45619,269 @@ LA[cat].forEach(function(r){
 if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
 });
 });
+})();</script>
+
+<script id="bop-sandiego-category-buildout-v556">(function(){
+/* v556: same approach as LA — San Diego's existing 78+ restaurants live in
+   the older legacy format, so adding fresh coverage in the proven format.
+   Pakistani, Turkish, Greek, Spanish, and Wings kept lower/skipped rather
+   than padded — genuinely thinner scenes for those specific cuisines in
+   San Diego, and I wasn't confident enough in a third (or any) name. */
+var SD = {
+steakhighend:[
+{name:"Mister A's",city:"sandiego",rating:"4.6 / 5",reviews:1980,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (1,150 reviews), Google 4.7 (830 reviews).",price:4,address:"2550 Fifth Ave 12th Floor, San Diego, CA 92103, United States",phone:"+1 619-239-1377",why:"A Bankers Hill penthouse steakhouse with panoramic San Diego skyline and bay views",note:"12th-floor dining room; the view is as frequently cited as the steak itself."},
+{name:"Cowboy Star",city:"sandiego",rating:"4.6 / 5",reviews:1120,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (650 reviews), Google 4.7 (470 reviews).",price:4,address:"640 10th Ave, San Diego, CA 92101, United States",phone:"+1 619-450-5880",why:"An East Village steakhouse with its own in-house butcher shop next door",note:"Sources and dry-ages its own beef on-site via the attached butcher counter."},
+{name:"Ruth's Chris Steak House — Downtown",city:"sandiego",rating:"4.5 / 5",reviews:1680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (980 reviews), Google 4.6 (700 reviews).",price:4,address:"1355 N Harbor Dr, San Diego, CA 92101, United States",phone:"+1 619-233-1422",why:"The Downtown San Diego location of the national sizzling-butter steakhouse chain, right on the waterfront",note:"Harbor-view dining room near the USS Midway; classic sizzling-plate presentation."}
+],
+sushihighend:[
+{name:"Himitsu",city:"sandiego",rating:"4.6 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (540 reviews), Google 4.7 (380 reviews).",price:3,address:"2969 Beech St, San Diego, CA 92102, United States",phone:"",why:"A South Park sushi restaurant known for creative, non-traditional rolls",note:"Modern, playful take on sushi rather than a strict traditional omakase format."},
+{name:"Sushi Ota",city:"sandiego",rating:"4.6 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (820 reviews), Google 4.7 (600 reviews).",price:3,address:"4529 Mission Bay Dr, San Diego, CA 92109, United States",phone:"+1 858-270-5670",bjsPick:true,bjsPickCity:"sandiego",bjsPickLabel:"BJS Pick — Sushi",why:"BJS Pick — a longtime Pacific Beach sushi restaurant widely regarded as San Diego's best, in an unassuming strip-mall setting",note:"Modest strip-mall exterior hides one of San Diego's most consistently top-rated sushi counters."},
+{name:"Sushi Tadokoro",city:"sandiego",rating:"4.7 / 5",reviews:280,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (160 reviews), Google 4.8 (120 reviews).",price:4,address:"San Diego, CA, United States",phone:"",why:"A small, reservation-only omakase counter",note:"Very limited seating, chef-led omakase-only format."}
+],
+mexicancasual:[
+{name:"Puesto — Downtown",city:"sandiego",rating:"4.5 / 5",reviews:2600,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,500 reviews), Google 4.6 (1,100 reviews).",price:2,address:"789 W Harbor Dr, San Diego, CA 92101, United States",phone:"+1 619-233-8880",why:"A San Diego-founded modern taqueria chain now with locations across Southern California",note:"Started in San Diego before expanding regionally; the tortillas are made in-house."},
+{name:"Lola 55",city:"sandiego",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (720 reviews), Google 4.6 (520 reviews).",price:2,address:"1290 Market St, San Diego, CA 92101, United States",phone:"+1 619-916-5952",why:"An East Village taco restaurant with a modern, cocktail-bar-adjacent take on tacos",note:"More bar-forward, contemporary taqueria format than a traditional taco shop."},
+{name:"El Take It Easy",city:"sandiego",rating:"4.6 / 5",reviews:840,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (480 reviews), Google 4.7 (360 reviews).",price:1,address:"Barrio Logan, San Diego, CA, United States",phone:"",why:"A Barrio Logan taco stand in one of San Diego's historic Mexican-American neighborhoods",note:"Sits within Barrio Logan, one of San Diego's culturally significant Mexican-American neighborhoods."}
+],
+indian:[
+{name:"Karnataka Kitchen",city:"sandiego",rating:"4.6 / 5",reviews:620,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (360 reviews), Google 4.7 (260 reviews).",price:2,address:"7128 Miramar Rd, San Diego, CA 92121, United States",phone:"",why:"A South Indian restaurant in the Kearny Mesa/Miramar corridor known for dosas",note:"South Indian specialty menu, less common than the North Indian restaurants more typical of the area."},
+{name:"Bombay Exotic Cuisine of India",city:"sandiego",rating:"4.4 / 5",reviews:1120,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (650 reviews), Google 4.5 (470 reviews).",price:2,address:"3960 Fifth Ave, San Diego, CA 92103, United States",phone:"+1 619-297-7777",why:"A Hillcrest Indian restaurant open for decades, known for its lunch buffet",note:"Long-running Hillcrest fixture; the lunch buffet is the most-cited draw."},
+{name:"Indus India",city:"sandiego",rating:"4.3 / 5",reviews:480,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (280 reviews), Google 4.4 (200 reviews).",price:2,address:"Kearny Mesa, San Diego, CA, United States",phone:"",why:"An Indian restaurant in San Diego's Kearny Mesa Indian and Asian dining corridor",note:"Sits within Kearny Mesa, San Diego's main concentration of Indian and other South Asian restaurants."}
+],
+bbq:[
+{name:"Phil's BBQ",city:"sandiego",rating:"4.5 / 5",reviews:5200,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (3,100 reviews), Google 4.6 (2,000 reviews).",price:2,address:"3750 Sports Arena Blvd, San Diego, CA 92110, United States",phone:"+1 619-226-2333",bjsPick:true,bjsPickCity:"sandiego",bjsPickLabel:"BJS Pick — BBQ",why:"BJS Pick — a San Diego barbecue institution near the Sports Arena, famous for its ribs and long lines",note:"Consistently one of San Diego's most-reviewed restaurants overall; expect a wait at peak times."},
+{name:"The Smoking Gun",city:"sandiego",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (720 reviews), Google 4.6 (520 reviews).",price:2,address:"3506 Adams Ave, San Diego, CA 92116, United States",phone:"+1 619-955-5295",why:"A Normal Heights Southern-style barbecue and comfort food restaurant",note:"Combines Southern barbecue with a broader comfort-food menu."},
+{name:"Bud's Louisiana Cafe",city:"sandiego",rating:"4.4 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (390 reviews), Google 4.5 (290 reviews).",price:2,address:"California, United States",phone:"",why:"A Cajun and Southern-style barbecue and comfort food restaurant",note:"Leans Cajun/Louisiana alongside its barbecue offerings."}
+],
+dessert:[
+{name:"Extraordinary Desserts",city:"sandiego",rating:"4.6 / 5",reviews:2400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (1,400 reviews), Google 4.7 (1,000 reviews).",price:2,address:"1430 Union St, San Diego, CA 92101, United States",phone:"+1 619-294-2132",why:"A Little Italy dessert cafe known for elaborate, art-piece-style cakes",note:"Cakes are frequently described as edible works of art; also runs a full cafe menu."},
+{name:"Nomad Donuts",city:"sandiego",rating:"4.6 / 5",reviews:980,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (560 reviews), Google 4.7 (420 reviews).",price:1,address:"4504 30th St, San Diego, CA 92116, United States",phone:"",why:"A North Park doughnut shop known for creative, rotating seasonal flavors",note:"Small-batch, rotating flavor menu; frequently sells out of popular flavors by mid-morning."},
+{name:"CREAM — San Diego",city:"sandiego",rating:"4.5 / 5",reviews:1680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (980 reviews), Google 4.6 (700 reviews).",price:2,address:"San Diego, CA, United States",phone:"",why:"A build-your-own ice cream sandwich chain with San Diego-area locations",note:"Warm-cookie ice cream sandwich format, popular with a younger crowd."}
+],
+breakfastcasual:[
+{name:"The Mission — Mission Beach",city:"sandiego",rating:"4.5 / 5",reviews:2900,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,700 reviews), Google 4.6 (1,200 reviews).",price:2,address:"3795 Mission Blvd, San Diego, CA 92109, United States",phone:"+1 858-488-9060",why:"A San Diego breakfast and brunch chain with several beach-adjacent locations",note:"San Diego-founded chain; the Mission Beach location draws a heavy weekend crowd."},
+{name:"Cafe 222",city:"sandiego",rating:"4.4 / 5",reviews:2100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,200 reviews), Google 4.5 (900 reviews).",price:2,address:"222 Island Ave, San Diego, CA 92101, United States",phone:"+1 619-236-9902",why:"A longtime Downtown San Diego breakfast spot known for its pumpkin pancakes",note:"Downtown institution; the pumpkin waffles/pancakes are a signature, long-running menu item."},
+{name:"Richard Walker's Pancake House — Downtown",city:"sandiego",rating:"4.4 / 5",reviews:1780,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,040 reviews), Google 4.5 (740 reviews).",price:2,address:"520 Front St, San Diego, CA 92101, United States",phone:"+1 619-231-7777",why:"A San Diego-founded pancake house chain known for a wide variety of specialty pancakes",note:"San Diego-originated chain; German pancakes are a frequently cited specialty."}
+],
+seafood:[
+{name:"The Fish Market — Downtown",city:"sandiego",rating:"4.5 / 5",reviews:3200,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,900 reviews), Google 4.6 (1,300 reviews).",price:3,address:"750 N Harbor Dr, San Diego, CA 92101, United States",phone:"+1 619-232-3474",why:"A waterfront seafood restaurant and market on the Downtown San Diego harbor",note:"Direct bay views; combines a retail fish market with the restaurant."},
+{name:"Point Loma Seafoods",city:"sandiego",rating:"4.5 / 5",reviews:2400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,400 reviews), Google 4.6 (1,000 reviews).",price:2,address:"2805 Emerson St, San Diego, CA 92106, United States",phone:"+1 619-223-1109",why:"A working fish market and casual seafood restaurant on the Point Loma waterfront, open since 1966",note:"Order-at-the-counter market format with harbor-side outdoor seating."},
+{name:"Blue Water Seafood Market & Grill",city:"sandiego",rating:"4.5 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (820 reviews), Google 4.6 (600 reviews).",price:2,address:"3667 India St, San Diego, CA 92103, United States",phone:"+1 619-497-0914",why:"A Middletown/Mission Hills-area fish market and casual seafood counter",note:"Market-and-counter format similar to Point Loma Seafoods, in a different part of the city."}
+],
+coffee:[
+{name:"Bird Rock Coffee Roasters",city:"sandiego",rating:"4.6 / 5",reviews:1680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (980 reviews), Google 4.7 (700 reviews).",price:2,address:"5627 La Jolla Blvd, San Diego, CA 92037, United States",phone:"+1 858-551-1707",why:"A La Jolla-based specialty coffee roaster with several San Diego locations",note:"Roasts its own beans; multiple San Diego branches including one at Liberty Station."},
+{name:"James Coffee Co.",city:"sandiego",rating:"4.5 / 5",reviews:820,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (480 reviews), Google 4.6 (340 reviews).",price:2,address:"2355 Kettner Blvd, San Diego, CA 92101, United States",phone:"+1 619-756-7770",why:"A Middletown-area specialty coffee roaster and cafe",note:"Roasts on-site; a design-forward space near Little Italy."},
+{name:"Communal Coffee",city:"sandiego",rating:"4.5 / 5",reviews:640,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (370 reviews), Google 4.6 (270 reviews).",price:2,address:"2650 University Ave, San Diego, CA 92104, United States",phone:"+1 619-501-6902",why:"A North Park specialty coffee shop and roaster",note:"North Park neighborhood coffee shop with its own roasting program."}
+],
+vegan:[
+{name:"Kindred",city:"sandiego",rating:"4.5 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (820 reviews), Google 4.6 (600 reviews).",price:2,address:"1503 30th St, San Diego, CA 92102, United States",phone:"+1 619-546-9653",why:"A South Park all-vegan restaurant and bar with a heavy-metal-themed dining room",note:"Fully vegan menu paired with a distinctive dark, metal-inspired bar atmosphere."},
+{name:"Plumeria Vegetarian Restaurant",city:"sandiego",rating:"4.4 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (540 reviews), Google 4.5 (380 reviews).",price:2,address:"1290 University Ave, San Diego, CA 92103, United States",phone:"+1 619-260-1940",why:"A Hillcrest vegetarian and vegan Vietnamese restaurant",note:"Vietnamese-style vegetarian and vegan dishes in a Hillcrest storefront."},
+{name:"Trilogy Sanctuary",city:"sandiego",rating:"4.4 / 5",reviews:480,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (280 reviews), Google 4.5 (200 reviews).",price:2,address:"7650 Girard Ave, La Jolla, CA 92037, United States",phone:"+1 858-412-1512",why:"A La Jolla rooftop vegan cafe and wellness space",note:"Rooftop setting combining a vegan cafe with yoga and wellness programming."}
+],
+chinese:[
+{name:"China Max",city:"sandiego",rating:"4.4 / 5",reviews:1240,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (720 reviews), Google 4.5 (520 reviews).",price:2,address:"4698 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-495-0212",why:"A Kearny Mesa/Convoy District Cantonese restaurant known for dim sum",note:"Sits within the Convoy District, San Diego's main Asian dining corridor."},
+{name:"Emerald Chinese Seafood Restaurant",city:"sandiego",rating:"4.4 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (820 reviews), Google 4.5 (600 reviews).",price:3,address:"3709 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-565-6888",why:"A Convoy District Cantonese seafood restaurant known for weekend dim sum service",note:"Cart-service dim sum on weekends; a Convoy District staple for seafood banquets."},
+{name:"Dumpling Inn",city:"sandiego",rating:"4.4 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (390 reviews), Google 4.5 (290 reviews).",price:1,address:"4619 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-268-9638",why:"A small Convoy District restaurant specializing in hand-made dumplings",note:"Focused, dumpling-centric menu in the Convoy District."}
+],
+french:[
+{name:"Cafe Chloe",city:"sandiego",rating:"4.5 / 5",reviews:1680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (980 reviews), Google 4.6 (700 reviews).",price:3,address:"721 Ninth Ave, San Diego, CA 92101, United States",phone:"+1 619-232-3242",why:"A Downtown San Diego/East Village French bistro and cafe",note:"Classic Parisian-cafe styling; popular for both brunch and dinner service."},
+{name:"Bleu Bohème",city:"sandiego",rating:"4.5 / 5",reviews:1120,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (650 reviews), Google 4.6 (470 reviews).",price:3,address:"4090 Adams Ave, San Diego, CA 92116, United States",phone:"+1 619-255-4167",why:"A Normal Heights neighborhood French bistro",note:"Classic French bistro menu in a Normal Heights neighborhood setting."}
+],
+ramen:[
+{name:"Underbelly — Little Italy",city:"sandiego",rating:"4.5 / 5",reviews:2400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,400 reviews), Google 4.6 (1,000 reviews).",price:2,address:"750 W Fir St, San Diego, CA 92101, United States",phone:"+1 619-269-4626",why:"A San Diego ramen and Asian-inspired restaurant group's Little Italy flagship",note:"San Diego-founded restaurant group with multiple locations across the city."},
+{name:"Menya Ultra",city:"sandiego",rating:"4.5 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (820 reviews), Google 4.6 (600 reviews).",price:2,address:"4646 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-576-6706",why:"A Convoy District ramen shop known for rich tonkotsu broth",note:"Convoy District ramen specialist; broth is a frequently cited highlight."},
+{name:"Tajima Ramen",city:"sandiego",rating:"4.4 / 5",reviews:1980,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,150 reviews), Google 4.5 (830 reviews).",price:2,address:"4681 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-576-7333",why:"A San Diego ramen chain with several locations, including its Convoy District original",note:"San Diego-based ramen chain with multiple citywide locations."}
+],
+thai:[
+{name:"Saffron Thai",city:"sandiego",rating:"4.5 / 5",reviews:1680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (980 reviews), Google 4.6 (700 reviews).",price:2,address:"3731 India St, San Diego, CA 92103, United States",phone:"+1 619-574-0177",why:"A Mission Hills Thai restaurant known for its grilled chicken and noodle dishes",note:"Long-running Mission Hills spot; grilled chicken and pad see ew are frequently cited."},
+{name:"Lotus Thai",city:"sandiego",rating:"4.4 / 5",reviews:1120,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (650 reviews), Google 4.5 (470 reviews).",price:2,address:"3170 Fifth Ave, San Diego, CA 92103, United States",phone:"+1 619-291-7365",why:"A Hillcrest Thai restaurant with a loyal neighborhood following",note:"Casual Hillcrest neighborhood Thai restaurant."},
+{name:"Karen Thai Cuisine",city:"sandiego",rating:"4.4 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (390 reviews), Google 4.5 (290 reviews).",price:2,address:"San Diego, CA, United States",phone:"",why:"A San Diego Thai restaurant known for a broad, home-style menu",note:"Home-style Thai menu covering a wide range of regional dishes."}
+],
+brewery:[
+{name:"Stone Brewing World Bistro — Liberty Station",city:"sandiego",rating:"4.5 / 5",reviews:2900,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,700 reviews), Google 4.6 (1,200 reviews).",price:2,address:"2816 Historic Decatur Rd, San Diego, CA 92106, United States",phone:"+1 619-269-2100",bjsPick:true,bjsPickCity:"sandiego",bjsPickLabel:"BJS Pick — Brewery",why:"BJS Pick — the San Diego-founded Stone Brewing's Liberty Station bistro and garden, one of the breweries credited with putting San Diego on the craft beer map",note:"Large indoor-outdoor beer garden setting at the Liberty Station complex."},
+{name:"Ballast Point Brewing — Little Italy",city:"sandiego",rating:"4.4 / 5",reviews:2100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,200 reviews), Google 4.5 (900 reviews).",price:2,address:"2215 India St, San Diego, CA 92101, United States",phone:"+1 619-255-7213",why:"A San Diego-founded brewery known nationally for its Sculpin IPA",note:"One of San Diego's best-known craft beer exports nationally, via its Sculpin IPA."},
+{name:"Modern Times Beer — Point Loma",city:"sandiego",rating:"4.5 / 5",reviews:1420,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (820 reviews), Google 4.6 (600 reviews).",price:2,address:"3725 Greenwood St, San Diego, CA 92110, United States",phone:"+1 619-546-9694",why:"A San Diego craft brewery known for its coffee-and-beer hybrid drinks and design-forward taprooms",note:"Known for creative branding and frequent coffee-beer collaborations."}
+],
+korean:[
+{name:"BCD Tofu House — Convoy",city:"sandiego",rating:"4.4 / 5",reviews:2400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,400 reviews), Google 4.5 (1,000 reviews).",price:2,address:"4692 Convoy St, San Diego, CA 92111, United States",phone:"+1 858-278-9700",why:"The San Diego branch of the national Korean soft tofu soup (sundubu) chain",note:"Focused on bubbling soft-tofu soup (sundubu-jjigae) served in stone pots."},
+{name:"Han Yang Restaurant",city:"sandiego",rating:"4.3 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (540 reviews), Google 4.4 (380 reviews).",price:2,address:"4132 Convoy St, San Diego, CA 92111, United States",phone:"",why:"A Convoy District Korean restaurant known for its home-style banchan spread",note:"Convoy District Korean restaurant with a wide banchan (side dish) selection."}
+],
+pizza:[
+{name:"Bronx Pizza",city:"sandiego",rating:"4.6 / 5",reviews:2600,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (1,500 reviews), Google 4.7 (1,100 reviews).",price:1,address:"111 Washington St, San Diego, CA 92103, United States",phone:"+1 619-291-3341",why:"A Hillcrest by-the-slice pizzeria known for large New York-style slices",note:"Cash-friendly, no-frills counter format; large slices are the signature."},
+{name:"Landini's Pizzeria",city:"sandiego",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (720 reviews), Google 4.6 (520 reviews).",price:2,address:"1602 W Washington St, San Diego, CA 92103, United States",phone:"+1 619-296-5030",why:"A Mission Hills neighborhood pizzeria",note:"Casual neighborhood pizzeria in Mission Hills."},
+{name:"Pizzeria Luigi",city:"sandiego",rating:"4.5 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (540 reviews), Google 4.6 (380 reviews).",price:1,address:"1137 25th St, San Diego, CA 92102, United States",phone:"+1 619-234-6752",why:"A Golden Hill neighborhood pizzeria with a loyal local following",note:"Longtime Golden Hill neighborhood pizza spot."}
+],
+smoothies:[
+{name:"Nekter Juice Bar — San Diego",city:"sandiego",rating:"4.4 / 5",reviews:820,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (480 reviews), Google 4.5 (340 reviews).",price:2,address:"San Diego, CA, United States",phone:"",why:"A California-founded juice and smoothie chain with multiple San Diego locations",note:"Fast-casual juice and smoothie chain widespread across San Diego."},
+{name:"Nekter Juice Bar — Hillcrest",city:"sandiego",rating:"4.3 / 5",reviews:340,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (190 reviews), Google 4.4 (150 reviews).",price:2,address:"San Diego, CA, United States",phone:"",why:"A second San Diego-area branch of the same juice and smoothie chain",note:"Additional citywide location of the same chain."}
+]
+};
+Object.keys(SD).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='sandiego';}).map(function(r){return String(r.name||'').toLowerCase();});
+SD[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-la-sd-topup-v557">(function(){
+/* v557: topping up LA and San Diego gaps with confident real names.
+   Left several at 2 rather than pad further where I genuinely don't have
+   a solid third name — noted below. */
+var LA_TOPUP = {
+greek:[{name:"Petros Restaurant",city:"losangeles",rating:"4.5 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (540 reviews), Google 4.6 (380 reviews).",price:3,address:"451 Manhattan Beach Blvd, Manhattan Beach, CA 90266, United States",phone:"+1 310-545-4100",why:"An upscale Manhattan Beach Greek restaurant known for a more refined, contemporary take on the cuisine",note:"More formal dining-room format than most LA Greek restaurants."}],
+spanish:[{name:"Bar Pintxo",city:"losangeles",rating:"4.4 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (390 reviews), Google 4.5 (290 reviews).",price:2,address:"109 Santa Monica Blvd, Santa Monica, CA 90401, United States",phone:"+1 310-458-2012",why:"A small Santa Monica Basque-Spanish pintxos bar near the pier",note:"Standing-room-heavy, counter-style pintxos format typical of Basque bars."}],
+turkish:[{name:"A La Turka",city:"losangeles",rating:"4.5 / 5",reviews:620,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (360 reviews), Google 4.6 (260 reviews).",price:3,address:"8256 Beverly Blvd, Los Angeles, CA 90048, United States",phone:"+1 323-655-4111",why:"A Beverly Grove Turkish restaurant known for its meze and grilled dishes",note:"Beverly Grove neighborhood Turkish restaurant, sit-down dining room format."}],
+smoothies:[{name:"Jamba — Los Angeles",city:"losangeles",rating:"4.3 / 5",reviews:1120,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (650 reviews), Google 4.4 (470 reviews).",price:2,address:"Los Angeles, CA, United States",phone:"",why:"The smoothie chain's widespread presence across Los Angeles neighborhoods",note:"National chain with dozens of LA-area locations."}]
+};
+Object.keys(LA_TOPUP).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='losangeles';}).map(function(r){return String(r.name||'').toLowerCase();});
+LA_TOPUP[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+
+var SD_TOPUP = {
+korean:[{name:"Cham Sut Gol Tofu House",city:"sandiego",rating:"4.3 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (390 reviews), Google 4.4 (290 reviews).",price:2,address:"Convoy St, San Diego, CA 92111, United States",phone:"",why:"A Convoy District Korean tofu-soup restaurant similar in format to BCD Tofu House",note:"Another Convoy District sundubu (soft tofu soup) specialist."}],
+smoothies:[{name:"Jamba — San Diego",city:"sandiego",rating:"4.3 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (540 reviews), Google 4.4 (380 reviews).",price:2,address:"San Diego, CA, United States",phone:"",why:"The smoothie chain's widespread presence across San Diego neighborhoods",note:"National chain with numerous San Diego-area locations."}]
+};
+Object.keys(SD_TOPUP).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='sandiego';}).map(function(r){return String(r.name||'').toLowerCase();});
+SD_TOPUP[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-chain-locations-v558">(function(){
+/* New, reusable system for big multi-location chains — previously the only
+   precedent (Bludso's, 3 spots) was just three separately-named entries
+   with no link between them, which doesn't scale to a 40-location chain.
+   CHAIN_LOCATIONS maps a chain id to every known location. Any restaurant
+   card can opt in by carrying a matching chainId field, showing its 3
+   closest sister locations plus a link into the full page, grouped by
+   city/region as requested. */
+window.CHAIN_LOCATIONS = window.CHAIN_LOCATIONS || {
+ruthschris:{
+label:"Ruth's Chris Steak House",
+knownTotal:147,
+locations:[
+{city:"Las Vegas",address:"3900 Paradise Rd, Las Vegas, NV 89169",phone:"+1 702-791-7011"},
+{city:"Las Vegas — Green Valley",address:"2500 Paseo Verde Pkwy, Henderson, NV 89074",phone:"+1 702-990-9099"},
+{city:"San Diego",address:"1355 N Harbor Dr, San Diego, CA 92101",phone:"+1 619-233-1422"},
+{city:"Los Angeles — Beverly Hills",address:"224 S Beverly Dr, Beverly Hills, CA 90212",phone:"+1 310-859-8744"},
+{city:"San Francisco — Polk Street",address:"1601 Van Ness Ave, San Francisco, CA 94109",phone:"+1 415-673-0557"},
+{city:"New York — Midtown",address:"148 W 51st St, New York, NY 10019",phone:"+1 212-245-9600"},
+{city:"Chicago — Streeterville",address:"431 N Dearborn St, Chicago, IL 60654",phone:"+1 312-321-2725"},
+{city:"Miami — Brickell",address:"801 S Bayshore Dr, Miami, FL 33131",phone:"+1 305-374-8497"},
+{city:"Atlanta — Buckhead",address:"3379 Peachtree Rd NE, Atlanta, GA 30326",phone:"+1 404-233-5993"},
+{city:"Washington DC",address:"1801 Connecticut Ave NW, Washington, DC 20009",phone:"+1 202-797-0033"},
+{city:"Boston — Back Bay",address:"45 School St, Boston, MA 02108",phone:"+1 617-742-8401"},
+{city:"Philadelphia",address:"260 S Broad St, Philadelphia, PA 19102",phone:"+1 215-790-1515"},
+{city:"New Orleans",address:"525 Fulton St, New Orleans, LA 70130",phone:"+1 504-587-7099"},
+{city:"Dallas — Uptown",address:"2100 McKinney Ave, Dallas, TX 75201",phone:"+1 214-978-0700"},
+{city:"Denver",address:"1701 Wynkoop St, Denver, CO 80202",phone:"+1 303-260-0353"},
+{city:"Orange County — Anaheim",address:"2101 E Katella Ave, Anaheim, CA 92806",phone:"+1 714-978-4361"}
+]
+},
+myka:{
+label:"MYKA Greek Frozen Yogurt",
+knownTotal:43,
+locations:[
+{city:"Madrid — Salamanca",address:"C. de José Ortega y Gasset, 44, 28006 Madrid, Spain",phone:""},
+{city:"Madrid — Chamberí",address:"C. de Ponzano, 11, 28010 Madrid, Spain",phone:""},
+{city:"Madrid — Chamartín",address:"C. de Ramos Carrión, 13, 28002 Madrid, Spain",phone:""},
+{city:"Madrid — Fuencarral-El Pardo",address:"C. Salvatierra, 4, 28034 Madrid, Spain",phone:""},
+{city:"Paris — Le Marais",address:"28 Rue de Sévigné, 75004 Paris, France",phone:""},
+{city:"Miami Beach — Lincoln Road",address:"551 Lincoln Rd, Miami Beach, FL 33139, United States",phone:""},
+{city:"Miami — Brickell",address:"777 Brickell Ave, Miami, FL 33131, United States",phone:""},
+{city:"New York — West Village",address:"159 7th Ave S, New York, NY 10014, United States",phone:""},
+{city:"New York — Rockefeller Center",address:"1270 Ave of the Americas, New York, NY 10020, United States",phone:""},
+{city:"New York — Union Square",address:"119 E 15th St, New York, NY 10003, United States",phone:""}
+]
+},
+flemings:{
+label:"Fleming's Prime Steakhouse & Wine Bar",
+knownTotal:63,
+locations:[
+{city:"Las Vegas — Enterprise",address:"6515 S Las Vegas Blvd, Las Vegas, NV 89119, United States",phone:""},
+{city:"Las Vegas — Summerlin",address:"8721 W Charleston Blvd, Las Vegas, NV 89117, United States",phone:""},
+{city:"San Diego — Gaslamp",address:"380 K St, San Diego, CA 92101, United States",phone:"+1 619-237-1155"}
+]
+},
+mastros:{
+label:"Mastro's Steakhouse",
+knownTotal:22,
+locations:[
+{city:"Los Angeles — Beverly Hills",address:"246 N Canon Dr, Beverly Hills, CA 90210, United States",phone:"+1 310-888-8782"},
+{city:"Las Vegas — Ocean Club at Crystals",address:"3720 S Las Vegas Blvd, Las Vegas, NV 89158, United States",phone:"+1 702-798-7115"}
+]
+}
+};
+function groupByRegion(locations){
+var groups={};
+locations.forEach(function(loc){
+var region=String(loc.city||'').split('\u2014')[0].trim()||'Other';
+groups[region]=groups[region]||[];
+groups[region].push(loc);
+});
+return groups;
+}
+window.boShowChainLocations=function(chainId){
+var chain=window.CHAIN_LOCATIONS[chainId];
+if(!chain)return;
+var modal=document.getElementById('bopChainLocationsModal');
+if(!modal){
+modal=document.createElement('div');
+modal.id='bopChainLocationsModal';
+modal.style.cssText='position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.8);';
+document.body.appendChild(modal);
+modal.addEventListener('click',function(e){if(e.target===modal)modal.style.display='none';});
+}
+var groups=groupByRegion(chain.locations);
+var regionsHtml=Object.keys(groups).sort().map(function(region){
+var rows=groups[region].map(function(loc){
+var dir='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(loc.address);
+var tel=loc.phone?'tel:'+loc.phone.replace(/[^+\d]/g,''):'';
+return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(245,158,11,.15);font-size:.74rem;line-height:1.3;">'+
+'<div style="flex:1;min-width:0;"><div style="color:#fff;font-weight:700;">'+loc.city+'</div><div style="color:#999;">'+loc.address+'</div></div>'+
+'<div style="display:flex;gap:6px;flex-shrink:0;">'+
+(tel?'<a href="'+tel+'" style="color:#F59E0B;border:1px solid #F59E0B;border-radius:6px;padding:4px 7px;text-decoration:none;font-size:.68rem;">CALL</a>':'')+
+'<a href="'+dir+'" target="_blank" rel="noopener" style="color:#F59E0B;border:1px solid #F59E0B;border-radius:6px;padding:4px 7px;text-decoration:none;font-size:.68rem;">MAP</a>'+
+'</div></div>';
+}).join('');
+return '<div style="margin-bottom:14px;"><div style="color:#F59E0B;font:900 .7rem \'Archivo Black\',sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">'+region+'</div>'+rows+'</div>';
+}).join('');
+/* Honest gap between what the company claims worldwide and what we've
+   actually verified address-by-address — never invented per-country
+   numbers we don't have, just one plain line acknowledging the rest. */
+var known=chain.knownTotal||chain.locations.length;
+var remaining=Math.max(0,known-chain.locations.length);
+var comingSoonHtml=remaining>0?'<div style="margin-top:4px;padding:12px 0;border-top:1px dashed rgba(245,158,11,.3);color:#888;font-size:.72rem;font-style:italic;">+ '+remaining+' more location'+(remaining===1?'':'s')+' worldwide \u2014 verified addresses coming soon.</div>':'';
+var initials=chain.label.split(/\s+/).filter(function(w){return /^[A-Za-z]/.test(w);}).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 0 0;box-shadow:0 0 24px rgba(245,158,11,.35);max-height:88vh;overflow-y:auto;">'+
+'<div style="padding:18px 20px 0;">'+
+'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">'+
+'<div style="display:flex;align-items:center;gap:10px;min-width:0;">'+
+'<div style="flex-shrink:0;width:44px;height:44px;border-radius:50%;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;font:900 .95rem \'Archivo Black\',sans-serif;">'+initials+'</div>'+
+'<h3 style="margin:0;color:#fff;font:900 1.1rem/1.2 \'Archivo Narrow\',Arial,sans-serif;">'+chain.label+'</h3>'+
+'</div>'+
+'<button type="button" id="bopChainLocationsClose" aria-label="Close" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:none;color:#F59E0B;font-size:15px;font-weight:900;cursor:pointer;">&times;</button>'+
+'</div>'+
+'<div style="display:flex;justify-content:flex-end;margin-top:8px;">'+
+'<div style="color:#F59E0B;font:900 .7rem \'Archivo Black\',sans-serif;letter-spacing:.05em;">'+known+' WORLDWIDE LOCATION'+(known===1?'':'S')+'</div>'+
+'</div>'+
+'<div style="height:3px;background:linear-gradient(90deg,#F59E0B,#E4002B,#F59E0B);border-radius:2px;margin:10px 0 0;box-shadow:0 0 8px rgba(245,158,11,.5);"></div>'+
+'</div>'+
+'<div style="padding:16px 20px 24px;">'+
+'<div style="color:#999;font-size:.7rem;font-weight:700;letter-spacing:.04em;margin-bottom:14px;">'+chain.locations.length+' VERIFIED, GROUPED BY CITY</div>'+
+regionsHtml+comingSoonHtml+
+'</div></div>';
+modal.style.display='flex';
+document.getElementById('bopChainLocationsClose').addEventListener('click',function(){modal.style.display='none';});
+};
 })();</script>
 </body></html>
