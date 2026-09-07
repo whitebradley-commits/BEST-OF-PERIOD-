@@ -25664,49 +25664,8 @@ target.disabled=true;goBack();setTimeout(function(){target.disabled=false},450);
     var afterEnter=micBtn||enterBtn;
     if(afterEnter.nextSibling!==goLiveBtn) row.insertBefore(goLiveBtn,afterEnter.nextSibling);
 
-    /* Rebuilt after being removed, per a later request to bring them back —
-       same size/glow as Music, understated small text, mail opens a tap-to-
-       email popup instead of a raw mailto link. */
-    var corner=document.getElementById('bopGateCorner');
-    if(!corner){
-      corner=document.createElement('div');
-      corner.id='bopGateCorner';
-      corner.style.cssText='position:fixed;right:68px;bottom:14px;z-index:2147483647;display:none;align-items:center;gap:8px;';
-      var bjsBtn=document.createElement('button');
-      bjsBtn.type='button';
-      bjsBtn.id='bopGateBjsBtn';
-      bjsBtn.setAttribute('aria-label','BJS Co.');
-      bjsBtn.style.cssText='width:46px;height:46px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;overflow:visible;';
-      bjsBtn.innerHTML='<svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><text x="20" y="18" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="6.5" font-weight="600" fill="#F59E0B">BJS</text><text x="20" y="25" text-anchor="middle" font-family="Archivo Narrow, Arial, sans-serif" font-size="4.8" font-weight="400" fill="#F59E0B">CO.</text></svg>';
-      corner.appendChild(bjsBtn);
-      document.body.appendChild(corner);
-    }
-    if(emailLink && emailLink.parentNode!==corner){
-      emailLink.style.cssText='width:46px;height:46px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin:0;';
-      var svg=emailLink.querySelector('svg');
-      if(svg){ svg.setAttribute('width','25'); svg.setAttribute('height','25'); svg.setAttribute('stroke','#F59E0B'); }
-      emailLink.addEventListener('click',function(e){
-        e.preventDefault();
-        var pop=document.getElementById('bopGateEmailPopup');
-        if(!pop){
-          pop=document.createElement('div');
-          pop.id='bopGateEmailPopup';
-          pop.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);padding:20px;';
-          pop.innerHTML='<div style="position:relative;max-width:300px;width:100%;background:#0a0a0a;border:2px solid #F59E0B;border-radius:14px;padding:24px 20px;text-align:center;box-shadow:0 0 16px rgba(245,158,11,.4);"><button id="bopGateEmailPopupClose" type="button" style="position:absolute;top:8px;right:10px;background:none;border:none;color:#F59E0B;font-size:20px;font-weight:900;cursor:pointer;line-height:1;">&times;</button><div style="color:#F59E0B;font:800 .9rem Arial,sans-serif;margin-bottom:10px;">Email Us</div><a href="mailto:info@bestofperiod.com" style="color:#F59E0B;font-weight:800;font-size:1.05rem;text-decoration:none;">info@bestofperiod.com</a></div>';
-          document.body.appendChild(pop);
-          pop.addEventListener('click',function(e2){ if(e2.target===pop) pop.remove(); });
-          document.getElementById('bopGateEmailPopupClose').addEventListener('click',function(){ pop.remove(); });
-        }
-      });
-      corner.appendChild(emailLink);
-    }
-    /* Order closest-to-edge inward: Music (separate, always-on element) — BJS — Email. */
-    if(corner.firstElementChild!==emailLink && emailLink && emailLink.parentNode===corner){
-      corner.insertBefore(emailLink, corner.firstChild);
-    }
-    var active=document.documentElement.classList.contains('bop-invite-active');
-    var wantDisplay=active?'flex':'none';
-    if(corner.style.display!==wantDisplay)corner.style.display=wantDisplay;
+    /* BJS + Mail corner cluster fully rebuilt below in a single, self-contained
+       block (see bop-gate-corner-rebuild-v551) — nothing left here. */
   }
   install();
   document.addEventListener('DOMContentLoaded',install);
@@ -25988,9 +25947,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #bopExclusiveInvitation #bopExclusiveGoLive{color:#E4002B!important}
 #bopInviteCornerRow,#bopInviteCornerRow2{display:none!important}
 #bopExclusiveInvitation .bop-exclusive-enter{animation:bjsOuterGlowPulse 4s ease-in-out infinite}
-#bopGateBjsBtn,#bopGateCorner a{box-shadow:0 0 4px rgba(245,158,11,.7)}
-#bopGateBjsBtn text{fill:#F59E0B!important}
-html:not(.bop-invite-active) .bop-exclusive-contact-icononly,html:not(.bop-invite-active) #bopGateBjsBtn,html:not(.bop-invite-active) #bopGateCorner{display:none!important}
+html:not(.bop-invite-active) .bop-exclusive-contact-icononly{display:none!important}
 #bopExclusiveInvitation #bopExclusiveEnter{width:54px!important;height:54px!important;font-size:10.5px!important}#bopExclusiveInvitation #bopExclusiveEnter{position:relative!important}#bopExclusiveInvitation .bop-bjs-co-stack{position:absolute!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;width:max-content!important}#bopExclusiveInvitation .bop-bjs-thick{display:block!important;line-height:1!important;-webkit-text-stroke:.6px currentColor;letter-spacing:.02em}#bopExclusiveInvitation .bop-bjs-co-light{display:block!important;line-height:1!important;font-weight:400!important;font-size:.5em!important;letter-spacing:.1em}#bopExclusiveInvitation .bop-exclusive-btn-row{display:flex;align-items:center;justify-content:center;gap:16px}#bopExclusiveInvitation .bop-exclusive-btn-row .bop-exclusive-enter{margin-top:0}#bopExclusiveInvitation #bopExclusivePromo{font:900 6.6px/1.15 'Archivo Narrow',Arial,sans-serif;letter-spacing:.05em}#bopExclusiveInvitation .bop-exclusive-enter:focus-visible{outline:3px solid #F59E0B;outline-offset:4px}#bopExclusiveInvitation .bop-exclusive-contact:focus-visible{outline:3px solid #E4002B;outline-offset:5px}@media(max-width:370px){#bopExclusiveInvitation .bop-exclusive-brand{margin-bottom:12px}#bopExclusiveInvitation .bop-exclusive-enter{width:42px;height:42px;margin-top:13px}#bopExclusiveInvitation .bop-exclusive-btn-row .bop-exclusive-enter{margin-top:0}#bopExclusiveInvitation .bop-exclusive-btn-row{gap:12px}}</style>
 
 <style id="bop-active-contact-icons-v1">#boNearInfoCard .bo-near-info-phone,#boNearInfoCard .bo-near-info-actions a[href],.teen-result-action[href^="tel:"],.teen-result-action[href*="google.com/maps"],.bop-map-popup a[href*="google.com/maps"]{position:relative!important;z-index:4!important;pointer-events:auto!important;touch-action:manipulation}</style>
@@ -26757,7 +26714,7 @@ document.addEventListener('click',function(){setTimeout(function(){buildNYMap();
 
 <style id="bop-music-corner-and-promo-race-v266">#bopMusicCorner{position:fixed;bottom:14px;right:14px;z-index:2147483647;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:bjsOuterGlowPulse 4s ease-in-out infinite}#bopMusicCorner svg{width:27px;height:27px;display:block}#bopMusicCorner .bop-music-slash{display:none}#bopMusicCorner.bop-music-muted .bop-music-note{opacity:.38}#bopMusicCorner.bop-music-muted .bop-music-slash{display:block}#bopStaticFounders,button[aria-label="BJS CO."][data-dest="about"]{display:none!important}#bestOfOverlay>.site-sound-toggle{opacity:0!important;pointer-events:none!important}
 @keyframes bjsOuterGlowPulse{0%,100%{box-shadow:0 0 2px rgba(245,158,11,.5)}50%{box-shadow:0 0 7px rgba(245,158,11,.9)}}
-#bopMusicCorner,#bopGateBjsBtn,#bopGateCorner a,#bopExclusiveInvitation .bop-exclusive-enter{-webkit-transform:translateZ(0);transform:translateZ(0);will-change:box-shadow}
+#bopMusicCorner,#bopExclusiveInvitation .bop-exclusive-enter{-webkit-transform:translateZ(0);transform:translateZ(0);will-change:box-shadow}
 @media (prefers-reduced-motion:reduce){#bopMusicCorner{animation:none}}
 </style>
 <script id="bop-music-corner-and-promo-race-v266-script">(function(){
@@ -44609,13 +44566,45 @@ refreshVoiceUI();
 })();
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function openRestaurant(x){
+var r=x.r;
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var modal=document.getElementById('bopVoiceRestaurantCard');
+if(!modal){
+modal=document.createElement('div');
+modal.id='bopVoiceRestaurantCard';
+modal.style.cssText='position:fixed;inset:0;z-index:2147483647;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.78);';
+document.body.appendChild(modal);
+modal.addEventListener('click',function(e){if(e.target===modal)modal.style.display='none';});
+}
+var catLabelText=String(r.cat||'Restaurant').replace(/^bjspicks/i,'BJS Picks ').replace(/highend/ig,' Fine').replace(/casual/ig,' Casual').replace(/dive/ig,' Dive').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,function(m){return m.toUpperCase();}).trim();
+var ratingLabel=r.rating?('\u2605 '+esc(r.rating)+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')):'';
+var phoneHtml=r.phone?'<a href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'" style="color:#F59E0B;text-decoration:none;font-weight:700;">'+esc(r.phone)+'</a>':'<span style="color:#777;">Phone not listed</span>';
+var directionsUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address||(r.name+' '+x.city));
+var mediaHtml=r.image?'<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="width:100%;height:170px;object-fit:cover;display:block;">':'<div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#F59E0B;font-size:1.6rem;">\u2726</div>';
+var whyHtml=r.why?'<p style="margin:10px 0 0;color:#ddd;font:500 .88rem/1.45 Arial,sans-serif;">'+esc(r.why)+'</p>':'';
+modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 0 0;box-shadow:0 0 24px rgba(245,158,11,.35);max-height:88vh;overflow-y:auto;">'+
+'<div style="position:relative;">'+mediaHtml+'<button type="button" id="bopVoiceCardClose" aria-label="Close" style="position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1.5px solid #F59E0B;background:rgba(10,10,10,.85);color:#F59E0B;font-size:18px;font-weight:900;cursor:pointer;">&times;</button></div>'+
+'<div style="padding:18px 20px 24px;">'+
+'<h3 style="margin:0 0 4px;color:#fff;font:900 1.25rem/1.2 \'Archivo Narrow\',Arial,sans-serif;">'+esc(r.name)+'</h3>'+
+'<div style="color:#F59E0B;font:800 .78rem/1.4 \'Archivo Narrow\',Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;">'+esc(catLabelText)+(ratingLabel?' \u00b7 '+ratingLabel:'')+'</div>'+
+whyHtml+
+'<div style="margin-top:14px;color:#bbb;font:600 .82rem/1.4 Arial,sans-serif;">'+esc(r.address||'')+'</div>'+
+'<div style="margin-top:6px;font:600 .88rem/1.4 Arial,sans-serif;">'+phoneHtml+'</div>'+
+'<div style="display:flex;gap:10px;margin-top:16px;">'+
+'<a href="'+directionsUrl+'" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:12px;border:2px solid #F59E0B;border-radius:10px;color:#F59E0B;font:900 .78rem \'Archivo Black\',sans-serif;text-decoration:none;letter-spacing:.04em;">GET DIRECTIONS</a>'+
+'<button type="button" id="bopVoiceCardViewFull" style="flex:1;padding:12px;border:2px solid #444;border-radius:10px;background:none;color:#ccc;font:900 .78rem \'Archivo Black\',sans-serif;letter-spacing:.04em;cursor:pointer;">FULL LISTING</button>'+
+'</div></div></div>';
+modal.style.display='flex';
+document.getElementById('bopVoiceCardClose').addEventListener('click',function(){modal.style.display='none';});
+document.getElementById('bopVoiceCardViewFull').addEventListener('click',function(){
+modal.style.display='none';
 closePanel();
 var gate=document.getElementById('bopExclusiveInvitation');if(gate){gate.classList.add('bop-invite-closed');document.documentElement.classList.remove('bop-invite-active');}
 var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
 try{boCityContext=x.city;}catch(e){}
 window.boCityContext=x.city;
-if(typeof window.boOpenRestaurantFromMap==='function'){window.boOpenRestaurantFromMap(x.r.cat||x.city,x.r.name);}
-else{var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');}
+if(typeof window.boOpenRestaurantFromMap==='function'){window.boOpenRestaurantFromMap(r.cat||x.city,r.name);}
+});
 }
 function openPanel(){panel.classList.add('open');panel.scrollTop=0;document.body.style.overflow='hidden';}
 function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');}
@@ -44759,35 +44748,6 @@ var retryLabel=document.getElementById('bopVoiceRetryLabel');if(retryLabel)retry
 window.bopVoiceSearch={run:run,parse:parse};
 
 
-})();</script>
-<script id="bop-landing-mail-corner-v549">(function(){
-/* Music already lives at right:14px on every page. This adds a matching
-   Mail icon on the plain landing page specifically (BJS doesn't need its
-   own copy here — it's already one of the five dock orbs). Gate-only, this
-   would collide with #bopGateCorner, so it's scoped strictly to the landing
-   page with the gate fully closed. */
-function landingOnly(){
-var landing=document.getElementById('bopLandingOverlay');
-var gate=document.getElementById('bopExclusiveInvitation');
-var gateClosed=!gate||gate.classList.contains('bop-invite-closed')||!document.documentElement.classList.contains('bop-invite-active');
-return !!(landing&&landing.classList.contains('open')&&gateClosed);
-}
-function install(){
-var b=document.getElementById('bopLandingMailBtn');
-if(!b){
-b=document.createElement('a');
-b.id='bopLandingMailBtn';
-b.href='mailto:info@bestofperiod.com';
-b.setAttribute('aria-label','Email info at Best Of Period dot com');
-b.style.cssText='position:fixed;right:66px;bottom:14px;z-index:2147483647;width:44px;height:44px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;box-shadow:0 0 8px rgba(245,158,11,.5);display:flex;align-items:center;justify-content:center;';
-b.innerHTML='<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#E4002B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>';
-document.body.appendChild(b);
-}
-b.style.display=landingOnly()?'flex':'none';
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-document.addEventListener('click',function(){setTimeout(install,150);},true);
-setInterval(install,600);
 })();</script>
 
 <script id="bop-london-category-buildout-v543">(function(){
@@ -45016,18 +44976,123 @@ function ready(fn){if(document.readyState==='loading')document.addEventListener(
 ready(function(){normalize();setInterval(normalize,1000);});
 })();</script>
 
-<script id="bop-gate-corner-dedupe-v550">(function(){
-/* Same class of fix as the music-icon duplication earlier: if #bopGateCorner
-   ever gets created more than once, remove every extra instead of letting
-   two independently-animated copies overlap and visually beat against each
-   other, which reads exactly like flickering. */
-function dedupe(){
-var all=document.querySelectorAll('#bopGateCorner');
-for(var i=1;i<all.length;i++) all[i].remove();
-var btns=document.querySelectorAll('#bopGateBjsBtn');
-for(var j=1;j<btns.length;j++) btns[j].remove();
+<script id="bop-gate-corner-rebuild-v551">(function(){
+/* Complete rebuild from nothing, after several targeted fixes to the old
+   BJS + Mail cluster (#bopGateCorner / #bopGateBjsBtn) failed to hold up on
+   real devices across multiple browsers — ruling out caching and pointing
+   at a real, still-unfound bug in that old code. Starting over clean:
+   brand-new element IDs never referenced anywhere else in this file, every
+   style set as a literal DOM property (never a shared class, never
+   cssText, nothing any other script could plausibly also be touching),
+   built exactly once and never rebuilt or re-styled again. Visibility is
+   the only thing that changes after creation, and it changes by directly
+   setting one style property, nothing else. */
+var built=false;
+function build(){
+if(built)return;
+if(!document.body)return;
+var gate=document.getElementById('bopExclusiveInvitation');
+var oldEmail=document.querySelector('#bopExclusiveInvitation .bop-exclusive-contact-icononly');
+if(!gate)return;
+built=true;
+
+var wrap=document.createElement('div');
+wrap.id='bopEndCapWrap551';
+wrap.style.position='fixed';
+wrap.style.right='68px';
+wrap.style.bottom='14px';
+wrap.style.zIndex='2147483647';
+wrap.style.display='none';
+wrap.style.alignItems='center';
+wrap.style.gap='8px';
+wrap.style.pointerEvents='none';
+
+var mail=document.createElement('a');
+mail.id='bopEndCapMail551';
+mail.href='mailto:info@bestofperiod.com';
+mail.setAttribute('aria-label','Email info at Best Of Period dot com');
+mail.style.width='46px';
+mail.style.height='46px';
+mail.style.borderRadius='50%';
+mail.style.border='1.5px solid #F59E0B';
+mail.style.background='#0a0a0a';
+mail.style.boxShadow='0 0 4px rgba(245,158,11,.7)';
+mail.style.cursor='pointer';
+mail.style.display='flex';
+mail.style.alignItems='center';
+mail.style.justifyContent='center';
+mail.style.pointerEvents='auto';
+mail.innerHTML='<svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="#F59E0B" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+mail.addEventListener('click',function(e){
+e.preventDefault();
+var pop=document.getElementById('bopEndCapMailPopup551');
+if(pop){pop.style.display='flex';return;}
+pop=document.createElement('div');
+pop.id='bopEndCapMailPopup551';
+pop.style.position='fixed';
+pop.style.inset='0';
+pop.style.zIndex='2147483647';
+pop.style.display='flex';
+pop.style.alignItems='center';
+pop.style.justifyContent='center';
+pop.style.background='rgba(0,0,0,.72)';
+pop.style.padding='20px';
+pop.innerHTML='<div style="position:relative;max-width:300px;width:100%;background:#0a0a0a;border:2px solid #F59E0B;border-radius:14px;padding:24px 20px;text-align:center;box-shadow:0 0 16px rgba(245,158,11,.4);"><button type="button" id="bopEndCapMailPopupClose551" style="position:absolute;top:8px;right:10px;background:none;border:none;color:#F59E0B;font-size:20px;font-weight:900;cursor:pointer;line-height:1;">&times;</button><div style="color:#F59E0B;font:800 .9rem Arial,sans-serif;margin-bottom:10px;">Email Us</div><a href="mailto:info@bestofperiod.com" style="color:#F59E0B;font-weight:800;font-size:1.05rem;text-decoration:none;">info@bestofperiod.com</a></div>';
+document.body.appendChild(pop);
+pop.addEventListener('click',function(e2){if(e2.target===pop)pop.style.display='none';});
+document.getElementById('bopEndCapMailPopupClose551').addEventListener('click',function(){pop.style.display='none';});
+});
+
+var bjs=document.createElement('button');
+bjs.id='bopEndCapBjs551';
+bjs.type='button';
+bjs.setAttribute('aria-label','BJS Co.');
+bjs.style.width='46px';
+bjs.style.height='46px';
+bjs.style.borderRadius='50%';
+bjs.style.border='1.5px solid #F59E0B';
+bjs.style.background='#0a0a0a';
+bjs.style.boxShadow='0 0 4px rgba(245,158,11,.7)';
+bjs.style.cursor='default';
+bjs.style.padding='0';
+bjs.style.display='flex';
+bjs.style.alignItems='center';
+bjs.style.justifyContent='center';
+bjs.style.pointerEvents='auto';
+var bjsText=document.createElement('div');
+bjsText.style.textAlign='center';
+bjsText.style.lineHeight='1';
+bjsText.style.pointerEvents='none';
+var bjsLine1=document.createElement('div');
+bjsLine1.textContent='BJS';
+bjsLine1.style.color='#F59E0B';
+bjsLine1.style.fontFamily="'Archivo Black',sans-serif";
+bjsLine1.style.fontWeight='600';
+bjsLine1.style.fontSize='9px';
+var bjsLine2=document.createElement('div');
+bjsLine2.textContent='CO.';
+bjsLine2.style.color='#F59E0B';
+bjsLine2.style.fontFamily="'Archivo Narrow',Arial,sans-serif";
+bjsLine2.style.fontWeight='400';
+bjsLine2.style.fontSize='6px';
+bjsLine2.style.marginTop='1px';
+bjsText.appendChild(bjsLine1);
+bjsText.appendChild(bjsLine2);
+bjs.appendChild(bjsText);
+
+wrap.appendChild(mail);
+wrap.appendChild(bjs);
+if(oldEmail&&oldEmail.parentNode)oldEmail.parentNode.removeChild(oldEmail);
+document.body.appendChild(wrap);
+
+function sync(){
+var active=document.documentElement.classList.contains('bop-invite-active');
+var want=active?'flex':'none';
+if(wrap.style.display!==want)wrap.style.display=want;
 }
-if(typeof window.__bopTick==='function') window.__bopTick(dedupe,400);
-else setInterval(dedupe,400);
+sync();
+new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build);else build();
 })();</script>
 </body></html>
