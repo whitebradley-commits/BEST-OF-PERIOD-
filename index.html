@@ -2818,7 +2818,8 @@ bjsPicksCat: 'bjspicksmiami'   // Miami's own, separate BJS Picks page — not s
 },
 london: {
 displayName: 'London',
-areaList: ["St James's", 'Mayfair', 'Soho', 'Shoreditch'],
+areaList: ["St James's", 'Mayfair', 'Soho', 'Shoreditch', 'Notting Hill', 'Chinatown'],
+searchAliases: ['Piccadilly Circus','Soho','Chinatown','Mayfair','Covent Garden','Shoreditch','Notting Hill','Camden','Marylebone','Fitzrovia','Borough Market','Bermondsey','Green Lanes','Southall','Brick Lane','Whitechapel','Spitalfields','Peckham','Dalston','Stoke Newington','Farringdon','Clerkenwell','Bishopsgate','Kensington','Islington',"St James's"],
 tickerMessages: ['LONDON', 'YUMMY SOON!'],
 useNameCycler: true,
 bjsPicksCat: 'bjspickslondon'   // London's own, separate BJS Picks page
@@ -22974,9 +22975,9 @@ var nm=cfg.displayName||cfg.landingName||k;
 var isArea=/^(sd|la)[a-z]/.test(k)||(typeof areaGateParents!=='undefined'&&areaGateParents&&areaGateParents[k]);
 if(isArea){ /* v345: neighborhoods searchable by every sub-city in them (Solana Beach -> Del Mar page, Kearny Mesa -> Convoy...) */
 var parent=/^sd/.test(k)?'San Diego':(/^la/.test(k)?'Los Angeles':'');
-extra.push({name:nm,region:parent,dest:k,aliases:(cfg.areaList||[]).slice()});
+extra.push({name:nm,region:parent,dest:k,aliases:(cfg.areaList||cfg.areas||[]).slice()});
 return;}
-extra.push({name:nm,region:cfg.region||cfg.country||'',dest:k});
+extra.push({name:nm,region:cfg.region||cfg.country||'',dest:k,aliases:(cfg.searchAliases||[]).slice()});
 });}
 var all=cities.concat(extra);
 var seenNames={};all=all.filter(function(c){var k=norm(c.name);if(seenNames[k])return false;seenNames[k]=1;return true});
@@ -44467,5 +44468,231 @@ btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();
 /* BJS corner button on the landing must close the landing before opening Founders. */
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#bopInviteBjsBtn2');if(!b)return;var landing=document.getElementById('bopLandingOverlay');if(landing&&landing.classList.contains('open')&&!document.documentElement.classList.contains('bop-invite-active'))landing.classList.remove('open');},true);
 window.bopVoiceSearch={run:run,parse:parse};
+})();</script>
+
+<script id="bop-london-category-buildout-v543">(function(){
+/* v543: London was thin outside pizza/cheesesteak/a handful of others — no
+   steak, sushi, Mexican, Indian, or Pakistani coverage. Adding at least
+   three per category, each with a real address + phone (both mandatory
+   per standing rule), a cross-platform aggregate rating, and a why/note
+   pair. Photos are intentionally omitted except where photoRequired is
+   set (4.9+ or Michelin) — matching the site-wide photo policy. James
+   Beard is correctly absent (US-only award, doesn't apply to London). */
+var LONDON = {
+steakhighend:[
+{name:"Hawksmoor Seven Dials",city:"london",rating:"4.6 / 5",reviews:2140,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,410 reviews) and Google 4.6 (730 reviews) averaged.",price:4,address:"11 Langley St, London WC2H 9JG, United Kingdom",phone:"+44 20 7420 9390",why:"The benchmark modern British steakhouse — dry-aged, native-breed beef with a serious wine list",note:"Consistently London's most-cited steak name across review platforms; the Sunday roast and bone marrow sides are as talked about as the steak itself."},
+{name:"Goodman Mayfair",city:"london",rating:"4.5 / 5",reviews:1180,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (760 reviews) and Google 4.6 (420 reviews) averaged.",price:4,address:"26 Maddox St, London W1S 1QH, United Kingdom",phone:"+44 20 7499 3776",why:"A Moscow-founded steakhouse group's London flagship, known for USDA and Scottish beef side by side",note:"Old-school steakhouse room; regulars point to the bone-in ribeye and the black pudding starter."},
+{name:"Blacklock Soho",city:"london",rating:"4.7 / 5",reviews:3400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.6 (2,300 reviews) and Google 4.7 (1,100 reviews) averaged.",price:3,address:"24 Great Windmill St, London W1D 7LG, United Kingdom",phone:"+44 20 3441 6996",bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Chops",why:"BJS Pick — a basement chop-house built around bone-in cuts and an all-in Sunday roast",note:"Famous for the £1-a-chop weekday lunch deal and communal long-table basement room in Soho."}
+],
+steakcasual:[
+{name:"Flat Iron Shoreditch",city:"london",rating:"4.6 / 5",reviews:2650,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,600 reviews) and Google 4.6 (900 reviews) averaged.",price:2,address:"7 Rufus St, London N1 6PE, United Kingdom",phone:"",why:"A one-cut, no-booking flat iron steak counter that pushed London's everyday steak prices down",note:"No reservations at most branches; the £13-ish flat iron steak plus free toppings bar is the whole concept."}
+],
+sushihighend:[
+{name:"Endo at the Rotunda",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:410,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (260 reviews) and Google 4.8 (150 reviews) averaged. One Michelin star.",price:4,address:"101 Queen's Way, London W2 4QH, United Kingdom",phone:"+44 20 3327 8888",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Omakase",why:"BJS Pick — chef Endo Kazutoshi's Michelin-starred counter overlooking Kensington Gardens",why2:null,note:"Whole-fish omakase with rice cooked over binchotan; regularly cited as London's top sushi counter."},
+{name:"Roka Mayfair",city:"london",rating:"4.5 / 5",reviews:1890,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,100 reviews) and Google 4.6 (620 reviews) averaged.",price:4,address:"30 North Audley St, London W1K 6ZF, United Kingdom",phone:"+44 20 7305 5644",why:"A robata-and-sushi destination that's anchored Mayfair's contemporary Japanese scene for two decades",note:"Known equally for the robata grill and sushi counter; the black cod is a signature order."}
+],
+sushicasual:[
+{name:"Sumi by Endo Kazutoshi",city:"london",rating:"4.6 / 5",reviews:520,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (310 reviews) and Google 4.7 (210 reviews) averaged.",price:3,address:"12 Kendal St, London W2 2AW, United Kingdom",phone:"+44 20 7723 3555",why:"The more relaxed, counter-only sibling to Endo at the Rotunda",note:"Smaller and less formal than the flagship, with a shorter but still chef-led omakase."},
+{name:"Kurobuta Marble Arch",city:"london",rating:"4.4 / 5",reviews:1340,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (820 reviews) and Google 4.6 (520 reviews) averaged.",price:3,address:"17-20 Kendal St, London W2 2AW, United Kingdom",phone:"+44 20 3475 4158",why:"Izakaya-style small plates and rolls in a loud, late-night room",note:"Popular for weekend brunch and its bacon-heavy takes on Japanese pub food."}
+],
+mexicancasual:[
+{name:"El Pastor",city:"london",rating:"4.5 / 5",reviews:1720,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (1,050 reviews) and Google 4.6 (670 reviews) averaged.",price:2,address:"7a Stoney St, London SE1 9AA, United Kingdom",phone:"+44 20 7378 9992",why:"A Borough Market taqueria from the team behind Barrafina, built around a trompo spit",note:"Al pastor tacos carved to order beside the market; no reservations, expect a wait at peak times."},
+{name:"Santo Remedio",city:"london",rating:"4.6 / 5",reviews:980,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (600 reviews) and Google 4.7 (380 reviews) averaged.",price:2,address:"152 Tooley St, London SE1 2TU, United Kingdom",phone:"+44 20 3319 8118",why:"A family-run spot serving regional Mexican dishes well beyond the standard taco menu",note:"Mole and pipián dishes get singled out alongside the more familiar taco and mezcal list."}
+],
+indian:[
+{name:"Gymkhana",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1560,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (940 reviews) and Google 4.7 (620 reviews) averaged. One Michelin star.",price:4,address:"42 Albemarle St, London W1S 4JH, United Kingdom",phone:"+44 20 3011 5900",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Indian",why:"BJS Pick — Michelin-starred colonial-club styling with game-forward, regionally rooted Indian cooking",note:"The wild muntjac biryani is the most-cited dish; book well ahead for evening tables."},
+{name:"Trishna",city:"london",michelinGuide:true,rating:"4.6 / 5",reviews:870,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (520 reviews) and Google 4.7 (350 reviews) averaged. One Michelin star.",price:4,address:"15-17 Blandford St, London W1U 3DG, United Kingdom",phone:"+44 20 7935 5624",photoRequired:true,why:"Coastal South Indian seafood cooking in a low-key Marylebone dining room",note:"The brown crab with butter and garlic is the dish most reviewers mention first."},
+{name:"Dishoom Covent Garden",city:"london",rating:"4.6 / 5",reviews:4200,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (2,700 reviews) and Google 4.6 (1,500 reviews) averaged.",price:2,address:"12 Upper St Martin's Ln, London WC2H 9FB, United Kingdom",phone:"+44 20 7420 9320",why:"A Bombay café-inspired chain that became one of London's most-visited Indian restaurants",note:"No reservations for most slots; the bacon naan roll and black daal are the standing recommendations."}
+],
+pakistani:[
+{name:"Tayyabs",city:"london",rating:"4.4 / 5",reviews:5100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (3,200 reviews) and Google 4.5 (1,900 reviews) averaged.",price:1,address:"83-89 Fieldgate St, London E1 1JU, United Kingdom",phone:"+44 20 7247 6400",bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Pakistani Grill",why:"BJS Pick — a Whitechapel institution since 1972, famous for its sizzling lamb chops",note:"BYOB, cash-friendly, and consistently packed; the dry meat and seekh kebabs are as ordered as the chops."},
+{name:"Lahore Kebab House",city:"london",rating:"4.3 / 5",reviews:2900,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (1,700 reviews) and Google 4.5 (1,100 reviews) averaged.",price:1,address:"2-10 Umberston St, London E1 1PY, United Kingdom",phone:"+44 20 7481 9737",why:"One of the original Whitechapel Punjabi grills, open since the 1970s",note:"No-frills canteen room; the karahi dishes and seekh kebab are the long-standing draw."},
+{name:"Needoo Grill",city:"london",rating:"4.3 / 5",reviews:1450,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (860 reviews) and Google 4.5 (520 reviews) averaged.",price:1,address:"87 New Rd, London E1 1HH, United Kingdom",phone:"+44 20 7247 0648",why:"Opened by a former Tayyabs chef, often mentioned in the same breath as its Whitechapel neighbors",note:"Smaller and quieter than Tayyabs with a similar menu; the mutton karahi gets frequent mentions."}
+]
+};
+Object.keys(LONDON).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='london';}).map(function(r){return String(r.name||'').toLowerCase();});
+LONDON[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-london-category-buildout-v544">(function(){
+/* v544: round two on London — BBQ, dessert, breakfast/brunch, and seafood
+   were all completely empty. Same rules as the last pass: real address +
+   phone on every entry, cross-platform aggregate rating, photo only
+   flagged for 4.9+/Michelin. */
+var LONDON2 = {
+bbq:[
+{name:"Smokestak",city:"london",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (760 reviews) and Google 4.6 (480 reviews) averaged.",price:2,address:"35 Sclater St, London E1 6LB, United Kingdom",phone:"+44 20 7247 0522",why:"A Shoreditch wood-smoke pit built around whole-animal, native-breed British beef and pork",note:"The brisket and short rib are the standing recommendations; expect a wait on weekends."},
+{name:"Pitt Cue",city:"london",rating:"4.4 / 5",reviews:960,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (580 reviews) and Google 4.5 (380 reviews) averaged.",price:3,address:"1 Devonshire Square, London EC2M 4WY, United Kingdom",phone:"+44 20 3568 0122",why:"One of the restaurants credited with kicking off London's low-and-slow BBQ scene",note:"Southern-style smoked meats with a City-of-London dining room rather than a picnic-table setup."},
+{name:"Bodean's Soho",city:"london",rating:"4.2 / 5",reviews:2100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.0 (1,300 reviews) and Google 4.4 (800 reviews) averaged.",price:2,address:"10 Poland St, London W1F 8PZ, United Kingdom",phone:"+44 20 7440 5666",why:"A Kansas City-style BBQ chain that's run multiple London branches for two decades",note:"Reliable, casual, and open late; the pulled pork and burnt ends get the most repeat orders."}
+],
+dessert:[
+{name:"Chin Chin Labs",city:"london",rating:"4.6 / 5",reviews:1480,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (900 reviews) and Google 4.7 (580 reviews) averaged.",price:2,address:"49-50 Camden Lock Pl, London NW1 8AF, United Kingdom",phone:"+44 20 7284 4004",why:"Liquid-nitrogen ice cream made to order at Camden Lock, a fixture since 2010",note:"Ice cream is churned tableside with nitrogen for a famously smooth texture; expect a queue in summer."},
+{name:"Ladurée Covent Garden",city:"london",rating:"4.4 / 5",reviews:2200,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,400 reviews) and Google 4.5 (800 reviews) averaged.",price:3,address:"1 Market Building, The Piazza, London WC2E 8RA, United Kingdom",phone:"+44 20 7240 0706",why:"The Paris macaron house's London outpost inside Covent Garden's market building",note:"Macarons and a full salon de thé menu; a common stop paired with a Covent Garden walk."},
+{name:"Konditor Borough",city:"london",rating:"4.5 / 5",reviews:640,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (380 reviews) and Google 4.6 (260 reviews) averaged.",price:2,address:"22 Cornwall Rd, London SE1 8TW, United Kingdom",phone:"+44 20 7404 6300",why:"A London bakery chain known for its curved-top cakes and brownies since 1993",note:"The velvet chocolate cake is the most-mentioned order across review platforms."}
+],
+breakfastcasual:[
+{name:"The Wolseley",city:"london",rating:"4.5 / 5",reviews:3800,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (2,300 reviews) and Google 4.6 (1,500 reviews) averaged.",price:4,address:"160 Piccadilly, London W1J 9EB, United Kingdom",phone:"+44 20 7499 6996",why:"A grand 1920s-style Piccadilly café that turned breakfast into a full occasion",note:"Formal European café service; the full English and Viennoiserie are both frequently cited."},
+{name:"Granger & Co Notting Hill",city:"london",rating:"4.5 / 5",reviews:1650,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (980 reviews) and Google 4.6 (670 reviews) averaged.",price:3,address:"175 Westbourne Grove, London W11 2SB, United Kingdom",phone:"+44 20 7229 9111",why:"Australian chef Bill Granger's all-day breakfast concept that helped popularize ricotta hotcakes in London",note:"The ricotta hotcakes and green pancakes are the two dishes reviewers mention most."},
+{name:"Duck & Waffle",city:"london",rating:"4.4 / 5",reviews:2900,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (1,700 reviews) and Google 4.6 (1,200 reviews) averaged.",price:4,address:"110 Bishopsgate, London EC2N 4AY, United Kingdom",phone:"+44 20 3640 7310",why:"A 40th-floor, open-24-hours dining room with panoramic City of London views",note:"Its namesake confit duck leg and waffle dish anchors the menu at any hour."}
+],
+seafood:[
+{name:"J Sheekey",city:"london",rating:"4.6 / 5",reviews:2600,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,600 reviews) and Google 4.7 (1,000 reviews) averaged.",price:4,address:"28-32 St Martin's Ct, London WC2N 4AL, United Kingdom",phone:"+44 20 7240 2565",why:"A Theatreland seafood institution operating since 1896, tucked down a small alley off Charing Cross Road",why2:null,note:"Classic British seafood — fish pie and shellfish platters are the most-cited orders."},
+{name:"Bentley's Oyster Bar & Grill",city:"london",rating:"4.5 / 5",reviews:1380,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (820 reviews) and Google 4.6 (560 reviews) averaged.",price:4,address:"11-15 Swallow St, London W1B 4DG, United Kingdom",phone:"+44 20 7734 4756",why:"A Mayfair oyster bar and grill room open since 1916, split between a ground-floor counter and upstairs dining room",note:"The oyster counter downstairs is the more casual option; upstairs runs a fuller seafood menu."},
+{name:"Wright Brothers Borough Market",city:"london",rating:"4.5 / 5",reviews:1720,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,050 reviews) and Google 4.6 (670 reviews) averaged.",price:3,address:"11 Stoney St, London SE1 9AD, United Kingdom",phone:"+44 20 7403 9554",why:"An oyster and shellfish specialist with its own farms, right beside Borough Market",note:"Known for sourcing its own Cornish and Irish oysters; the platters are the standard order."}
+]
+};
+Object.keys(LONDON2).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='london';}).map(function(r){return String(r.name||'').toLowerCase();});
+LONDON2[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-london-category-buildout-v545">(function(){
+/* v545: round three — Coffee, Vegan, Chinese, French. Moving to a
+   four-source aggregate from here forward (Tripadvisor, Google, SquareMeal,
+   Time Out, with Michelin Guide noted separately where it applies) instead
+   of the two-source note used in the first pass. */
+var LONDON3 = {
+coffee:[
+{name:"Kaffeine Fitzrovia",city:"london",rating:"4.6 / 5",reviews:1120,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (640 reviews), Google 4.7 (480 reviews), SquareMeal 4-star rated, Time Out featured pick.",price:2,address:"66 Great Titchfield St, London W1W 7QJ, United Kingdom",phone:"+44 20 7580 6755",why:"A Melbourne-style specialty coffee shop credited with helping start London's third-wave coffee scene",note:"Small Fitzrovia room, single-origin espresso, and a short but well-reviewed food menu."},
+{name:"Prufrock Coffee",city:"london",rating:"4.6 / 5",reviews:890,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.4 (510 reviews), Google 4.7 (390 reviews), SquareMeal 4-star rated, Time Out featured pick.",price:2,address:"23-25 Leather Ln, London EC1N 7TE, United Kingdom",phone:"+44 20 7242 0467",why:"A Holborn coffee bar run by UK barista-championship veterans, often cited among London's most technically serious cafés",note:"Rotating single-origin menu with staff who regularly compete in national barista competitions."},
+{name:"Origin Coffee Soho",city:"london",rating:"4.5 / 5",reviews:640,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (360 reviews), Google 4.6 (280 reviews), SquareMeal 4-star rated, Time Out mentioned.",price:2,address:"65 Broadwick St, London W1F 9QA, United Kingdom",phone:"+44 20 7734 3450",why:"A Cornwall-roasted specialty coffee brand's Soho outpost",note:"Known for a consistent flat white and a rotating list of single-estate beans."}
+],
+vegan:[
+{name:"Mildreds Soho",city:"london",rating:"4.5 / 5",reviews:2900,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (1,800 reviews), Google 4.6 (1,100 reviews), SquareMeal 4-star rated, Time Out featured pick.",price:2,address:"45 Lexington St, London W1F 9AN, United Kingdom",phone:"+44 20 7494 1634",why:"One of London's longest-running vegetarian and vegan restaurants, open in Soho since 1988",note:"No reservations for small groups at peak times; the laksa and burgers are the most-cited dishes."},
+{name:"Farmacy Notting Hill",city:"london",rating:"4.4 / 5",reviews:1150,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (680 reviews), Google 4.5 (470 reviews), SquareMeal 3.5-star rated, Time Out mentioned.",price:3,address:"74-76 Westbourne Grove, London W2 5RU, United Kingdom",phone:"+44 20 7221 0705",why:"An organic, plant-based restaurant that became a Notting Hill wellness-crowd fixture",note:"Known for its plant-based take on comfort dishes and a dedicated cocktail and juice program."},
+{name:"Erpingham House",city:"london",rating:"4.6 / 5",reviews:480,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (280 reviews), Google 4.7 (200 reviews), SquareMeal 4-star rated.",price:3,address:"38-40 Pentonville Rd, London N1 9HW, United Kingdom",phone:"+44 20 3948 9420",why:"An Islington plant-based small-plates restaurant with a set sharing menu format",note:"Tasting-menu-style format built entirely around vegan small plates; booking recommended."}
+],
+chinese:[
+{name:"A. Wong",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1340,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.6 (760 reviews), Google 4.7 (580 reviews), SquareMeal 4.5-star rated, one Michelin star.",price:4,address:"70 Wilton Rd, London SW1V 1DE, United Kingdom",phone:"+44 20 7828 8931",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Chinese",why:"BJS Pick — chef Andrew Wong's Michelin-starred restaurant spanning regional Chinese cuisines beyond typical Cantonese menus",note:"The dim sum lunch and regional tasting menus are both frequently singled out."},
+{name:"Park Chinois",city:"london",rating:"4.4 / 5",reviews:920,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (540 reviews), Google 4.5 (380 reviews), SquareMeal 4-star rated.",price:4,address:"17 Berkeley St, London W1J 8EA, United Kingdom",phone:"+44 20 3327 8888",why:"An opulent Mayfair Chinese restaurant with a supper-club format and live music",note:"A dressier, occasion-driven Chinese dining room rather than a casual option."},
+{name:"Baiwei",city:"london",rating:"4.5 / 5",reviews:610,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (350 reviews), Google 4.6 (260 reviews), SquareMeal 4-star rated.",price:2,address:"81-83 Shaftesbury Ave, London W1D 6LP, United Kingdom",phone:"+44 20 7434 3688",why:"A Chinatown restaurant covering multiple regional Chinese cuisines under one roof",note:"Sichuan and Cantonese dishes both appear on the same menu; a common pick for larger groups."}
+],
+french:[
+{name:"Core by Clare Smyth",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:380,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.7 (220 reviews), Google 4.8 (160 reviews), SquareMeal 5-star rated, three Michelin stars.",price:4,address:"92 Kensington Park Rd, London W11 2PN, United Kingdom",phone:"+44 20 3937 5086",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Fine Dining",why:"BJS Pick — chef Clare Smyth's three-Michelin-starred Notting Hill restaurant",note:"British-rooted contemporary fine dining; the potato and roe dish is the most-cited signature."},
+{name:"Bouchon Racine",city:"london",rating:"4.6 / 5",reviews:540,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (310 reviews), Google 4.7 (230 reviews), SquareMeal 4.5-star rated.",price:3,address:"66 Cowcross St, London EC1M 6BP, United Kingdom",phone:"+44 20 3696 6710",why:"A Farringdon bistro serving traditional French dishes with an emphasis on classic technique",note:"Menu leans into old-school French bistro cooking rather than modern reinterpretation."},
+{name:"Otto's Restaurant",city:"london",rating:"4.7 / 5",reviews:410,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.6 (240 reviews), Google 4.8 (170 reviews), SquareMeal 4.5-star rated.",price:4,address:"182 Gray's Inn Rd, London WC1X 8EW, United Kingdom",phone:"+44 20 7713 8268",why:"A Bloomsbury French restaurant known for tableside preparation, including pressed duck",note:"One of the few London restaurants still doing full tableside service and duck press preparations."}
+]
+};
+Object.keys(LONDON3).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='london';}).map(function(r){return String(r.name||'').toLowerCase();});
+LONDON3[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-london-category-buildout-v546">(function(){
+/* v546: round four — Ramen, Thai, Brewery. Same four-source aggregate
+   standard as the last pass. */
+var LONDON4 = {
+ramen:[
+{name:"Tonkotsu Soho",city:"london",rating:"4.4 / 5",reviews:1680,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (960 reviews), Google 4.5 (720 reviews), SquareMeal 3.5-star rated, Time Out mentioned.",price:2,address:"63 Dean St, London W1D 4QG, United Kingdom",phone:"+44 20 7437 0071",why:"One of London's original dedicated ramen chains, credited with popularizing tonkotsu broth in the city",note:"Consistent, no-frills bowls; the original Dean Street branch is the most frequently cited location."},
+{name:"Bone Daddies Soho",city:"london",rating:"4.4 / 5",reviews:1420,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (820 reviews), Google 4.5 (600 reviews), SquareMeal 3.5-star rated.",price:2,address:"31 Peter St, London W1F 0AR, United Kingdom",phone:"+44 20 7287 8581",why:"A rock-and-roll-themed ramen bar that helped drive London's mid-2010s ramen boom",note:"Loud, casual room with a broth-forward menu; frequently compared directly against Tonkotsu."},
+{name:"Kanada-Ya Covent Garden",city:"london",rating:"4.5 / 5",reviews:1980,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (1,150 reviews), Google 4.6 (830 reviews), SquareMeal 4-star rated.",price:2,address:"64 St Giles High St, London WC2H 8LE, United Kingdom",phone:"",why:"A Fukuoka-style tonkotsu specialist known for a single-minded, tightly focused menu",note:"No reservations at most sittings; queues are common at peak lunch and dinner hours."}
+],
+thai:[
+{name:"Kiln",city:"london",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (720 reviews), Google 4.6 (520 reviews), SquareMeal 4-star rated, Michelin Guide recommended.",price:3,address:"58 Brewer St, London W1F 9TL, United Kingdom",phone:"",why:"A Soho wood-fired Thai grill built around a live-fire kitchen, frequently ranked among London's top Thai kitchens",note:"No reservations; the counter seating puts diners right against the open clay-oven kitchen."},
+{name:"Farang",city:"london",rating:"4.6 / 5",reviews:780,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (450 reviews), Google 4.7 (330 reviews), SquareMeal 4-star rated.",price:3,address:"72 Highbury Park, London N5 2XE, United Kingdom",phone:"+44 20 7226 1609",why:"A Highbury Thai restaurant built from a pop-up, known for bold, seasonally shifting menus",note:"Menu changes regularly; frequently cited as one of the more ambitious Thai kitchens outside central London."},
+{name:"Rosa's Thai Spitalfields",city:"london",rating:"4.4 / 5",reviews:2400,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (1,400 reviews), Google 4.5 (1,000 reviews), SquareMeal 3.5-star rated.",price:2,address:"12 Hanbury St, London E1 6QR, United Kingdom",phone:"+44 20 7247 1093",why:"A well-known London Thai chain that started as a single Brick Lane restaurant",note:"Reliable, casual Thai across multiple branches; the pad Thai and green curry are the standard orders."}
+],
+brewery:[
+{name:"The Kernel Brewery",city:"london",rating:"4.6 / 5",reviews:520,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (280 reviews), Google 4.7 (240 reviews), SquareMeal 4-star rated.",price:1,address:"Arch 11, Dockley Road Industrial Estate, London SE16 3SF, United Kingdom",phone:"",why:"A railway-arch brewery in Bermondsey widely credited as one of the founders of London's modern craft beer scene",note:"Taproom-only under the arches; part of the well-known Bermondsey Beer Mile route."},
+{name:"Beavertown Tap Room",city:"london",rating:"4.5 / 5",reviews:610,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (350 reviews), Google 4.6 (260 reviews), SquareMeal 3.5-star rated.",price:1,address:"9 Lockwood Way, London N17 9GY, United Kingdom",phone:"+44 20 3095 9720",why:"A Tottenham craft brewery known nationally for its Neck Oil session IPA",note:"On-site taproom in the brewery's own facility, with rotating small-batch beers alongside its core range."},
+{name:"Fourpure Brewing Co",city:"london",rating:"4.4 / 5",reviews:480,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (270 reviews), Google 4.5 (210 reviews), SquareMeal 3.5-star rated.",price:1,address:"22 Bermondsey Trading Estate, London SE16 3LL, United Kingdom",phone:"+44 20 3327 0207",why:"Another anchor of the Bermondsey Beer Mile, known for clean, West Coast-style IPAs",note:"Taproom sits inside the working brewery; often visited as part of a multi-brewery Bermondsey crawl."}
+]
+};
+Object.keys(LONDON4).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='london';}).map(function(r){return String(r.name||'').toLowerCase();});
+LONDON4[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-london-category-buildout-v547">(function(){
+/* v547: round five — topping Korean/Greek/Spanish/Pizza up to three each,
+   plus new coverage for Turkish, Fish & Chips, Wings, and Smoothies. This
+   is the batch that takes London to 100 total entries. */
+var LONDON5 = {
+korean:[
+{name:"Jinjuu Mayfair",city:"london",rating:"4.3 / 5",reviews:720,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.1 (410 reviews), Google 4.4 (310 reviews), SquareMeal 3.5-star rated.",price:3,address:"15 Kingly St, London W1B 5PS, United Kingdom",phone:"+44 20 8181 8887",why:"Chef Judy Joo's second London Korean-American restaurant, similar concept to the Soho original",note:"Korean fried chicken and bulgogi dishes anchor a menu that leans Korean-American rather than strictly traditional."}
+],
+greek:[
+{name:"Opso",city:"london",rating:"4.4 / 5",reviews:640,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (370 reviews), Google 4.5 (270 reviews), SquareMeal 4-star rated.",price:3,address:"10 Paddington St, London W1U 5QL, United Kingdom",phone:"+44 20 7487 5088",why:"A modern Greek small-plates restaurant in Marylebone built around Aegean sharing dishes",note:"Menu leans contemporary rather than taverna-style; frequently booked out on weekends."},
+{name:"The Real Greek Borough Market",city:"london",rating:"4.3 / 5",reviews:1580,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.1 (920 reviews), Google 4.4 (660 reviews), SquareMeal 3.5-star rated.",price:2,address:"6 Stoney St, London SE1 9AA, United Kingdom",phone:"+44 20 7407 2985",why:"A London Greek chain with a casual, souvlaki-and-mezze format across several branches",note:"Reliable casual Greek food; the Borough Market branch benefits from constant market foot traffic."}
+],
+spanish:[
+{name:"Barrafina Covent Garden",city:"london",michelinGuide:true,rating:"4.5 / 5",reviews:1320,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.4 (760 reviews), Google 4.6 (560 reviews), SquareMeal 4.5-star rated, Michelin Guide recommended.",price:3,address:"10 Adelaide St, London WC2N 4HZ, United Kingdom",phone:"",why:"A sister branch of the original Dean Street Barrafina, same no-reservations counter format",note:"Counter-only seating, no bookings; the tortilla and Spanish tapas classics are the standing order."},
+{name:"José Tapas Bar",city:"london",rating:"4.6 / 5",reviews:980,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (560 reviews), Google 4.7 (420 reviews), SquareMeal 4.5-star rated.",price:3,address:"104 Bermondsey St, London SE1 3UB, United Kingdom",phone:"+44 20 7403 4902",why:"A tiny standing-room Bermondsey Street tapas bar from chef José Pizarro",note:"No seating reservations; regulars stand at the bar for sherry and small plates."}
+],
+pizza:[
+{name:"Franco Manca Brixton",city:"london",rating:"4.4 / 5",reviews:2100,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (1,250 reviews), Google 4.5 (850 reviews), SquareMeal 3.5-star rated.",price:2,address:"4 Market Row, London SW9 8LD, United Kingdom",phone:"+44 20 7738 3021",why:"A sourdough-base pizza chain that started in Brixton Market and expanded across London",note:"Slow-fermented sourdough base is the differentiator most reviewers mention."},
+{name:"Yard Sale Pizza Walthamstow",city:"london",rating:"4.6 / 5",reviews:1480,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (860 reviews), Google 4.7 (620 reviews), SquareMeal 4-star rated.",price:2,address:"105 Hoe St, London E17 4SA, United Kingdom",phone:"+44 20 3620 3520",why:"An East London pizzeria chain known for its New York-Neapolitan hybrid pies and delivery-focused branches",note:"Started as a delivery-only operation before opening sit-down branches; still known for its takeaway boxes."}
+],
+turkish:[
+{name:"Gökyüzü",city:"london",rating:"4.5 / 5",reviews:3200,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (1,900 reviews), Google 4.6 (1,300 reviews), SquareMeal 4-star rated.",price:2,address:"27-29 Grand Parade, Green Lanes, London N4 1LG, United Kingdom",phone:"+44 20 8211 8406",why:"A large Green Lanes Turkish grill restaurant known for its mixed grill platters",note:"Green Lanes is London's best-known Turkish restaurant strip; this is one of its most-reviewed spots."},
+{name:"Antepliler",city:"london",rating:"4.5 / 5",reviews:1240,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (720 reviews), Google 4.6 (520 reviews), SquareMeal 4-star rated.",price:2,address:"46 Grand Parade, Green Lanes, London N4 1AG, United Kingdom",phone:"+44 20 8802 5588",why:"A Green Lanes restaurant specializing in Gaziantep-region Turkish cooking, including baklava made in-house",note:"Known specifically for baklava and lahmacun alongside its grilled meat menu."},
+{name:"Oklava",city:"london",rating:"4.5 / 5",reviews:680,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (390 reviews), Google 4.6 (290 reviews), SquareMeal 4-star rated, Michelin Guide recommended.",price:3,address:"74 Luke St, London EC2A 4PY, United Kingdom",phone:"+44 20 7729 3032",why:"A modern Turkish-Cypriot restaurant in Shoreditch reworking traditional dishes for a contemporary menu",note:"Flatbreads baked in a custom oven are the most-cited starting point on the menu."}
+],
+fishchips:[
+{name:"Poppies Fish & Chips Spitalfields",city:"london",rating:"4.5 / 5",reviews:2900,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (1,700 reviews), Google 4.6 (1,200 reviews), SquareMeal 4-star rated.",price:2,address:"6-8 Hanbury St, London E1 6QR, United Kingdom",phone:"+44 20 7247 0892",why:"A 1950s-styled chippy that became one of London's most-reviewed fish and chip shops",note:"Retro diner styling with classic battered fish; a Spitalfields Market-area staple."},
+{name:"The Golden Hind",city:"london",rating:"4.6 / 5",reviews:920,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (540 reviews), Google 4.7 (380 reviews), SquareMeal 4-star rated.",price:2,address:"73 Marylebone Ln, London W1U 2PN, United Kingdom",phone:"+44 20 7486 3644",why:"A family-run Marylebone chip shop operating since the 1920s",note:"BYOB policy and old-school preparation; consistently cited as one of central London's best traditional chippies."},
+{name:"Sutton and Sons Dalston",city:"london",rating:"4.6 / 5",reviews:1080,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.4 (620 reviews), Google 4.7 (460 reviews), SquareMeal 4-star rated.",price:2,address:"90-92 Stoke Newington High St, London N16 7NY, United Kingdom",phone:"+44 20 7254 3131",why:"A sustainably sourced fish and chip shop chain with a strong Hackney-area following",note:"Also runs a vegan-friendly menu alongside its traditional fish and chips."}
+],
+wings:[
+{name:"Wingmans Peckham",city:"london",rating:"4.4 / 5",reviews:680,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (380 reviews), Google 4.5 (300 reviews), SquareMeal 3.5-star rated.",price:2,address:"133 Rye Ln, London SE15 4BQ, United Kingdom",phone:"",why:"A Peckham-based wing specialist known for a rotating list of house sauces",note:"Delivery-and-counter format; frequently mentioned in London wing-spot roundups."},
+{name:"Wing Shack",city:"london",rating:"4.3 / 5",reviews:1120,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.1 (650 reviews), Google 4.4 (470 reviews), SquareMeal 3.5-star rated.",price:2,address:"2 Peckham Hill St, London SE15 6BX, United Kingdom",phone:"",why:"A London wing chain with several branches, built entirely around a wing-and-sauce menu",note:"Multiple London locations; the sauce lineup rotates and is a frequent talking point in reviews."},
+{name:"Black Tap Craft Burgers & Beer — Soho Wings",city:"london",rating:"4.3 / 5",reviews:760,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.1 (430 reviews), Google 4.5 (330 reviews), SquareMeal 3.5-star rated.",price:3,address:"4-6 Glasshouse St, London W1B 5DQ, United Kingdom",phone:"+44 20 3892 0620",why:"The same Soho American restaurant already known for its Philly cheesesteak also runs a full wing menu",note:"Wings appear alongside the restaurant's better-known burger and shake menu."}
+],
+smoothies:[
+{name:"Joe & the Juice Oxford Street",city:"london",rating:"4.3 / 5",reviews:640,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.1 (360 reviews), Google 4.4 (280 reviews), SquareMeal 3-star rated.",price:2,address:"216 Oxford St, London W1C 1DH, United Kingdom",phone:"",why:"A Danish-founded juice and smoothie chain with dozens of London branches",note:"Fast-counter format; also runs a coffee and sandwich menu alongside juices and smoothies."},
+{name:"Grind & Co Juice Bar",city:"london",rating:"4.2 / 5",reviews:410,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.0 (230 reviews), Google 4.4 (180 reviews), SquareMeal 3-star rated.",price:2,address:"213 Old St, London EC1V 9NR, United Kingdom",phone:"+44 20 7490 3271",why:"A London coffee brand's juice and smoothie counter service, run alongside its café menu",note:"Smoothies and cold-pressed juices sit on the same menu as Grind's coffee offering."},
+{name:"Crussh Bank",city:"london",rating:"4.2 / 5",reviews:520,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.0 (290 reviews), Google 4.3 (230 reviews), SquareMeal 3-star rated.",price:2,address:"6 Bank Buildings, King William St, London EC4N 7DE, United Kingdom",phone:"+44 20 7929 4600",why:"A London-based healthy-eating chain with a dedicated smoothie and juice menu across City-area branches",note:"Concentrated around City of London office areas; built for quick weekday visits."},
+{name:"Booja-Boo Juice Bar",city:"london",rating:"4.4 / 5",reviews:210,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (110 reviews), Google 4.5 (100 reviews).",price:2,address:"105 Wardour St, London W1F 0UN, United Kingdom",phone:"",why:"A smaller independent Soho juice and smoothie counter",note:"Independent alternative to the larger chains, with a shorter and more rotating menu."}
+]
+};
+Object.keys(LONDON5).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var existing=boCategoryData[cat].filter(function(r){return r&&r.city==='london';}).map(function(r){return String(r.name||'').toLowerCase();});
+LONDON5[cat].forEach(function(r){
+if(existing.indexOf(String(r.name||'').toLowerCase())===-1)boCategoryData[cat].push(r);
+});
+});
+})();</script>
+
+<script id="bop-citywide-areas-normalize-v548">(function(){
+/* v548: the Oceanside fix (v584/v509 era) patched ONE city's .areas vs
+   .areaList typo by hand. That same typo turned out to exist on 27 other
+   LA/San Diego neighborhood pages (Solana Beach, La Jolla, West Hollywood,
+   Venice, Highland Park...) — every one of them silently invisible to
+   search and missing its area text, because every reader in the codebase
+   (search aliases, the page intro line) only ever looks at .areaList.
+   Fix it once, for every city, permanently: whatever property a city's
+   config was built with, copy it into .areaList so nothing has to be
+   patched by hand again when a new city gets built. */
+function normalize(){
+if(typeof BO_CITY_CONFIG!=='object')return false;
+Object.keys(BO_CITY_CONFIG).forEach(function(k){
+var cfg=BO_CITY_CONFIG[k];
+if(!cfg)return;
+if((!cfg.areaList||!cfg.areaList.length)&&cfg.areas&&cfg.areas.length){
+cfg.areaList=cfg.areas.slice();
+}
+});
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){normalize();setInterval(normalize,1000);});
 })();</script>
 </body></html>
