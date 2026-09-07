@@ -26773,7 +26773,7 @@ b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+
 '<path class="bop-music-note" d="M9 18.5V6.2l9-2v10.8" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
 '<circle class="bop-music-note" cx="6.8" cy="18.5" r="2.4" fill="#F59E0B"/>'+
 '<circle class="bop-music-note" cx="15.8" cy="15" r="2.4" fill="#F59E0B"/>'+
-'<line class="bop-music-slash" x1="4" y1="4" x2="20" y2="20" stroke="#E4002B" stroke-width="2.2" stroke-linecap="round"/>'+
+'<line class="bop-music-slash" x1="4" y1="4" x2="20" y2="20" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round"/>'+
 '</svg>';
 b.addEventListener('click',function(e){
 e.preventDefault();e.stopPropagation();
@@ -44402,15 +44402,19 @@ else if((m=t.match(/(\d+|ten|fifteen|twenty|thirty|forty five|forty-five|forty|f
 if(/hour and a half|an hour and a half/.test(t))out.minutes=90;
 if((m=t.match(/(\d+(?:\.\d+)?|five|ten|fifteen|twenty|thirty|forty|fifty)\s*miles?/))){out.miles=wordNum(m[1]);}
 if(out.miles==null&&out.minutes!=null)out.miles=Math.max(5,Math.round(out.minutes*0.8));
-if(/near ?me|nearby|around here|close by|walking distance|pr[eè]s de moi|\u9644\u8fd1|cerca de m[ií]|\u8fd1\u304f|in der n[aä]he|vicino a me|\uadfc\ucc98|perto de mim|\u05dc\u05d9\u05d3\u05d9|\u05e7\u05e8\u05d5\u05d1|n[aä]ra mig/.test(t)&&out.miles==null)out.miles=8;
+if(/near ?me|nearby|around here|close by|closest|nearest|walking distance|pr[eè]s de moi|\u9644\u8fd1|cerca de m[ií]|\u8fd1\u304f|in der n[aä]he|vicino a me|\uadfc\ucc98|perto de mim|\u05dc\u05d9\u05d3\u05d9|\u05e7\u05e8\u05d5\u05d1|n[aä]ra mig/.test(t)&&out.miles==null)out.miles=8;
 /* No recognized cuisine — pull out the actual food word so we can still
    search for it directly (name/description) instead of giving up. Strips
    the usual wrapper phrases ("I have a craving for", "give me", "I want",
    distance/tier words already parsed above, filler words) and keeps
-   whatever's left as a free-text search term. */
-if(!out.cats.length){
+   whatever's left as a free-text search term. A tier alone ("closest dive",
+   "fine dining near me") is already a complete request — matchTier() does
+   that filtering separately, so free-text search would just get in the way
+   and search for literal garbage like "closest dive restaurant". */
+var wantsSuggestion=/\b(suggest|suggestion|suggestions|recommend|recommendation|recommendations|surprise me|you choose|your choice|pick (something|one|for me)|what should i (eat|get|have|order|try)|what do you (recommend|suggest|think))\b/.test(t);
+if(!out.cats.length&&!wantsSuggestion&&!out.tier){
 var ft=t;
-ft=ft.replace(/\b(i(?:'m| am)?|we|you|craving|crave|have|has|had|a|an|the|some|really|kinda|kind of|sort of|want|wants|wanted|would like|like|looking for|look for|find me|get me|give me|show me|near ?me|nearby|around here|close by|within|an? hour|minutes?|miles?|please|for|to eat|to have|hungry for|in the mood for|mood for)\b/g,' ');
+ft=ft.replace(/\b(i(?:'m| am)?|we|you|craving|crave|have|has|had|a|an|the|some|really|actually|just|can|could|would|will|tell me|tell|kinda|kind of|sort of|want|wants|wanted|would like|like|looking for|look for|find me|get me|give me|show me|near ?me|nearby|around here|close by|closest|nearest|walking distance|within|an? hour|minutes?|miles?|please|for|to eat|to have|hungry for|in the mood for|mood for)\b/g,' ');
 ft=ft.replace(/\s+/g,' ').trim();
 if(ft.length>=3&&ft.length<=40&&!/^(something|anything|food|place|places|restaurant|restaurants|eat|eating|dinner|lunch|breakfast|meal|thing|stuff|options|somewhere|good)$/i.test(ft))out.freeText=ft;
 }
