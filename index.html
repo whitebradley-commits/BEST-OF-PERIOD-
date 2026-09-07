@@ -44384,10 +44384,11 @@ typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);ret
 try{
 rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
 hadError=false;startedAt=Date.now();
-rec.onstart=function(){if(!fingerDown){try{rec.abort();}catch(e){}setListening(false);return;}autoRetried=false;setListening(true);showBubble('ASK US ANYTHING!','',true);};
+rec.onstart=function(){if(cancelPending){cancelPending=false;try{rec.abort();}catch(e){}setListening(false);return;}setListening(true);showBubble('ASK US ANYTHING!','',true);};
 rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('ASK US ANYTHING!',(lastFinal+' '+interim).trim(),true);};
 rec.onerror=function(ev){
 hadError=true;setListening(false);
+if(ev&&ev.error==='aborted')return; /* our own cancel — nothing to report */
 /* iOS sometimes fumbles the very first grant of mic permission — the
    session that was starting while the OS prompt was up comes back with a
    one-off error even though access is now actually allowed. Retry once,
@@ -44396,7 +44397,7 @@ hadError=true;setListening(false);
 var errType=ev&&ev.error;
 if(!autoRetried&&errType!=='not-allowed'&&(Date.now()-startedAt)<4000){
 autoRetried=true;
-setTimeout(function(){if(fingerDown)startListening();},250);
+setTimeout(function(){startListening();},250);
 return;
 }
 var msg=errType==='not-allowed'?'Microphone permission is needed \u2014 allow it in Safari and try again.':errType==='no-speech'?'Didn\u2019t catch that \u2014 hold the mic and speak.':'Voice hiccup \u2014 try again.';
@@ -44418,7 +44419,7 @@ clearTimeout(safety);safety=setTimeout(function(){if(listening)forceReset();},15
 }
 function stopListening(){clearTimeout(safety);if(rec&&listening){try{rec.stop();}catch(e){}}
 /* If the engine doesn't confirm the stop within 2s, force it. */
-safety=setTimeout(function(){if(listening)forceReset();},2000);}
+safety=setTimeout(function(){if(listening)forceReset();},4500);}
 var synthPrimed=false;
 function primeSynth(){
 /* iOS only lets speech start from a real tap. Priming with a silent utterance
@@ -44427,13 +44428,15 @@ function primeSynth(){
 if(synthPrimed||!synth)return;
 try{if(synth.paused)synth.resume();var p=new SpeechSynthesisUtterance('');synth.speak(p);synthPrimed=true;loadVoices();}catch(e){}
 }
-var fingerDown=false;
-function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;fingerDown=true;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}primeSynth();
+var fingerDown=false,cancelPending=false;
+function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;fingerDown=true;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}
+cancelPending=false;autoRetried=false;
 if(listening){forceReset();return;} /* pressing while stuck = release it */
 startListening();}
-function onUp(e){e.preventDefault();fingerDown=false;if(!listening)return;
-/* Strict hold-to-talk: lifting the thumb always ends the recording. A very
-   quick brush (<250ms) is treated as an accident and simply cancelled. */
+function onUp(e){e.preventDefault();fingerDown=false;
+if(!listening){if(Date.now()-pressAt<250)cancelPending=true;return;}
+/* Lifting the thumb ends the recording. A very quick brush (<250ms) is an
+   accident and is simply cancelled. */
 if(Date.now()-pressAt<250){forceReset();hideBubble(0);return;}
 stopListening();}
 /* The big thumbprint inside the results page is the ONLY hold-to-talk
@@ -44452,6 +44455,7 @@ document.getElementById('bopVoiceSummary').innerHTML='';
 document.getElementById('bopVoiceNote').textContent='';
 document.getElementById('bopVoiceList').innerHTML='';
 typeForm.classList.remove('open');
+primeSynth();
 openPanel();
 }
 [mic,document.getElementById('bopExclusiveVoiceMic'),document.getElementById('bopStaticVoiceMic')].filter(Boolean).forEach(function(btn){
