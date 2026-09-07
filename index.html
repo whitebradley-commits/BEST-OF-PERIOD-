@@ -44511,6 +44511,15 @@ speak(text,null);
 
 /* ---- text-to-speech: voice on/off toggle + voice picker (British male first) ---- */
 var VOICE_ON_KEY='bopVoiceOn',VOICE_NAME_KEY='bopVoiceName';
+/* One-time migration: Karen is now the default. If an earlier test session
+   already saved a different voice choice, clear it once so Karen actually
+   takes effect instead of silently staying overridden. */
+(function(){try{
+if(localStorage.getItem('bopVoiceDefaultV2')!=='karen'){
+localStorage.removeItem(VOICE_NAME_KEY);
+localStorage.setItem('bopVoiceDefaultV2','karen');
+}
+}catch(e){}})();
 var synth=('speechSynthesis' in window)?window.speechSynthesis:null;
 var voiceList=[],currentUtter=null;
 function voiceOn(){try{var v=localStorage.getItem(VOICE_ON_KEY);return v===null?true:v==='yes';}catch(e){return true;}}
@@ -44519,14 +44528,15 @@ function loadVoices(){
 if(!synth)return [];
 var all=synth.getVoices()||[];
 var en=all.filter(function(v){return /^en/i.test(v.lang);});
-/* Rank: British male first (Daniel is the iOS en-GB male), then other British, then the rest of English. */
+/* Rank: Karen first (default), then British male Daniel, then other British, then the rest of English. */
 en.sort(function(a,b){return rank(a)-rank(b);});
 function rank(v){
+if(/karen/i.test(v.name))return 0;
 var gb=/en[-_]GB/i.test(v.lang);
-if(gb&&/daniel|arthur|oliver|george|james|rishi/i.test(v.name))return 0;
-if(gb)return 1;
-if(/en[-_]US/i.test(v.lang)&&/alex|aaron|fred|tom|daniel/i.test(v.name))return 2;
-return 3;
+if(gb&&/daniel|arthur|oliver|george|james|rishi/i.test(v.name))return 1;
+if(gb)return 2;
+if(/en[-_]US/i.test(v.lang)&&/alex|aaron|fred|tom|daniel/i.test(v.name))return 3;
+return 4;
 }
 voiceList=en.length?en:all;
 return voiceList;
@@ -44577,8 +44587,10 @@ var next=voiceList[(idx+1)%voiceList.length];
 try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
-setReply('Voice test: \u201cHello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
-speak('Hello, I\u2019m '+next.name.replace(/\s*\(.*?\)\s*/g,'')+'. Ask me anything.',function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
+var cleanName=next.name.replace(/\s*\(.*?\)\s*/g,'');
+var greeting='Hello, I\u2019m '+cleanName+'. I\u2019m a little nosy, and I want to make sure you get to the right restaurant this evening. Ask me anything.';
+setReply('Voice test: \u201c'+greeting+'\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
+speak(greeting,function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
 });
 if(synth){
 loadVoices();
