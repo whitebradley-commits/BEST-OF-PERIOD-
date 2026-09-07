@@ -44378,7 +44378,42 @@ return roots.some(function(root){return blob.indexOf(root)>=0;});
 function matchTier(r,q){if(!q.tier)return true;try{return boNearMatchesTier(r,q.tier);}catch(e){return true;}}
 function run(text,opts){
 opts=opts||{};
+/* Meta questions ("what can I ask you", "how does this work") aren't food
+   requests — answer them directly instead of running a search and dumping
+   every restaurant in the nearest city, which is what used to happen. */
+if(/what (can|should) i ask|what do you do|how does this work|what are you|help me|what can you do|how do (i|you) (use|work)/i.test(text)){
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+setReply('Ask me for a type of food, how fancy or cheap you want it, and how far you\u2019ll go. Try something like \u201csushi near me,\u201d \u201cfancy steakhouse within an hour,\u201d or \u201ccheap tacos.\u201d');
+speak('Ask me for a type of food, how fancy or cheap you want it, and how far you\u2019ll go. Try something like sushi near me, fancy steakhouse within an hour, or cheap tacos.',null);
+return;
+}
 var q=parse(text);
+/* Nothing recognized at all (no cuisine, no tier, no distance) — this used
+   to silently fall through to "show everything in the nearest city," a
+   30-restaurant flood with no real filter. Now it just says so, playfully,
+   and asks again instead of guessing. */
+if(!q.cats.length&&!q.tier&&q.miles==null){
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+var confusedLines=[
+'I\u2019m not quite prepared to have this conversation\u2026 let\u2019s talk about food, baby!',
+'Let\u2019s talk about food, baby\u2026 let\u2019s not talk about you and me\u2026 what are you in the mood for?',
+'Hmm, let\u2019s talk about franks and beans and your culinary hopes and dreams\u2026 what are you craving?',
+'I didn\u2019t catch a craving in there \u2014 give me a cuisine, like sushi or tacos.',
+'That one\u2019s outside my wheelhouse \u2014 I only know food. Try me again with a craving!'
+];
+var line=confusedLines[Math.floor(Math.random()*confusedLines.length)];
+setReply(line);
+speak(line,null);
+return;
+}
 openPanel();
 document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
 var summary=document.getElementById('bopVoiceSummary'),note=document.getElementById('bopVoiceNote'),list=document.getElementById('bopVoiceList');
