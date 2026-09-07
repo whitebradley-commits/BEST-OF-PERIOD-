@@ -25705,12 +25705,13 @@ target.disabled=true;goBack();setTimeout(function(){target.disabled=false},450);
       corner.insertBefore(emailLink, corner.firstChild);
     }
     var active=document.documentElement.classList.contains('bop-invite-active');
-    corner.style.display=active?'flex':'none';
+    var wantDisplay=active?'flex':'none';
+    if(corner.style.display!==wantDisplay)corner.style.display=wantDisplay;
   }
   install();
   document.addEventListener('DOMContentLoaded',install);
   setInterval(install,500);
-  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  new MutationObserver(install).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
 })();</script>
 
 <script id="bop-exclusive-invitation-script-v261">(function(){
@@ -44591,7 +44592,7 @@ try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
 var cleanName=next.name.replace(/\s*\(.*?\)\s*/g,'');
-var greeting='Hello, I\u2019m '+cleanName+'. I\u2019m a little nosy, and I want to make sure you get to the right restaurant this evening. Ask me anything.';
+var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy concierge, here to make sure you find the perfect restaurant. Ask me anything.';
 setReply('Voice test: \u201c'+greeting+'\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
 speak(greeting,function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
 });
@@ -44737,7 +44738,7 @@ greetOnArrival();
 function greetOnArrival(){
 var v=pickVoice();
 var name=v?v.name.replace(/\s*\(.*?\)\s*/g,''):'BJS';
-var greeting='Hello, I\u2019m '+name+'. I\u2019m a little nosy, and I want to make sure you get to the right restaurant this evening. Ask me anything.';
+var greeting='Hi there, I\u2019m '+name+', your friendly nosy concierge, here to make sure you find the perfect restaurant. Ask me anything.';
 setReply(greeting);
 speak(greeting,null);
 }
