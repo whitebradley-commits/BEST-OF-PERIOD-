@@ -15584,15 +15584,33 @@ const isGoldApple = s.bjsPick === true ||
 (Number.isFinite(verificationRating) && verificationRating >= 4.9) ||
 (Number.isFinite(s.michelinStars) && s.michelinStars > 0) ||
 s.jamesBeard === true;
-/* Verified (checkmark apple) -- Michelin, James Beard, or a 4.9 auto-qualify
-on top of gold; everything else still verified the normal way it always
-was (4.4+ sourced rating, manual bjsVerified flag, or the permanent list). */
+/* Verified (checkmark apple) requires BOTH a 4.4-4.8 rating AND at least
+   1,000 reviews to back it up -- combined across sources if needed, or a
+   single source alone if that source already clears 1,000. We read every
+   "(NNN reviews)" mention out of the aggregate ratingNote text (that's
+   where each source's individual count lives) rather than just s.reviews,
+   since s.reviews is usually only the first source's count on its own. */
+function verifiedReviewCount(){
+var mentions = [];
+if (typeof s.ratingNote === 'string') {
+var re = /\(([\d,]+)\s*reviews?\)/gi, m;
+while ((m = re.exec(s.ratingNote))) mentions.push(parseInt(m[1].replace(/,/g, ''), 10));
+}
+if (!mentions.length && Number.isFinite(s.reviews)) mentions.push(s.reviews);
+var max = mentions.length ? Math.max.apply(null, mentions) : 0;
+var sum = mentions.reduce(function(a, b) { return a + b; }, 0);
+return Math.max(max, sum >= 1000 ? sum : 0);
+}
+const meetsReviewBar = verifiedReviewCount() >= 1000;
+/* Michelin, James Beard, or a 4.9 auto-qualify on top of gold; everything
+   else still verified the normal way it always was (4.4+ sourced rating
+   AND 1,000+ reviews, a manual bjsVerified flag, or the permanent list). */
 const isVerifiedApple = isGoldApple ||
 (Number.isFinite(s.michelinStars) && s.michelinStars > 0) ||
 s.jamesBeard === true ||
 s.bjsVerified === true ||
 BO_PERMANENT_BJS_VERIFIED.has(bjsVerifiedKey) ||
-(Number.isFinite(verificationRating) && verificationRating >= 4.4);
+(Number.isFinite(verificationRating) && verificationRating >= 4.4 && meetsReviewBar);
 const verificationStatus = isGoldApple ? 'gold' : (isVerifiedApple ? 'verified' : 'unverified');
 const card = document.createElement('div');
 card.className = 'bo-card' + (s.bjsPick ? ' bo-card-bjs' : '');
@@ -43977,6 +43995,10 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-reply{display:none;margin:-4px 0 16px;padding:12px 14px;border-left:3px solid #F59E0B;background:rgba(245,158,11,.07);border-radius:0 10px 10px 0;color:#fff;font:600 .92rem/1.45 'Archivo Narrow',Arial,sans-serif}
 #bopVoiceResults .bop-voice-reply.open{display:block}
 #bopVoiceResults .bop-voice-reply-label{display:block;margin-bottom:4px;color:#F59E0B;font:900 .6rem/1 'Archivo Black',sans-serif;letter-spacing:.14em}
+#bopVoiceResults .bop-voice-thinking{display:inline-block}
+#bopVoiceResults .bop-voice-thinking::after{content:'Thinking\2026';display:inline-block;color:#E8C97A;font-style:italic;animation:bopThinkFlash 1s ease-in-out infinite}
+@keyframes bopThinkFlash{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#bopVoiceResults .bop-voice-thinking::after{animation:none;opacity:.85}}
 #bopVoiceResults .bop-voice-summary{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
 #bopVoiceResults .bop-voice-chip{padding:5px 10px;border:1px solid #F59E0B;border-radius:999px;color:#F59E0B;font:900 .66rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;text-transform:uppercase}
 #bopVoiceResults .bop-voice-chip.is-dim{border-color:#444;color:#999}
@@ -44377,6 +44399,25 @@ return roots.some(function(root){return blob.indexOf(root)>=0;});
 }
 function matchTier(r,q){if(!q.tier)return true;try{return boNearMatchesTier(r,q.tier);}catch(e){return true;}}
 function run(text,opts){
+/* A quick flashing "thinking" beat between releasing the thumb and the
+   answer landing — feels considered instead of an instant robotic snap. */
+opts=opts||{};
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+var reply=document.getElementById('bopVoiceReply');
+var label=document.getElementById('bopVoiceReplyLabel'),body=document.getElementById('bopVoiceReplyText');
+if(label)label.textContent=uiText('bjsSays');
+if(body){body.textContent='';body.classList.add('bop-voice-thinking');}
+if(reply)reply.classList.add('open');
+setTimeout(function(){
+if(body)body.classList.remove('bop-voice-thinking');
+runNow(text,opts);
+},950);
+}
+function runNow(text,opts){
 opts=opts||{};
 /* Meta questions ("what can I ask you", "how does this work") aren't food
    requests — answer them directly instead of running a search and dumping
