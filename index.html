@@ -26752,6 +26752,7 @@ document.addEventListener('click',function(){setTimeout(function(){buildNYMap();
 
 <style id="bop-music-corner-and-promo-race-v266">#bopMusicCorner{position:fixed;bottom:14px;right:14px;z-index:2147483647;display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:1.5px solid #F59E0B;background:#0a0a0a;cursor:pointer;-webkit-tap-highlight-color:transparent;animation:bjsOuterGlowPulse 4s ease-in-out infinite}#bopMusicCorner svg{width:27px;height:27px;display:block}#bopMusicCorner .bop-music-slash{display:none}#bopMusicCorner.bop-music-muted .bop-music-note{opacity:.38}#bopMusicCorner.bop-music-muted .bop-music-slash{display:block}#bopStaticFounders,button[aria-label="BJS CO."][data-dest="about"]{display:none!important}#bestOfOverlay>.site-sound-toggle{opacity:0!important;pointer-events:none!important}
 @keyframes bjsOuterGlowPulse{0%,100%{box-shadow:0 0 2px rgba(245,158,11,.5)}50%{box-shadow:0 0 7px rgba(245,158,11,.9)}}
+#bopMusicCorner,#bopGateBjsBtn,#bopGateCorner a,#bopExclusiveInvitation .bop-exclusive-enter{-webkit-transform:translateZ(0);transform:translateZ(0);will-change:box-shadow}
 @media (prefers-reduced-motion:reduce){#bopMusicCorner{animation:none}}
 </style>
 <script id="bop-music-corner-and-promo-race-v266-script">(function(){
@@ -44753,6 +44754,7 @@ var retryLabel=document.getElementById('bopVoiceRetryLabel');if(retryLabel)retry
 })();
 window.bopVoiceSearch={run:run,parse:parse};
 
+
 })();</script>
 <script id="bop-landing-mail-corner-v549">(function(){
 /* Music already lives at right:14px on every page. This adds a matching
@@ -45008,5 +45010,20 @@ return true;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){normalize();setInterval(normalize,1000);});
+})();</script>
+
+<script id="bop-gate-corner-dedupe-v550">(function(){
+/* Same class of fix as the music-icon duplication earlier: if #bopGateCorner
+   ever gets created more than once, remove every extra instead of letting
+   two independently-animated copies overlap and visually beat against each
+   other, which reads exactly like flickering. */
+function dedupe(){
+var all=document.querySelectorAll('#bopGateCorner');
+for(var i=1;i<all.length;i++) all[i].remove();
+var btns=document.querySelectorAll('#bopGateBjsBtn');
+for(var j=1;j<btns.length;j++) btns[j].remove();
+}
+if(typeof window.__bopTick==='function') window.__bopTick(dedupe,400);
+else setInterval(dedupe,400);
 })();</script>
 </body></html>
