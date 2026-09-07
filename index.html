@@ -44091,6 +44091,7 @@ var bubbleText=bubble.querySelector('.bop-voice-bubble-text');
 var bubbleLabel=bubble.querySelector('.bop-voice-bubble-label');
 var panel=document.getElementById('bopVoiceResults');
 var retry=document.getElementById('bopVoiceRetry');
+try{if(panel&&bubble&&bubble.parentNode!==panel)panel.appendChild(bubble);}catch(e){}
 var typeForm=document.getElementById('bopVoiceTypeForm');
 var typeInput=document.getElementById('bopVoiceTypeInput');
 
@@ -44382,7 +44383,7 @@ document.getElementById('bopVoiceNote').textContent='Voice isn\u2019t available 
 typeForm.classList.add('open');setTimeout(function(){typeInput.focus();},60);return;
 }
 try{
-rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+rec=new SR();var thisRec=rec;rec.lang='en-US';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
 hadError=false;startedAt=Date.now();
 rec.onstart=function(){if(cancelPending){cancelPending=false;try{rec.abort();}catch(e){}setListening(false);return;}setListening(true);showBubble('ASK US ANYTHING!','',true);};
 rec.onresult=function(ev){var interim='',fin='';for(var i=ev.resultIndex;i<ev.results.length;i++){var tr=ev.results[i][0].transcript;if(ev.results[i].isFinal)fin+=tr;else interim+=tr;}if(fin)lastFinal=(lastFinal+' '+fin).trim();showBubble('ASK US ANYTHING!',(lastFinal+' '+interim).trim(),true);};
@@ -44412,8 +44413,9 @@ if(said){showBubble('Got it',said,false);hideBubble(900);run(said);}
 else{if(bubble.classList.contains('open')&&bubbleLabel.textContent==='ASK US ANYTHING!'){showBubble('Oops','Didn\u2019t catch that \u2014 hold the mic and speak.',false);hideBubble(2200);}}
 };
 rec.start();
-/* Safety net: if iOS never reports the end (happens when the mic was started
-   oddly), force it back to idle after 15s instead of staying stuck. */
+/* Watchdog: if the mic hasn't reported in after 5s, it isn't coming. */
+setTimeout(function(){if(!listening&&!hadError&&rec===thisRec&&!cancelPending){hadError=true;try{rec.abort();}catch(e){}setListening(false);showBubble('Mic didn\u2019t start','Check Settings \u203a Safari \u203a Microphone for bestofperiod.com, then try again.',false);hideBubble(4500);}},5000);
+/* Safety net: if iOS never reports the end, force it back to idle after 15s. */
 clearTimeout(safety);safety=setTimeout(function(){if(listening)forceReset();},15000);
 }catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
 }
@@ -44432,6 +44434,7 @@ var fingerDown=false,cancelPending=false;
 function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;fingerDown=true;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}
 cancelPending=false;autoRetried=false;
 if(listening){forceReset();return;} /* pressing while stuck = release it */
+showBubble('ASK US ANYTHING!','',true);
 startListening();}
 function onUp(e){e.preventDefault();fingerDown=false;
 if(!listening){if(Date.now()-pressAt<250)cancelPending=true;return;}
