@@ -783,49 +783,42 @@ happened before the cycler further down in the same block ever started.
 The later declaration (further down, unchanged) just re-assigns the same
 values -- harmless with var, and kept so nothing else has to change. */
 
+/* This is the real, current list of cities that actually have restaurant
+   data in the system (pulled directly from every distinct `city:` value
+   across boCategoryData — not a decorative wish-list). Cycles in this
+   fixed order so the count and the full loop time are both knowable:
+   77 cities * holdMs = one complete lap. Update this list only when a
+   new city actually goes live with real listings. */
 const BOP_LANDING_CITIES = [
-"Las Vegas", "Miami", "S.V.", "Los Angeles", "Santa Barbara", "N.Y.C.", "Chicago", "Austin",
-"Nashville", "New Orleans", "San Francisco", "S.D.", "Dallas",
-"Houston", "Atlanta", "Orlando", "Tampa", "Scottsdale", "Phoenix",
-"Denver", "Seattle", "Boston", "Washington DC", "Charlotte", "Honolulu",
-"Savannah", "Charleston", "Palm Springs", "Aspen", "Napa",
-"Tokyo", "Seoul", "Bangkok", "Singapore", "Hong Kong", "Shanghai",
-"Dubai", "Abu Dhabi", "Doha", "Tel Aviv", "Istanbul",
-"London", "Paris", "Rome", "Milan", "Barcelona", "Madrid", "Ibiza",
-"Mykonos", "Berlin", "Amsterdam", "Monaco", "Zürich", "Lucerne", "Geneva", "Zermatt", "Vienna", "Prague",
-"Lisbon", "Sydney", "Melbourne", "Cancun", "Tulum", "Rio de Janeiro",
-"Mexico City", "Toronto", "Vancouver", "Montreal",
-"Portland", "Minneapolis", "Kansas City", "St. Louis", "Detroit",
-"Salt Lake City", "Albuquerque", "Oklahoma City", "Indianapolis",
-"Columbus", "Pittsburgh", "Cincinnati", "Cleveland", "Milwaukee",
-"Sacramento", "San Antonio", "Fort Worth", "El Paso", "Memphis",
-"Louisville", "Richmond", "Raleigh", "Baltimore", "Philadelphia",
-"Jacksonville", "Fort Lauderdale", "Key West", "Asheville", "Sedona",
-"Lake Tahoe", "Jackson Hole", "Santa Fe", "Marfa", "Anchorage",
-"Buenos Aires", "Sao Paulo", "Bogota", "Lima", "Santiago",
-"Cartagena", "Punta Cana", "San Juan", "Nassau", "Havana",
-"Marrakech", "Cape Town", "Nairobi", "Cairo", "Tangier",
-"Reykjavik", "Copenhagen", "Stockholm", "Oslo", "Helsinki",
-"Dublin", "Edinburgh", "Athens", "Santorini", "Florence",
-"Venice", "Nice", "Cannes", "St. Tropez", "Marbella",
-"Beijing", "Kyoto", "Osaka", "Taipei", "Manila", "Kuala Lumpur",
-"Bali", "Auckland", "Queenstown", "Vail", "Whistler"
+"Amsterdam", "Antwerp", "Atlanta", "Austin", "Bangkok", "Barcelona", "Beijing",
+"Bentonville", "Berlin", "Boston", "The Bronx", "Brooklyn", "Brussels",
+"Buenos Aires", "Chicago", "Copenhagen", "Dallas", "Denver", "Dubai", "Dublin",
+"Florence", "The Hamptons", "Hong Kong", "Idaho", "Irving", "Istanbul", "Kyoto",
+"Lisbon", "London", "Los Angeles", "Lucerne", "Macau", "Madrid", "Manhattan",
+"Mexico City", "Miami", "Milan", "Minneapolis", "Montreal", "Munich", "Naples",
+"New Orleans", "New York", "North Shore, L.I.", "Oaxaca", "Orange County",
+"Osaka", "Oslo", "Philadelphia", "Porto", "Queens", "Rio de Janeiro", "Rome",
+"San Diego", "San Diego \u2014 Del Mar", "San Diego \u2014 Encinitas",
+"San Diego \u2014 Oceanside", "San Diego \u2014 Uptown", "San Francisco",
+"San Sebasti\u00e1n", "Santa Barbara", "S\u00e3o Paulo", "Seattle", "Seoul",
+"Shanghai", "Silicon Valley", "Singapore", "South Shore, L.I.", "Stockholm",
+"Taipei", "Tokyo", "Toronto", "Vancouver", "Vienna", "Washington, D.C.",
+"Zagreb", "Zermatt"
 ];
 function startInfiniteCityCycler(elId, cities, holdMs){
 const el = document.getElementById(elId);
 if(!el) return;
-let last = el.textContent;
-function pickNext(){
-let next;
-do { next = cities[Math.floor(Math.random() * cities.length)]; }
-while(next === last && cities.length > 1);
-return next;
-}
+/* Sequential, not random: cycles through the real city list in a fixed
+   order so the full loop length is predictable (cities.length * holdMs)
+   instead of a random walk that never confirms coverage or a stable
+   cycle time. */
+let idx = Math.floor(Math.random() * cities.length);
 function step(){
-last = pickNext();
-if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = last;
-else el.appendChild(document.createTextNode(last));
-if(typeof boCityFitValue === 'function') el.setAttribute('data-fit', boCityFitValue(last));
+idx = (idx + 1) % cities.length;
+const next = cities[idx];
+if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = next;
+else el.appendChild(document.createTextNode(next));
+if(typeof boCityFitValue === 'function') el.setAttribute('data-fit', boCityFitValue(next));
 setTimeout(step, holdMs);
 }
 setTimeout(step, holdMs);
@@ -44006,17 +43999,17 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 @keyframes bopRecGlow{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.6)}50%{box-shadow:0 0 30px rgba(245,158,11,1),0 0 60px rgba(245,158,11,.55)}}
 #bopVoiceResults .bop-voice-retry-label{color:#F59E0B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-align:center;text-shadow:0 0 8px rgba(245,158,11,.6);-webkit-user-select:none;user-select:none}
 .bop-voice-btn-row{position:relative;display:inline-flex;align-items:center;justify-content:center}
-.bop-voice-hold-hint-wrap{position:absolute;right:100%;bottom:6px;margin-right:9px;display:flex;align-items:flex-end;gap:5px;opacity:0;pointer-events:none;transition:opacity .15s ease}
-.bop-voice-hold-dot-1{margin-bottom:1px}
-.bop-voice-hold-dot-2{margin-bottom:9px}
-.bop-voice-hold-dot-3{margin-bottom:19px}
-.bop-voice-hold-bubble{margin-bottom:30px}
+.bop-voice-hold-hint-wrap{position:absolute;left:100%;bottom:14px;margin-left:5px;display:flex;align-items:flex-end;gap:2px;opacity:0;pointer-events:none;transition:opacity .15s ease}
+.bop-voice-hold-dot-1{margin-bottom:2px}
+.bop-voice-hold-dot-2{margin-bottom:17px}
+.bop-voice-hold-dot-3{margin-bottom:36px}
+.bop-voice-hold-bubble{margin-bottom:57px}
 .bop-voice-hold-hint-wrap.is-visible{opacity:1}
 .bop-voice-hold-dot{flex:0 0 auto;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;box-shadow:0 0 6px rgba(245,158,11,.5);opacity:0;transform:scale(0)}
-.bop-voice-hold-dot-3{width:15px;height:15px}
-.bop-voice-hold-dot-2{width:10px;height:10px}
-.bop-voice-hold-dot-1{width:6px;height:6px}
-.bop-voice-hold-bubble{flex:0 0 auto;background:#0a0a0a;border:2px solid #F59E0B;border-radius:20px;padding:9px 13px;color:#F59E0B;font:700 .66rem/1.3 'Archivo Narrow',sans-serif;letter-spacing:.01em;text-align:center;white-space:nowrap;box-shadow:0 0 10px rgba(245,158,11,.5);opacity:0;transform:scale(0);-webkit-user-select:none;user-select:none}
+.bop-voice-hold-dot-1{width:5px;height:5px}
+.bop-voice-hold-dot-2{width:8px;height:8px}
+.bop-voice-hold-dot-3{width:12px;height:12px}
+.bop-voice-hold-bubble{flex:0 0 auto;width:82px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 18px 4px;padding:8px 9px;color:#F59E0B;font:700 .56rem/1.3 'Archivo Narrow',sans-serif;letter-spacing:0;text-align:center;white-space:normal;box-shadow:0 0 10px rgba(245,158,11,.5);opacity:0;transform:scale(0);-webkit-user-select:none;user-select:none}
 @keyframes bopHoldPop{0%{transform:scale(0);opacity:0}65%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
 .bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-dot-1{animation:bopHoldPop .22s ease-out forwards}
 .bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-dot-2{animation:bopHoldPop .22s ease-out .13s forwards}
@@ -44026,18 +44019,21 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 /* Recording indicator lives ABOVE the button so a thumb never covers it. */
 #bopVoiceResults .bop-rec-indicator{display:flex;align-items:center;justify-content:center;gap:10px;min-height:34px;opacity:0;transition:opacity .15s ease}
 #bopVoiceResults .bop-voice-retry-wrap.is-listening .bop-rec-indicator{opacity:1}
-#bopVoiceResults .bop-rec-dot{display:block;width:16px;height:16px;border-radius:50%;background:#F59E0B;box-shadow:0 0 12px rgba(245,158,11,1);animation:bopRecBlink .9s ease-in-out infinite}
-@keyframes bopRecBlink{0%,100%{opacity:1}50%{opacity:.15}}
-#bopVoiceResults .bop-rec-wave{display:flex;align-items:flex-end;gap:5px;height:34px}
-#bopVoiceResults .bop-rec-wave i{display:block;width:6px;height:8px;border-radius:3px;background:#F59E0B;box-shadow:0 0 8px rgba(245,158,11,.9);animation:bopRecBar .75s ease-in-out infinite}
-#bopVoiceResults .bop-rec-wave i:nth-child(1){animation-delay:0s}
-#bopVoiceResults .bop-rec-wave i:nth-child(2){animation-delay:.12s}
-#bopVoiceResults .bop-rec-wave i:nth-child(3){animation-delay:.24s}
-#bopVoiceResults .bop-rec-wave i:nth-child(4){animation-delay:.36s}
-#bopVoiceResults .bop-rec-wave i:nth-child(5){animation-delay:.48s}
-@keyframes bopRecBar{0%,100%{height:8px;opacity:.55}50%{height:34px;opacity:1}}
+#bopVoiceResults .bop-rec-mic-pill{display:flex;align-items:center;gap:9px;padding:8px 16px 8px 12px;border-radius:999px;background:#0a0a0a;border:2px solid #F59E0B;box-shadow:0 0 12px rgba(245,158,11,.55),inset 0 0 10px rgba(245,158,11,.08)}
+#bopVoiceResults .bop-rec-mic-icon{width:19px;height:19px;flex:0 0 auto;color:#F59E0B;filter:drop-shadow(0 0 4px rgba(245,158,11,.75));animation:bopRecMicPulse 1.4s ease-in-out infinite}
+@keyframes bopRecMicPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+#bopVoiceResults .bop-rec-wave{display:flex;align-items:center;gap:3px;height:24px}
+#bopVoiceResults .bop-rec-wave i{display:block;width:3.5px;height:24px;border-radius:2px;background:#F59E0B;box-shadow:0 0 6px rgba(245,158,11,.85);transform-origin:center;animation:bopRecBar ease-in-out infinite}
+#bopVoiceResults .bop-rec-wave i:nth-child(1){animation-duration:.8s;animation-delay:0s}
+#bopVoiceResults .bop-rec-wave i:nth-child(2){animation-duration:.95s;animation-delay:.09s}
+#bopVoiceResults .bop-rec-wave i:nth-child(3){animation-duration:.7s;animation-delay:.18s}
+#bopVoiceResults .bop-rec-wave i:nth-child(4){animation-duration:1.05s;animation-delay:.05s}
+#bopVoiceResults .bop-rec-wave i:nth-child(5){animation-duration:.85s;animation-delay:.27s}
+#bopVoiceResults .bop-rec-wave i:nth-child(6){animation-duration:.75s;animation-delay:.14s}
+#bopVoiceResults .bop-rec-wave i:nth-child(7){animation-duration:1s;animation-delay:.22s}
+@keyframes bopRecBar{0%,100%{transform:scaleY(.28)}50%{transform:scaleY(1)}}
 #bopVoiceResults .bop-voice-shell{padding-bottom:230px}
-@media (prefers-reduced-motion:reduce){#bopVoiceResults .bop-rec-wave i,#bopVoiceResults .bop-rec-dot,#bopVoiceResults .bop-voice-retry{animation:none}}
+@media (prefers-reduced-motion:reduce){#bopVoiceResults .bop-rec-wave i,#bopVoiceResults .bop-rec-mic-icon,#bopVoiceResults .bop-voice-retry{animation:none}}
 #bopVoiceTypeForm{display:none;gap:8px;margin:0 0 16px}
 #bopVoiceTypeForm.open{display:flex}
 #bopVoiceTypeForm input{flex:1;min-width:0;padding:11px 13px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:700 .9rem Arial,sans-serif}
@@ -44062,7 +44058,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
     <p class="bop-voice-note" id="bopVoiceNote"></p>
     <div class="bop-voice-list" id="bopVoiceList"></div>
-    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-dot"></span><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><div class="bop-voice-btn-row"><div class="bop-voice-hold-hint-wrap" id="bopVoiceHoldHintWrap" aria-hidden="true"><div class="bop-voice-hold-bubble">Keep holding a beat after<br/>you finish talking&hellip;</div><span class="bop-voice-hold-dot bop-voice-hold-dot-3"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-2"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-1"></span></div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button></div></div>
+    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-mic-pill"><svg class="bop-rec-mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="9" y1="22" x2="15" y2="22"/></svg><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><div class="bop-voice-btn-row"><div class="bop-voice-hold-hint-wrap" id="bopVoiceHoldHintWrap" aria-hidden="true"><span class="bop-voice-hold-dot bop-voice-hold-dot-1"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-2"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-3"></span><div class="bop-voice-hold-bubble">Keep holding a beat after you finish talking&hellip;</div></div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button></div></div>
   </div>
 </div>
 <script id="bop-voice-search-v540-script">(function(){
@@ -46372,7 +46368,10 @@ return '<button type="button" class="bo-celeb-card'+(isEmpty?' is-empty':'')+'" 
 }).join('');
 el.innerHTML='<div class="bo-celeb-shell">'+
 '<button type="button" class="bo-celeb-close" id="bopCelebChefClose">&times;</button>'+
-'<div class="bo-celeb-title">Celebrity Chef</div>'+
+'<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">'+
+'<div class="bop-splash-line1">Best of</div>'+
+'<div class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="'+boCityFitValue('Celebrity Chefs')+'">Celebrity Chefs</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>'+
+'</div>'+
 '<div class="bo-celeb-sub">Tap a chef to see their restaurants in our system</div>'+
 '<div class="bo-celeb-grid">'+cardsHtml+'</div>'+
 '</div>';
@@ -46417,9 +46416,9 @@ return '<button type="button" class="bo-celeb-chef-row" data-idx="'+i+'">'+
 var chainNote=chef.chainId?'<div class="bo-celeb-chef-empty" style="margin-top:6px;">This chef also has a full worldwide location list — see the Verified Chains page.</div>':'';
 el.innerHTML='<div class="bo-celeb-chef-shell">'+
 '<button type="button" class="bo-celeb-close" id="bopCelebChefPageClose">&times;</button>'+
-'<div class="bop-splash-hero" style="margin-top:6px;">'+
+'<div class="bop-splash-hero bop-splash-hero-nocircle" style="margin-top:6px;padding:0;">'+
 '<div class="bop-splash-line1">Best of</div>'+
-'<div class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city">'+chef.name+'</span></span><span class="bop-splash-period">Period.</span></div>'+
+'<div class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="'+boCityFitValue(chef.name)+'">'+chef.name+'</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>'+
 '</div>'+
 '<img class="bo-celeb-chef-photo-big" src="'+chef.photo+'" alt="'+chef.name+'">'+
 listHtml+chainNote+
@@ -46457,10 +46456,15 @@ if(already)already.remove();
 return;
 }
 if(already)return;
+/* v2: was a large 96x96 square star badge, sitting apart from the
+   rest of the tile grid visually. Now uses the same rectangular
+   .bo-picker-btn shape as every other tile (BJS Picks, Steak,
+   Dessert, etc.) so it sits naturally in that same row instead of
+   reading as an oversized, out-of-place square. */
 var btn=document.createElement('button');
 btn.type='button';
-btn.className='bo-celeb-chef-tile';
-btn.innerHTML=window.boCelebrityChefStarSVG;
+btn.className='bo-picker-btn bo-celeb-chef-tile bo-celeb-chef-tile-rect';
+btn.innerHTML='<span class="bo-celeb-chef-tile-label">Celebrity<br>Chefs</span>';
 btn.addEventListener('click',function(){window.boShowCelebrityChefs();});
 grid.insertBefore(btn, grid.firstChild);
 }
@@ -46681,9 +46685,12 @@ if(!exists)boCategoryData[cat].push(r);
 <style id="bop-celebrity-chef-v1">
 /* Walk-of-Fame star tile — sits among the other bo-picker-btn tiles on
    any city page that has at least one of the 12 chefs' restaurants. */
-.bo-celeb-chef-tile{position:relative;width:112px;height:112px;flex:0 0 112px;padding:0;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);transition:transform .2s ease}
-.bo-celeb-chef-tile:hover{transform:rotate(-4deg) scale(1.06)}
-.bo-celeb-chef-star{width:100%;height:100%;display:block;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.5)}
+/* Rectangular tile — sits among the other bo-picker-btn tiles (BJS
+   Picks, Steak, Dessert, etc.) on any city page that has at least
+   one of the 12 chefs' restaurants, matching their shape instead of
+   the old oversized square star badge. */
+.bo-celeb-chef-tile-rect{display:flex;align-items:center;justify-content:center}
+.bo-celeb-chef-tile-label{font-style:italic;font-weight:700;color:#E4002B;text-shadow:0 0 10px rgba(228,0,43,.55);line-height:1.15}
 /* Popup: grid of 12 chef photos */
 .bo-celeb-overlay{position:fixed;inset:0;z-index:100300;display:none;overflow-y:auto;background:#050505;padding:60px 18px 60px}
 .bo-celeb-overlay.open{display:block}
@@ -46693,7 +46700,7 @@ if(!exists)boCategoryData[cat].push(r);
 .bo-celeb-sub{text-align:center;color:#999;font-family:'Archivo Narrow',sans-serif;font-size:.82rem;margin-bottom:28px}
 .bo-celeb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .bo-celeb-card{background:none;border:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
-.bo-celeb-photo{width:100%;aspect-ratio:1;border-radius:10px;border:none;object-fit:cover;box-shadow:none}
+.bo-celeb-photo{width:100%;aspect-ratio:1;border-radius:10px;border:none;object-fit:contain;box-shadow:none;background:#0c0c0c}
 .bo-celeb-card.is-empty .bo-celeb-photo{opacity:.4}
 .bo-celeb-name{color:#fff;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.72rem;text-align:center;line-height:1.2}
 .bo-celeb-card.is-empty .bo-celeb-name{color:#666}
@@ -46701,7 +46708,7 @@ if(!exists)boCategoryData[cat].push(r);
 .bo-celeb-chef-page{position:fixed;inset:0;z-index:100310;display:none;overflow-y:auto;background:#050505;padding:60px 18px 60px}
 .bo-celeb-chef-page.open{display:block}
 .bo-celeb-chef-shell{width:min(620px,100%);margin:0 auto}
-.bo-celeb-chef-photo-big{display:block;width:150px;height:150px;border-radius:10px;border:none;object-fit:cover;margin:10px auto 18px;box-shadow:none}
+.bo-celeb-chef-photo-big{display:block;width:150px;height:150px;border-radius:10px;border:none;object-fit:contain;margin:10px auto 18px;box-shadow:none;background:#0c0c0c}
 .bo-celeb-chef-empty{text-align:center;color:#999;font-family:'Archivo Narrow',sans-serif;font-size:.9rem;margin-top:30px;line-height:1.6}
 .bo-celeb-chef-list{display:flex;flex-direction:column;gap:12px;margin-top:20px}
 .bo-celeb-chef-row{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#0c0c0c;border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left}
@@ -47082,10 +47089,10 @@ font-size:calc(clamp(2.58rem,11.65vmin,4.52rem) + 4px + 3pt)!important;
 /* 2) & 3) City name column (the rotating red city text) nudged
    right and down — it was landing too far left and slightly too
    high relative to "Best Of" / "Period", which stay exactly where
-   they are. Running total after four passes: +5pt, +2pt, +3pt,
-   +3pt right (15pt total) / +4pt then -2pt down (2pt total). */
+   they are. Running total after five passes: +5pt, +2pt, +3pt,
+   +3pt, +5pt right (20pt total) / +4pt then -2pt down (2pt total). */
 .bop-splash-city-col{
-transform:translate(15pt,2pt)!important;
+transform:translate(20pt,2pt)!important;
 }
 /* 4) Pin above the "i" in Period nudged down 4pt further — still
    sitting a touch high after the last pass. */
