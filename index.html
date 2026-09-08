@@ -12799,7 +12799,7 @@ media.innerHTML='';
 const esc=boNearEscape;
 const rows=group.items.map((item,index)=>{
 const r=item.restaurant;
-const thumb=r.image ? '<img src="'+esc(r.image)+'" alt="">' : '<span>✦</span>';
+const thumb=r.image ? '<img src="'+esc(r.image)+'" alt="" onerror="this.outerHTML=\'<span>&#10022;</span>\';">' : '<span>✦</span>';
 const rating=r.rating ? '★ '+esc(r.ratingText||Number(r.rating).toFixed(1)) : 'Best Of selection';
 return '<button class="bo-near-cluster-row" type="button" data-cluster-index="'+index+'">'+
 '<span class="bo-near-cluster-thumb">'+thumb+'</span><span><span class="bo-near-cluster-name">'+esc(r.name)+'</span><span class="bo-near-cluster-meta">'+esc(boNearCategoryLabel(r))+' · '+rating+'</span></span><span class="bo-near-cluster-arrow">›</span></button>';
@@ -17105,7 +17105,7 @@ const photos = BUSINESS_PHOTOS[name];
 titleEl.textContent = name;
 if(photos && photos.length){
 bodyEl.innerHTML = '<div class="pics-gallery-grid">' +
-photos.map(function(src){ return '<img src="' + src + '" alt="' + name + ' photo" loading="lazy">'; }).join('') +
+photos.map(function(src){ return '<img src="' + src + '" alt="' + name + ' photo" loading="lazy" onerror="this.style.display=\'none\';">'; }).join('') +
 '</div>';
 } else {
 bodyEl.innerHTML = '<p class="pics-gallery-empty">No photos yet — check back soon, or if you\'re the owner, tap "Claim This Listing" to add your own.</p>';
@@ -31403,7 +31403,7 @@ function analogRow(d,idx){
 var links=[];
 if(d.phone)links.push('<a class="bo-near-osm-item-link" href="tel:'+d.phone+'">Call</a>');
 var order=orderLinkFor(d);if(order)links.push(order);
-var photo=d.photo?'<img src="'+d.photo+'" alt="" class="bo-ft-pin-thumb">':'';
+var photo=d.photo?'<img src="'+d.photo+'" alt="" class="bo-ft-pin-thumb" onerror="this.style.display=\'none\';">':'';
 var catIcon=(d.category&&typeof window.bopVsCatIcon==='function')?window.bopVsCatIcon(d.category):'';
 var iconSpan=catIcon?'<span style="display:inline-flex;width:15px;height:15px;vertical-align:-3px;margin-right:5px;">'+catIcon+'</span>':'';
 var permTag=d.permanent?' <span class="bo-ftm-perm-tag">PERMANENT</span>':'';
@@ -42742,7 +42742,7 @@ html+='<div class="bobb-pop bobb-card" id="bobbpop-'+id+'" style="display:none">
 var img=r.image||((typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'');
 if(!img){var wantN=String(r.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim();Object.keys(boCategoryData).some(function(cc){var L=boCategoryData[cc];if(!Array.isArray(L))return false;return L.some(function(x){if(x&&x.image&&String(x.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim()===wantN){img=x.image;return true;}return false;});});}
 var brandPlaceholder='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period \u2014 Verified Location" loading="lazy">';
-html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1">':brandPlaceholder)+'</div>';
+html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1" onerror="this.closest(\'.bobb-card-media\').classList.add(\'bobb-card-media-placeholder\');this.outerHTML=\''+brandPlaceholder.replace(/'/g,"\\'")+'\';">':brandPlaceholder)+'</div>';
 html+='<div class="bobb-card-body">';
 html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
 var stars=parseInt(r.michelinStars,10)||0;
@@ -43054,7 +43054,7 @@ states.forEach(function(st){
 html+='<div class="bo-hfs-state">'+esc(STATE_NAMES[st]||st)+'</div>';
 byState[st].forEach(function(d){
 html+='<div class="bo-hfs-card">'+
-(d.photo?'<img src="'+esc(d.photo)+'" alt="">':'')+
+(d.photo?'<img src="'+esc(d.photo)+'" alt="" onerror="this.style.display=\'none\';">':'')+
 '<div class="bo-hfs-name">'+esc(d.name||'Home For Sale')+'</div>'+
 (d.price?'<div class="bo-hfs-price">'+esc(d.price)+'</div>':'')+
 ((d.beds||d.baths)?'<div class="bo-hfs-meta">'+(d.beds?d.beds+' bd':'')+(d.beds&&d.baths?' · ':'')+(d.baths?d.baths+' ba':'')+'</div>':'')+
@@ -44808,7 +44808,23 @@ var catLabelText=String(r.cat||'Restaurant').replace(/^bjspicks/i,'BJS Picks ').
 var ratingLabel=r.rating?('\u2605 '+esc(r.rating)+(r.reviews?' ('+Number(r.reviews).toLocaleString()+')':'')):'';
 var phoneHtml=r.phone?'<a href="tel:'+esc(String(r.phone).replace(/[^+\d]/g,''))+'" style="color:#F59E0B;text-decoration:none;font-weight:700;">'+esc(r.phone)+'</a>':'<span style="color:#777;">Phone not listed</span>';
 var directionsUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address||(r.name+' '+x.city));
-var mediaHtml=r.image?'<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="width:100%;height:170px;object-fit:cover;display:block;">':'<div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#F59E0B;font-size:1.6rem;">\u2726</div>';
+/* Chain match is computed below (chainMatch/chainId), but the fallback
+   image needs it earlier, so do a quick pre-check here too. */
+var preChainLogo='';
+if(typeof window.CHAIN_LOCATIONS==='object'&&typeof CHAIN_LOGOS==='object'){
+Object.keys(window.CHAIN_LOCATIONS).forEach(function(id){
+if(preChainLogo)return;
+var lbl=window.CHAIN_LOCATIONS[id].label;
+if(lbl&&String(r.name||'').toLowerCase().indexOf(lbl.toLowerCase())>=0&&CHAIN_LOGOS[id])preChainLogo=CHAIN_LOGOS[id];
+});
+}
+/* Plain (unescaped) fallback markup — used directly when r.image is absent. */
+var brokenImageFallbackPlain=preChainLogo?
+('<div style="width:100%;height:170px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;padding:22px;box-sizing:border-box;"><img src="'+preChainLogo+'" alt="'+esc(r.name)+'" style="max-width:100%;max-height:100%;object-fit:contain;"></div>'):
+('<div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#F59E0B;font-size:1.6rem;">\u2726</div>');
+/* Same markup, HTML-entity-escaped so it can live inside the onerror="...outerHTML='...'" attribute. */
+var brokenImageFallbackAttr=brokenImageFallbackPlain.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+var mediaHtml=r.image?'<img src="'+esc(r.image)+'" alt="'+esc(r.name)+'" style="width:100%;height:170px;object-fit:cover;display:block;" onerror="this.outerHTML=\''+brokenImageFallbackAttr+'\';">':brokenImageFallbackPlain;
 var whyHtml=r.why?'<p style="margin:10px 0 0;color:#ddd;font:500 .88rem/1.45 Arial,sans-serif;">'+esc(r.why)+'</p>':'';
 /* Chain locations — if this restaurant matches a known multi-location
    chain, show 3 other locations plus a link into the full grouped list,
@@ -46192,21 +46208,25 @@ var placed=chain.locations.length+totalPending;
 var remaining=Math.max(0,known-placed);
 var comingSoonHtml=remaining>0?'<div style="margin-top:4px;padding:12px 0;border-top:1px dashed rgba(245,158,11,.3);color:#888;font-size:.72rem;font-style:italic;">+ '+remaining+' more location'+(remaining===1?'':'s')+' worldwide \u2014 not yet placed to a state/region.</div>':'';
 var initials=chain.label.split(/\s+/).filter(function(w){return /^[A-Za-z]/.test(w);}).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+var chainLogoSrc=(typeof CHAIN_LOGOS==='object'&&CHAIN_LOGOS[chainId])?CHAIN_LOGOS[chainId]:'';
+var chainLogoHtml=chainLogoSrc?
+'<div style="flex-shrink:0;width:52px;height:52px;border-radius:50%;border:2px solid #F59E0B;overflow:hidden;background:#050505;display:flex;align-items:center;justify-content:center;"><img src="'+chainLogoSrc+'" alt="'+chain.label+' logo" style="width:100%;height:100%;object-fit:contain;padding:5px;box-sizing:border-box;" onerror="this.parentElement.outerHTML=\'<div style=&quot;flex-shrink:0;width:52px;height:52px;border-radius:50%;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;font:900 .95rem &apos;Archivo Black&apos;,sans-serif;&quot;>'+initials+'</div>\';"></div>':
+'<div style="flex-shrink:0;width:52px;height:52px;border-radius:50%;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;font:900 .95rem \'Archivo Black\',sans-serif;">'+initials+'</div>';
 modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 0 0;box-shadow:0 0 24px rgba(245,158,11,.35);max-height:88vh;overflow-y:auto;">'+
-'<div style="padding:18px 20px 0;">'+
-'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">'+
-'<div style="display:flex;align-items:center;gap:10px;min-width:0;">'+
-'<div style="flex-shrink:0;width:44px;height:44px;border-radius:50%;border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;font:900 .95rem \'Archivo Black\',sans-serif;">'+initials+'</div>'+
-'<h3 style="margin:0;color:#fff;font:900 1.1rem/1.2 \'Archivo Narrow\',Arial,sans-serif;">'+chain.label+'</h3>'+
+'<div style="padding:26px 20px 0;">'+
+'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">'+
+'<div style="display:flex;align-items:center;gap:14px;min-width:0;">'+
+chainLogoHtml+
+'<h3 style="margin:0;color:#fff;font:900 1.2rem/1.25 \'Archivo Narrow\',Arial,sans-serif;">'+chain.label+'</h3>'+
 '</div>'+
 '<button type="button" id="bopChainLocationsClose" aria-label="Close" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:none;color:#F59E0B;font-size:15px;font-weight:900;cursor:pointer;">&times;</button>'+
 '</div>'+
-'<div style="display:flex;justify-content:flex-end;margin-top:8px;">'+
+'<div style="display:flex;justify-content:flex-end;margin-top:12px;">'+
 '<div style="color:#F59E0B;font:900 .7rem \'Archivo Black\',sans-serif;letter-spacing:.05em;">'+known+' WORLDWIDE LOCATION'+(known===1?'':'S')+'</div>'+
 '</div>'+
-'<div style="height:3px;background:linear-gradient(90deg,#F59E0B,#E4002B,#F59E0B);border-radius:2px;margin:10px 0 0;box-shadow:0 0 8px rgba(245,158,11,.5);"></div>'+
+'<div style="height:3px;background:linear-gradient(90deg,#F59E0B,#E4002B,#F59E0B);border-radius:2px;margin:12px 0 0;box-shadow:0 0 8px rgba(245,158,11,.5);"></div>'+
 '</div>'+
-'<div style="padding:16px 20px 24px;">'+
+'<div style="padding:20px 20px 24px;">'+
 '<div style="color:#999;font-size:.7rem;font-weight:700;letter-spacing:.04em;margin-bottom:14px;">'+chain.locations.length+' VERIFIED'+(totalPending?' &middot; '+totalPending+' PENDING':'')+', GROUPED BY STATE</div>'+
 regionsHtml+comingSoonHtml+
 '<button type="button" id="bopChainSeeAllChains" style="width:100%;margin-top:18px;padding:11px;border:1.5px solid #444;border-radius:8px;background:none;color:#999;font:800 .68rem \'Archivo Black\',sans-serif;letter-spacing:.05em;cursor:pointer;">SEE ALL VERIFIED CHAINS</button>'+
@@ -46416,6 +46436,18 @@ if(!exists)boCategoryData[cat].push(r);
 });
 });
 })();</script>
+<style id="bop-stacked-title-v1">
+/* Site-wide redesign: "Best of" / City / "Period" stacked vertically and
+   tight, instead of city+period side-by-side. Pure CSS override so it
+   applies everywhere .bop-splash-line1/line2/city/period is used, without
+   touching the dozens of places that generate this markup. */
+.bop-splash-line2{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;margin-top:.06em!important;width:auto!important;max-width:100%!important;left:0!important}
+.bop-splash-city-col{text-align:center!important;width:auto!important;max-width:100%!important}
+.bop-splash-city{display:block!important;text-align:center!important;line-height:1.02!important}
+.bop-splash-period{display:block!important;text-align:center!important;line-height:1.02!important;margin-top:-.02em!important}
+.bop-splash-hero-nocircle .bop-splash-line2,
+.bop-splash-hero-san-diego .bop-splash-line2{display:flex!important;flex-direction:column!important;align-items:center!important}
+</style>
 <style id="bop-four-across-grid-unify-v1">#boMoviesPage .bo-movie-list,#boWorldwidePage .bo-movie-list{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-flow:row!important;gap:8px!important;margin-top:14px!important}#boMoviesPage .bo-movie-card,#boWorldwidePage .bo-movie-card{display:flex!important;flex-direction:column!important;align-items:stretch!important;grid-template-columns:none!important;grid-template-rows:none!important;min-height:0!important;padding:0!important;border-radius:8px!important}#boMoviesPage .bo-movie-card-title,#boWorldwidePage .bo-movie-card-title{display:none!important}#boMoviesPage .bo-movie-screen-wrap,#boWorldwidePage .bo-movie-screen-wrap{display:none!important}#boMoviesPage .bo-movie-poster,#boWorldwidePage .bo-movie-poster{display:block!important;width:100%!important;height:auto!important;aspect-ratio:2/3!important;object-fit:cover!important;border-radius:6px!important;margin:0!important}#boMoviesPage .bo-movie-info,#boWorldwidePage .bo-movie-info{display:block!important;grid-column:auto!important;grid-row:auto!important;padding:6px 2px 0!important;background:none!important}#boMoviesPage .bo-movie-info>h3,#boWorldwidePage .bo-movie-info>h3{display:block!important;margin:0 0 2px!important;color:#fff!important;font:800 .68rem/1.15 'Archivo Narrow',sans-serif!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#boMoviesPage .bo-movie-metric,#boWorldwidePage .bo-movie-metric{color:#F59E0B!important;font:800 .6rem/1.2 'Archivo Narrow',sans-serif!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#boMoviesPage .bo-movie-date,#boWorldwidePage .bo-movie-date,#boMoviesPage .bo-movie-accolades,#boWorldwidePage .bo-movie-accolades,#boMoviesPage .bo-home-viewing-label,#boWorldwidePage .bo-home-viewing-label,#boMoviesPage .bo-home-viewing-row,#boWorldwidePage .bo-home-viewing-row,#boMoviesPage .bo-home-viewing-note,#boWorldwidePage .bo-home-viewing-note,#boMoviesPage .bo-send-movie-btn,#boWorldwidePage .bo-send-movie-btn,#boMoviesPage .bo-market-ticker,#boWorldwidePage .bo-market-ticker,#boMoviesPage .bo-worldwide-highlight,#boWorldwidePage .bo-worldwide-highlight{display:none!important}#boMoviesPage .bo-movie-card,#boWorldwidePage .bo-movie-card{position:relative!important}#boMoviesPage .bo-movie-rank,#boWorldwidePage .bo-movie-rank{display:flex!important;position:static!important;align-items:center;justify-content:center;width:auto!important;height:auto!important;margin:0 0 2px!important;padding:0!important;background:none!important;border:0!important;color:#F59E0B!important;font:900 .72rem/1 'Archivo Black',sans-serif!important}@media(max-width:430px){#boMoviesPage .bo-movie-list,#boWorldwidePage .bo-movie-list{gap:6px!important}#boMoviesPage .bo-movie-info>h3,#boWorldwidePage .bo-movie-info>h3{font-size:.6rem!important}#boMoviesPage .bo-movie-metric,#boWorldwidePage .bo-movie-metric{font-size:.54rem!important}}</style>
 <style id="bop-movie-section-headings-gold-2x">.bo-movie-column-head h2{width:clamp(160px,26vw,220px)!important;height:clamp(160px,26vw,220px)!important;color:#F59E0B!important;font-size:clamp(1.8rem,5.2vw,2.76rem)!important;text-shadow:0 0 8px rgba(245,158,11,.7)!important}.bo-movie-column-head h2 span{color:#F59E0B!important}.bo-current-movies-title{width:clamp(216px,44vw,308px)!important;height:clamp(216px,44vw,308px)!important;color:#F59E0B!important;font-size:clamp(1.76rem,5.6vw,2.96rem)!important;padding:24px!important;text-shadow:0 0 8px rgba(245,158,11,.7)!important}.bo-current-movies-title span{color:#F59E0B!important}@media(max-width:620px){.bo-movie-column-head h2{width:clamp(150px,42vw,200px)!important;height:clamp(150px,42vw,200px)!important;font-size:clamp(1.6rem,7vw,2rem)!important}.bo-current-movies-title{width:clamp(180px,50vw,230px)!important;height:clamp(180px,50vw,230px)!important;font-size:clamp(1.6rem,6vw,2.2rem)!important}}</style>
 </body></html>
