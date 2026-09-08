@@ -44005,6 +44005,10 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-retry.is-listening .bop-thumbprint{opacity:.45}
 @keyframes bopRecGlow{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.6)}50%{box-shadow:0 0 30px rgba(245,158,11,1),0 0 60px rgba(245,158,11,.55)}}
 #bopVoiceResults .bop-voice-retry-label{color:#F59E0B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-align:center;text-shadow:0 0 8px rgba(245,158,11,.6);-webkit-user-select:none;user-select:none}
+.bop-voice-hold-hint{opacity:0;max-height:0;overflow:hidden;pointer-events:none;transition:opacity .3s ease;color:#F59E0B;font:700 .68rem/1.35 'Archivo Narrow',sans-serif;letter-spacing:.02em;text-align:center;text-shadow:0 0 6px rgba(245,158,11,.55);max-width:200px;-webkit-user-select:none;user-select:none}
+.bop-voice-hold-hint.is-visible{opacity:1;max-height:60px;animation:bopHoldHintNudge 1.3s ease-in-out infinite}
+@keyframes bopHoldHintNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media (prefers-reduced-motion:reduce){.bop-voice-hold-hint.is-visible{animation:none}}
 /* Recording indicator lives ABOVE the button so a thumb never covers it. */
 #bopVoiceResults .bop-rec-indicator{display:flex;align-items:center;justify-content:center;gap:10px;min-height:34px;opacity:0;transition:opacity .15s ease}
 #bopVoiceResults .bop-voice-retry-wrap.is-listening .bop-rec-indicator{opacity:1}
@@ -44044,7 +44048,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
     <p class="bop-voice-note" id="bopVoiceNote"></p>
     <div class="bop-voice-list" id="bopVoiceList"></div>
-    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-dot"></span><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button></div>
+    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-dot"></span><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><div class="bop-voice-hold-hint" id="bopVoiceHoldHint">Keep holding a beat after<br/>you finish talking</div></div>
   </div>
 </div>
 <script id="bop-voice-search-v540-script">(function(){
@@ -44054,7 +44058,7 @@ words become $-levels, "within an hour" becomes a mile radius from GPS, and
 every city whose center falls inside that radius is searched. Designed so an
 AI parser can later replace parse() without touching the mic or results. */
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',lastInterim='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false,missStreak=0;
+var rec=null,listening=false,pressAt=0,tapMode=false,safety=null,lastFinal='',lastInterim='',bubbleTimer=null,hadError=false,startedAt=0,autoRetried=false,weAborted=false,weStopped=false,missStreak=0,holdHintTimer=null;
 function showConfused(text){
 openPanel();
 if(text)document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
@@ -44849,6 +44853,17 @@ mic.classList.toggle('is-listening',on);
 retry.classList.toggle('is-listening',on);var wrap=retry.parentElement;if(wrap&&wrap.classList.contains('bop-voice-retry-wrap'))wrap.classList.toggle('is-listening',on);
 var label=document.getElementById('bopVoiceRetryLabel');
 if(label)label.textContent=on?uiText('release'):uiText('thumbPress');
+var holdHint=document.getElementById('bopVoiceHoldHint');
+clearTimeout(holdHintTimer);
+if(on){
+/* Give people a beat to actually start talking first — showing this
+   immediately on press would be noise, not help. Comes on partway
+   through a hold, as a nudge not to let go the instant they stop
+   talking (the mic needs a moment to catch that last word). */
+holdHintTimer=setTimeout(function(){if(holdHint&&listening)holdHint.classList.add('is-visible');},1500);
+}else if(holdHint){
+holdHint.classList.remove('is-visible');
+}
 }
 function forceReset(){
 /* Hard reset used by the safety timer and error paths, so the button can
@@ -44910,7 +44925,13 @@ else{if(bubble.classList.contains('open')&&bubbleLabel.textContent===uiText('ask
 };
 rec.start();
 /* Watchdog: if the mic hasn't reported in after 5s, it isn't coming. */
-setTimeout(function(){if(!listening&&!hadError&&rec===thisRec&&!cancelPending){hadError=true;try{rec.abort();}catch(e){}setListening(false);showBubble('Mic didn\u2019t start','Check Settings \u203a Safari \u203a Microphone for bestofperiod.com, then try again.',false);hideBubble(4500);}},5000);
+setTimeout(function(){if(!listening&&!hadError&&rec===thisRec&&!cancelPending){
+/* The mic engine sometimes just doesn't confirm "started" in time on iOS,
+   even with permission already granted — same class of flakiness the
+   onerror handler already retries once for. Give this path the same one
+   free retry before showing an error, instead of failing immediately. */
+if(!autoRetried){autoRetried=true;try{rec.abort();}catch(e){}setListening(false);setTimeout(function(){startListening();},250);return;}
+hadError=true;try{rec.abort();}catch(e){}setListening(false);showBubble('Mic didn\u2019t start','Check Settings \u203a Safari \u203a Microphone for bestofperiod.com, then try again.',false);hideBubble(4500);}},5000);
 /* Safety net: if iOS never reports the end, force it back to idle after 15s. */
 clearTimeout(safety);safety=setTimeout(function(){if(listening)forceReset();},15000);
 }catch(e){setListening(false);showBubble('Oops','Voice isn\u2019t available here \u2014 tap to type instead.',false);hideBubble(2400);}
