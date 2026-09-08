@@ -47334,5 +47334,23 @@ font-size:calc(1.38em + 2pt)!important;
 scale:1.331!important;
 }
 
+/* Worldwide comparison pages (luxury, songs, cars, airlines, watches, cell
+   phones) were splitting into two side-by-side halves, each ALSO forced
+   into its own 4-across tile grid -- an 8-across squeeze on a phone
+   screen. Movies never had that inner 4-across override, which is why
+   it was the only one that looked right. Fix: stack the two ranking
+   sections top-to-bottom instead of side-by-side (matching Movies'
+   flow), while keeping each section's own 4-across grid at full width
+   -- four tiles, wrap to a new row of four, and so on, then the next
+   section starts fresh underneath once the first is fully shown. */
+#boWorldwidePage .bo-movies-columns{grid-template-columns:1fr!important;gap:30px!important}
+#boWorldwidePage .bo-movies-columns::after{display:none!important}
+#boWorldwidePage .bo-movies-columns>.bo-movie-column{width:100%!important;min-width:0!important;padding:0 14px 8px!important;border:0!important;box-shadow:none!important;background:#000!important}
+#boWorldwidePage .bo-movies-columns>.bo-movie-column:first-child{border-right:0!important}
+#boWorldwidePage[data-worldwide-key] .bo-movies-columns>.bo-movie-column:first-child,
+#boWorldwidePage[data-worldwide-key] .bo-movies-columns>.bo-movie-column:nth-child(2){
+background:#000!important;border:0!important;box-shadow:none!important
+}
+#boWorldwidePage .bo-movie-column:nth-child(2) .bo-movie-info{background:#000!important}
 </style>
 </body></html>
