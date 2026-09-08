@@ -15123,7 +15123,7 @@ const immediateCity = immediateCfg.landingName || immediateCfg.displayName;
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
 <div class="bop-splash-line1">Best Of</div>
 <div class="bop-splash-line2">
-<span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(immediateCity)}">${immediateCity}</span></span>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(immediateCity)}" id="bopMainCityText">${immediateCity}</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
 </div>
 </div>`;
@@ -47047,10 +47047,10 @@ font-size:calc(clamp(2.58rem,11.65vmin,4.52rem) + 4px + 3pt)!important;
 /* 2) & 3) City name column (the rotating red city text) nudged
    right and down — it was landing too far left and slightly too
    high relative to "Best Of" / "Period", which stay exactly where
-   they are. Running total after three passes: +5pt, then +2pt,
-   then +3pt right (10pt total) / +4pt then -2pt down (2pt total). */
+   they are. Running total after four passes: +5pt, +2pt, +3pt,
+   +3pt right (15pt total) / +4pt then -2pt down (2pt total). */
 .bop-splash-city-col{
-transform:translate(10pt,2pt)!important;
+transform:translate(15pt,2pt)!important;
 }
 /* 4) Pin above the "i" in Period nudged down 4pt further — still
    sitting a touch high after the last pass. */
@@ -47066,14 +47066,13 @@ top:calc(-0.05em + 4pt)!important;
 #boHeroTitle .bop-splash-period{
 font-size:calc(1.38em + 2pt)!important;
 }
-/* 6) Main rotating landing page only: city text nudged 2pt further
-   right (12pt total from the original position) and enlarged 10%
-   on top of its existing scale. Scoped to #bopLandingCityText only
-   so results/sub-pages (which no longer animate — see below) are
-   unaffected. */
-.bop-splash-city-col{
-transform:translate(12pt,2pt)!important;
-}
+/* 6) Main rotating landing page: city text enlarged 10% on top of
+   its existing scale. Scoped to #bopLandingCityText only so
+   results/sub-pages (which no longer animate) are unaffected. The
+   horizontal/vertical position itself is handled by the single
+   .bop-splash-city-col rule above (item 2/3) — do not duplicate a
+   second transform here, it will silently win over that one since
+   it comes later in the document. */
 #bopLandingCityText{
 scale:1.331!important;
 }
