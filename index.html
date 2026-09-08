@@ -12383,6 +12383,13 @@ imagePosition:r.imagePosition||'center',
 why:r.why||'',
 note:r.note||'',
 property:r.property||r.hotel||r.resort||r.venue||'',
+/* Pizza-only score trio (BJS, One Bite, Dave) -- these were never in this
+   whitelist, so every restaurant that passed through here silently lost
+   its real scores and showed as unscored everywhere downstream (voice
+   search, Near Me), even when the underlying data had them populated. */
+bjsPizzaScore:r.bjsPizzaScore!=null?r.bjsPizzaScore:null,
+oneBiteScore:r.oneBiteScore!=null?r.oneBiteScore:null,
+oneBiteDaveScore:r.oneBiteDaveScore!=null?r.oneBiteDaveScore:null,
 downtown:!!r.downtown,strip:!!r.strip,summerlin:!!r.summerlin,henderson:!!r.henderson
 };
 const current = seen.get(key);
@@ -12417,6 +12424,9 @@ imagePosition:(primary.image?primary.imagePosition:secondary.imagePosition)||'ce
 why:primary.why||secondary.why||'',
 note:primary.note||secondary.note||'',
 property:primary.property||secondary.property||'',
+bjsPizzaScore:primary.bjsPizzaScore!=null?primary.bjsPizzaScore:secondary.bjsPizzaScore,
+oneBiteScore:primary.oneBiteScore!=null?primary.oneBiteScore:secondary.oneBiteScore,
+oneBiteDaveScore:primary.oneBiteDaveScore!=null?primary.oneBiteDaveScore:secondary.oneBiteDaveScore,
 downtown:!!(primary.downtown||secondary.downtown),
 strip:!!(primary.strip||secondary.strip),
 summerlin:!!(primary.summerlin||secondary.summerlin),
@@ -44001,7 +44011,8 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-pizza-mini{display:inline-flex;align-items:center;gap:5px;margin-left:6px;vertical-align:middle}
 #bopVoiceResults .bop-voice-pizza-mini-item{display:inline-flex;align-items:center;gap:1.5px}
 #bopVoiceResults .bop-voice-pizza-mini-badge{display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;flex:0 0 auto;font:900 6px/1 'Archivo Black',Arial,sans-serif;box-sizing:border-box}
-#bopVoiceResults .bop-voice-pizza-mini-bjs{border:1px solid #F59E0B;background:#000;color:#F59E0B}
+#bopVoiceResults .bop-voice-pizza-mini-bjs{border:1px solid #F59E0B;background:#0a0a0a;padding:0;overflow:hidden}
+#bopVoiceResults .bop-voice-pizza-mini-bjs svg{width:100%;height:100%;display:block}
 #bopVoiceResults .bop-voice-pizza-mini-ob{background:#E4002B;color:#fff;font-size:5px}
 #bopVoiceResults .bop-voice-pizza-mini-dave{width:11px;height:11px;flex:0 0 auto}
 #bopVoiceResults .bop-voice-pizza-mini-dave svg{width:100%;height:100%;display:block}
@@ -44646,7 +44657,7 @@ var pizzaMini='';
 if(r.cat==='pizza'){
 var fmt=function(v){return v!=null&&v!==''&&!isNaN(parseFloat(v))?Number(v).toFixed(1):'\u2014';};
 pizzaMini='<span class="bop-voice-pizza-mini">'
-+'<span class="bop-voice-pizza-mini-item" aria-label="BJS score"><span class="bop-voice-pizza-mini-badge bop-voice-pizza-mini-bjs">B</span><span class="bop-voice-pizza-mini-score">'+fmt(r.bjsPizzaScore)+'</span></span>'
++'<span class="bop-voice-pizza-mini-item" aria-label="BJS score"><span class="bop-voice-pizza-mini-badge bop-voice-pizza-mini-bjs"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="3"/><text x="20" y="26" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="16" font-weight="900" fill="#F59E0B">BJS</text></svg></span><span class="bop-voice-pizza-mini-score">'+fmt(r.bjsPizzaScore)+'</span></span>'
 +'<span class="bop-voice-pizza-mini-item" aria-label="One Bite score"><span class="bop-voice-pizza-mini-badge bop-voice-pizza-mini-ob">OB</span><span class="bop-voice-pizza-mini-score">'+fmt(r.oneBiteScore)+'</span></span>'
 +'<span class="bop-voice-pizza-mini-item" aria-label="Dave score"><span class="bop-voice-pizza-mini-dave"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#f0b184" stroke="#F59E0B" stroke-width="2"/><path d="M8 18c0-9 5-14 12-14 8 0 13 5 13 14-4-4-8-6-13-6-5 0-9 2-12 6z" fill="#211610"/><path d="M8 14c1-7 5-11 12-11s11 4 12 11H8z" fill="#00274C"/><path d="M7 14h27c-2 3-7 4-14 3-6 0-10-1-13-3z" fill="#00274C" stroke="#FFCB05" stroke-width=".8"/><path d="M15 6h3l2 3 2-3h3v7h-2V9l-3 4-3-4v4h-2V6z" fill="#FFCB05"/><path d="M10 24c2 8 6 12 10 12s9-4 11-12c-3 3-6 4-11 4s-8-1-10-4z" fill="#3a2418"/><path d="M14 21h4M23 21h4" stroke="#211610" stroke-width="2" stroke-linecap="round"/><path d="M17 28c2 1 4 1 6 0" fill="none" stroke="#f4d0b2" stroke-width="1.5" stroke-linecap="round"/><path d="M18.5 23.5l1.5 2 1.5-2" fill="none" stroke="#9a5e3c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="bop-voice-pizza-mini-score">'+fmt(r.oneBiteDaveScore)+'</span></span>'
 +'</span>';
@@ -44754,17 +44765,13 @@ hint.classList.add('open');
 setTimeout(function(){hint.classList.remove('open');},6000);
 }
 
-/* ---- text-to-speech: voice on/off toggle + voice picker (British male first) ---- */
+/* ---- text-to-speech: voice on/off toggle + voice picker (Karen & Daniel only) ---- */
 var VOICE_ON_KEY='bopVoiceOn',VOICE_NAME_KEY='bopVoiceName';
-/* One-time migration: Karen is now the default. If an earlier test session
-   already saved a different voice choice, clear it once so Karen actually
-   takes effect instead of silently staying overridden. */
-(function(){try{
-if(localStorage.getItem('bopVoiceDefaultV2')!=='karen'){
-localStorage.removeItem(VOICE_NAME_KEY);
-localStorage.setItem('bopVoiceDefaultV2','karen');
-}
-}catch(e){}})();
+/* Per request: every fresh page load starts on Karen, no matter what was
+   picked last time. This runs unconditionally on every load (not just
+   once) -- cycling to Daniel still works for the rest of that session,
+   it just never carries over as the starting voice on the next visit. */
+(function(){try{localStorage.removeItem(VOICE_NAME_KEY);}catch(e){}})();
 var synth=('speechSynthesis' in window)?window.speechSynthesis:null;
 var voiceList=[],currentUtter=null;
 function voiceOn(){try{var v=localStorage.getItem(VOICE_ON_KEY);return v===null?true:v==='yes';}catch(e){return true;}}
@@ -44773,17 +44780,22 @@ function loadVoices(){
 if(!synth)return [];
 var all=synth.getVoices()||[];
 var en=all.filter(function(v){return /^en/i.test(v.lang);});
-/* Rank: Karen first (default), then British male Daniel, then other British, then the rest of English. */
-en.sort(function(a,b){return rank(a)-rank(b);});
+/* Per request: only Karen and Daniel are offered, Karen always first/
+   default. If a device genuinely has neither installed as a system
+   voice (most non-Apple platforms), fall back to the full English list
+   rather than going silent -- but on any device that has them, this is
+   the entire pool the cycle button moves through. */
+var restricted=en.filter(function(v){return /karen|daniel/i.test(v.name);});
+var pool=restricted.length?restricted:en;
 function rank(v){
 if(/karen/i.test(v.name))return 0;
+if(/daniel/i.test(v.name))return 1;
 var gb=/en[-_]GB/i.test(v.lang);
-if(gb&&/daniel|arthur|oliver|george|james|rishi/i.test(v.name))return 1;
 if(gb)return 2;
-if(/en[-_]US/i.test(v.lang)&&/alex|aaron|fred|tom|daniel/i.test(v.name))return 3;
-return 4;
+return 3;
 }
-voiceList=en.length?en:all;
+pool.sort(function(a,b){return rank(a)-rank(b);});
+voiceList=pool.length?pool:all;
 return voiceList;
 }
 function pickVoice(){
