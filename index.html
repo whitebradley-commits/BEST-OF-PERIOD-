@@ -44425,7 +44425,7 @@ sv:[
 };
 function parse(text){
 var t=' '+String(text||'').toLowerCase().replace(/[^\p{L}\p{N}\s\-']/gu,' ').replace(/\s+/g,' ')+' ';
-var out={raw:text,cats:[],labels:[],tier:null,minutes:null,miles:null};
+var out={raw:text,cats:[],labels:[],tier:null,minutes:null,miles:null,pizzaSource:null};
 CAT_WORDS.forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});if(out.labels.indexOf(w.label)<0)out.labels.push(w.label);}});
 if(FOREIGN_CAT_WORDS[LANG]){
 FOREIGN_CAT_WORDS[LANG].forEach(function(w){if(w.re.test(t)){w.cats.forEach(function(c){if(out.cats.indexOf(c)<0)out.cats.push(c);});if(out.labels.indexOf(w.label)<0)out.labels.push(w.label);}});
@@ -44441,6 +44441,14 @@ if(/hour and a half|an hour and a half/.test(t))out.minutes=90;
 if((m=t.match(/(\d+(?:\.\d+)?|five|ten|fifteen|twenty|thirty|forty|fifty)\s*miles?/))){out.miles=wordNum(m[1]);}
 if(out.miles==null&&out.minutes!=null)out.miles=Math.max(5,Math.round(out.minutes*0.8));
 if(/near ?me|nearby|around here|close by|close to me|closest|nearest|walking distance|pr[eè]s de moi|\u9644\u8fd1|cerca de m[ií]|\u8fd1\u304f|in der n[aä]he|vicino a me|\uadfc\ucc98|perto de mim|\u05dc\u05d9\u05d3\u05d9|\u05e7\u05e8\u05d5\u05d1|n[aä]ra mig/.test(t)&&out.miles==null)out.miles=8;
+/* Pizza-specific: "any One Bite spots", "Dave-rated pizza", "BJS pizza" --
+   asks for places actually scored by one particular source, instead of
+   just repeating the same full pizza list every source shares. Checked
+   regardless of whether "pizza" itself was caught, same as tier/miles
+   above, since the source word is the whole point of the question. */
+if(/one\s*bite/.test(t))out.pizzaSource='onebite';
+else if(/\bdave\b/.test(t))out.pizzaSource='dave';
+else if(/\bbjs\b/.test(t))out.pizzaSource='bjs';
 /* No recognized cuisine — pull out the actual food word so we can still
    search for it directly (name/description) instead of giving up. Strips
    the usual wrapper phrases ("I have a craving for", "give me", "I want",
@@ -44588,6 +44596,8 @@ var scope='';
 if(!pos){var ctx=(typeof boCityContext!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';cands=[{key:ctx,mi:null}];scope='Location is off, so this is '+cityLabel(ctx)+'. Turn on location for drive-time results.';}
 else if(!cands.length){cands=[{key:nearest,mi:nearestMi}];scope=q.miles!=null?'Nothing within '+q.miles+' miles yet \u2014 we noticed your closest region is '+cityLabel(nearest)+' ('+Math.round(nearestMi)+' mi).':'We noticed your closest region is '+cityLabel(nearest)+'.';}
 else{scope=cands.length===1?'Searching '+cityLabel(cands[0].key)+'.':'Searching '+cands.length+' cities within range: '+cands.map(function(c){return cityLabel(c.key);}).join(', ')+'.';}
+var PIZZA_SOURCE_FIELD={onebite:'oneBiteScore',dave:'oneBiteDaveScore',bjs:'bjsPizzaScore'};
+var PIZZA_SOURCE_LABEL={onebite:'One Bite',dave:'Dave',bjs:'BJS'};
 var rows=[];
 cands.forEach(function(c){
 var rs=[];try{rs=boGetMapRestaurants(c.key);}catch(e){}
@@ -44595,6 +44605,13 @@ var center=boNearCityDefaults(c.key).center;
 var cityLabelLower=boNearCityDefaults(c.key).label.toLowerCase();
 rs.forEach(function(r){
 if(!matchCat(r,q)||!matchTier(r,q))return;
+/* "Any One Bite spots" / "Dave pizza" -- only keep places that source
+   has actually scored, instead of the full pizza list every source
+   would otherwise share. */
+if(q.pizzaSource){
+var srcField=PIZZA_SOURCE_FIELD[q.pizzaSource];
+if(r[srcField]==null)return;
+}
 var d=null,exact=false;
 if(pos&&r.lat!=null&&r.lon!=null){d=boNearDistanceMiles(pos,{lat:r.lat,lng:r.lon});exact=true;}
 else if(pos&&r.address){
@@ -44608,10 +44625,19 @@ rows.push({r:r,city:c.key,d:d,exact:exact});
 });
 });
 var seen={};rows=rows.filter(function(x){var k=(x.r.name+'|'+x.r.address).toLowerCase();if(seen[k])return false;seen[k]=1;return true;});
+if(q.pizzaSource){
+/* Sort by that specific source's score instead of the overall star
+   rating, so the "top pick" is whoever that source actually scored
+   highest, not just whoever has the best aggregate rating. */
+var srcField2=PIZZA_SOURCE_FIELD[q.pizzaSource];
+rows.sort(function(a,b){var sa=Number(a.r[srcField2])||0,sb=Number(b.r[srcField2])||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return sb-sa;});
+}else{
 rows.sort(function(a,b){var ra=Number(a.r.rating)||0,rb=Number(b.r.rating)||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return rb-ra;});
+}
 rows=rows.slice(0,30);
 var chips=[];
 q.labels.forEach(function(l){chips.push('<span class="bop-voice-chip">'+esc(l)+'</span>');});
+if(q.pizzaSource)chips.push('<span class="bop-voice-chip">'+PIZZA_SOURCE_LABEL[q.pizzaSource]+' scored</span>');
 if(q.tier)chips.push('<span class="bop-voice-chip">'+(q.tier==='fine'?'Fine $$$$':q.tier==='dive'?'Dive $':'Casual $$\u2013$$$')+'</span>');
 if(q.minutes!=null)chips.push('<span class="bop-voice-chip">Up to '+q.minutes+' min drive</span>');
 else if(q.miles!=null)chips.push('<span class="bop-voice-chip">Within '+q.miles+' mi</span>');
@@ -44694,7 +44720,11 @@ setTimeout(function(){geocodeNext(idx+1);},650);
 });
 }
 function speakSummary(q,rows,scope){
+var PIZZA_SOURCE_LABEL2={onebite:'One Bite',dave:'Dave',bjs:'BJS'};
 if(!rows.length){
+if(q.pizzaSource){
+return 'None of the pizza spots have a '+PIZZA_SOURCE_LABEL2[q.pizzaSource]+' score yet'+(scope?' \u2014 '+scope.replace(/\.$/,'').toLowerCase():'')+'. Try asking without the '+PIZZA_SOURCE_LABEL2[q.pizzaSource]+' part and I can still show you pizza.';
+}
 if(missStreak>=3){
 missStreak=0;
 return'My goal here is to keep you focused on food. So\u2026 think food. You must be hungry, so let me have it!';
@@ -44706,7 +44736,7 @@ return bits.join(' ');
 }
 var pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
 var top=rows[0].r,lvl=0;try{lvl=boNearPriceLevel(top)||0;}catch(e){}
-var what=(q.labels.length?q.labels.join(' or ')+' ':'')+(rows.length===1?'spot':'spots');
+var what=(q.labels.length?q.labels.join(' or ')+' ':'')+(q.pizzaSource?PIZZA_SOURCE_LABEL2[q.pizzaSource]+'-scored ':'')+(rows.length===1?'spot':'spots');
 var count=rows.length+' '+what+(q.tier?' \u2014 '+(q.tier==='fine'?'fine dining':q.tier==='dive'?'dive':'casual'):'');
 var openers=[
 'Found '+count+'.',
@@ -44716,7 +44746,14 @@ var openers=[
 'I found you '+count+'.',
 'Good news \u2014 '+count+'.'
 ];
-var ratingBit=top.rating?', rated '+top.rating+' stars':'';
+var ratingBit;
+if(q.pizzaSource){
+var srcFieldForSpeech={onebite:'oneBiteScore',dave:'oneBiteDaveScore',bjs:'bjsPizzaScore'}[q.pizzaSource];
+var srcVal=top[srcFieldForSpeech];
+ratingBit=srcVal!=null?', '+PIZZA_SOURCE_LABEL2[q.pizzaSource]+' scored it '+Number(srcVal).toFixed(1):(top.rating?', rated '+top.rating+' stars':'');
+}else{
+ratingBit=top.rating?', rated '+top.rating+' stars':'';
+}
 var pickPhrases=[
 'Top pick: '+top.name+ratingBit+'.',
 'My favorite of the bunch is '+top.name+ratingBit+'.',
