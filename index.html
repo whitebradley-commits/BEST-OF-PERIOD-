@@ -21693,6 +21693,7 @@ new MutationObserver(function(){requestAnimationFrame(decorate)}).observe(docume
     <h1 class="bop-ny-gateway-title">Best Of<span class="bop-ny-title-city">New York</span><span class="bop-ny-title-period">Period<span class="period-mark">©</span></span></h1>
     
     <div class="bop-map-wrap" style="width:min(100%,420px)">
+      <div class="bop-map-scroll-cue" aria-hidden="true"><span class="bop-map-scroll-letters"><span>S</span><span>C</span><span>R</span><span>O</span><span>L</span><span>L</span></span><svg class="bop-map-scroll-arrow" viewBox="0 0 20 30"><line x1="10" y1="0" x2="10" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 15 L10 23 L16 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M118,10 L150,6 L165,32 L152,58 L120,54 L105,32 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
         <path d="M112,54 L134,58 L145,90 L128,132 L100,140 L88,112 L96,78 Z" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round"/>
@@ -27759,7 +27760,7 @@ el.innerHTML =
 '<button type="button" class="bop-city-gate-back">\u2190 Back</button>'+
 '<div class="bop-ny-coast-head">'+cfg.title+'</div>'+
 '<div class="bop-ny-coast-sub">'+cfg.sub+'</div>'+
-'<div class="bop-map-wrap">'+pinsHTML+'</div>'+
+'<div class="bop-map-wrap"><div class="bop-map-scroll-cue" aria-hidden="true"><span class="bop-map-scroll-letters"><span>S</span><span>C</span><span>R</span><span>O</span><span>L</span><span>L</span></span><svg class="bop-map-scroll-arrow" viewBox="0 0 20 30"><line x1="10" y1="0" x2="10" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 15 L10 23 L16 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+pinsHTML+'</div>'+
 '<div class="bop-ny-coast-hint">Tap your area for its own directory.</div>';
 document.body.appendChild(el);
 el.querySelector('.bop-city-gate-back').addEventListener('click', function(){
@@ -43701,6 +43702,7 @@ setInterval(brandChips,600);
 .bop-coast-page .bop-ny-coast-sub{text-align:center;color:#F59E0B;font:800 .78rem/1.3 Arial,sans-serif;letter-spacing:.18em;margin-bottom:16px}
 .bop-coast-page .bop-map-wrap{position:relative!important;width:100%!important;max-width:none!important;margin:0 auto!important;padding:22px 14px 22px 74px!important;border:2px solid #F59E0B;border-radius:22px;background:#050505;box-shadow:0 0 18px rgba(245,158,11,.35);box-sizing:border-box;min-height:0!important}
 .bop-coast-page .bop-map-wrap svg{display:none!important}
+.bop-coast-page .bop-map-wrap svg.bop-map-scroll-arrow{display:block!important}
 .bop-coast-page .bop-map-wrap:before{content:"";position:absolute;left:14px;top:14px;bottom:14px;width:52px;border-radius:14px 0 0 14px;background:linear-gradient(90deg,#0e2540,#0b1f36);border-right:3px solid #F59E0B;box-shadow:inset -6px 0 12px rgba(0,0,0,.5)}
 .bop-coast-page .bop-map-wrap:after{content:"ATLANTIC";position:absolute;left:14px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;width:52px;text-align:center;color:#3b9dff;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.35em;opacity:.85}
 .bop-coast-page .bop-map-pin{position:static!important;transform:none!important;display:block;margin:0 0 12px}
@@ -43710,7 +43712,19 @@ setInterval(brandChips,600);
 .bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn:before{content:"";position:absolute;left:-13px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:#F59E0B;box-shadow:0 0 8px rgba(245,158,11,.9)}
 .bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn:active{background:#1a1200!important}
 .bop-coast-page .bop-ny-coast-hint{text-align:center;color:#9a9a9a;font:600 .8rem/1.3 Arial,sans-serif;margin:14px 0 18px}
-.bop-coast-page.bop-coast-pacific .bop-map-wrap:after{content:"PACIFIC"!important}</style>
+.bop-coast-page.bop-coast-pacific .bop-map-wrap:after{content:"PACIFIC"!important}
+/* Water-side scroll hint: stacked S-C-R-O-L-L letters plus a thin line
+   arrow, faint blue like the ATLANTIC/PACIFIC label, with a gentle white
+   glow-pulse -- sits at the top of that same water-colored bar so it's
+   visible the moment the page opens, before the person has scrolled at
+   all. Shared by San Diego, LA (both via buildGate) and New York (the
+   static gateway), since all three reuse .bop-map-wrap. */
+.bop-map-wrap .bop-map-scroll-cue{position:absolute;left:14px;top:14px;width:52px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:12px;color:#6fb3ff;pointer-events:none}
+.bop-map-scroll-letters{display:flex;flex-direction:column;align-items:center;gap:3px;font:800 .62rem/1 Arial,sans-serif;letter-spacing:.02em}
+.bop-map-scroll-letters span{opacity:.5;text-shadow:0 0 6px rgba(255,255,255,.55),0 0 4px rgba(111,179,255,.5);animation:bopMapScrollPulse 2.2s ease-in-out infinite}
+.bop-map-scroll-arrow{width:13px!important;height:19px!important;opacity:.45;filter:drop-shadow(0 0 4px rgba(255,255,255,.5));animation:bopMapScrollPulse 2.2s ease-in-out infinite .3s}
+@keyframes bopMapScrollPulse{0%,100%{opacity:.28}50%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.bop-map-scroll-letters span,.bop-map-scroll-arrow{animation:none;opacity:.55}}</style>
 <script id="bop-ny-gateway-coast-v426-script">(function(){
 var AREAS={bronx:'THE BRONX \u00b7 ARTHUR AVENUE',manhattan:'MANHATTAN \u00b7 MIDTOWN \u00b7 DOWNTOWN',queens:'QUEENS \u00b7 ASTORIA \u00b7 FLUSHING',brooklyn:'BROOKLYN \u00b7 WILLIAMSBURG',northshoreli:'NORTH SHORE \u00b7 LONG ISLAND',southshoreli:'SOUTH SHORE \u00b7 LONG ISLAND',hamptons:'THE HAMPTONS \u00b7 MONTAUK'};
 var ORDER=['bronx','manhattan','queens','brooklyn','northshoreli','southshoreli','hamptons'];
