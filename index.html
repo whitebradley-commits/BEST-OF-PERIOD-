@@ -888,7 +888,7 @@ if(event.target !== input) input.focus();
 }
 syncLandingPrompt();
 if(typeof startInfiniteCityCycler === 'function'){
-startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 200);
+startInfiniteCityCycler('bopLandingCityText', BOP_LANDING_CITIES, 250);
 }
 const LIVE_CITIES = [
 { name: 'Las Vegas', region: 'Nevada', dest: 'bestof' },
@@ -15133,58 +15133,30 @@ boHeroSubEl.style.opacity = 1;
 setTimeout(() => {
 if(BO_CITY_CONFIG[cat]){
 const cityCfg = BO_CITY_CONFIG[cat];
-const cityElId = cityCfg.useNameCycler ? ' id="bopResultsCityText"' : '';
+const cityElId = ' id="bopResultsCityText"';
 const sanDiegoHeroClass = '';
 const heroDisplayName = cityCfg.landingName || cityCfg.displayName;
-const cyclerCities = [heroDisplayName].concat(
-(typeof BOP_SPLASH_CITIES!=='undefined'&&BOP_SPLASH_CITIES?BOP_SPLASH_CITIES:['Vegas','Miami','LA','Tokyo','N.Y.C.','Dubai','London','Paris','Ibiza','Monaco']).filter(c => c !== cityCfg.displayName && c !== heroDisplayName)
-);
-const startingName = cityCfg.useNameCycler
-? cyclerCities[1 + Math.floor(Math.random() * (cyclerCities.length - 1))]
-: heroDisplayName;
+const finalCityText = cat === 'sandiego' ? 'S.D.' : heroDisplayName;
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
 <div class="bop-splash-line1">Best Of</div>
 <div class="bop-splash-line2">
-<span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(heroDisplayName)}"${cityElId}>${startingName}</span></span>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(heroDisplayName)}"${cityElId}>${finalCityText}</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
 </div>
 </div>`;
 boHeroTitleEl.style.opacity = 1;
 boHeroSubEl.style.opacity = 1;
-if(cityCfg.useNameCycler){
-const resultSpinHold = 260;
-const resultOutMs = 45;
-const resultInMs = 45;
-const resultSpinCount = 6;
-startBopVegasSlotCycler('bopResultsCityText', cyclerCities, resultSpinHold, 5000, resultOutMs, resultInMs, resultSpinCount, true);
-if(cat === 'sandiego'){
-const sdHeroText = document.getElementById('bopResultsCityText');
-if(sdHeroText){
-setTimeout(() => {
-if(!sdHeroText.isConnected) return;
-sdHeroText.textContent = 'S.D.';
-sdHeroText.classList.remove('animating-out', 'animating-in');
-sdHeroText.classList.add('is-active');
-}, 3200);
-}
-}
-}
 boCityContext = cat;
 } else if(cat === 'otheroptions'){
 const otherBestsCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
 const otherBestsCity = otherBestsCfg.landingName || otherBestsCfg.displayName;
-const mainCyclerCities = [otherBestsCity].concat(
-(typeof BOP_SPLASH_CITIES!=='undefined'&&BOP_SPLASH_CITIES?BOP_SPLASH_CITIES:['Vegas','Miami','LA','Tokyo','N.Y.C.','Dubai','London','Paris','Ibiza','Monaco']).filter(c => c !== otherBestsCity)
-);
-const mainStartingName = mainCyclerCities[1 + Math.floor(Math.random() * (mainCyclerCities.length - 1))];
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
 <div class="bop-splash-line1">Best Of</div>
 <div class="bop-splash-line2">
-<span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${mainStartingName}</span></span>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${otherBestsCity}</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
 </div>
 </div>`;
-startBopVegasSlotCycler('bopMainCityText', mainCyclerCities, 260, 5000, 45, 45, 6, true);
 } else if(isBjsPicksCat(cat)){
 const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
 boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title)}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(bjsPicksCity)}">${bjsPicksCity}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
@@ -47094,5 +47066,17 @@ top:calc(-0.05em + 4pt)!important;
 #boHeroTitle .bop-splash-period{
 font-size:calc(1.38em + 2pt)!important;
 }
+/* 6) Main rotating landing page only: city text nudged 2pt further
+   right (12pt total from the original position) and enlarged 10%
+   on top of its existing scale. Scoped to #bopLandingCityText only
+   so results/sub-pages (which no longer animate — see below) are
+   unaffected. */
+.bop-splash-city-col{
+transform:translate(12pt,2pt)!important;
+}
+#bopLandingCityText{
+scale:1.331!important;
+}
+
 </style>
 </body></html>
