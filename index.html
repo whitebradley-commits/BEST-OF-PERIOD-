@@ -44021,6 +44021,16 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-row-dist small{display:block;margin-top:3px;color:#999;font:700 .58rem/1 Arial,sans-serif;letter-spacing:.06em}
 #bopVoiceResults .bop-voice-empty{padding:26px 14px;border:1px dashed rgba(245,158,11,.5);border-radius:12px;color:#ddd;font:600 .88rem/1.5 Arial,sans-serif;text-align:center}
 #bopVoiceResults .bop-voice-empty strong{color:#F59E0B}
+/* Flashing "Locating…" placeholder shown for a couple seconds before the
+   list itself appears, and the smaller per-row "finding…" fallback for
+   any individual row still waiting on its real mileage once the list is
+   up. Same gold/dashed language as the empty state, just animated. */
+#bopVoiceResults .bop-voice-locating{display:flex;align-items:center;justify-content:center;gap:8px;padding:26px 14px;border:1px dashed rgba(245,158,11,.5);border-radius:12px;color:#F59E0B;font:700 .88rem/1.5 Arial,sans-serif;text-align:center}
+#bopVoiceResults .bop-voice-locating-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:#F59E0B;animation:bopVoiceLocatingPulse 1s ease-in-out infinite}
+@keyframes bopVoiceLocatingPulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+#bopVoiceResults .bop-voice-row-dist-pending{display:inline-block;color:#c9932f;font:700 .68rem/1 Arial,sans-serif;letter-spacing:.03em;animation:bopVoiceLocatingTextFlash 1.3s ease-in-out infinite}
+@keyframes bopVoiceLocatingTextFlash{0%,100%{opacity:.5}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){#bopVoiceResults .bop-voice-locating-dot,#bopVoiceResults .bop-voice-row-dist-pending{animation:none}}
 /* One-time nudge toward the VOICE toggle for anyone who's turned it off,
    shown right after their first answer instead of interrupting the ask
    flow itself. Points up-left toward the toggle it's talking about. */
@@ -44654,12 +44664,14 @@ list.innerHTML='<div class="bop-voice-empty">None of the pizza spots have a <str
 list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';
 }
 return;}
+function renderRows(){
 list.innerHTML=rows.map(function(x,i){
 var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
 var meta=[cityLabel(x.city),catLabel(r.cat)];
 if(lvl)meta.push('$'.repeat(lvl));
 if(r.rating)meta.push('\u2605 '+r.rating);
-var dist=(x.d==null||!x.exact)?'':(x.d<.1?'<0.1':x.d.toFixed(1))+' mi';
+var pendingGeocode=(x.d==null||!x.exact)&&!!r.address;
+var dist=(x.d==null||!x.exact)?(pendingGeocode?'<span class="bop-voice-row-dist-pending">finding\u2026</span>':''):(x.d<.1?'<0.1':x.d.toFixed(1))+' mi';
 /* Same verification tiers as the main site cards: gold apple for a BJS
    Pick, Michelin star, James Beard honor, or 4.9+ rating; a checkmark
    apple for a 4.4-4.8 rating backed by 1,000+ combined reviews (read out
@@ -44698,13 +44710,11 @@ pizzaMini='<span class="bop-voice-pizza-mini">'
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+appleBadge+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+pizzaMini+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
 list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
-/* Rows without an exact distance so far just fell back to a rough
-   city-center estimate, which used to render as a blank instead of a
-   real number — most restaurants simply don't have lat/lon stored, and
-   this used to only ever READ the geocode cache, never actually fill it.
-   Now it does: look up real coordinates in the background (throttled,
-   capped to what's on screen) and fill each blank in as it resolves,
-   caching every result so it's instant on the next search. */
+/* Rows still without an exact distance after the pre-fetch window below
+   just fell back to a rough city-center estimate, which used to render
+   as a blank instead of a real number. Keep looking up the rest in the
+   background (throttled, capped to what's on screen) and fill each in
+   as it resolves, caching every result so it's instant next time. */
 if(pos){
 var toGeocode=rows.map(function(x,i){return{x:x,i:i};}).filter(function(o){return!o.x.exact&&o.x.r.address;}).slice(0,12);
 (function geocodeNext(idx){
@@ -44724,6 +44734,31 @@ setTimeout(function(){geocodeNext(idx+1);},650);
 });
 })(0);
 }
+}
+/* Per request: don't pop the list in instantly with half the mileage
+   blank. Hold on a flashing "Locating…" placeholder for a couple
+   seconds, using that same window to look real coordinates up for as
+   many rows as possible (in parallel, not throttled, since this is a
+   one-time burst before anything's shown) -- so more rows already have
+   real mileage the moment the list actually appears. Capped so a slow
+   network never leaves the panel stuck on the loading state. */
+list.innerHTML='<div class="bop-voice-locating"><span class="bop-voice-locating-dot"></span>Locating\u2026</div>';
+var prefetch=[];
+if(pos){
+var toPrefetch=rows.map(function(x,i){return{x:x,i:i};}).filter(function(o){return!o.x.exact&&o.x.r.address;}).slice(0,12);
+prefetch=toPrefetch.map(function(o){
+var cLabel=cityLabel(o.x.city),cDefaults=boNearCityDefaults(o.x.city);
+return Promise.resolve(boGeocodeRestaurant(o.x.r,cLabel,cDefaults)).then(function(coord){
+if(coord&&coord.lat&&coord.lon){
+var d=boNearDistanceMiles(pos,{lat:coord.lat,lng:coord.lon});
+o.x.d=d;o.x.exact=true;
+}
+}).catch(function(){});
+});
+}
+var minDelay=new Promise(function(res){setTimeout(res,2000);});
+var geoBudget=new Promise(function(res){setTimeout(res,3500);});
+Promise.all([minDelay,Promise.race([Promise.all(prefetch),geoBudget])]).then(renderRows);
 });
 }
 function speakSummary(q,rows,scope){
