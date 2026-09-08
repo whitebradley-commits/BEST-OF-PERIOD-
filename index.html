@@ -44617,6 +44617,32 @@ var appleBadge='<span class="bop-voice-apple" aria-hidden="true"><svg viewBox="0
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+appleBadge+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
 list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
+/* Rows without an exact distance so far just fell back to a rough
+   city-center estimate, which used to render as a blank instead of a
+   real number — most restaurants simply don't have lat/lon stored, and
+   this used to only ever READ the geocode cache, never actually fill it.
+   Now it does: look up real coordinates in the background (throttled,
+   capped to what's on screen) and fill each blank in as it resolves,
+   caching every result so it's instant on the next search. */
+if(pos){
+var toGeocode=rows.map(function(x,i){return{x:x,i:i};}).filter(function(o){return!o.x.exact&&o.x.r.address;}).slice(0,12);
+(function geocodeNext(idx){
+if(idx>=toGeocode.length)return;
+var o=toGeocode[idx];
+var cLabel=cityLabel(o.x.city),cDefaults=boNearCityDefaults(o.x.city);
+Promise.resolve(boGeocodeRestaurant(o.x.r,cLabel,cDefaults)).then(function(coord){
+if(coord&&coord.lat&&coord.lon){
+var d=boNearDistanceMiles(pos,{lat:coord.lat,lng:coord.lon});
+o.x.d=d;o.x.exact=true;
+var row=list.querySelector('[data-voice-idx="'+o.i+'"]');
+var distEl=row&&row.querySelector('.bop-voice-row-dist');
+if(distEl)distEl.textContent=(d<.1?'<0.1':d.toFixed(1))+' mi';
+}
+}).catch(function(){}).then(function(){
+setTimeout(function(){geocodeNext(idx+1);},650);
+});
+})(0);
+}
 });
 }
 function speakSummary(q,rows,scope){
