@@ -46363,7 +46363,7 @@ var resolved=boResolveChefRestaurants(chef);
 var isEmpty=resolved.length===0;
 return '<button type="button" class="bo-celeb-card'+(isEmpty?' is-empty':'')+'" data-chef-id="'+chef.id+'">'+
 '<img class="bo-celeb-photo" src="'+chef.photo+'" alt="'+chef.name+'">'+
-'<span class="bo-celeb-name">'+chef.name+'</span>'+
+'<span class="bo-celeb-name">'+chef.name+'<span class="bo-celeb-name-hint">Tap again for restaurants</span></span>'+
 '</button>';
 }).join('');
 el.innerHTML='<div class="bo-celeb-shell">'+
@@ -46372,7 +46372,7 @@ el.innerHTML='<div class="bo-celeb-shell">'+
 '<div class="bop-splash-line1">Best of</div>'+
 '<div class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="'+boCityFitValue('Celebrity Chefs')+'">Celebrity Chefs</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>'+
 '</div>'+
-'<div class="bo-celeb-sub">Tap a chef to see their restaurants in our system</div>'+
+'<div class="bo-celeb-sub">Tap a chef to see their name, tap again for their restaurants</div>'+
 '<div class="bo-celeb-grid">'+cardsHtml+'</div>'+
 '</div>';
 el.classList.add('open');
@@ -46380,9 +46380,19 @@ document.body.style.overflow='hidden';
 document.getElementById('bopCelebChefClose').addEventListener('click',function(){
 boCloseCelebOverlay(el);
 });
+/* First tap on a chef's photo reveals their name (like a fingertip
+   press showing a tooltip, since these cutout photos otherwise carry
+   no label); a second tap on that same, already-revealed card goes
+   to their restaurant list. Tapping a different card just swaps
+   which one is revealed, it doesn't navigate. */
 el.querySelectorAll('.bo-celeb-card').forEach(function(btn){
 btn.addEventListener('click',function(){
+if(btn.classList.contains('is-tapped')){
 window.boShowChefRestaurants(btn.dataset.chefId);
+return;
+}
+el.querySelectorAll('.bo-celeb-card.is-tapped').forEach(function(other){other.classList.remove('is-tapped');});
+btn.classList.add('is-tapped');
 });
 });
 };
@@ -46698,12 +46708,14 @@ if(!exists)boCategoryData[cat].push(r);
 .bo-celeb-close{position:sticky;top:0;width:48px;height:48px;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#E4002B;font:800 12px/1 Arial;box-shadow:0 0 12px rgba(245,158,11,.5);cursor:pointer}
 .bo-celeb-title{text-align:center;margin:8px 0 6px;color:#F59E0B;font-family:'Archivo Black',sans-serif;font-size:clamp(1.9rem,7vw,3.2rem);letter-spacing:.03em}
 .bo-celeb-sub{text-align:center;color:#999;font-family:'Archivo Narrow',sans-serif;font-size:.82rem;margin-bottom:28px}
-.bo-celeb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.bo-celeb-card{background:none;border:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.bo-celeb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bo-celeb-card{position:relative;background:none;border:none;padding:0;cursor:pointer;display:block}
 .bo-celeb-photo{width:100%;aspect-ratio:1;border-radius:10px;border:none;object-fit:contain;box-shadow:none;background:#0c0c0c}
 .bo-celeb-card.is-empty .bo-celeb-photo{opacity:.4}
-.bo-celeb-name{color:#fff;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.72rem;text-align:center;line-height:1.2}
-.bo-celeb-card.is-empty .bo-celeb-name{color:#666}
+.bo-celeb-name{position:absolute;left:50%;bottom:8px;transform:translateX(-50%) translateY(4px);width:calc(100% - 10px);opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;background:rgba(5,5,5,.92);border:1.5px solid #F59E0B;border-radius:8px;padding:5px 4px 4px;color:#fff;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.66rem;text-align:center;line-height:1.15;box-shadow:0 0 10px rgba(245,158,11,.4)}
+.bo-celeb-name-hint{display:block;margin-top:2px;color:#F59E0B;font-weight:600;font-size:.56rem;text-transform:uppercase;letter-spacing:.02em}
+.bo-celeb-card.is-tapped .bo-celeb-name{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.bo-celeb-card.is-empty .bo-celeb-name{color:#666;border-color:#555}
 /* Per-chef restaurant page */
 .bo-celeb-chef-page{position:fixed;inset:0;z-index:100310;display:none;overflow-y:auto;background:#050505;padding:60px 18px 60px}
 .bo-celeb-chef-page.open{display:block}
