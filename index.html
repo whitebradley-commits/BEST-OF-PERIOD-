@@ -46828,4 +46828,126 @@ min-height:4rem!important;
 }
 }
 </style>
+
+<style id="bop-main-results-landed-stack-fix-v1">
+/* "Best Of [City] Period" on the city results/picker page (Beverly
+   Hills etc — #bopMainCityText / #bopResultsCityText). This one
+   stacks correctly WHILE the city name is rotating, but the moment
+   it lands on a final city, a separate older rule that only applies
+   once the ".bop-city-landed" class is added takes back over and
+   forces City + Period side-by-side again (with higher specificity
+   than the general stacking fix above, since it targets the landed
+   class specifically). Re-apply the same stack, at matching
+   specificity, for the landed state — and make Period ~30% larger
+   here per request. */
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed),
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed),
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText.bop-city-landed),
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText.bop-city-landed){
+display:flex!important;
+flex-direction:column!important;
+align-items:center!important;
+justify-content:center!important;
+gap:.04em!important;
+column-gap:0!important;
+width:100%!important;
+max-width:100%!important;
+left:0!important;
+}
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city-col,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city-col,
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city-col,
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city-col{
+width:100%!important;
+min-width:0!important;
+max-width:100%!important;
+text-align:center!important;
+flex:none!important;
+}
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city,
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city,
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city{
+display:block!important;
+text-align:center!important;
+}
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-period,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-period,
+#bestOfOverlay .bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-period,
+#bestOfOverlay .bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-period{
+display:block!important;
+position:static!important;
+grid-column:auto!important;
+margin:0!important;
+transform:none!important;
+text-align:center!important;
+width:auto!important;
+font-size:1.5em!important;
+}
+</style>
+
+<style id="bop-best-of-caps-and-icon-fix-v1">
+/* 1) "BEST OF" badges (the small circular Best-Of orb shown on every
+   page, and the "Best of [City] Period" picker tile) were forced to
+   ALL CAPS via text-transform even though the HTML text is correctly
+   "Best Of" already. Turn that off so it renders as typed. */
+.bjs-pick-mini-badge .mini-label,
+.hub-best-mini-label{
+text-transform:none!important;
+}
+
+/* 2) The apple/pin decoration that replaces the dot on the "i" in
+   "Period" had a rule mixing an em unit with a flat +15px offset
+   (top:calc(.04em + 15px)), which only looked right at one specific
+   font size — at any other size (which is most of them, since this
+   badge appears at many different sizes across the site) the pin
+   sits far too low. Replace with a pure em-based offset so it tracks
+   the text size correctly and sits like a normal dot above the i. */
+.bop-period-i-wrap .bop-period-apple-i,
+.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,
+.bop-period-i-wrap.bop-i-caps:not(.bop-i-exempt) .bop-period-apple-i{
+left:48%!important;
+top:-0.14em!important;
+width:.30em!important;
+height:.30em!important;
+transform:translateX(-50%)!important;
+}
+
+/* 3) Extra safety net: the Brooklyn word (BROOK + bridge + LYN) sits
+   inside the city span, so it should already stack under "Best of"
+   and above "Period" once the general landed-state fix above applies
+   — but pin it down explicitly too in case Brooklyn's own legacy
+   layout rules (several older versions of which exist earlier in
+   this file) win a specificity tie in some context this session
+   didn't cover. */
+.bop-splash-line2:has(.bop-brooklyn-word),
+#bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word),
+.bo-lead-best-lockup:has(.bop-brooklyn-word){
+display:flex!important;
+flex-direction:column!important;
+align-items:center!important;
+justify-content:center!important;
+gap:.04em!important;
+width:100%!important;
+max-width:100%!important;
+}
+.bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-city-col,
+#bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-city-col{
+width:100%!important;
+text-align:center!important;
+}
+.bop-splash-line2:has(.bop-brooklyn-word) .bop-brooklyn-word,
+#bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word) .bop-brooklyn-word{
+justify-content:center!important;
+margin:0 auto!important;
+}
+.bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-period,
+#bestOfOverlay .bop-splash-line2:has(.bop-brooklyn-word) .bop-splash-period{
+display:block!important;
+position:static!important;
+margin:0!important;
+transform:none!important;
+text-align:center!important;
+}
+</style>
 </body></html>
