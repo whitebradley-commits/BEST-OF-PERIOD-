@@ -44410,6 +44410,13 @@ var wantsSuggestion=/\b(suggest|suggestion|suggestions|recommend|recommendation|
 if(!out.cats.length&&!wantsSuggestion&&!out.tier){
 var ft=t;
 ft=ft.replace(/\b(i(?:'m| am)?|we|you|craving|crave|have|has|had|a|an|the|some|really|actually|just|can|could|would|will|how about|how|about|tell me|tell|kinda|kind of|sort of|want|wants|wanted|would like|like|looking for|look for|find me|get me|give me|show me|near ?me|nearby|around here|close by|close to me|closest|nearest|walking distance|within|an? hour|minutes?|miles?|please|for|to eat|to have|hungry for|in the mood for|mood for)\b/g,' ');
+/* A bare leftover number (e.g. the "15" from "within 15 minutes" -- the
+   word "minutes" gets stripped above but the digit itself doesn't) used
+   to survive into the free-text search term, turning "place" into the
+   literal garbage query "place 15" that matches no restaurant at all.
+   Numbers on their own are never meaningful free text once the
+   distance/time phrase they belonged to has already been parsed above. */
+ft=ft.replace(/\b\d+\b/g,' ');
 ft=ft.replace(/\s+/g,' ').trim();
 if(ft.length>=3&&ft.length<=40&&!/^(something|anything|food|place|places|restaurant|restaurants|eat|eating|dinner|lunch|breakfast|meal|thing|stuff|options|somewhere|good)$/i.test(ft))out.freeText=ft;
 }
@@ -44536,7 +44543,7 @@ if(pos&&q.miles!=null&&mi<=q.miles+25)cands.push({key:k,mi:mi});
 });
 var scope='';
 if(!pos){var ctx=(typeof boCityContext!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';cands=[{key:ctx,mi:null}];scope='Location is off, so this is '+cityLabel(ctx)+'. Turn on location for drive-time results.';}
-else if(!cands.length){cands=[{key:nearest,mi:nearestMi}];scope=q.miles!=null?'Nothing we cover is within '+q.miles+' miles yet \u2014 showing the closest city, '+cityLabel(nearest)+' ('+Math.round(nearestMi)+' mi).':'Showing '+cityLabel(nearest)+', the closest city we cover.';}
+else if(!cands.length){cands=[{key:nearest,mi:nearestMi}];scope=q.miles!=null?'Nothing within '+q.miles+' miles yet \u2014 we noticed your closest region is '+cityLabel(nearest)+' ('+Math.round(nearestMi)+' mi).':'We noticed your closest region is '+cityLabel(nearest)+'.';}
 else{scope=cands.length===1?'Searching '+cityLabel(cands[0].key)+'.':'Searching '+cands.length+' cities within range: '+cands.map(function(c){return cityLabel(c.key);}).join(', ')+'.';}
 var rows=[];
 cands.forEach(function(c){
