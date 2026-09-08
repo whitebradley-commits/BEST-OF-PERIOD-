@@ -15116,7 +15116,7 @@ const immediateCity = immediateCfg.landingName || immediateCfg.displayName;
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
 <div class="bop-splash-line1">Best Of</div>
 <div class="bop-splash-line2">
-<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(immediateCity)}" id="bopMainCityText">${immediateCity}</span></span>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(immediateCity)}" id="bopMainCityText">${immediateCity}</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
 </div>
 </div>`;
@@ -15146,10 +15146,20 @@ const otherBestsCity = otherBestsCfg.landingName || otherBestsCfg.displayName;
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
 <div class="bop-splash-line1">Best Of</div>
 <div class="bop-splash-line2">
-<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${otherBestsCity}</span></span>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${otherBestsCity}</span></span>
 <span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span>
 </div>
 </div>`;
+/* Restored per request: the city name spins through a handful of
+   real cities before landing on the actual one for this page,
+   instead of just appearing already-set. Lands and stays landed
+   (oneShot) after roughly 9 spins -- about 4-5 seconds at this
+   pace, matching the timing the main rotating landing page and
+   other slot-style cyclers on the site already use. */
+if(typeof startBopVegasSlotCycler === 'function' && typeof BOP_LANDING_CITIES !== 'undefined'){
+var spinPool = BOP_LANDING_CITIES.filter(function(c){return c !== otherBestsCity;});
+startBopVegasSlotCycler('bopMainCityText', [otherBestsCity].concat(spinPool), 180, 5000, 140, 180, 9, true);
+}
 } else if(isBjsPicksCat(cat)){
 const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
 boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title)}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(bjsPicksCity)}">${bjsPicksCity}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
@@ -46267,6 +46277,20 @@ window.CELEBRITY_CHEFS = [
 ];
 </script>
 <script id="bop-celebrity-chef-logic-v1">(function(){
+/* NYC's boroughs/areas (manhattan, brooklyn, queens, etc.) are their
+   own separate boCityContext keys for page-routing purposes, but the
+   underlying restaurant records were entered under the single umbrella
+   key "newyork" (e.g. Café Boulud is stored as city:"newyork"). Without
+   normalizing both sides to the same key before comparing, a chef with
+   a real NYC restaurant never matches any of the actual NYC-borough
+   pages -- which is exactly why Manhattan showed no celebrity chef tile
+   even though Café Boulud is right there. */
+function boCelebNormalizeCity(k){
+k=String(k||'');
+if(/^(manhattan|brooklyn|queens|bronx|statenisland|hamptons|northshoreli|southshoreli)$/.test(k))return 'newyork';
+return k;
+}
+window.boCelebNormalizeCity=boCelebNormalizeCity;
 /* Matches a chef's stored restaurant name/city against the live
    boCategoryData (scans every category array). city:null means "no
    preference" (mostly Las Vegas entries, which are stored without a
@@ -46282,7 +46306,7 @@ arr.forEach(function(r){
 if(!r||!r.name)return;
 if(String(r.name).toLowerCase()!==String(name).toLowerCase())return;
 if(cityHint){
-if(r.city===cityHint){found=found||{r:r,cat:cat};}
+if(boCelebNormalizeCity(r.city)===boCelebNormalizeCity(cityHint)){found=found||{r:r,cat:cat};}
 else if(!fallback){fallback={r:r,cat:cat};}
 }else{
 if(!r.city){found=found||{r:r,cat:cat};}
@@ -46310,10 +46334,10 @@ return out;
 }
 window.boCelebrityChefCityHasMatch=function(cityKey){
 if(!Array.isArray(window.CELEBRITY_CHEFS))return false;
-var target=cityKey||'bestof';
+var target=boCelebNormalizeCity(cityKey||'bestof');
 return window.CELEBRITY_CHEFS.some(function(chef){
 return (chef.restaurants||[]).some(function(spec){
-var wantCity=spec.city||'bestof';
+var wantCity=boCelebNormalizeCity(spec.city||'bestof');
 if(target==='bestof')return !spec.city;
 return wantCity===target || (!spec.city && target==='bestof');
 });
