@@ -44787,21 +44787,11 @@ whyHtml+
 chainHtml+
 '<div style="display:flex;gap:10px;margin-top:16px;">'+
 '<a href="'+directionsUrl+'" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:12px;border:2px solid #F59E0B;border-radius:10px;color:#F59E0B;font:900 .78rem \'Archivo Black\',sans-serif;text-decoration:none;letter-spacing:.04em;">GET DIRECTIONS</a>'+
-'<button type="button" id="bopVoiceCardViewFull" style="flex:1;padding:12px;border:2px solid #444;border-radius:10px;background:none;color:#ccc;font:900 .78rem \'Archivo Black\',sans-serif;letter-spacing:.04em;cursor:pointer;">FULL LISTING</button>'+
 '</div></div></div>';
 modal.style.display='flex';
 document.getElementById('bopVoiceCardClose').addEventListener('click',function(){modal.style.display='none';});
 var chainAllBtn=document.getElementById('bopVoiceChainAll');
 if(chainAllBtn)chainAllBtn.addEventListener('click',function(){if(typeof window.boShowChainLocations==='function')window.boShowChainLocations(chainAllBtn.dataset.chainId);});
-document.getElementById('bopVoiceCardViewFull').addEventListener('click',function(){
-modal.style.display='none';
-closePanel();
-var gate=document.getElementById('bopExclusiveInvitation');if(gate){gate.classList.add('bop-invite-closed');document.documentElement.classList.remove('bop-invite-active');}
-var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
-try{boCityContext=x.city;}catch(e){}
-window.boCityContext=x.city;
-if(typeof window.boOpenRestaurantFromMap==='function'){window.boOpenRestaurantFromMap(r.cat||x.city,r.name);}
-});
 }
 function openPanel(){panel.classList.add('open');panel.scrollTop=0;document.body.style.overflow='hidden';}
 function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');}
@@ -44898,6 +44888,12 @@ var fingerDown=false,cancelPending=false;
 function onDown(e){if(e.button!=null&&e.button!==0)return;e.preventDefault();pressAt=Date.now();tapMode=false;fingerDown=true;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(err){}
 cancelPending=false;autoRetried=false;
 if(listening){forceReset();return;} /* pressing while stuck = release it */
+/* Stop Karen talking the instant a thumb goes down — otherwise her own
+   voice can still be playing through the speaker right as the mic opens,
+   and on a phone without headphones that bleeds straight back into the
+   mic input, garbling whatever the person actually says (e.g. hearing
+   itself say "...spot!" as part of the next request). */
+try{if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e0){}
 showBubble(uiText('askAnything'),'',true);
 startListening();}
 function onUp(e){e.preventDefault();fingerDown=false;
