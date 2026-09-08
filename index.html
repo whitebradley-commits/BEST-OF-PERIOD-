@@ -44005,10 +44005,20 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 #bopVoiceResults .bop-voice-retry.is-listening .bop-thumbprint{opacity:.45}
 @keyframes bopRecGlow{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.6)}50%{box-shadow:0 0 30px rgba(245,158,11,1),0 0 60px rgba(245,158,11,.55)}}
 #bopVoiceResults .bop-voice-retry-label{color:#F59E0B;font:900 .78rem/1 'Archivo Black',sans-serif;letter-spacing:.1em;text-align:center;text-shadow:0 0 8px rgba(245,158,11,.6);-webkit-user-select:none;user-select:none}
-.bop-voice-hold-hint{opacity:0;max-height:0;overflow:hidden;pointer-events:none;transition:opacity .3s ease;color:#F59E0B;font:700 .68rem/1.35 'Archivo Narrow',sans-serif;letter-spacing:.02em;text-align:center;text-shadow:0 0 6px rgba(245,158,11,.55);max-width:200px;-webkit-user-select:none;user-select:none}
-.bop-voice-hold-hint.is-visible{opacity:1;max-height:60px;animation:bopHoldHintNudge 1.3s ease-in-out infinite}
-@keyframes bopHoldHintNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-@media (prefers-reduced-motion:reduce){.bop-voice-hold-hint.is-visible{animation:none}}
+.bop-voice-btn-row{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.bop-voice-hold-hint-wrap{position:absolute;right:100%;top:50%;transform:translateY(-50%);margin-right:11px;display:flex;align-items:center;gap:5px;opacity:0;pointer-events:none;transition:opacity .15s ease}
+.bop-voice-hold-hint-wrap.is-visible{opacity:1}
+.bop-voice-hold-dot{flex:0 0 auto;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;box-shadow:0 0 6px rgba(245,158,11,.5);opacity:0;transform:scale(0)}
+.bop-voice-hold-dot-3{width:15px;height:15px}
+.bop-voice-hold-dot-2{width:10px;height:10px}
+.bop-voice-hold-dot-1{width:6px;height:6px}
+.bop-voice-hold-bubble{flex:0 0 auto;background:#0a0a0a;border:2px solid #F59E0B;border-radius:20px;padding:9px 13px;color:#F59E0B;font:700 .66rem/1.3 'Archivo Narrow',sans-serif;letter-spacing:.01em;text-align:center;white-space:nowrap;box-shadow:0 0 10px rgba(245,158,11,.5);opacity:0;transform:scale(0);-webkit-user-select:none;user-select:none}
+@keyframes bopHoldPop{0%{transform:scale(0);opacity:0}65%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
+.bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-dot-1{animation:bopHoldPop .22s ease-out forwards}
+.bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-dot-2{animation:bopHoldPop .22s ease-out .13s forwards}
+.bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-dot-3{animation:bopHoldPop .22s ease-out .26s forwards}
+.bop-voice-hold-hint-wrap.is-visible .bop-voice-hold-bubble{animation:bopHoldPop .28s ease-out .39s forwards}
+@media (prefers-reduced-motion:reduce){.bop-voice-hold-dot,.bop-voice-hold-bubble{animation:none!important;opacity:1!important;transform:scale(1)!important}}
 /* Recording indicator lives ABOVE the button so a thumb never covers it. */
 #bopVoiceResults .bop-rec-indicator{display:flex;align-items:center;justify-content:center;gap:10px;min-height:34px;opacity:0;transition:opacity .15s ease}
 #bopVoiceResults .bop-voice-retry-wrap.is-listening .bop-rec-indicator{opacity:1}
@@ -44048,7 +44058,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
     <div class="bop-voice-summary" id="bopVoiceSummary"></div>
     <p class="bop-voice-note" id="bopVoiceNote"></p>
     <div class="bop-voice-list" id="bopVoiceList"></div>
-    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-dot"></span><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button><div class="bop-voice-hold-hint" id="bopVoiceHoldHint">Keep holding a beat after<br/>you finish talking</div></div>
+    <div class="bop-voice-retry-wrap"><div class="bop-rec-indicator" aria-hidden="true"><span class="bop-rec-dot"></span><span class="bop-rec-wave"><i></i><i></i><i></i><i></i><i></i></span></div><div class="bop-voice-retry-label" id="bopVoiceRetryLabel">THUMB. PRESS. SPEAK.</div><div class="bop-voice-btn-row"><div class="bop-voice-hold-hint-wrap" id="bopVoiceHoldHintWrap" aria-hidden="true"><div class="bop-voice-hold-bubble">Keep holding a beat after<br/>you finish talking</div><span class="bop-voice-hold-dot bop-voice-hold-dot-3"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-2"></span><span class="bop-voice-hold-dot bop-voice-hold-dot-1"></span></div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button></div></div>
   </div>
 </div>
 <script id="bop-voice-search-v540-script">(function(){
@@ -44853,7 +44863,7 @@ mic.classList.toggle('is-listening',on);
 retry.classList.toggle('is-listening',on);var wrap=retry.parentElement;if(wrap&&wrap.classList.contains('bop-voice-retry-wrap'))wrap.classList.toggle('is-listening',on);
 var label=document.getElementById('bopVoiceRetryLabel');
 if(label)label.textContent=on?uiText('release'):uiText('thumbPress');
-var holdHint=document.getElementById('bopVoiceHoldHint');
+var holdHint=document.getElementById('bopVoiceHoldHintWrap');
 clearTimeout(holdHintTimer);
 if(on){
 /* Give people a beat to actually start talking first — showing this
