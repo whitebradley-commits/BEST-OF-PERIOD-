@@ -12375,11 +12375,6 @@ url:r.url||'',
 rating:rating,
 ratingText:r.rating||'',
 reviews:(typeof r.reviews==='number'?r.reviews:null),
-ratingNote:r.ratingNote||'',
-bjsPick:!!r.bjsPick,
-michelinStars:Number.isFinite(r.michelinStars)?r.michelinStars:null,
-jamesBeard:!!r.jamesBeard,
-bjsVerified:!!r.bjsVerified,
 cat:cat||'bestof',
 phone:r.phone||'',
 hours:Array.isArray(r.hours)?r.hours:[],
@@ -12410,11 +12405,6 @@ url:primary.url||secondary.url||'',
 rating:primary.rating||secondary.rating||null,
 ratingText:primary.ratingText||secondary.ratingText||'',
 reviews:primary.reviews!=null?primary.reviews:secondary.reviews,
-ratingNote:primary.ratingNote||secondary.ratingNote||'',
-bjsPick:!!(primary.bjsPick||secondary.bjsPick),
-michelinStars:primary.michelinStars!=null?primary.michelinStars:secondary.michelinStars,
-jamesBeard:!!(primary.jamesBeard||secondary.jamesBeard),
-bjsVerified:!!(primary.bjsVerified||secondary.bjsVerified),
 phone:primary.phone||secondary.phone||'',
 hours:(primary.hours&&primary.hours.length?primary.hours:secondary.hours)||[],
 price:primary.price||secondary.price||null,
@@ -44058,7 +44048,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 <button id="bopVoiceMicBtn" type="button" aria-label="Hold to speak — tell us what you're looking for">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" class="bop-mic-body"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/><path class="bop-mic-wave bop-mic-wave-l" d="M2 11a10 10 0 0 0 2.6 6.7" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/><path class="bop-mic-wave bop-mic-wave-r" d="M22 11a10 10 0 0 1 -2.6 6.7" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </button>
-<div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">ASK ME ANYTHING!</span><span class="bop-voice-bubble-text"></span></div>
+<div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">ASK US ANYTHING!</span><span class="bop-voice-bubble-text"></span></div>
 <div id="bopVoiceResults" aria-label="Voice search results">
   <div class="bop-voice-shell">
     <button type="button" class="bop-voice-close" id="bopVoiceClose" aria-label="Close">&times;</button>
@@ -44066,7 +44056,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
       <label class="bop-voice-toggle-wrap"><span class="bop-voice-toggle" id="bopVoiceToggleTrack"><input type="checkbox" id="bopVoiceToggle" aria-label="Voice replies on or off"><span class="bop-voice-toggle-knob"></span></span><span class="bop-voice-toggle-label">VOICE</span></label>
       <button type="button" class="bop-voice-voice-btn" id="bopVoiceCycle" aria-label="Cycle voice">🔊 <span id="bopVoiceCycleLabel">Voice</span></button>
     </div>
-    <div class="bop-voice-said-label" id="bopVoiceSaidLabel">ASK ME ANYTHING!</div>
+    <div class="bop-voice-said-label" id="bopVoiceSaidLabel">ASK US ANYTHING!</div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
     <p class="bop-voice-reply" id="bopVoiceReply" aria-live="polite"><span class="bop-voice-reply-label" id="bopVoiceReplyLabel"></span><span id="bopVoiceReplyText"></span></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
@@ -44175,17 +44165,17 @@ return 'en';
 })();
 var REC_LANG={en:'en-US',fr:'fr-FR',zh:'zh-CN',es:'es-US',ja:'ja-JP',de:'de-DE',it:'it-IT',ko:'ko-KR',pt:'pt-BR',he:'he-IL',sv:'sv-SE'};
 var UI_TEXT={
-en:{askAnything:'ASK ME ANYTHING!',thumbPress:'THUMB. PRESS. SPEAK.',release:'RELEASE.',searching:'Finding your spots\u2026',noMatch:'I couldn\u2019t find anything matching that.',tryExample:'Try something like cheesesteak, or fine dining steak.',bjsSays:'BJS SAYS'},
-fr:{askAnything:'DEMANDEZ-MOI TOUT !',thumbPress:'POUCE. APPUYEZ. PARLEZ.',release:'RELÂCHEZ.',searching:'Recherche en cours\u2026',noMatch:'Je n\u2019ai rien trouv\u00e9 qui corresponde.',tryExample:'Essayez par exemple\u00a0: pizza, ou sushi \u00e9l\u00e9gant.',bjsSays:'BJS DIT'},
-zh:{askAnything:'\u6709\u4ec0\u4e48\u5c31\u95ee\u6211\uff01',thumbPress:'\u6309\u4f4f\u62c7\u6307\u3002\u8bf4\u8bdd\u3002',release:'\u677e\u5f00\u3002',searching:'\u6b63\u5728\u4e3a\u60a8\u67e5\u627e\u2026',noMatch:'\u6ca1\u6709\u627e\u5230\u5339\u914d\u7684\u9910\u5385\u3002',tryExample:'\u8bd5\u8bd5\u8bf4\uff1a\u5bff\u53f8\uff0c\u6216\u8005\u9ad8\u6863\u725b\u6392\u3002',bjsSays:'BJS \u8bf4'},
-es:{askAnything:'\u00a1PREG\u00daNTAME LO QUE SEA!',thumbPress:'PULGAR. PRESIONA. HABLA.',release:'SUELTA.',searching:'Buscando tus lugares\u2026',noMatch:'No encontr\u00e9 nada que coincida.',tryExample:'Prueba algo como pizza, o bistec de alta cocina.',bjsSays:'BJS DICE'},
+en:{askAnything:'ASK US ANYTHING!',thumbPress:'THUMB. PRESS. SPEAK.',release:'RELEASE.',searching:'Finding your spots\u2026',noMatch:'I couldn\u2019t find anything matching that.',tryExample:'Try something like cheesesteak, or fine dining steak.',bjsSays:'BJS SAYS'},
+fr:{askAnything:'DEMANDEZ-NOUS TOUT !',thumbPress:'POUCE. APPUYEZ. PARLEZ.',release:'RELÂCHEZ.',searching:'Recherche en cours\u2026',noMatch:'Je n\u2019ai rien trouv\u00e9 qui corresponde.',tryExample:'Essayez par exemple\u00a0: pizza, ou sushi \u00e9l\u00e9gant.',bjsSays:'BJS DIT'},
+zh:{askAnything:'\u6709\u4ec0\u4e48\u5c31\u95ee\u6211\u4eec\uff01',thumbPress:'\u6309\u4f4f\u62c7\u6307\u3002\u8bf4\u8bdd\u3002',release:'\u677e\u5f00\u3002',searching:'\u6b63\u5728\u4e3a\u60a8\u67e5\u627e\u2026',noMatch:'\u6ca1\u6709\u627e\u5230\u5339\u914d\u7684\u9910\u5385\u3002',tryExample:'\u8bd5\u8bd5\u8bf4\uff1a\u5bff\u53f8\uff0c\u6216\u8005\u9ad8\u6863\u725b\u6392\u3002',bjsSays:'BJS \u8bf4'},
+es:{askAnything:'\u00a1PREG\u00daNTANOS LO QUE SEA!',thumbPress:'PULGAR. PRESIONA. HABLA.',release:'SUELTA.',searching:'Buscando tus lugares\u2026',noMatch:'No encontr\u00e9 nada que coincida.',tryExample:'Prueba algo como pizza, o bistec de alta cocina.',bjsSays:'BJS DICE'},
 ja:{askAnything:'\u4f55\u3067\u3082\u805e\u3044\u3066\u304f\u3060\u3055\u3044\uff01',thumbPress:'\u89aa\u6307\u3002\u62bc\u3059\u3002\u8a71\u3059\u3002',release:'\u96e2\u3059\u3002',searching:'\u304a\u5e97\u3092\u63a2\u3057\u3066\u3044\u307e\u3059\u2026',noMatch:'\u8a72\u5f53\u3059\u308b\u3082\u306e\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f\u3002',tryExample:'\u300c\u5bff\u53f8\u300d\u3084\u300c\u9ad8\u7d1a\u30b9\u30c6\u30fc\u30ad\u300d\u306e\u3088\u3046\u306b\u8a71\u3057\u3066\u307f\u3066\u304f\u3060\u3055\u3044\u3002',bjsSays:'BJS\u3088\u308a'},
-de:{askAnything:'FRAG MICH ALLES!',thumbPress:'DAUMEN. DR\u00dcCKEN. SPRECHEN.',release:'LOSLASSEN.',searching:'Suche nach passenden Orten\u2026',noMatch:'Ich habe nichts Passendes gefunden.',tryExample:'Versuch es mit z.\u00a0B. Pizza oder gehobenem Steak.',bjsSays:'BJS SAGT'},
-it:{askAnything:'CHIEDIMI QUALSIASI COSA!',thumbPress:'POLLICE. PREMI. PARLA.',release:'RILASCIA.',searching:'Sto cercando i posti giusti\u2026',noMatch:'Non ho trovato nulla che corrisponda.',tryExample:'Prova con qualcosa come pizza, o bistecca elegante.',bjsSays:'BJS DICE'},
+de:{askAnything:'FRAG UNS ALLES!',thumbPress:'DAUMEN. DR\u00dcCKEN. SPRECHEN.',release:'LOSLASSEN.',searching:'Suche nach passenden Orten\u2026',noMatch:'Ich habe nichts Passendes gefunden.',tryExample:'Versuch es mit z.\u00a0B. Pizza oder gehobenem Steak.',bjsSays:'BJS SAGT'},
+it:{askAnything:'CHIEDICI QUALSIASI COSA!',thumbPress:'POLLICE. PREMI. PARLA.',release:'RILASCIA.',searching:'Sto cercando i posti giusti\u2026',noMatch:'Non ho trovato nulla che corrisponda.',tryExample:'Prova con qualcosa come pizza, o bistecca elegante.',bjsSays:'BJS DICE'},
 ko:{askAnything:'\ubb34\uc5c7\uc774\ub4e0 \ubb3c\uc5b4\ubcf4\uc138\uc694!',thumbPress:'\uc5c4\uc9c0. \ub204\ub974\uae30. \ub9d0\ud558\uae30.',release:'\ub193\uae30.',searching:'\uc7a5\uc18c\ub97c \ucc3e\ub294 \uc911\u2026',noMatch:'\uc77c\uce58\ud558\ub294 \uacf3\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.',tryExample:'\uc608: \uc2a4\uc2dc, \ub610\ub294 \uace0\uae09 \uc2a4\ud14c\uc774\ud06c.',bjsSays:'BJS \uc548\ub0b4'},
-pt:{askAnything:'PERGUNTE-ME QUALQUER COISA!',thumbPress:'POLEGAR. PRESSIONE. FALE.',release:'SOLTE.',searching:'Procurando seus lugares\u2026',noMatch:'N\u00e3o encontrei nada correspondente.',tryExample:'Experimente algo como pizza, ou bife sofisticado.',bjsSays:'O BJS DIZ'},
-he:{askAnything:'\u05e9\u05d0\u05dc \u05d0\u05d5\u05ea\u05d9 \u05db\u05dc \u05d3\u05d1\u05e8!',thumbPress:'\u05d0\u05d2\u05d5\u05d3\u05dc. \u05dc\u05d7\u05e6\u05d5. \u05d3\u05d1\u05e8\u05d5.',release:'\u05e9\u05d7\u05e8\u05e8\u05d5.',searching:'\u05de\u05d7\u05e4\u05e9\u05d9\u05dd \u05d1\u05e9\u05d1\u05d9\u05dc\u05db\u05dd\u2026',noMatch:'\u05dc\u05d0 \u05de\u05e6\u05d0\u05ea\u05d9 \u05e9\u05d5\u05dd \u05d3\u05d1\u05e8 \u05de\u05ea\u05d0\u05d9\u05dd.',tryExample:'\u05e0\u05e1\u05d5 \u05dc\u05de\u05e9\u05dc: \u05e1\u05d5\u05e9\u05d9, \u05d0\u05d5 \u05e1\u05d8\u05d9\u05d9\u05e7 \u05d9\u05d5\u05e7\u05e8\u05ea\u05d9.',bjsSays:'BJS \u05d0\u05d5\u05de\u05e8\u05d9\u05dd'},
-sv:{askAnything:'FR\u00c5GA MIG VAD SOM HELST!',thumbPress:'TUMME. TRYCK. PRATA.',release:'SL\u00c4PP.',searching:'S\u00f6ker efter dina st\u00e4llen\u2026',noMatch:'Jag hittade inget som matchade.',tryExample:'Prova n\u00e5got som pizza, eller finare biff.',bjsSays:'BJS S\u00c4GER'}
+pt:{askAnything:'PERGUNTE QUALQUER COISA!',thumbPress:'POLEGAR. PRESSIONE. FALE.',release:'SOLTE.',searching:'Procurando seus lugares\u2026',noMatch:'N\u00e3o encontrei nada correspondente.',tryExample:'Experimente algo como pizza, ou bife sofisticado.',bjsSays:'O BJS DIZ'},
+he:{askAnything:'\u05e9\u05d0\u05dc\u05d5 \u05d0\u05d5\u05ea\u05e0\u05d5 \u05db\u05dc \u05d3\u05d1\u05e8!',thumbPress:'\u05d0\u05d2\u05d5\u05d3\u05dc. \u05dc\u05d7\u05e6\u05d5. \u05d3\u05d1\u05e8\u05d5.',release:'\u05e9\u05d7\u05e8\u05e8\u05d5.',searching:'\u05de\u05d7\u05e4\u05e9\u05d9\u05dd \u05d1\u05e9\u05d1\u05d9\u05dc\u05db\u05dd\u2026',noMatch:'\u05dc\u05d0 \u05de\u05e6\u05d0\u05ea\u05d9 \u05e9\u05d5\u05dd \u05d3\u05d1\u05e8 \u05de\u05ea\u05d0\u05d9\u05dd.',tryExample:'\u05e0\u05e1\u05d5 \u05dc\u05de\u05e9\u05dc: \u05e1\u05d5\u05e9\u05d9, \u05d0\u05d5 \u05e1\u05d8\u05d9\u05d9\u05e7 \u05d9\u05d5\u05e7\u05e8\u05ea\u05d9.',bjsSays:'BJS \u05d0\u05d5\u05de\u05e8\u05d9\u05dd'},
+sv:{askAnything:'FR\u00c5GA OSS VAD SOM HELST!',thumbPress:'TUMME. TRYCK. PRATA.',release:'SL\u00c4PP.',searching:'S\u00f6ker efter dina st\u00e4llen\u2026',noMatch:'Jag hittade inget som matchade.',tryExample:'Prova n\u00e5got som pizza, eller finare biff.',bjsSays:'BJS S\u00c4GER'}
 };
 function uiText(key){return (UI_TEXT[LANG]&&UI_TEXT[LANG][key])||UI_TEXT.en[key];}
 /* A handful of the most-asked-for cuisines in French and Chinese — not a
@@ -44592,57 +44582,13 @@ var meta=[cityLabel(x.city),catLabel(r.cat)];
 if(lvl)meta.push('$'.repeat(lvl));
 if(r.rating)meta.push('\u2605 '+r.rating);
 var dist=(x.d==null||!x.exact)?'':(x.d<.1?'<0.1':x.d.toFixed(1))+' mi';
-/* Same verification tiers as the main site cards: gold apple for a BJS
-   Pick, Michelin star, James Beard honor, or 4.9+ rating; a checkmark
-   apple for a 4.4-4.8 rating backed by 1,000+ combined reviews (read out
-   of every "(NNN reviews)" mention in ratingNote, same as the main grid),
-   a manual bjsVerified flag, or Michelin/James Beard on their own. */
-var vRating=parseFloat(r.rating);
-var isGold=!!(r.bjsPick||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard||(Number.isFinite(vRating)&&vRating>=4.9));
-var reviewCount=(function(){
-var mentions=[];
-if(typeof r.ratingNote==='string'){
-var re=/\(([\d,]+)\s*reviews?\)/gi,m;
-while((m=re.exec(r.ratingNote)))mentions.push(parseInt(m[1].replace(/,/g,''),10));
-}
-if(!mentions.length&&Number.isFinite(r.reviews))mentions.push(r.reviews);
-var max=mentions.length?Math.max.apply(null,mentions):0;
-var sum=mentions.reduce(function(a,b){return a+b;},0);
-return Math.max(max,sum>=1000?sum:0);
-})();
-var isVerified=isGold||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard||r.bjsVerified||(Number.isFinite(vRating)&&vRating>=4.4&&reviewCount>=1000);
+var isGold=!!(r.goldApple||r.bjsPick||(Number(r.rating)>=4.9));
 var appleFill=isGold?'#F59E0B':'#000';
-var appleCheck=isVerified?'<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>':'';
+var appleCheck=isGold?'<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>':'';
 var appleBadge='<span class="bop-voice-apple" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="'+appleFill+'" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/>'+appleCheck+'</svg></span>';
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+appleBadge+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
 list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
-/* Rows without an exact distance so far just fell back to a rough
-   city-center estimate, which used to render as a blank instead of a
-   real number — most restaurants simply don't have lat/lon stored, and
-   this used to only ever READ the geocode cache, never actually fill it.
-   Now it does: look up real coordinates in the background (throttled,
-   capped to what's on screen) and fill each blank in as it resolves,
-   caching every result so it's instant on the next search. */
-if(pos){
-var toGeocode=rows.map(function(x,i){return{x:x,i:i};}).filter(function(o){return!o.x.exact&&o.x.r.address;}).slice(0,12);
-(function geocodeNext(idx){
-if(idx>=toGeocode.length)return;
-var o=toGeocode[idx];
-var cLabel=cityLabel(o.x.city),cDefaults=boNearCityDefaults(o.x.city);
-Promise.resolve(boGeocodeRestaurant(o.x.r,cLabel,cDefaults)).then(function(coord){
-if(coord&&coord.lat&&coord.lon){
-var d=boNearDistanceMiles(pos,{lat:coord.lat,lng:coord.lon});
-o.x.d=d;o.x.exact=true;
-var row=list.querySelector('[data-voice-idx="'+o.i+'"]');
-var distEl=row&&row.querySelector('.bop-voice-row-dist');
-if(distEl)distEl.textContent=(d<.1?'<0.1':d.toFixed(1))+' mi';
-}
-}).catch(function(){}).then(function(){
-setTimeout(function(){geocodeNext(idx+1);},650);
-});
-})(0);
-}
 });
 }
 function speakSummary(q,rows,scope){
