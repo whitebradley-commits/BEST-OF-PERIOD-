@@ -44458,7 +44458,7 @@ else if(/\bbjs\b/.test(t))out.pizzaSource='bjs';
    that filtering separately, so free-text search would just get in the way
    and search for literal garbage like "closest dive restaurant". */
 var wantsSuggestion=/\b(suggest|suggestion|suggestions|recommend|recommendation|recommendations|surprise me|you choose|your choice|pick (something|one|for me)|what should i (eat|get|have|order|try)|what do you (recommend|suggest|think))\b/.test(t);
-if(!out.cats.length&&!wantsSuggestion&&!out.tier){
+if(!out.cats.length&&!wantsSuggestion&&!out.tier&&!out.pizzaSource){
 var ft=t;
 ft=ft.replace(/\b(i(?:'m| am)?|we|you|craving|crave|have|has|had|a|an|the|some|really|actually|just|can|could|would|will|how about|how|about|tell me|tell|kinda|kind of|sort of|want|wants|wanted|would like|like|looking for|look for|find me|get me|give me|show me|near ?me|nearby|around here|close by|close to me|closest|nearest|walking distance|within|an? hour|minutes?|miles?|please|for|to eat|to have|hungry for|in the mood for|mood for)\b/g,' ');
 /* A bare leftover number (e.g. the "15" from "within 15 minutes" -- the
@@ -44576,7 +44576,7 @@ var q=parse(text);
    usable free-text leftover after stripping filler words) — a genuine
    miss. Three of these in a row gets a different, pointed line instead of
    the usual playful rotation; any real result resets the streak. */
-if(!q.cats.length&&!q.tier&&q.miles==null&&!q.freeText){
+if(!q.cats.length&&!q.tier&&q.miles==null&&!q.freeText&&!q.pizzaSource){
 showConfused(text);
 return;
 }
@@ -44637,16 +44637,23 @@ rows.sort(function(a,b){var ra=Number(a.r.rating)||0,rb=Number(b.r.rating)||0;if
 rows=rows.slice(0,30);
 var chips=[];
 q.labels.forEach(function(l){chips.push('<span class="bop-voice-chip">'+esc(l)+'</span>');});
+if(!q.labels.length&&q.pizzaSource)chips.push('<span class="bop-voice-chip">Pizza</span>');
 if(q.pizzaSource)chips.push('<span class="bop-voice-chip">'+PIZZA_SOURCE_LABEL[q.pizzaSource]+' scored</span>');
 if(q.tier)chips.push('<span class="bop-voice-chip">'+(q.tier==='fine'?'Fine $$$$':q.tier==='dive'?'Dive $':'Casual $$\u2013$$$')+'</span>');
 if(q.minutes!=null)chips.push('<span class="bop-voice-chip">Up to '+q.minutes+' min drive</span>');
 else if(q.miles!=null)chips.push('<span class="bop-voice-chip">Within '+q.miles+' mi</span>');
-if(!q.labels.length&&!q.tier)chips.push('<span class="bop-voice-chip is-dim">No cuisine caught \u2014 showing everything</span>');
+if(!q.labels.length&&!q.tier&&!q.pizzaSource)chips.push('<span class="bop-voice-chip is-dim">No cuisine caught \u2014 showing everything</span>');
 chips.push('<span class="bop-voice-chip is-dim">'+rows.length+' spot'+(rows.length===1?'':'s')+'</span>');
 summary.innerHTML=chips.join('');
 note.textContent=scope;
 speakResults(q,rows,scope);
-if(!rows.length){list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';return;}
+if(!rows.length){
+if(q.pizzaSource){
+list.innerHTML='<div class="bop-voice-empty">None of the pizza spots have a <strong>'+esc(PIZZA_SOURCE_LABEL[q.pizzaSource])+'</strong> score yet.<br>Try asking just for <strong>\u201cpizza\u201d</strong> and I can still show you the list.</div>';
+}else{
+list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';
+}
+return;}
 list.innerHTML=rows.map(function(x,i){
 var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
 var meta=[cityLabel(x.city),catLabel(r.cat)];
@@ -44736,7 +44743,7 @@ return bits.join(' ');
 }
 var pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
 var top=rows[0].r,lvl=0;try{lvl=boNearPriceLevel(top)||0;}catch(e){}
-var what=(q.labels.length?q.labels.join(' or ')+' ':'')+(q.pizzaSource?PIZZA_SOURCE_LABEL2[q.pizzaSource]+'-scored ':'')+(rows.length===1?'spot':'spots');
+var what=(q.labels.length?q.labels.join(' or ')+' ':(q.pizzaSource?'Pizza ':''))+(q.pizzaSource?PIZZA_SOURCE_LABEL2[q.pizzaSource]+'-scored ':'')+(rows.length===1?'spot':'spots');
 var count=rows.length+' '+what+(q.tier?' \u2014 '+(q.tier==='fine'?'fine dining':q.tier==='dive'?'dive':'casual'):'');
 var openers=[
 'Found '+count+'.',
