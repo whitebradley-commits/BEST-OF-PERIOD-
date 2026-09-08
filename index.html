@@ -24323,7 +24323,13 @@ function install(){
 const grid=document.querySelector('#bopWorldwideLanding .bop-world-tiles');if(!grid)return;
 let tile=grid.querySelector('.bop-world-all-bjs');
 if(!tile){tile=document.createElement('button');tile.type='button';tile.className='bop-world-tile bop-world-all-bjs';tile.setAttribute('aria-label','Open All BJS Picks');tile.innerHTML='<span class="bop-world-red-globe" aria-hidden="true"></span>ALL BJS<br>PICKS';grid.appendChild(tile);}
-const restaurants=grid.querySelector('[data-worldwide-key="restaurants"]');if(restaurants&&restaurants.nextElementSibling!==tile)restaurants.insertAdjacentElement('afterend',tile);
+/* Positioning removed -- the bop-worldwide-tiles-restore-v414 script now
+   owns the full tile order (All Cities, All BJS Picks, Live!,
+   Restaurants, then the rest) on its own interval. This script forcing
+   All BJS Picks to sit right after Restaurants was fighting that one
+   for the same element every time either script's watcher fired,
+   which is what caused the flicker -- this only ensures the tile
+   exists now, never where it sits. */
 }
 document.addEventListener('click',function(e){const tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-bjs');if(!tile)return;e.preventDefault();e.stopImmediatePropagation();if(typeof window.boOpenAllBjsPicks==='function')window.boOpenAllBjsPicks();},true);
 function start(){install();new MutationObserver(install).observe(document.body,{childList:true,subtree:true});}
