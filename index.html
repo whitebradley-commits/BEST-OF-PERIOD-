@@ -46839,15 +46839,19 @@ if(typeof window.boCityContext==='undefined')return;
    own fixed set of circular orbs and isn't meant to gain a new tile. */
 var landingOverlay=document.getElementById('bopLandingOverlay');
 if(landingOverlay && landingOverlay.classList.contains('open'))return;
-var grids=document.querySelectorAll('.bo-picker-grid');
-if(!grids.length)return;
-/* v2: always show, every city/page (a city with no local matches
-   just opens an empty/coming-soon Celebrity Chefs list rather than
-   hiding the tile) — and live in the FEATURED row (grid[0]) right
-   next to BJS Picks, not buried as the first tile of the K–Z grid
-   (grids[length-1]), which is where it was landing before. */
-var grid=grids[0];
-if(landingOverlay && landingOverlay.contains(grid))return;
+/* v4: target the FEATURED row specifically by its real container
+   (.bo-featured-category-group), not just "whichever .bo-picker-grid
+   happens to be first on the page" — grids[0] was landing inside an
+   unrelated circular quick-nav row (Dessert/24 HOURS/NEAR ME/etc.)
+   on the city hero splash page instead, which is why it was showing
+   up there as a stray circular orb and was simply missing from the
+   real category picker's featured row next to BJS Picks. Also sweep
+   away any tile that landed in the wrong place from that old logic. */
+document.querySelectorAll('.bo-celeb-chef-tile').forEach(function(stray){
+if(!stray.closest('.bo-featured-category-group'))stray.remove();
+});
+var grid=document.querySelector('.bo-featured-category-group .bo-picker-grid');
+if(!grid)return;
 var already=grid.querySelector('.bo-celeb-chef-tile');
 if(already)return;
 /* v3: restore the Walk-of-Fame star/granite artwork as the tile's
@@ -47710,6 +47714,18 @@ display:none!important;
    starts much closer to the top of the circle instead. */
 #bjsWhyOverlay .bjs-why-orb{
 padding-top:4%!important;
+}
+</style>
+
+<style id="bop-landing-period-mark-visible-v1">
+/* The apple/© mark next to "Period" on the always-rotating city
+   splash (#bopLandingOverlay — the London/Brooklyn/NYC page users
+   land on, distinct from #boHeroTitle) uses its own absolute-
+   positioned rule sized at a tiny .18em, which combined with the
+   earlier missing svg width/height made it effectively invisible
+   here too. Boosting it to a size that's actually visible. */
+#bopLandingOverlay .bop-splash-period>.period-mark{
+font-size:.34em!important;
 }
 </style>
 </body></html>
