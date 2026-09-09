@@ -20207,6 +20207,7 @@ document.addEventListener('keydown',function(event){if(event.key==='Escape'){var
 <script id="bop-external-sites-stay-open-v185">(function(){
 document.addEventListener('click',function(event){
 const link=event.target.closest('a[href]');if(!link||event.defaultPrevented||event.button>0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+if(link.target==='_blank')return;
 let url;try{url=new URL(link.href,location.href);}catch(error){return;}
 if(!/^https?:$/.test(url.protocol)||url.origin===location.origin)return;
 event.preventDefault();event.stopImmediatePropagation();
@@ -25599,10 +25600,11 @@ london:'europe',paris:'europe',zurich:'europe',lucerne:'europe',geneva:'europe',
 function regionFor(key,cfg){
 if(assignments[key])return assignments[key];
 var hint=String((cfg&&cfg.countryLabel)||'').toLowerCase();
-if(/japan|china|korea|india|singapore|thai|vietnam|philipp/.test(hint))return'asia';
+if(/japan|china|korea|india|singapore|thai|vietnam|philipp|hong kong|taiwan|macau/.test(hint))return'asia';
 if(/australia|zealand|fiji/.test(hint))return'oceania';
 if(/brazil|argentina|peru|chile|colombia/.test(hint))return'south-america';
 if(/africa|egypt|israel|emirates|dubai|turkey|lebanon/.test(hint))return'africa-middle-east';
+if(/spain|italy|denmark|netherlands|portugal|belgium|austria|germany|sweden|norway|ireland|croatia|switzerland|france|england|scotland|wales|united kingdom|\buk\b|greece|poland|czech|hungary|finland|iceland|slovenia|serbia|romania|bulgaria|russia|monaco/.test(hint))return'europe';
 return'north-america';
 }
 function cityRows(){
@@ -47225,7 +47227,7 @@ transform:translateX(-50%)!important;
    uniformly on top of whichever variant is active. */
 #bopLandingOverlay .bop-splash-city{
 display:inline-block!important;
-transform:scale(1.1) translateX(-5px)!important;
+transform:scale(1.21) translateX(-7px)!important;
 transform-origin:center center!important;
 }
 
