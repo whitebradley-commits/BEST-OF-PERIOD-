@@ -42894,7 +42894,7 @@ html+='<div class="bobb-pop bobb-card" id="bobbpop-'+id+'" style="display:none">
 var img=r.image||((typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'');
 if(!img){var wantN=String(r.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim();Object.keys(boCategoryData).some(function(cc){var L=boCategoryData[cc];if(!Array.isArray(L))return false;return L.some(function(x){if(x&&x.image&&String(x.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").trim()===wantN){img=x.image;return true;}return false;});});}
 var brandPlaceholder='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period \u2014 Verified Location" loading="lazy">';
-html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1" onerror="this.closest(\'.bobb-card-media\').classList.add(\'bobb-card-media-placeholder\');this.outerHTML=\''+brandPlaceholder.replace(/'/g,"\\'")+'\';">':brandPlaceholder)+'</div>';
+html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1">':brandPlaceholder)+'</div>';
 html+='<div class="bobb-card-body">';
 html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
 var stars=parseInt(r.michelinStars,10)||0;
@@ -43443,7 +43443,7 @@ if(r.phone)h+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).re
 if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)h+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
 h+='</div>';
-body.innerHTML=h;var im=body.querySelector('.bobb-card-media img:not(.bobb-card-placeholder)');if(im)im.addEventListener('error',function(){im.parentElement.classList.add('bobb-card-media-placeholder');im.parentElement.innerHTML=brand;var ph=im.parentElement.querySelector('.bobb-card-placeholder');if(ph)ph.addEventListener('error',function(){ph.parentElement.innerHTML=brandText;});});var ph0=body.querySelector('.bobb-card-placeholder');if(ph0)ph0.addEventListener('error',function(){ph0.parentElement.innerHTML=brandText;});pop.classList.add('open');pop.scrollTop=0;
+body.innerHTML=h;var im=body.querySelector('.bobb-card-media img:not(.bobb-card-placeholder)');if(im)im.addEventListener('error',function(){var pe=im.parentElement;if(!pe)return;pe.classList.add('bobb-card-media-placeholder');pe.innerHTML=brand;var ph=pe.querySelector('.bobb-card-placeholder');if(ph)ph.addEventListener('error',function(){if(ph.parentElement)ph.parentElement.innerHTML=brandText;});});var ph0=body.querySelector('.bobb-card-placeholder');if(ph0)ph0.addEventListener('error',function(){if(ph0.parentElement)ph0.parentElement.innerHTML=brandText;});pop.classList.add('open');pop.scrollTop=0;
 }
 function close(){pop.classList.remove('open');}
 window.bopShowPickCard=function(r,label){show(r,label||(r.bjsPick?'BJS PICK':'BEST OF PERIOD'));};
@@ -48552,6 +48552,143 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   function install(){
     applyExact();repairAll(document);
     new MutationObserver(function(records){records.forEach(function(rec){rec.addedNodes.forEach(function(node){if(node.nodeType===1){if(node.matches&&node.matches('.bobb-card-media'))repair(node);repairAll(node);}});});}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="bop-landing-pin-and-canonical-card-media-v600">
+/* v600 (2026-09-09) — 1) Rotating landing page: the pin floated ~13px above
+   the ı (into the city name). Bring it down so it sits like a dot, ~2-3px
+   over the letter. Landing page only; inner pages untouched. */
+#bopLandingOverlay .bop-splash-period .bop-period-i-wrap>.bop-period-apple-i{
+  top:calc(-.14em + 4pt + .2em)!important;
+}
+/* 2) One canonical no-photo fallback for restaurant cards (All BJS Picks
+   card + Best of All Cities cards): the real Best of / Period lockup cloned
+   from the landing page (same pin + apple system), never a PNG or a plain
+   text "Best of Period". */
+.bop-canon-fallback{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;box-sizing:border-box;
+  padding:8px 10px;background:#000;text-align:center;overflow:hidden;
+  font-family:'Bodoni Moda','Playfair Display',serif;font-weight:900;
+}
+.bop-canon-fallback .bop-canon-line1{color:#fff;line-height:.92;white-space:nowrap;text-shadow:0 0 12px rgba(255,255,255,.35)}
+.bop-canon-fallback .bop-canon-period{color:#F59E0B;line-height:.95;white-space:nowrap;text-shadow:0 0 14px rgba(245,158,11,.45);position:relative;display:inline-block}
+.bop-canon-fallback .bop-canon-period *{color:inherit;fill:currentColor}
+.bop-canon-fallback .bop-canon-period .bop-period-apple-i svg{fill:#F59E0B;width:100%;height:100%;display:block}
+.bop-canon-fallback .bop-canon-period .period-mark{font-size:.13em;line-height:1;vertical-align:.08em;margin-left:.045em;position:static;transform:none}
+.bop-canon-fallback .bop-canon-tagline{margin-top:7px;color:#F59E0B;font:800 9px/1.15 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+#bopPickCardPop .bop-canon-fallback .bop-canon-line1,#bopPickCardPop .bop-canon-fallback .bop-canon-period{font-size:38px}
+#bopBestOfBestOverlay .bop-canon-fallback .bop-canon-line1,#bopBestOfBestOverlay .bop-canon-fallback .bop-canon-period{font-size:29px}
+#bopBestOfBestOverlay .bop-canon-fallback .bop-canon-tagline{font-size:8px;margin-top:5px}
+#bopPickCardPop .bobb-card-media>img[data-bop-canon-photo],
+#bopBestOfBestOverlay .bobb-card-media>img[data-bop-canon-photo]{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:cover!important;object-position:center!important;padding:0!important;
+}
+#bopPickCardPop .bobb-card-media:has(>.bop-canon-fallback),
+#bopBestOfBestOverlay .bobb-card-media:has(>.bop-canon-fallback){background:#000!important}
+</style>
+<script id="bop-landing-pin-and-canonical-card-media-v600-script">
+(function(){
+  var MEDIA_SEL='#bopPickCardPop .bobb-card-media,#bopBestOfBestOverlay .bobb-card-media';
+  var STALE_SEL='.bobb-card-placeholder,.bobb-card-brandmark,.bobb-card-brandmark-live,.bop-current-photo-fallback,.bop-main-landing-fallback,.bobb-card-ph';
+  function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/\s*[\u2014\u2013-]\s*.*$/,'').replace(/[^a-z0-9]+/g,' ').trim();}
+  function normFull(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();}
+  function candidates(name){
+    var out=[],seen={};
+    function add(u){u=String(u||'').trim();if(u&&!seen[u]){seen[u]=1;out.push(u);}}
+    var full=normFull(name),base=norm(name);
+    if(typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS){
+      Object.keys(BUSINESS_PHOTOS).forEach(function(k){var a=BUSINESS_PHOTOS[k];if(!Array.isArray(a))return;var nk=normFull(k);if(nk===full||norm(k)===base)a.forEach(add);});
+    }
+    if(typeof boCategoryData==='object'&&boCategoryData){
+      [full,base].forEach(function(want){
+        if(!want)return;
+        Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(r&&r.image&&(normFull(r.name)===want||norm(r.name)===want))add(r.image);});});
+      });
+    }
+    return out;
+  }
+  function stripAttrs(root){
+    root.querySelectorAll('[id],[style],[data-bop-one-point],[data-bop-v474]').forEach(function(n){n.removeAttribute('id');n.removeAttribute('style');n.removeAttribute('data-bop-one-point');n.removeAttribute('data-bop-v474');});
+    root.querySelectorAll('.bop-i-glyph-v474').forEach(function(g){var p=g.parentNode;while(g.firstChild)p.insertBefore(g.firstChild,g);p.removeChild(g);});
+  }
+  function periodMarkup(){
+    var src=document.querySelector('#bopLandingOverlay .bop-splash-period');
+    if(src){var c=src.cloneNode(true);stripAttrs(c);c.querySelectorAll('.bop-period-apple-i~.bop-period-apple-i').forEach(function(n){n.remove();});return c.innerHTML;}
+    return 'Period<span class="period-mark">\u00a9</span>';
+  }
+  function fallback(media){
+    if(media.querySelector(':scope>.bop-canon-fallback'))return;
+    var box=document.createElement('div');box.className='bop-canon-fallback';box.setAttribute('aria-label','Best of Period \u2014 We did the digging. You do the dining.');
+    var a=document.createElement('div');a.className='bop-canon-line1';a.textContent='Best of';
+    var b=document.createElement('div');b.className='bop-canon-period';b.innerHTML=periodMarkup();
+    var c=document.createElement('div');c.className='bop-canon-tagline';c.textContent='We did the digging. You do the dining.';
+    box.appendChild(a);box.appendChild(b);box.appendChild(c);
+    media.classList.add('bobb-card-media-placeholder');
+    media.replaceChildren(box);
+    media.dataset.bopCanon='fallback';
+  }
+  function nameOf(media){
+    var card=media.closest('.bobb-card-inner,.bobb-pop-inner,#bopPickCardBody')||media.parentElement;
+    var n=card&&card.querySelector('.bobb-card-name');
+    return n?(n.textContent||'').trim():'';
+  }
+  function tryNext(media){
+    var name=nameOf(media);
+    var list=candidates(name);
+    var tried=(media.dataset.bopCanonTried||'').split('\n').filter(Boolean);
+    var next=null;
+    for(var i=0;i<list.length;i++){if(tried.indexOf(list[i])<0){next=list[i];break;}}
+    if(!next){fallback(media);return;}
+    tried.push(next);media.dataset.bopCanonTried=tried.join('\n');
+    var img=document.createElement('img');img.alt=name+' restaurant';img.decoding='async';img.dataset.bopCanonPhoto='1';
+    img.addEventListener('error',function(){if(img.parentNode===media)tryNext(media);},{once:true});
+    img.addEventListener('load',function(){media.classList.remove('bobb-card-media-placeholder');media.dataset.bopCanon='photo';},{once:true});
+    media.classList.remove('bobb-card-media-placeholder');
+    media.replaceChildren(img);
+    img.src=next;
+  }
+  function repair(media){
+    if(!media||!media.isConnected)return;
+    var own=media.querySelector(':scope>img[data-bop-canon-photo]');
+    var canon=media.querySelector(':scope>.bop-canon-fallback');
+    var stale=media.querySelector(STALE_SEL);
+    if(own||canon){
+      if(stale)stale.remove();
+      if(own&&own.complete&&own.naturalWidth===0&&!own.dataset.bopCanonFailed){own.dataset.bopCanonFailed='1';tryNext(media);}
+      return;
+    }
+    var real=media.querySelector('img:not(.bobb-card-placeholder)');
+    if(real&&!stale){
+      var src=real.getAttribute('src')||'';
+      if(src){var t=(media.dataset.bopCanonTried||'').split('\n').filter(Boolean);if(t.indexOf(src)<0){t.push(src);media.dataset.bopCanonTried=t.join('\n');}}
+      if(real.complete&&real.naturalWidth===0){tryNext(media);return;}
+      if(!real.dataset.bopCanonBound){real.dataset.bopCanonBound='1';real.addEventListener('error',function(){if(real.parentNode===media)tryNext(media);},{once:true});}
+      return;
+    }
+    tryNext(media);
+  }
+  function repairAll(root){(root||document).querySelectorAll(MEDIA_SEL).forEach(repair);}
+  function onMutations(records){
+    var todo=new Set();
+    records.forEach(function(rec){
+      var t=rec.target;
+      if(t&&t.nodeType===1){var m=t.matches&&t.matches('.bobb-card-media')?t:(t.closest&&t.closest('.bobb-card-media'));if(m&&m.matches(MEDIA_SEL))todo.add(m);}
+      rec.addedNodes.forEach(function(node){
+        if(node.nodeType!==1)return;
+        if(node.matches&&node.matches(MEDIA_SEL))todo.add(node);
+        if(node.querySelectorAll)node.querySelectorAll(MEDIA_SEL).forEach(function(m){todo.add(m);});
+      });
+    });
+    todo.forEach(repair);
+  }
+  function install(){
+    repairAll(document);
+    new MutationObserver(onMutations).observe(document.body,{childList:true,subtree:true});
+    document.addEventListener('click',function(){setTimeout(function(){repairAll(document);},50);setTimeout(function(){repairAll(document);},400);},true);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
