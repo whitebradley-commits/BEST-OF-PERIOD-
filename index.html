@@ -47223,7 +47223,7 @@ transform:translateX(-50%)!important;
 #bopLandingOverlay .bop-splash-city,
 #tbotrLandingOverlay .bop-splash-city{
 display:inline-block!important;
-transform:scale(1.1) translateX(1.5px)!important;
+transform:scale(1.1)!important;
 transform-origin:center center!important;
 }
 
@@ -47426,5 +47426,126 @@ background:#000!important;border:0!important;box-shadow:none!important
 #bopMovieChoiceModal .bop-inline-bjs-word{display:inline;color:#E4002B;font:inherit;letter-spacing:inherit;white-space:nowrap;text-decoration:underline;text-decoration-color:#F59E0B;text-decoration-thickness:1.5px;text-underline-offset:4px;text-shadow:0 0 7px rgba(228,0,43,.8);cursor:pointer;animation:bopPlainBjsLinkGlow 1.6s ease-in-out infinite}
 #bopMovieChoiceModal .bop-inline-bjs-word::before,#bopMovieChoiceModal .bop-inline-bjs-word::after{content:none!important;display:none!important}
 @media(prefers-reduced-motion:reduce){.bop-movie-choice-content .bop-fate-orb .bop-movie-orb-art{animation:none}#bopMovieChoiceModal .bop-inline-bjs-word{animation:none}}
+</style>
+<style id="bop-truly-final-city-period-authority-v1">
+/* ABSOLUTE LAST WORD on this layout, deliberately placed at the very
+   end of the document so it wins every earlier !important rule tied
+   on selector specificity. There is a long history of prior patches
+   fighting each other here (grid vs flex, row vs column, transitions
+   left on from an earlier attempt causing a visible slide from row 3
+   into row 2 instead of an immediate snap) — this block is the single
+   source of truth going forward instead of another patch layered on
+   top.
+   Rotating/not-yet-landed state: Best Of / City / Period stack as
+   three plain rows, no motion.
+   Landed state (.bop-city-landed present): City and Period sit
+   together on one row, 6pt gap, centered as a block. No transition
+   on any of these elements, ever — the change must be instant so
+   nothing is ever seen sliding from one layout into the other. */
+.bop-splash-line2,
+.bop-splash-line2 .bop-splash-city-col,
+.bop-splash-line2 .bop-splash-city,
+.bop-splash-line2 .bop-splash-period{
+transition:none!important;
+animation-name:none!important;
+}
+.bop-splash-line2:has(#bopLandingCityText:not(.bop-city-landed)),
+.bop-splash-line2:has(#bopSplashCityText:not(.bop-city-landed)),
+.bop-splash-line2:has(#bopMainCityText:not(.bop-city-landed)),
+.bop-splash-line2:has(#bopResultsCityText:not(.bop-city-landed)){
+display:flex!important;
+flex-direction:column!important;
+align-items:center!important;
+justify-content:center!important;
+gap:.04em!important;
+column-gap:0!important;
+width:100%!important;
+max-width:100%!important;
+left:0!important;
+}
+.bop-splash-line2:has(#bopLandingCityText:not(.bop-city-landed)) .bop-splash-city-col,
+.bop-splash-line2:has(#bopSplashCityText:not(.bop-city-landed)) .bop-splash-city-col,
+.bop-splash-line2:has(#bopMainCityText:not(.bop-city-landed)) .bop-splash-city-col,
+.bop-splash-line2:has(#bopResultsCityText:not(.bop-city-landed)) .bop-splash-city-col{
+width:100%!important;
+min-width:0!important;
+max-width:100%!important;
+text-align:center!important;
+flex:none!important;
+}
+.bop-splash-line2:has(#bopLandingCityText:not(.bop-city-landed)) .bop-splash-city,
+.bop-splash-line2:has(#bopSplashCityText:not(.bop-city-landed)) .bop-splash-city,
+.bop-splash-line2:has(#bopMainCityText:not(.bop-city-landed)) .bop-splash-city,
+.bop-splash-line2:has(#bopResultsCityText:not(.bop-city-landed)) .bop-splash-city{
+display:block!important;
+text-align:center!important;
+}
+.bop-splash-line2:has(#bopLandingCityText:not(.bop-city-landed)) .bop-splash-period,
+.bop-splash-line2:has(#bopSplashCityText:not(.bop-city-landed)) .bop-splash-period,
+.bop-splash-line2:has(#bopMainCityText:not(.bop-city-landed)) .bop-splash-period,
+.bop-splash-line2:has(#bopResultsCityText:not(.bop-city-landed)) .bop-splash-period{
+display:block!important;
+position:static!important;
+grid-column:auto!important;
+margin:0!important;
+transform:none!important;
+text-align:center!important;
+width:auto!important;
+}
+.bop-splash-line2:has(#bopLandingCityText.bop-city-landed),
+.bop-splash-line2:has(#bopSplashCityText.bop-city-landed),
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed),
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed){
+display:flex!important;
+flex-direction:row!important;
+flex-wrap:nowrap!important;
+align-items:baseline!important;
+justify-content:center!important;
+column-gap:22pt!important;
+gap:22pt!important;
+width:max-content!important;
+max-width:calc(100vw - 32px)!important;
+left:0!important;
+}
+.bop-splash-line2:has(#bopLandingCityText.bop-city-landed) .bop-splash-city-col,
+.bop-splash-line2:has(#bopSplashCityText.bop-city-landed) .bop-splash-city-col,
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city-col,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city-col{
+display:contents!important;
+}
+.bop-splash-line2:has(#bopLandingCityText.bop-city-landed) .bop-splash-city,
+.bop-splash-line2:has(#bopSplashCityText.bop-city-landed) .bop-splash-city,
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-city,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-city{
+display:inline-block!important;
+text-align:right!important;
+transform:none!important;
+white-space:nowrap!important;
+width:auto!important;
+flex:0 0 auto!important;
+padding-right:.4em!important;
+}
+.bop-splash-line2:has(#bopLandingCityText.bop-city-landed) .bop-splash-period,
+.bop-splash-line2:has(#bopSplashCityText.bop-city-landed) .bop-splash-period,
+.bop-splash-line2:has(#bopMainCityText.bop-city-landed) .bop-splash-period,
+.bop-splash-line2:has(#bopResultsCityText.bop-city-landed) .bop-splash-period{
+display:inline-block!important;
+position:static!important;
+grid-column:auto!important;
+margin:0!important;
+transform:none!important;
+text-align:left!important;
+width:auto!important;
+flex:0 0 auto!important;
+}
+/* The rotating-preview scale/glow effect must never apply once a
+   city has actually landed — a 1.1x scale on the city text visually
+   overlaps into Period even though flex layout itself is correct,
+   since a CSS transform doesn't change the box other elements lay
+   out around, only what's painted on screen. */
+#bopLandingOverlay .bop-splash-city.bop-city-landed,
+#tbotrLandingOverlay .bop-splash-city.bop-city-landed{
+transform:none!important;
+}
 </style>
 </body></html>
