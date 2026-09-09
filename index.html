@@ -29757,9 +29757,7 @@ var apple = document.createElement('span');
 apple.className = 'bop-period-apple-i';
 apple.setAttribute('aria-hidden','true');
 apple.innerHTML =
-'<svg viewBox="0 0 40 40"><path d="M20 14c-1.8-3.2-5.6-4-8.4-1.6-3.4 3-4 8.7-1.8 13.4 1.9 4 4.6 6.7 7.4 6.7 1 0 1.7-.4 2.8-.4s1.8.4 2.8.4c2.8 0 5.5-2.7 7.4-6.7 2.2-4.7 1.6-10.4-1.8-13.4-2.8-2.4-6.6-1.6-8.4 1.6z"/>' +
-'<path d="M20 14c-.3-1.8.2-3.5 1.4-4.7" fill="none" stroke-linecap="round"/>' +
-'<path d="M21.4 9.3c1.6-1.7 3.8-1.8 4.6-1-.2 2.1-2.4 3.1-4.6 1z"/></svg>';
+'<svg viewBox="0 0 40 40" fill-rule="evenodd"><path d="M20 6C13.4 6 8 11.4 8 18c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12zm0 16.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>';
 iWrap.appendChild(apple);
 iWrap.appendChild(document.createTextNode(dotlessI));
 frag.appendChild(iWrap);
@@ -47818,6 +47816,7 @@ margin:0!important;
 transform:none!important;
 transform-origin:center!important;
 line-height:1!important;
+scale:2.662!important;
 }
 #bopLandingOverlay .bop-splash-line2>.bop-splash-period{
 display:block!important;
@@ -47840,10 +47839,18 @@ margin-top:6px!important;
 }
 </style>
 <style id="bop-repair-pass-20260909">
-/* Repair only: keep the approved lockup, but never substitute an apple for
-   the "o" in Period.  The apple/pin above the i remains unchanged. */
-.bop-period-apple-o{display:inline!important;width:auto!important;height:auto!important;margin:0!important;vertical-align:baseline!important;line-height:inherit!important}
-.bop-period-apple-o>svg{display:none!important}
+/* Canonical logo: navigation pin above the i, apple as the o, and a tiny
+   copyright mark after the d.  Never replace or hide any of these pieces. */
+.bop-period-apple-o{
+  display:inline-block!important;
+  width:.9em!important;
+  height:.97em!important;
+  margin:0 -.15em!important;
+  vertical-align:-.2em!important;
+  line-height:0!important;
+}
+.bop-period-apple-o>svg{display:block!important;width:100%!important;height:100%!important}
+.bop-period-apple-o>svg path{fill:currentColor!important;stroke:currentColor!important}
 
 /* Keep the Celebrity Chefs heading inside narrow phone screens. */
 #bopCelebChefOverlay .bop-splash-city-col{display:block!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
@@ -47877,11 +47884,6 @@ margin-top:6px!important;
 </style>
 <script id="bop-repair-pass-20260909-script">(function(){
 function repairPeriodMarks(root){
-  (root||document).querySelectorAll('.bop-period-apple-o').forEach(function(el){
-    var parent=el.parentElement;
-    var isCaps=!!(parent&&/^[^a-z]*$/.test(parent.textContent||''));
-    el.replaceWith(document.createTextNode(isCaps?'O':'o'));
-  });
   var selector='.bop-splash-period,.bo-movies-period,.bop-world-period,.hub-best-mini-period,.bo-picker-period,.bo-lead-best-period';
   (root||document).querySelectorAll(selector).forEach(function(el){
     if(el.closest('#bopExclusiveInvitation')&&el.querySelector('sup'))return;
