@@ -29325,7 +29325,7 @@ boCategoryData[cat]=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];
 if(!boCategoryData[cat].some(function(r){return r&&r.city===x.city&&key(r.name)===key(x.name)}))boCategoryData[cat].push(Object.assign({},source));
 });
 });
-Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r)return;var d=EXTRA[key(r.name)];if(d){r.why=d.why;r.note=d.note;if(d.callout){r.redCalloutLabel=d.label;r.redCallout=d.callout}else if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}}if(platformLed(r.why)){r.why='A locally distinctive restaurant selected for its cooking, setting and neighborhood identity'}if(!r.note||platformLed(r.note)){r.note='The rating is only one signal. Use this section for the restaurant’s cooking, atmosphere and place in its neighborhood.'}if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}})});
+Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){if(!r)return;var d=EXTRA[key(r.name)];if(d){r.why=d.why;r.note=d.note;if(d.callout){r.redCalloutLabel=d.label;r.redCallout=d.callout}else if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}}if(platformLed(r.why)){r.why='A locally distinctive restaurant selected for its cooking, setting and neighborhood identity'}if(!r.note||platformLed(r.note)){r.note='We\u2019re continuously researching this location. Check back soon for the full story.'}if(r.redCalloutLabel==='WHY IT STANDS OUT'){delete r.redCalloutLabel;delete r.redCallout}})});
 ['northshoreli','southshoreli','bronx','brooklyn','hamptons','manhattan'].forEach(function(city){
 var seen={},pool=[];Object.keys(boCategoryData).forEach(function(cat){(boCategoryData[cat]||[]).forEach(function(r){if(!r||r.city!==city||!parseFloat(r.rating))return;var k=key(r.name);if(!seen[k]){seen[k]=1;pool.push(r)}})});
 pool.sort(function(a,b){var ax=(a.bjsPick?3:0)+(a.michelinStars?3:0)+(a.jamesBeard?2:0)+(a.redCallout?1:0),bx=(b.bjsPick?3:0)+(b.michelinStars?3:0)+(b.jamesBeard?2:0)+(b.redCallout?1:0);return bx-ax||(parseFloat(b.rating)||0)-(parseFloat(a.rating)||0)||(Number(b.reviews)||0)-(Number(a.reviews)||0)});
@@ -40069,7 +40069,7 @@ rows.forEach(function(r){var area=areaName(r);var rn=parseFloat(String(r.rating|
 var phoneHtml=r.phone?'<a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a>':'<span></span>';
 var viewCatHtml=catInfo.key?'<button type="button" class="cp-view-cat" data-cat-key="'+esc(catInfo.key)+'" data-cat-city="'+esc(String(r.city||''))+'">View Category</button>':'';
 var bottomRowHtml=(r.phone||viewCatHtml)?'<div class="cp-bottom-row">'+phoneHtml+viewCatHtml+'</div>':'';
-h+='<div class="cp-card"><div class="cp-name">'+esc(r.name)+'</div><div class="cp-meta">'+(rating?esc(rating)+' \u00b7 ':'')+'BJS PICK'+(catLabel?' \u2014 '+esc(catLabel):'')+(area?' \u00b7 '+esc(area):'')+'</div>'+
+h+='<div class="cp-card"><div class="cp-name">'+esc(r.name)+(typeof window.bopCardAppleBadge==='function'?window.bopCardAppleBadge(r):'')+'</div><div class="cp-meta">'+(rating?esc(rating)+' \u00b7 ':'')+'BJS PICK'+(catLabel?' \u2014 '+esc(catLabel):'')+(area?' \u00b7 '+esc(area):'')+'</div>'+
 (r.why||r.note?'<div class="cp-why">'+esc(r.why||r.note)+'</div>':'')+
 (r.address?'<div class="cp-line">'+esc(r.address)+'</div>':'')+
 bottomRowHtml+'</div>';});
@@ -40088,6 +40088,21 @@ if(!back)return;
 if(lastKey==='newyork'){var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.style.display='';if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();return;}
 if(typeof window.bopShowCityGate==='function')window.bopShowCityGate(lastKey);}
 window.bopOpenCityPicks=openPicks;
+window.bopPickCategory=pickCategory;
+window.bopGoToCategory=function(catKey,cityKey){
+if(!catKey)return;
+document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');});
+var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.classList.remove('open');
+var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+var pop=document.getElementById('bopPickCardPop');if(pop)pop.classList.remove('open');
+var bobb=document.getElementById('bopBestOfBestOverlay');if(bobb){bobb.classList.remove('open');bobb.style.display='';}
+if(page)page.classList.remove('open');
+var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');
+if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}
+if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);
+if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);
+window.scrollTo(0,0);
+};
 function btn(key){var b=document.createElement('button');b.type='button';b.className='bop-city-picks-btn';b.setAttribute('data-picks-city',key);
 b.innerHTML='<span class="bjs-mini">BJS<small>CO.</small></span><span>'+esc(CITY[key].label)+'</span>';
 b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();openPicks(key);});return b;}
@@ -42908,7 +42923,7 @@ if(!img){var wantN=String(r.name||'').toLowerCase().replace(/[\u2019\u2018]/g,"'
 var brandPlaceholder='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period \u2014 Verified Location" loading="lazy">';
 html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy" data-bobb-photo="1">':brandPlaceholder)+'</div>';
 html+='<div class="bobb-card-body">';
-html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
+html+='<div class="bobb-card-name">'+esc(r.name)+(typeof window.bopCardAppleBadge==='function'?window.bopCardAppleBadge(r):'')+'</div>';
 var stars=parseInt(r.michelinStars,10)||0;
 html+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span>'+(price(r.price)?'<span class="bobb-card-price">'+price(r.price)+'</span>':'')+(stars?'<span class="bobb-card-stars">'+'\u2605'.repeat(stars)+' Michelin</span>':'')+'</div>';
 var desc=cleanDesc(r);
@@ -42917,6 +42932,7 @@ if(r.address)html+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
 if(r.phone)html+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>';
 if(r.address)html+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)html+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
+html+=(typeof window.bopCardViewCatBtn==='function'?window.bopCardViewCatBtn(r):'')+(typeof window.bopCardAllPicksBtn==='function'?window.bopCardAllPicksBtn(r):'');
 html+='</div></div></div>';
 });
 html+='</div>';
@@ -43446,7 +43462,7 @@ var brand='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png"
 var h='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy">':brand)+'</div>';
 h+='<div class="bobb-card-body">';
 h+='<span class="bop-pick-badge">'+esc(label||'BJS PICK')+'</span>';
-h+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
+h+='<div class="bobb-card-name">'+esc(r.name)+(typeof window.bopCardAppleBadge==='function'?window.bopCardAppleBadge(r):'')+'</div>';
 var stars=parseInt(r.michelinStars,10)||0;
 h+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span>'+(price(r.price)?'<span class="bobb-card-price">'+price(r.price)+'</span>':'')+(stars?'<span class="bobb-card-stars">'+'\u2605'.repeat(stars)+' Michelin</span>':'')+'</div>';
 var dd=desc(r);if(dd)h+='<div class="bobb-card-desc">'+esc(dd)+'</div>';
@@ -43454,6 +43470,7 @@ if(r.address)h+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
 if(r.phone)h+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">Call '+esc(r.phone)+'</a></div>';
 if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)h+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
+h+=(typeof window.bopCardViewCatBtn==='function'?window.bopCardViewCatBtn(r):'')+(typeof window.bopCardAllPicksBtn==='function'?window.bopCardAllPicksBtn(r):'');
 h+='</div>';
 body.innerHTML=h;var im=body.querySelector('.bobb-card-media img:not(.bobb-card-placeholder)');if(im)im.addEventListener('error',function(){var pe=im.parentElement;if(!pe)return;pe.classList.add('bobb-card-media-placeholder');pe.innerHTML=brand;var ph=pe.querySelector('.bobb-card-placeholder');if(ph)ph.addEventListener('error',function(){if(ph.parentElement)ph.parentElement.innerHTML=brandText;});});var ph0=body.querySelector('.bobb-card-placeholder');if(ph0)ph0.addEventListener('error',function(){if(ph0.parentElement)ph0.parentElement.innerHTML=brandText;});pop.classList.add('open');pop.scrollTop=0;
 }
@@ -48772,4 +48789,65 @@ window.bopShowZoneSoon=open;
 #bopCityPicksPage .cp-title .bop-title-line1 .bop-ny-title-period{font-size:1em!important;color:#F59E0B!important}
 #bopCityPicksPage .cp-title .bop-ny-title-city{display:block!important;margin-top:18px!important;font-size:1.15em!important;letter-spacing:.01em!important}
 </style>
+<style id="bop-card-enrichment-v602-style">
+.bop-card-apple{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:0 0 auto;vertical-align:middle;margin-left:6px}
+.bop-card-apple svg{display:block;width:100%;height:100%}
+.bop-card-allpicks-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 10px 5px 6px;border:1.5px solid #ef3340;border-radius:999px;background:#0a0a0a;color:#ef3340;font:900 .64rem 'Archivo Black',Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 8px rgba(239,51,64,.35)}
+.bop-card-allpicks-btn .bo-all-bjs-red-globe{width:16px;height:16px;border-width:1.4px;box-shadow:none}
+.bop-card-allpicks-btn .bo-all-bjs-red-globe:before{inset:2.2px -1px}
+.bop-card-allpicks-btn .bo-all-bjs-red-globe:after{inset:-1px 2.2px}
+.bop-card-allpicks-btn .bo-all-bjs-globe-lat{inset:0}
+.bop-card-allpicks-btn .bo-all-bjs-globe-lon{inset:0;transform:rotate(90deg)}
+#bopPickCardPop .bobb-card-name,#bopBestOfBestOverlay .bobb-card-name,#bopCityPicksPage .cp-name{display:flex;align-items:center;flex-wrap:wrap}
+#bopPickCardPop .cp-view-cat-mini,#bopBestOfBestOverlay .cp-view-cat-mini{display:inline-block;margin-top:10px;margin-right:8px;padding:7px 14px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 .72rem 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+</style>
+<script id="bop-card-enrichment-v602-script">(function(){
+function appleTier(r){
+var rating=parseFloat(r.rating);
+var isGold=!!(r.bjsPick===true||(Number.isFinite(rating)&&rating>=4.9)||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard===true);
+var reviewCount=(function(){
+var mentions=[];
+if(typeof r.ratingNote==='string'){var re=/\(([\d,]+)\s*reviews?\)/gi,m;while((m=re.exec(r.ratingNote)))mentions.push(parseInt(m[1].replace(/,/g,''),10));}
+if(!mentions.length&&Number.isFinite(r.reviews))mentions.push(r.reviews);
+var max=mentions.length?Math.max.apply(null,mentions):0;
+var sum=mentions.reduce(function(a,b){return a+b;},0);
+return Math.max(max,sum>=1000?sum:0);
+})();
+var isVerified=isGold||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard===true||r.bjsVerified===true||(Number.isFinite(rating)&&rating>=4.4&&reviewCount>=1000);
+return isGold?'gold':(isVerified?'verified':'unverified');
+}
+function badgeHTML(status){
+var fill=status==='gold'?'#F59E0B':'#000';
+var check=status==='unverified'?'':'<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+var svg='<svg viewBox="0 0 24 24" fill="none"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="'+fill+'" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/>'+check+'</svg>';
+var title=status==='gold'?'Golden Apple \u2014 BJS Pick & 4.9+':status==='verified'?'Verified \u2014 Michelin, James Beard, or 4.4+':'Processing \u2014 new or not yet verified';
+return '<span class="bo-apple-badge bop-card-apple bo-apple-'+status+'" aria-hidden="true" title="'+title+'">'+svg+'</span>';
+}
+function allPicksBtnHTML(){
+return '<button type="button" class="bop-card-allpicks-btn" aria-label="See all BJS Picks"><span class="bo-all-bjs-red-globe" aria-hidden="true"><span class="bo-all-bjs-globe-lat"></span><span class="bo-all-bjs-globe-lon"></span></span><span>All BJS Picks</span></button>';
+}
+window.bopCardAppleBadge=function(r){return badgeHTML(appleTier(r));};
+window.bopCardAllPicksBtn=function(r){return r&&r.bjsPick?allPicksBtnHTML():'';};
+window.bopCardViewCatBtn=function(r){
+if(typeof window.bopPickCategory!=='function')return '';
+var info=window.bopPickCategory(r);if(!info||!info.key)return '';
+return '<button type="button" class="cp-view-cat-mini" data-cat-key="'+info.key.replace(/"/g,'&quot;')+'" data-cat-city="'+String(r.city||'').replace(/"/g,'&quot;')+'">View Category</button>';
+};
+document.addEventListener('click',function(e){
+var all=e.target&&e.target.closest&&e.target.closest('.bop-card-allpicks-btn');
+if(all){
+e.preventDefault();e.stopPropagation();
+var pop=document.getElementById('bopPickCardPop');if(pop)pop.classList.remove('open');
+var bobb=document.getElementById('bopBestOfBestOverlay');if(bobb){bobb.classList.remove('open');bobb.style.display='';}
+if(typeof window.boOpenAllBjsPicks==='function')window.boOpenAllBjsPicks();
+return;
+}
+var vc=e.target&&e.target.closest&&e.target.closest('.cp-view-cat-mini');
+if(vc){
+e.preventDefault();e.stopPropagation();
+if(typeof window.bopGoToCategory==='function')window.bopGoToCategory(vc.dataset.catKey,vc.dataset.catCity);
+return;
+}
+},true);
+})();</script>
 </body></html>
