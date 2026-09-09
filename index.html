@@ -11839,7 +11839,8 @@ let media=`<img class="bo-movie-poster" src="${boMoviePoster(item[0],index)}" al
 if(key==='airlines'){
 let domain='';
 try{domain=new URL(item[1]).hostname.replace(/^www\./,'');}catch(e){}
-const logoUrl=`https://logo.clearbit.com/${encodeURIComponent(domain)}?size=192`;
+const embeddedAirlineNames={'Delta':'Delta Air Lines','American':'American Airlines','United':'United Airlines','Lufthansa':'Lufthansa Group','British Airways':'IAG'};
+const logoUrl=BO_WORLDWIDE_LOGOS[embeddedAirlineNames[item[0]]||item[0]]||`https://logo.clearbit.com/${encodeURIComponent(domain)}?size=192`;
 media=`<div class="bo-airline-logo-wrap"><img class="bo-airline-logo" src="${logoUrl}" alt="${item[0]} logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="bo-airline-logo-fallback">${item[0]}</span></div>`;
 }
 if(key==='airlines'){
@@ -11848,7 +11849,7 @@ return `<article class="bo-current-card bo-airline-direct-card"><span class="bo-
 let providerDomain='';
 try{providerDomain=new URL(item[1]).hostname.replace(/^www\./,'');}catch(e){}
 const songLogos={'Spotify':'https://cdn.simpleicons.org/spotify/1ED760','Apple Music':'https://cdn.simpleicons.org/applemusic/FA243C','YouTube Music':'https://cdn.simpleicons.org/youtubemusic/FF0000','Amazon Music':'https://cdn.simpleicons.org/amazonmusic/25D1DA','TIDAL':'https://cdn.simpleicons.org/tidal/FFFFFF'};
-const providerLogo=(key==='songs'&&songLogos[item[0]])?songLogos[item[0]]:`https://logo.clearbit.com/${encodeURIComponent(providerDomain)}?size=192`;
+const providerLogo=(key==='songs'&&songLogos[item[0]])?songLogos[item[0]]:(BO_WORLDWIDE_LOGOS[item[0]]||`https://logo.clearbit.com/${encodeURIComponent(providerDomain)}?size=192`);
 return `<article class="bo-current-card bo-provider-logo-card"><span class="bo-movie-rank">${index+1}</span><a class="bo-provider-logo-link" target="_blank" rel="noopener" aria-label="Open ${item[0]}" href="${item[1]}"><img class="bo-provider-logo" src="${providerLogo}" alt="${item[0]} logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><span class="bo-provider-logo-fallback">${item[0]}</span></a></article>`;
 }
 let boMarketTickerTimer=null;
@@ -19949,8 +19950,8 @@ return '<article class="bo-current-card bo-airline-direct-card"><div class="bo-a
 };
 }
 function stripRankingPhotos(){
-const page=document.querySelector('#boWorldwidePage[data-worldwide-key="airlines"]');if(!page)return;
-page.querySelectorAll('.bo-movie-card>.bo-movie-poster,.bo-movie-card>.bo-cabin-brand').forEach(function(media){media.remove();});
+/* Ranking cards now use the supplied embedded airline marks. */
+return;
 }
 function install(){stripRankingPhotos();new MutationObserver(function(){requestAnimationFrame(stripRankingPhotos);}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-worldwide-key','class']});document.addEventListener('click',function(event){if(event.target.closest('[data-worldwide-key="airlines"]'))setTimeout(stripRankingPhotos,100);},true);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
@@ -47423,6 +47424,24 @@ background:#000!important;border:0!important;box-shadow:none!important
    breathe around the mark itself. */
 #boWorldwidePage .bo-worldwide-logo-real{display:flex!important;align-items:center;justify-content:center;background:#0a0a0a!important;padding:12px;box-sizing:border-box}
 #boWorldwidePage .bo-worldwide-logo-real img{width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+/* Restore the supplied airline marks in the two ranking lists.  A legacy
+   airline-directory rule hid this same media slot with !important. */
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-list .bo-movie-card>.bo-movie-poster.bo-worldwide-logo-real{
+display:flex!important;
+width:100%!important;
+height:auto!important;
+aspect-ratio:2/3!important;
+padding:10px!important;
+overflow:hidden!important;
+background:#0a0a0a!important;
+}
+#boWorldwidePage[data-worldwide-key="airlines"] .bo-movie-list .bo-movie-card>.bo-worldwide-logo-real>img{
+display:block!important;
+width:100%!important;
+height:100%!important;
+object-fit:contain!important;
+object-position:center!important;
+}
 /* "Thumb Your Luck" popup content lives in #bopMovieChoiceModal, which
    sits outside #boMoviesPage (appended to body) -- so none of the old
    #boMoviesPage-scoped orb/thumb/count styling reaches it. Fresh,
@@ -47712,12 +47731,9 @@ display:block!important;
 #bjsWhyOverlay .bop-primary-more-row{
 display:none!important;
 }
-/* 2) The orb had a 16% top padding forcing all the text down into a
-   flex-start column, leaving a big empty gap above "WE DIG IN..." —
-   that's the "too much room on top" — cutting it down so the content
-   starts much closer to the top of the circle instead. */
+/* Keep the copy lower in the shared WHY orb and nearer the BJS CO. lockup. */
 #bjsWhyOverlay .bjs-why-orb{
-padding-top:4%!important;
+padding-top:14%!important;
 }
 </style>
 
@@ -47749,4 +47765,70 @@ font-size:clamp(3.6rem,17vw,7.2rem)!important;
 font-size:calc(clamp(3.6rem,17vw,7.2rem) + 2pt)!important;
 }
 </style>
+<style id="bop-repair-pass-20260909">
+/* Repair only: keep the approved lockup, but never substitute an apple for
+   the "o" in Period.  The apple/pin above the i remains unchanged. */
+.bop-period-apple-o{display:inline!important;width:auto!important;height:auto!important;margin:0!important;vertical-align:baseline!important;line-height:inherit!important}
+.bop-period-apple-o>svg{display:none!important}
+
+/* Keep the Celebrity Chefs heading inside narrow phone screens. */
+#bopCelebChefOverlay .bop-splash-city-col{display:block!important;width:100%!important;max-width:100%!important;overflow:hidden!important}
+#bopCelebChefOverlay .bop-splash-city{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  font-size:clamp(2rem,9vw,3.2rem)!important;
+  line-height:1.02!important;
+  letter-spacing:-.035em!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  transform:none!important;
+}
+
+/* The copyright belongs after the d and must remain a small mark. */
+.bop-splash-period>.period-mark,
+.bo-movies-period>.period-mark,
+.hub-best-mini-period>.period-mark,
+.bo-picker-period>.period-mark,
+.bo-lead-best-period>.period-mark{
+  display:inline!important;
+  position:relative!important;
+  inset:auto!important;
+  margin-left:.04em!important;
+  font-size:.24em!important;
+  line-height:1!important;
+  vertical-align:.58em!important;
+  transform:none!important;
+}
+</style>
+<script id="bop-repair-pass-20260909-script">(function(){
+function repairPeriodMarks(root){
+  (root||document).querySelectorAll('.bop-period-apple-o').forEach(function(el){
+    var parent=el.parentElement;
+    var isCaps=!!(parent&&/^[^a-z]*$/.test(parent.textContent||''));
+    el.replaceWith(document.createTextNode(isCaps?'O':'o'));
+  });
+  var selector='.bop-splash-period,.bo-movies-period,.bop-world-period,.hub-best-mini-period,.bo-picker-period,.bo-lead-best-period';
+  (root||document).querySelectorAll(selector).forEach(function(el){
+    if(el.closest('#bopExclusiveInvitation')&&el.querySelector('sup'))return;
+    if(!el.querySelector('.period-mark, sup')){
+      var mark=document.createElement('span');
+      mark.className='period-mark';
+      mark.textContent='©';
+      el.appendChild(mark);
+    }
+  });
+}
+function install(){
+  repairPeriodMarks(document);
+  new MutationObserver(function(records){
+    records.forEach(function(record){
+      record.addedNodes.forEach(function(node){
+        if(node.nodeType===1)repairPeriodMarks(node);
+      });
+    });
+  }).observe(document.body,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();</script>
 </body></html>
