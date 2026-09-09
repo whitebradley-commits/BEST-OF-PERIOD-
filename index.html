@@ -47223,10 +47223,9 @@ transform:translateX(-50%)!important;
    .bop-splash-city is overridden per data-fit="normal/long/xlong" variant
    as the city name length changes on every rotation — a scale applies
    uniformly on top of whichever variant is active. */
-#bopLandingOverlay .bop-splash-city,
-#tbotrLandingOverlay .bop-splash-city{
+#bopLandingOverlay .bop-splash-city{
 display:inline-block!important;
-transform:scale(1.1) translateX(-2px)!important;
+transform:scale(1.1) translateX(-5px)!important;
 transform-origin:center center!important;
 }
 
@@ -47549,6 +47548,92 @@ flex:0 0 auto!important;
 #bopLandingOverlay .bop-splash-city.bop-city-landed,
 #tbotrLandingOverlay .bop-splash-city.bop-city-landed{
 transform:none!important;
+}
+</style>
+<style id="bop-new-city-lockup-design-v1">
+/* New design, per explicit direction: everywhere EXCEPT the one main
+   perpetually-rotating splash (#bopLandingCityText, which keeps its
+   existing three-row stack exactly as-is) — "Best Of Period" now
+   sits together on a single line, matching the lockup already used
+   on the Go-Live page, and the city (whether still cycling or
+   already landed) sits on its own line underneath, sized roughly
+   2.2x that top line and spanning its full width. Uses display:contents
+   on line2 so its children (city + period) become direct flex items
+   of the shared hero container alongside line1, then `order` puts
+   Best Of and Period together on row one while flex-basis:100% on
+   the city forces it onto its own row two beneath them. */
+.bop-splash-hero:has(#bopSplashCityText),
+.bop-splash-hero:has(#bopMainCityText),
+.bop-splash-hero:has(#bopResultsCityText){
+display:flex!important;
+flex-wrap:wrap!important;
+align-items:baseline!important;
+justify-content:center!important;
+column-gap:.16em!important;
+row-gap:.12em!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) > div:first-child:not(.bop-splash-line1):not(.bop-splash-line2):not(.bop-splash-tagline),
+.bop-splash-hero:has(#bopMainCityText) > div:first-child:not(.bop-splash-line1):not(.bop-splash-line2):not(.bop-splash-tagline),
+.bop-splash-hero:has(#bopResultsCityText) > div:first-child:not(.bop-splash-line1):not(.bop-splash-line2):not(.bop-splash-tagline){
+order:0!important;
+flex-basis:100%!important;
+width:100%!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-line1,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-line1,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-line1{
+order:1!important;
+width:auto!important;
+font-size:clamp(1.9rem,8.5vw,2.9rem)!important;
+white-space:nowrap!important;
+margin-right:.14em!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-line2,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-line2,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-line2{
+display:contents!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-period,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-period,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-period{
+order:2!important;
+position:static!important;
+grid-column:auto!important;
+margin:0!important;
+transform:none!important;
+width:auto!important;
+flex:0 0 auto!important;
+font-size:clamp(1.9rem,8.5vw,2.9rem)!important;
+white-space:nowrap!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-city-col,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-city-col,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-city-col{
+order:3!important;
+flex-basis:100%!important;
+width:100%!important;
+min-width:0!important;
+max-width:100%!important;
+text-align:center!important;
+margin-top:.08em!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-city,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-city,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-city{
+display:block!important;
+text-align:center!important;
+transform:none!important;
+white-space:nowrap!important;
+width:100%!important;
+padding:0!important;
+font-size:clamp(4.2rem,19vw,6.4rem)!important;
+}
+.bop-splash-hero:has(#bopSplashCityText) .bop-splash-tagline,
+.bop-splash-hero:has(#bopMainCityText) .bop-splash-tagline,
+.bop-splash-hero:has(#bopResultsCityText) .bop-splash-tagline{
+order:4!important;
+flex-basis:100%!important;
+width:100%!important;
 }
 </style>
 </body></html>
