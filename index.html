@@ -37259,20 +37259,13 @@ var lockup=document.querySelector('#bopGoLiveOverlay .bop-golive-lockup .bo-goli
 if(lockup&&!lockup.dataset.bopV527){
 lockup.dataset.bopV527='1';
 var mark=lockup.querySelector('.period-mark');
-if(mark) mark.outerHTML='<span class="bop-golive-lockup-apple">'+APPLE_SVG+'</span>';
+if(mark) mark.textContent='©';
 }
 }
 function fixAllPeriodMarks(){
 document.querySelectorAll('.period-mark').forEach(function(el){
-if(el.dataset.bopV527apple)return;
-if(el.textContent.indexOf('©')===-1)return;
-el.dataset.bopV527apple='1';
-el.innerHTML=APPLE_SVG;
-el.style.display='inline-block';
-el.style.width='.5em';
-el.style.height='.5em';
-el.style.verticalAlign='.4em';
-el.style.marginLeft='.05em';
+el.textContent='©';
+el.removeAttribute('style');
 });
 }
 function install(){
@@ -47866,33 +47859,45 @@ margin-top:6px!important;
   transform:none!important;
 }
 
-/* The copyright belongs after the d and must remain a small mark. */
-.bop-splash-period>.period-mark,
-.bo-movies-period>.period-mark,
-.hub-best-mini-period>.period-mark,
-.bo-picker-period>.period-mark,
-.bo-lead-best-period>.period-mark{
+/* The final logo mark is always a nearly hidden copyright sign—not an apple.
+   Keep it at the baseline position where a printed period would sit. */
+.period-mark,
+.bop-brand-copyright,
+.bop-world-period>sup{
   display:inline!important;
   position:relative!important;
   inset:auto!important;
-  margin-left:.04em!important;
-  font-size:.24em!important;
+  top:.08em!important;
+  margin-left:.025em!important;
+  font-family:Arial,sans-serif!important;
+  font-style:normal!important;
+  font-weight:700!important;
+  font-size:.14em!important;
   line-height:1!important;
-  vertical-align:.58em!important;
+  vertical-align:baseline!important;
   transform:none!important;
+  width:auto!important;
+  height:auto!important;
+  overflow:visible!important;
 }
+.period-mark>svg,.bop-brand-copyright>svg{display:none!important}
 </style>
 <script id="bop-repair-pass-20260909-script">(function(){
 function repairPeriodMarks(root){
   var selector='.bop-splash-period,.bo-movies-period,.bop-world-period,.hub-best-mini-period,.bo-picker-period,.bo-lead-best-period';
   (root||document).querySelectorAll(selector).forEach(function(el){
-    if(el.closest('#bopExclusiveInvitation')&&el.querySelector('sup'))return;
-    if(!el.querySelector('.period-mark, sup')){
+    var marks=Array.from(el.querySelectorAll(':scope > .period-mark,:scope > .bop-brand-copyright,:scope > sup'));
+    var mark=marks.shift();
+    marks.forEach(function(extra){extra.remove();});
+    if(!mark){
       var mark=document.createElement('span');
       mark.className='period-mark';
-      mark.textContent='©';
       el.appendChild(mark);
     }
+    mark.className='period-mark';
+    mark.setAttribute('aria-hidden','true');
+    mark.removeAttribute('style');
+    mark.textContent='©';
   });
 }
 function install(){
