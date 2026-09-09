@@ -48409,4 +48409,64 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installVisualSystem);else installVisualSystem();
 })();
 </script>
+<style id="bop-three-scoped-adjustments-20260909">
+/* Rotating landing page only: lower the navigation pin by exactly 2pt. */
+#bopLandingOverlay .bop-splash-period .bop-period-i-wrap>.bop-period-apple-i{
+  top:calc(-.14em + 2pt)!important;
+}
+
+/* Every city starts at the approved Del Mar scale. JavaScript reduces it only
+   when the rendered name truly exceeds the available phone width. */
+#boHeroTitle .bop-unified-subcategory-title[data-fit],
+#boHeroTitle .bop-splash-city[data-fit]{
+  width:100%!important;max-width:100%!important;
+  font-size:clamp(3.55rem,16vw,6.4rem)!important;
+  line-height:.86!important;letter-spacing:-.035em!important;
+  white-space:nowrap!important;transform:none!important;
+}
+
+/* Lower only the four city-category orbs, leaving the search and bottom dock alone. */
+#boOtherTastesCircles{
+  position:relative!important;
+  transform:translateY(38px)!important;
+  z-index:3!important;
+}
+</style>
+<script id="bop-bangkok-scale-20260909-script">
+(function(){
+  var pending=0;
+  function fitOne(title){
+    title.style.removeProperty('font-size');
+    var viewport=Math.max(280,window.innerWidth||document.documentElement.clientWidth||390);
+    var base=Math.min(102.4,Math.max(56.8,viewport*.16));
+    var available=Math.min(viewport*.94,(document.getElementById('boHeroTitle').clientWidth||viewport)*.94);
+    var cs=getComputedStyle(title);
+    var canvas=fitOne.canvas||(fitOne.canvas=document.createElement('canvas'));
+    var ctx=canvas.getContext('2d');
+    ctx.font=[cs.fontStyle,cs.fontWeight,base+'px',cs.fontFamily].join(' ');
+    var text=(title.textContent||'').trim();
+    var spacing=parseFloat(cs.letterSpacing)||0;
+    var measured=ctx.measureText(text).width+Math.max(0,text.length-1)*spacing;
+    var fitted=measured>available ? Math.max(30,base*(available/measured)*.97) : base;
+    title.style.setProperty('font-size',fitted.toFixed(2)+'px','important');
+  }
+  function fitAll(){
+    pending=0;
+    var hero=document.getElementById('boHeroTitle');
+    if(!hero)return;
+    hero.querySelectorAll('.bop-unified-subcategory-title,.bop-splash-city').forEach(function(title){
+      fitOne(title);
+    });
+  }
+  function schedule(){if(!pending)pending=requestAnimationFrame(fitAll);}
+  function install(){
+    schedule();
+    var hero=document.getElementById('boHeroTitle');
+    if(hero)new MutationObserver(schedule).observe(hero,{childList:true,subtree:true,characterData:true});
+    window.addEventListener('resize',schedule,{passive:true});
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 </body></html>
