@@ -48121,4 +48121,29 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   background:transparent!important;
 }
 </style>
+<!-- v424: All BJS Picks media fallback and deterministic overlay return -->
+<style id="bop-all-bjs-recovery-v424-style">
+#bopPickCardPop .bobb-card-brandmark-live{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:#000;overflow:hidden}
+#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static{position:relative!important;inset:auto!important;transform:none!important;width:min(78%,290px)!important;height:auto!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;opacity:1!important;visibility:visible!important;pointer-events:none!important}
+#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static *{opacity:1!important;visibility:visible!important}
+#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static .bop-splash-line1,#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static .bop-lockup-top{color:#fff!important}
+#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static .bop-splash-period,#bopPickCardPop .bobb-card-brandmark-live .bop-lockup-static .bop-lockup-bottom{color:#F59E0B!important}
+#bopPickCardPop .bobb-card-media-placeholder{background:#000!important}
+</style>
+<script id="bop-all-bjs-recovery-v424-script">
+(function(){
+var html=document.documentElement,all=document.getElementById('bopAllBjsPicks'),pick=document.getElementById('bopPickCardPop'),origin=null;
+if(!all)return;
+function visible(el){if(!el)return false;var s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&(el.classList.contains('open')||el.getAttribute('aria-hidden')==='false'||s.position==='fixed');}
+function captureOrigin(){var ids=['bestOfOverlay','bopWorldwideLanding','bopLandingOverlay'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(visible(el)){origin=ids[i];return;}}origin='bopLandingOverlay';}
+function clearStrayFocus(){var a=document.activeElement;if(a&&a!==document.body&&typeof a.blur==='function')a.blur();}
+function restoreOrigin(){if(pick)pick.classList.remove('open');html.classList.remove('bop-all-bjs-open');document.body.style.overflow='';clearStrayFocus();var dest=document.getElementById(origin||'bopLandingOverlay');if(!dest)dest=document.getElementById('bestOfOverlay')||document.getElementById('bopLandingOverlay');if(dest){dest.classList.add('open');dest.style.removeProperty('display');dest.style.removeProperty('visibility');dest.style.removeProperty('opacity');dest.setAttribute('aria-hidden','false');}origin=null;}
+var oldOpen=window.boOpenAllBjsPicks;if(typeof oldOpen==='function')window.boOpenAllBjsPicks=function(){captureOrigin();return oldOpen.apply(this,arguments);};
+document.addEventListener('click',function(e){var back=e.target&&e.target.closest&&e.target.closest('#bopAllBjsPicks .bop-all-bjs-back');if(back){e.preventDefault();e.stopImmediatePropagation();restoreOrigin();}},true);
+function landingBrand(){var src=document.querySelector('#bopLandingOverlay .bop-lockup-static')||document.querySelector('.bop-lockup-static');if(src){var clone=src.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(function(n){n.removeAttribute('id');});return '<div class="bobb-card-brandmark-live" aria-label="Best Of Period">'+clone.outerHTML+'</div>';}return '<div class="bobb-card-brandmark bobb-card-brandmark-live"><span class="bobb-brand-white">Best Of</span><span class="bobb-brand-gold">Period</span></div>';}
+function replaceBrokenMedia(media){if(!media)return;media.classList.add('bobb-card-media-placeholder');media.innerHTML=landingBrand();}
+function repairCard(){var body=document.getElementById('bopPickCardBody');if(!body)return;var media=body.querySelector('.bobb-card-media');if(!media)return;var placeholder=media.querySelector('.bobb-card-placeholder');if(placeholder){replaceBrokenMedia(media);return;}var image=media.querySelector('img');if(image&&!image.complete)image.addEventListener('error',function(){replaceBrokenMedia(media);},{once:true});else if(image&&image.naturalWidth===0)replaceBrokenMedia(media);}
+var body=document.getElementById('bopPickCardBody');if(body)new MutationObserver(repairCard).observe(body,{childList:true,subtree:true});
+})();
+</script>
 </body></html>
