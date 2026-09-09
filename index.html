@@ -48146,4 +48146,27 @@ function repairCard(){var body=document.getElementById('bopPickCardBody');if(!bo
 var body=document.getElementById('bopPickCardBody');if(body)new MutationObserver(repairCard).observe(body,{childList:true,subtree:true});
 })();
 </script>
+<!-- v425: Live-page pin micro-adjustment and deterministic Back recovery -->
+<style id="bop-live-pin-up-three-v425">
+/* Only the PERIOD pin in the six Live opportunity pages. */
+:is(#bopRealtorOverlay,#bopFoodTruckOverlay,#bopVendorStandOverlay,#bopYardSaleOverlay,#bopCarForSaleOverlay,#bopSafeMeetupOverlay,#bopHomesForSaleOverlay) .bop-period-apple-i{
+  transform:translate(-50%,-3pt)!important;
+}
+</style>
+<script id="bop-live-back-recovery-v425">
+(function(){
+var LIVE=['bopRealtorOverlay','bopFoodTruckOverlay','bopVendorStandOverlay','bopYardSaleOverlay','bopCarForSaleOverlay','bopSafeMeetupOverlay','bopHomesForSaleOverlay'];
+var TRACK=LIVE.concat(['bopGoLiveOverlay','bopAllBjsPicks','bopWorldwideLanding','boMoviesPage','bopBestOfBestOverlay','bjsWhyOverlay','legendOverlay']);
+var last='';
+function open(id){var e=document.getElementById(id);if(!e)return false;if(id==='bopAllBjsPicks')return document.documentElement.classList.contains('bop-all-bjs-open');return e.classList.contains('open');}
+function remember(){for(var i=0;i<TRACK.length;i++){if(open(TRACK[i])){last=TRACK[i];return;}}}
+function show(id){var e=document.getElementById(id);if(!e)return false;e.classList.add('open');e.style.removeProperty('display');e.style.removeProperty('visibility');e.style.removeProperty('opacity');e.setAttribute('aria-hidden','false');e.scrollTop=0;document.body.style.overflow='hidden';return true;}
+function landing(){var e=document.getElementById('bopLandingOverlay');if(!e)return;e.classList.add('open');e.style.removeProperty('display');e.style.removeProperty('visibility');e.style.removeProperty('opacity');e.setAttribute('aria-hidden','false');document.body.style.overflow='';window.scrollTo(0,0);}
+setInterval(remember,180);remember();
+window.addEventListener('popstate',function(){var from=last;setTimeout(function(){
+  if(LIVE.indexOf(from)>-1){if(!show('bopGoLiveOverlay'))landing();last='bopGoLiveOverlay';return;}
+  if(from==='bopGoLiveOverlay'||from==='bopWorldwideLanding'||from==='bopAllBjsPicks'||from==='boMoviesPage'||from==='bopBestOfBestOverlay'){landing();last='bopLandingOverlay';}
+},90);});
+})();
+</script>
 </body></html>
