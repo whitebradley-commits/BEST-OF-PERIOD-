@@ -44791,7 +44791,12 @@ var scope='';
 if(!pos){var ctx=(typeof boCityContext!=='undefined'&&BO_CITY_CONFIG[boCityContext])?boCityContext:'bestof';cands=[{key:ctx,mi:null}];scope='Location is off, so this is '+cityLabel(ctx)+'. Turn on location for drive-time results.';}
 else if(!cands.length){cands=[{key:nearest,mi:nearestMi}];scope=q.miles!=null?'Nothing within '+q.miles+' miles yet \u2014 we noticed your closest region is '+cityLabel(nearest)+' ('+Math.round(nearestMi)+' mi).':'We noticed your closest region is '+cityLabel(nearest)+'.';}
 else{scope=cands.length===1?'Searching '+cityLabel(cands[0].key)+'.':'Searching '+cands.length+' cities within range: '+cands.map(function(c){return cityLabel(c.key);}).join(', ')+'.';}
-var PIZZA_SOURCE_FIELD={onebite:'oneBiteScore',dave:'oneBiteDaveScore',bjs:'bjsPizzaScore'};
+var PIZZA_SOURCE_FIELD={onebite:['ob','oneBiteScore'],dave:['dave','oneBiteDaveScore'],bjs:['bjs','bjsPizzaScore']};
+function pizzaSourceScore(r,srcKey){
+var fields=PIZZA_SOURCE_FIELD[srcKey]||[];
+for(var i=0;i<fields.length;i++){if(r[fields[i]]!=null)return r[fields[i]];}
+return null;
+}
 var PIZZA_SOURCE_LABEL={onebite:'One Bite',dave:'Dave',bjs:'BJS'};
 var rows=[];
 cands.forEach(function(c){
@@ -44804,8 +44809,7 @@ if(!matchCat(r,q)||!matchTier(r,q))return;
    has actually scored, instead of the full pizza list every source
    would otherwise share. */
 if(q.pizzaSource){
-var srcField=PIZZA_SOURCE_FIELD[q.pizzaSource];
-if(r[srcField]==null)return;
+if(pizzaSourceScore(r,q.pizzaSource)==null)return;
 }
 var d=null,exact=false;
 if(pos&&r.lat!=null&&r.lon!=null){d=boNearDistanceMiles(pos,{lat:r.lat,lng:r.lon});exact=true;}
@@ -44824,8 +44828,7 @@ if(q.pizzaSource){
 /* Sort by that specific source's score instead of the overall star
    rating, so the "top pick" is whoever that source actually scored
    highest, not just whoever has the best aggregate rating. */
-var srcField2=PIZZA_SOURCE_FIELD[q.pizzaSource];
-rows.sort(function(a,b){var sa=Number(a.r[srcField2])||0,sb=Number(b.r[srcField2])||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return sb-sa;});
+rows.sort(function(a,b){var sa=Number(pizzaSourceScore(a.r,q.pizzaSource))||0,sb=Number(pizzaSourceScore(b.r,q.pizzaSource))||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return sb-sa;});
 }else{
 rows.sort(function(a,b){var ra=Number(a.r.rating)||0,rb=Number(b.r.rating)||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return rb-ra;});
 }
