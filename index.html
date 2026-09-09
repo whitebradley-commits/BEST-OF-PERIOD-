@@ -45854,8 +45854,11 @@ greek:[
 {name:"Yaya",city:"paris",rating:"4.5 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (390 reviews), Google 4.6 (290 reviews).",price:2,address:"29 Rue de la Villette, 75019 Paris, France",phone:"",why:"A casual, colorful Greek restaurant in Belleville focused on mezze-style small plates",note:"Sharing-plate mezze format in a bright, casual Belleville dining room."}
 ],
 pizza:[
-{name:"Popine",city:"paris",rating:"4.6 / 5",reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (520 reviews), Google 4.7 (400 reviews).",price:2,address:"20 Rue Servan, 75011 Paris, France",phone:"",why:"A well-regarded 11th arrondissement pizzeria known for a natural, long-fermented dough",note:"Small neighborhood pizzeria; frequently cited among Paris's best for its dough and seasonal toppings."},
-{name:"Pizzeria Popolare",city:"paris",rating:"4.4 / 5",reviews:1480,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (860 reviews), Google 4.5 (620 reviews).",price:2,address:"111 Rue Réaumur, 75002 Paris, France",phone:"+33 1 42 21 30 91",why:"A large, lively pizzeria from chef Grégory Marchand (of Frenchie), serving Naples-style pizza",note:"No-reservations, communal-table format; part of the well-known Frenchie restaurant group."}
+{name:"Peppe Pizzeria Étienne Marcel",city:"paris",rating:"4.7 / 5",bjsPizzaScore:9.4,reviews:568,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (568 reviews).",price:2,address:"Paris, France",phone:"",why:"A highly rated Paris pizzeria from pizza champion Giuseppe Cutraro",note:"The Étienne Marcel location is among the city's strongest-reviewed pizza destinations."},
+{name:"Popine",city:"paris",rating:"4.6 / 5",bjsPizzaScore:9.2,reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (520 reviews), Google 4.7 (400 reviews).",price:2,address:"20 Rue Servan, 75011 Paris, France",phone:"",why:"A well-regarded Paris pizzeria known for naturally fermented dough",note:"A neighborhood pizzeria frequently cited for its dough and seasonal toppings."},
+{name:"Louie Louie",city:"paris",rating:"4.4 / 5",bjsPizzaScore:8.8,reviews:1812,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (326 reviews), Google 4.5 (1,486 reviews).",price:2,address:"78 Rue de Charonne, 75011 Paris, France",phone:"+33 1 43 43 96 09",why:"A popular Rue de Charonne pizzeria known for thin-crust pizzas and a lively neighborhood dining room",note:"Its large combined review count makes it one of the more time-tested pizza choices in Paris."},
+{name:"Iovine's",city:"paris",rating:"4.6 / 5",bjsPizzaScore:9.2,reviews:0,ratingSource:"Google",ratingNote:"Google 4.6.",price:2,address:"7 bis Rue du Colonel Driant, 75001 Paris, France",phone:"",why:"A Neapolitan pizzeria near the Louvre with an additional Paris Opéra location",note:"Known for Neapolitan-style pizza and a central location near the Louvre."},
+{name:"Pizzeria Popolare",city:"paris",rating:"4.4 / 5",bjsPizzaScore:8.8,reviews:2357,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (2,357 reviews); additional platform ratings contribute to the BJS aggregate.",price:2,address:"111 Rue Réaumur, 75002 Paris, France",phone:"+33 1 42 21 30 91",why:"Big Mamma's large, lively Paris pizzeria serving Neapolitan-style pizzas and Italian dishes",note:"A high-volume communal-table restaurant known for its energetic room and long queues."}
 ]
 };
 Object.keys(PARIS).forEach(function(cat){
@@ -48249,4 +48252,82 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   font-size:clamp(1.65rem,7.7vw,3.6rem)!important;
 }
 </style>
+<style id="bop-final-repair-20260909">
+/* Every true Back control stays in the phone's top-left safe area. */
+.bo-back-btn,.bop-all-bjs-back,.bop-all-pizza-back,.bobb-close,
+.bo-golive-back,.bo-ft-back,.bo-rt-back,.bo-ys-back,.bo-cfs-back,
+.bo-hfs-back,.bo-movies-back,.bop-world-back,.bop-city-gate-back,
+.bop-bjs-soon-back,.bop-ticket-hub-back,.cp-back,.tg-back,.map-back,
+#boBackBtn,#boMoviesBack,#boWorldwideBack,#bopGoLiveBack,
+#bopRealtorBack,#bopFoodTruckBack,#bopVendorStandBack,#bopYardSaleBack,
+#bopCarForSaleBack,#bopSafeMeetupBack,#bopHomesForSaleBack{
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top,0px) + 10px)!important;
+  left:12px!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin:0!important;
+  transform:none!important;
+  z-index:2147483000!important;
+}
+
+/* Current branded fallback used only when a restaurant has no usable photo. */
+.bop-current-photo-fallback{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:#000;
+  font-family:'Bodoni Moda','Playfair Display',serif;text-align:center;
+}
+.bop-current-photo-fallback .bop-fallback-best{
+  color:#fff;font-size:clamp(29px,8vw,48px);font-weight:900;line-height:.88;
+  text-shadow:0 0 12px rgba(255,255,255,.35);
+}
+.bop-current-photo-fallback .bop-fallback-period{
+  color:#F59E0B;font-size:clamp(29px,8vw,48px);font-weight:900;line-height:.95;
+  white-space:nowrap;text-shadow:0 0 14px rgba(245,158,11,.48);
+}
+.bop-current-photo-fallback .bop-fallback-i{position:relative;display:inline-block}
+.bop-current-photo-fallback .bop-fallback-pin{
+  position:absolute;left:50%;top:-.30em;transform:translateX(-50%);
+  font:900 .27em/1 Arial,sans-serif;color:#F59E0B;
+}
+.bop-current-photo-fallback .bop-fallback-apple{
+  display:inline-block;width:.76em;height:.76em;vertical-align:-.12em;margin:0 -.05em;
+}
+.bop-current-photo-fallback .bop-fallback-apple svg{display:block;width:100%;height:100%;fill:#F59E0B}
+.bop-current-photo-fallback sup{font:700 .12em/1 Arial,sans-serif;margin-left:.04em;vertical-align:.1em}
+.bop-current-photo-fallback .bop-fallback-tagline{
+  margin-top:9px;color:#F59E0B;font:700 clamp(8px,2.1vw,12px)/1.15 'Archivo Narrow',sans-serif;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+</style>
+<script id="bop-final-repair-20260909-script">
+(function(){
+  function currentBrand(){
+    return '<div class="bop-current-photo-fallback" aria-label="Best of Period — We did the digging. You do the dining.">'+
+      '<div class="bop-fallback-best">Best of</div>'+
+      '<div class="bop-fallback-period">Per<span class="bop-fallback-i">i<span class="bop-fallback-pin">●</span></span>'+
+      '<span class="bop-fallback-apple" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M35 13c3-7 9-10 15-9-1 7-6 11-13 12 9-1 18 6 19 18 1 14-9 27-18 27-4 0-6-2-10-2s-6 2-10 2C9 61 1 48 2 34 3 21 14 14 24 16c4 1 7 3 9 5 1-3 1-5 2-8z"/></svg></span>d<sup>©</sup></div>'+
+      '<div class="bop-fallback-tagline">We did the digging. You do the dining.</div></div>';
+  }
+  function replaceOldFallback(root){
+    (root||document).querySelectorAll('#bopPickCardPop .bobb-card-media').forEach(function(media){
+      if(media.querySelector('.bobb-card-placeholder,.bobb-card-brandmark-live') && !media.querySelector('.bop-current-photo-fallback')){
+        media.classList.add('bobb-card-media-placeholder');
+        media.innerHTML=currentBrand();
+      }
+      var img=media.querySelector('img:not(.bobb-card-placeholder)');
+      if(img&&!img.dataset.bopFallbackBound){
+        img.dataset.bopFallbackBound='1';
+        img.addEventListener('error',function(){media.innerHTML=currentBrand();},{once:true});
+      }
+    });
+  }
+  function install(){
+    replaceOldFallback(document);
+    var body=document.getElementById('bopPickCardBody');
+    if(body)new MutationObserver(function(){replaceOldFallback(body);}).observe(body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
 </body></html>
