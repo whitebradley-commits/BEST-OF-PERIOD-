@@ -27915,7 +27915,7 @@ zones: [{dest:'lahighlandpark',label:'HIGHLAND PARK & EAGLE ROCK'},{dest:'lanort
 sandiego: {
 title: 'San Diego',
 sub: 'THE COASTLINE. OCEANSIDE TO THE BORDER.',
-zones: [{dest:'sdoceanside',label:'OCEANSIDE · VISTA · SAN MARCOS'},{dest:'sdcarlsbad',label:'CARLSBAD · CARLSBAD VILLAGE'},{dest:'sdencinitas',label:'ENCINITAS · CARDIFF · LEUCADIA'},{dest:'sddelmar',label:'DEL MAR · SOLANA BEACH'},{dest:'sdlajolla',label:'LA JOLLA · UTC'},{dest:'sdpacificbeach',label:'PACIFIC BEACH · MISSION BEACH'},{dest:'sddowntown',label:'DOWNTOWN · GASLAMP · LITTLE ITALY'},{dest:'sdcoronado',label:'CORONADO · IMPERIAL BEACH'},{dest:'sdconvoy',label:'CONVOY · KEARNY MESA'},{dest:'sduptown',label:'HILLCREST · NORTH PARK'},{dest:'sdobpointloma',label:'OCEAN BEACH · POINT LOMA'},{dest:'sdsouthpark',label:'SOUTH PARK · GOLDEN HILL'},{dest:'sdeastcounty',label:'EAST COUNTY · LA MESA'}]
+zones: [{dest:'sdoceanside',label:'OCEANSIDE · VISTA · SAN MARCOS'},{dest:'sdcarlsbad',label:'CARLSBAD · CARLSBAD VILLAGE'},{dest:'sdencinitas',label:'ENCINITAS · CARDIFF · LEUCADIA'},{dest:'sddelmar',label:'DEL MAR · SOLANA BEACH'},{dest:'sdlajolla',label:'LA JOLLA · UTC'},{dest:'sdpacificbeach',label:'PACIFIC BEACH · MISSION BEACH'},{dest:'sddowntown',label:'DOWNTOWN · GASLAMP · LITTLE ITALY'},{dest:'sdcoronado',label:'CORONADO · IMPERIAL BEACH'},{dest:'sdconvoy',label:'CONVOY · KEARNY MESA'},{dest:'sduptown',label:'HILLCREST · NORTH PARK'},{dest:'sdobpointloma',label:'OCEAN BEACH · POINT LOMA'},{dest:'sdsouthpark',label:'SOUTH PARK · GOLDEN HILL'},{dest:'sdeastcounty',label:'EAST COUNTY · LA MESA'},{dest:'tijuana',label:'TIJUANA',soon:true}]
 }
 };
 
@@ -27927,7 +27927,7 @@ var el = document.createElement('div');
 el.className = 'bop-city-gate bop-coast-page bop-coast-pacific';
 el.id = 'bopCityGate_' + key;
 var pinsHTML = cfg.zones.map(function(z){
-return '<div class="bop-map-pin"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn" data-ny-destination="'+z.dest+'"><strong>'+z.label+'</strong></button></div>';
+return '<div class="bop-map-pin"><button type="button" class="bop-ny-gateway-tile bop-map-pin-btn'+(z.soon?' bop-map-pin-soon':'')+'" data-ny-destination="'+z.dest+'"'+(z.soon?' data-soon="1"':'')+'><strong>'+z.label+'</strong></button></div>';
 }).join('');
 el.innerHTML =
 '<button type="button" class="bop-city-gate-back">\u2190 Back</button>'+
@@ -27948,6 +27948,10 @@ window.scrollTo(0,0);
 });
 el.querySelectorAll('.bop-map-pin-btn').forEach(function(zone){
 zone.addEventListener('click', function(){
+if(zone.dataset.soon==='1'){
+if(typeof window.bopShowZoneSoon==='function')window.bopShowZoneSoon(zone.textContent.trim());
+return;
+}
 var dest = zone.dataset.nyDestination;
 if(dest && typeof BO_CITY_CONFIG === 'object' && BO_CITY_CONFIG[dest]){
 el.classList.remove('open');
@@ -40023,8 +40027,12 @@ area maps (see v507). Nothing hidden here. */
 #bopCityPicksPage .cp-why{color:#ddd;font-size:.95rem;line-height:1.35}
 #bopCityPicksPage .cp-line{color:#aaa;font-size:.85rem;margin-top:6px}
 #bopCityPicksPage .cp-line a{color:#F59E0B;text-decoration:none}
+#bopCityPicksPage .cp-bottom-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px}
+#bopCityPicksPage .cp-bottom-row a{color:#F59E0B;text-decoration:none;font-size:.85rem;flex:0 1 auto;min-width:0}
+#bopCityPicksPage .cp-view-cat{display:inline-block;flex:0 0 auto;margin-top:0;margin-left:auto;padding:7px 14px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 .72rem 'Archivo Black',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+#bopCityPicksPage .cp-view-cat:active{background:#1a1200}
 #bopCityPicksPage .cp-empty{text-align:center;color:#aaa;margin:30px 0}
-#bopCityPicksPage .cp-all{display:block;width:min(92%,420px);margin:26px auto 0;padding:14px;border:2px solid #E4002B;border-radius:999px;background:#0a0a0a;color:#E4002B;font:900 1rem 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 14px rgba(228,0,43,.45)}
+#bopCityPicksPage .cp-all{display:block;width:auto;max-width:min(78%,320px);margin:26px auto 0;padding:11px 20px;border:2px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 .88rem 'Archivo Black',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 12px rgba(245,158,11,.4)}
 </style>
 <script id="bop-city-bjs-picks-v512-script">(function(){
 /* v512 (2026-09-02): (1) A glowing "BJS PICKS LA / S.D. / NEW YORK" button at
@@ -40046,7 +40054,7 @@ if(arr.some(function(r){return r&&r.name&&r.name.toLowerCase().replace(/\s+/g,' 
 var pick=found.filter(function(c){return /bjspick$/.test(c);}).map(function(c){return c.replace(/bjspick$/,'');});
 var cats=(pick.length?pick:found).filter(function(c){return LABELS[c];});
 if(!cats.length)cats=found.filter(function(c){return !/bjspick$/.test(c);});
-if(!cats.length)return '';var c=cats[0];return LABELS[c]||c.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,function(x){return x.toUpperCase();});}
+if(!cats.length)return {key:'',label:''};var c=cats[0];return {key:c,label:LABELS[c]||c.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,function(x){return x.toUpperCase();})};}
 function picksFor(key){var cfg=CITY[key];var seen={},out=[];if(typeof boCategoryData!=='object')return out;
 Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||!r.bjsPick)return;if(!cfg.test(region(r))&&!cfg.test(String(r.city||'')))return;var k=r.name.toLowerCase().replace(/\s+/g,' ').trim();if(seen[k])return;seen[k]=1;out.push(r);});});
 out.sort(function(a,b){return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);});return out;}
@@ -40055,13 +40063,16 @@ function ensurePage(){if(page)return page;page=document.createElement('div');pag
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function openPicks(key){var cfg=CITY[key];if(!cfg)return;lastKey=key;var p=ensurePage();var rows=picksFor(key);
 var h='<button type="button" class="cp-back">\u2190 Back</button>'+
-'<h1 class="bop-ny-gateway-title cp-title">Best Of<span class="bop-ny-title-city">'+esc(cfg.picksTitle)+'</span><span class="bop-ny-title-period">Period<span class="period-mark">\u00a9</span></span></h1>';
+'<h1 class="bop-ny-gateway-title cp-title"><span class="bop-title-line1">Best Of<span class="bop-ny-title-period">Period<span class="period-mark">\u00a9</span></span></span><span class="bop-ny-title-city">'+esc(cfg.picksTitle)+'</span></h1>';
 if(!rows.length)h+='<div class="cp-empty">No BJS Picks filed for '+esc(cfg.title)+' yet.</div>';
-rows.forEach(function(r){var area=areaName(r);var rn=parseFloat(String(r.rating||''));var rating=isNaN(rn)?'':rn.toFixed(1)+' / 5';var catLabel=pickCategory(r);
+rows.forEach(function(r){var area=areaName(r);var rn=parseFloat(String(r.rating||''));var rating=isNaN(rn)?'':rn.toFixed(1)+' / 5';var catInfo=pickCategory(r);var catLabel=catInfo.label;
+var phoneHtml=r.phone?'<a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a>':'<span></span>';
+var viewCatHtml=catInfo.key?'<button type="button" class="cp-view-cat" data-cat-key="'+esc(catInfo.key)+'" data-cat-city="'+esc(String(r.city||''))+'">View Category</button>':'';
+var bottomRowHtml=(r.phone||viewCatHtml)?'<div class="cp-bottom-row">'+phoneHtml+viewCatHtml+'</div>':'';
 h+='<div class="cp-card"><div class="cp-name">'+esc(r.name)+'</div><div class="cp-meta">'+(rating?esc(rating)+' \u00b7 ':'')+'BJS PICK'+(catLabel?' \u2014 '+esc(catLabel):'')+(area?' \u00b7 '+esc(area):'')+'</div>'+
 (r.why||r.note?'<div class="cp-why">'+esc(r.why||r.note)+'</div>':'')+
 (r.address?'<div class="cp-line">'+esc(r.address)+'</div>':'')+
-(r.phone?'<div class="cp-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>':'')+'</div>';});
+bottomRowHtml+'</div>';});
 h+='<button type="button" class="cp-all">All BJS Picks</button>';
 p.innerHTML=h;
 /* hide whatever is under it */
@@ -40069,8 +40080,10 @@ document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList
 var ny=document.getElementById('bopNewYorkGateway');if(ny&&(ny.classList.contains('open')||ny.getAttribute('aria-hidden')==='false')){ny.__picksReturn=true;ny.classList.remove('open');ny.setAttribute('aria-hidden','true');ny.style.display='none';}
 p.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';p.scrollTop=0;
 p.querySelector('.cp-back').onclick=function(){closePicks(true);};
+p.querySelectorAll('.cp-view-cat').forEach(function(vb){vb.onclick=function(e){e.preventDefault();e.stopPropagation();var catKey=vb.dataset.catKey,cityKey=vb.dataset.catCity;if(!catKey)return;closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);window.scrollTo(0,0);};});
 p.querySelector('.cp-all').onclick=function(){closePicks(false);if(typeof window.boOpenAllBjsPicks==='function'){window.boOpenAllBjsPicks();return;}var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');window.scrollTo(0,0);};}
 function closePicks(back){if(!page)return;page.classList.remove('open');document.documentElement.style.overflow='';document.body.style.overflow='';
+if(!back){var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');}
 if(!back)return;
 if(lastKey==='newyork'){var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.style.display='';if(typeof window.bopOpenNewYorkGateway==='function')window.bopOpenNewYorkGateway();return;}
 if(typeof window.bopShowCityGate==='function')window.bopShowCityGate(lastKey);}
@@ -43878,7 +43891,7 @@ setInterval(brandChips,600);
 .bop-coast-page .bop-map-wrap svg{display:none!important}
 .bop-coast-page .bop-map-wrap svg.bop-map-scroll-arrow{display:block!important}
 .bop-coast-page .bop-map-wrap:before{content:"";position:absolute;left:14px;top:14px;bottom:14px;width:52px;border-radius:14px 0 0 14px;background:linear-gradient(90deg,#0e2540,#0b1f36);border-right:3px solid #F59E0B;box-shadow:inset -6px 0 12px rgba(0,0,0,.5)}
-.bop-coast-page .bop-map-wrap:after{content:"ATLANTIC";position:absolute;left:14px;top:28%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;width:52px;text-align:center;color:#3b9dff;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.35em;opacity:.85}
+.bop-coast-page .bop-map-wrap:after{content:"ATLANTIC";position:absolute;left:14px;top:16%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;width:52px;text-align:center;color:#3b9dff;font:800 .68rem/1 Arial,sans-serif;letter-spacing:.35em;opacity:.85}
 .bop-coast-page .bop-map-pin{position:static!important;transform:none!important;display:block;margin:0 0 12px}
 .bop-coast-page .bop-map-pin:last-of-type{margin-bottom:0}
 .bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn{display:block!important;width:100%;min-height:0!important;padding:10px 14px!important;border:2px solid #F59E0B!important;border-radius:999px!important;background:#000!important;color:#fff!important;font:900 clamp(.78rem,3.5vw,.98rem)/1.15 'Archivo Black',sans-serif!important;letter-spacing:.04em;text-transform:uppercase;text-align:left;white-space:normal;overflow-wrap:anywhere;box-shadow:0 0 12px rgba(245,158,11,.45)!important;position:relative}
@@ -43893,7 +43906,7 @@ setInterval(brandChips,600);
    visible the moment the page opens, before the person has scrolled at
    all. Shared by San Diego, LA (both via buildGate) and New York (the
    static gateway), since all three reuse .bop-map-wrap. */
-.bop-map-wrap .bop-map-scroll-cue{position:absolute;left:14px;top:14px;bottom:auto;width:52px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:0;color:#6fb3ff;pointer-events:none}
+.bop-map-wrap .bop-map-scroll-cue{position:absolute;left:14px;top:16%;bottom:auto;width:52px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:96px;color:#6fb3ff;pointer-events:none}
 .bop-map-scroll-letters{display:flex;flex-direction:column;align-items:center;gap:3px;font:800 .62rem/1 Arial,sans-serif;letter-spacing:.02em}
 .bop-map-scroll-letters span{opacity:.5;text-shadow:0 0 6px rgba(255,255,255,.55),0 0 4px rgba(111,179,255,.5);animation:bopMapScrollPulse 2.2s ease-in-out infinite}
 .bop-map-scroll-arrow{width:13px!important;height:19px!important;opacity:.45;filter:drop-shadow(0 0 4px rgba(255,255,255,.5));animation:bopMapScrollPulse 2.2s ease-in-out infinite .3s}
@@ -43910,8 +43923,8 @@ var head=document.createElement('div');head.className='bop-ny-coast-head';head.t
 var sub=document.createElement('div');sub.className='bop-ny-coast-sub';sub.textContent='THE FIVE BOROUGHS. THE ISLAND. THE END.';
 inner.insertBefore(sub,wrap);inner.insertBefore(head,sub);
 var pins={};g.querySelectorAll('.bop-map-pin').forEach(function(p){var b=p.querySelector('[data-ny-destination]');if(!b)return;var k=b.dataset.nyDestination;var label=(b.textContent||'').trim().toLowerCase();if(/staten/.test(label))k='statenisland';if(!pins[k])pins[k]=p;else p.remove();});
+if(pins.statenisland){var sb=pins.statenisland.querySelector('[data-ny-destination]');if(sb)sb.innerHTML='<strong>STATEN ISLAND</strong>';wrap.appendChild(pins.statenisland);}
 ORDER.forEach(function(k){var p=pins[k];if(!p)return;var b=p.querySelector('[data-ny-destination]');if(b&&AREAS[k])b.innerHTML='<strong>'+AREAS[k]+'</strong>';wrap.appendChild(p);});
-if(pins.statenisland){var b=pins.statenisland.querySelector('[data-ny-destination]');if(b)b.innerHTML='<strong>STATEN ISLAND</strong>';wrap.appendChild(pins.statenisland);}
 var hint=document.createElement('div');hint.className='bop-ny-coast-hint';hint.textContent='Tap your area for its own directory.';
 wrap.insertAdjacentElement('afterend',hint);
 }
@@ -48710,4 +48723,53 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+<style id="bop-zone-soon-v600-style">
+.bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn.bop-map-pin-soon{border-color:#E4002B!important;color:#E4002B!important}
+.bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn.bop-map-pin-soon:before{background:#E4002B!important;box-shadow:0 0 8px rgba(228,0,43,.9)!important}
+#bopZoneSoonModal{position:fixed;inset:0;z-index:2147483450;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.74);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+#bopZoneSoonModal.open{display:flex}
+.bop-zone-soon-panel{position:relative;width:min(380px,92vw);padding:32px 24px 26px;border:2px solid #E4002B;border-radius:22px;background:#050505;text-align:center;box-shadow:0 0 28px rgba(228,0,43,.42)}
+.bop-zone-soon-close{position:absolute;top:10px;right:10px;width:36px;height:36px;border:1.5px solid #E4002B;border-radius:50%;background:#000;color:#E4002B;font:900 20px/1 Arial;cursor:pointer}
+.bop-zone-soon-kicker{color:#E4002B;font:900 .66rem/1 'Archivo Black',Arial;letter-spacing:.2em;margin-bottom:12px}
+.bop-zone-soon-title{margin:0 28px 14px;color:#fff;font:900 1.3rem/1.2 'Fraunces',serif}
+.bop-zone-soon-title em{color:#E4002B;font-style:italic}
+.bop-zone-soon-body{margin:0 0 22px;color:#ddd;font:600 .95rem/1.5 'Archivo Narrow',sans-serif}
+.bop-zone-soon-body b{color:#fff}
+.bop-zone-soon-body i{color:#F59E0B;font-style:normal}
+.bop-zone-soon-mail{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border:2px solid #E4002B;border-radius:50%;background:#0a0a0a;color:#E4002B;text-decoration:none;box-shadow:0 0 12px rgba(228,0,43,.45)}
+.bop-zone-soon-mail svg{width:24px;height:24px;stroke:#E4002B;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bop-zone-soon-mail:active{transform:scale(.96)}
+</style>
+<div id="bopZoneSoonModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="We are working on this area">
+  <div class="bop-zone-soon-panel">
+    <button type="button" class="bop-zone-soon-close" aria-label="Close">&times;</button>
+    <div class="bop-zone-soon-kicker">WE'RE ON IT</div>
+    <h2 class="bop-zone-soon-title">We're still digging on <em id="bopZoneSoonName">this area</em>.</h2>
+    <p class="bop-zone-soon-body"><b>Best of</b> <i>Period&copy;</i> is working on it. Know a spot that belongs here? Email us and we'll eat there as soon as we can.</p>
+    <a class="bop-zone-soon-mail" id="bopZoneSoonMail" href="mailto:info@bestofperiod.com" aria-label="Email a suggestion"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></a>
+  </div>
+</div>
+<script id="bop-zone-soon-v600-script">(function(){
+var modal=document.getElementById('bopZoneSoonModal');if(!modal)return;
+var nameEl=document.getElementById('bopZoneSoonName'),mail=document.getElementById('bopZoneSoonMail');
+function open(label){
+nameEl.textContent=label||'this area';
+mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Suggestion: '+(label||'this area'))+'&body='+encodeURIComponent('Restaurant name:\nAddress:\nWhy it belongs on Best of Period:\n');
+modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+}
+function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+modal.querySelector('.bop-zone-soon-close').addEventListener('click',close);
+modal.addEventListener('click',function(e){if(e.target===modal)close();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close();});
+window.bopShowZoneSoon=open;
+})();</script>
+<style id="bop-cp-title-oneline-v601">
+/* BJS Picks LA/S.D./N.Y. heading: "Best Of Period" on one line, a gold
+   bar matching that line's exact width, then "BJS Picks <City>" below
+   with real room to breathe. Approved 2026-09-09. */
+#bopCityPicksPage .cp-title{display:flex!important;flex-direction:column!important;align-items:center!important;gap:0!important}
+#bopCityPicksPage .cp-title .bop-title-line1{display:inline-flex!important;align-items:baseline!important;gap:.28em!important;padding-bottom:10px!important;border-bottom:3px solid #F59E0B!important;box-shadow:0 6px 12px -7px rgba(245,158,11,.7)!important;border-radius:1px!important;color:#fff!important;font-size:1.5rem!important}
+#bopCityPicksPage .cp-title .bop-title-line1 .bop-ny-title-period{font-size:1em!important;color:#F59E0B!important}
+#bopCityPicksPage .cp-title .bop-ny-title-city{display:block!important;margin-top:18px!important;font-size:1.15em!important;letter-spacing:.01em!important}
+</style>
 </body></html>
