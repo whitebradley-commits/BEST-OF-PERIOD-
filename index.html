@@ -47898,7 +47898,45 @@ margin-top:6px!important;
 #bopExclusiveInvitation .bop-world-period>sup{
   top:0!important;
   font-size:.10285em!important;
-  transform:translateY(-3.5pt)!important;
+  transform:translateY(-5pt)!important;
+}
+
+/* Fixed brand lockup at the top of the WHY explanation orb. */
+#bjsWhyOverlay .bjs-why-city-period-lockup.bjs-why-fixed-logo{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+  width:100%!important;
+  margin:0 auto 6pt!important;
+  line-height:.88!important;
+}
+#bjsWhyOverlay .bjs-why-fixed-logo>.bop-world-best,
+#bjsWhyOverlay .bjs-why-fixed-logo>.bop-world-period{
+  display:block!important;
+  position:relative!important;
+  width:150px!important;
+  margin:0!important;
+  padding:0!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  font-family:'Bodoni Moda',serif!important;
+  font-weight:900!important;
+  line-height:.88!important;
+  letter-spacing:-.035em!important;
+}
+#bjsWhyOverlay .bjs-why-fixed-logo>.bop-world-best{
+  color:#f2f1ed!important;
+  font-size:calc(clamp(1.35rem,5.8vw,1.7rem) + 2pt)!important;
+}
+#bjsWhyOverlay .bjs-why-fixed-logo>.bop-world-period{
+  color:#F59E0B!important;
+  font-size:clamp(1.35rem,5.8vw,1.7rem)!important;
+}
+#bjsWhyOverlay .bjs-why-fixed-logo .period-mark{
+  font-size:.10em!important;
+  transform:translateY(-1pt)!important;
 }
 </style>
 <script id="bop-repair-pass-20260909-script">(function(){
@@ -47922,6 +47960,18 @@ function repairPeriodMarks(root){
 function install(){
   repairPeriodMarks(document);
   document.querySelectorAll('#bjsWhyOverlay .bop-primary-more-row').forEach(function(row){row.remove();});
+  var whyText=document.querySelector('#bjsWhyOverlay .bjs-why-orb-text');
+  var whyLogo=document.querySelector('#bjsWhyOverlay .bjs-why-city-period-lockup');
+  var entryBest=document.querySelector('#bopExclusiveInvitation .bop-world-best');
+  var entryPeriod=document.querySelector('#bopExclusiveInvitation .bop-world-period');
+  if(whyText&&whyLogo&&entryBest&&entryPeriod){
+    whyLogo.classList.add('bjs-why-fixed-logo');
+    whyLogo.innerHTML='';
+    whyLogo.appendChild(entryBest.cloneNode(true));
+    whyLogo.appendChild(entryPeriod.cloneNode(true));
+    whyText.insertBefore(whyLogo,whyText.firstChild);
+    repairPeriodMarks(whyLogo);
+  }
   new MutationObserver(function(records){
     records.forEach(function(record){
       record.addedNodes.forEach(function(node){
