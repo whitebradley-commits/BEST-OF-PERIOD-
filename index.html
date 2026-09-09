@@ -14691,6 +14691,19 @@ if(/^BEST\s+OF\b/i.test(source))return source;
 if(/^BEST\b/i.test(source))return source.replace(/^BEST\b/i,'Best Of');
 return 'Best Of '+source;
 }
+function boUniformSubcategoryHeader(cityName, rawTitle){
+const scratch=document.createElement('div');
+scratch.innerHTML=String(rawTitle||'');
+let category=(scratch.textContent||scratch.innerText||'').replace(/^\s*BEST\s+OF\s*/i,'').trim();
+category=category.toLowerCase().replace(/\b[a-z]/g,function(ch){return ch.toUpperCase();})
+.replace(/\bBjs\b/g,'BJS').replace(/\bNyc\b/g,'NYC');
+const combined=(String(cityName||'').trim()+' '+category).trim();
+return `<div class="bop-splash-hero bop-splash-hero-nocircle bop-unified-subcategory-hero" style="padding:0;">
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">Best Of</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-goldline"></div></div>
+<span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-unified-subcategory-title" data-fit="${boCityFitValue(combined)}">${combined}</span></span>
+</div>`;
+}
 const botrToLandingBtnEl = document.getElementById('botrToLandingBtn');
 const boExpandBtnTopEl = document.getElementById('boExpandBtnTopWrap');
 let boCurrentCat = 'bestof';
@@ -15171,13 +15184,10 @@ startBopVegasSlotCycler('bopMainCityText', [otherBestsCity].concat(spinPool), 18
 }
 } else if(isBjsPicksCat(cat)){
 const bjsPicksCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title)}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(bjsPicksCity)}">${bjsPicksCity}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
+boHeroTitleEl.innerHTML = boUniformSubcategoryHeader(bjsPicksCity,boHeroCopy[cat] ? boHeroCopy[cat].title : boHeroCopy.bjspicks.title);
 } else {
 const genericCityName = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
-const ishSuffix = (cat === '24hours' && BO_24HR_ISH_CITIES.includes(boCityContext))
-? ' <span class="bo-hero-dessert-word" style="font-size:0.65em;">ish</span>'
-: '';
-boHeroTitleEl.innerHTML = `${boBestOfCategoryTitle(boHeroCopy[cat].title)}${ishSuffix}<span class="bop-splash-hero bop-splash-hero-nocircle bo-subcategory-lockup"><span class="bop-splash-line2"><span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(genericCityName)}">${genericCityName}</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></span></span>`;
+boHeroTitleEl.innerHTML = boUniformSubcategoryHeader(genericCityName,boHeroCopy[cat].title);
 }
 const activeHeroCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
 let activeHeroSub = (boHeroCopy[cat] || {sub:''}).sub || '';
@@ -48187,6 +48197,56 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   line-height:1!important;
   vertical-align:baseline!important;
   transform:translateY(-1pt)!important;
+}
+</style>
+<style id="bop-uniform-global-subcategory-headers-v434">
+/* One London-style header system for city landings and every restaurant subcategory. */
+#boHeroTitle .bop-lockup-static>.bop-splash-line1,
+#boHeroTitle .bop-lockup-static>.bop-splash-period{
+  position:static!important;
+  display:inline!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:clamp(1.9rem,8.5vw,2.9rem)!important;
+  line-height:1!important;
+  transform:none!important;
+}
+#boHeroTitle .bop-lockup-static>.bop-splash-line1{margin-right:.32em!important}
+#boHeroTitle .bop-lockup-static>.bop-splash-period>.period-mark{
+  display:inline-block!important;
+  position:relative!important;
+  inset:auto!important;
+  top:-.04em!important;
+  margin-left:.05em!important;
+  font-size:.1575em!important;
+  line-height:1!important;
+  transform:translateY(-1pt)!important;
+}
+#boHeroTitle .bop-unified-subcategory-hero .bop-lockup-goldline{
+  width:100%!important;
+  height:3px!important;
+  margin:10px auto 20px!important;
+}
+#boHeroTitle .bop-unified-subcategory-title{
+  display:block!important;
+  width:100%!important;
+  max-width:94vw!important;
+  margin:0 auto!important;
+  padding:0!important;
+  color:#E4002B!important;
+  font-size:clamp(2.35rem,11vw,5rem)!important;
+  line-height:1!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  transform:none!important;
+}
+#boHeroTitle .bop-unified-subcategory-title[data-fit="long"]{
+  font-size:clamp(2.05rem,9.5vw,4.35rem)!important;
+}
+#boHeroTitle .bop-unified-subcategory-title[data-fit="xlong"]{
+  font-size:clamp(1.65rem,7.7vw,3.6rem)!important;
 }
 </style>
 </body></html>
