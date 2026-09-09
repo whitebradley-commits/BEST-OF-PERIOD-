@@ -48412,7 +48412,7 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
 <style id="bop-three-scoped-adjustments-20260909">
 /* Rotating landing page only: lower the navigation pin by exactly 2pt. */
 #bopLandingOverlay .bop-splash-period .bop-period-i-wrap>.bop-period-apple-i{
-  top:calc(-.14em + 2pt)!important;
+  top:calc(-.14em + 4pt)!important;
 }
 
 /* Every city starts at the approved Del Mar scale. JavaScript reduces it only
@@ -48465,6 +48465,93 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
     if(hero)new MutationObserver(schedule).observe(hero,{childList:true,subtree:true,characterData:true});
     window.addEventListener('resize',schedule,{passive:true});
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script>
+<style id="bop-universal-popup-media-20260909">
+#bopPickCardPop .bop-main-landing-fallback,
+#bopBestOfBestOverlay .bop-main-landing-fallback{
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;box-sizing:border-box;
+  padding:15px;background:#000;text-align:center;overflow:hidden;
+}
+.bop-main-landing-fallback .bop-fallback-line1{
+  color:#fff;font:900 clamp(30px,9vw,50px)/.92 'Fraunces','Bodoni Moda','Playfair Display',serif;
+  text-shadow:0 0 12px rgba(255,255,255,.35);white-space:nowrap;
+}
+.bop-main-landing-fallback .bop-fallback-period{
+  color:#F59E0B;font:900 clamp(30px,9vw,50px)/.95 'Fraunces','Bodoni Moda','Playfair Display',serif;
+  text-shadow:0 0 14px rgba(245,158,11,.45);white-space:nowrap;
+}
+.bop-main-landing-fallback .bop-fallback-tagline{
+  margin-top:10px;color:#F59E0B;font:800 clamp(8px,2.3vw,12px)/1.15 'Archivo Narrow',Arial,sans-serif;
+  letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;
+}
+#bopPickCardPop .bobb-card-media>img[data-bop-resolved-photo],
+#bopBestOfBestOverlay .bobb-card-media>img[data-bop-resolved-photo]{
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:cover!important;object-position:center!important;padding:0!important;
+}
+</style>
+<script id="bop-universal-popup-media-20260909-script">
+(function(){
+  var EXACT={
+    'olamaie':'https://images.squarespace-cdn.com/content/v1/646015e48fe58a2a5008e2b0/8b459662-1032-4f91-ad5e-544cf411ee11/stripeporch2.jpg',
+    'trb hutong':'https://images.squarespace-cdn.com/content/v1/65406903d2a579787394055c/f2cbc313-3502-4a19-be3a-bac515aa50d3/1B9CFC72-1C18-4269-B011-47A03B597E28.JPG'
+  };
+  function norm(s){return String(s||'').toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/[^a-z0-9]+/g,' ').trim();}
+  function photoFor(name){
+    var key=norm(name),found=EXACT[key]||'';
+    if(found)return found;
+    if(typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS){
+      Object.keys(BUSINESS_PHOTOS).some(function(k){var a=BUSINESS_PHOTOS[k];if(norm(k)===key&&Array.isArray(a)&&a[0]){found=a[0];return true;}return false;});
+    }
+    if(!found&&typeof boCategoryData==='object'&&boCategoryData){
+      Object.keys(boCategoryData).some(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return false;return list.some(function(r){if(r&&norm(r.name)===key&&r.image){found=r.image;return true;}return false;});});
+    }
+    return found;
+  }
+  function landingFallback(media){
+    var box=document.createElement('div');box.className='bop-main-landing-fallback';
+    var landing=document.getElementById('bopLandingOverlay');
+    var line1=landing&&landing.querySelector('.bop-splash-line1');
+    var period=landing&&landing.querySelector('.bop-splash-period');
+    var tagline=landing&&landing.querySelector('.bop-splash-hero>p');
+    var a=document.createElement('div');a.className='bop-fallback-line1';a.innerHTML=line1?line1.innerHTML:'Best Of';
+    var b=document.createElement('div');b.className='bop-fallback-period';b.innerHTML=period?period.innerHTML:'Period<span class="period-mark">©</span>';
+    var c=document.createElement('div');c.className='bop-fallback-tagline';c.textContent=tagline?'WE DID THE DIGGING. YOU DO THE DINING.':'WE DID THE DIGGING. YOU DO THE DINING.';
+    box.append(a,b,c);media.classList.add('bobb-card-media-placeholder');media.replaceChildren(box);
+  }
+  function repair(media){
+    if(!media||media.dataset.bopMediaRepairing==='1')return;
+    media.dataset.bopMediaRepairing='1';
+    var card=media.closest('.bobb-card-inner,.bobb-pop-inner')||media.parentElement;
+    var nameEl=card&&card.querySelector('.bobb-card-name');
+    var name=nameEl?(nameEl.textContent||'').trim():'';
+    var photo=photoFor(name);
+    var real=media.querySelector('img:not(.bobb-card-placeholder)');
+    var stale=media.querySelector('.bobb-card-placeholder,.bobb-card-brandmark,.bobb-card-brandmark-live,.bop-current-photo-fallback,.bop-main-landing-fallback');
+    if(photo&&(!real||stale)){
+      var img=document.createElement('img');img.src=photo;img.alt=name+' restaurant';img.loading='lazy';img.dataset.bopResolvedPhoto='1';
+      img.addEventListener('error',function(){landingFallback(media);},{once:true});
+      media.classList.remove('bobb-card-media-placeholder');media.replaceChildren(img);
+    }else if(real){
+      if(!real.dataset.bopFinalError){real.dataset.bopFinalError='1';real.addEventListener('error',function(){var retry=photoFor(name);if(retry&&real.src!==retry){real.src=retry;}else landingFallback(media);},{once:true});}
+      if(real.complete&&real.naturalWidth===0)landingFallback(media);
+    }else if(!photo){landingFallback(media);}
+    media.dataset.bopMediaRepairing='0';
+  }
+  function repairAll(root){
+    (root||document).querySelectorAll('#bopPickCardPop .bobb-card-media,#bopBestOfBestOverlay .bobb-card-media').forEach(repair);
+  }
+  function applyExact(){
+    if(typeof boCategoryData!=='object'||!boCategoryData)return;
+    Object.keys(boCategoryData).forEach(function(cat){var list=boCategoryData[cat];if(!Array.isArray(list))return;list.forEach(function(r){var u=r&&EXACT[norm(r.name)];if(u&&!r.image)r.image=u;});});
+  }
+  function install(){
+    applyExact();repairAll(document);
+    new MutationObserver(function(records){records.forEach(function(rec){rec.addedNodes.forEach(function(node){if(node.nodeType===1){if(node.matches&&node.matches('.bobb-card-media'))repair(node);repairAll(node);}});});}).observe(document.body,{childList:true,subtree:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
