@@ -48330,4 +48330,83 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
+<style id="bop-authoritative-visual-system-20260909">
+/* One authoritative mobile scale for every city masthead. */
+#boHeroTitle .bop-unified-subcategory-title,
+#boHeroTitle .bop-splash-city{
+  width:100%!important;max-width:100%!important;margin-inline:auto!important;
+  font-size:clamp(3.55rem,16vw,6.4rem)!important;line-height:.86!important;
+  white-space:nowrap!important;text-align:center!important;transform:none!important;
+}
+#boHeroTitle [data-fit="long"],#boHeroTitle [data-fit="xlong"]{
+  font-size:clamp(3.05rem,13.5vw,5.35rem)!important;
+}
+
+/* Celebrity Chefs list and individual-chef pages use the same restrained title system. */
+#bopCelebChefOverlay .bop-splash-city-col,
+#bopCelebChefPage .bop-splash-city-col{width:100%!important;max-width:100%!important;overflow:hidden!important;transform:none!important}
+#bopCelebChefOverlay .bop-splash-city,
+#bopCelebChefPage .bop-splash-city{
+  width:100%!important;max-width:100%!important;margin:10px auto 18px!important;
+  font-size:clamp(2rem,8.5vw,3.25rem)!important;line-height:.95!important;
+  white-space:nowrap!important;text-align:center!important;transform:none!important;
+}
+#bopCelebChefOverlay .bop-splash-city[data-fit="long"],
+#bopCelebChefPage .bop-splash-city[data-fit="long"]{font-size:clamp(1.75rem,7.4vw,2.8rem)!important}
+#bopCelebChefOverlay .bop-splash-city[data-fit="xlong"],
+#bopCelebChefPage .bop-splash-city[data-fit="xlong"]{font-size:clamp(1.45rem,6.2vw,2.35rem)!important}
+
+/* Crop chef portraits consistently so source-image side bars never show. */
+#bopCelebChefOverlay .bo-celeb-card{overflow:hidden!important;background:#000!important}
+#bopCelebChefOverlay .bo-celeb-photo{
+  width:100%!important;height:100%!important;aspect-ratio:1!important;
+  object-fit:cover!important;object-position:center 18%!important;
+  transform:scale(1.08)!important;transform-origin:center!important;
+  background:#000!important;
+}
+#bopCelebChefPage .bo-celeb-chef-photo-big{
+  width:160px!important;height:160px!important;max-width:42vw!important;
+  object-fit:cover!important;object-position:center 18%!important;
+  background:#000!important;border-radius:12px!important;
+}
+
+/* Canonical Period mark: one pin, a centered apple, and the London baseline. */
+.bop-period-i-wrap{position:relative!important;display:inline-block!important}
+.bop-period-i-wrap>.bop-period-apple-i{
+  position:absolute!important;left:50%!important;top:-.14em!important;
+  width:.22em!important;height:.22em!important;margin:0!important;
+  transform:translateX(-50%)!important;
+}
+.bop-period-i-wrap>.bop-period-apple-i~.bop-period-apple-i{display:none!important}
+.bop-period-apple-o{
+  display:inline-block!important;width:.79em!important;height:.82em!important;
+  margin:0 -.065em!important;vertical-align:-.105em!important;
+  transform:none!important;
+}
+.bop-splash-period sup,.bop-world-period sup{
+  font-size:.13em!important;line-height:1!important;vertical-align:.08em!important;
+  margin-left:.045em!important;position:static!important;transform:none!important;
+}
+</style>
+<script id="bop-authoritative-visual-system-20260909-script">
+(function(){
+  function repairPeriodMarks(root){
+    (root||document).querySelectorAll('.bop-splash-period,.bop-world-period,.bop-lockup-period').forEach(function(mark){
+      var pins=mark.querySelectorAll('.bop-period-apple-i');
+      for(var i=1;i<pins.length;i++)pins[i].remove();
+      mark.querySelectorAll('.bop-period-i-wrap').forEach(function(wrap){
+        var own=wrap.querySelectorAll(':scope > .bop-period-apple-i');
+        for(var j=1;j<own.length;j++)own[j].remove();
+      });
+    });
+  }
+  function installVisualSystem(){
+    repairPeriodMarks(document);
+    new MutationObserver(function(records){
+      records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)repairPeriodMarks(node);});});
+    }).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installVisualSystem);else installVisualSystem();
+})();
+</script>
 </body></html>
