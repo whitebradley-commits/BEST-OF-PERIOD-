@@ -47616,4 +47616,28 @@ position:static!important;
 font-size:clamp(4.2rem,19vw,6.4rem)!important;
 }
 </style>
+
+<style id="bop-lockup-best-period-city-align-v2">
+/* Fix for the "Best Of Period" goldline lockup (search-result/landed
+   hero, e.g. tapping a city from search): "Period" was rendering
+   noticeably larger than "Best Of" because the older #boHeroTitle
+   .bop-splash-period rule (font-size:1.38em + 2pt, written for the
+   pre-goldline "Best Of Beverly Hills Period" layout) still wins on
+   ID specificity over the newer .bop-lockup-static sizing. Forcing
+   Period back down to match Best Of's own size here, scoped only to
+   this lockup so nothing else on the site is touched. */
+#boHeroTitle .bop-lockup-static .bop-splash-period{
+font-size:clamp(1.9rem,8.5vw,2.9rem)!important;
+}
+/* The city name (e.g. "London") sits under the goldline and is meant
+   to be centered under the "WE DID THE DIGGING..." tagline below it.
+   The general .bop-splash-city-col rule carries a +20pt/+2pt nudge
+   that was tuned for the old rotating-landing grid layout, not this
+   centered block — it was pushing the city off-center to the right
+   here. Neutralizing that and nudging 3pt left of true-center per
+   request. */
+.bop-splash-hero:has(.bop-lockup-goldline) .bop-splash-city-col{
+transform:translateX(-3pt)!important;
+}
+</style>
 </body></html>
