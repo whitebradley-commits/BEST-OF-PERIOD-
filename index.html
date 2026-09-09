@@ -42992,9 +42992,10 @@ if(t===pop){close();}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close();var k=e.target&&e.target.closest&&e.target.closest('[data-golden-apple-popup]');if(k&&(e.key==='Enter'||e.key===' ')){e.preventDefault();open();}});
 })();</script>
 <style id="bop-movies-compact-grid-v403">
-#boMoviesPage .bo-movies-columns,#boMoviesPage .bo-current-grid{display:none!important}
+#boMoviesPage .bo-movies-columns,#boMoviesPage .bo-current-grid,#boMoviesPage .bo-current-movies-title,#boMoviesPage .bo-current-source{display:none!important}
 #boMoviesPage .bop-mv-section{margin:14px 0 6px}
-#boMoviesPage .bop-mv-head{display:flex;align-items:center;justify-content:center;width:clamp(150px,42vw,200px);height:clamp(150px,42vw,200px);margin:14px auto 10px;padding:14px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#F59E0B;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(1.6rem,7vw,2rem);font-weight:900;letter-spacing:.025em;line-height:1.02;text-align:center;box-shadow:0 0 14px rgba(245,158,11,.48),inset 0 0 18px rgba(245,158,11,.07);text-shadow:0 0 8px rgba(245,158,11,.7)}
+#boMoviesPage .bop-mv-head{display:flex;flex-direction:column;align-items:center;justify-content:center;width:clamp(150px,42vw,200px);height:clamp(150px,42vw,200px);margin:14px auto 10px;padding:14px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#F59E0B;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(1.6rem,7vw,2rem);font-weight:900;letter-spacing:.025em;line-height:1.02;text-align:center;box-shadow:0 0 14px rgba(245,158,11,.48),inset 0 0 18px rgba(245,158,11,.07);text-shadow:0 0 8px rgba(245,158,11,.7)}
+#boMoviesPage .bop-mv-head::before{content:'★';display:block;margin:0 0 5px;color:#fff;font:inherit;line-height:1;text-shadow:0 0 7px rgba(255,255,255,.38)}
 #boMoviesPage .bop-mv-src{text-align:center;margin:0 0 12px}
 #boMoviesPage .bop-mv-src{color:#9d8f72;font-size:9px;font-weight:800;letter-spacing:.12em;margin:0 0 8px}
 #boMoviesPage .bop-mv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-items:start}
@@ -46845,15 +46846,15 @@ if(already)already.remove();
 return;
 }
 if(already)return;
-/* v2: was a large 96x96 square star badge, sitting apart from the
-   rest of the tile grid visually. Now uses the same rectangular
-   .bo-picker-btn shape as every other tile (BJS Picks, Steak,
-   Dessert, etc.) so it sits naturally in that same row instead of
-   reading as an oversized, out-of-place square. */
+/* v3: restore the Walk-of-Fame star/granite artwork as the tile's
+   background (filling the rectangle via preserveAspectRatio="slice",
+   like object-fit:cover), keeping the same footprint as every other
+   .bo-picker-btn tile instead of the old oversized square badge. */
 var btn=document.createElement('button');
 btn.type='button';
 btn.className='bo-picker-btn bo-celeb-chef-tile bo-celeb-chef-tile-rect';
-btn.innerHTML='<span class="bo-celeb-chef-tile-label">Celebrity<br>Chefs</span>';
+var starSvg=(window.boCelebrityChefStarSVG||'').replace('viewBox="0 0 100 100"','viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"');
+btn.innerHTML='<span class="bo-celeb-chef-tile-art">'+starSvg+'</span><span class="bo-celeb-chef-tile-label">Celebrity<br>Chefs</span>';
 btn.addEventListener('click',function(){window.boShowCelebrityChefs();});
 grid.insertBefore(btn, grid.firstChild);
 }
@@ -47078,8 +47079,10 @@ if(!exists)boCategoryData[cat].push(r);
    Picks, Steak, Dessert, etc.) on any city page that has at least
    one of the 12 chefs' restaurants, matching their shape instead of
    the old oversized square star badge. */
-.bo-celeb-chef-tile-rect{display:flex;align-items:center;justify-content:center}
-.bo-celeb-chef-tile-label{font-style:italic;font-weight:700;color:#E4002B;text-shadow:0 0 10px rgba(228,0,43,.55);line-height:1.15}
+.bo-celeb-chef-tile-rect{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bo-celeb-chef-tile-art{position:absolute;inset:0;z-index:0;line-height:0}
+.bo-celeb-chef-tile-art svg{display:block;width:100%;height:100%}
+.bo-celeb-chef-tile-label{position:relative;z-index:1;font-style:italic;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 10px rgba(0,0,0,.8);line-height:1.15}
 /* Popup: grid of 12 chef photos */
 .bo-celeb-overlay{position:fixed;inset:0;z-index:100300;display:none;overflow-y:auto;background:#050505;padding:60px 18px 60px}
 .bo-celeb-overlay.open{display:block}
@@ -47089,7 +47092,7 @@ if(!exists)boCategoryData[cat].push(r);
 .bo-celeb-sub{text-align:center;color:#999;font-family:'Archivo Narrow',sans-serif;font-size:.82rem;margin-bottom:28px}
 .bo-celeb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .bo-celeb-card{position:relative;background:none;border:none;padding:0;cursor:pointer;display:block}
-.bo-celeb-photo{width:100%;aspect-ratio:1;border-radius:10px;border:none;object-fit:contain;box-shadow:none;background:#0c0c0c}
+.bo-celeb-photo{width:100%;aspect-ratio:1;border-radius:10px;border:none;object-fit:cover;object-position:center 18%;box-shadow:none;background:#0c0c0c}
 .bo-celeb-card.is-empty .bo-celeb-photo{opacity:.4}
 .bo-celeb-name{position:absolute;left:50%;bottom:8px;transform:translateX(-50%) translateY(4px);width:calc(100% - 10px);opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;background:rgba(5,5,5,.92);border:1.5px solid #F59E0B;border-radius:8px;padding:5px 4px 4px;color:#fff;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.66rem;text-align:center;line-height:1.15;box-shadow:0 0 10px rgba(245,158,11,.4)}
 .bo-celeb-name-hint{display:block;margin-top:2px;color:#F59E0B;font-weight:600;font-size:.56rem;text-transform:uppercase;letter-spacing:.02em}
@@ -47223,7 +47226,7 @@ transform:translateX(-50%)!important;
 #bopLandingOverlay .bop-splash-city,
 #tbotrLandingOverlay .bop-splash-city{
 display:inline-block!important;
-transform:scale(1.1)!important;
+transform:scale(1.1) translateX(-2px)!important;
 transform-origin:center center!important;
 }
 
