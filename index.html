@@ -45281,7 +45281,11 @@ typeForm.addEventListener('submit',function(e){e.preventDefault();var v=typeInpu
 /* ---- mic control ---- */
 function showBubble(label,text,live){bubbleLabel.textContent=label;bubbleText.textContent=text||'';bubble.classList.toggle('is-live',!!live);bubble.classList.add('open');clearTimeout(bubbleTimer);}
 function hideBubble(delay){clearTimeout(bubbleTimer);bubbleTimer=setTimeout(function(){bubble.classList.remove('open');},delay||0);}
-function bopVoiceHoldHintBump(){try{var n=(parseInt(localStorage.getItem('bopVoiceHoldHintUses_v2')||'0',10)||0)+1;localStorage.setItem('bopVoiceHoldHintUses_v2',String(n));return n;}catch(e){return 0;}}
+/* Per request (2026-09-10): the 1st/3rd/7th count is per visit, not
+   forever — an in-memory counter resets every time the page loads, so
+   leaving and coming back starts over. */
+var bopVoiceHoldHintUseCount=0;
+function bopVoiceHoldHintBump(){bopVoiceHoldHintUseCount+=1;return bopVoiceHoldHintUseCount;}
 function bopVoiceHoldHintPing(){
 try{
 if(localStorage.getItem('bop-music-muted-v1')==='yes')return;
@@ -45306,8 +45310,9 @@ if(on){
 /* Per request (2026-09-10): pop up the instant the thumb goes down,
    not after a delay — as a nudge not to let go the instant they stop
    talking (the mic needs a moment to catch that last word).
-   Per request (2026-09-09): don't nag on every single use — only the
-   1st, 3rd, and 7th uses as reminders, then never again. */
+   Per request (2026-09-09/10): don't nag on every single use — only the
+   1st, 3rd, and 7th uses *of each visit* as reminders. Leaving the page
+   and coming back starts the count over. */
 var useN=bopVoiceHoldHintBump();
 var shouldShowHint=(useN===1||useN===3||useN===7);
 if(shouldShowHint)holdHintTimer=setTimeout(function(){if(holdHint&&listening){holdHint.classList.add('is-visible');bopVoiceHoldHintPing();}},0);
@@ -48527,41 +48532,11 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
 }
 </style>
 <script id="bop-bangkok-scale-20260909-script">
-(function(){
-  var pending=0;
-  function fitOne(title){
-    title.style.removeProperty('font-size');
-    var viewport=Math.max(280,window.innerWidth||document.documentElement.clientWidth||390);
-    var base=Math.min(102.4,Math.max(56.8,viewport*.16));
-    var available=Math.min(viewport*.94,(document.getElementById('boHeroTitle').clientWidth||viewport)*.94);
-    var cs=getComputedStyle(title);
-    var canvas=fitOne.canvas||(fitOne.canvas=document.createElement('canvas'));
-    var ctx=canvas.getContext('2d');
-    ctx.font=[cs.fontStyle,cs.fontWeight,base+'px',cs.fontFamily].join(' ');
-    var text=(title.textContent||'').trim();
-    var spacing=parseFloat(cs.letterSpacing)||0;
-    var measured=ctx.measureText(text).width+Math.max(0,text.length-1)*spacing;
-    var fitted=measured>available ? Math.max(30,base*(available/measured)*.97) : base;
-    title.style.setProperty('font-size',fitted.toFixed(2)+'px','important');
-  }
-  function fitAll(){
-    pending=0;
-    var hero=document.getElementById('boHeroTitle');
-    if(!hero)return;
-    hero.querySelectorAll('.bop-unified-subcategory-title,.bop-splash-city').forEach(function(title){
-      fitOne(title);
-    });
-  }
-  function schedule(){if(!pending)pending=requestAnimationFrame(fitAll);}
-  function install(){
-    schedule();
-    var hero=document.getElementById('boHeroTitle');
-    if(hero)new MutationObserver(schedule).observe(hero,{childList:true,subtree:true,characterData:true});
-    window.addEventListener('resize',schedule,{passive:true});
-    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-})();
+/* Retired 2026-09-10: this canvas-based fitter did not account for the
+   1.21x scale on .bop-splash-city, so it produced overflowing sizes and
+   fought the v604 rendered-width fitter every tick (visible flicker).
+   The v604 script now owns title fitting, with the same instant
+   MutationObserver/rAF trigger this one had. */
 </script>
 <style id="bop-universal-popup-media-20260909">
 #bopPickCardPop .bop-main-landing-fallback,
@@ -48832,15 +48807,57 @@ function schedule(){hydrate();setTimeout(hydrate,800);setTimeout(hydrate,2000);s
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule);else schedule();
 document.addEventListener('click',function(){setTimeout(hydrate,50);setTimeout(hydrate,400);},true);
 })();</script>
+<style id="bop-worldwide-orbs-half-v605">
+/* Worldwide sub-pages (autos, cellular, luxury goods, airlines, songs):
+   halve the ranking orbs and tone down the glow. Scoped to
+   #boWorldwidePage only — vendor / food-truck pages untouched. */
+#boWorldwidePage .bo-movie-column-head h2{
+  width:clamp(75px,21vw,100px)!important;
+  height:clamp(75px,21vw,100px)!important;
+  padding:8px!important;
+  border-width:2px!important;
+  font-size:clamp(.8rem,3.5vw,1rem)!important;
+  box-shadow:0 0 7px rgba(245,158,11,.3),inset 0 0 9px rgba(245,158,11,.05)!important;
+  text-shadow:0 0 4px rgba(245,158,11,.5)!important;
+}
+/* Movies + worldwide "Best of Period" title: lift the pin over the "i"
+   so it hovers above the stem instead of sitting in it, and make the
+   (c) mark actually visible — it was rendering at ~3px. */
+#boMoviesPage .bo-movies-period-inline .bop-period-apple-i,
+#boWorldwidePage .bo-movies-period-inline .bop-period-apple-i{
+  transform:translate(-50%,-3pt)!important;
+}
+#boMoviesPage .bo-movies-period-inline .period-mark,
+#boWorldwidePage .bo-movies-period-inline .period-mark{
+  font-size:.22em!important;
+  position:relative!important;
+  top:-.55em!important;
+  margin-left:.06em!important;
+  opacity:1!important;
+}
+</style>
 <script id="bop-hero-title-universal-autofit-v604-script">(function(){
 function fitOne(el){
 if(!el||!el.isConnected)return;
 var maxWidth=(document.documentElement.clientWidth||window.innerWidth)-24;
 if(!maxWidth||maxWidth<40)return;
+/* Only re-fit when the text or the screen width actually changed.
+   Resetting + re-shrinking on every tick caused a visible flicker. */
+var key=el.textContent+'|'+maxWidth;
+if(el.dataset.bopFitKey===key)return;
+el.dataset.bopFitKey=key;
 el.style.setProperty('font-size','',null);
 var size=parseFloat(getComputedStyle(el).fontSize);
+var width=el.getBoundingClientRect().width;
+/* Jump straight to a proportional estimate (one layout), then fine-tune
+   with a few 1px steps. Stepping 1px from the top forced dozens of
+   full-page layouts and blocked the main thread for ~300ms. */
+if(width>maxWidth&&width>0){
+size=Math.max(11,Math.floor(size*(maxWidth/width)*0.985));
+el.style.setProperty('font-size',size+'px','important');
+}
 var guard=0;
-while(el.getBoundingClientRect().width>maxWidth&&size>11&&guard<60){
+while(el.getBoundingClientRect().width>maxWidth&&size>11&&guard<8){
 size-=1;
 el.style.setProperty('font-size',size+'px','important');
 guard++;
@@ -48849,8 +48866,17 @@ guard++;
 function fitAll(){
 document.querySelectorAll('#boHeroTitle .bop-splash-city[data-fit],.bop-unified-subcategory-title[data-fit],#bopCelebChefOverlay .bop-splash-city[data-fit],#bopCelebChefPage .bop-splash-city[data-fit]').forEach(fitOne);
 }
+var pending=0;
+function schedule(){if(!pending)pending=requestAnimationFrame(function(){pending=0;fitAll();});}
+function install(){
+schedule();
+var hero=document.getElementById('boHeroTitle');
+if(hero)new MutationObserver(schedule).observe(hero,{childList:true,subtree:true,characterData:true});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 setInterval(fitAll,400);
-window.addEventListener('resize',fitAll);
+window.addEventListener('resize',schedule,{passive:true});
 })();</script>
 <style id="bop-near-closest-bop-header-v603">
 body.bo-closest-five-active #boNearMapPage .bo-near-map-title>strong:not(.bo-near-closest-title){display:none!important}
