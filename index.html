@@ -45302,10 +45302,9 @@ if(on){
    through a hold, as a nudge not to let go the instant they stop
    talking (the mic needs a moment to catch that last word).
    Per request (2026-09-09): don't nag on every single use — only the
-   very first time someone holds the mic, then once more around the
-   7th use as a refresher, then never again. */
+   1st, 3rd, and 7th uses as reminders, then never again. */
 var useN=bopVoiceHoldHintBump();
-var shouldShowHint=(useN===1||useN===7);
+var shouldShowHint=(useN===1||useN===3||useN===7);
 if(shouldShowHint)holdHintTimer=setTimeout(function(){if(holdHint&&listening){holdHint.classList.add('is-visible');bopVoiceHoldHintPing();}},1500);
 }else if(holdHint){
 holdHint.classList.remove('is-visible');
