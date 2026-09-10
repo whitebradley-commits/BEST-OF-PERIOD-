@@ -20026,7 +20026,12 @@ const thumbSVG='<svg viewBox="0 0 64 78" aria-hidden="true"><path d="M32 73C13 6
 function allMovies(){
 const seen=new Set(),list=[];
 const sources=[];
-try{sources.push(BO_MOVIES_CURRENT,BO_MOVIES_ALL_TIME,BO_MOVIES_RATED);}catch(error){}
+/* Per request (2026-09-10): Thumb Your Luck promises to pick from the
+   All-Time Money List, Top Rated, or a BJS Pick only — never a current
+   release. Current movies used to be included here, and landing on one
+   made openMovie() think it was "in theaters" and skip straight to the
+   ticket hub, bypassing the FATE HAS DECIDED reveal entirely. */
+try{sources.push(BO_MOVIES_ALL_TIME,BO_MOVIES_RATED);}catch(error){}
 sources.forEach(function(source){(source||[]).forEach(function(movie){if(movie&&movie.title&&!seen.has(movie.title)){seen.add(movie.title);list.push(movie);}});});
 if(!list.length)document.querySelectorAll('#boMoviesPage .bo-movie-card-title,#boMoviesPage .bo-movie-info h3').forEach(function(h){const title=h.textContent.trim();if(title&&!seen.has(title)){seen.add(title);list.push({title:title});}});
 return list;
@@ -20046,8 +20051,8 @@ modal.innerHTML='<div class="bop-movie-choice-card"><button type="button" class=
 document.body.appendChild(modal);function close(){if(luckSpinTimer){clearInterval(luckSpinTimer);luckSpinTimer=null;}modal.classList.remove('is-open');}
 modal.querySelector('.bop-movie-choice-close').addEventListener('click',close);modal.addEventListener('click',function(event){if(event.target===modal)close();});return modal;
 }
-function openMovie(title){
-const inTheaters=currentTitles().has(title);
+function openMovie(title,forceReveal){
+const inTheaters=!forceReveal&&currentTitles().has(title);
 if(inTheaters){if(window.bopOpenTicketHub){window.bopOpenTicketHub(title,'theaters');}else{openBuyTickets(title);}return;}
 const modal=ensureModal(),poster=posterFor(title),message='This movie is available to rent or purchase.';
 const safeTitle=title.replace(/"/g,'&quot;');
@@ -20114,13 +20119,13 @@ luckHoldTimer=setTimeout(function(){
 const movies=allMovies();if(!movies.length)return;const selected=movies[luckCarouselIndex%movies.length];
 stopLuckHold(fate,thumb,true);fate.classList.remove('is-holding');thumb.classList.remove('is-holding');count.textContent='3';
 if(luckSpinTimer){clearInterval(luckSpinTimer);luckSpinTimer=null;}
-openMovie(selected.title);
+openMovie(selected.title,true);
 },3000);
 });
 ['pointerup','pointercancel','pointerleave'].forEach(function(type){thumb.addEventListener(type,function(){if(luckHoldTimer){stopLuckHold(fate,thumb,false);thumb.classList.remove('is-holding');}});});
 }
 function markup(){
-return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button><button class="bop-movie-orb bop-home-orb" type="button" aria-label="Buy tickets"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">BUY<br>TICKETS</span></button><button class="bop-movie-orb bop-luck-orb" type="button" aria-label="Thumb your luck — let fate pick a movie"><span class="bop-movie-orb-art">'+thumbSVG+'</span><span class="bop-movie-orb-name">THUMB<br>YOUR LUCK</span></button></div></section>';
+return '<section class="bop-movie-launcher" aria-label="Movie discovery"><div class="bop-movie-launcher-row"><button class="bop-movie-orb bop-theaters-orb" type="button"><span class="bop-movie-orb-art">'+filmSVG+'</span><span class="bop-movie-orb-name">IN<br>THEATERS</span></button><button class="bop-movie-orb bop-home-orb" type="button" aria-label="Buy tickets"><span class="bop-movie-orb-art">'+homeSVG+'</span><span class="bop-movie-orb-name">BUY<br>TICKETS</span></button><button class="bop-movie-orb bop-luck-orb" type="button" aria-label="Thumb your luck — let fate pick a movie"><span class="bop-movie-orb-art">'+thumbSVG+'</span><span class="bop-movie-orb-name">TAP TO<br>THUMB<br>YOUR LUCK</span></button></div></section>';
 }
 function wire(page){
 const launcher=page.querySelector('.bop-movie-launcher');if(!launcher||launcher.dataset.wired==='1')return;launcher.dataset.wired='1';
@@ -45157,7 +45162,12 @@ var want='';try{want=localStorage.getItem(VOICE_NAME_KEY)||'';}catch(e){}
 if(want){for(var i=0;i<voiceList.length;i++){if(voiceList[i].name===want)return voiceList[i];}}
 return voiceList[0];
 }
-function voiceLabel(v){if(!v)return 'Voice';var gb=/en[-_]GB/i.test(v.lang);return v.name+(gb?' (British)':'');}
+function voiceLabel(v){if(!v)return 'Voice';var gb=/en[-_]GB/i.test(v.lang);return displayName(v.name)+(gb?' (British)':'');}
+/* Per request (2026-09-10): the system voice is still really "Karen" under
+   the hood (that's the actual OS voice we select), but she's introduced
+   to the user as "Apple" everywhere — the toggle label, the cycle button,
+   and her own spoken greeting. Daniel keeps his real name. */
+function displayName(rawName){return /^karen$/i.test(String(rawName||'').trim())?'Apple':rawName;}
 function refreshVoiceUI(){
 var t=document.getElementById('bopVoiceToggle');if(t)t.checked=voiceOn();
 var l=document.getElementById('bopVoiceCycleLabel');if(l)l.textContent=synth?voiceLabel(pickVoice()):'No voice on this browser';
@@ -45195,7 +45205,7 @@ var next=voiceList[(idx+1)%voiceList.length];
 try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
-var cleanName=next.name.replace(/\s*\(.*?\)\s*/g,'');
+var cleanName=displayName(next.name.replace(/\s*\(.*?\)\s*/g,''));
 var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me anything!';
 setReply('Voice test: \u201c'+greeting+'\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
 speak(greeting,function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
@@ -45451,7 +45461,7 @@ greetOnArrival();
 }
 function greetOnArrival(){
 var v=pickVoice();
-var name=v?v.name.replace(/\s*\(.*?\)\s*/g,''):'BJS';
+var name=v?displayName(v.name.replace(/\s*\(.*?\)\s*/g,'')):'BJS';
 var greeting='Hi there, I\u2019m '+name+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me anything!';
 setReply(greeting);
 speak(greeting,null);
