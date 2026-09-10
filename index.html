@@ -818,12 +818,22 @@ const BOP_LANDING_CITIES = [
 function startInfiniteCityCycler(elId, cities, holdMs){
 const el = document.getElementById(elId);
 if(!el) return;
+/* Per request (2026-09-10): this cycler never stopped once started, so
+   after it ran on the landing hero it kept overwriting the SAME shared
+   #bopMainCityText element forever — including after the user searched
+   and landed on a real, specific city page. Give it a stop switch and
+   flip it the moment a real city name gets written to this element. */
+if(window.__bopCityCyclerGenId===undefined)window.__bopCityCyclerGenId=0;
+var myGen=++window.__bopCityCyclerGenId;
+window.__bopCityCyclerActiveEl=el;
 /* Sequential, not random: cycles through the real city list in a fixed
    order so the full loop length is predictable (cities.length * holdMs)
    instead of a random walk that never confirms coverage or a stable
    cycle time. */
 let idx = Math.floor(Math.random() * cities.length);
 function step(){
+if(window.__bopCityCyclerGenId!==myGen)return;
+if(!el.isConnected)return;
 idx = (idx + 1) % cities.length;
 const next = cities[idx];
 if(el.firstChild && el.firstChild.nodeType === 3) el.firstChild.nodeValue = next;
@@ -833,6 +843,7 @@ setTimeout(step, holdMs);
 }
 setTimeout(step, holdMs);
 }
+window.__bopStopCityCycler=function(){window.__bopCityCyclerGenId=(window.__bopCityCyclerGenId||0)+1;};
 function setupBopReturnToLandingBtn(){
 const btn = document.getElementById('bopReturnToLandingBtn');
 const landing = document.getElementById('bopLandingOverlay');
@@ -11723,7 +11734,7 @@ let page=document.getElementById('boMoviesPage');
 if(page) return page;
 page=document.createElement('section');
 page.id='boMoviesPage';page.className='bo-movies-page';page.setAttribute('aria-label','Best Of Movies');
-page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof-wrap"><div class="bo-movies-bestof-line1">Best of <span class="bo-movies-period-inline">Period<span class="period-mark">©</span></span></div><div class="bo-movies-rotating-wrap"><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span></div></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
+page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boMoviesBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof-wrap"><div class="bop-golive-lockup bop-golive-lockup-sub"><span class="bo-golive-best">Best Of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><div class="bo-movies-rotating-wrap"><span class="bo-movies-rotating" id="boMoviesRotator">MOVIES</span></div></div><div class="bo-movies-kicker">Worldwide movies. One universal page.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>ALL-TIME MONEY LIST</span></h2><div class="bo-movie-source"><strong>All-time worldwide theatrical gross</strong><br>Box Office Mojo · The Numbers · studio reporting</div></div><div class="bo-movie-list">${BO_MOVIES_ALL_TIME.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>TOP RATED</span></h2><div class="bo-movie-source"><strong>Critic-led all-time ranking</strong><br>Rotten Tomatoes · Metacritic · IMDb · Letterboxd · TMDB</div></div><div class="bo-movie-list">${BO_MOVIES_RATED.map((m,i)=>boMovieCardHTML(m,i,false)).join('')}</div></section></div><div class="bo-movie-picks-launch-wrap"><button class="bo-movie-picks-launch" id="boMoviePicksLaunch" type="button">BJS<br>MOVIE PICKS</button></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">CURRENT <span>BOX OFFICE</span></h2><div class="bo-current-source">The top hot movies playing now · current domestic box-office reporting · choose a ticket provider on every card</div><div class="bo-current-grid">${BO_MOVIES_CURRENT.map((m,i)=>boMovieCardHTML(m,i,true)).join('')}</div></section></div><div class="bo-movie-picks-modal" id="boMoviePicksModal" role="dialog" aria-modal="true" aria-label="BJS Movie Picks"><div class="bo-movie-picks-panel"><button class="bo-movie-picks-close" id="boMoviePicksClose" type="button" aria-label="Close BJS Movie Picks">×</button><h2><span>BJS</span> MOVIE PICKS</h2><ol class="bo-movie-picks-list">${BO_BJS_MOVIE_PICKS.map(boBjsMoviePickRowHTML).join('')}</ol></div></div>`;
 document.body.appendChild(page);
 page.querySelector('.bo-movies-kicker').textContent='Worldwide Movies Universal Page';
 page.querySelector('.bo-current-source').textContent='THEATER PICKS OR VERIFIED STREAMING, RENTAL, AND PURCHASE PROVIDERS.';
@@ -11884,7 +11895,7 @@ let page=document.getElementById('boWorldwidePage');if(!page){page=document.crea
 page.dataset.worldwideKey=key;
 const directTitle=key==='airlines'?'TOP AIRLINES <span>DIRECT ACCESS</span>':'CURRENT <span>DIRECT ACCESS</span>';
 const directSource=key==='airlines'?'* For immediate booking at one of these airlines, tap the name or phone number.':'Go directly to the companies and providers.';
-page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof-wrap"><div class="bo-movies-bestof-line1">Best of <span class="bo-movies-period-inline">Period<span class="period-mark">©</span></span></div><div class="bo-movies-rotating-wrap"><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span></div></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">${directTitle}</h2><div class="bo-current-source">${directSource}</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
+page.innerHTML=`<div class="bo-movies-shell"><button class="bo-movies-back" id="boWorldwideBack" type="button">←<br>Back</button><header class="bo-movies-hero"><div class="bo-movies-bestof-wrap"><div class="bop-golive-lockup bop-golive-lockup-sub"><span class="bo-golive-best">Best Of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><div class="bo-movies-rotating-wrap"><span class="bo-movies-rotating" id="boWorldwideRotator">${data.title}</span></div></div><div class="bo-movies-kicker">Worldwide. Commercial performance versus reputation.</div></header><div class="bo-movies-columns"><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.left}</span></h2><div class="bo-movie-source"><strong>Commercial ranking</strong><br>${data.leftSource}</div></div><div class="bo-movie-list">${data.commercial.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section><section class="bo-movie-column"><div class="bo-movie-column-head"><h2>★ <span>${data.right}</span></h2><div class="bo-movie-source"><strong>Reputation ranking</strong><br>${data.rightSource}</div></div><div class="bo-movie-list">${data.rated.map((item,index)=>boWorldwideRankHTML(item,index,key)).join('')}</div></section></div><section class="bo-current-movies"><h2 class="bo-current-movies-title">${directTitle}</h2><div class="bo-current-source">${directSource}</div><div class="bo-current-grid">${data.links.map((item,index)=>boWorldwideActionHTML(item,index,data.action,key)).join('')}</div></section></div>`;
 clearInterval(boMarketTickerTimer);boUpdateMarketTickers(page);boMarketTickerTimer=setInterval(()=>boUpdateMarketTickers(page),60000);
 page.classList.add('open');document.body.style.overflow='hidden';page.scrollTop=0;document.getElementById('boWorldwideBack').addEventListener('click',boCloseWorldwidePage);
 boStartWorldwideTitleRotation(document.getElementById('boWorldwideRotator'),data.title);
@@ -16088,6 +16099,20 @@ const others = cities.slice(1);
 bopCyclerGenerations[elId] = (bopCyclerGenerations[elId] || 0) + 1;
 const myGeneration = bopCyclerGenerations[elId];
 function isCurrent(){ return bopCyclerGenerations[elId] === myGeneration; }
+/* Per request (2026-09-10): a real, confirmed bug — this "land after N
+   spins" cycler was observed spinning indefinitely (6+ seconds, never
+   landing), leaving the wrong city name showing on a real city page.
+   Whatever is re-triggering it, force a landing on the real value if
+   this generation hasn't landed within a hard ceiling, so the user
+   never sees a stuck wrong name. */
+setTimeout(function(){
+if(!isCurrent())return;
+if(el.classList.contains('bop-city-landed'))return;
+el.classList.remove('animating-out','animating-in');
+el.classList.add('is-active','bop-city-landed');
+el.textContent=vegas;
+if(typeof boCityFitValue==='function')el.setAttribute('data-fit',boCityFitValue(vegas));
+},4500);
 function buildSpinQueue(){
 const shuffled = bopShuffle(others);
 const trimmed = spinCount ? shuffled.slice(0, spinCount) : shuffled;
@@ -48958,13 +48983,12 @@ window.addEventListener('resize',schedule,{passive:true});
 <style id="bop-near-closest-bop-header-v603">
 body.bo-closest-five-active #boNearMapPage .bo-near-map-title>strong:not(.bo-near-closest-title){display:none!important}
 #boNearMapPage .bo-near-bop-header{display:block;text-align:left;margin-bottom:8px;position:relative;z-index:2147483647;background:#000;padding:2px 4px 2px 0}
-#boNearMapPage .bo-near-bop-header .bop-golive-lockup-sub{margin:0!important;padding-bottom:0!important;display:block!important;text-align:left!important}
-#boNearMapPage .bo-near-bop-header .bop-golive-lockup-sub::after{margin:8px 0 0!important;width:80%!important}
+#boNearMapPage .bo-near-bop-header{width:100%!important;text-align:center!important}
 #boNearMapPage .bo-near-bop-header .bop-title-line1{display:inline-flex!important;align-items:baseline!important;font-size:clamp(1.05rem,5.6vw,1.35rem)!important;white-space:nowrap!important;gap:.22em!important;margin:0!important;font-weight:900;font-family:'Archivo Black',Arial,sans-serif}
 #boNearMapPage .bo-near-bop-best,#boNearMapPage .bo-near-bop-period{flex:0 0 auto!important;width:auto!important;max-width:max-content!important;overflow:hidden!important;display:inline-block!important;font-size:1em!important;letter-spacing:normal!important;font-family:'Archivo Black',Arial,sans-serif!important}
 #boNearMapPage .bo-near-bop-best::before{content:"Best Of";color:#fff}
 #boNearMapPage .bo-near-bop-period::before{content:"Period\00A9";color:#F59E0B}
-#boNearMapPage .bo-near-bop-header::after{content:"";display:block;width:min(78%,260px);height:3px;margin:10px 0 0;background:#F59E0B;border-radius:2px;box-shadow:0 0 14px rgba(245,158,11,.85),0 0 26px rgba(245,158,11,.5)}
+#boNearMapPage .bo-near-bop-header::after{content:none!important;display:none!important}
 </style>
 <style id="bop-zone-soon-v600-style">
 .bop-coast-page .bop-ny-gateway-tile.bop-map-pin-btn.bop-map-pin-soon{border-color:#E4002B!important;color:#E4002B!important}
@@ -49084,4 +49108,18 @@ return;
 }
 },true);
 })();</script>
+<style id="bop-lockup-bulletproof-v1">
+/* Per request (2026-09-10): ONE "Best of Period" header everywhere, pinned to
+   the Go Live page's look. Every property is forced with a specificity
+   booster so no page-scoped rule (near-map, zone, movies, worldwide...) can
+   shrink, uppercase, left-align or refont it. */
+.bop-golive-lockup:not(#bop-x):not(#bop-y){display:block!important;width:100%!important;margin:0 auto!important;padding:0 0 14px!important;text-align:center!important;font-family:'Fraunces',serif!important;font-weight:700!important;font-size:clamp(2.4rem,11vw,3.6rem)!important;line-height:1.1!important;letter-spacing:.01em!important;text-transform:none!important;white-space:nowrap!important;color:#fff!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-best,.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-period{display:inline!important;font:inherit!important;font-family:'Fraunces',serif!important;font-weight:700!important;font-size:inherit!important;line-height:inherit!important;letter-spacing:inherit!important;text-transform:none!important;margin:0!important;padding:0!important;gap:0!important;width:auto!important;vertical-align:baseline!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-best{color:#fff!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) span:not(.period-mark){font-size:inherit!important;line-height:inherit!important;margin-top:0!important;text-transform:none!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-period{color:#F59E0B!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-best::before,.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-best::after,.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-period::before,.bop-golive-lockup:not(#bop-x):not(#bop-y) .bo-golive-period::after{content:none!important;display:none!important}
+.bop-golive-lockup:not(#bop-x):not(#bop-y) .period-mark{font-size:.16em!important;vertical-align:baseline!important;text-transform:none!important;letter-spacing:0!important}
+.bop-golive-lockup-sub:not(#bop-x):not(#bop-y)::after{content:""!important;display:block!important;width:100%!important;height:3px!important;margin:14px auto 0!important;background:#F59E0B!important;border-radius:2px!important;box-shadow:0 0 14px rgba(245,158,11,.85),0 0 26px rgba(245,158,11,.5)!important}
+</style>
 </body></html>
