@@ -20571,23 +20571,27 @@ copy.innerHTML='<strong>CHOOSE FROM THE ALL-TIME MONEY LIST, TOP RATED, <span cl
 function install(){updateFateCopy();new MutationObserver(function(){requestAnimationFrame(updateFateCopy)}).observe(document.body,{childList:true,subtree:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();</script>
-<style id="bop-legend-badges-first-v211">#legendOverlay .bo-legend-price .bo-price-legend{transform:none!important;display:flex!important;align-items:stretch!important;justify-content:center!important;gap:8px!important;width:100%!important}#legendOverlay .bo-legend-price .bo-price-legend-item{display:flex!important;flex:1 1 0!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important;padding:12px 5px!important;font-size:.9rem!important}#legendOverlay .bo-legend-price .bo-price-legend-sign{display:block!important;color:#F59E0B!important;font:900 clamp(1.35rem,6vw,1.8rem)/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:-.06em!important;text-shadow:0 0 7px rgba(245,158,11,.5)!important}#legendOverlay .bo-legend-price>h3{color:transparent!important;background:linear-gradient(90deg,#b86f08 0%,#F59E0B 24%,#ffd06a 50%,#F59E0B 76%,#b86f08 100%)!important;-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 8px rgba(245,158,11,.2)!important}</style>
+<style id="bop-legend-badges-first-v211">#legendOverlay .bo-legend-price .bo-price-legend{transform:none!important;display:flex!important;align-items:stretch!important;justify-content:center!important;gap:8px!important;width:100%!important}#legendOverlay .bo-legend-price .bo-price-legend-item{display:flex!important;flex:1 1 0!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important;padding:12px 5px!important;font-size:.9rem!important}#legendOverlay .bo-legend-price .bo-price-legend-sign{display:block!important;color:#F59E0B!important;font:900 clamp(1.35rem,6vw,1.8rem)/1 'Archivo Black',Arial,sans-serif!important;letter-spacing:-.06em!important;text-shadow:0 0 7px rgba(245,158,11,.5)!important}#legendOverlay .bo-legend-price>h3{display:none!important}</style>
 <script id="bop-legend-badges-first-v211">(function(){
 function arrange(){
 var content=document.querySelector('#legendOverlay .ty-content');if(!content)return;
 var title=content.querySelector('.bo-legend-title');
 var badges=document.getElementById('boLegendBadges');
 var price=content.querySelector('.bo-legend-price');
+var tail=document.getElementById('boLegendBadgesTail');
 var location=Array.from(content.querySelectorAll('.bo-legend-section')).find(function(section){var h=section.querySelector('h3');return h&&h.textContent.trim()==='LOCATION & STATUS'});
 if(!title||!badges||!price)return;
 var disclaimer=content.querySelector('.bop-legend-disclaimer');
 var badgeAnchor=disclaimer||title;
 if(badgeAnchor.nextElementSibling!==badges)badgeAnchor.insertAdjacentElement('afterend',badges);
 if(badges.nextElementSibling!==price)badges.insertAdjacentElement('afterend',price);
-if(location&&price.nextElementSibling!==location)price.insertAdjacentElement('afterend',location);
+var afterPrice=tail||location;
+if(afterPrice&&price.nextElementSibling!==afterPrice)price.insertAdjacentElement('afterend',afterPrice);
+if(tail&&location&&tail.nextElementSibling!==location)tail.insertAdjacentElement('afterend',location);
 }
 function install(){arrange();var root=document.getElementById('legendOverlay');if(root)new MutationObserver(function(){requestAnimationFrame(arrange)}).observe(root,{childList:true,subtree:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+window.__bopLegendArrange=arrange;
 })();</script>
 <style id="bop-footer-hot-brand-icons-v212">.bop-footer-home-icon,.bop-footer-bjs-icon{appearance:none;-webkit-appearance:none;display:inline-flex;position:relative;align-items:center;justify-content:center;vertical-align:middle;margin:0 4px;padding:0;border:1.5px solid #F59E0B;background:#050505;color:#F59E0B;cursor:pointer;box-shadow:0 0 6px rgba(245,158,11,.35)}.bop-footer-home-icon{width:58px;height:38px;border-radius:50%;flex-direction:column;font-family:'Archivo Black',Arial,sans-serif;line-height:.82}.bop-footer-home-icon .bop-footer-best{font-size:7px;color:#fff;letter-spacing:.03em}.bop-footer-home-icon .bop-footer-city{display:block;max-width:48px;overflow:hidden;color:#E4002B;font-size:9px;font-style:italic;white-space:nowrap}.bop-footer-home-icon .bop-footer-period{font-size:7px;color:#F59E0B;letter-spacing:.02em}.bop-footer-bjs-icon{width:35px;height:35px;border-radius:50%;color:#E4002B;font:900 10px/1 'Archivo Black',Arial,sans-serif}.bop-footer-home-icon:active,.bop-footer-bjs-icon:active{transform:scale(.94)}.bop-footer-home-icon:focus-visible,.bop-footer-bjs-icon:focus-visible{outline:2px solid #fff;outline-offset:3px}</style>
 <script id="bop-footer-hot-brand-icons-v212">(function(){
@@ -44018,11 +44022,27 @@ var sticker=list.querySelector('.bo-legend-sticker-preview'),vendor=list.querySe
 var bestOf=findRow(list,/^Best of\s*City|Best of.*highest-rated in the category/i),bjs=findRow(list,/^BJS PICK/i),mich=findRow(list,/Michelin Stars/i),jb=findRow(list,/James Beard/i);
 if(!(italy&&china&&sticker&&vendor&&bestOf&&bjs&&mich&&jb))return;
 list.dataset.v428='1';
-var order=[sticker,vendor,bestOf,bjs,mich,jb];
+/* Per request (2026-09-10): PRICE & STYLE now sits right after "Become
+   a Verified Vendor", heading dropped, with Best Of and the rest of
+   the badges continuing after it. A sibling script pins the badges
+   section directly before the price section as top-level siblings, so
+   everything after Vendor moves into a second badges list positioned
+   after price instead — see bop-legend-badges-first-v211, updated to
+   anchor this same tail element right after price. */
+var order=[sticker,vendor];
 order.forEach(function(el){list.appendChild(el);});
-Array.from(list.children).forEach(function(c){if(order.indexOf(c)===-1&&c!==italy&&c!==china&&!c.classList.contains('bop-nb-pair')&&!c.classList.contains('bop-nb-note'))list.appendChild(c);});
-var pair=document.createElement('div');pair.className='bop-nb-pair';pair.appendChild(italy);pair.appendChild(china);list.appendChild(pair);
-var note=document.createElement('div');note.className='bop-nb-note';note.textContent='* Not available in every city.';list.appendChild(note);
+var tail=document.getElementById('boLegendBadgesTail');
+if(!tail){tail=document.createElement('div');tail.id='boLegendBadgesTail';tail.className='bo-legend-list';}
+[bestOf,bjs,mich,jb].forEach(function(el){tail.appendChild(el);});
+Array.from(list.children).forEach(function(c){if(order.indexOf(c)===-1&&c!==italy&&c!==china&&!c.classList.contains('bop-nb-pair')&&!c.classList.contains('bop-nb-note'))tail.appendChild(c);});
+var pair=document.createElement('div');pair.className='bop-nb-pair';pair.appendChild(italy);pair.appendChild(china);tail.appendChild(pair);
+var note=document.createElement('div');note.className='bop-nb-note';note.textContent='* Not available in every city.';tail.appendChild(note);
+window.__bopLegendBadgesTail=tail;
+/* getElementById can only find tail once it's actually part of the live
+   document — attach it somewhere valid first so __bopLegendArrange's
+   own getElementById lookup succeeds and can then move it into place. */
+if(!tail.isConnected)document.body.appendChild(tail);
+if(typeof window.__bopLegendArrange==='function')window.__bopLegendArrange();
 }
 function liveSection(){
 var sec=document.querySelector('#legendOverlay .bo-legend-vendors');if(!sec)return;
