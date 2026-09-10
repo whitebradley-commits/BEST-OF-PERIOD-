@@ -15281,6 +15281,11 @@ const specialCirclesHTML = cat === 'otheroptions' ? `
 ` : '';
 let pickerOptions = (boPickerConfig[cat]||[]).filter(opt => {
 if(cat !== 'otheroptions') return true;
+/* Per request (2026-09-10): James Beard is a US-only award — hide that
+   tile for every European city on the site (built or upcoming), unless
+   a specific restaurant there ever earns the honor. None currently do. */
+const NO_JAMES_BEARD_CITIES = /^(amsterdam|antwerp|barcelona|berlin|brussels|copenhagen|dublin|florence|lisbon|london|madrid|milan|munich|naples|oslo|paris|porto|rome|sansebastian|stockholm|vienna|zagreb)$/;
+if(opt && opt.cat === 'jamesbeard' && NO_JAMES_BEARD_CITIES.test(boCityContext)) return false;
 /* v318: hide category tiles that have zero restaurants for the current city.
 Umbrella tiles (steak, italian...) resolve to their tier sub-keys first.
 Special/meta tiles are always kept. Las Vegas (bestof) is never filtered. */
@@ -22262,6 +22267,7 @@ if(pin){pin.t='live';pin.dest=key;pin.la=c.la;pin.lo=c.lo}else OC_CITIES.push({n
 /* Existing members of the 20-city launch list get their current pins/search
 normalized too; their established pages and records remain untouched. */
 var existingLive={
+zagreb:{name:'Zagreb',region:'Croatia',la:45.8150,lo:15.9819},vienna:{name:'Vienna',region:'Austria',la:48.2082,lo:16.3738},berlin:{name:'Berlin',region:'Germany',la:52.5200,lo:13.4050},stockholm:{name:'Stockholm',region:'Sweden',la:59.3293,lo:18.0686},florence:{name:'Florence',region:'Italy',la:43.7696,lo:11.2558},dublin:{name:'Dublin',region:'Ireland',la:53.3498,lo:-6.2603},
 london:{name:'London',region:'England',la:51.5072,lo:-.1276},paris:{name:'Paris',region:'France',la:48.8566,lo:2.3522},
 losangeles:{name:'Los Angeles',region:'California',la:34.0522,lo:-118.2437},sanfrancisco:{name:'San Francisco',region:'California',la:37.7749,lo:-122.4194},
 newyork:{name:'New York City',region:'New York',la:40.7128,lo:-74.0060}
@@ -22290,7 +22296,13 @@ copenhagen:[['Geranium',3],['Jordnær',3],['Alchemist',2]],
 seoul:[['Mingles',3],['La Yeon',2],['Soigné',2]],
 osaka:[['HAJIME',3],['Kashiwaya Osaka Senriyama',3],['Taian',3]],
 kyoto:[['Kikunoi Honten',3],['Hyotei',3],['Gion Sasaki',3]],
-dubai:[['Trèsind Studio',3],['FZN by Björn Frantzén',3],['Row on 45',2]]
+dubai:[['Trèsind Studio',3],['FZN by Björn Frantzén',3],['Row on 45',2]],
+zagreb:[['Noel',1],['Dubravkin Put',1]],
+vienna:[['Steirereck',3],['Amador',3],['Silvio Nickol Gourmet Restaurant',2]],
+berlin:[['Rutz',3],['Restaurant Tim Raue',2],['Restaurant FACIL',2]],
+stockholm:[['Frantzén',3],['Aloë',2],['Ekstedt',1]],
+florence:[['Enoteca Pinchiorri',3],['Santa Elisabetta',2],['Il Palagio',1]],
+dublin:[['Restaurant Patrick Guilbaud',2],['Liath',2],['Chapter One by Mickael Viljanen',2]]
 };
 var photos=[
 '',
@@ -42846,6 +42858,31 @@ var o=Object.assign({},r,{rank:i+1,bestOfList:true});delete o.bjsPick;delete o.b
 }
 apply();
 setInterval(apply,500);
+})();</script>
+<script id="bop-zagreb-steak-v1">(function(){
+/* Per request (2026-09-10): Zagreb's first food-category build (Steak).
+   Both picks verified against 3+ independent sources per Brad's standard
+   — Google, Time Out, Gault & Millau, and/or Michelin Plate recognition —
+   not a single-platform rating. */
+function install(){
+if(typeof boCategoryData!=='object')return false;
+if(!Array.isArray(boCategoryData.steakhighend))boCategoryData.steakhighend=[];
+var arr=boCategoryData.steakhighend;
+function already(name){return arr.some(function(r){return r&&r.city==='zagreb'&&r.name===name;});}
+var rows=[
+{name:'NAV',rating:'4.8 / 5',price:4,ratingSource:'BJS aggregate',ratingNote:'Google 4.8 (177 reviews), Time Out 5/5, Gault & Millau 16.5/20 (3 Torques) and Michelin Plate (2024\u20132026) referenced. Chef Tvrtko \u0160akota\u2019s modern Croatian tasting menu built around steaks.',why:'Modern Croatian fine dining from chef Tvrtko \u0160akota, mains built around steak.',note:'Nine-table dining room on Masarykova; Michelin Plate holder, La Liste 78 points.',address:'Masarykova ul. 11/1, 10000 Zagreb',phone:'+385 1 2029 961',url:'https://nav-restaurant.com/'},
+{name:'Balon',rating:'4.6 / 5',price:3,ratingSource:'BJS aggregate',ratingNote:'Google 4.6 (approx. 900 reviews), Time Out 4/5, Gault & Millau 16/20 and Michelin Plate (2024\u20132025) referenced. Steaks and Mediterranean seafood on the Sava riverbank.',why:'Riverside bistro built around dry-aged steaks and Mediterranean seafood.',note:'Michelin Plate holder on the Sava riverbank; dry-aged display case at the entrance.',address:'Prisavlje 2, 10000 Zagreb',phone:'+385 95 604 0910',url:'http://www.restaurantbalon.com/'}
+];
+rows.forEach(function(r){
+if(already(r.name))return;
+var rank=arr.filter(function(x){return x&&x.city==='zagreb';}).length+1;
+arr.push(Object.assign({city:'zagreb',reviews:null,image:'',imagePosition:'center',hue:'28, 38%, 23%',hours:[],rank:rank},r));
+});
+if(typeof boHeroCopy!=='undefined'&&!boHeroCopy.steakhighend)boHeroCopy.steakhighend={title:'BEST STEAK',sub:'The city\u2019s strongest steakhouses and live-fire dining rooms.'};
+return true;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){var n=0,t=setInterval(function(){n++;if(install()||n>40)clearInterval(t);},300);});
+else{var n=0,t=setInterval(function(){n++;if(install()||n>40)clearInterval(t);},300);}
 })();</script>
 <style id="bop-bestofbest-style">
 #bopBestOfBestOverlay{display:none;position:fixed;inset:0;z-index:2147483000;background:#000;color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
