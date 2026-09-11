@@ -44010,12 +44010,16 @@ foodtrucksTile.insertAdjacentElement('afterend',streetvendorsTile);
 document.addEventListener('click',function(e){
 var t=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-cities');
 if(t){e.preventDefault();e.stopImmediatePropagation();
-var w=document.getElementById('bopWorldwideLanding');if(w)w.classList.remove('open');document.body.style.overflow='';
-if(typeof window.openBopBestOfBest==='function')window.openBopBestOfBest();return;}
+/* v1 (2026-09-11): open the destination FIRST so its own origin-snapshot
+   (inside openBopBestOfBest) still sees bopWorldwideLanding as open --
+   removing 'open' beforehand meant its Back button had nothing to
+   restore and fell through to a black screen. */
+if(typeof window.openBopBestOfBest==='function')window.openBopBestOfBest();
+var w=document.getElementById('bopWorldwideLanding');if(w)w.classList.remove('open');document.body.style.overflow='';return;}
 var l=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-live');
 if(l){e.preventDefault();e.stopImmediatePropagation();
-var w2=document.getElementById('bopWorldwideLanding');if(w2)w2.classList.remove('open');document.body.style.overflow='';
-if(typeof window.bopOpenGoLivePage==='function')window.bopOpenGoLivePage();return;}
+if(typeof window.bopOpenGoLivePage==='function')window.bopOpenGoLivePage();
+var w2=document.getElementById('bopWorldwideLanding');if(w2)w2.classList.remove('open');document.body.style.overflow='';return;}
 },true);
 setInterval(ensure,400);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
@@ -50091,9 +50095,14 @@ document.addEventListener('click',function(e){
 var tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-michelin');
 if(!tile)return;
 e.preventDefault();e.stopImmediatePropagation();
-var w=document.getElementById('bopWorldwideLanding');if(w)w.classList.remove('open');
-document.body.style.overflow='';
+/* Michelin Worldwide's own close() never restores anything -- it assumes
+   whatever was open underneath is still open. Its z-index (2147483004)
+   already sits above the Worldwide hub's (2147483001), so it renders on
+   top without the hub needing to be hidden at all -- removing 'open' from
+   the hub here left nothing to fall back to once Michelin's Back button
+   was tapped, which is the black screen this fixes. */
 if(typeof window.bopOpenMichelinWorldwide==='function')window.bopOpenMichelinWorldwide();
+document.body.style.overflow='hidden';
 },true);
 })();</script>
 <style id="bop-michelin-worldwide-tile-style-v1">
