@@ -43568,8 +43568,25 @@ var show=pop.style.display==='none';
 pop.style.display=show?'block':'none';
 openPop=show?pop:null;
 });
-function open(){build();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;document.body.style.overflow='hidden';document.documentElement.classList.add('bop-qr-bypass-active');}
-function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow='';document.documentElement.classList.remove('bop-qr-bypass-active');}
+var bobbOriginIds=null;
+function open(){
+bobbOriginIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='bopBestOfBestOverlay';});
+build();overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');overlay.scrollTop=0;document.body.style.overflow='hidden';document.documentElement.classList.add('bop-qr-bypass-active');}
+function close(){
+overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow='';document.documentElement.classList.remove('bop-qr-bypass-active');
+/* v1 (2026-09-11): restore whatever page was open before this one, same
+   fix as the All BJS Picks back button -- previously this just closed
+   itself and hoped something was still underneath, which sometimes left
+   a black screen. */
+if(bobbOriginIds&&bobbOriginIds.length){
+bobbOriginIds.forEach(function(id){var el=document.getElementById(id);if(el){el.classList.add('open');el.style.removeProperty('display');el.style.removeProperty('visibility');el.style.removeProperty('opacity');el.setAttribute('aria-hidden','false');}});
+}
+setTimeout(function(){
+function vis(el){if(!el)return false;var s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden';}
+var anyVisible=[].slice.call(document.querySelectorAll('.open')).some(vis);
+if(!anyVisible){var land=document.getElementById('bopLandingOverlay');if(land){land.classList.add('open');land.style.removeProperty('display');land.style.removeProperty('visibility');land.style.removeProperty('opacity');land.setAttribute('aria-hidden','false');}}
+},50);
+bobbOriginIds=null;}
 if(closeBtn)closeBtn.addEventListener('click',close);
 window.openBopBestOfBest=open;
 window.closeBopBestOfBest=close;
@@ -48863,9 +48880,36 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 var html=document.documentElement,all=document.getElementById('bopAllBjsPicks'),pick=document.getElementById('bopPickCardPop'),origin=null;
 if(!all)return;
 function visible(el){if(!el)return false;var s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&(el.classList.contains('open')||el.getAttribute('aria-hidden')==='false'||s.position==='fixed');}
-function captureOrigin(){var ids=['bestOfOverlay','bopWorldwideLanding','bopLandingOverlay'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(visible(el)){origin=ids[i];return;}}origin='bopLandingOverlay';}
+var originIds=null;
+function captureOrigin(){
+/* v1 (2026-09-11): the old version only checked 3 hardcoded ids, so opening
+   All BJS Picks from anywhere else (a city page, Legend, etc.) meant the
+   back button had nothing to restore -- a black screen. Now it snapshots
+   every page-level container that is actually open right now and restores
+   exactly that set, whatever it is. */
+originIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='bopAllBjsPicks';});
+var ids=['bestOfOverlay','bopWorldwideLanding','bopLandingOverlay'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(visible(el)){origin=ids[i];return;}}origin='bopLandingOverlay';}
 function clearStrayFocus(){var a=document.activeElement;if(a&&a!==document.body&&typeof a.blur==='function')a.blur();}
-function restoreOrigin(){if(pick)pick.classList.remove('open');html.classList.remove('bop-all-bjs-open');document.body.style.overflow='';clearStrayFocus();var dest=document.getElementById(origin||'bopLandingOverlay');if(!dest)dest=document.getElementById('bestOfOverlay')||document.getElementById('bopLandingOverlay');if(dest){dest.classList.add('open');dest.style.removeProperty('display');dest.style.removeProperty('visibility');dest.style.removeProperty('opacity');dest.setAttribute('aria-hidden','false');}origin=null;}
+function restoreOrigin(){
+if(pick)pick.classList.remove('open');
+html.classList.remove('bop-all-bjs-open');
+document.body.style.overflow='';
+clearStrayFocus();
+var restored=false;
+if(originIds&&originIds.length){
+originIds.forEach(function(id){var el=document.getElementById(id);if(el){el.classList.add('open');el.style.removeProperty('display');el.style.removeProperty('visibility');el.style.removeProperty('opacity');el.setAttribute('aria-hidden','false');restored=true;}});
+}
+if(!restored){
+var dest=document.getElementById(origin||'bopLandingOverlay');if(!dest)dest=document.getElementById('bestOfOverlay')||document.getElementById('bopLandingOverlay');
+if(dest){dest.classList.add('open');dest.style.removeProperty('display');dest.style.removeProperty('visibility');dest.style.removeProperty('opacity');dest.setAttribute('aria-hidden','false');restored=true;}
+}
+/* Safety net: if, after all that, nothing page-level is actually visible,
+   force the main landing open rather than leave a black screen. */
+setTimeout(function(){
+var anyVisible=[].slice.call(document.querySelectorAll('.open')).some(function(e){return visible(e);});
+if(!anyVisible){var land=document.getElementById('bopLandingOverlay');if(land){land.classList.add('open');land.style.removeProperty('display');land.style.removeProperty('visibility');land.style.removeProperty('opacity');land.setAttribute('aria-hidden','false');}}
+},50);
+origin=null;originIds=null;}
 var oldOpen=window.boOpenAllBjsPicks;if(typeof oldOpen==='function')window.boOpenAllBjsPicks=function(){captureOrigin();return oldOpen.apply(this,arguments);};
 document.addEventListener('click',function(e){var back=e.target&&e.target.closest&&e.target.closest('#bopAllBjsPicks .bop-all-bjs-back');if(back){e.preventDefault();e.stopImmediatePropagation();restoreOrigin();}},true);
 function landingBrand(){var src=document.querySelector('#bopLandingOverlay .bop-lockup-static')||document.querySelector('.bop-lockup-static');if(src){var clone=src.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(function(n){n.removeAttribute('id');});return '<div class="bobb-card-brandmark-live" aria-label="Best Of Period">'+clone.outerHTML+'</div>';}return '<div class="bobb-card-brandmark bobb-card-brandmark-live"><span class="bobb-brand-white">Best Of</span><span class="bobb-brand-gold">Period</span></div>';}
@@ -50070,7 +50114,7 @@ if(typeof window.bopOpenMichelinWorldwide==='function')window.bopOpenMichelinWor
    line under the Best Of Period lockup and the corner music button go
    silver to match the page's theme. "Period" stays gold; it's the only
    gold element left on this page. */
-body.bop-mw-open #bopMichelinWorldwide .bop-golive-lockup-sub::after{
+body.bop-mw-open #bopMichelinWorldwide .bop-golive-lockup-sub:not(#bop-x):not(#bop-y)::after{
   background:#DCDCDC!important;
   box-shadow:0 0 14px rgba(220,220,220,.75),0 0 26px rgba(220,220,220,.4)!important;
 }
@@ -50089,15 +50133,15 @@ body.bop-mw-open #bopMusicCorner{
   font-size:clamp(2.9rem,13vw,4.3rem)!important;
 }
 #bopMichelinWorldwide .bop-mw-titlerow{
-  gap:9px!important;
+  gap:7px!important;
   margin:38px 0 8px!important;
 }
 #bopMichelinWorldwide .bop-mw-globe{
-  width:clamp(66px,18vw,104px)!important;
-  height:clamp(66px,18vw,104px)!important;
+  width:clamp(76px,21vw,120px)!important;
+  height:clamp(76px,21vw,120px)!important;
 }
 #bopMichelinWorldwide .bop-mw-title{
-  font-size:clamp(30px,9vw,66px)!important;
+  font-size:clamp(32px,9.6vw,70px)!important;
 }
 </style>
 
