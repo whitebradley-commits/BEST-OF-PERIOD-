@@ -47805,13 +47805,18 @@ page.innerHTML='<button type="button" id="bopVerifiedChainsClose" aria-label="Cl
 '</div>'+
 '<div style="padding:20px 18px 10px;color:#F59E0B;font:500 .76rem/1.4 Arial,sans-serif;flex-shrink:0;">'+
 'A chain, for our purposes, is any restaurant or concept with locations in <strong style="color:#fff;">four or more places worldwide</strong>. '+
-'There are thousands of chains out there \u2014 we don\u2019t verify all of them. What\u2019s here is the highest level: the best of the best, each one individually researched and address-checked before it goes on this list.'+
+'There are thousands of chains out there \u2014 we don\u2019t verify all of them. Each one individually checked before going live.'+
 '</div>'+
 '<div style="display:flex;flex-wrap:wrap;padding:4px 10px 24px;">'+cardsHtml+'</div>';
 page.style.display='flex';
 document.getElementById('bopVerifiedChainsClose').addEventListener('click',function(){page.style.display='none';});
 page.querySelectorAll('.bop-verified-chain-card').forEach(function(btn){
 btn.addEventListener('click',function(){
+/* v1 (2026-09-11): the chain-locations modal sits at a lower z-index than
+   this directory page (so IT can in turn sit below the restaurant-info
+   popup) -- so this page has to get out of the way first, or the modal
+   opens invisibly underneath it and looks like a dead tap. */
+page.style.display='none';
 if(typeof window.boShowChainLocations==='function')window.boShowChainLocations(btn.dataset.chainId);
 });
 });
