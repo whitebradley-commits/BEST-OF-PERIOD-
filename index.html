@@ -12081,7 +12081,7 @@ legend.innerHTML = `
 <section class="bo-legend-section bo-legend-badges" id="boLegendBadges">
 <h3>BADGES</h3>
 <div class="bo-legend-list">
-<div><span class="bo-michelin-badge bo-legend-michelin"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;&#9733;&#9733;</span></span><p><b>Michelin Guide</b><small>M plus one, two or three stars shows the restaurant's Michelin distinction.</small></p></div>
+<div class="bo-legend-michelin-row"><span class="bo-michelin-badge bo-legend-michelin"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;&#9733;&#9733;</span></span><p><b>Michelin Guide</b><small>M plus one, two or three stars shows the restaurant's Michelin distinction. <button type="button" class="bo-legend-michelin-full-link" id="bopLegendMichelinFullLink">FULL MICHELIN LIST &rsaquo;</button></small></p></div>
 <div><span class="bo-legend-jb">JB</span><p><b>James Beard Recognition</b><small>Recognition may mean winner, nominee, finalist, semifinalist or another official acknowledgement. Not every James Beard mention is an award win; the listing states the exact honor.</small></p></div>
 <div><span class="bo-world-famous-badge bo-legend-badge">WORLD FAMOUS</span><p><b>World Famous</b><small>Exceptional international name recognition or landmark status. Fame is separate from the current BJS ranking.</small></p></div>
 <div><span class="bo-badge-count-demo bo-legend-count">99</span><p><b>Category Count</b><small>The exact number of restaurants waiting behind that category tile in the selected city.</small></p></div>
@@ -14817,6 +14817,15 @@ allCitiesBtn.addEventListener('click', function(){
 if(typeof window.openBopBestOfBest === 'function') window.openBopBestOfBest();
 });
 row.appendChild(allCitiesBtn);
+const michelinBtn = document.createElement('button');
+michelinBtn.type = 'button';
+michelinBtn.className = 'bo-all-bjs-globe-launch bo-all-bjs-michelin-btn';
+michelinBtn.setAttribute('aria-label','Open Michelin Guide');
+michelinBtn.innerHTML = '<span class="bo-all-bjs-red-globe bo-all-bjs-silver-globe" aria-hidden="true"><span class="bo-all-bjs-globe-lat"></span><span class="bo-all-bjs-globe-lon"></span></span><span class="bo-all-bjs-globe-label bo-all-bjs-silver-globe-label">MICHELIN<br>GUIDE</span>';
+michelinBtn.addEventListener('click', function(){
+if(typeof window.bopOpenMichelinWorldwide === 'function') window.bopOpenMichelinWorldwide();
+});
+row.appendChild(michelinBtn);
 }
 if(cat==='pizza'){
 const allPizzaBtn=document.createElement('button');
@@ -40288,7 +40297,7 @@ hook();var n=0,t=setInterval(function(){n++;hook();if(n>40)clearInterval(t);},30
 /* v522 (2026-09-02): the Legend's price line now looks exactly like the
 Closest 5 key — flat gold caps with thin dividers: DIVE $ | CASUAL $$–$$$ |
 FINE $$$$ — instead of the glowing orange signs. */
-function fix(){var sec=document.querySelector('#legendOverlay .bo-legend-price');if(!sec||sec.querySelector('.bop-legend-price-key'))return;var old=sec.querySelector('.bo-price-legend');var k=document.createElement('div');k.className='bop-legend-price-key';k.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine four dollar signs');k.innerHTML='<span>DIVE&nbsp; $</span><i aria-hidden="true"></i><span>CASUAL&nbsp; $$\u2013$$$</span><i aria-hidden="true"></i><span>FINE&nbsp; $$$$</span>';if(old)old.parentNode.insertBefore(k,old);else sec.appendChild(k);}
+function fix(){var sec=document.querySelector('#legendOverlay .bo-legend-price');if(!sec||sec.querySelector('.bop-legend-price-key'))return;var old=sec.querySelector('.bo-price-legend');var k=document.createElement('div');k.className='bop-legend-price-key';k.setAttribute('aria-label','Price guide: Dive one dollar sign, Casual two to three dollar signs, Fine four dollar signs');k.innerHTML='<span>DIVE&nbsp; <span class="bop-legend-price-amount">$</span></span><i aria-hidden="true"></i><span>CASUAL&nbsp; <span class="bop-legend-price-amount">$$\u2013$$$</span></span><i aria-hidden="true"></i><span>FINE&nbsp; <span class="bop-legend-price-amount">$$$$</span></span>';if(old)old.parentNode.insertBefore(k,old);else sec.appendChild(k);}
 fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
 })();</script>
 
@@ -49937,7 +49946,7 @@ setInterval(installLinks,1500);
    the pin sits one level deeper (.bop-period-i-wrap > .bop-i-glyph-v474 >
    .bop-period-apple-i), so the rule never matched and the pin stayed low. */
 #bopExclusiveInvitation .bop-world-period .bop-period-i-wrap .bop-period-apple-i{
-  top:-1px!important;
+  top:2px!important;
 }
 </style>
 
@@ -49998,26 +50007,13 @@ if(!install()){var n=0;var t=setInterval(function(){if(install()||++n>40)clearIn
 </style>
 
 <style id="bop-legend-price-key-enlarge-v1">
-/* Per request (2026-09-11): Legend page's DIVE/CASUAL/FINE price key was
-   too small to read -- roughly doubled, plus a gold divider line under it
-   to match the rest of the Legend page's section styling. Scoped to the
-   Legend page only. */
-#legendOverlay .bo-legend-price .bop-legend-price-key{
-  gap:10px clamp(12px,3.6vw,22px)!important;
-  margin:18px 0 14px!important;
-  font-size:clamp(15px,4.6vw,22px)!important;
-  letter-spacing:.02em!important;
-  white-space:normal!important;
-  flex-wrap:wrap!important;
-  row-gap:10px!important;
-  padding:0 6px!important;
-}
-#legendOverlay .bo-legend-price .bop-legend-price-key span{white-space:nowrap!important}
-#legendOverlay .bo-legend-price .bop-legend-price-key i{
-  height:30px!important;
-}
-#legendOverlay .bo-legend-price{
-  display:block!important;
+/* Per request (2026-09-11), corrected same day: the ask was only to
+   enlarge the DOLLAR SIGNS, not resize or wrap the whole row -- that
+   earlier pass overcorrected. Back to the normal single-line
+   DIVE / CASUAL / FINE key, with just the $ amounts sized up, plus the
+   gold divider line underneath (unchanged). Legend page only. */
+#legendOverlay .bo-legend-price .bop-legend-price-key .bop-legend-price-amount{
+  font-size:1.55em!important;
 }
 #legendOverlay .bo-legend-price::after{
   content:"";
@@ -50103,5 +50099,113 @@ body.bop-mw-open #bopMusicCorner{
 #bopMichelinWorldwide .bop-mw-title{
   font-size:clamp(30px,9vw,66px)!important;
 }
+</style>
+
+<style id="bop-bjs-cities-michelin-row-v1">
+/* Per request (2026-09-11): third globe -- MICHELIN GUIDE, silver -- added
+   next to ALL BJS PICKS and BEST OF ALL CITIES wherever that row appears
+   (renderBjsPickFooter is shared across every category page). Explicit
+   equal sizing on all three so globe/label dimensions can't drift, and a
+   tightened 3-up layout on narrow phones so they stay on one row. */
+.bo-all-bjs-globe-launch{
+  width:112px!important;
+}
+.bo-all-bjs-red-globe{
+  width:58px!important;
+  height:58px!important;
+}
+.bo-all-bjs-globe-label{
+  font-size:11px!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+}
+.bo-all-bjs-silver-globe{
+  border-color:#DCDCDC!important;
+  box-shadow:0 0 12px rgba(220,220,220,.72),inset 0 0 10px rgba(220,220,220,.22)!important;
+}
+.bo-all-bjs-silver-globe:before,.bo-all-bjs-silver-globe:after,
+.bo-all-bjs-silver-globe .bo-all-bjs-globe-lat,.bo-all-bjs-silver-globe .bo-all-bjs-globe-lon{
+  border-color:#DCDCDC!important;
+}
+.bo-all-bjs-globe-launch:hover .bo-all-bjs-silver-globe,
+.bo-all-bjs-globe-launch:focus-visible .bo-all-bjs-silver-globe{
+  box-shadow:0 0 20px rgba(220,220,220,.95),inset 0 0 12px rgba(220,220,220,.3)!important;
+}
+.bo-all-bjs-silver-globe-label{
+  color:#DCDCDC!important;
+  text-shadow:0 0 7px rgba(220,220,220,.55)!important;
+}
+.bo-bottom-tile-row:has(.bo-all-bjs-silver-globe){
+  gap:10px!important;
+}
+@media(max-width:420px){
+.bo-bottom-tile-row:has(.bo-all-bjs-silver-globe){
+  gap:4px!important;
+}
+.bo-bottom-tile-row:has(.bo-all-bjs-silver-globe) .bo-all-bjs-globe-launch{
+  width:31vw!important;
+  max-width:112px!important;
+  margin:12px 0!important;
+}
+.bo-bottom-tile-row:has(.bo-all-bjs-silver-globe) .bo-all-bjs-red-globe{
+  width:clamp(42px,13vw,58px)!important;
+  height:clamp(42px,13vw,58px)!important;
+}
+.bo-bottom-tile-row:has(.bo-all-bjs-silver-globe) .bo-all-bjs-globe-label{
+  font-size:clamp(8.5px,2.6vw,11px)!important;
+}
+}
+</style>
+
+<script id="bop-michelin-silver-legend-link-v1">(function(){
+document.addEventListener('click',function(e){
+var link=e.target.closest&&e.target.closest('#bopLegendMichelinFullLink');
+if(!link)return;
+e.preventDefault();e.stopPropagation();
+if(typeof window.bopOpenMichelinWorldwide==='function')window.bopOpenMichelinWorldwide();
+},true);
+})();</script>
+<style id="bop-michelin-silver-sitewide-v1">
+/* Per request (2026-09-11): every Michelin M-badge and star glyph across
+   the whole site (restaurant cards, Legend) goes silver/glowing to match
+   the Michelin Worldwide page, instead of the site's usual gold. */
+.bo-michelin-m{
+  background:#DCDCDC!important;
+  color:#0a0a0a!important;
+  box-shadow:0 0 6px rgba(220,220,220,.65)!important;
+}
+.bo-michelin-stars{
+  color:#DCDCDC!important;
+  text-shadow:0 0 6px rgba(220,220,220,.55)!important;
+}
+/* Legend's Michelin Guide entry: the box itself, the heading and the
+   description text all go silver too, matching the Michelin page theme. */
+#legendOverlay .bo-legend-michelin-row{
+  border-color:rgba(220,220,220,.45)!important;
+  background:rgba(220,220,220,.05)!important;
+}
+#legendOverlay .bo-legend-michelin-row p b{
+  color:#DCDCDC!important;
+  text-shadow:0 0 6px rgba(220,220,220,.5)!important;
+}
+#legendOverlay .bo-legend-michelin-row p small{
+  color:#c8c8c8!important;
+}
+.bo-legend-michelin-full-link{
+  display:inline-block;
+  margin-top:6px;
+  background:none;
+  border:none;
+  padding:0;
+  color:#DCDCDC;
+  font-weight:800;
+  font-size:.78rem;
+  text-decoration:underline;
+  text-decoration-color:rgba(220,220,220,.7);
+  text-underline-offset:2px;
+  text-shadow:0 0 6px rgba(220,220,220,.5);
+  cursor:pointer;
+}
+.bo-legend-michelin-full-link:active{opacity:.8}
 </style>
 </body></html>
