@@ -19291,18 +19291,21 @@ const worldLanding=document.getElementById('bopWorldwideLanding');
 if(worldLanding)worldLanding.classList.remove('open');
 document.body.style.overflow='';
 if(key==='restaurants'){
-/* v1 (2026-09-11): this used to route into tbotrLandingOverlay, a
+/* v2 (2026-09-11): this used to route into tbotrLandingOverlay, a
    retired single-city splash page ("Vegas is live! Coming to a city
-   near you!") left over from an earlier version of the site. Send it
-   to the real, current restaurant browsing page instead. */
-document.querySelectorAll('.open').forEach(function(el){if(el.id!=='bestOfOverlay')el.classList.remove('open');});
-const best=document.getElementById('bestOfOverlay');
-if(best){
-best.classList.add('open');
-best.style.removeProperty('display');
-best.style.removeProperty('visibility');
-best.style.removeProperty('opacity');
-best.setAttribute('aria-hidden','false');
+   near you!") left over from an earlier version of the site. v1 sent it
+   to bestOfOverlay instead, but that page is locked to whatever single
+   city context is currently set (Vegas by default) -- not what this tile
+   is supposed to open. This should go to the real main landing page,
+   the one with the rotating city name and search bar. */
+document.querySelectorAll('.open').forEach(function(el){if(el.id!=='bopLandingOverlay')el.classList.remove('open');});
+const landing=document.getElementById('bopLandingOverlay');
+if(landing){
+landing.classList.add('open');
+landing.style.removeProperty('display');
+landing.style.removeProperty('visibility');
+landing.style.removeProperty('opacity');
+landing.setAttribute('aria-hidden','false');
 document.body.style.overflow='';
 window.scrollTo(0,0);
 }
@@ -44201,7 +44204,7 @@ ready(function(){apply();setInterval(apply,250);});
 })();</script>
 <style id="bop-live-page-titles-v420">
 .bop-world-divider+.bo-live-page-title{margin-top:10px}
-.bo-live-page-title{margin:-16px auto 26px;padding:0 10px;text-align:center;font:900 clamp(1.55rem,7.6vw,2.5rem)/1.05 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 12px rgba(245,158,11,.55)}
+.bo-live-page-title{margin:22px auto 26px;padding:0 10px;text-align:center;font:900 clamp(1.55rem,7.6vw,2.5rem)/1.05 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#F59E0B;text-shadow:0 0 12px rgba(245,158,11,.55)}
 .bo-meetup-title-hand{display:inline-block;width:.6em;height:.6em;margin:0 .12em;vertical-align:-.08em;text-shadow:none}
 .bo-meetup-title-hand svg{display:block;width:100%;height:100%}
 </style>
@@ -50339,6 +50342,24 @@ if(typeof window.boShowVerifiedChainsPage==='function')window.boShowVerifiedChai
    are, regardless of scroll position. */
 .bo-near-info-card{
   position:fixed!important;
+}
+</style>
+
+<style id="bop-worldwide-hero-tighten-v1">
+/* Per request (2026-09-11): globe pulled closer to "Period," the whole
+   globe+Period row raised right under "Best Of," and WHY + the gold bar
+   brought up too -- closing the dead space above WORLDWIDE BESTS. */
+#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{
+  margin-left:clamp(-18px,-2.5vw,-4px)!important;
+}
+#bopWorldwideLanding .bop-world-title-line{
+  margin-top:-18px!important;
+}
+#bopWorldwideLanding .bop-world-why{
+  margin-top:-34px!important;
+}
+#bopWorldwideLanding .bop-world-divider{
+  margin:10px 0 26px!important;
 }
 </style>
 </body></html>
