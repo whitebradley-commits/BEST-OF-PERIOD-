@@ -19291,15 +19291,20 @@ const worldLanding=document.getElementById('bopWorldwideLanding');
 if(worldLanding)worldLanding.classList.remove('open');
 document.body.style.overflow='';
 if(key==='restaurants'){
-const tbotr=document.getElementById('tbotrLandingOverlay');
-if(tbotr){
-const bopLanding=document.getElementById('bopLandingOverlay');
-if(bopLanding)bopLanding.classList.remove('open');
-tbotr.classList.add('open');
+/* v1 (2026-09-11): this used to route into tbotrLandingOverlay, a
+   retired single-city splash page ("Vegas is live! Coming to a city
+   near you!") left over from an earlier version of the site. Send it
+   to the real, current restaurant browsing page instead. */
+document.querySelectorAll('.open').forEach(function(el){if(el.id!=='bestOfOverlay')el.classList.remove('open');});
+const best=document.getElementById('bestOfOverlay');
+if(best){
+best.classList.add('open');
+best.style.removeProperty('display');
+best.style.removeProperty('visibility');
+best.style.removeProperty('opacity');
+best.setAttribute('aria-hidden','false');
+document.body.style.overflow='';
 window.scrollTo(0,0);
-document.body.style.overflow='hidden';
-}else{
-window.location.assign('https://bestofperiod.com/');
 }
 return;
 }
@@ -23733,7 +23738,7 @@ overlay.querySelector(".bop-hotel-close").addEventListener("click",closeHotels);
 document.addEventListener("keydown",function(e){if(e.key!=="Escape"||!document.documentElement.classList.contains("bop-hotels-open"))return;if(notice.classList.contains("open"))notice.classList.remove("open");else closeHotels();});
 })();</script>
 <style id="bop-all-bjs-picks-style">#bopAllBjsPicks{position:fixed;inset:0;z-index:2147483005;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}.bop-all-bjs-open #bopAllBjsPicks{display:block}.bop-all-bjs-shell{width:min(1180px,100%);min-height:100%;margin:auto;padding:18px 16px 34px}.bop-all-bjs-back{position:sticky;top:8px;z-index:3;display:grid;place-items:center;width:50px;height:50px;border:3px solid #f59e0b;border-radius:50%;background:#050505;color:#ef3340;font-size:34px;font-weight:900;line-height:1;box-shadow:0 0 15px rgba(245,158,11,.35)}.bop-all-bjs-title{margin:8px 0 2px;text-align:center;color:#f59e0b;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(25px,5vw,54px);line-height:.95;letter-spacing:.02em}.bop-all-bjs-sub{margin:5px 0 12px;text-align:center;color:#9d8f72;font-size:9px;font-weight:800;letter-spacing:.22em}.bop-all-bjs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;align-items:start}.bop-all-bjs-section-head{grid-column:1/-1;margin:10px 0 2px;padding-bottom:5px;border-bottom:2px solid #f59e0b;color:#fff;font-family:'Archivo Black',Arial,sans-serif;font-size:clamp(14px,3.2vw,22px);letter-spacing:.14em;text-transform:uppercase}.bop-all-bjs-section-head-hotels{margin-top:22px}.bop-all-bjs-hotel-group{border:2px solid #f59e0b!important;box-shadow:0 0 12px rgba(245,158,11,.45),inset 0 0 8px rgba(245,158,11,.12)}.bop-all-bjs-hotel-apple{display:inline-block;width:14px;height:14px;margin-right:3px;vertical-align:-2px}.bop-all-bjs-hotel-apple svg{width:14px;height:14px;display:block}.bop-all-bjs-group{min-width:0;border:1px solid #493a1d;background:#0b0b0b;padding:7px}.bop-all-bjs-city{margin:0 0 5px;padding-bottom:4px;border-bottom:1px solid #f59e0b;color:#f59e0b;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.bop-all-bjs-list{margin:0;padding:0;list-style:none}.bop-all-bjs-item{display:grid;grid-template-columns:14px minmax(0,1fr);gap:3px;padding:3px 0;border-bottom:1px solid #1d1d1d;font-size:8px;line-height:1.08}.bop-all-bjs-num{color:#7e35e8;font-weight:900}.bop-all-bjs-name{overflow-wrap:anywhere;font-weight:800}.bop-all-bjs-source{display:block;margin-top:1px;color:#9f947d;font-size:6px;font-weight:600;letter-spacing:.03em}.bo-all-bjs-globe-launch{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:116px;margin:18px auto;padding:0;border:0;background:transparent;cursor:pointer}.bo-all-bjs-red-globe{position:relative;display:block;width:58px;height:58px;border:3px solid #ef3340;border-radius:50%;box-shadow:0 0 12px rgba(239,51,64,.72),inset 0 0 10px rgba(239,51,64,.22)}.bo-all-bjs-red-globe:before,.bo-all-bjs-red-globe:after,.bo-all-bjs-globe-lat,.bo-all-bjs-globe-lon{content:'';position:absolute;border:1.7px solid #ef3340;border-radius:50%}.bo-all-bjs-red-globe:before{inset:8px -2px}.bo-all-bjs-red-globe:after{inset:-2px 12px}.bo-all-bjs-globe-lat{left:2px;right:2px;top:26px;height:0;border-width:1.7px 0 0;border-radius:0}.bo-all-bjs-globe-lon{top:2px;bottom:2px;left:26px;width:0;border-width:0 0 0 1.7px;border-radius:0}.bo-all-bjs-globe-label{color:#ef3340;font:900 11px/1 'Archivo Black',Arial,sans-serif;letter-spacing:.035em;text-align:center;text-shadow:0 0 7px rgba(239,51,64,.48)}.bo-worldwide-bjs-icons{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:4px}.bo-all-bjs-red-globe-tile{width:34px;height:34px;border-width:2px;box-shadow:0 0 8px rgba(239,51,64,.7),inset 0 0 6px rgba(239,51,64,.2)}.bo-all-bjs-red-globe-tile:before{inset:5px -1px}.bo-all-bjs-red-globe-tile:after{inset:-1px 7px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lat{top:15px;left:1px;right:1px;border-top-width:1px}.bo-all-bjs-red-globe-tile .bo-all-bjs-globe-lon{left:15px;top:1px;bottom:1px;border-left-width:1px}.bo-bjs-outline-flame{width:20px;height:25px;color:#ef3340;filter:drop-shadow(0 0 4px rgba(239,51,64,.65))}.bo-worldwide-bjs-label{color:#ef3340;font:900 clamp(.58rem,1.72vw,.78rem)/1.05 'Archivo Black',sans-serif;text-shadow:0 0 5px rgba(239,51,64,.4)}.bo-all-bjs-globe-launch:hover .bo-all-bjs-red-globe,.bo-all-bjs-globe-launch:focus-visible .bo-all-bjs-red-globe{box-shadow:0 0 20px rgba(239,51,64,.95),inset 0 0 12px rgba(239,51,64,.3)}.bo-all-bjs-globe-launch:focus-visible{outline:1px solid #ef3340;outline-offset:5px}@media(min-width:800px){.bop-all-bjs-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.bop-all-bjs-item{font-size:9px}.bop-all-bjs-source{font-size:7px}}@media(max-width:420px){.bop-all-bjs-shell{padding-inline:8px}.bop-all-bjs-grid{gap:4px}.bop-all-bjs-group{padding:5px}.bop-all-bjs-city{font-size:8px}.bop-all-bjs-item{font-size:6.8px;grid-template-columns:11px minmax(0,1fr)}.bop-all-bjs-source{font-size:5.5px}}</style>
-<section id="bopAllBjsPicks" role="dialog" aria-modal="true" aria-label="All BJS Picks"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to BJS Picks">×</button><h2 class="bop-all-bjs-title">ALL BJS PICKS</h2><p class="bop-all-bjs-sub">EVERY CURRENT BJS SELECTION · ONE PAGE</p><div class="bop-all-bjs-grid"></div></div></section>
+<section id="bopAllBjsPicks" role="dialog" aria-modal="true" aria-label="All BJS Picks"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to BJS Picks">×</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">ALL BJS PICKS</h2><p class="bop-all-bjs-sub">EVERY CURRENT BJS SELECTION · ONE PAGE</p><div class="bop-all-bjs-grid"></div></div></section>
 <script id="bop-all-bjs-picks-script">(function(){
 var overlay=document.getElementById('bopAllBjsPicks');
 if(!overlay)return;
@@ -43991,6 +43996,16 @@ if(michelinTile.nextElementSibling!==live)michelinTile.insertAdjacentElement('af
 var restaurants=g.querySelector('[data-worldwide-key="restaurants"]');
 if(!restaurants){restaurants=mk('','restaurants','Restaurants — Best of Period',RESTAURANT_ICON+'RESTAURANTS');}
 if(live.nextElementSibling!==restaurants)live.insertAdjacentElement('afterend',restaurants);
+/* Per request (2026-09-11): CHAINS sits next to RESTAURANTS (same row),
+   and STREET VENDORS moves down to sit next to FOOD TRUCKS instead. */
+var chainsTile=g.querySelector('.bop-world-chains');
+if(!chainsTile){chainsTile=mk('bop-world-chains','','Chains',RESTAURANT_ICON+'CHAINS');}
+if(restaurants.nextElementSibling!==chainsTile)restaurants.insertAdjacentElement('afterend',chainsTile);
+var foodtrucksTile=g.querySelector('[data-worldwide-key="foodtrucks"]');
+var streetvendorsTile=g.querySelector('[data-worldwide-key="streetvendors"]');
+if(foodtrucksTile&&streetvendorsTile&&foodtrucksTile.nextElementSibling!==streetvendorsTile){
+foodtrucksTile.insertAdjacentElement('afterend',streetvendorsTile);
+}
 }
 document.addEventListener('click',function(e){
 var t=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-all-cities');
@@ -50252,4 +50267,36 @@ if(typeof window.bopOpenMichelinWorldwide==='function')window.bopOpenMichelinWor
 }
 .bo-legend-michelin-full-link:active{opacity:.8}
 </style>
+
+<style id="bop-all-bjs-lockup-v1">
+/* Per request (2026-09-11): All BJS Picks used to start with the title
+   crammed at the very top. Now: Best of Period lockup + gold line about a
+   fifth of the way down, then ALL BJS PICKS underneath -- same pattern as
+   the Michelin Worldwide page. Page stays gold-themed (unlike Michelin). */
+#bopAllBjsPicks .bop-all-bjs-lockup:not(#bop-x):not(#bop-y){
+  margin:18vh auto 0!important;
+  font-size:clamp(1.9rem,8.5vw,2.9rem)!important;
+  padding-bottom:22px!important;
+  text-align:center!important;
+  width:100%!important;
+}
+#bopAllBjsPicks .bop-all-bjs-title{
+  margin-top:22px!important;
+}
+</style>
+
+
+<script id="bop-worldwide-chains-tile-click-v1">(function(){
+/* boShowVerifiedChainsPage renders at z-index 2147483647 -- above the
+   Worldwide hub's own 2147483001 -- so it layers on top rather than
+   replacing it. Leave the hub's 'open' state alone; its own close button
+   just hides itself and the hub is still there underneath, no restore
+   logic needed. */
+document.addEventListener('click',function(e){
+var tile=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-chains');
+if(!tile)return;
+e.preventDefault();e.stopImmediatePropagation();
+if(typeof window.boShowVerifiedChainsPage==='function')window.boShowVerifiedChainsPage();
+},true);
+})();</script>
 </body></html>
