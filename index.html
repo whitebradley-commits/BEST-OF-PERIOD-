@@ -1030,9 +1030,11 @@ const normalizedQuery = q.replace(/[^a-z0-9]/g, '');
 const normalize = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const liveNames = new Set();
 LIVE_CITIES.forEach(c => [c.name].concat(c.aliases || []).forEach(name => liveNames.add(normalize(name))));
-const matchingLiveCities = LIVE_CITIES.filter(c =>
-[c.name].concat(c.aliases || []).some(name => normalize(name).startsWith(normalizedQuery))
-);
+const matchingLiveCities = LIVE_CITIES.map(c => {
+const pool = [c.name].concat(c.aliases || []);
+const hit = pool.find(name => normalize(name).startsWith(normalizedQuery));
+return hit ? Object.assign({}, c, {matchedAlias: hit}) : null;
+}).filter(Boolean);
 const matchingPreviews = (typeof BOP_LANDING_CITIES !== 'undefined' ? BOP_LANDING_CITIES : [])
 .filter(name => normalize(name).startsWith(normalizedQuery) && !liveNames.has(normalize(name)))
 .map(name => ({ name: name }));
@@ -1056,7 +1058,7 @@ previewMatches = previewMatches.slice(0, Math.max(0, 3 - displayedLiveCities.len
 let html = '<div class="bop-landing-results-label">Live Cities</div>';
 html += displayedLiveCities.map(c => `
 <button type="button" class="bop-landing-result" data-dest="${c.dest}">
-<span class="bop-landing-result-dot"></span> ${c.name}, ${c.region}
+<span class="bop-landing-result-dot"></span> ${c.matchedAlias && c.matchedAlias.toLowerCase() !== c.name.toLowerCase() ? c.matchedAlias + ' &middot; ' : ''}${c.name}, ${c.region}
 </button>
 `).join('');
 html += previewMatches.map(item => `
@@ -23261,11 +23263,11 @@ extra.push({name:nm,region:cfg.region||cfg.country||'',dest:k,aliases:(cfg.searc
 });}
 var all=cities.concat(extra);
 var seenNames={};all=all.filter(function(c){var k=norm(c.name);if(seenNames[k])return false;seenNames[k]=1;return true});
-var found=all.filter(function(city){return [city.name].concat(city.aliases||[]).some(function(name){return norm(name).startsWith(q)})}).slice(0,6);
+var found=all.map(function(city){var pool=[city.name].concat(city.aliases||[]);var hit=pool.find(function(name){return norm(name).startsWith(q)});return hit?Object.assign({},city,{matchedAlias:hit}):null;}).filter(Boolean).slice(0,6);
 if(!found.length){
 results.innerHTML='<div class="bop-landing-results-label">Not on the platform yet</div><button type="button" class="bop-landing-result" data-authoritative-city="__suggest__" data-suggest-city="'+input.value.replace(/"/g,'&quot;')+'"><span class="bop-landing-result-dot"></span> Tell us to add '+input.value.replace(/</g,'&lt;')+'</button>';
 results.classList.add('open');return}
-results.innerHTML='<div class="bop-landing-results-label">Live Cities</div>'+found.map(function(city){return '<button type="button" class="bop-landing-result" data-authoritative-city="'+city.dest+'"><span class="bop-landing-result-dot"></span> '+city.name+(city.region?', '+city.region:'')+'</button>'}).join('');
+results.innerHTML='<div class="bop-landing-results-label">Live Cities</div>'+found.map(function(city){var prefix=(city.matchedAlias&&city.matchedAlias.toLowerCase()!==city.name.toLowerCase())?(city.matchedAlias+' &middot; '):'';return '<button type="button" class="bop-landing-result" data-authoritative-city="'+city.dest+'"><span class="bop-landing-result-dot"></span> '+prefix+city.name+(city.region?', '+city.region:'')+'</button>'}).join('');
 results.classList.add('open');
 }
 function repaintLast(){setTimeout(paint,0)}
