@@ -1717,7 +1717,7 @@ function closeDirectionsPopup(){
 overlay.classList.remove('open');
 if(mapEl) mapEl.src = '';   // stop the map loading in the background
 var vrp=document.getElementById('bopVoiceResults');
-if(vrp)vrp.style.pointerEvents='';
+if(vrp){vrp.style.pointerEvents='';vrp.style.zIndex='';}
 }
 if(closeBtn) closeBtn.addEventListener('click', closeDirectionsPopup);
 overlay.addEventListener('click', function(e){
@@ -45582,7 +45582,9 @@ speak(lineP,null);
 var listP=document.getElementById('bopVoiceList');
 if(listP){
 var digitsP=String(targetP.phone).replace(/[^+\d]/g,'');
-listP.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;"><a href="tel:'+digitsP+'" aria-label="Call '+targetP.name.replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-decoration:none;"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1"/></svg><span style="color:#0a0a0a;font:900 9px Archivo Black,Arial,sans-serif;letter-spacing:.03em;">CALL</span></a><span style="color:#F59E0B;font:800 .8rem Archivo Narrow,Arial,sans-serif;letter-spacing:.02em;text-align:center;">'+targetP.name.replace(/</g,'&lt;')+'</span></div>';
+listP.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;">'+'<a href="tel:'+digitsP+'" data-no-popup="1" data-allow-direct="true" class="bop-voice-call-orb" aria-label="Call '+targetP.name.replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-decoration:none;"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1"/></svg><span style="color:#0a0a0a;font:900 9px Archivo Black,Arial,sans-serif;letter-spacing:.03em;">CALL</span></a><span style="color:#F59E0B;font:800 .8rem Archivo Narrow,Arial,sans-serif;letter-spacing:.02em;text-align:center;">'+targetP.name.replace(/</g,'&lt;')+'</span><span style="color:#E4002B;font:800 .82rem Archivo Narrow,Arial,sans-serif;letter-spacing:.04em;">'+String(targetP.phone).replace(/</g,'&lt;')+'</span></div>';
+var callOrb=listP.querySelector('.bop-voice-call-orb');
+if(callOrb)callOrb.addEventListener('click',function(ev){ev.stopPropagation();setTimeout(function(){try{window.location.href='tel:'+digitsP;}catch(e){}},50);});
 }
 }else{
 lineP='I don\u2019t have a phone number on file for '+targetP.name+' yet.';
@@ -45689,10 +45691,15 @@ if(typeof window.openDirectionsPopup==='function'){
    the voice panel outright before opening directions -- with nothing
    left underneath, there's no layer left to fight with, and the panel
    comes back completely fresh next time the mic is used. */
-if(typeof closePanel==='function')closePanel();
 window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
+/* v4: keep the mic panel open (closing it dropped users back onto the
+   landing page), and win the stacking tie by nudging the panel's z-index
+   just below the popup while it's open. closeDirectionsPopup() and
+   closePanel() both put it back. Nothing is moved or made unclickable. */
 var dpo=document.getElementById('directionsPopupOverlay');
 if(dpo)dpo.style.zIndex='2147483647';
+var vrp=document.getElementById('bopVoiceResults');
+if(vrp)vrp.style.zIndex='2147483100';
 }else{
 window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
 }
@@ -46214,7 +46221,7 @@ if(chainAllBtn)chainAllBtn.addEventListener('click',function(){if(typeof window.
 }
 window.openRestaurant=openRestaurant;
 function openPanel(){panel.classList.add('open');panel.scrollTop=0;document.body.style.overflow='hidden';}
-function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');panel.style.pointerEvents='';try{if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e0){}}
+function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');panel.style.pointerEvents='';panel.style.zIndex='';try{if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e0){}}
 document.getElementById('bopVoiceClose').addEventListener('click',closePanel);
 typeForm.addEventListener('submit',function(e){e.preventDefault();var v=typeInput.value.trim();if(v)run(v);});
 
