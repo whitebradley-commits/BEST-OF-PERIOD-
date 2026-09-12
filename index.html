@@ -45683,18 +45683,16 @@ if(orbBtn)orbBtn.addEventListener('click',function(){
    (max z-index), so the directions popup was opening successfully but
    sitting invisibly behind them -- close those out of the way first. */
 if(typeof window.openDirectionsPopup==='function'){
+/* v3: fighting over z-index/pointer-events between this popup and the
+   voice results panel kept breaking in new ways (blank page, stuck
+   clicks, X button dead). Simplest fix that can't half-fail: just close
+   the voice panel outright before opening directions -- with nothing
+   left underneath, there's no layer left to fight with, and the panel
+   comes back completely fresh next time the mic is used. */
+if(typeof closePanel==='function')closePanel();
 window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
-/* v2: the earlier fix moved the popup to the end of <body> to win a
-   z-index tie against the voice results panel -- but that DOM move
-   triggered an unrelated site-wide script that injects the Legend/
-   social-icon dock into any element whose id ends in "Overlay",
-   leaving a broken blank page after closing. Fixed the non-destructive
-   way instead: just disable clicks on the voice panel while the popup
-   is open, and restore them when it closes. Nothing moves in the DOM. */
 var dpo=document.getElementById('directionsPopupOverlay');
 if(dpo)dpo.style.zIndex='2147483647';
-var vrp=document.getElementById('bopVoiceResults');
-if(vrp)vrp.style.pointerEvents='none';
 }else{
 window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
 }
