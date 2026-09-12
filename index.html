@@ -45083,10 +45083,6 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
     </div>
     <div class="bop-voice-on-hint" id="bopVoiceOnHint" role="status"><span class="bop-voice-on-hint-arrow">&#8598;</span>Turn on VOICE up top for a live, spoken-back conversation.</div>
     <div class="bop-voice-said-label" id="bopVoiceSaidLabel">ASK ME ANYTHING!</div>
-    <div class="bop-voice-suggestions" id="bopVoiceSuggestions" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0 6px;">
-      <button type="button" class="bop-voice-suggestion-chip" data-voice-suggest="what time does it close" style="padding:7px 12px;border:1.5px solid #F59E0B;border-radius:999px;background:none;color:#F59E0B;font:800 .68rem 'Archivo Narrow',Arial,sans-serif;letter-spacing:.03em;cursor:pointer;">🕐 Ask me a time</button>
-      <button type="button" class="bop-voice-suggestion-chip" data-voice-suggest="send me directions" style="padding:7px 12px;border:1.5px solid #F59E0B;border-radius:999px;background:none;color:#F59E0B;font:800 .68rem 'Archivo Narrow',Arial,sans-serif;letter-spacing:.03em;cursor:pointer;">📍 Ask me for directions</button>
-    </div>
     <p class="bop-voice-said" id="bopVoiceSaid"></p>
     <p class="bop-voice-reply" id="bopVoiceReply" aria-live="polite"><span class="bop-voice-reply-label" id="bopVoiceReplyLabel"></span><span id="bopVoiceReplyText"></span></p>
     <form id="bopVoiceTypeForm" novalidate><input type="text" id="bopVoiceTypeInput" placeholder="Type what you're looking for…" aria-label="Type what you're looking for"><button type="submit">GO</button></form>
@@ -45548,63 +45544,55 @@ runNow(text,opts);
 }
 function runNow(text,opts){
 opts=opts||{};
-/* v-sep11: quick follow-up intents that act on whichever restaurant the
-   user last opened (window.__bopLastRestaurant) -- "what time does it
-   close" / "send me directions" -- rather than re-searching by name. */
-if(/\b(what\s*time|how\s*late|open\s*(until|till)|close[sd]?\s*(at|when)?|hours?)\b/i.test(text)&&!/directions?|address/i.test(text)){
-var rHrs=(typeof window.bopFindRestaurantInText==='function'&&window.bopFindRestaurantInText(text))||window.__bopLastRestaurant;
-if(rHrs)window.__bopLastRestaurant=rHrs;
+/* v2 (2026-09-11): hours + directions intents. Resolution order:
+   (1) a restaurant named in the sentence, matched tolerantly;
+   (2) if the sentence contained a name we DON'T have, say so honestly --
+       never fall through to whatever was asked previously (v1 did, and
+       answered "Ruth's Chris?" with Bongiorno's hours);
+   (3) only when no name was spoken at all, use the last-opened restaurant
+       as a natural follow-up ("what time do they close"). */
+var wantsHours=/\b(what\s*time|how\s*late|open\s*(until|till|to|late)?|opens?|clos(e|es|ing|ed)|hours?|still\s*open)\b/i.test(text)&&!/\b(directions?|address|where\s*is)\b/i.test(text);
+var wantsDirs=/\b(directions?|address|where\s*is\s*(it|this|that)?|how\s*do\s*i\s*get)\b/i.test(text);
+if(wantsHours||wantsDirs){
+var look=(typeof window.bopFindRestaurantInText==='function')?window.bopFindRestaurantInText(text):{rec:null,named:false};
+var target=look.rec||(look.named?null:window.__bopLastRestaurant);
+if(target)window.__bopLastRestaurant=target;
 openPanel();
 document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
 document.getElementById('bopVoiceSummary').innerHTML='';
 document.getElementById('bopVoiceList').innerHTML='';
 document.getElementById('bopVoiceNote').textContent='';
-var replyH=document.getElementById('bopVoiceReply'),labelH=document.getElementById('bopVoiceReplyLabel'),bodyH=document.getElementById('bopVoiceReplyText');
-if(labelH)labelH.textContent=uiText('bjsSays');
-if(replyH)replyH.classList.add('open');
-var lineH='';
-if(!rHrs){
-lineH='Ask about a restaurant first, then I can tell you its hours.';
-}else if(rHrs.open24===true){
-lineH=rHrs.name+' is open 24 hours.';
-}else if(Array.isArray(rHrs.hours)&&rHrs.hours.length){
-var plainH=hoursTextHTML(rHrs.hours,rHrs.open24).replace(/<[^>]+>/g,'').replace(/\s*\u2022\s*/g,' ').trim();
-lineH=rHrs.name+' \u2014 '+plainH;
-}else{
-lineH="I don't have confirmed hours for "+rHrs.name+' yet \u2014 worth a quick call to check.';
-}
-if(bodyH)bodyH.textContent=lineH;
-speak(lineH,null);
+var replyI=document.getElementById('bopVoiceReply'),labelI=document.getElementById('bopVoiceReplyLabel'),bodyI=document.getElementById('bopVoiceReplyText');
+if(labelI)labelI.textContent=uiText('bjsSays');
+if(replyI)replyI.classList.add('open');
+var line='';
+if(!target){
+line=look.named?'I couldn\u2019t find that one in our system yet. Try the full name, or ask me about another spot.':'Which restaurant? Say the name and ask again \u2014 for example, \u201cwhat time is Bongiorno\u2019s open until?\u201d';
+if(bodyI)bodyI.textContent=line;
+speak(line,null);
 return;
 }
-if(/\b(directions?|send\s*me\s*directions|where\s*is\s*(it|this)|address)\b/i.test(text)){
-var rDir=(typeof window.bopFindRestaurantInText==='function'&&window.bopFindRestaurantInText(text))||window.__bopLastRestaurant;
-if(rDir)window.__bopLastRestaurant=rDir;
-openPanel();
-document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
-document.getElementById('bopVoiceSummary').innerHTML='';
-document.getElementById('bopVoiceList').innerHTML='';
-document.getElementById('bopVoiceNote').textContent='';
-var replyD=document.getElementById('bopVoiceReply'),labelD=document.getElementById('bopVoiceReplyLabel'),bodyD=document.getElementById('bopVoiceReplyText');
-if(labelD)labelD.textContent=uiText('bjsSays');
-if(replyD)replyD.classList.add('open');
-if(!rDir){
-var lineD='Ask about a restaurant first, then I can pull up directions.';
-if(bodyD)bodyD.textContent=lineD;
-speak(lineD,null);
+if(wantsHours){
+if(target.open24===true){
+line=target.name+' is open 24 hours.';
+}else if(Array.isArray(target.hours)&&target.hours.length){
+var plainH=hoursTextHTML(target.hours,target.open24).replace(/<[^>]+>/g,'').replace(/&middot;/g,'\u00b7').replace(/\s+/g,' ').replace(/^\s*\ud83d\udd50\s*/,'').trim();
+line=target.name+' is open '+plainH+'.';
+}else{
+line='I don\u2019t have confirmed hours for '+target.name+' yet \u2014 worth a quick call to check.';
+}
+if(bodyI)bodyI.textContent=line;
+speak(line,null);
 return;
 }
-var lineD2='Here you go \u2014 tap below for directions to '+rDir.name+'.';
-if(bodyD)bodyD.textContent=lineD2;
-speak(lineD2,null);
-var dUrl=rDir.directionsUrl||(rDir.address?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(rDir.address)):null);
-var list=document.getElementById('bopVoiceList');
-if(list){
-if(dUrl){
-list.innerHTML='<a href="'+dUrl+'" target="_blank" rel="noopener" class="bop-voice-directions-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:13px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#F59E0B;font:900 .82rem \'Archivo Black\',Arial,sans-serif;letter-spacing:.04em;text-decoration:none;">\ud83d\udccd GET DIRECTIONS \u2014 '+rDir.name+'</a>';
-}else{
-list.innerHTML='<div class="bop-voice-empty">No address on file for '+rDir.name+' yet.</div>';
-}
+/* directions */
+var dUrl=target.directionsUrl||(target.address?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(target.address)):null);
+line=dUrl?('Here you go \u2014 tap below for directions to '+target.name+'.'):('I don\u2019t have an address on file for '+target.name+' yet.');
+if(bodyI)bodyI.textContent=line;
+speak(line,null);
+var listD=document.getElementById('bopVoiceList');
+if(listD&&dUrl){
+listD.innerHTML='<a href="'+dUrl+'" target="_blank" rel="noopener" class="bop-voice-directions-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:13px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#F59E0B;font:900 .82rem \'Archivo Black\',Arial,sans-serif;letter-spacing:.04em;text-decoration:none;">\ud83d\udccd GET DIRECTIONS \u2014 '+target.name+'</a>';
 }
 return;
 }
@@ -46027,7 +46015,7 @@ try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
 var cleanName=displayName(next.name.replace(/\s*\(.*?\)\s*/g,''));
-var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me anything!';
+var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me about a restaurant, ask me what time a place is open until, or ask me for directions!';
 setReply('Voice test: \u201c'+greeting+'\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
 speak(greeting,function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
 });
@@ -50751,56 +50739,78 @@ address:"1228 Sherbrooke St W, Montreal, QC H3G 1H6, Canada",
 price:4
 });
 })();</script>
-<script id="bop-voice-name-lookup-v1">(function(){
-/* v-sep11: lets someone land fresh on the mic page and just say
-   "Bongiorno's, what time do they close?" -- pulls the restaurant name
-   straight out of the sentence and looks it up, instead of requiring a
-   restaurant to already be open first. */
-function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+<script id="bop-hours-fill-v1">(function(){
+/* 2026-09-11: structured hours for the voice "what time is X open until"
+   feature. Bongiorno's (Solana Beach) -- 10am-10pm daily, confirmed by
+   Yelp, Sirved and bongiornospizza.net. */
+function setHours(name, hours){
+if(typeof boCategoryData!=='object')return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){if(r&&r.name===name&&!(Array.isArray(r.hours)&&r.hours.length))r.hours=hours;});
+});
+}
+var FILLS=[["Bongiorno's New York Pizzeria",[{days:[0,1,2,3,4,5,6],open:'10:00',close:'22:00'}]]];
+function applyAll(){FILLS.forEach(function(f){setHours(f[0],f[1]);});}
+/* a later script rebuilds some records with hours:[] after this runs, so
+   re-apply a few times until the data has settled. */
+applyAll();
+var tries=0,t=setInterval(function(){applyAll();if(++tries>=12)clearInterval(t);},500);
+window.addEventListener('load',applyAll);
+})();</script>
+<script id="bop-voice-name-lookup-v2">(function(){
+/* v2 (2026-09-11): tolerant restaurant-name matching for spoken queries.
+   v1 required the exact name to appear inside the sentence, which fell
+   apart on real speech -- "Ruth Chris" for "Ruth's Chris", "stake 48"
+   for "Steak 48", "Philly Frank steaks" for "Philly Frank's Steaks".
+   Now: strip the question words, then score each restaurant by how many
+   of its distinctive name-words the sentence contains (with a small
+   sound-alike allowance), and only accept a confident match. Also returns
+   whether the sentence contained ANY candidate name words at all, so the
+   caller can tell "they named a place we don't have" apart from "they
+   didn't name a place" -- those need different answers. */
+var STOP=['what','time','times','hour','hours','does','do','they','it','its','is','are','close','closes','closing','closed','open','opens','opening','until','till','late','how','send','me','directions','direction','address','where','this','that','the','a','an','for','to','get','please','can','you','have','any','information','info','on','about','of','and','at','in','restaurant','place','spot','hey','hi','tell','give','find','when','today','tonight','now','still','yet','there','their','up','with'];
+var GENERIC=['steak','steaks','steakhouse','house','grill','bar','kitchen','cafe','restaurant','pizzeria','pizza','deli','bistro','bakery','tavern','lounge','room','club','new','york','york','city','downtown','beach','north','south','east','west','the','original','famous','brothers','sons','company','co','inc','and'];
+var SOUND={'stake':'steak','stakes':'steaks','steaks':'steak','stakehouse':'steakhouse','ruths':'ruth','ruth':'ruths','franks':'frank','frank':'franks','chris':'chris'};
+function norm(str){return String(str||'').toLowerCase().replace(/[\u2019']/g,'').replace(/&/g,' and ').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+function words(str){return norm(str).split(' ').filter(function(w){return w&&STOP.indexOf(w)<0;});}
+function same(a,b){
+if(a===b)return true;
+if(SOUND[a]===b||SOUND[b]===a)return true;
+/* plural / possessive drift: "steak"~"steaks", "frank"~"franks" */
+if(a.length>3&&b.length>3&&(a===b+'s'||b===a+'s'))return true;
+return false;
+}
 window.bopFindRestaurantInText=function(text){
-var t=norm(text);
-if(!t)return null;
-var stripWords=['what','time','times','hour','hours','does','do','they','it','close','closes','closing','open','opens','until','till','late','how','send','me','directions','direction','address','where','is','this','the','a','for','to','get','please','can','you'];
-var tWords=t.split(' ').filter(function(w){return w&&stripWords.indexOf(w)<0;});
-if(!tWords.length)return null;
-var nameOnly=tWords.join(' ');
-var best=null,bestLen=0;
-if(typeof boCategoryData!=='object')return null;
+var qw=words(text);
+if(!qw.length)return {rec:null,named:false};
+if(typeof boCategoryData!=='object')return {rec:null,named:true};
+var best=null,bestScore=0,bestLen=0;
 Object.keys(boCategoryData).forEach(function(cat){
 var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
 arr.forEach(function(r){
 if(!r||!r.name)return;
-var rn=norm(r.name);
-if(!rn||rn.length<3)return;
-/* match if the restaurant's name shows up in what's left of the
-   sentence, or (for short/ambiguous names) the leftover words show up
-   in the restaurant's name -- whichever direction actually fires,
-   favor the longest name match so "Bongiorno's Pizzeria" beats a
-   coincidental shorter match. */
-var hit=false;
-if(nameOnly.indexOf(rn)>=0)hit=true;
-else if(rn.indexOf(nameOnly)>=0&&nameOnly.length>=4)hit=true;
-if(hit&&rn.length>bestLen){best=r;bestLen=rn.length;}
+var nw=norm(r.name).split(' ').filter(function(w){return w&&STOP.indexOf(w)<0&&w.length>1;});
+if(!nw.length)return;
+var hits=0;
+nw.forEach(function(n){if(qw.some(function(q){return same(q,n);}))hits++;});
+if(!hits)return;
+/* score: fraction of the restaurant's name-words the user said. Need
+   most of a short name, or at least two words of a long one, so
+   "steak" alone can't grab "Steak 48" but "stake 48" can. */
+var frac=hits/nw.length;
+/* A single distinctive brand word is enough on its own ("Bongiorno's",
+   "Komodo") -- but generic words like "steak", "house", "grill", "new",
+   "york", "pizzeria" never are, so "steak" can't grab "Steak 48". */
+var brandHit=nw.some(function(n){return GENERIC.indexOf(n)<0&&n.length>=6&&qw.indexOf(n)>=0;});
+var ok=(nw.length<=2&&hits===nw.length)||(nw.length>2&&(hits>=2&&frac>=0.5))||(brandHit&&hits>=1);
+if(!ok)return;
+var score=frac*10+hits+(brandHit?3:0);
+if(score>bestScore||(score===bestScore&&nw.length>bestLen)){best=r;bestScore=score;bestLen=nw.length;}
 });
 });
-return best;
+return {rec:best,named:true};
 };
-})();</script>
-<script id="bop-voice-suggestion-chips-v1">(function(){
-function wire(){
-document.querySelectorAll('.bop-voice-suggestion-chip').forEach(function(btn){
-if(btn.dataset.wired)return;
-btn.dataset.wired='1';
-btn.addEventListener('click',function(){
-var q=btn.dataset.voiceSuggest;
-if(typeof window.bopVoiceSearch==='object'&&typeof window.bopVoiceSearch.run==='function'){
-window.bopVoiceSearch.run(q);
-}
-});
-});
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
-new MutationObserver(wire).observe(document.documentElement,{childList:true,subtree:true});
 })();</script>
 <script id="bop-oliver-expansion-v1">(function(){
 /* v-sep11: Jamie Oliver's UK empire mostly collapsed in 2019; he's since
