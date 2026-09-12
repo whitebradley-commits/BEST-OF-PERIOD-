@@ -45591,13 +45591,48 @@ if(bodyI)bodyI.textContent=line;
 speak(line,null);
 var listD=document.getElementById('bopVoiceList');
 if(listD&&target.address){
-var addrEsc=String(target.address).replace(/'/g,"\\'");
-var nameEsc=String(target.name||'').replace(/'/g,"\\'");
-listD.innerHTML='<div style="display:flex;justify-content:center;margin-top:14px;"><button type="button" class="bop-voice-directions-orb" data-orb-address="'+target.address.replace(/"/g,'&quot;')+'" data-orb-name="'+(target.name||'').replace(/"/g,'&quot;')+'" aria-label="Get directions to '+(target.name||'').replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0;"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1.3"/></svg><span style="color:#0a0a0a;font:900 10px \'Archivo Black\',Arial,sans-serif;letter-spacing:.03em;">GO</span></button></div>';
+/* v2 (2026-09-11): show distance from the user in red above the name,
+   before they tap GO -- reuses whatever position the site has already
+   picked up (window.__bopLastPos), same source as every other distance
+   shown on the site. Falls back to requesting it fresh if we don't have
+   one yet, then fills the distance in once it resolves. */
+var distHtml='';
+var distId='bopVoiceDist'+Date.now();
+if(Number.isFinite(target.lat)&&Number.isFinite(target.lon)){
+distHtml='<span id="'+distId+'" style="color:#E4002B;font:800 .74rem Archivo Narrow,Arial,sans-serif;letter-spacing:.03em;"></span>';
+}
+listD.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;">'+distHtml+'<button type="button" class="bop-voice-directions-orb" data-orb-address="'+target.address.replace(/"/g,'&quot;')+'" data-orb-name="'+(target.name||'').replace(/"/g,'&quot;')+'" aria-label="Get directions to '+(target.name||'').replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0;"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1.3"/></svg><span style="color:#0a0a0a;font:900 10px Archivo Black,Arial,sans-serif;letter-spacing:.03em;">GO</span></button><span style="color:#F59E0B;font:800 .8rem Archivo Narrow,Arial,sans-serif;letter-spacing:.02em;text-align:center;">'+(target.name||'').replace(/</g,'&lt;')+'</span></div>';
+if(distHtml){
+var fillDist=function(userPos){
+if(!userPos)return;
+var d=boNearDistanceMiles(userPos,{lat:target.lat,lng:target.lon});
+var el=document.getElementById(distId);
+if(el&&Number.isFinite(d))el.textContent=(d<0.1?'<0.1':d.toFixed(1))+' mi away';
+};
+if(window.__bopLastPos){
+fillDist(window.__bopLastPos);
+}else if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(function(p){
+var up={lat:p.coords.latitude,lng:p.coords.longitude};
+window.__bopLastPos=up;
+fillDist(up);
+},function(){},{timeout:6000});
+}
+}
+}
 var orbBtn=listD.querySelector('.bop-voice-directions-orb');
 if(orbBtn)orbBtn.addEventListener('click',function(){
+/* the voice card/panel render above everything else on the page
+   (max z-index), so the directions popup was opening successfully but
+   sitting invisibly behind them -- close those out of the way first. */
 if(typeof window.openDirectionsPopup==='function'){
 window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
+/* the voice results panel and a couple of other full-screen layers on
+   this site render at the maximum possible z-index, higher than this
+   popup's normal z-index -- match them exactly so it's never silently
+   stuck underneath. */
+var dpo=document.getElementById('directionsPopupOverlay');
+if(dpo)dpo.style.zIndex='2147483647';
 }else{
 window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
 }
