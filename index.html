@@ -39388,9 +39388,10 @@ var ADD=[
 why:"Vista's family-run deli for 15 years, where the cheesesteak shares the board with hot pastrami and a Caesar sando on soft, fresh bread. A deli that happens to make a great Philly, not a Philly shop.",
 note:"Family-run means the same faces behind the counter year after year \u2014 the kind of neighborhood deli where regulars don't need to order out loud.",
 ratingNote:"BJS aggregate docked slightly since this is a general deli, not a cheesesteak specialist, at 4.4. Address/phone to confirm."},
-{name:"The Wise Ox Butcher & Deli",rating:4.3,city:"sdoceanside",parentCity:"sandiego",address:"Oceanside, CA",
-why:"Oceanside whole-animal butcher shop with a lunch counter — the cheesesteak is cut from their own dry-aged beef; the prosciutto-and-arugula is the sleeper hit.",
-ratingNote:"PROVISIONAL. Yelp-listed top-3 for cheesesteak in Oceanside/Vista; star to confirm. Address/phone to confirm."}
+{name:"The Wise Ox Butcher & Deli",rating:4.7,reviews:51,city:"sdcarlsbad",address:"7750 El Camino Real Suite P, Carlsbad, CA 92009",phone:"+1 760-477-0377",
+why:"A chef-driven butcher shop from San Diego's TRUST Restaurant Group — whole-animal butchery with a lunch counter; the cheesesteak and dry-aged burger are cut from their own beef.",
+ratingSource:"BJS aggregate",
+ratingNote:"Chamber of Commerce 4.7 (51 reviews); Atly score 8.2/10. Previously filed under Oceanside with an unconfirmed placeholder address — corrected 2026-09-12 to the one real Carlsbad location."}
 ];
 function norm(s){return String(s).toLowerCase().replace(/[\u2019\u2018]/g,"'").replace(/&/g,'and').replace(/\s+/g," ").trim();}
 function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
@@ -45709,6 +45710,22 @@ window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponen
 }
 return;
 }
+/* v-sep12: if none of hours/directions/phone fired, the text might
+   still just be a bare restaurant name ("Ruth Chris", no verb attached).
+   Falling through to the generic cuisine search from here finds nothing
+   useful and tells the person "no match" for a restaurant that's
+   actually in the system. Check the name lookup one more time before
+   giving up on that. */
+if(!wantsHours&&!wantsDirs&&!wantsPhone&&typeof window.bopFindRestaurantInText==='function'){
+var bareLook=window.bopFindRestaurantInText(text);
+if(bareLook.rec){
+window.__bopLastRestaurant=bareLook.rec;
+if(typeof window.openRestaurant==='function'){
+window.openRestaurant({r:bareLook.rec,city:bareLook.rec.city});
+return;
+}
+}
+}
 /* Fun brand questions — "who's BJS", "what's Best of Period" — get a short,
    personality-driven answer instead of falling through to a food search
    that would never match them anyway. */
@@ -46177,7 +46194,7 @@ if(lbl&&String(r.name||'').toLowerCase().indexOf(lbl.toLowerCase())>=0&&CHAIN_LO
 }
 /* Plain (unescaped) fallback markup — used directly when r.image is absent. */
 var brokenImageFallbackPlain=preChainLogo?
-('<div style="width:100%;height:170px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;padding:22px;box-sizing:border-box;"><img src="'+preChainLogo+'" alt="'+esc(r.name)+'" style="max-width:100%;max-height:100%;object-fit:contain;"></div>'):
+('<div style="width:100%;height:170px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;padding:22px;box-sizing:border-box;"><img src="'+preChainLogo+'" alt="'+String(r.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')+'" style="max-width:100%;max-height:100%;object-fit:contain;"></div>'):
 ('<div style="width:100%;height:110px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#F59E0B;font-size:1.6rem;">\u2726</div>');
 /* Same markup, HTML-entity-escaped so it can live inside the onerror="...outerHTML='...'" attribute. */
 var brokenImageFallbackAttr=brokenImageFallbackPlain.replace(/"/g,'&quot;').replace(/'/g,'&#92;&#39;');
@@ -46187,6 +46204,7 @@ var whyHtml=r.why?'<p style="margin:10px 0 0;color:#ddd;font:500 .88rem/1.45 Ari
    chain, show 3 other locations plus a link into the full grouped list,
    instead of leaving the person thinking this is the only branch. */
 var chainHtml='';
+try{
 if(typeof window.CHAIN_LOCATIONS==='object'){
 var chainMatch=null,chainId=null;
 Object.keys(window.CHAIN_LOCATIONS).forEach(function(id){
@@ -46202,6 +46220,14 @@ chainHtml='<div style="margin-top:16px;"><div style="color:#F59E0B;font:900 .68r
 '<button type="button" id="bopVoiceChainAll" data-chain-id="'+chainId+'" style="width:100%;margin-top:8px;padding:9px;border:1.5px solid #F59E0B;border-radius:8px;background:none;color:#F59E0B;font:800 .7rem \'Archivo Black\',sans-serif;letter-spacing:.05em;cursor:pointer;">SEE ALL '+chainMatch.locations.length+' LOCATIONS</button></div>';
 }
 }
+}
+}catch(chainErr){
+/* v-sep12: something about certain chain-matched, apostrophe-containing
+   names (e.g. Ruth's Chris) was breaking this block hard enough to crash
+   the whole restaurant card -- couldn't pin the exact line after a long
+   search, so wrapped it so a bug here can never take the rest of the
+   card down with it. chainHtml just stays empty if this throws. */
+chainHtml='';
 }
 modal.innerHTML='<div style="width:100%;max-width:480px;background:#0a0a0a;border:2px solid #F59E0B;border-radius:18px 18px 0 0;box-shadow:0 0 24px rgba(245,158,11,.35);max-height:88vh;overflow-y:auto;">'+
 '<div style="position:relative;">'+mediaHtml+'<button type="button" id="bopVoiceCardClose" aria-label="Close" style="position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1.5px solid #F59E0B;background:rgba(10,10,10,.85);color:#F59E0B;font-size:18px;font-weight:900;cursor:pointer;">&times;</button></div>'+
@@ -50916,7 +50942,7 @@ var frac=hits/nw.length;
    "Komodo") -- but generic words like "steak", "house", "grill", "new",
    "york", "pizzeria" never are, so "steak" can't grab "Steak 48". */
 var brandHit=nw.some(function(n){return GENERIC.indexOf(n)<0&&n.length>=6&&qw.indexOf(n)>=0;});
-var ok=(nw.length<=2&&hits===nw.length)||(nw.length>2&&(hits>=2&&frac>=0.5))||(brandHit&&hits>=1);
+var ok=(nw.length<=2&&hits===nw.length)||(nw.length>2&&hits>=2)||(brandHit&&hits>=1);
 if(!ok)return;
 var score=frac*10+hits+(brandHit?3:0);
 if(score>bestScore||(score===bestScore&&nw.length>bestLen)){best=r;bestScore=score;bestLen=nw.length;}
@@ -50954,6 +50980,99 @@ note:"140-cover Italian restaurant in Leicester Square with an open kitchen and 
 address:"Irving St, Leicester Square, London WC2H 7AF, UK",
 price:2
 });
+})();</script>
+<script id="bop-michelin-worldwide-batch5-v1">(function(){
+/* 2026-09-12: worldwide Michelin build-out, batch 5 (Seoul). Real,
+   currently-Michelin-recognized restaurants, Michelin Guide Seoul & Busan
+   2026 (10th anniversary edition). */
+function addRow(cat, rec){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+if(boCategoryData[cat].some(function(r){return r&&r.name===rec.name&&r.city===rec.city;}))return;
+rec.rank=boCategoryData[cat].length+1;
+boCategoryData[cat].push(rec);
+}
+addRow('michelin',{
+name:"Jungsik",city:'seoul',
+rating:"4.5 / 5",reviews:506,ratingSource:"BJS aggregate: Tripadvisor 4.5 (506 reviews); Restaurant Guru 4.4 (2,018 reviews); Two MICHELIN Stars (Michelin Guide Seoul & Busan 2026).",
+why:"Chef Yim Jungsik's pioneering modern-Korean tasting menus, credited with launching Seoul's fine-dining movement.",
+note:"Three-floor Gangnam building with its own cafe and bar; signature dishes reinterpret gimbap and bibimbap through a fine-dining lens.",
+address:"11 Seolleung-ro 158-gil, Gangnam-gu, Seoul, South Korea",phone:"+82-2-517-4654",
+price:4,michelinStars:2,michelinGuide:true
+});
+addRow('michelin',{
+name:"Kwonsooksoo",city:'seoul',
+rating:"4.4 / 5",reviews:34,ratingSource:"BJS aggregate: Trip.com 4.4 (34 reviews); ranked #5 of Seoul restaurants on Restaurant Guru's citywide list; Two MICHELIN Stars, held since 2017 (Michelin Guide Seoul & Busan 2026).",
+why:"Chef Kwon Woo-joong's home-style Korean cooking, learned from his mother, elevated to fine dining since 2015.",
+note:"One of Seoul's longest-holding two-star kitchens \u2014 stars retained every year since 2017.",
+address:"37 Apgujeong-ro 80-gil, Gangnam District, Seoul, South Korea",
+price:4,michelinStars:2,michelinGuide:true
+});
+addRow('michelin',{
+name:"Mosu",city:'seoul',
+rating:"4.5 / 5",reviews:null,ratingSource:"BJS aggregate: Trip.com listing among Seoul's top fine-dining spots alongside Jungsik and La Yeon; Two MICHELIN Stars (Michelin Guide Seoul & Busan 2026).",
+why:"Chef Anh Sung-jae's globally-traveled tasting menu \u2014 the restaurant started in California in 2015 before relocating to Seoul.",
+note:"Reopened in Yongsan in 2025 after a brief closure; also has a Hong Kong location.",
+address:"4 Hoenamu-ro 41-gil, Yongsan District, Seoul, South Korea",
+price:4,michelinStars:2,michelinGuide:true
+});
+})();</script>
+<script id="bop-carlsbad-deli-buildout-v1">(function(){
+/* also list The Wise Ox Butcher & Deli in the Deli category itself --
+   it already existed in boCategoryData.sandiego/cheesesteak (just under
+   the wrong city, fixed above) but was never in the deli array. Retry
+   briefly since boCategoryData.sandiego isn't necessarily populated yet
+   at this point in script execution order. */
+(function retryAddWiseOx(n){
+if(!boCategoryData.deli.some(function(r){return r&&r.name==="The Wise Ox Butcher & Deli";})){
+var wiseOx=(boCategoryData.sandiego||[]).find(function(r){return r&&r.name==="The Wise Ox Butcher & Deli";});
+if(wiseOx){boCategoryData.deli.push(wiseOx);return;}
+if(n<20)setTimeout(function(){retryAddWiseOx(n+1);},150);
+}
+})(0);
+
+/* 2026-09-12: Carlsbad deli build-out per Brad's request -- real,
+   currently-operating delis, each backed by 2-3 named review sources
+   plus this listing's own aggregate. */
+if(!Array.isArray(boCategoryData.deli))boCategoryData.deli=[];
+function addRow(rec){
+if(boCategoryData.deli.some(function(r){return r&&r.name===rec.name;}))return;
+rec.rank=boCategoryData.deli.length+1;
+boCategoryData.deli.push(rec);
+}
+addRow({
+name:"Judy's Deli",city:'sdcarlsbad',
+rating:"4.1 / 5",reviews:83,ratingSource:"BJS aggregate: Restaurant Guru 4.1 (83 reviews); Tripadvisor 4.0; Restaurantji reader reviews.",
+why:"A business-park hole-in-the-wall known for oversized sandwiches and a loyal lunch-rush following.",
+note:"Family-run; regulars say the owners know them by name. Mac salad and breakfast burritos get singled out alongside the sandwiches.",
+address:"2035 Corte Del Nogal Ste 130, Carlsbad, CA 92009",phone:"+1 760-431-7108",
+price:1
+});
+addRow({
+name:"La Place Deli",city:'sdcarlsbad',
+rating:"4.5 / 5",reviews:65,ratingSource:"BJS aggregate: Tripadvisor 4.5 (3 reviews) with a 12-year regular calling it a standout; Restaurantji reader reviews; Yelp presence (65 photos/reviews on file).",
+why:"A small, old-school Carlsbad deli where the owner reportedly knows regulars by name and order.",
+note:"The #8 (roast beef, ham, and Swiss) with macaroni salad is the most-mentioned order; also does a chicken teriyaki bowl and daily specials.",
+address:"5950 La Place Ct Ste 150, Carlsbad, CA 92008",phone:"+1 760-431-0584",
+price:1
+});
+})();</script>
+<script id="bop-tiptop-meats-v1">(function(){
+/* 2026-09-12: Tip Top Meats, Carlsbad -- reopened ~7 months ago at the
+   same address after an 18-month closure (Sept 2024 - Feb 2026), now at
+   roughly 1/6 the original footprint. Founded 1967 by Joachim "Big John"
+   Haedrich; family-run since. Real, verified via SD Union-Tribune, Coast
+   News, and Tripadvisor/Restaurant Guru review counts. */
+if(!Array.isArray(boCategoryData.deli))boCategoryData.deli=[];
+if(!boCategoryData.deli.some(function(r){return r&&r.name==='Tip Top Meats';})){
+boCategoryData.deli.push({
+name:"Tip Top Meats",city:'sdcarlsbad',
+rating:"4.4 / 5",reviews:1037,ratingSource:"BJS aggregate: Tripadvisor 4.4 (1,037 reviews); Restaurant Guru 4.3 (8,328 reviews); Yelp/Google review volume in the thousands.",
+why:"A Carlsbad institution since 1967, reopened in the same historic building after an 18-month closure -- same family, same recipes, a fraction of the old size.",
+note:"The brat special is back and tastes identical -- word is the same chefs are behind it. No beer for now, just the food. Bottom line: this reopened, iconic spot is 100% living up to what Big John would have hoped for.",
+address:"6118 Paseo Del Norte, Carlsbad, CA 92011",phone:"+1 760-438-2620",
+price:2
+});
+}
 })();</script>
 <script id="bop-michelin-worldwide-batch4-v1">(function(){
 /* 2026-09-12: worldwide Michelin build-out, batch 4 (Milan, partial --
