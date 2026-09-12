@@ -45553,6 +45553,42 @@ opts=opts||{};
        as a natural follow-up ("what time do they close"). */
 var wantsHours=/\b(what\s*time|how\s*late|open\s*(until|till|to|late)?|opens?|clos(e|es|ing|ed)|hours?|still\s*open)\b/i.test(text)&&!/\b(directions?|address|where\s*is)\b/i.test(text);
 var wantsDirs=/\b(directions?|address|where\s*is\s*(it|this|that)?|how\s*do\s*i\s*get)\b/i.test(text);
+var wantsPhone=/\b(phone|number|call|telephone)\b/i.test(text)&&!/\b(directions?|hours?)\b/i.test(text);
+if(wantsPhone){
+var lookP=(typeof window.bopFindRestaurantInText==='function')?window.bopFindRestaurantInText(text):{rec:null,named:false};
+var targetP=lookP.rec||(lookP.named?null:window.__bopLastRestaurant);
+if(targetP)window.__bopLastRestaurant=targetP;
+openPanel();
+document.getElementById('bopVoiceSaid').textContent='\u201c'+text+'\u201d';
+document.getElementById('bopVoiceSummary').innerHTML='';
+document.getElementById('bopVoiceList').innerHTML='';
+document.getElementById('bopVoiceNote').textContent='';
+var replyP=document.getElementById('bopVoiceReply'),labelP=document.getElementById('bopVoiceReplyLabel'),bodyP=document.getElementById('bopVoiceReplyText');
+if(labelP)labelP.textContent=uiText('bjsSays');
+if(replyP)replyP.classList.add('open');
+var lineP='';
+if(!targetP){
+lineP=lookP.named?'I couldn\u2019t find that one in our system yet. Try the full name, or ask me about another spot.':'Which restaurant? Say the name and ask again \u2014 for example, \u201cwhat\u2019s the phone number for Bongiorno\u2019s?\u201d';
+if(bodyP)bodyP.textContent=lineP;
+speak(lineP,null);
+return;
+}
+if(targetP.phone){
+lineP=targetP.name+'\u2019s number is '+targetP.phone+'.';
+if(bodyP)bodyP.textContent=lineP;
+speak(lineP,null);
+var listP=document.getElementById('bopVoiceList');
+if(listP){
+var digitsP=String(targetP.phone).replace(/[^+\d]/g,'');
+listP.innerHTML='<div style="display:flex;justify-content:center;margin-top:14px;"><a href="tel:'+digitsP+'" style="display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 .8rem \'Archivo Black\',Arial,sans-serif;letter-spacing:.04em;text-decoration:none;">\ud83d\udcde CALL '+targetP.name.toUpperCase()+'</a></div>';
+}
+}else{
+lineP='I don\u2019t have a phone number on file for '+targetP.name+' yet.';
+if(bodyP)bodyP.textContent=lineP;
+speak(lineP,null);
+}
+return;
+}
 if(wantsHours||wantsDirs){
 var look=(typeof window.bopFindRestaurantInText==='function')?window.bopFindRestaurantInText(text):{rec:null,named:false};
 var target=look.rec||(look.named?null:window.__bopLastRestaurant);
