@@ -687,9 +687,9 @@ const countText = rating.count ? ' (' + rating.count.toLocaleString() + ' ' + ra
 return '<span class="rating-stars">' + stars + '</span> <span class="rating-text">' + rating.score.toFixed(1) + countText + '</span>';
 }
 function directionsButtonHTML(address, name){
-if(!address) return '<span class="directions-btn directions-btn-pending" title="Directions coming soon">\ud83d\udccd</span>';
+if(!address) return '<span class="directions-btn directions-btn-pending" title="Directions coming soon"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F59E0B\" style=\"vertical-align:-1px;display:inline-block;\"><path d=\"M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z\"/></svg></span>';
 const esc = function(v){ return String(v || '').replace(/"/g, '&quot;'); };
-return '<button type="button" class="directions-btn" data-directions-popup="' + esc(address) + '" data-directions-name="' + esc(name) + '" title="Directions">\ud83d\udccd</button>';
+return '<button type="button" class="directions-btn" data-directions-popup="' + esc(address) + '" data-directions-name="' + esc(name) + '" title="Directions"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" aria-hidden="true"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg></button>';
 }
 function emailButtonHTML(email){
 return '';
@@ -2011,8 +2011,8 @@ const headerRating = (hasRating
 ? verifiedBadge
 : '<span class="listing-rating-badge listing-rating-unverified">\u2717 Unverified Vendor</span>') + priceHtml;
 const addressLine = d.address
-? '<div class="entry-detail"><span class="entry-icon">\ud83d\udccd</span> ' + d.address + '</div>'
-: '<div class="entry-detail entry-detail-muted"><span class="entry-icon">\ud83d\udccd</span> Address coming soon</div>';
+? '<div class="entry-detail"><span class="entry-icon"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F59E0B\" style=\"vertical-align:-1px;display:inline-block;\"><path d=\"M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z\"/></svg></span> ' + d.address + '</div>'
+: '<div class="entry-detail entry-detail-muted"><span class="entry-icon"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F59E0B\" style=\"vertical-align:-1px;display:inline-block;\"><path d=\"M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z\"/></svg></span> Address coming soon</div>';
 const specialtyLine = d.specialty
 ? '<div class="entry-detail"><span class="entry-icon">\u2728</span> ' + d.specialty + '</div>'
 : '';
@@ -2693,7 +2693,7 @@ ${openClosedBadgeHTML(v.hoursData, v.open24)}
 </div>
 </button>
 <div class="lvsteam-dp-panel" id="lv-dp-panel-${idx}">
-<div class="lvsteam-dp-panel-line">📍 ${v.address}</div>
+<div class="lvsteam-dp-panel-line"><svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" style="vertical-align:-1px;display:inline-block;"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg> ${v.address}</div>
 <div class="lvsteam-dp-panel-line">🕐 ${v.hours}</div>
 <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">${callButtonHTML(v.phone)}${directionsButtonHTML(v.address)}${siteButtonHTML(websiteUrl)}${fbLink}${igLink}${emailButtonHTML(v.email)}${picsButtonHTML(v.name)}</div>
 ${!lvIsVerified(v) ? '<button class="lvsteam-claim claim-btn" type="button" style="margin-top:0.5rem;">Is this your business? Claim This Listing →</button>' : ''}
@@ -34289,7 +34289,7 @@ try{
 var NearMe = L.Control.extend({
 options:{position:'topleft'},
 onAdd:function(){
-var b=L.DomUtil.create('button','bo-ft-nearme'); b.type='button'; b.textContent='\u{1F4CD} Near me';
+var b=L.DomUtil.create('button','bo-ft-nearme'); b.type='button'; b.innerHTML='<svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F59E0B\" style=\"vertical-align:-1px;display:inline-block;\"><path d=\"M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z\"/></svg> Near me';
 L.DomEvent.disableClickPropagation(b); L.DomEvent.disableScrollPropagation(b);
 b.addEventListener('click', function(){
 wantRecenter=true;
@@ -36429,7 +36429,7 @@ page.innerHTML =
 '<div class="bo-vs-photo-row"><label class="bo-vs-photo-btn" id="bopSmPhotoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add Photo</span><img id="bopSmPreviewImg" style="display:none;" alt=""><input type="file" accept="image/*" id="bopSmPhotoInput" style="display:none;"></label><div class="bo-vs-photo-hint">(Optional — but it increases viewership)</div></div>'+
 '<textarea class="bo-ftc-field" id="bopSmDescription" rows="3" placeholder="Description — condition, details, anything buyers should know"></textarea>'+
 '<div class="bo-sm-geozone-label">GET IN THE ZONE</div><div class="bo-sm-geozone-sub">Must be within 500 feet to check in.</div>'+
-'<div class="bo-sm-geocheck" id="bopSmGeoCheck"><div class="bo-sm-geocheck-status" id="bopSmGeoStatus">📍 Checking your location…</div></div>'+
+'<div class="bo-sm-geocheck" id="bopSmGeoCheck"><div class="bo-sm-geocheck-status" id="bopSmGeoStatus"><svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" style="vertical-align:-1px;display:inline-block;"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg> Checking your location…</div></div>'+
 '<button type="button" class="bo-ftc-btn" id="bopSmCheckinSubmit" disabled>I\'m Here — Go Live</button>'+
 '<div class="bo-sm-geo-note">Check-in only available within 500 feet of an approved location. This applies to Meet-Up only — everything else on Go Live can be posted from anywhere.</div>'+
 '<div class="bo-ftc-status" id="bopSmCheckinStatus"></div>'+
@@ -36489,7 +36489,7 @@ document.getElementById('bopSmGeoRetry').addEventListener('click',runGeoCheck);
 }
 function runGeoCheck(){
 var statusBox=document.getElementById('bopSmGeoCheck');
-statusBox.innerHTML='<div class="bo-sm-geocheck-status">📍 Checking your location…</div>';
+statusBox.innerHTML='<div class="bo-sm-geocheck-status"><svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" style="vertical-align:-1px;display:inline-block;"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg> Checking your location…</div>';
 document.getElementById('bopSmCheckinSubmit').disabled=true;
 window.bopSmDetectedSpot='';
 if(!navigator.geolocation){ statusBox.innerHTML='<div class="bo-sm-geo-blocked">Location isn\u2019t available on this device/browser.</div>'; return; }
@@ -45586,13 +45586,22 @@ speak(line,null);
 return;
 }
 /* directions */
-var dUrl=target.directionsUrl||(target.address?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(target.address)):null);
-line=dUrl?('Here you go \u2014 tap below for directions to '+target.name+'.'):('I don\u2019t have an address on file for '+target.name+' yet.');
+line=target.address?('Here you go \u2014 tap the orb below for directions to '+target.name+'.'):('I don\u2019t have an address on file for '+target.name+' yet.');
 if(bodyI)bodyI.textContent=line;
 speak(line,null);
 var listD=document.getElementById('bopVoiceList');
-if(listD&&dUrl){
-listD.innerHTML='<a href="'+dUrl+'" target="_blank" rel="noopener" class="bop-voice-directions-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:13px;border:1.5px solid #F59E0B;border-radius:10px;background:#0a0a0a;color:#F59E0B;font:900 .82rem \'Archivo Black\',Arial,sans-serif;letter-spacing:.04em;text-decoration:none;">\ud83d\udccd GET DIRECTIONS \u2014 '+target.name+'</a>';
+if(listD&&target.address){
+var addrEsc=String(target.address).replace(/'/g,"\\'");
+var nameEsc=String(target.name||'').replace(/'/g,"\\'");
+listD.innerHTML='<div style="display:flex;justify-content:center;margin-top:14px;"><button type="button" class="bop-voice-directions-orb" data-orb-address="'+target.address.replace(/"/g,'&quot;')+'" data-orb-name="'+(target.name||'').replace(/"/g,'&quot;')+'" aria-label="Get directions to '+(target.name||'').replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0;"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1.3"/></svg><span style="color:#0a0a0a;font:900 10px \'Archivo Black\',Arial,sans-serif;letter-spacing:.03em;">GO</span></button></div>';
+var orbBtn=listD.querySelector('.bop-voice-directions-orb');
+if(orbBtn)orbBtn.addEventListener('click',function(){
+if(typeof window.openDirectionsPopup==='function'){
+window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
+}else{
+window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
+}
+});
 }
 return;
 }
@@ -46015,7 +46024,7 @@ try{localStorage.setItem(VOICE_NAME_KEY,next.name);}catch(e){}
 refreshVoiceUI();
 var wasOn=voiceOn();if(!wasOn)setVoiceOn(true);
 var cleanName=displayName(next.name.replace(/\s*\(.*?\)\s*/g,''));
-var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me about a restaurant, ask me what time a place is open until, or ask me for directions!';
+var greeting='Hi there, I\u2019m '+cleanName+', your friendly nosy foodie know it all. Hold down your thumb and ask me anything \u2014 from hours of operation to \u201cI want pickles\u2026\u201d Let\u2019s have some fun!';
 setReply('Voice test: \u201c'+greeting+'\u201d \u2014 if you can\u2019t hear this, check your ringer switch and volume.');
 speak(greeting,function(){if(!wasOn)setVoiceOn(false);refreshVoiceUI();});
 });
@@ -46283,7 +46292,7 @@ greetOnArrival();
 function greetOnArrival(){
 var v=pickVoice();
 var name=v?displayName(v.name.replace(/\s*\(.*?\)\s*/g,'')):'BJS';
-var greeting='Hi there, I\u2019m '+name+', your friendly nosy foodie know it all. I\u2019m here to make sure you find the perfect spot. Hold down your thumb and ask me anything!';
+var greeting='Hi there, I\u2019m '+name+', your friendly nosy foodie know it all. Hold down your thumb and ask me anything \u2014 from hours of operation to \u201cI want pickles\u2026\u201d Let\u2019s have some fun!';
 setReply(greeting);
 speak(greeting,null);
 }
