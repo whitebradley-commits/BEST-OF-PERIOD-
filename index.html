@@ -1716,6 +1716,8 @@ var mapEl = document.getElementById('directionsPopupMap');
 function closeDirectionsPopup(){
 overlay.classList.remove('open');
 if(mapEl) mapEl.src = '';   // stop the map loading in the background
+var vrp=document.getElementById('bopVoiceResults');
+if(vrp)vrp.style.pointerEvents='';
 }
 if(closeBtn) closeBtn.addEventListener('click', closeDirectionsPopup);
 overlay.addEventListener('click', function(e){
@@ -45634,24 +45636,44 @@ if(listD&&target.address){
    one yet, then fills the distance in once it resolves. */
 var distHtml='';
 var distId='bopVoiceDist'+Date.now();
-if(Number.isFinite(target.lat)&&Number.isFinite(target.lon)){
+if(target.address){
 distHtml='<span id="'+distId+'" style="color:#E4002B;font:800 .74rem Archivo Narrow,Arial,sans-serif;letter-spacing:.03em;"></span>';
 }
 listD.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;">'+distHtml+'<button type="button" class="bop-voice-directions-orb" data-orb-address="'+target.address.replace(/"/g,'&quot;')+'" data-orb-name="'+(target.name||'').replace(/"/g,'&quot;')+'" aria-label="Get directions to '+(target.name||'').replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0;"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1.3"/></svg><span style="color:#0a0a0a;font:900 10px Archivo Black,Arial,sans-serif;letter-spacing:.03em;">GO</span></button><span style="color:#F59E0B;font:800 .8rem Archivo Narrow,Arial,sans-serif;letter-spacing:.02em;text-align:center;">'+(target.name||'').replace(/</g,'&lt;')+'</span></div>';
 if(distHtml){
-var fillDist=function(userPos){
-if(!userPos)return;
-var d=boNearDistanceMiles(userPos,{lat:target.lat,lng:target.lon});
+/* v2: some restaurants (like Steak 48) don't have lat/lon saved on the
+   record itself. Rather than just hiding the distance for those, geocode
+   the address live (same lookup + cache the main results list already
+   uses) so the mileage shows up regardless of whether coordinates were
+   ever filled in on that particular listing. */
+var fillDist=function(userPos,coords){
+if(!userPos||!coords)return;
+var d=boNearDistanceMiles(userPos,{lat:coords.lat,lng:coords.lon});
 var el=document.getElementById(distId);
 if(el&&Number.isFinite(d))el.textContent=(d<0.1?'<0.1':d.toFixed(1))+' mi away';
 };
+var getCoords=function(){
+if(Number.isFinite(target.lat)&&Number.isFinite(target.lon)){
+return Promise.resolve({lat:target.lat,lon:target.lon});
+}
+if(typeof boGeocodeRestaurant==='function'&&typeof cityLabel==='function'){
+var cLabel=cityLabel(target.city);
+var cDefaults=(typeof boNearCityDefaults==='function')?boNearCityDefaults(target.city):null;
+return Promise.resolve(boGeocodeRestaurant(target,cLabel,cDefaults)).catch(function(){return null;});
+}
+return Promise.resolve(null);
+};
+var runFill=function(userPos){
+if(!userPos)return;
+getCoords().then(function(coords){fillDist(userPos,coords);});
+};
 if(window.__bopLastPos){
-fillDist(window.__bopLastPos);
+runFill(window.__bopLastPos);
 }else if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(p){
 var up={lat:p.coords.latitude,lng:p.coords.longitude};
 window.__bopLastPos=up;
-fillDist(up);
+runFill(up);
 },function(){},{timeout:6000});
 }
 }
@@ -45672,18 +45694,7 @@ window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
 var dpo=document.getElementById('directionsPopupOverlay');
 if(dpo)dpo.style.zIndex='2147483647';
 var vrp=document.getElementById('bopVoiceResults');
-if(vrp){
-vrp.style.pointerEvents='none';
-var restore=function(){
-vrp.style.pointerEvents='';
-dpo.removeEventListener('click',restoreOnOverlayClick);
-document.removeEventListener('click',restoreOnCloseBtn,true);
-};
-var restoreOnOverlayClick=function(e){if(e.target===dpo)restore();};
-var restoreOnCloseBtn=function(e){if(e.target&&e.target.id==='directionsPopupCloseBtn')restore();};
-if(dpo)dpo.addEventListener('click',restoreOnOverlayClick);
-document.addEventListener('click',restoreOnCloseBtn,true);
-}
+if(vrp)vrp.style.pointerEvents='none';
 }else{
 window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
 }
@@ -46205,7 +46216,7 @@ if(chainAllBtn)chainAllBtn.addEventListener('click',function(){if(typeof window.
 }
 window.openRestaurant=openRestaurant;
 function openPanel(){panel.classList.add('open');panel.scrollTop=0;document.body.style.overflow='hidden';}
-function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');try{if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e0){}}
+function closePanel(){panel.classList.remove('open');document.body.style.overflow='';typeForm.classList.remove('open');panel.style.pointerEvents='';try{if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e0){}}
 document.getElementById('bopVoiceClose').addEventListener('click',closePanel);
 typeForm.addEventListener('submit',function(e){e.preventDefault();var v=typeInput.value.trim();if(v)run(v);});
 
