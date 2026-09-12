@@ -45580,7 +45580,7 @@ speak(lineP,null);
 var listP=document.getElementById('bopVoiceList');
 if(listP){
 var digitsP=String(targetP.phone).replace(/[^+\d]/g,'');
-listP.innerHTML='<div style="display:flex;justify-content:center;margin-top:14px;"><a href="tel:'+digitsP+'" style="display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 .8rem \'Archivo Black\',Arial,sans-serif;letter-spacing:.04em;text-decoration:none;">\ud83d\udcde CALL '+targetP.name.toUpperCase()+'</a></div>';
+listP.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;"><a href="tel:'+digitsP+'" aria-label="Call '+targetP.name.replace(/"/g,'&quot;')+'" style="width:64px;height:64px;border-radius:50%;background:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-decoration:none;"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#F59E0B" stroke="#0a0a0a" stroke-width="1"/></svg><span style="color:#0a0a0a;font:900 9px Archivo Black,Arial,sans-serif;letter-spacing:.03em;">CALL</span></a><span style="color:#F59E0B;font:800 .8rem Archivo Narrow,Arial,sans-serif;letter-spacing:.02em;text-align:center;">'+targetP.name.replace(/</g,'&lt;')+'</span></div>';
 }
 }else{
 lineP='I don\u2019t have a phone number on file for '+targetP.name+' yet.';
@@ -45662,12 +45662,16 @@ if(orbBtn)orbBtn.addEventListener('click',function(){
    sitting invisibly behind them -- close those out of the way first. */
 if(typeof window.openDirectionsPopup==='function'){
 window.openDirectionsPopup(orbBtn.dataset.orbAddress,orbBtn.dataset.orbName);
-/* the voice results panel and a couple of other full-screen layers on
-   this site render at the maximum possible z-index, higher than this
-   popup's normal z-index -- match them exactly so it's never silently
-   stuck underneath. */
+/* the voice results panel renders at the same maximum z-index as this
+   popup, so it was a tie -- whichever element is LATER in the DOM wins
+   both the paint order and (critically) which one actually receives
+   clicks. Moving the popup to the very end of <body> here guarantees
+   it wins that tie every time, not just visually but for taps too. */
 var dpo=document.getElementById('directionsPopupOverlay');
-if(dpo)dpo.style.zIndex='2147483647';
+if(dpo){
+dpo.style.zIndex='2147483647';
+document.body.appendChild(dpo);
+}
 }else{
 window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(orbBtn.dataset.orbAddress),'_blank');
 }
