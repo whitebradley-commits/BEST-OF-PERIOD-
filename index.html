@@ -40285,6 +40285,21 @@ if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[wantCity])return {key:wantCi
 var pick=found.filter(function(c){return /bjspick$/.test(c);}).map(function(c){return c.replace(/bjspick$/,'');});
 var cats=(pick.length?pick:found).filter(function(c){return LABELS[c];});
 if(!cats.length)cats=found.filter(function(c){return !/bjspick$/.test(c);});
+if(!cats.length){
+/* v-sep13: voice search tags each result with whatever city bucket the
+   search loop happened to be scanning (c.key), which isn't always the
+   restaurant's real home city -- that mismatch was sending View Category
+   to a dead end and silently falling back to the mic page. If the
+   city-constrained search above found nothing, retry once with no city
+   constraint at all: any category where this exact name appears wins. */
+var anyFound=[];
+Object.keys(boCategoryData).forEach(function(cat){if(SKIP.test(cat))return;if(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG[cat])return;if(/^(sd|la)[a-z]+$/.test(cat)&&!LABELS[cat])return;var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+if(arr.some(function(r){return r&&r.name&&r.name.toLowerCase().replace(/\s+/g,' ').trim()===key;}))anyFound.push(cat);
+});
+var anyPick=anyFound.filter(function(c){return /bjspick$/.test(c);}).map(function(c){return c.replace(/bjspick$/,'');});
+cats=(anyPick.length?anyPick:anyFound).filter(function(c){return LABELS[c];});
+if(!cats.length)cats=anyFound.filter(function(c){return !/bjspick$/.test(c);});
+}
 if(!cats.length)return {key:'',label:''};var c=cats[0];return {key:c,label:LABELS[c]||c.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,function(x){return x.toUpperCase();})};}
 function picksFor(key){var cfg=CITY[key];var seen={},out=[];if(typeof boCategoryData!=='object')return out;
 Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(!r||!r.name||!r.bjsPick)return;if(!cfg.test(region(r))&&!cfg.test(String(r.city||'')))return;var k=r.name.toLowerCase().replace(/\s+/g,' ').trim();if(seen[k])return;seen[k]=1;out.push(r);});});
