@@ -44944,11 +44944,12 @@ body:has(#bopLandingOverlay.open) #bopStaticLandingDock #bopStaticShare{display:
 /* Landing corner cluster: [BJS] [mail] ... gap ... [MIC alone in the corner] */
 body:has(#bopLandingOverlay.open) #bopInviteCornerRow2{right:92px!important;bottom:24px!important;gap:16px!important}
 body:has(#bopLandingOverlay.open) #bopCornerBjsBadge{display:none!important}
-#bopVoiceMicBtn{position:fixed;right:66px;bottom:14px;z-index:2147483647;display:none;align-items:center;justify-content:center;width:52px;height:52px;padding:0;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.6);cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;animation:bopVoiceIdle 3s ease-in-out infinite}
+#bopVoiceMicBtn{position:fixed;right:66px;bottom:14px;z-index:2147483647;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:52px;padding:0;border-radius:50%;border:2px solid #F59E0B;background:#0a0a0a;color:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.6);cursor:pointer;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;animation:bopVoiceIdle 3s ease-in-out infinite}
 /* v541: mic now lives in the landing dock (see below) instead of floating alone,
    so it stops competing with the music toggle for the same corner. */
 body:has(#bopLandingOverlay.open) #bopVoiceMicBtn{display:none!important}
-#bopVoiceMicBtn svg{width:24px;height:24px;pointer-events:none}
+#bopVoiceMicBtn svg{width:18px;height:18px;pointer-events:none}
+#bopVoiceMicBtn .bop-mic-btn-label{font:900 .3rem/1 'Archivo Black',sans-serif;letter-spacing:.05em;color:#F59E0B;pointer-events:none;white-space:nowrap}
 #bopVoiceMicBtn.is-listening{border-color:#F59E0B;color:#F59E0B;box-shadow:0 0 0 6px rgba(245,158,11,.18),0 0 18px rgba(245,158,11,.95);animation:bopVoiceLive .9s ease-in-out infinite}
 #bopVoiceMicBtn.is-busy{opacity:.6}
 @keyframes bopVoiceIdle{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.5)}50%{box-shadow:0 0 16px rgba(245,158,11,.95)}}
@@ -45031,11 +45032,10 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 @media (prefers-reduced-motion:reduce){#bopVoiceResults .bop-voice-on-hint-arrow{animation:none}}
 #bopVoiceResults .bop-voice-retry-wrap{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none}
 #bopVoiceResults .bop-voice-retry-wrap>*{pointer-events:auto}
-#bopVoiceResults .bop-voice-retry{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:112px;height:128px;padding:10px;border:3px solid #F59E0B;border-radius:48% 48% 44% 44%;background:#030303;color:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.62),0 0 34px rgba(245,158,11,.22);cursor:pointer;animation:bopThumbIdle 1.6s ease-in-out infinite;-webkit-touch-callout:none!important;-webkit-user-select:none!important;user-select:none!important;touch-action:none!important;-webkit-tap-highlight-color:transparent}
+#bopVoiceResults .bop-voice-retry{display:grid;place-items:center;width:112px;height:128px;padding:10px;border:3px solid #F59E0B;border-radius:48% 48% 44% 44%;background:#030303;color:#F59E0B;box-shadow:0 0 16px rgba(245,158,11,.62),0 0 34px rgba(245,158,11,.22);cursor:pointer;animation:bopThumbIdle 1.6s ease-in-out infinite;-webkit-touch-callout:none!important;-webkit-user-select:none!important;user-select:none!important;touch-action:none!important;-webkit-tap-highlight-color:transparent}
 @keyframes bopThumbIdle{0%,100%{box-shadow:0 0 12px rgba(245,158,11,.5),0 0 26px rgba(245,158,11,.18)}50%{box-shadow:0 0 22px rgba(245,158,11,.95),0 0 44px rgba(245,158,11,.4)}}
 #bopVoiceResults .bop-voice-retry svg{pointer-events:none;-webkit-touch-callout:none!important;-webkit-user-select:none!important;user-select:none!important}
-#bopVoiceResults .bop-voice-retry .bop-thumbprint{width:66px;height:80px;stroke-width:3.4}
-#bopVoiceResults .bop-voice-retry-handsfree{font:900 .5rem/1 'Archivo Black',sans-serif;letter-spacing:.08em;color:#F59E0B;text-shadow:0 0 6px rgba(245,158,11,.6);white-space:nowrap}
+#bopVoiceResults .bop-voice-retry .bop-thumbprint{width:82px;height:100px;stroke-width:3.4}
 #bopVoiceResults .bop-voice-retry.is-listening{animation:bopRecGlow .9s ease-in-out infinite}
 #bopVoiceResults .bop-voice-retry.is-listening .bop-thumbprint{opacity:.45}
 @keyframes bopRecGlow{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.6)}50%{box-shadow:0 0 30px rgba(245,158,11,1),0 0 60px rgba(245,158,11,.55)}}
@@ -45077,6 +45077,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 </style>
 <button id="bopVoiceMicBtn" type="button" aria-label="Hold to speak — tell us what you're looking for">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" class="bop-mic-body"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/><path class="bop-mic-wave bop-mic-wave-l" d="M2 11a10 10 0 0 0 2.6 6.7" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/><path class="bop-mic-wave bop-mic-wave-r" d="M22 11a10 10 0 0 1 -2.6 6.7" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <span class="bop-mic-btn-label" aria-hidden="true">HANDS FREE</span>
 </button>
 <div id="bopVoiceBubble" role="status" aria-live="polite"><span class="bop-voice-bubble-label">ASK ME ANYTHING!</span><span class="bop-voice-bubble-text"></span></div>
 <div id="bopVoiceResults" aria-label="Voice search results">
@@ -45115,7 +45116,7 @@ body:has(#bopVoiceResults.open) #bopVoiceBubble .bop-voice-bubble-label{font-siz
 <text x="270" y="98" text-anchor="middle" font-family="Archivo Narrow, sans-serif" font-size="19" fill="#F59E0B" font-weight="800">Hi! Keep pressing</text>
 <text x="270" y="124" text-anchor="middle" font-family="Archivo Narrow, sans-serif" font-size="19" fill="#F59E0B" font-weight="800">a beat after you</text>
 <text x="270" y="150" text-anchor="middle" font-family="Archivo Narrow, sans-serif" font-size="19" fill="#F59E0B" font-weight="800">finish speaking&hellip;</text>
-</svg></div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg><span class="bop-voice-retry-handsfree" aria-hidden="true">HANDS FREE</span></button></div></div>
+</svg></div><button type="button" class="bop-voice-retry" id="bopVoiceRetry" aria-label="Press your thumb while speaking, release when done"><svg class="bop-thumbprint" viewBox="0 0 64 78" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 73C13 61 8 45 11 28 14 10 27 3 39 7 54 12 58 30 51 48M20 59C12 47 14 30 20 19 26 8 40 9 47 20 54 32 47 52 39 65M27 55C21 43 22 27 30 20 38 13 47 22 47 34 47 46 40 58 34 67M33 49C29 40 30 28 35 25 42 22 44 31 43 39 42 48 38 56 37 62"/></svg></button></div></div>
   </div>
 </div>
 <script id="bop-voice-search-v540-script">(function(){
