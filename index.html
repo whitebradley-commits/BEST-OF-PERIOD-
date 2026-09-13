@@ -50230,6 +50230,8 @@ body.bop-mw-open #bopMichelinWorldwide{display:block}
 .bop-mw-src{display:block;color:#6e6e6e;font-size:.72em;letter-spacing:.06em;margin-top:2px;text-transform:none}
 .bop-michelin-hotlink{color:#DCDCDC!important;text-decoration:underline!important;text-decoration-color:rgba(220,220,220,.7)!important;text-underline-offset:2px;cursor:pointer;font-weight:inherit}
 .bop-michelin-hotlink:active{opacity:.8}
+.bop-onebite-hotlink{color:#F59E0B!important;text-decoration:underline!important;text-decoration-color:rgba(245,158,11,.7)!important;text-underline-offset:2px;cursor:pointer;font-weight:inherit}
+.bop-onebite-hotlink:active{opacity:.8}
 </style>
 <section id="bopMichelinWorldwide" role="dialog" aria-modal="true" aria-label="Michelin Worldwide">
   <button type="button" id="bopMichelinWorldwideBack" aria-label="Back">&larr;<br>Back</button>
@@ -50370,6 +50372,8 @@ return;
 }
 var link=e.target.closest&&e.target.closest('.bop-michelin-hotlink');
 if(link){e.preventDefault();e.stopPropagation();open();return;}
+var obLink=e.target.closest&&e.target.closest('.bop-onebite-hotlink');
+if(obLink){e.preventDefault();e.stopPropagation();if(typeof window.boOpenAllPizzaScores==='function')window.boOpenAllPizzaScores();return;}
 /* View Category tapped on a card opened from this page: get out of the way
    so the category page underneath is actually visible. */
 if(document.body.classList.contains('bop-mw-open')&&e.target.closest&&e.target.closest('#bopVoiceRestaurantCard .cp-view-cat-mini'))close();
@@ -50390,7 +50394,26 @@ else if(p)frag.appendChild(document.createTextNode(p));
 n.parentNode.replaceChild(frag,n);
 });
 }
-function installLinks(){hotlink('bjsWhyOverlay');hotlink('legendOverlay');}
+/* Hotlink the words "One Bite" inside the WHY popup only -- the Legend
+   page already has its own dedicated "Analog List" button next to the
+   BJS vs One Bite explanation, so wrapping the words there too would be
+   a redundant second link right next to it. */
+function hotlinkOneBite(rootId){
+var root=document.getElementById(rootId);if(!root)return;
+var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+var nodes=[];
+while(walker.nextNode()){var n=walker.currentNode;if(/one\s+bite/i.test(n.nodeValue)&&!(n.parentNode&&n.parentNode.closest&&n.parentNode.closest('.bop-onebite-hotlink,script,style,button,a')))nodes.push(n);}
+nodes.forEach(function(n){
+var frag=document.createDocumentFragment();
+var parts=n.nodeValue.split(/(One\s+Bite|ONE\s+BITE)/);
+parts.forEach(function(p){
+if(/^one\s+bite$/i.test(p)){var sp=document.createElement('span');sp.className='bop-onebite-hotlink';sp.textContent=p;frag.appendChild(sp);}
+else if(p)frag.appendChild(document.createTextNode(p));
+});
+n.parentNode.replaceChild(frag,n);
+});
+}
+function installLinks(){hotlink('bjsWhyOverlay');hotlink('legendOverlay');hotlinkOneBite('bjsWhyOverlay');}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installLinks);else installLinks();
 setInterval(installLinks,1500);
 })();</script>
