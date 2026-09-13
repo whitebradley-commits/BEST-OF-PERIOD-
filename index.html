@@ -45225,7 +45225,7 @@ return 'en';
 })();
 var REC_LANG={en:'en-US',fr:'fr-FR',zh:'zh-CN',es:'es-US',ja:'ja-JP',de:'de-DE',it:'it-IT',ko:'ko-KR',pt:'pt-BR',he:'he-IL',sv:'sv-SE'};
 var UI_TEXT={
-en:{askAnything:'ASK ME ANYTHING!',thumbPress:'THUMB. PRESS. SPEAK.',release:'RELEASE.',searching:'Finding your spots\u2026',noMatch:'I couldn\u2019t find anything matching that.',tryExample:'Try something like cheesesteak, or fine dining steak.',bjsSays:'BJS SAYS'},
+en:{askAnything:'ASK ME ANYTHING!',thumbPress:'THUMB. PRESS. SPEAK.',release:'RELEASE.',searching:'Finding your spots\u2026',noMatch:'I couldn\u2019t find that \u2014 this only searches Best of Period approved locations.',tryExample:'Try something like cheesesteak, or fine dining steak.',bjsSays:'BJS SAYS'},
 fr:{askAnything:'DEMANDEZ-MOI TOUT !',thumbPress:'POUCE. APPUYEZ. PARLEZ.',release:'RELÂCHEZ.',searching:'Recherche en cours\u2026',noMatch:'Je n\u2019ai rien trouv\u00e9 qui corresponde.',tryExample:'Essayez par exemple\u00a0: pizza, ou sushi \u00e9l\u00e9gant.',bjsSays:'BJS DIT'},
 zh:{askAnything:'\u6709\u4ec0\u4e48\u5c31\u95ee\u6211\uff01',thumbPress:'\u6309\u4f4f\u62c7\u6307\u3002\u8bf4\u8bdd\u3002',release:'\u677e\u5f00\u3002',searching:'\u6b63\u5728\u4e3a\u60a8\u67e5\u627e\u2026',noMatch:'\u6ca1\u6709\u627e\u5230\u5339\u914d\u7684\u9910\u5385\u3002',tryExample:'\u8bd5\u8bd5\u8bf4\uff1a\u5bff\u53f8\uff0c\u6216\u8005\u9ad8\u6863\u725b\u6392\u3002',bjsSays:'BJS \u8bf4'},
 es:{askAnything:'\u00a1PREG\u00daNTAME LO QUE SEA!',thumbPress:'PULGAR. PRESIONA. HABLA.',release:'SUELTA.',searching:'Buscando tus lugares\u2026',noMatch:'No encontr\u00e9 nada que coincida.',tryExample:'Prueba algo como pizza, o bistec de alta cocina.',bjsSays:'BJS DICE'},
@@ -45720,6 +45720,12 @@ return;
 if(!wantsHours&&!wantsDirs&&!wantsPhone&&typeof window.bopFindRestaurantInText==='function'){
 var looksLikeCuisineSearch=/near\s*me|nearby|close\s*(to\s*me|by)|around\s*(me|here)|walking\s*distance/i.test(text);
 if(!looksLikeCuisineSearch){
+try{
+var cuisineCheck=(typeof parse==='function')?parse(text):null;
+if(cuisineCheck&&cuisineCheck.cats&&cuisineCheck.cats.length>0)looksLikeCuisineSearch=true;
+}catch(cuisineCheckErr){}
+}
+if(!looksLikeCuisineSearch){
 var bareLook=window.bopFindRestaurantInText(text);
 if(bareLook.rec){
 window.__bopLastRestaurant=bareLook.rec;
@@ -45849,7 +45855,7 @@ rows.sort(function(a,b){var sa=Number(pizzaSourceScore(a.r,q.pizzaSource))||0,sb
 }else{
 rows.sort(function(a,b){var ra=Number(a.r.rating)||0,rb=Number(b.r.rating)||0;if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>15)return a.d-b.d;return rb-ra;});
 }
-rows=rows.slice(0,30);
+rows=rows.slice(0,10);
 var chips=[];
 q.labels.forEach(function(l){chips.push('<span class="bop-voice-chip">'+esc(l)+'</span>');});
 if(!q.labels.length&&q.pizzaSource)chips.push('<span class="bop-voice-chip">Pizza</span>');
@@ -45867,7 +45873,7 @@ if(!rows.length){
 if(q.pizzaSource){
 list.innerHTML='<div class="bop-voice-empty">None of the pizza spots have a <strong>'+esc(PIZZA_SOURCE_LABEL[q.pizzaSource])+'</strong> score yet.<br>Try asking just for <strong>\u201cpizza\u201d</strong> and I can still show you the list.</div>';
 }else{
-list.innerHTML='<div class="bop-voice-empty">No matches for that yet.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';
+list.innerHTML='<div class="bop-voice-empty">Nothing yet \u2014 the restaurants you can search for here are only <strong>Best of Period\u00a9 approved locations</strong>, so if it\u2019s not in our system, it won\u2019t turn up.<br>Try something like <strong>\u201ccheesesteak\u201d</strong>, <strong>\u201cfine dining steak\u201d</strong>, or <strong>\u201csushi within an hour\u201d</strong>.</div>';
 }
 return;}
 function renderRows(){
