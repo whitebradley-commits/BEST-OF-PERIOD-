@@ -2904,7 +2904,7 @@ bjsPicksCat: 'bjspickssiliconvalley'
 losangeles: {
 displayName: 'L.A. & O.C.',
 landingName: 'L.A. & O.C.',
-areaList: ['Los Angeles County', 'Orange County'], tickerMessages: ['LOS ANGELES & ORANGE COUNTY', 'YUMMY SOON!'],
+areaList: ['Downtown Los Angeles', 'Hollywood', 'West Hollywood', 'Beverly Hills & Westside', 'Santa Monica & Venice', 'Los Feliz & Silver Lake', 'Highland Park & Eagle Rock', 'San Fernando Valley', 'North Hollywood & Burbank', 'Culver City', 'South Bay & LAX', 'Long Beach', 'Huntington Beach', 'Newport Beach', 'Costa Mesa', 'Irvine', 'Laguna Beach & Dana Point', 'San Juan Capistrano'], tickerMessages: ['LOS ANGELES & ORANGE COUNTY', 'YUMMY SOON!'],
 useNameCycler: true, bjsPicksCat: 'bjspickslosangeles'
 },
 santabarbara: {
@@ -42556,7 +42556,14 @@ if(!list||list.length<2){
 sub.classList.remove('bop-hub-areas-line');
 return;
 }
-var html=list.map(function(a){return '<strong>'+a+'</strong>';}).join(', ');
+var html=list.map(function(a){
+var match=null;
+if(typeof BO_CITY_CONFIG!=='undefined'){
+match=Object.keys(BO_CITY_CONFIG).find(function(k){return BO_CITY_CONFIG[k].displayName===a;});
+}
+if(match)return '<strong class="bop-all-bjs-city-link" role="button" tabindex="0" data-city-key="'+match+'" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;">'+a+'</strong>';
+return '<strong>'+a+'</strong>';
+}).join(', ');
 if(sub.innerHTML!==html){
 sub.innerHTML=html;
 }
@@ -51090,6 +51097,47 @@ return true;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix);else fix();
 setTimeout(fix,600);setTimeout(fix,1600);
+})();</script>
+<script id="bop-weho-buildout-v1">(function(){
+/* 2026-09-12: West Hollywood build-out (partial -- Ardor added, real
+   Michelin-adjacent pick; more to follow across all LA/OC neighborhoods
+   per Brad's directive -- min 6 each, Michelin first then best local
+   picks, 3-source aggregates). */
+function addRow(cat, rec){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+if(boCategoryData[cat].some(function(r){return r&&r.name===rec.name&&r.city===rec.city;}))return;
+rec.rank=boCategoryData[cat].length+1;
+boCategoryData[cat].push(rec);
+}
+addRow('bestof',{
+name:"Ardor",city:'laweho',
+rating:"4.5 / 5",reviews:16,ratingSource:"BJS aggregate: Tripadvisor 4.5 (16 reviews); Restaurant Guru 4.8 (1,470 reviews); Yelp (406 reviews).",
+why:"The West Hollywood EDITION hotel's vegetable-forward New American restaurant \u2014 several reviewers call it Michelin-worthy.",
+note:"Tandoor carrots, dry-aged lamb, and the famous gooseberry phyllo pie dessert with 25-year balsamic are the most-cited dishes.",
+address:"9040 W Sunset Blvd, West Hollywood, CA 90069",phone:"+1 424-310-1197",
+price:4
+});
+})();</script>
+<script id="bop-boa-dedup-v1">(function(){
+/* 2026-09-12: "BOA Steakhouse West Hollywood" and "Boa Steakhouse -- West
+   Hollywood" are the same restaurant (same address, same phone, just
+   different name formatting) duplicated across steakhighend/laweho/
+   losangeles/bestoflaweho -- occupying two of the top slots in West
+   Hollywood's Steak category and burying Dan Tana's. Keep the more
+   complete record ("BOA Steakhouse West Hollywood", 4.6/3,400 reviews)
+   and drop every copy of the other one. */
+function dedupBoa(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))return;
+boCategoryData[cat]=boCategoryData[cat].filter(function(r){
+return !(r&&r.name==='Boa Steakhouse — West Hollywood');
+});
+});
+}
+dedupBoa();
+setTimeout(dedupBoa,600);
+setTimeout(dedupBoa,1600);
 })();</script>
 <script id="bop-vegas-bjspicks-cleanup-v1">(function(){
 /* 2026-09-12: per Brad -- the Vegas bjspicks list ('bjspicks', Vegas's
