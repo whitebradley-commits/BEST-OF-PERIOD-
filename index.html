@@ -9315,7 +9315,7 @@ rank: 12,
 name: "Raising Cane's",
 image: "bop-image-075-baf1227b.webp",
 bjsPick: true,
-bjsPickLabel: "Fast Food",
+bjsPickLabel: "Best Fast Food",
 rating: "4.4 / 5",
 ratingNote: "Aggregate across Menu and Tripadvisor for the Strip flagship location — small individual review counts, but this is our own editorial pick regardless of the raw number.",
 why: "\"The Jackpot\" — Cane's landmark Las Vegas Strip location near MGM Grand, with an Elvis-themed second floor and disco balls",
@@ -10904,7 +10904,13 @@ return found;
 boCategoryData.bjspicks = (() => {
 const byName = new Map();
 const add = (r, cat) => {
-if(!r || !r.name || Number(r.price || 0) < 3) return;
+/* 2026-09-12: this used to require price>=3, which silently dropped
+   genuine, Brad-confirmed BJS Picks that happen to be inexpensive
+   (Freedom Beat's steak & eggs, Raising Cane's fast food pick) from the
+   main Las Vegas BJS Picks page entirely -- not just missing their gold
+   label, missing as cards. BJS Picks are curated regardless of price
+   tier everywhere else on the site, so this gate shouldn't exist here. */
+if(!r || !r.name) return;
 const label = r.bjsPickLabel || BJS_PICK_SOURCE[cat] || null;
 const existing = byName.get(r.name);
 if(existing){
@@ -10952,7 +10958,14 @@ const seen = new Map();
 Object.values(boCategoryData).forEach(list => {
 if(!Array.isArray(list)) return;
 list.forEach(r => {
-if(r && Number(r.price || 0) >= 3 && r.bjsPickCity === 'london' && !seen.has(r.name)) seen.set(r.name, r);
+/* v-sep14: this used to match on bjsPickCity alone, which also matches
+   every "Best Of London Period" category-topper (Blacklock Soho, A. Wong,
+   Gymkhana, etc.) -- those carry bjsPickCity/bjsPickLabel for that
+   highlight-reel feature but were never confirmed as real BJS Picks.
+   Brad confirmed only Fallow is an actual BJS Pick for London. Requiring
+   bjsPick===true (not just bjsPickCity) is what actually separates the
+   two features. */
+if(r && r.bjsPick === true && Number(r.price || 0) >= 3 && r.bjsPickCity === 'london' && !seen.has(r.name)) seen.set(r.name, r);
 });
 });
 const priority = [
@@ -25593,7 +25606,7 @@ directionsUrl:maps(address)},extra||{});
 }
 var V={
 lark:venue('The Lark','https://www.jsfashionista.com/wp-content/uploads/The-Lark-Santa-Barbara7.jpg','131 Anacapa St, Santa Barbara, CA 93101','https://www.thelarksb.com/','A defining Funk Zone dining room for seasonal Central Coast cooking and lively shared plates.',3,{bjsPick:true,bjsPickCity:city,bjsPickLabel:'Affiliate BJS Pick',michelinGuide:true,redCalloutLabel:'Ad STAD — Best Of S.B.',redCallout:'\u201cGo straight to The Lark \u2014 it is always great.\u201d Named for the overnight Pullman train that served Santa Barbara from 1910\u20131968; the dining room anchors the historic Fish Market building with a 24-seat live-edge communal table.'}),
-winecask:venue('Wine Cask','https://images.squarespace-cdn.com/content/v1/5a1ee92b18b27d399650de66/1574803430572-7JWYLYDSTD4AI7KEUO6Q/THS04877-Pano-2.jpg','813 Anacapa St, Santa Barbara, CA 93101','https://www.winecask.com/','A longtime State Street-area institution pairing refined California cooking with a serious wine program.',4,{bjsPick:true,bjsPickCity:city,bjsPickLabel:'Affiliate BJS Pick',redCalloutLabel:'AFFILIATE PICK · S.B. INSTITUTION',redCallout:'A Santa Barbara culinary landmark founded in 1985 inside historic El Paseo. Wine Cask now hosts special events; for regular nightly dining, its sister restaurant Intermezzo is next door.'}),
+winecask:venue('Wine Cask','https://images.squarespace-cdn.com/content/v1/5a1ee92b18b27d399650de66/1574803430572-7JWYLYDSTD4AI7KEUO6Q/THS04877-Pano-2.jpg','813 Anacapa St, Santa Barbara, CA 93101','https://www.winecask.com/','A longtime State Street-area institution pairing refined California cooking with a serious wine program.',4,{redCalloutLabel:'AFFILIATE PICK · S.B. INSTITUTION',redCallout:'A Santa Barbara culinary landmark founded in 1985 inside historic El Paseo. Wine Cask now hosts special events; for regular nightly dining, its sister restaurant Intermezzo is next door.'}),
 stonehouse:venue('The Stonehouse at San Ysidro Ranch','https://i.pinimg.com/originals/c4/6d/92/c46d925e756e182339a551829259d46e.jpg','900 San Ysidro Ln, Montecito, CA 93108','https://www.stonehouserestaurant.com/','A romantic ranch dining room built around garden-driven California cuisine and an exceptional cellar.',4,{bjsPick:true,bjsPickCity:city,bjsPickLabel:'Affiliate BJS Pick',michelinGuide:true,redCalloutLabel:'AFFILIATE LUXURY PICK',redCallout:'Dine inside a 19th-century citrus packing house beside a world-renowned 16,000-bottle wine cellar. Sunday Champagne Brunch and private cellar experiences make this a true Montecito occasion.'}),
 rare:venue('Rare Society Santa Barbara','https://images.squarespace-cdn.com/content/v1/638931dddf47a848a9e6fa5b/bbe0875e-5e50-42bb-a0ce-fa3bbd4677c7/RareSociety3-Restaurant-Bar-SantaBarbara-California-Opulist.jpg','214 State St, Santa Barbara, CA 93101','https://raresociety.com/santa-barbara','A glamorous modern steakhouse centered on dry-aged beef, live fire and shareable boards.',4,{bjsPick:true,bjsPickCity:city,bjsPickLabel:'Affiliate BJS Pick',redCalloutLabel:'AFFILIATE STEAKHOUSE PICK',redCallout:'The steakhouse answer: Rat Pack glamour in the Funk Zone, premium cuts over an open red-oak flame, shareable chef boards and Oyster Monday from 4–6 p.m.'}),
 carusos:venue("Caruso's",'https://www.gernreisen.de/assets/Reiseziele/Rosewood-Miramar-Beach/112233082-H1-RosewoodMiramarBeachCarusosDining.jpg','1759 S Jameson Ln, Montecito, CA 93108','https://www.rosewoodhotels.com/en/miramar-beach-montecito/dining/carusos','Oceanfront Italian fine dining at Rosewood Miramar Beach with precise service and a tasting-menu focus.',4,{michelinGuide:true,michelinStars:1}),
@@ -25683,8 +25696,6 @@ install('dessert',[V.mcconnells]);
 /* Affiliate text selections, each with a stable home category for the
 Return to Category link on the BJS Picks page. */
 install('bjspickssantabarbara',[
-Object.assign({},V.yoichis,{bjsPick:true,bjsFromCat:'sushihighend'}),
-Object.assign({},V.winecask,{bjsPick:true,bjsFromCat:'santabarbara'}),
 Object.assign({},V.lark,{bjsPick:true,bjsFromCat:'jamesbeard'}),
 Object.assign({},V.rare,{bjsPick:true,bjsFromCat:'steakhighend'})
 ]);
@@ -33487,12 +33498,12 @@ ratingNote:"The Infatuation rates it \u201cHigh 8\u201d (great, worth crossing t
 why:"A one-item walk-up counter from the Beverly Hills steakhouse Mat\u016b \u2014 100% grass-fed Wagyu ribeye-and-sirloin cheesesteak with Wagyu-tallow chips",
 note:"Shares a counter and patio with sister spot HiHo Cheeseburger in Pasadena's Playhouse Village. Only two things on the menu: the Wagyu cheesesteak (Cooper Sharp, grilled onions, long hot pepper, sesame roll) and house-made chips fried in Wagyu tallow. Lunch only, 11:30am\u20137pm; lines form right at open. Pricier than a typical cheesesteak (around $24) given the beef. Cheesesteaks are also available at the bar at Mat\u016b in Beverly Hills and Mat\u016b Kai in Brentwood.",
 url:"https://www.matusteak.com/cheesesteaks-by-matu/pasadena/",address:"625B E Colorado Blvd Ste 100, Pasadena, CA 91101",hue:"350, 45%, 26%",price:2}},
-{cats:['chinese'],r:{name:"Jade Rabbit",city:"losangeles",rating:"4.5 / 5",reviews:100,ratingSource:"BJS aggregate",
+{cats:['asianfusion'],r:{name:"Jade Rabbit",city:"losangeles",rating:"4.5 / 5",reviews:100,ratingSource:"BJS aggregate",
 ratingNote:"DoorDash 4.5 (100+ ratings) used as primary source \u2014 Time Out LA separately gave it 4/5 stars. Google star data is not used as a BJS source.",
 why:"A fast-casual Chinese American build-your-own-bowl spot from former Cassia chef Bryant Ng and his wife Kim Luu-Ng \u2014 a culinary homecoming for a chef whose parents and grandparents ran Chinese restaurants in LA",
 note:"Counter-service, Chipotle-style assembly line: pick a base (chow mein, fried rice), two vegetable sides, and a main like beef and broccoli (a lomo saltado-inspired riff), orange-mango chicken, or Sichuan spicy minced lamb. Also scallion garlic cheese toast, Almond Roca chocolate chip cookies, and Cantonese-style lemon iced tea. Combos start around $13. Street parking is tight; there's a small lot in back.",
 specialNote:"You have never had a homemade spring roll w/ cheese like this. And the bowls\u2026 in\u2026credible. Saving the best for last, make sure you ask for the green sauce.",
-url:"https://www.eatjaderabbit.com/",address:"2301 Santa Monica Blvd, Santa Monica, CA 90404",phone:"(424) 441-1416",hue:"140, 35%, 26%",price:1,openedDate:"2024",bjsPick:true,bjsPickCity:"losangeles",bjsPickLabel:"Best Chinese"}},
+url:"https://www.eatjaderabbit.com/",address:"2301 Santa Monica Blvd, Santa Monica, CA 90404",phone:"(424) 441-1416",hue:"140, 35%, 26%",price:1,openedDate:"2024",bjsPick:true,bjsPickCity:"losangeles",bjsPickLabel:"Best Asian Fusion"}},
 {cats:['chinese'],r:{name:"Sichuan Impression",city:"losangeles",rating:"4.2 / 5",reviews:1898,ratingSource:"BJS aggregate",
 ratingNote:"Restaurant Guru 4.2 (1,898 reviews) used as primary source. Tripadvisor 4.5 on only 22 reviews \u2014 too thin to anchor on its own but consistent with the aggregate.",
 why:"Alhambra's Michelin Bib Gourmand Sichuan stalwart \u2014 tea-smoked duck, mapo tofu, and numbing-spicy dry pots that have made LA Times' 101 Best Restaurants list three times",
@@ -45204,29 +45215,17 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(sync()||n>60)clearI
 <script id="bop-la-hotels-bjs-pick-v380">(function(){
 var HOTEL={image:__BOPIMG[20],name:"Chateau Marmont",city:"losangeles",rating:"4.4 / 5",reviews:908,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.0 (696 reviews, #94 of 381 LA hotels), Booking.com 9.1/10 (213 verified guest reviews), and TripExpert 91/100 (Cond\u00e9 Nast Traveler, U.S. News, Gayot, Mr & Mrs Smith) averaged. Michelin Guide Two Keys.",why:"The most storied hotel in America \u2014 a Loire-inspired castle above the Sunset Strip that has hosted nearly every Hollywood legend since 1929",note:"Ratings don't do this old-school, iconic landmark justice, but critics who actually understand it embrace the creaky floors and quirky old-building character \u2014 there's just no denying the feeling you get when the place is buzzing. True Hollywood style — and it comes with a price, since any day of the week at the Chateau could be the biggest night of the year. Bungalows, garden cottages and the famously discreet main house. The BJS pick for hotels across all of L.A.",url:"https://www.chateaumarmont.com/",address:"8221 Sunset Blvd, Los Angeles, CA 90046",phone:"(323) 656-1010",hue:"28, 40%, 26%",price:4,openedDate:"1929",bjsPick:true,bjsPickCity:"losangeles",bjsPickLabel:"BJS Hotel Pick \u2014 Los Angeles",bjsVerified:true,goldApple:true,isHotel:true,redCalloutLabel:"BJS HOTEL PICK",redCallout:"Our single hotel pick for all of Los Angeles. Not the top-rated by the numbers \u2014 chosen for history, privacy, and pure Hollywood mythology."};
 function ensureHotel(){
-if(typeof boCategoryData!=="object"||!boCategoryData)return false;
-var list=boCategoryData.bjspickslosangeles;
-if(!Array.isArray(list))return false;
-var seen={};
-for(var i=list.length-1;i>=0;i--){var k=String(list[i]&&list[i].name||"").toLowerCase();if(seen[k])list.splice(i,1);else seen[k]=1;}
-var already=list.some(function(x){return x&&String(x.name).toLowerCase()==="chateau marmont";});
-if(!already){list.push(Object.assign({},HOTEL));}
-else{var idx=list.findIndex(function(x){return x&&String(x.name).toLowerCase()==="chateau marmont";});if(idx!==list.length-1){var it=list.splice(idx,1)[0];list.push(it);}}
-return true;
+/* 2026-09-12: Brad confirmed hotels (Chateau Marmont) don't belong mixed
+   into the restaurants BJS Picks list -- they have their own dedicated
+   Hotels category (hotelslosangeles, built separately). Disabled the
+   cross-injection into bjspickslosangeles entirely. */
+return false;
 }
 function divider(text,extra){var d=document.createElement('div');d.className='bo-section-divider'+(extra?' '+extra:'');d.innerHTML='<span class="bo-section-divider-title">'+text+'</span>';return d;}
 function injectDividers(){
-if(typeof boCurrentCat==="undefined"||boCurrentCat!=='bjspickslosangeles')return;
-var listEl=document.getElementById('boList');if(!listEl)return;
-if(listEl.querySelector('.bo-section-divider'))return;
-var firstCard=listEl.querySelector('.bo-card');
-if(firstCard)listEl.insertBefore(divider('Restaurants'),firstCard);
-var hotelCard=document.getElementById('bo-card-chateau-marmont');
-if(hotelCard){
-var footerRow=listEl.querySelector('.bo-bottom-tile-row');
-if(footerRow)listEl.insertBefore(hotelCard,footerRow);else listEl.appendChild(hotelCard);
-listEl.insertBefore(divider('Hotels','bo-section-divider-hotels'),hotelCard);
-}
+/* Disabled alongside ensureHotel() above -- no hotel card is injected
+   into this list anymore, so there's nothing to divide. */
+return;
 }
 function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready(function(){
@@ -46803,13 +46802,13 @@ var LONDON = {
 steakhighend:[
 {name:"Hawksmoor Seven Dials",city:"london",rating:"4.6 / 5",reviews:2140,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,410 reviews) and Google 4.6 (730 reviews) averaged.",price:4,address:"11 Langley St, London WC2H 9JG, United Kingdom",phone:"+44 20 7420 9390",why:"The benchmark modern British steakhouse — dry-aged, native-breed beef with a serious wine list",note:"Consistently London's most-cited steak name across review platforms; the Sunday roast and bone marrow sides are as talked about as the steak itself."},
 {name:"Goodman Mayfair",city:"london",rating:"4.5 / 5",reviews:1180,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (760 reviews) and Google 4.6 (420 reviews) averaged.",price:4,address:"26 Maddox St, London W1S 1QH, United Kingdom",phone:"+44 20 7499 3776",why:"A Moscow-founded steakhouse group's London flagship, known for USDA and Scottish beef side by side",note:"Old-school steakhouse room; regulars point to the bone-in ribeye and the black pudding starter."},
-{name:"Blacklock Soho",city:"london",rating:"4.7 / 5",reviews:3400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.6 (2,300 reviews) and Google 4.7 (1,100 reviews) averaged.",price:3,address:"24 Great Windmill St, London W1D 7LG, United Kingdom",phone:"+44 20 3441 6996",bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Chops",why:"BJS Pick — a basement chop-house built around bone-in cuts and an all-in Sunday roast",note:"Famous for the £1-a-chop weekday lunch deal and communal long-table basement room in Soho."}
+{name:"Blacklock Soho",city:"london",rating:"4.7 / 5",reviews:3400,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.6 (2,300 reviews) and Google 4.7 (1,100 reviews) averaged.",price:3,address:"24 Great Windmill St, London W1D 7LG, United Kingdom",phone:"+44 20 3441 6996",bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"A basement chop-house built around bone-in cuts and an all-in Sunday roast",note:"Famous for the £1-a-chop weekday lunch deal and communal long-table basement room in Soho."}
 ],
 steakcasual:[
 {name:"Flat Iron Shoreditch",city:"london",rating:"4.6 / 5",reviews:2650,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (1,600 reviews) and Google 4.6 (900 reviews) averaged.",price:2,address:"7 Rufus St, London N1 6PE, United Kingdom",phone:"",why:"A one-cut, no-booking flat iron steak counter that pushed London's everyday steak prices down",note:"No reservations at most branches; the £13-ish flat iron steak plus free toppings bar is the whole concept."}
 ],
 sushihighend:[
-{name:"Endo at the Rotunda",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:410,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (260 reviews) and Google 4.8 (150 reviews) averaged. One Michelin star.",price:4,address:"101 Queen's Way, London W2 4QH, United Kingdom",phone:"+44 20 3327 8888",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Omakase",why:"BJS Pick — chef Endo Kazutoshi's Michelin-starred counter overlooking Kensington Gardens",why2:null,note:"Whole-fish omakase with rice cooked over binchotan; regularly cited as London's top sushi counter."},
+{name:"Endo at the Rotunda",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:410,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.7 (260 reviews) and Google 4.8 (150 reviews) averaged. One Michelin star.",price:4,address:"101 Queen's Way, London W2 4QH, United Kingdom",phone:"+44 20 3327 8888",photoRequired:true,bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"Chef Endo Kazutoshi's Michelin-starred counter overlooking Kensington Gardens",why2:null,note:"Whole-fish omakase with rice cooked over binchotan; regularly cited as London's top sushi counter."},
 {name:"Roka Mayfair",city:"london",rating:"4.5 / 5",reviews:1890,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (1,100 reviews) and Google 4.6 (620 reviews) averaged.",price:4,address:"30 North Audley St, London W1K 6ZF, United Kingdom",phone:"+44 20 7305 5644",why:"A robata-and-sushi destination that's anchored Mayfair's contemporary Japanese scene for two decades",note:"Known equally for the robata grill and sushi counter; the black cod is a signature order."}
 ],
 sushicasual:[
@@ -46821,12 +46820,12 @@ mexicancasual:[
 {name:"Santo Remedio",city:"london",rating:"4.6 / 5",reviews:980,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (600 reviews) and Google 4.7 (380 reviews) averaged.",price:2,address:"152 Tooley St, London SE1 2TU, United Kingdom",phone:"+44 20 3319 8118",why:"A family-run spot serving regional Mexican dishes well beyond the standard taco menu",note:"Mole and pipián dishes get singled out alongside the more familiar taco and mezcal list."}
 ],
 indian:[
-{name:"Gymkhana",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1560,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (940 reviews) and Google 4.7 (620 reviews) averaged. One Michelin star.",price:4,address:"42 Albemarle St, London W1S 4JH, United Kingdom",phone:"+44 20 3011 5900",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Indian",why:"BJS Pick — Michelin-starred colonial-club styling with game-forward, regionally rooted Indian cooking",note:"The wild muntjac biryani is the most-cited dish; book well ahead for evening tables."},
+{name:"Gymkhana",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1560,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (940 reviews) and Google 4.7 (620 reviews) averaged. One Michelin star.",price:4,address:"42 Albemarle St, London W1S 4JH, United Kingdom",phone:"+44 20 3011 5900",photoRequired:true,bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"Michelin-starred colonial-club styling with game-forward, regionally rooted Indian cooking",note:"The wild muntjac biryani is the most-cited dish; book well ahead for evening tables."},
 {name:"Trishna",city:"london",michelinGuide:true,rating:"4.6 / 5",reviews:870,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (520 reviews) and Google 4.7 (350 reviews) averaged. One Michelin star.",price:4,address:"15-17 Blandford St, London W1U 3DG, United Kingdom",phone:"+44 20 7935 5624",photoRequired:true,why:"Coastal South Indian seafood cooking in a low-key Marylebone dining room",note:"The brown crab with butter and garlic is the dish most reviewers mention first."},
 {name:"Dishoom Covent Garden",city:"london",rating:"4.6 / 5",reviews:4200,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.5 (2,700 reviews) and Google 4.6 (1,500 reviews) averaged.",price:2,address:"12 Upper St Martin's Ln, London WC2H 9FB, United Kingdom",phone:"+44 20 7420 9320",why:"A Bombay café-inspired chain that became one of London's most-visited Indian restaurants",note:"No reservations for most slots; the bacon naan roll and black daal are the standing recommendations."}
 ],
 pakistani:[
-{name:"Tayyabs",city:"london",rating:"4.4 / 5",reviews:5100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (3,200 reviews) and Google 4.5 (1,900 reviews) averaged.",price:1,address:"83-89 Fieldgate St, London E1 1JU, United Kingdom",phone:"+44 20 7247 6400",bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Pakistani Grill",why:"BJS Pick — a Whitechapel institution since 1972, famous for its sizzling lamb chops",note:"BYOB, cash-friendly, and consistently packed; the dry meat and seekh kebabs are as ordered as the chops."},
+{name:"Tayyabs",city:"london",rating:"4.4 / 5",reviews:5100,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (3,200 reviews) and Google 4.5 (1,900 reviews) averaged.",price:1,address:"83-89 Fieldgate St, London E1 1JU, United Kingdom",phone:"+44 20 7247 6400",bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"A Whitechapel institution since 1972, famous for its sizzling lamb chops",note:"BYOB, cash-friendly, and consistently packed; the dry meat and seekh kebabs are as ordered as the chops."},
 {name:"Lahore Kebab House",city:"london",rating:"4.3 / 5",reviews:2900,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (1,700 reviews) and Google 4.5 (1,100 reviews) averaged.",price:1,address:"2-10 Umberston St, London E1 1PY, United Kingdom",phone:"+44 20 7481 9737",why:"One of the original Whitechapel Punjabi grills, open since the 1970s",note:"No-frills canteen room; the karahi dishes and seekh kebab are the long-standing draw."},
 {name:"Needoo Grill",city:"london",rating:"4.3 / 5",reviews:1450,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (860 reviews) and Google 4.5 (520 reviews) averaged.",price:1,address:"87 New Rd, London E1 1HH, United Kingdom",phone:"+44 20 7247 0648",why:"Opened by a former Tayyabs chef, often mentioned in the same breath as its Whitechapel neighbors",note:"Smaller and quieter than Tayyabs with a similar menu; the mutton karahi gets frequent mentions."}
 ]
@@ -46893,12 +46892,12 @@ vegan:[
 {name:"Erpingham House",city:"london",rating:"4.6 / 5",reviews:480,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (280 reviews), Google 4.7 (200 reviews), SquareMeal 4-star rated.",price:3,address:"38-40 Pentonville Rd, London N1 9HW, United Kingdom",phone:"+44 20 3948 9420",why:"An Islington plant-based small-plates restaurant with a set sharing menu format",note:"Tasting-menu-style format built entirely around vegan small plates; booking recommended."}
 ],
 chinese:[
-{name:"A. Wong",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1340,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.6 (760 reviews), Google 4.7 (580 reviews), SquareMeal 4.5-star rated, one Michelin star.",price:4,address:"70 Wilton Rd, London SW1V 1DE, United Kingdom",phone:"+44 20 7828 8931",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Chinese",why:"BJS Pick — chef Andrew Wong's Michelin-starred restaurant spanning regional Chinese cuisines beyond typical Cantonese menus",note:"The dim sum lunch and regional tasting menus are both frequently singled out."},
+{name:"A. Wong",city:"london",michelinGuide:true,rating:"4.7 / 5",reviews:1340,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.6 (760 reviews), Google 4.7 (580 reviews), SquareMeal 4.5-star rated, one Michelin star.",price:4,address:"70 Wilton Rd, London SW1V 1DE, United Kingdom",phone:"+44 20 7828 8931",photoRequired:true,bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"Chef Andrew Wong's Michelin-starred restaurant spanning regional Chinese cuisines beyond typical Cantonese menus",note:"The dim sum lunch and regional tasting menus are both frequently singled out."},
 {name:"Park Chinois",city:"london",rating:"4.4 / 5",reviews:920,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.2 (540 reviews), Google 4.5 (380 reviews), SquareMeal 4-star rated.",price:4,address:"17 Berkeley St, London W1J 8EA, United Kingdom",phone:"+44 20 3327 8888",why:"An opulent Mayfair Chinese restaurant with a supper-club format and live music",note:"A dressier, occasion-driven Chinese dining room rather than a casual option."},
 {name:"Baiwei",city:"london",rating:"4.5 / 5",reviews:610,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.3 (350 reviews), Google 4.6 (260 reviews), SquareMeal 4-star rated.",price:2,address:"81-83 Shaftesbury Ave, London W1D 6LP, United Kingdom",phone:"+44 20 7434 3688",why:"A Chinatown restaurant covering multiple regional Chinese cuisines under one roof",note:"Sichuan and Cantonese dishes both appear on the same menu; a common pick for larger groups."}
 ],
 french:[
-{name:"Core by Clare Smyth",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:380,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.7 (220 reviews), Google 4.8 (160 reviews), SquareMeal 5-star rated, three Michelin stars.",price:4,address:"92 Kensington Park Rd, London W11 2PN, United Kingdom",phone:"+44 20 3937 5086",photoRequired:true,bjsPick:true,bjsPickCity:"london",bjsPickLabel:"BJS Pick — Fine Dining",why:"BJS Pick — chef Clare Smyth's three-Michelin-starred Notting Hill restaurant",note:"British-rooted contemporary fine dining; the potato and roe dish is the most-cited signature."},
+{name:"Core by Clare Smyth",city:"london",michelinGuide:true,rating:"4.8 / 5",reviews:380,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.7 (220 reviews), Google 4.8 (160 reviews), SquareMeal 5-star rated, three Michelin stars.",price:4,address:"92 Kensington Park Rd, London W11 2PN, United Kingdom",phone:"+44 20 3937 5086",photoRequired:true,bjsPickCity:"london",bjsPickLabel:"Best Of London Period",why:"Chef Clare Smyth's three-Michelin-starred Notting Hill restaurant",note:"British-rooted contemporary fine dining; the potato and roe dish is the most-cited signature."},
 {name:"Bouchon Racine",city:"london",rating:"4.6 / 5",reviews:540,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.5 (310 reviews), Google 4.7 (230 reviews), SquareMeal 4.5-star rated.",price:3,address:"66 Cowcross St, London EC1M 6BP, United Kingdom",phone:"+44 20 3696 6710",why:"A Farringdon bistro serving traditional French dishes with an emphasis on classic technique",note:"Menu leans into old-school French bistro cooking rather than modern reinterpretation."},
 {name:"Otto's Restaurant",city:"london",rating:"4.7 / 5",reviews:410,ratingSource:"BJS 4-source aggregate",ratingNote:"Tripadvisor 4.6 (240 reviews), Google 4.8 (170 reviews), SquareMeal 4.5-star rated.",price:4,address:"182 Gray's Inn Rd, London WC1X 8EW, United Kingdom",phone:"+44 20 7713 8268",why:"A Bloomsbury French restaurant known for tableside preparation, including pressed duck",note:"One of the few London restaurants still doing full tableside service and duck press preparations."}
 ]
@@ -51599,7 +51598,9 @@ directionsUrl:"https://www.google.com/maps/search/?api=1&query=2223%20El%20Cajon
 };
 rec.rank=boCategoryData.hotelssandiego.length+1;
 boCategoryData.hotelssandiego.push(rec);
-boCategoryData.bjspickssandiego.push(rec);
+/* 2026-09-12: Brad confirmed hotels don't belong mixed into the
+   restaurants BJS Picks list -- removed the push into bjspickssandiego.
+   The Lafayette stays in its own dedicated hotelssandiego category. */
 }
 })();</script>
 <script id="bop-phovan-v1">(function(){
