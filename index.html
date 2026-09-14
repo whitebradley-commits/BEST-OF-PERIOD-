@@ -12921,7 +12921,7 @@ copy.innerHTML='<h3 class="bo-near-info-name">'+esc(r.name)+'</h3>'+distanceLabe
 '<div class="bo-near-info-category">'+esc(categoryLabel)+'</div>'+
 '<div class="bo-near-info-rating">'+ratingLabel+'</div>'+
 '<div class="bo-near-info-address">'+esc(r.address)+'</div>'+phone+
-'<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS <svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-1px;margin-left:3px" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></a><button id="boNearOpenBestOf" type="button">VIEW RESTAURANT</button></div>'+
+'<div class="bo-near-info-actions"><a href="'+directions+'" target="_blank" rel="noopener">GET DIRECTIONS <svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-1px;margin-left:3px" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></a><button id="boNearOpenBestOf" type="button">VIEW CATEGORY</button></div>'+
 '<div class="bo-near-info-actions" style="margin-top:6px;"><button type="button" style="all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:3px;width:55px;height:31px;background:#0a0a0a;border:1.5px solid #F59E0B;border-radius:6px;color:#F59E0B;font-family:\'Bebas Neue\',sans-serif;font-size:0.72rem;letter-spacing:0.02em;cursor:pointer;animation:bo-send-pulse-glow 2s ease-in-out infinite;" title="Send this restaurant" data-send-restaurant="'+esc(r.name).replace(/"/g,'&quot;')+'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>SEND</button></div>';
 const openBtn=document.getElementById('boNearOpenBestOf');
 if(openBtn) openBtn.addEventListener('click',()=>boOpenRestaurantFromMap(r.cat,r.name),{once:true});
@@ -42632,7 +42632,7 @@ media.innerHTML='<div class="bop-analog-info-placeholder">&#10022;</div>';
 function chip(label,val){return '<div class="bop-analog-info-score"><small>'+label+'</small><strong>'+(val!=null?Number(val).toFixed(1):'\u2014')+'</strong></div>';}
 var phone=r.phone?'<a class="bop-analog-info-phone" href="tel:'+esc(String(r.phone).replace(/[^0-9+]/g,''))+'">'+esc(r.phone)+'</a>':'';
 var directions=r.address?'<a href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(r.address)+'" target="_blank" rel="noopener">GET DIRECTIONS <svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-1px;margin-left:3px" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></a>':'';
-var viewBtn='<button id="bopAnalogInfoViewBtn" type="button">VIEW RESTAURANT</button>';
+var viewBtn='<button id="bopAnalogInfoViewBtn" type="button">VIEW CATEGORY</button>';
 copy.innerHTML='<h3 class="bop-analog-info-name">'+esc(r.name)+'</h3>'+
 '<div class="bop-analog-info-scores">'+chip('BJS',r.bjsPizzaScore)+chip('ONE BITE',r.oneBiteScore)+chip('DAVE',r.oneBiteDaveScore)+'</div>'+
 (r.address?'<div class="bop-analog-info-address">'+esc(r.address)+'</div>':'')+phone+
@@ -48297,6 +48297,14 @@ window.openRestaurant({r:item.r, city:item.cityLabel});
 });
 var chainBtn=el.querySelector('.bo-celeb-chain-btn');
 if(chainBtn)chainBtn.addEventListener('click',function(){
+/* The chain-locations modal renders at a lower z-index than this
+   full-screen chef page (which force-tops itself to 2147483647), so
+   without closing this page first the modal opened invisibly
+   underneath it -- a dead-looking tap. Close this page (and the
+   chef grid behind it, if open) before showing the modal. */
+boCloseCelebOverlay(el, true);
+var grid=document.getElementById('bopCelebChefOverlay');
+if(grid) boCloseCelebOverlay(grid, true);
 if(typeof window.boShowChainLocations==='function')window.boShowChainLocations(chainBtn.dataset.chainId);
 });
 };
@@ -48484,7 +48492,12 @@ var ids=Object.keys(window.CHAIN_LOCATIONS||{});
 var cardsHtml=ids.map(function(id){
 var chain=window.CHAIN_LOCATIONS[id];
 var logoSrc=CHAIN_LOGOS[id]||'';
-var img=logoSrc?'<img src="'+logoSrc+'" alt="" style="max-width:100%;max-height:100%;object-fit:contain;">':'';
+/* Not every chain has a logo image on file (e.g. Jamie's Italian,
+   Bobby's Burgers) -- those rendered as blank tiles at the front of
+   the grid. Fall back to initials, matching the pattern already used
+   in the chain-locations modal below. */
+var initials=chain.label.split(/\s+/).filter(function(w){return /^[A-Za-z]/.test(w);}).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+var img=logoSrc?'<img src="'+logoSrc+'" alt="" style="max-width:100%;max-height:100%;object-fit:contain;">':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#F59E0B;font:900 1.6rem \'Archivo Black\',sans-serif;text-align:center;">'+initials+'</div>';
 return '<button type="button" class="bop-verified-chain-card" data-chain-id="'+id+'" aria-label="'+chain.label+'" style="display:flex;align-items:center;justify-content:center;padding:6px;background:none;border:none;cursor:pointer;width:25%;box-sizing:border-box;aspect-ratio:1;">'+img+'</button>';
 }).join('');
 page.innerHTML='<button type="button" id="bopVerifiedChainsClose" aria-label="Close" style="position:fixed;top:14px;right:14px;z-index:5;width:32px;height:32px;border-radius:50%;border:1.5px solid #F59E0B;background:#000;color:#F59E0B;font-size:15px;font-weight:900;cursor:pointer;">&times;</button>'+
@@ -49849,9 +49862,9 @@ window.addEventListener('popstate',function(){var from=last;setTimeout(function(
 /* Show full chef portraits uncropped — the source photos already sit
    on a matching black background, so contain-fit blends in seamlessly
    instead of cropping faces. */
-#bopCelebChefOverlay .bo-celeb-card{overflow:hidden!important;background:#000!important;padding-top:3px!important;box-sizing:border-box!important}
+#bopCelebChefOverlay .bo-celeb-card{overflow:hidden!important;background:#000!important;box-sizing:border-box!important}
 #bopCelebChefOverlay .bo-celeb-photo{
-  width:100%!important;height:calc(100% - 3px)!important;aspect-ratio:1!important;
+  width:100%!important;height:auto!important;aspect-ratio:1!important;
   object-fit:contain!important;object-position:center center!important;
   transform:none!important;transform-origin:center!important;
   background:#000!important;
