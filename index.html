@@ -44400,6 +44400,69 @@ var w2=document.getElementById('bopWorldwideLanding');if(w2)w2.classList.remove(
 setInterval(ensure,400);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
 })();</script>
+
+<style id="bop-worldwide-onebite-tile-style-v1">
+/* Per request: a ONE BITE tile fills the empty last slot in the Worldwide
+   Bests grid, glowing red to match One Bite's brand color, and opens the
+   Analog Pizza List. */
+#bopWorldwideLanding .bop-world-tile.bop-world-onebite{
+  border-color:#E4002B;
+  background:#070707;
+  color:#E4002B;
+  text-shadow:0 0 6px rgba(228,0,43,.6);
+  box-shadow:0 0 12px rgba(228,0,43,.5),inset 0 0 14px rgba(228,0,43,.1);
+  animation:bopWorldOneBiteGlow 2.6s ease-in-out infinite;
+}
+#bopWorldwideLanding .bop-world-onebite .bop-world-onebite-mark{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:23px;
+  margin:0 auto 9px;
+  border-radius:50%;
+  background:#E4002B;
+  color:#fff;
+  font:900 .4rem 'Archivo Black',sans-serif;
+  line-height:.78;
+  letter-spacing:-.02em;
+  box-shadow:0 0 6px rgba(228,0,43,.75);
+}
+@keyframes bopWorldOneBiteGlow{
+  0%,100%{box-shadow:0 0 8px rgba(228,0,43,.35),inset 0 0 14px rgba(228,0,43,.08)}
+  50%{box-shadow:0 0 18px rgba(228,0,43,.75),inset 0 0 14px rgba(228,0,43,.15)}
+}
+@media (prefers-reduced-motion:reduce){
+  #bopWorldwideLanding .bop-world-tile.bop-world-onebite{animation:none}
+}
+</style>
+<script id="bop-worldwide-onebite-tile-script-v1">(function(){
+function grid(){return document.querySelector('#bopWorldwideLanding .bop-world-tiles');}
+function ensure(){
+var g=grid();if(!g)return;
+var tile=g.querySelector('.bop-world-onebite');
+if(!tile){
+tile=document.createElement('button');
+tile.type='button';
+tile.className='bop-world-tile bop-world-onebite';
+tile.setAttribute('aria-label','Open the Analog Pizza List');
+tile.innerHTML='<span class="bop-world-onebite-mark" aria-hidden="true">ONE<br>BITE</span>ONE<br>BITE';
+g.appendChild(tile);
+}else if(g.lastElementChild!==tile){
+g.appendChild(tile);
+}
+}
+document.addEventListener('click',function(e){
+var t=e.target.closest&&e.target.closest('#bopWorldwideLanding .bop-world-onebite');
+if(!t)return;
+e.preventDefault();e.stopImmediatePropagation();
+var w=document.getElementById('bopWorldwideLanding');if(w)w.classList.remove('open');
+document.body.style.overflow='';
+if(typeof window.boOpenAllPizzaScores==='function')window.boOpenAllPizzaScores();
+},true);
+setInterval(ensure,400);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure);else ensure();
+})();</script>
 <style id="bop-webpopup-blank-fallback-v415">
 #webPopupFallback{position:absolute;left:14px;right:74px;bottom:18px;z-index:6;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1.5px solid #F59E0B;border-radius:12px;background:rgba(5,5,5,.94);box-shadow:0 0 12px rgba(245,158,11,.4)}
 #webPopupFallback.show{display:flex}
