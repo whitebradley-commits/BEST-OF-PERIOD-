@@ -15919,12 +15919,14 @@ if(event.key === 'Enter' || event.key === ' ') openCityJamesBeard(event);
 }
 const restWrap = document.getElementById('boRestWrap');
 const boGateIndex = Math.min(2, sortedEntries.length - 1);
-if(BO_MAIN_CITY_CATS.includes(cat) && i > boGateIndex && restWrap){
+/* Per request (2026-09-15, Brad): remove the "Continue" gate entirely on
+   Best Of pages -- show every ranked entry directly, no click-to-reveal. */
+if(false && BO_MAIN_CITY_CATS.includes(cat) && i > boGateIndex && restWrap){
 restWrap.appendChild(card);
 } else {
 boListEl.appendChild(card);
 }
-if(BO_MAIN_CITY_CATS.includes(cat) && i === boGateIndex && sortedEntries.length > i + 1){
+if(false && BO_MAIN_CITY_CATS.includes(cat) && i === boGateIndex && sortedEntries.length > i + 1){
 const gate = document.createElement('div');
 gate.className = 'bo-continue-wrap';
 gate.id = 'boContinueWrap';
@@ -50726,6 +50728,37 @@ setInterval(strip,400);
 .bop-zone-head{padding-top:150px!important}
 #boNearMapPage .bo-near-bop-header{margin-top:14px!important}
 </style>
+<style id="bop-pin-and-badge-nudge-v2">
+/* Per request (2026-09-15, Brad): pin above the apple-i is still slightly
+   too high on the Worldwide page and a few others -- bring it down more so
+   the gap reads as a tight dot, not a floating mark. Also the BJS CO.
+   badge at the bottom of the WHY orb is now touching the bottom edge --
+   pull it back up off the edge a bit. */
+.bop-period-i-wrap .bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-i-caps .bop-period-apple-i{top:.30em!important}
+#bjsWhyOverlay .bjs-why-orb-text .bjs-why-bottom-badge{margin-bottom:16px!important}
+</style>
+<script id="bop-black-screen-safety-net-v1">(function(){
+/* Per request (2026-09-15, Brad): closing the WHY orb's "Other Leaders"
+   popup was leaving the whole page covered by the QR-bypass Exclusive
+   Invitation gate (#bopExclusiveInvitation, max z-index) -- it re-appeared
+   because the html.bop-qr-bypass-active flag that's supposed to keep it
+   hidden after first bypass was getting dropped somewhere in that close
+   sequence. Force the flag back on whenever either popup closes. */
+function keepInviteBypassed(){
+if(!document.documentElement.classList.contains('bop-qr-bypass-active')){
+document.documentElement.classList.add('bop-qr-bypass-active');
+}
+var invite=document.getElementById('bopExclusiveInvitation');
+if(invite){invite.style.display='none';invite.style.visibility='hidden';invite.style.pointerEvents='none';}
+}
+document.addEventListener('click',function(e){
+var closer=e.target.closest&&e.target.closest('#bjsWhyCloseBtn, #bjsWhyOverlay .bjs-why-close, .bo-other-leaders-close, .bo-other-leaders-back');
+if(!closer)return;
+setTimeout(keepInviteBypassed,60);
+setTimeout(keepInviteBypassed,300);
+},true);
+})();
+</script>
 <script id="bop-london-sd-crosscheck-v1">(function(){
 /* Per request (2026-09-10): first cross-check pass on London + San Diego.
    1) Fill in verified addresses/phones that were missing (The Ledbury,
@@ -53250,8 +53283,9 @@ if(list&&!document.getElementById('bopIceCreamConeCentral')){
 var link=document.createElement('button');
 link.type='button';
 link.id='bopIceCreamConeCentral';
-link.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:10px;width:min(100%,420px);margin:28px auto 10px;padding:14px 18px;border:2px solid #F59E0B;border-radius:14px;background:#070707;color:#F59E0B;font:900 .92rem/1 "Archivo Black",sans-serif;letter-spacing:.03em;text-transform:uppercase;box-shadow:0 0 12px rgba(245,158,11,.42),inset 0 0 14px rgba(245,158,11,.06);cursor:pointer;');
-link.innerHTML=coneIconSVG(26)+'<span>Cone Central</span>';
+link.setAttribute('aria-label','Cone Central \u2014 Ice Cream To Go');
+link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:68px;height:68px;margin:28px auto 10px;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 11px rgba(245,158,11,.06);cursor:pointer;');
+link.innerHTML=coneIconSVG(22)+'<span style="font:900 .32rem/1 \'Archivo Black\',sans-serif;letter-spacing:.04em;color:#F59E0B;white-space:nowrap;" aria-hidden="true">CONE CENTRAL</span>';
 link.addEventListener('click',function(){
 if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecreamtogo');
 });
@@ -53302,6 +53336,68 @@ install({name:"Handel's Homemade Ice Cream \u2014 Irvine",rating:"4.5 / 5",bjsPi
 install({name:"H\u00e4agen-Dazs \u2014 Premium Outlets North",rating:"4.4 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"World's first super-premium ice cream, since 1960.",why:"Premium scoop shop at Las Vegas North Premium Outlets.",note:"Simple ingredients, no artificial colors or flavors \u2014 cups, cones, shakes, sundaes.",address:"855 S Grand Central Pkwy K104, Las Vegas, NV 89106",phone:"(702) 820-3119",url:"https://www.haagendazs.us/"},'bestof');
 install({name:"H\u00e4agen-Dazs \u2014 South Strip",rating:"4.3 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"World's first super-premium ice cream, since 1960.",why:"Premium scoop shop on the South Strip.",note:"Simple ingredients, no artificial colors or flavors \u2014 cups, cones, shakes, sundaes.",address:"3799 S Las Vegas Blvd, Las Vegas, NV 89109",phone:"(702) 597-0688",url:"https://www.haagendazs.us/"},'bestof');
 install({name:"Van Leeuwen \u2014 East Village",rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 1,200 photos, 1,097 reviews at this location.",why:"Started as a yellow food truck on NYC streets in 2008; French-style base with double the usual egg yolks.",note:"To-go scoop shop, dairy and vegan options both.",address:"48\u00bd E 7th St, New York, NY 10003",phone:"(646) 476-3865",url:"https://vanleeuwenicecream.com/"},'manhattan');
+install({name:"Handel's Homemade Ice Cream \u2014 Los Feliz",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"Los Feliz, Los Angeles, CA",phone:"",url:"https://handelsicecream.com/"},'lalosfelizsilverlake');
+install({name:"Handel's Homemade Ice Cream \u2014 Northridge",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"Northridge, CA",phone:"",url:"https://handelsicecream.com/"},'lavalley');
+install({name:"Handel's Homemade Ice Cream \u2014 San Pedro",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"San Pedro, Los Angeles, CA",phone:"",url:"https://handelsicecream.com/"},'lasouthbaylax');
+install({name:"Handel's Homemade Ice Cream \u2014 Santee",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"Santee, CA",phone:"",url:"https://handelsicecream.com/"},'sdeastcounty');
+install({name:"Handel's Homemade Ice Cream \u2014 San Clemente",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"San Clemente, CA",phone:"",url:"https://handelsicecream.com/"},'lasanjuancapistrano');
+install({name:"Handel's Homemade Ice Cream \u2014 San Marcos",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"San Marcos, CA",phone:"",url:"https://handelsicecream.com/"},'sdcarlsbad');
+install({name:"Handel's Homemade Ice Cream \u2014 Highland Park / Pasadena",rating:"4.5 / 5",bjsPick:true,price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"BJS PICK \u2014 small-batch, made-daily since 1945.",note:"To-go scoop counter, nothing more.",address:"Pasadena, CA",phone:"",url:"https://handelsicecream.com/"},'lahighlandpark');
+install({name:"Jeni's Splendid Ice Creams \u2014 Los Feliz",rating:"4.5 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Yelp: 2,028 photos, 1,086 reviews at this location.",why:"Nashville-born, now national; known for a distinctive, ultra-smooth base recipe.",note:"To-go scoop shop, nothing more.",address:"1954 Hillhurst Ave, Los Angeles, CA 90027",phone:"(323) 928-2668",url:"https://jenis.com/"},'lalosfelizsilverlake');
+install({name:"Jeni's Splendid Ice Creams \u2014 Lower East Side",rating:"4.4 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"Nashville-born, now national; known for a distinctive, ultra-smooth base recipe.",note:"To-go scoop shop, nothing more.",address:"196 Stanton St, New York, NY 10002",phone:"",url:"https://jenis.com/"},'manhattan');
+install({name:"Salt & Straw \u2014 Arts District",rating:"4.6 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 2,249 photos, 1,365 reviews at this location.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors.",note:"To-go scoop counter, nothing more.",address:"829 E 3rd St, Los Angeles, CA 90013",phone:"(213) 988-7070",url:"https://saltandstraw.com/"},'ladowntown');
+install({name:"Salt & Straw \u2014 West Hollywood",rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors.",note:"To-go scoop counter, nothing more.",address:"8949 Santa Monica Blvd, West Hollywood, CA 90069",phone:"",url:"https://saltandstraw.com/"},'laweho');
+install({name:"Salt & Straw \u2014 Culver City",rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate surfaced this pass yet.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors.",note:"To-go scoop counter, nothing more.",address:"9300 Culver Blvd, Culver City, CA 90232",phone:"",url:"https://saltandstraw.com/"},'laculvercity');
+install({name:"Van Leeuwen \u2014 Fairfax",rating:"4.4 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 124 photos, 90 reviews at this location.",why:"Started as a yellow food truck on NYC streets in 2008; French-style base with double the usual egg yolks.",note:"To-go scoop shop, dairy and vegan options both.",address:"420 N Fairfax Ave, Los Angeles, CA 90036",phone:"(718) 701-1630",url:"https://vanleeuwenicecream.com/"},'lahollywood');
+install({name:"Salt & Straw \u2014 Fillmore",rating:"4.6 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 2,141 photos, 1,259 reviews at this location.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors.",note:"To-go scoop counter, nothing more.",address:"2201 Fillmore St, San Francisco, CA 94115",phone:"(415) 829-2803",url:"https://saltandstraw.com/"},'sanfrancisco');
+install({name:"Salt & Straw \u2014 Hayes Valley",rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 1,527 photos, 934 reviews at this location.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors.",note:"To-go scoop counter, nothing more.",address:"586 Hayes St, San Francisco, CA 94102",phone:"(415) 549-7445",url:"https://saltandstraw.com/"},'sanfrancisco');
+install({name:"Salt & Straw \u2014 One Paseo",rating:"4.6 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Provisional \u2014 no aggregate star surfaced this pass; strong qualitative reviews on Tripadvisor.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors. San Diego's second location.",note:"To-go scoop counter in One Paseo, Carmel Valley, nothing more.",address:"3705 Caminito Ct Ste 0580, San Diego, CA 92130",phone:"(858) 345-1792",url:"https://saltandstraw.com/"},'sddelmar');
+install({name:"Salt & Straw \u2014 UTC / La Jolla",rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",ratingNote:"Yelp: 301 photos, 164 reviews at this location.",why:"Portland-born craft scoop shop \u2014 inventive, ingredient-driven flavors. San Diego's third location, opened 2023.",note:"To-go scoop counter at Westfield UTC, nothing more.",address:"4575 La Jolla Village Dr Ste 1150, San Diego, CA 92122",phone:"(619) 952-2008",url:"https://saltandstraw.com/"},'sdlajolla');
+install({name:"Bacio di Latte \u2014 Santa Monica",rating:"4.8 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Yelp 4.8 (63 reviews) at this location.",why:"Italian gelato chain consistently rated among LA's best \u2014 4.7\u20134.8 across multiple locations.",note:"To-go gelato counter, nothing more.",address:"Santa Monica, CA",phone:"",url:"https://baciodilatteusa.com/"},'lasantamonicavenice');
+install({name:"Bacio di Latte \u2014 Brentwood",rating:"4.7 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Yelp 4.7 (116 reviews) at this location.",why:"Italian gelato chain consistently rated among LA's best \u2014 4.7\u20134.8 across multiple locations.",note:"To-go gelato counter, nothing more.",address:"Brentwood, Los Angeles, CA",phone:"",url:"https://baciodilatteusa.com/"},'labeveryhillswestside');
+install({name:"Bacio di Latte \u2014 West Hollywood",rating:"4.8 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Yelp 4.8 (98 reviews) at this location.",why:"Italian gelato chain consistently rated among LA's best \u2014 4.7\u20134.8 across multiple locations.",note:"To-go gelato counter, nothing more.",address:"West Hollywood, CA",phone:"",url:"https://baciodilatteusa.com/"},'laweho');
+install({name:"Milkcow \u2014 Tivoli Village",rating:"4.5 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Yelp: 394 photos, 194 reviews at this location. \"Absolutely the best soft serve in Las Vegas\" per repeat reviewers.",why:"South Korean premium soft-serve brand, founded 2013, now in 15+ countries.",note:"To-go soft-serve counter \u2014 milk-and-honey base, matcha, ube, honeycomb toppings.",address:"400 S Rampart Blvd Ste 140, Las Vegas, NV 89145",phone:"(725) 500-6677",url:"https://milkcownv.com/"},'bestof');
+install({name:"La Paleta",rating:"4.9 / 5",price:1,ratingSource:"BJS aggregate",ratingNote:"4.9 (159 reviews) per Chamber of Commerce listing; Yelp shows 313 photos, 267 reviews. Repeatedly named Vegas's top paleteria.",why:"Highest-rated paleteria in Las Vegas \u2014 family-run, everything homemade.",note:"To-go Mexican paletas and helados \u2014 taro, coconut, fresas y crema, tamarind, and more, all made in-house.",address:"5651 S Grand Canyon Dr Ste 140, Las Vegas, NV 89148",phone:"(725) 204-7503",url:"https://lapaletalv.com/"},'bestof');
+install({name:"Bobboi Natural Gelato \u2014 Little Italy",rating:"4.8 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"5.0 (139 reviews) / 4.8 (197 reviews) across Yelp snapshots \u2014 repeatedly named San Diego's highest-rated gelato.",why:"Highest-rated gelato in San Diego \u2014 natural, organic ingredients, vegan options.",note:"To-go gelato counter, nothing more \u2014 flavors like Baci, dragon lemon, double chocolate sorbet.",address:"2175 Kettner Blvd, San Diego, CA 92101",phone:"(858) 214-8240",url:"https://bobboigelato.com/"},'sddowntown');
+install({name:"Bobboi Natural Gelato \u2014 La Jolla Cove",rating:"4.8 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Same brand as the top-rated Little Italy location; San Diego's second Bobboi location.",why:"Highest-rated gelato in San Diego \u2014 natural, organic ingredients, vegan options.",note:"To-go gelato counter at La Jolla Cove, nothing more.",address:"La Jolla Cove, San Diego, CA 92037",phone:"",url:"https://bobboigelato.com/"},'sdlajolla');
+install({name:"Holy Paleta \u2014 Little Italy",rating:"4.7 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"Repeatedly ranked #1 in San Diego paletas/paleteria lists.",why:"San Diego's top-rated paleteria, opened 2018.",note:"To-go Mexican paletas, customizable with chocolate drizzle, Oreo crumbs and more \u2014 plus house-churned ice cream.",address:"2040 India St, San Diego, CA 92101",phone:"(619) 915-5366",url:"https://www.holypaleta.com/"},'sddowntown');
+install({name:"North Park Creamery",rating:"4.8 / 5",price:2,ratingSource:"BJS aggregate",ratingNote:"4.8 (131-169 reviews) across multiple sources; repeatedly named San Diego's top soft serve.",why:"San Diego's highest-rated soft serve \u2014 the only spot locals say does vegan soft serve right.",note:"To-go soft-serve counter \u2014 Straus Organic base, dipped cones, vegan options, rotating flavors.",address:"3077 University Ave, San Diego, CA 92104",phone:"(619) 228-9088",url:"https://www.northparkcreamery.com/"},'sduptown');
+})();
+</script>
+<script id="bop-dessert-vs-togo-split-v1">(function(){
+if(typeof boCategoryData==='undefined')return;
+/* Per request (2026-09-15, Brad): differentiate sit-down dessert restaurants
+   from walk-up/counter-only ice cream & frozen treat spots. MYKA is a
+   walk-up gelato-style counter with no seating anywhere -- move every MYKA
+   record out of 'dessert' and into 'icecreamtogo' only, so the two lists
+   stop overlapping. Add Serendipity 3 (genuine full-service, waiters,
+   reservations) to NYC's sit-down dessert list as a clear contrast case. */
+if(Array.isArray(boCategoryData.dessert)){
+var moved=boCategoryData.dessert.filter(function(r){return r&&r.name&&r.name.toLowerCase().indexOf('myka')>-1;});
+boCategoryData.dessert=boCategoryData.dessert.filter(function(r){return !(r&&r.name&&r.name.toLowerCase().indexOf('myka')>-1);});
+if(!Array.isArray(boCategoryData.icecreamtogo))boCategoryData.icecreamtogo=[];
+moved.forEach(function(r){
+var exists=boCategoryData.icecreamtogo.some(function(x){return x&&x.name===r.name&&x.city===r.city;});
+if(!exists)boCategoryData.icecreamtogo.push(r);
+});
+}
+if(Array.isArray(boCategoryData.dessert)){
+var hasSerendipity=boCategoryData.dessert.some(function(r){return r&&r.name&&r.name.indexOf('Serendipity')>-1&&r.city==='manhattan';});
+if(!hasSerendipity){
+boCategoryData.dessert.push({
+name:"Serendipity 3",city:'manhattan',rating:"4.5 / 5",price:3,ratingSource:"BJS aggregate",
+ratingNote:"Yelp: 6,066 photos, 5,218 reviews at the Upper East Side flagship.",
+why:"The Upper East Side institution behind the world-famous Frrrozen Hot Chocolate, open since 1954.",
+note:"Full table service, reservations, a per-person minimum \u2014 sundaes, pies, cakes, burgers and the signature Frrrozen Hot Chocolate. A genuine sit-down dessert restaurant, not a counter.",
+address:"225 E 60th St, New York, NY 10022",phone:"",url:"https://www.serendipity3.com/",openedDate:"1954"
+});
+}
+}
+})();
+</script>
+<script id="bop-icecreamtogo-subtitle-v2">(function(){
+if(typeof boHeroCopy==='undefined'||!boHeroCopy.icecreamtogo)return;
+boHeroCopy.icecreamtogo.sub='Scoop counters and walk-up spots mainly \u2014 ice cream, gelato, frozen yogurt, soft serve, sorbet, paletas and shaved ice.';
 })();
 </script>
 </body></html>
