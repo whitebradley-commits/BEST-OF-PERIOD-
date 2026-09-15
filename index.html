@@ -53717,4 +53717,109 @@ url:"https://raresociety.com/"}
 newRareSociety.forEach(function(r){if(!has(steakhighend,r.name))steakhighend.push(r);});
 })();
 </script>
+<script id="bop-brooklyn-pizza-onebite-fill-v1">(function(){
+/* Per request (2026-09-15, Brad): cross-checked Brooklyn pizza entries --
+   6 of 7 were missing both One Bite and Dave scores entirely (only
+   L'industrie Pizzeria had one). Filled in real, verified scores from
+   onebite.app directly. Joe's Pizza (Bedford Ave location specifically)
+   has not been personally scored by Dave yet on that app -- only its
+   community score exists, so no Dave number is added for it. Still
+   outstanding: Lucky Charlie and Little Pizza Parlor -- could not
+   confirm their One Bite listings yet. */
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+var n=0;var t=setInterval(function(){
+n++;
+if(typeof boCategoryData!=='undefined'&&Array.isArray(boCategoryData.pizza)){
+var FIXES={
+"Juliana's":{oneBiteDaveScore:6.9,oneBiteScore:8.2,oneBiteReviews:134},
+"Joe's Pizza \u2014 Williamsburg":{oneBiteScore:7.7,oneBiteReviews:120},
+"Lucali":{oneBiteDaveScore:9.3},
+"Di Fara Pizza":{oneBiteDaveScore:9.4}
+};
+boCategoryData.pizza.forEach(function(r){
+if(r&&r.city==='brooklyn'&&FIXES[r.name]){
+Object.assign(r,FIXES[r.name]);
+}
+});
+clearInterval(t);
+}
+if(n>40)clearInterval(t);
+},300);
+});
+})();
+</script>
+<script id="bop-brooklyn-manhattan-onebite-fill-v2">(function(){
+/* Per request (2026-09-15, Brad): continuing the One Bite/Dave cross-check
+   into Brooklyn (finishing Lucky Charlie + Little Pizza Parlor) and
+   Manhattan. All four confirmed real via onebite.app -- none have been
+   personally visited by Dave yet (an accurate state, not a bug), but all
+   have real Community scores that were previously missing entirely. */
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+var n=0;var t=setInterval(function(){
+n++;
+if(typeof boCategoryData!=='undefined'&&Array.isArray(boCategoryData.pizza)){
+var FIXES={
+"Lucky Charlie":{oneBiteScore:8.9,oneBiteReviews:21,city:"brooklyn"},
+"Little Pizza Parlor":{oneBiteScore:8.2,oneBiteReviews:27,city:"brooklyn"},
+"L'industrie Pizzeria \u2014 West Village":{oneBiteScore:8.8,oneBiteReviews:62,city:"manhattan"},
+"Una Pizza Napoletana":{oneBiteScore:8.4,oneBiteReviews:25,city:"manhattan"}
+};
+boCategoryData.pizza.forEach(function(r){
+var fx=FIXES[r.name];
+if(r&&fx&&r.city===fx.city){
+r.oneBiteScore=fx.oneBiteScore;
+r.oneBiteReviews=fx.oneBiteReviews;
+}
+});
+clearInterval(t);
+}
+if(n>40)clearInterval(t);
+},300);
+});
+})();
+</script>
+<script id="bop-sandiego-onebite-fill-v1">(function(){
+/* Per request (2026-09-15, Brad): continuing the One Bite/Dave cross-check
+   into San Diego. All confirmed real via onebite.app -- none personally
+   visited by Dave yet, but real Community scores now filled in where they
+   were previously missing entirely. */
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){
+var n=0;var t=setInterval(function(){
+n++;
+if(typeof boCategoryData!=='undefined'&&Array.isArray(boCategoryData.pizza)){
+var FIXES={
+"Regents Pizzeria":{oneBiteScore:7.5,oneBiteReviews:39,city:"sdlajolla"},
+"Luigi's at the Beach":{oneBiteScore:6.5,oneBiteReviews:19,city:"sdpacificbeach"},
+"Pizzeria Luigi":{oneBiteScore:7.7,oneBiteReviews:29,city:"sdsouthpark"},
+"Filippi's Pizza Grotto \u2014 Little Italy":{oneBiteScore:6.9,oneBiteReviews:34,city:"sddowntown"},
+"Bongiorno's New York Pizzeria":{oneBiteScore:7.9,oneBiteReviews:33,city:"sddelmar"}
+};
+boCategoryData.pizza.forEach(function(r){
+var fx=FIXES[r.name];
+if(r&&fx&&r.city===fx.city){
+r.oneBiteScore=fx.oneBiteScore;
+r.oneBiteReviews=fx.oneBiteReviews;
+}
+});
+clearInterval(t);
+}
+if(n>40)clearInterval(t);
+},300);
+});
+})();
+</script>
+<script id="bop-pizzeria-luigi-fix-v1">(function(){
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+function apply(){
+if(typeof boCategoryData==='undefined'||!Array.isArray(boCategoryData.pizza))return false;
+var r=boCategoryData.pizza.find(function(x){return x&&x.name==='Pizzeria Luigi'&&x.city==='sdsouthpark';});
+if(r){r.oneBiteScore=7.7;r.oneBiteReviews=29;return true;}
+return false;
+}
+ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>40)clearInterval(t);},300);});
+})();
+</script>
 </body></html>
