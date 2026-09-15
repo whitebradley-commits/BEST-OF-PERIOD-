@@ -50818,30 +50818,31 @@ setInterval(strip,400);
 .bobb-threes-s{font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:clamp(1.3rem,6vw,2.3rem);margin-left:.02em;margin-top:.12em}
 .bobb-threes-caption{margin:2px auto 0;text-align:center;color:#9a9a9a;font-family:'Archivo Narrow',sans-serif;font-size:.62rem;letter-spacing:.04em}
 </style>
-<script id="bop-black-screen-safety-net-v1">(function(){
-/* Per request (2026-09-15, Brad): the QR-bypass Exclusive Invitation gate
-   (#bopExclusiveInvitation, max z-index) keeps resurfacing on top of
-   OTHER things too, not just the WHY orb close path this was originally
-   written for -- most recently it covered the "Tell Dave" modal entirely
-   (modal opened and locked page scroll underneath, but was invisible
-   behind the invitation gate, so the page felt stuck with no way to
-   close or scroll). Rather than patch every individual trigger, this now
-   runs continuously in the background and on every click, so the
-   invitation can never silently cover anything again. */
-function keepInviteBypassed(){
-if(!document.documentElement.classList.contains('bop-qr-bypass-active')){
-document.documentElement.classList.add('bop-qr-bypass-active');
-}
+<script id="bop-black-screen-safety-net-v2">(function(){
+/* Per request (2026-09-15, Brad): correcting my own earlier mistake here.
+   The previous version of this fix kept forcing html.bop-qr-bypass-active
+   on (every click, every second) to stop the Exclusive Invitation gate
+   from covering things like the Tell Dave modal. But that class isn't a
+   narrow "suppress the invitation" flag -- it's a much bigger switch
+   (html.bop-qr-bypass-active body>*{display:none!important}) that hides
+   EVERYTHING on the page except specific QR check-in screens, with its
+   own "heal if stuck" logic elsewhere in the code that turns it back off
+   during normal navigation. Forcing it on that often was fighting that
+   legitimate code constantly -- on then off then on again -- which is
+   exactly what was causing the site-wide flicker Brad reported. Fixed
+   narrowly instead: just keep the invitation gate itself hidden
+   directly, never touch the QR-bypass class. */
+function hideInvite(){
 var invite=document.getElementById('bopExclusiveInvitation');
 if(invite){invite.style.display='none';invite.style.visibility='hidden';invite.style.pointerEvents='none';}
 }
-keepInviteBypassed();
+hideInvite();
 document.addEventListener('click',function(){
-keepInviteBypassed();
-setTimeout(keepInviteBypassed,60);
-setTimeout(keepInviteBypassed,300);
+hideInvite();
+setTimeout(hideInvite,60);
+setTimeout(hideInvite,300);
 },true);
-setInterval(keepInviteBypassed,1000);
+setInterval(hideInvite,1000);
 })();
 </script>
 <script id="bop-london-sd-crosscheck-v1">(function(){
