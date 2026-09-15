@@ -24000,8 +24000,18 @@ newyork:['rao’s',"rao's",'peter luger steak house'],
 sandiego:['pho hoa']
 };
 var groups=[];
+/* Per request (2026-09-15, Brad): San Diego, LA, and New York are county-
+   wide umbrellas over their real neighborhoods now (La Jolla, Beverly
+   Hills, Manhattan, etc.) and are not supposed to carry their own BJS
+   Picks column here -- this page was still discovering picks for them by
+   scanning every record site-wide for a matching bjsPickCity/city tag,
+   independent of the umbrella arrays already cleared elsewhere. Excluding
+   these three owner keys outright so they can never form a group again,
+   regardless of what any individual record is tagged with. */
+var EXCLUDED_UMBRELLA_OWNERS=['sandiego','losangeles','newyork'];
 Object.keys(boCategoryData).filter(function(cat){return typeof isBjsPicksCat==='function'&&isBjsPicksCat(cat);}).forEach(function(cat){
 var ownerKey=typeof BO_CITY_CONFIG==='undefined'?'bestof':(Object.keys(BO_CITY_CONFIG).find(function(k){return BO_CITY_CONFIG[k]&&BO_CITY_CONFIG[k].bjsPicksCat===cat;})||'bestof');
+if(EXCLUDED_UMBRELLA_OWNERS.indexOf(ownerKey)>-1)return;
 var candidates=(boCategoryData[cat]||[]).slice();
 /* An editorial marker is authoritative wherever the record lives. This
 lets a pick remain in its cuisine list while still appearing here. */
@@ -24024,7 +24034,7 @@ if(!item||!item.name||seen.has(key))return false;seen.add(key);return true;
 if(picks.length)groups.push({city:cityForCategory(cat),cityKey:cityKeyForCategory(cat),picks:picks});
 });
 groups.sort(function(a,b){return a.city.localeCompare(b.city);});
-var appleSvg='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/><path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+var appleSvg='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/></svg>';
 var restaurantsHTML=groups.map(function(group){
 return '<section class="bop-all-bjs-group"><h3 class="bop-all-bjs-city bop-all-bjs-city-link" role="button" tabindex="0" data-city-key="'+esc(group.cityKey)+'">'+esc(group.city)+'</h3><ol class="bop-all-bjs-list">'+group.picks.map(function(item,i){var derived=(typeof getBjsPickCategoryLabels==='function')?getBjsPickCategoryLabels(item):[];
 var sources=(derived.length?derived:(item.bjsSources||[])).join(' · ');return '<li class="bop-all-bjs-item bop-all-bjs-tap" data-pick-name="'+esc(item.name)+'" data-pick-city="'+esc(item.city||item.bjsPickCity||'')+'" role="button" tabindex="0"><span class="bop-all-bjs-num">'+String(i+1).padStart(2,'0')+'</span><span class="bop-all-bjs-name">'+esc(item.name)+(sources?'<small class="bop-all-bjs-source">'+esc(sources)+'</small>':'')+'</span></li>';}).join('')+'</ol></section>';
@@ -34017,13 +34027,13 @@ neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}}
 ];
 LITTLEITALY_SD_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
 var SHUNLEE_ROWS=[
-{cats:['chinese'],r:{name:"Shun Lee Palace",city:"newyork",rating:"4.3 / 5",reviews:1690,ratingSource:"OpenTable",
+{cats:['chinese'],r:{name:"Shun Lee Palace",city:"manhattan",rating:"4.3 / 5",reviews:1690,ratingSource:"OpenTable",
 ratingNote:"OpenTable 4.2\u20134.5 (1,680\u20131,702 reviews); two more sources pending per standard \u2014 provisional.",
 why:"Michael Tong's Midtown East institution since 1965 \u2014 the first Chinese restaurant in America to earn four stars from The New York Times' Craig Claiborne.",
 note:"General Tso's Chicken, Crisp Sea Bass Hunan Style, and Crisp Orange-Flavored Beef were all introduced or refined here by Chef Wang. Adam Tihany-designed dining room, two private rooms for up to 30 guests, and a legacy as one of the city's defining upscale Chinese tables.",
 redCalloutLabel:"BJS TIP",redCallout:"\u201cBlue Horseshoe loves Shun Lee.\u201d \u2014 GG",
 url:"http://www.shunlee-palace.com/",address:"155 E 55th St, New York, NY 10022",phone:"(212) 371-8844",hue:"5, 45%, 28%",price:3,
-bjsPick:true,bjsPickCity:"newyork",bjsPickLabel:"BJS Pick \u2014 Chinese",goldApple:true,xrefAliases:["Shun Lee"]}}
+bjsPick:true,bjsPickCity:"manhattan",bjsPickLabel:"BJS Pick \u2014 Chinese",goldApple:true,xrefAliases:["Shun Lee"]}}
 ];
 SHUNLEE_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
 var NYC_CHINESE_ROWS=[
@@ -44014,8 +44024,8 @@ else{var n=0,t=setInterval(function(){n++;if(install()||n>40)clearInterval(t);},
 <button type="button" class="bobb-close" id="bopBestOfBestClose">←<br>Back</button>
 <div class="bobb-shell">
 <h1 class="bobb-title"><span class="bobb-l1">Best Of</span><span class="bobb-l2">Best Of</span><span class="bobb-l3">Period</span></h1>
-<div class="bobb-sub">TOP THREES</div>
-<div class="bobb-sub2">WORLDWIDE</div>
+<div class="bobb-threes-mark"><span class="bobb-threes-num">3</span><span class="bobb-threes-comma">,</span><span class="bobb-threes-s">s</span></div>
+<div class="bobb-threes-caption">*Top three rated restaurants worldwide</div>
 <div class="bobb-rule"></div>
 <div id="bopBestOfBestList"></div>
 </div>
@@ -46413,9 +46423,17 @@ var max=mentions.length?Math.max.apply(null,mentions):0;
 var sum=mentions.reduce(function(a,b){return a+b;},0);
 return Math.max(max,sum>=1000?sum:0);
 })();
-var isVerified=isGold||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard||r.bjsVerified||(Number.isFinite(vRating)&&vRating>=4.4&&reviewCount>=1000);
+/* Per request (2026-09-15, Brad): this copy of the verification rule
+   never got the same fix as the main site cards -- it still required
+   1,000+ combined reviews on top of the 4.4+ rating, a stricter bar that
+   was already dropped everywhere else. Matches the main grid now: any
+   4.4+ rating alone earns the checkmark, review count no longer gates it. */
+var isVerified=isGold||(Number.isFinite(r.michelinStars)&&r.michelinStars>0)||r.jamesBeard||r.bjsVerified||(Number.isFinite(vRating)&&vRating>=4.4);
 var appleFill=isGold?'#F59E0B':'#000';
-var appleCheck=isVerified?'<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>':'';
+/* Per request (2026-09-15, Brad): a gold apple is already the top tier --
+   it should never also carry a checkmark inside it. Checkmark only
+   applies to the plain "verified" tier, not gold. */
+var appleCheck=(isVerified&&!isGold)?'<path d="M8.3 13.2L10.3 15.2L15.7 9.5" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>':'';
 var appleBadge='<span class="bop-voice-apple" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="'+appleFill+'" stroke="#F59E0B" stroke-width="1.1"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#F59E0B" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#F59E0B"/>'+appleCheck+'</svg></span>';
 /* Pizza-only: BJS, One Bite, and Dave scores in miniature next to the
    rating, matching the trio already shown on the full pizza scorecard
@@ -50776,6 +50794,24 @@ setInterval(strip,400);
 .bop-period-i-wrap .bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-i-caps .bop-period-apple-i{top:.30em!important}
 #bjsWhyOverlay .bjs-why-orb-text .bjs-why-bottom-badge{margin-bottom:16px!important}
 </style>
+<style id="bop-pin-nudge-v3">
+/* Per request (2026-09-15, Brad): .30em went too far the other way -- now
+   touching/overlapping the apple instead of hovering just above it.
+   Splitting the difference between the original .16em (too high) and
+   .30em (too low, touching). */
+.bop-period-i-wrap .bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-i-caps .bop-period-apple-i{top:.22em!important}
+</style>
+<style id="bop-bobb-threes-mark-v1">
+/* Per request (2026-09-15, Brad): replace the "TOP THREES / WORLDWIDE"
+   text lines under the Best of Best of Period lockup with a single giant
+   gold "3's" mark -- a big 3, a comma, and a small superscript s up in
+   the corner -- plus a tiny asterisk caption underneath. */
+.bobb-threes-mark{display:flex;align-items:flex-start;justify-content:center;margin:-6px auto 0;line-height:.82;color:#F59E0B;text-shadow:0 0 14px rgba(245,158,11,.55),0 0 34px rgba(245,158,11,.24)}
+.bobb-threes-num{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(4.4rem,20vw,7.6rem)}
+.bobb-threes-comma{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(4.4rem,20vw,7.6rem);margin-left:.02em}
+.bobb-threes-s{font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:clamp(1.3rem,6vw,2.3rem);margin-left:.02em;margin-top:.12em}
+.bobb-threes-caption{margin:2px auto 0;text-align:center;color:#9a9a9a;font-family:'Archivo Narrow',sans-serif;font-size:.62rem;letter-spacing:.04em}
+</style>
 <script id="bop-black-screen-safety-net-v1">(function(){
 /* Per request (2026-09-15, Brad): closing the WHY orb's "Other Leaders"
    popup was leaving the whole page covered by the QR-bypass Exclusive
@@ -51457,6 +51493,13 @@ if(typeof window.boShowVerifiedChainsPage==='function')window.boShowVerifiedChai
 }
 </style>
 <style id="bop-golive-pin-fix-v1">#bopGoLiveOverlay .bop-golive-lockup .bop-period-i-wrap .bop-period-apple-i{width:.26em!important;height:.26em!important;top:.11em!important;left:50%!important;transform:translateX(-50%)!important}</style>
+<style id="bop-allbjs-pin-fix-v1">
+/* Per request (2026-09-15, Brad): the All BJS Picks page uses the same
+   .bop-golive-lockup heading style but wasn't covered by the GoLive-only
+   pin fix above, so the pin sat oversized and misaligned over the apple.
+   Same fix, scoped to this page too. */
+#bopAllBjsPicks .bop-golive-lockup .bop-period-i-wrap .bop-period-apple-i{width:.26em!important;height:.26em!important;top:.11em!important;left:50%!important;transform:translateX(-50%)!important}
+</style>
 <style id="bop-coast-label-scroll-lower-v1">.bop-coast-page .bop-map-wrap:after{top:22%!important}.bop-coast-page .bop-map-wrap .bop-map-scroll-cue{top:34%!important}</style>
 <script id="bop-hero-subareas-fit-v1">(function(){
 function fit(el){var maxPx=24,minPx=13;var avail=(el.parentElement?el.parentElement.clientWidth:window.innerWidth)-24;if(avail<80)avail=window.innerWidth-40;el.style.fontSize=maxPx+'px';var px=maxPx;while(px>minPx&&el.scrollWidth>avail){px-=0.5;el.style.fontSize=px+'px';}}
@@ -53531,6 +53574,137 @@ if(bjsCat)boCategoryData[bjsCat]=[];
 }
 clearUmbrellas();
 var n=0;var t=setInterval(function(){n++;clearUmbrellas();if(n>40)clearInterval(t);},300);
+})();
+</script>
+<script id="bop-santabarbara-steak-dedup-v1">(function(){
+/* Per request (2026-09-15, Brad): The Lark, Rare Society Santa Barbara,
+   and The Stonehouse at San Ysidro Ranch were each double-tagged as a BJS
+   Pick in BOTH the bare "steak" category AND their tier-specific one
+   (steakcasual/steakhighend) -- showing redundant labels like "Best
+   Casual Steak - Best Steak" stacked together. Keeping only the more
+   precise tier-specific tag for each; the bare "steak" copy of the record
+   is untouched otherwise, just no longer double-counted as a pick. */
+function dedup(){
+if(typeof boCategoryData==='undefined'||!Array.isArray(boCategoryData.steak))return false;
+var NAMES=['The Lark','Rare Society Santa Barbara','The Stonehouse at San Ysidro Ranch'];
+var hit=false;
+boCategoryData.steak.forEach(function(r){
+if(r&&r.city==='santabarbara'&&NAMES.indexOf(r.name)>-1&&r.bjsPick===true){
+delete r.bjsPick;hit=true;
+}
+});
+return hit;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;dedup();if(n>40)clearInterval(t);},300);});
+})();
+</script>
+<script id="bop-santabarbara-drop-raresociety-pick-v1">(function(){
+/* Per request (2026-09-15, Brad): The Lark, Rare Society Santa Barbara,
+   The Stonehouse at San Ysidro Ranch were all showing as "Best Fine
+   Steak"/"Best Casual Steak" picks with overlap. Brad's decision: The
+   Stonehouse stays as the Best Fine Steak pick, Rare Society is dropped
+   as a pick entirely (still a normal listed restaurant, just not a BJS
+   Pick), The Lark stays as-is for Best Casual Steak. */
+function drop(){
+if(typeof boCategoryData==='undefined')return false;
+var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(r&&r.name==='Rare Society Santa Barbara'&&r.bjsPick===true){
+delete r.bjsPick;hit=true;
+}
+});
+});
+return hit;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;drop();if(n>40)clearInterval(t);},300);});
+})();
+</script>
+<script id="bop-santabarbara-beef-up-v1">(function(){
+/* Per request (2026-09-15, Brad): beef up Santa Barbara's Italian and
+   Mexican categories toward a 6-minimum, matching the site's existing
+   pattern for Best Of/Michelin/James Beard/Steak/Sushi (all already
+   at 6+). Real, verified businesses only. */
+if(typeof boCategoryData==='undefined')return;
+function ensureArr(k){if(!Array.isArray(boCategoryData[k]))boCategoryData[k]=[];return boCategoryData[k];}
+function has(arr,name){return arr.some(function(r){return r&&r.name===name;});}
+
+/* Tag the two Mexican restaurants already on the site (currently only
+   filed under Michelin) into the mexicanfine bucket so they count toward
+   Santa Barbara's Mexican category too -- no duplicate records. */
+var mexicanfine=ensureArr('mexicanfine');
+['Los Agaves','Corazon Cocina'].forEach(function(name){
+var src=boCategoryData.michelin.find(function(r){return r&&r.name===name&&r.city==='santabarbara';});
+if(src&&!has(mexicanfine,name))mexicanfine.push(Object.assign({},src));
+});
+
+/* Three new, real, verified Mexican restaurants. */
+var newMexican=[
+{name:"Santo Mezcal",city:"santabarbara",rating:"4.5 / 5",price:2,
+address:"119 State St, Santa Barbara, CA 93101",phone:"(805) 883-3593",
+why:"Modern Mexican from the Los Agaves team, right on lower State Street.",
+note:"Mezcal-forward cocktails, shrimp empanadas, crab-stuffed enchiladas. From the same group behind Los Agaves.",
+url:"https://santomezcalsb.com/"},
+{name:"La Super-Rica Taqueria",city:"santabarbara",rating:"4.6 / 5",price:1,
+address:"622 N Milpas St, Santa Barbara, CA 93103",phone:"(805) 963-4940",
+why:"A cash-only, no-frills Santa Barbara institution, famously championed by Julia Child.",
+note:"Handmade tortillas, the cheese-stuffed Especial, classic tacos. Lines are part of the experience.",
+url:""},
+{name:"Flor de Maiz",city:"santabarbara",rating:"4.4 / 5",price:2,
+address:"29 E Cabrillo Blvd, Santa Barbara, CA 93101",phone:"(805) 770-2963",
+why:"Oaxacan-inspired waterfront cocktail bar from the Los Agaves group.",
+note:"Mole negro, lobster and fish tacos, an ocean-view patio near East Beach and Stearns Wharf.",
+url:"https://flordemaizsb.com/"}
+];
+newMexican.forEach(function(r){if(!has(mexicanfine,r.name))mexicanfine.push(r);});
+
+/* Four new, real, verified Italian restaurants (Caruso's already on
+   site makes five total). */
+var italianfine=ensureArr('italianfine');
+var newItalian=[
+{name:"Via Maestra 42",city:"santabarbara",rating:"4.5 / 5",price:2,
+address:"3343 State St, Santa Barbara, CA 93105",phone:"(805) 569-6522",
+why:"A cozy, longtime Italian deli-trattoria on upper State Street.",
+note:"Housemade ricotta gnocchi, classic pastas, catering. A back-home, unpretentious room.",
+url:""},
+{name:"Olio e Limone Ristorante",city:"santabarbara",rating:"4.6 / 5",price:3,
+address:"11 W Victoria St Ste 17, Santa Barbara, CA 93101",phone:"(805) 899-2699",
+why:"Chef Alberto Morello's authentic Italian since 1999, with a Sicilian accent.",
+note:"Housemade pasta, New Zealand lamb chops with balsamic reduction, a 230-label wine cellar visible through glass.",
+url:"https://www.olioelimone.com/"},
+{name:"Ca' Dario",city:"santabarbara",rating:"4.5 / 5",price:2,
+address:"37 E Victoria St, Santa Barbara, CA 93101",phone:"(805) 884-9419",
+why:"Authentic Northern Italian since 1997, one of downtown Santa Barbara's original Italian spots.",
+note:"Imported pasta, cheese and olive oil; gluten-free pizza available; a cozy, convivial room.",
+url:"https://www.cadariorestaurants.com/"},
+{name:"Toma Restaurant & Bar",city:"santabarbara",rating:"4.6 / 5",reviews:940,price:3,
+address:"324 W Cabrillo Blvd, Santa Barbara, CA 93101",phone:"(805) 962-0777",
+why:"Waterfront Italian and seafood on the harbor, from a husband-wife team with 65 years in the industry.",
+note:"Channel Islands cioppino, lamb chops, sunset views over the harbor. Santa Barbara casual dress code.",
+url:"https://www.tomarestaurant.com/"}
+];
+newItalian.forEach(function(r){if(!has(italianfine,r.name))italianfine.push(r);});
+
+/* Two new, real, verified Rare Society locations (San Clemente and the
+   new Las Vegas / UnCommons outpost), matching the pattern of the
+   existing Solana Beach and Santa Barbara locations. */
+var steakhighend=ensureArr('steakhighend');
+var newRareSociety=[
+{name:"Rare Society \u2014 San Clemente",city:"lasanjuancapistrano",rating:"4.5 / 5",price:4,
+address:"226 Avenida Del Mar, San Clemente, CA 92672",phone:"(949) 669-7273",
+why:"Chef Brad Wise's retro steakhouse concept, in a beach-town San Clemente setting.",
+note:"Wood-fired, red-oak-grilled steaks, an in-house dry-aging program, a progressive cocktail menu.",
+url:"https://raresociety.com/"},
+{name:"Rare Society \u2014 Las Vegas",city:"bestof",rating:"4.6 / 5",price:4,
+address:"6880 Helen Toland St Ste 100, Las Vegas, NV 89113",phone:"(702) 330-3850",
+why:"The steakhouse group's Las Vegas debut, in the UnCommons development in southwest Vegas.",
+note:"On-premise dry-aging cabinets facing the dining room, wood-fired steaks, a retro Rat Pack-era feel.",
+url:"https://raresociety.com/"}
+];
+newRareSociety.forEach(function(r){if(!has(steakhighend,r.name))steakhighend.push(r);});
 })();
 </script>
 </body></html>
