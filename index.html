@@ -3153,7 +3153,7 @@ hours: [{ days: [1,2,3,4,5,6,0], open: '12:00', close: '15:00' }, { days: [1,2,3
 hue: "10, 50%, 30%", price: 4,
 instagram: null, facebook: null },
 { rank: 3, name: "Komodo Miami", city: 'miami',
-bjsPick: true, bjsPickCity: 'miami', bjsPickLabel: 'Best Of Period',
+
 image: "bop-image-037-8609db7e.webp",
 rating: "4.3",
 ratingNote: "Aggregate across Google (4.5), Menu (3.9, 2.6k reviews), Tripadvisor (4.0, 836 reviews), and Restaurant Guru (4.9) — averaged rather than cherry-picked; reviews are genuinely mixed, with recurring service complaints alongside strongly positive ones.",
@@ -3290,7 +3290,7 @@ hours: [{ days: [1,2,3,4], open: '12:00', close: '22:00' }, { days: [5,6], open:
 hue: "205, 35%, 30%", price: 3,
 instagram: null, facebook: null },
 { rank: 2, name: "Fallow", city: 'london',
-bjsPick: true, bjsPickCity: 'london', bjsPickLabel: 'Best Of Period',
+
 image: "bop-image-040-88c197e9.webp",
 rating: "4.6",
 ratingNote: "Aggregate across Tripadvisor (4.3, 966 reviews, current St James's location), Trip.com (4.7), and Restaurant Guru (5.0) — averaged rather than cherry-picked.",
@@ -6408,9 +6408,7 @@ offStrip: true
 {
 rank: 10,
 name: "Tamba",
-bjsPick: true,
-bjsPickLabel: "Best Of Period",
-bjsPickCity: "bestof",
+
 image: "bop-image-066-6aef8764.webp",
 rating: "4.6 / 5",
 ratingNote: "Rating unverified. The BJS pick rests on institutional recognition, not the star average.",
@@ -10860,17 +10858,37 @@ mexicanbjspick:   'Best Mexican',
 burgersbjspick:   'Best Burger',
 steakeggs:         'Best Steak & Eggs',
 indian:           'Best Indian',
-steakhighend:     'Best Steak',
-steakcasual:      'Best Steak',
+steakhighend:     'Best Fine Steak',
+steakcasual:      'Best Casual Steak',
+steakdive:        'Best Dive Steak',
 steak:            'Best Steak',
-sushicasual:      'Best Sushi',
-sushihighend:     'Best Sushi',
-italianhighend:   'Best Italian',
-mexicanhighend:   'Best Mexican',
+sushicasual:      'Best Casual Sushi',
+sushihighend:     'Best Fine Sushi',
+sushifine:        'Best Fine Sushi',
+italianhighend:   'Best Fine Italian',
+italiancasual:    'Best Casual Italian',
+italiandive:      'Best Dive Italian',
+italianfine:      'Best Fine Italian',
+mexicanhighend:   'Best Fine Mexican',
+mexicanfine:      'Best Fine Mexican',
+mexicancasual:    'Best Casual Mexican',
+mexicandive:      'Best Dive Mexican',
+japanesecasual:   'Best Casual Japanese',
+japanesefine:     'Best Fine Japanese',
+koreancasual:     'Best Casual Korean',
+koreanfine:       'Best Fine Korean',
+frenchfine:       'Best Fine French',
+newamericancasual:'Best Casual New American',
+newamericanfine:  'Best Fine New American',
+seafoodcasual:    'Best Casual Seafood',
+seafoodfine:      'Best Fine Seafood',
+seafoodhighend:   'Best Fine Seafood',
+breakfastcasual:  'Best Casual Breakfast',
+breakfastdive:    'Best Dive Breakfast',
+breakfasthighend: 'Best Fine Breakfast',
 pizza:            'Best Pizza',
 burgers:          'Best Burger',
 dessert:          'Best Dessert',
-breakfastcasual:  'Best Breakfast',
 coffee:           'Best Coffee',
 '24hours':        'Best Late Night',
 chinese:          'Best Chinese',
@@ -10885,9 +10903,9 @@ bagels:           'Best Bagels',
 nationkosher:     'Best Kosher',
 nationindian:     'Best Indian',
 brewery:          'Best Brewery',
-seafoodcasual:    'Best Seafood',
 brunch:           'Best Brunch',
-pakistani:        'Best Pakistani'
+pakistani:        'Best Pakistani',
+icecreamtogo:     'Best Ice Cream To Go'
 };
 function getBjsPickCategoryLabels(s){
 if(!s || !s.name) return [];
@@ -15065,13 +15083,28 @@ const normalizeCity=value=>{
 const key=String(value||'bestof').toLowerCase();
 return (key==='vegas'||key==='lasvegas') ? 'bestof' : key;
 };
-const canSimulate = typeof boRankedRestaurantList==='function' && typeof boRestaurantScore==='function';
+const canSimulate = typeof boRestaurantScore==='function';
+const rawRank=list=>{
+if(typeof boCompareRestaurants==='function') return list.slice().sort(boCompareRestaurants);
+return (typeof boRankedRestaurantList==='function') ? boRankedRestaurantList(list) : list;
+};
 const visibleSubset=(leafCat,list)=>{
 const scoped=(Array.isArray(list)?list:[]).filter(r=>r&&r.name&&normalizeCity(r.city)===city);
 if(!canSimulate) return scoped;
 const isAward=(leafCat==='michelin'||leafCat==='jamesbeard');
 const isPick=(typeof isBjsPicksCat==='function')&&isBjsPicksCat(leafCat);
-const ranked=boRankedRestaurantList(scoped.slice());
+/* Per request (2026-09-15, Brad): this count badge was going through
+   boRankedRestaurantList, which a later "Best Of City" wrapper (v524)
+   intercepts and silently strips anything priced under $$$ -- but only
+   when it *thinks* it's building a Best Of City page, which it wrongly
+   believes here because boCurrentCat is still sitting at its stale
+   'bestof' default before the person has clicked into any category.
+   That wiped every cheap category's tile badge (pizza, cheesesteak,
+   bagels, fast food, deli, coffee...) down to 0/'?' everywhere, even
+   though the real list underneath was fully populated. Sorting with the
+   raw comparator directly here sidesteps that wrapper entirely, since a
+   tile-count badge should just reflect what's really there. */
+const ranked=rawRank(scoped.slice());
 if(isPick||isAward) return ranked.slice(0,18);
 const exempt=e=>!!(e&&(e.michelinStars||e.michelinGuide||e.bjsPick));
 const rated=ranked.filter(e=>{if(exempt(e))return true;const s=boRestaurantScore(e);return s!=null&&s>=3.8;});
@@ -43982,6 +44015,7 @@ else{var n=0,t=setInterval(function(){n++;if(install()||n>40)clearInterval(t);},
 <div class="bobb-shell">
 <h1 class="bobb-title"><span class="bobb-l1">Best Of</span><span class="bobb-l2">Best Of</span><span class="bobb-l3">Period</span></h1>
 <div class="bobb-sub">TOP THREES</div>
+<div class="bobb-sub2">WORLDWIDE</div>
 <div class="bobb-rule"></div>
 <div id="bopBestOfBestList"></div>
 </div>
@@ -44042,7 +44076,7 @@ return {key:k,name:c.displayName||k,cat:(Array.isArray(boCategoryData[bo])&&boCa
 cities.sort(function(a,b){return a.name.localeCompare(b.name);});
 var html='<div class=\"bobb-grid\">';
 cities.forEach(function(c){
-var arr=Array.isArray(boCategoryData[c.cat])?boCategoryData[c.cat].filter(function(r){return r&&r.name;}):[];
+var arr=Array.isArray(boCategoryData[c.cat])?boCategoryData[c.cat].filter(function(r){return r&&r.name&&!r.isHotel&&r.redCalloutLabel!=='BJS HOTEL PICK';}):[];
 var seen={},uniq=[];
 arr.forEach(function(r){var k=r.name.toLowerCase();if(seen[k])return;seen[k]=1;uniq.push(r);});
 uniq.sort(cmp);
@@ -53403,6 +53437,100 @@ address:"225 E 60th St, New York, NY 10022",phone:"",url:"https://www.serendipit
 <script id="bop-icecreamtogo-subtitle-v2">(function(){
 if(typeof boHeroCopy==='undefined'||!boHeroCopy.icecreamtogo)return;
 boHeroCopy.icecreamtogo.sub='Scoop counters and walk-up spots mainly \u2014 ice cream, gelato, frozen yogurt, soft serve, sorbet, paletas and shaved ice.';
+})();
+</script>
+<style id="bop-top-threes-sub-nudge-v1">
+/* Per request (2026-09-15, Brad): "TOP THREES" sits slightly off from the
+   "Period" lockup above it -- nudging right by 3px as a first pass. Also
+   added a "WORLDWIDE" line directly underneath, same gold, same alignment. */
+.bobb-sub{transform:translateX(3px)!important}
+.bobb-sub2{text-align:center;margin:2px auto 0;padding-right:.5em;transform:translateX(3px);font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,5.2vw,2rem);letter-spacing:.38em;color:#F59E0B;text-shadow:0 0 10px rgba(245,158,11,.5)}
+</style>
+<script id="bop-london-generic-bjspick-strip-v1">(function(){
+/* Per request (2026-09-15, Brad): "Best Of London Period" was being used as
+   a catch-all bjsPickLabel on several London restaurants (Theo Randall,
+   Blacklock Soho, Endo at the Rotunda, Paladar, The Park Room, A. Wong,
+   Gymkhana London) -- not a real category, and Brad confirmed none of these
+   were meant to be BJS Picks (Dishoom Shoreditch, already correctly
+   labeled "Best Indian", is the only real London BJS Pick). Each of these
+   restaurants is duplicated inline across many category arrays (cuisine,
+   bestof, michelin, national-cuisine variants, bjspickslondon), so this
+   strips the BJS Pick flag wherever this exact label shows up, everywhere,
+   rather than hunting down every duplicate by hand. The restaurants stay
+   fully visible in their normal category lists -- only the BJS Pick status
+   and its labeling metadata are removed. */
+function strip(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+var hit=false;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(r&&r.bjsPickLabel==='Best Of London Period'){
+delete r.bjsPick;delete r.bjsPickLabel;delete r.bjsPickCity;delete r.bjsSources;
+hit=true;
+}
+});
+});
+return hit;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;strip();if(n>40)clearInterval(t);},300);});
+})();
+</script>
+<script id="bop-pho-lajolla-test-v1">(function(){
+/* Live test per Brad's request (2026-09-15): add a genuine Best Pho BJS
+   Pick scoped to La Jolla specifically, to demonstrate how a neighborhood-
+   level pick behaves relative to the San Diego county umbrella. Real,
+   verified: Pho La Jolla, 3211 Holiday Ct Ste 102, La Jolla, CA 92037. */
+if(typeof boCategoryData==='undefined')return;
+if(!Array.isArray(boCategoryData.pho))boCategoryData.pho=[];
+if(!boCategoryData.pho.some(function(r){return r&&r.name==='Pho La Jolla';})){
+boCategoryData.pho.push({
+name:"Pho La Jolla",city:"sdlajolla",
+rating:"4.2 / 5",reviews:83,ratingSource:"BJS aggregate",
+ratingNote:"Tripadvisor 4.0 (83 reviews) + strong Yelp volume (664 photos, 1,189 reviews) averaged for a 4.2 BJS aggregate. Reviews are genuinely mixed \u2014 some call it a standout, others find it unremarkable \u2014 but the volume and consistency support a La Jolla-specific pick.",
+why:"BJS Pick for Best Pho in La Jolla \u2014 a neighborhood-local spot, not the county-wide pick.",
+note:"Vietnamese noodle soup counter in La Jolla, high review volume relative to other La Jolla pho options.",
+address:"3211 Holiday Ct Ste 102, La Jolla, CA 92037",phone:"(858) 203-5444",
+url:"",price:1,
+bjsPick:true,bjsPickCity:"sdlajolla",bjsPickLabel:"Best Pho",
+directionsUrl:"https://www.google.com/maps/search/?api=1&query=3211%20Holiday%20Ct%20Ste%20102%2C%20La%20Jolla%2C%20CA%2092037"
+});
+}
+/* Also add to La Jolla's own Top Threes source array specifically, since
+   that's a separate, manually-populated list from the cuisine category --
+   this is the actual test of what Brad asked: does adding a neighborhood
+   pick here also leak into the San Diego county umbrella automatically? */
+if(!Array.isArray(boCategoryData.bestofsdlajolla))boCategoryData.bestofsdlajolla=[];
+if(!boCategoryData.bestofsdlajolla.some(function(r){return r&&r.name==='Pho La Jolla';})){
+var src=boCategoryData.pho.find(function(r){return r&&r.name==='Pho La Jolla';});
+if(src)boCategoryData.bestofsdlajolla.push(Object.assign({},src));
+}
+})();
+</script>
+<script id="bop-county-umbrella-directory-only-v1">(function(){
+/* Per request (2026-09-15, Brad): San Diego, LA, and New York are "county
+   directory" umbrellas with real neighborhood pages underneath them
+   (La Jolla, Beverly Hills, Manhattan, etc.). They were ALSO carrying their
+   own separate, manually-curated ranked/BJS-picks lists -- duplicating
+   picks that already live at the neighborhood level (e.g. Mat\u016b showed up
+   under both Beverly Hills' Best Cheesesteak AND LA's Best Cheesesteak,
+   maintained by hand in two places with no link between them). Brad
+   confirmed this doesn't scale and isn't automated, so these three
+   umbrellas should be pure directories now -- no standalone ranked content
+   of their own, just navigation into the real neighborhood pages. */
+if(typeof boCategoryData==='undefined')return;
+function clearUmbrellas(){
+['sandiego','losangeles','newyork'].forEach(function(key){
+boCategoryData['bestof'+key]=[];
+var c=(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG)?BO_CITY_CONFIG[key]:null;
+var bjsCat=c&&c.bjsPicksCat;
+if(bjsCat)boCategoryData[bjsCat]=[];
+});
+}
+clearUmbrellas();
+var n=0;var t=setInterval(function(){n++;clearUmbrellas();if(n>40)clearInterval(t);},300);
 })();
 </script>
 </body></html>
