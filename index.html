@@ -45438,6 +45438,12 @@ Three lines: BEST OF / BROOK-bridge-LYN (one row) / PERIOD. */
 .bop-splash-line2.bop-brooklyn-3line .bop-brooklyn-word .bop-brooklyn-lyn{position:static!important;display:inline-block!important;width:auto!important;margin:0!important;font-size:.78em!important;line-height:1!important;transform:none!important;grid-column:unset!important;grid-row:unset!important;align-self:auto!important}
 .bop-splash-line2.bop-brooklyn-3line .bop-brooklyn-word .bop-brooklyn-bridge{position:static!important;display:block!important;flex:0 0 1.5em!important;width:1.5em!important;height:.64em!important;margin:0 0 .04em!important;transform:none!important}
 </style>
+<style id="bop-brooklyn-hero-spacing-v1">
+/* Per request (2026-09-15, Brad): Brooklyn's hero sits noticeably further
+   from the "Best Of Period" masthead divider above it than other cities
+   do. Pulling the whole Brooklyn title block up to close that gap. */
+.bop-splash-line2.bop-brooklyn-3line{margin-top:-.6em!important}
+</style>
 <script id="bop-brooklyn-final-stack-v538-script">(function(){
 function apply(){
 document.querySelectorAll('.bop-brooklyn-word').forEach(function(word){
@@ -50813,12 +50819,15 @@ setInterval(strip,400);
 .bobb-threes-caption{margin:2px auto 0;text-align:center;color:#9a9a9a;font-family:'Archivo Narrow',sans-serif;font-size:.62rem;letter-spacing:.04em}
 </style>
 <script id="bop-black-screen-safety-net-v1">(function(){
-/* Per request (2026-09-15, Brad): closing the WHY orb's "Other Leaders"
-   popup was leaving the whole page covered by the QR-bypass Exclusive
-   Invitation gate (#bopExclusiveInvitation, max z-index) -- it re-appeared
-   because the html.bop-qr-bypass-active flag that's supposed to keep it
-   hidden after first bypass was getting dropped somewhere in that close
-   sequence. Force the flag back on whenever either popup closes. */
+/* Per request (2026-09-15, Brad): the QR-bypass Exclusive Invitation gate
+   (#bopExclusiveInvitation, max z-index) keeps resurfacing on top of
+   OTHER things too, not just the WHY orb close path this was originally
+   written for -- most recently it covered the "Tell Dave" modal entirely
+   (modal opened and locked page scroll underneath, but was invisible
+   behind the invitation gate, so the page felt stuck with no way to
+   close or scroll). Rather than patch every individual trigger, this now
+   runs continuously in the background and on every click, so the
+   invitation can never silently cover anything again. */
 function keepInviteBypassed(){
 if(!document.documentElement.classList.contains('bop-qr-bypass-active')){
 document.documentElement.classList.add('bop-qr-bypass-active');
@@ -50826,12 +50835,13 @@ document.documentElement.classList.add('bop-qr-bypass-active');
 var invite=document.getElementById('bopExclusiveInvitation');
 if(invite){invite.style.display='none';invite.style.visibility='hidden';invite.style.pointerEvents='none';}
 }
-document.addEventListener('click',function(e){
-var closer=e.target.closest&&e.target.closest('#bjsWhyCloseBtn, #bjsWhyOverlay .bjs-why-close, .bo-other-leaders-close, .bo-other-leaders-back');
-if(!closer)return;
+keepInviteBypassed();
+document.addEventListener('click',function(){
+keepInviteBypassed();
 setTimeout(keepInviteBypassed,60);
 setTimeout(keepInviteBypassed,300);
 },true);
+setInterval(keepInviteBypassed,1000);
 })();
 </script>
 <script id="bop-london-sd-crosscheck-v1">(function(){
