@@ -53823,4 +53823,47 @@ return false;
 ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>40)clearInterval(t);},300);});
 })();
 </script>
+<script id="bop-bfcache-restore-fix-v1">(function(){
+/* Per request (2026-09-15, Brad): the site wasn't reliably starting on
+   its home page. Root cause: iOS Safari's back-forward cache. When the
+   browser restores a page from that cache (very common on mobile --
+   backgrounding the app, switching tabs, sometimes even "refresh")
+   nothing on the page re-runs; the browser just repaints whatever was
+   frozen on screen, exactly as it was left -- Worldwide, a city page,
+   whatever was open at the time. None of the site's normal startup
+   logic (which correctly defaults to the landing splash) ever gets a
+   chance to run in that case, since it only runs on a true fresh load.
+   The 'pageshow' event with event.persisted=true is the one reliable
+   signal a bfcache restore just happened. Reset cleanly to landing
+   whenever that fires, unless the URL itself is asking for a specific
+   flow (QR check-in, tag game, etc.) -- those should still work as
+   intended after a restore too. */
+function isSpecialUrlFlow(){
+var p=new URLSearchParams(location.search);
+var h=(location.hash||'').replace(/^#/,'');
+return p.get('checkin')==='1'||h==='checkin'||
+p.get('vendorsignup')==='1'||h==='vendorsignup'||
+p.get('vendorcheckin')==='1'||h==='vendorcheckin'||
+p.get('tag')==='1'||/^tag/.test(h)||
+!!p.get('founder');
+}
+window.addEventListener('pageshow',function(event){
+if(!event.persisted)return;
+if(isSpecialUrlFlow())return;
+document.querySelectorAll('.open,.active,.is-open').forEach(function(el){
+if(el.id!=='bopLandingOverlay')el.classList.remove('open','active','is-open');
+});
+var landing=document.getElementById('bopLandingOverlay');
+if(landing){
+landing.classList.add('open');
+landing.style.removeProperty('display');
+landing.style.removeProperty('visibility');
+landing.style.removeProperty('opacity');
+landing.scrollTop=0;
+}
+document.body.style.overflow='';
+window.scrollTo(0,0);
+});
+})();
+</script>
 </body></html>
