@@ -43021,8 +43021,9 @@ ready(function(){var n=0;var t=setInterval(function(){n++;apply();if(n>80)clearI
 </style>
 <script id="bop-city-hub-areas-line-v367-script">(function(){
 function apply(){
-var para=document.getElementById('boSectionHeadPara');
 var sub=document.getElementById('boHeroSub');
+if(sub)sub.classList.remove('bop-hub-areas-line');
+return;
 if(!para||!sub)return;
 var isMainCityPage=para.innerHTML.indexOf('includes all genres across')!==-1;
 if(!isMainCityPage){
@@ -48583,7 +48584,13 @@ var resolved=boResolveChefRestaurants(chef);
 var listHtml=resolved.length?
 ('<div class="bo-celeb-chef-list">'+resolved.map(function(item,i){
 var CITY_LABEL_OVERRIDES={lasvegas:'Las Vegas',newyork:'New York',sandiego:'San Diego',losangeles:'Los Angeles',neworleans:'New Orleans',sanfrancisco:'San Francisco',washingtondc:'Washington, D.C.',fortlauderdale:'Fort Lauderdale',labeveryhillswestside:'Los Angeles',manhattan:'New York',raleighdurham:'Raleigh\u2013Durham'};
-var cityLabelText=CITY_LABEL_OVERRIDES[item.cityLabel]||String(item.cityLabel||'').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,function(m){return m.toUpperCase();});
+var rawCityLabel=item.cityLabel;
+if(!rawCityLabel||rawCityLabel==='bestof'){
+var addr=(item.r&&item.r.address)||'';
+var addrMatch=addr.match(/,\s*([^,]+?),\s*[A-Z]{2}\s*\d{5}/);
+rawCityLabel=addrMatch?addrMatch[1]:rawCityLabel;
+}
+var cityLabelText=CITY_LABEL_OVERRIDES[rawCityLabel]||String(rawCityLabel||'').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\b\w/g,function(m){return m.toUpperCase();});
 return '<button type="button" class="bo-celeb-chef-row" data-idx="'+i+'">'+
 '<span><span class="bo-celeb-chef-row-name">'+item.r.name+'</span>'+
 '<div class="bo-celeb-chef-row-city">'+(cityLabelText||'Las Vegas')+'</div></span>'+
@@ -50843,7 +50850,7 @@ setInterval(strip,400);
    badge at the bottom of the WHY orb is now touching the bottom edge --
    pull it back up off the edge a bit. */
 .bop-period-i-wrap .bop-period-apple-i,.bop-period-i-wrap:not(.bop-i-exempt) .bop-period-apple-i,.bop-i-caps .bop-period-apple-i{top:.11em!important}
-#bjsWhyOverlay .bjs-why-orb-text .bjs-why-bottom-badge{margin-bottom:30px!important}
+#bjsWhyOverlay .bjs-why-orb-text .bjs-why-bottom-badge{margin-bottom:35px!important}
 </style>
 <style id="bop-pin-nudge-v3">
 /* Per request (2026-09-15, Brad): .30em went too far the other way -- now
