@@ -54804,4 +54804,29 @@ setInterval(ensureBuySell,800);
 #boNearMapPage .bo-near-closest-title{font-size:clamp(2.1rem,11vw,3rem)!important}
 }
 </style>
+<script id="bop-why-trigger-everywhere-v527-script">(function(){
+/* Brad (2026-09-17): the "-> WHY <-" link under "WE DID THE DIGGING. YOU
+   DO THE DINING." should open the same main orb (#bjsWhyOverlay) on every
+   subcategory/tile page, exactly like it does from the rotating-cities
+   page. This is a final, unconditional, belt-and-suspenders binding so it
+   can never silently fail on any page the tagline appears on. */
+document.addEventListener('click',function(e){
+var trigger=e.target&&e.target.closest&&e.target.closest('.bjs-why-trigger');
+if(!trigger)return;
+e.preventDefault();
+var overlay=document.getElementById('bjsWhyOverlay');
+if(!overlay)return;
+overlay.classList.add('open');
+document.body.style.overflow='hidden';
+overlay.scrollTop=0;
+},true);
+})();</script>
+<style id="bop-why-orb-centered-content-v527">
+/* Brad (2026-09-17): "Best Of ... Period" down through the rest of the
+   orb copy was sitting unevenly -- force every line/block inside the
+   orb to be centered as a whole, not just its own text. */
+#bjsWhyOverlay .bjs-why-orb-text{align-items:center!important;text-align:center!important}
+#bjsWhyOverlay .bjs-why-orb-text>*{align-self:center!important;text-align:center!important;max-width:100%}
+#bjsWhyOverlay .bjs-why-city-period-lockup{justify-self:center!important;margin-left:auto!important;margin-right:auto!important}
+</style>
 </body></html>
