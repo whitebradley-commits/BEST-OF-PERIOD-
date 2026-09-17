@@ -19297,7 +19297,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <nav class="bop-static-landing-dock" id="bopStaticLandingDock" aria-label="Landing page controls">
   <button class="bop-static-landing-button bop-static-mic" id="bopStaticVoiceMic" type="button" aria-label="Hold to speak — tell us what you're looking for" style="flex-direction:column;gap:2px"><svg viewBox="0 0 24 24" fill="none" stroke="#E4002B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:29.3px;height:29.3px;margin-top:-5px"><rect x="9" y="3" width="6" height="11" rx="3" class="bop-mic-body"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/><path class="bop-mic-wave bop-mic-wave-l" d="M2 11a10 10 0 0 0 2.6 6.7" fill="none" stroke="#E4002B" stroke-width="1.5" stroke-linecap="round"/><path class="bop-mic-wave bop-mic-wave-r" d="M22 11a10 10 0 0 1 -2.6 6.7" fill="none" stroke="#E4002B" stroke-width="1.5" stroke-linecap="round"/></svg><span style="font:900 .36rem/1 'Archivo Black',sans-serif;letter-spacing:.04em;color:#E4002B;white-space:nowrap" aria-hidden="true">HANDS FREE</span></button>
   <button class="bop-static-landing-button bop-static-other-cities" id="bopStaticOtherCities" type="button" aria-label="Other Cities"><span class="bop-static-city-skyline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="bop-static-city-label">OTHER<br>CITIES</span></button>
-  <button class="bop-static-landing-button bop-static-closest-five" id="bopStaticClosestFive" type="button" aria-label="Closest Five"><svg class="bop-closest-five-mark" viewBox="0 0 58 58" aria-hidden="true"><defs><path id="bopClosestFiveArc" d="M 8 31 A 21 21 0 0 1 50 31"></path></defs><text class="bop-closest-five-word"><textPath href="#bopClosestFiveArc" startOffset="50%" text-anchor="middle">CLOSEST</textPath></text><circle class="bop-closest-five-dot" cx="29" cy="30" r="4"/></svg></button>
+  <button class="bop-static-landing-button bop-static-closest-five" id="bopStaticClosestFive" type="button" aria-label="Closest Five"><svg class="bop-closest-five-mark" viewBox="0 0 58 58" aria-hidden="true"><defs><path id="bopClosestFiveArc" d="M 8 31 A 21 21 0 0 1 50 31"></path></defs><text class="bop-closest-five-word"><textPath href="#bopClosestFiveArc" startOffset="50%" text-anchor="middle">CLOSEST</textPath></text><circle class="bop-closest-five-dot" cx="29" cy="29" r="4"/></svg></button>
   <button class="bop-static-landing-button bop-static-world" id="bopStaticWorld" type="button" aria-label="Worldwide bests"><svg aria-hidden="true" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"></circle><ellipse cx="32" cy="32" rx="11" ry="25"></ellipse><path d="M7 32h50M12 19h40M12 45h40"></path></svg></button>
   <button class="bop-static-landing-button bop-static-bjs" id="bopStaticFounders" type="button" aria-label="BJS Co." tabindex="-1"><span class="bop-static-bjs-lockup"><strong>BJS</strong><small>CO.</small></span></button>
 </nav>
@@ -20943,6 +20943,8 @@ var badges=document.getElementById('boLegendBadges');
 var price=content.querySelector('.bo-legend-price');
 var promo=content.querySelector('.bo-legend-vendor-promo');
 var tail=document.getElementById('boLegendBadgesTail');
+var whyTrigger=content.querySelector('.bjs-why-trigger');
+var whyP=whyTrigger?whyTrigger.closest('p'):null;
 var location=Array.from(content.querySelectorAll('.bo-legend-section')).find(function(section){var h=section.querySelector('h3');return h&&h.textContent.trim()==='LOCATION & STATUS'});
 if(!title||!badges||!price)return;
 var disclaimer=content.querySelector('.bop-legend-disclaimer');
@@ -20970,7 +20972,7 @@ var badgesList=michRow?michRow.closest('.bo-legend-list'):null;
    right after a running "cursor" node, so re-running this on every
    MutationObserver tick (including the mutations it causes itself) always
    converges on the same order instead of drifting. */
-var order=[badges,price,promo,badgesList,tail,location].filter(Boolean);
+var order=[whyP,badges,price,promo,badgesList,tail,location].filter(Boolean);
 var cursor=anchor;
 order.forEach(function(el){
 if(cursor.nextElementSibling!==el)cursor.insertAdjacentElement('afterend',el);
@@ -24731,7 +24733,7 @@ button.type='button';
 button.id='bopStaticClosestFive';
 button.className='bop-static-landing-button bop-static-closest-five';
 button.setAttribute('aria-label','Closest Five');
-button.innerHTML='<svg class="bop-closest-five-mark" viewBox="0 0 58 58" aria-hidden="true"><defs><path id="bopClosestFiveArc" d="M 8 31 A 21 21 0 0 1 50 31"/></defs><text class="bop-closest-five-word"><textPath href="#bopClosestFiveArc" startOffset="50%" text-anchor="middle">CLOSEST</textPath></text><circle class="bop-closest-five-dot" cx="29" cy="30" r="4"/></svg>';
+button.innerHTML='<svg class="bop-closest-five-mark" viewBox="0 0 58 58" aria-hidden="true"><defs><path id="bopClosestFiveArc" d="M 8 31 A 21 21 0 0 1 50 31"/></defs><text class="bop-closest-five-word"><textPath href="#bopClosestFiveArc" startOffset="50%" text-anchor="middle">CLOSEST</textPath></text><circle class="bop-closest-five-dot" cx="29" cy="29" r="4"/></svg>';
 dock.insertBefore(button,world);
 }
 return button;
