@@ -12880,20 +12880,34 @@ const list = document.getElementById('boNearOsmList');
 if(status){ status.textContent = 'Finding the closest restaurants near you…'; }
 if(list){ list.innerHTML=''; }
 const radii = [3218, 8047, 24140, 48280]; // ~2mi, 5mi, 15mi, 30mi — widen automatically in sparse areas
+async function fetchOverpass(query){
+const endpoints = [
+'https://overpass-api.de/api/interpreter',
+'https://overpass.kumi.systems/api/interpreter',
+'https://overpass.openstreetmap.ru/api/interpreter'
+];
+let lastErr;
+for (const base of endpoints){
+const controller = (typeof AbortController!=='undefined') ? new AbortController() : null;
+const timeoutId = controller ? setTimeout(function(){controller.abort();}, 9000) : null;
+try{
+const res = await fetch(base+'?data='+encodeURIComponent(query), controller?{signal:controller.signal}:{});
+if(timeoutId) clearTimeout(timeoutId);
+if(!res.ok) throw new Error('bad status '+res.status);
+return await res.json();
+}catch(e){
+if(timeoutId) clearTimeout(timeoutId);
+lastErr = e;
+continue;
+}
+}
+throw lastErr || new Error('All Overpass mirrors failed');
+}
 async function tryRadius(idx){
 if(idx>=radii.length) return {elements:[]};
 const radiusMeters = radii[idx];
 const query = '[out:json][timeout:15];(node["amenity"~"restaurant|fast_food|cafe"](around:'+radiusMeters+','+lat+','+lon+'););out body 30;';
-const controller = (typeof AbortController!=='undefined') ? new AbortController() : null;
-const timeoutId = controller ? setTimeout(function(){controller.abort();}, 12000) : null;
-let res;
-try{
-res = await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query), controller?{signal:controller.signal}:{});
-} finally {
-if(timeoutId) clearTimeout(timeoutId);
-}
-if(!res.ok) throw new Error('Overpass request failed');
-const data = await res.json();
+const data = await fetchOverpass(query);
 if((data.elements||[]).filter(el=>el.tags && el.tags.name).length===0 && idx<radii.length-1){
 if(status) status.textContent = 'Nothing within '+(radii[idx]/1609).toFixed(0)+' mi — widening the search…';
 return tryRadius(idx+1);
@@ -54736,13 +54750,11 @@ setInterval(ensureBuySell,800);
       across phone widths (it had been shrinking under some breakpoints) */
 #boNearMapPage .bo-near-hours-status{display:none!important}
 
-#boNearMapPage .bo-near-osm-item-name,
-#boNearMapPage .bo-near-osm-item-meta,
-#boNearMapPage .bo-near-osm-tier,
-#boNearMapPage .bo-near-osm-tier-dive,
-#boNearMapPage .bo-near-osm-tier-casual,
-#boNearMapPage .bo-near-osm-tier-fine{color:#F59E0B!important}
-#boNearMapPage .bo-near-osm-item-meta{opacity:.92}
+#boNearMapPage .bo-near-osm-item-name{color:#F59E0B!important}
+#boNearMapPage .bo-near-osm-item-meta{color:#F59E0B!important;opacity:.92}
+/* the price-tier pill keeps its own color (teal/gold/red per tier) —
+   Brad's reference screenshot shows the name in gold with a colored
+   money-sign pill to the right, not an all-gold pill */
 
 #boNearMapPage .bo-near-osm-item{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 #boNearMapPage .bo-near-osm-item-name{flex:1 1 auto;min-width:0}
