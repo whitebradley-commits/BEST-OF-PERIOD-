@@ -26276,7 +26276,7 @@ var geoFailed=!candidates.length && (window.__bopGeoServiceErrors||0)>0 && boNea
 if(!candidates.length){list.innerHTML='';status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST '+boNearClosestTier.toUpperCase()+' RESTAURANTS\u2026':(geoFailed?'Could not check nearby restaurants right now \u2014 check your connection and try again.':'No '+(boNearClosestTier==='all'?'':boNearClosestTier+' ')+'restaurants are mapped near this location yet.');status.classList.toggle('is-locating',!boNearGeocodingComplete);return;}
 status.classList.remove('is-locating');
 status.textContent=(boNearGeocodingComplete?'Showing ':'Still mapping — currently showing ')+candidates.length+(boNearClosestTier==='all'?' closest restaurants.':' closest '+boNearClosestTier+' restaurants.');
-list.innerHTML=candidates.map(function(item,index){var r=item.restaurant,level=boNearPriceLevel(r),distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';return '<button type="button" class="bo-near-closest-row" data-near-v211="'+index+'"><span><span class="bo-near-closest-name">'+esc(r.name)+'</span><span class="bo-near-closest-meta">'+'$'.repeat(level||1)+' · ★ '+esc(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>'}).join('');
+list.innerHTML=candidates.map(function(item,index){var r=item.restaurant,level=boNearPriceLevel(r)||1,tier=level>=4?'fine':(level<=1?'dive':'casual'),pill='<span class="bo-near-osm-tier bo-near-osm-tier-'+tier+'">'+'$'.repeat(level)+'</span>',distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';return '<button type="button" class="bo-near-closest-row" data-near-v211="'+index+'"><span><span class="bo-near-closest-name">'+esc(r.name)+' '+pill+'</span><span class="bo-near-closest-meta">★ '+esc(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>'}).join('');
 list.querySelectorAll('[data-near-v211]').forEach(function(btn){btn.addEventListener('click',function(){var item=candidates[Number(btn.dataset.nearV211)];if(!item)return;if(boNearMap)boNearMap.setView([item.geo.lat,item.geo.lon],Math.max(boNearMap.getZoom(),16));boShowNearRestaurantCard(item.restaurant,String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||''))})});
 }
 window.boRenderNearClosestFive=render;
@@ -46566,6 +46566,7 @@ function renderRows(){
 list.innerHTML=rows.map(function(x,i){
 var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
 var meta=[cityLabel(x.city),catLabel(r.cat)];
+if(r.bjsPick)meta.push('BJS PICK');
 if(lvl)meta.push('$'.repeat(lvl));
 if(r.rating)meta.push('\u2605 '+r.rating);
 var pendingGeocode=(x.d==null||!x.exact)&&!!r.address;
@@ -54762,6 +54763,10 @@ setInterval(ensureBuySell,800);
 #boNearMapPage .bo-near-osm-item-actions{display:flex;gap:6px;flex-shrink:0}
 #boNearMapPage .bo-near-osm-action{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;border:1px solid #F59E0B;color:#F59E0B;text-decoration:none;flex-shrink:0;transition:transform .15s ease,background .15s ease}
 #boNearMapPage .bo-near-osm-action:hover{background:#F59E0B;color:#000;transform:translateY(-1px)}
+
+#boNearMapPage .bo-near-closest-name{color:#F59E0B!important}
+#boNearMapPage .bo-near-closest-meta{font-size:12.5px!important}
+#boNearMapPage .bo-near-closest-name .bo-near-osm-tier{vertical-align:2px}
 
 #boNearMapPage .bo-near-map-title>strong:first-child,
 #boNearMapPage .bo-near-closest-title{font-size:clamp(2.6rem,10.5vw,4.4rem)!important;line-height:.95!important}
