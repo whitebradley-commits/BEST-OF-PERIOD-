@@ -12264,7 +12264,7 @@ legend.innerHTML = `
 <h3>BADGES</h3>
 <div class="bo-legend-list">
 <div><span class="bo-legend-bestof-mark"><span class="bo-legend-bestof-top">Best Of</span><span class="bo-legend-bestof-city">City</span></span><p><b>Best Of</b><small>The highest-rated in the category, by the numbers only — multiple review sources averaged, volume counted, staying power rewarded.</small></p></div>
-<div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>Hand-picked by us. Rating is only one signal — these are the places we’d actually send you.</small></p></div>
+<div><span class="bo-legend-bjs">BJS PICK</span><p><b>BJS Pick</b><small>Hand-picked by us. Rating is only one signal — these are our favorite places in the world.</small></p></div>
 <div class="bo-legend-michelin-row"><span class="bo-michelin-badge bo-legend-michelin"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;&#9733;&#9733;</span></span><p><b>Michelin Guide</b><small>M plus one, two or three stars shows the restaurant's Michelin distinction. <button type="button" class="bo-legend-michelin-full-link" id="bopLegendMichelinFullLink">FULL MICHELIN LIST &rsaquo;</button></small></p></div>
 <div><span class="bo-legend-jb">JB</span><p><b>James Beard Recognition</b><small>Recognition may mean winner, nominee, finalist, semifinalist or another official acknowledgement. Not every James Beard mention is an award win; the listing states the exact honor.</small></p></div>
 <div><span class="bo-world-famous-badge bo-legend-badge">WORLD FAMOUS</span><p><b>World Famous</b><small>Exceptional international name recognition or landmark status. Fame is separate from the current BJS ranking.</small></p></div>
@@ -12857,6 +12857,9 @@ boShowNearRestaurantCard(item.restaurant,(String(item.restaurant.cat||'')+'||'+S
 let boNearOsmRun = 0;
 let boNearOsmTier = 'all';
 let boNearOsmAllPlaces = [];
+let boNearOsmShowCount = 5;
+let boNearOsmLastLat = null;
+let boNearOsmLastLon = null;
 function boGuessOsmTier(tags){
 tags = tags || {};
 const priceRange = String(tags.price_range||'').toLowerCase();
@@ -12876,16 +12879,44 @@ function boRenderOsmList(){
 const status = document.getElementById('boNearOsmStatus');
 const list = document.getElementById('boNearOsmList');
 if(!list) return;
+const block = list.closest('.bo-near-osm-block');
+function refreshBtn(){
+if(!block) return null;
+var btn = document.getElementById('bopOsmRefresh');
+if(!btn){
+btn = document.createElement('button');
+btn.type='button';
+btn.id='bopOsmRefresh';
+btn.className='bop-osm-refresh';
+btn.setAttribute('aria-label','Refresh nearby restaurants');
+btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11A8 8 0 1 0 18.5 16"/><path d="M20 5v6h-6"/></svg><span>Refresh</span>';
+var heading = block.querySelector('.bo-near-osm-heading');
+if(heading) heading.insertAdjacentElement('afterend',btn);else block.insertBefore(btn,block.firstChild);
+btn.addEventListener('click',function(){
+if(boNearOsmLastLat==null||boNearOsmLastLon==null) return;
+btn.classList.add('is-spinning');
+boNearOsmShowCount=5;
+boFetchOsmNearby(boNearOsmLastLat,boNearOsmLastLon).then(function(){btn.classList.remove('is-spinning');});
+});
+}
+return btn;
+}
+refreshBtn();
 const places = boNearOsmTier==='all' ? boNearOsmAllPlaces : boNearOsmAllPlaces.filter(p=>p.tier===boNearOsmTier);
+var moreEl = document.getElementById('bopOsmShowMore');
+var collapseEl = document.getElementById('bopOsmCollapse');
 if(!places.length){
 list.innerHTML = '';
 if(status) status.textContent = boNearOsmAllPlaces.length
 ? 'No nearby '+boNearOsmTier+' places found in that radius — try All.'
-: 'No nearby restaurants found in OpenStreetMap data for this location.';
+: 'No nearby restaurants found in OpenStreetMap data for this location. If that seems wrong, try Refresh.';
+if(moreEl) moreEl.style.display='none';
+if(collapseEl) collapseEl.style.display='none';
 return;
 }
-if(status) status.textContent = 'Showing the '+places.length+' closest'+(boNearOsmTier==='all'?'':' '+boNearOsmTier)+' places — pulled live from OpenStreetMap, not limited to our own list. Tier is an estimate.';
-list.innerHTML = places.map(function(p){
+const shown = places.slice(0,boNearOsmShowCount);
+if(status) status.textContent = 'Showing '+shown.length+' of '+places.length+' closest'+(boNearOsmTier==='all'?'':' '+boNearOsmTier)+' places — pulled live from OpenStreetMap, not limited to our own list. Tier is an estimate.';
+list.innerHTML = shown.map(function(p){
 const distanceText = p.distance<.05 ? 'under 0.1 mi' : p.distance.toFixed(1)+' mi';
 const phoneDigits = (p.phone||'').replace(/[^+\d]/g,'');
 const callBtn = phoneDigits ? '<a class="bo-near-osm-action" href="tel:'+boNearEscape(phoneDigits)+'" aria-label="Call" title="Call"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.25 1.01z"/></svg></a>' : '';
@@ -12896,9 +12927,36 @@ return '<div class="bo-near-osm-item">'+
 '<div class="bo-near-osm-item-actions">'+callBtn+dirBtn+'</div>'+
 '</div>';
 }).join('');
+if(!moreEl){
+moreEl = document.createElement('button');
+moreEl.type='button';
+moreEl.id='bopOsmShowMore';
+moreEl.className='bop-closest-show-more';
+list.insertAdjacentElement('afterend',moreEl);
+moreEl.addEventListener('click',function(){boNearOsmShowCount+=10;boRenderOsmList();});
+}
+if(places.length>boNearOsmShowCount){
+moreEl.style.display='block';
+moreEl.textContent='SHOW 10 MORE ('+(places.length-boNearOsmShowCount)+' left)';
+}else{
+moreEl.style.display='none';
+}
+if(!collapseEl){
+collapseEl = document.createElement('button');
+collapseEl.type='button';
+collapseEl.id='bopOsmCollapse';
+collapseEl.className='bop-closest-show-more bop-closest-collapse';
+collapseEl.textContent='COLLAPSE';
+moreEl.insertAdjacentElement('afterend',collapseEl);
+collapseEl.addEventListener('click',function(){boNearOsmShowCount=5;boRenderOsmList();list.scrollIntoView({behavior:'smooth',block:'start'});});
+}
+collapseEl.style.display=boNearOsmShowCount>5?'block':'none';
 }
 async function boFetchOsmNearby(lat,lon){
 const run = ++boNearOsmRun;
+boNearOsmLastLat = lat;
+boNearOsmLastLon = lon;
+boNearOsmShowCount = 5;
 const status = document.getElementById('boNearOsmStatus');
 const list = document.getElementById('boNearOsmList');
 if(status){ status.textContent = 'Finding the closest restaurants near you…'; }
@@ -19504,7 +19562,7 @@ const worldIcons={
 movies:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="7" y="15" width="25" height="18" rx="3"/><path d="M32 20l9-5v18l-9-5M12 15l5-8 6 8M24 15l5-8 6 8"/><circle cx="14" cy="11" r="4"/><circle cx="29" cy="11" r="4"/></svg>',
 airlines:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M4 23l17-5 7-12 4 1-3 13 12 5c2 1 2 4-1 4l-13-2-6 8-3-1 2-9-9-1-4 4-2-1 2-6"/></svg>',
 songs:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 28V9l22-4v19M18 13l22-4"/><ellipse cx="12" cy="31" rx="6" ry="4"/><ellipse cx="34" cy="27" rx="6" ry="4"/></svg>',
-automotive:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M7 28v-8l5-9h24l5 9v8M9 20h30M14 28h20"/><circle cx="13" cy="29" r="4"/><circle cx="35" cy="29" r="4"/><path d="M15 14h18"/></svg>',
+automotive:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M7 28v-8l5-9h24l5 9v8M9 20h30M14 28h20"/><g class="bo-ft-wheel"><circle cx="13" cy="29" r="4"/><line x1="13" y1="25" x2="13" y2="33"/><line x1="9" y1="29" x2="17" y2="29"/></g><g class="bo-ft-wheel"><circle cx="35" cy="29" r="4"/><line x1="35" y1="25" x2="35" y2="33"/><line x1="31" y1="29" x2="39" y2="29"/></g><path d="M15 14h18"/><line class="bop-golive-road" x1="2" y1="37" x2="46" y2="37" stroke-dasharray="4 3"/></svg>',
 watches:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M18 9l2-6h8l2 6M18 31l2 6h8l2-6"/><circle cx="24" cy="20" r="12"/><path d="M24 13v8l6 3"/></svg>',
 cellphones:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><rect x="14" y="3" width="20" height="34" rx="4"/><path d="M20 7h8M21 32h6"/><circle cx="24" cy="27" r="1"/></svg>',
 restaurants:'<svg class="bop-world-line-icon" aria-hidden="true" viewBox="0 0 48 40"><path d="M13 4v13M8 4v9c0 3 2 5 5 5s5-2 5-5V4M13 18v18M31 4v32M31 4c6 3 8 9 8 15h-8"/><path d="M25 28h12"/></svg>'
@@ -21380,7 +21438,19 @@ page=document.createElement('section');page.id='bopMovieBjsSoon';page.setAttribu
 page.innerHTML='<button class="bop-bjs-soon-back" type="button" aria-label="Back to Movies">←<br>Back</button><div class="bop-bjs-soon-inner"><h2>BJS PICKS<span>COMING SOON</span></h2><p class="bop-bjs-soon-sub">Our worldwide movie picks are being selected.</p><div class="bop-bjs-question-row" aria-hidden="true"><span class="bop-bjs-question">?</span><span class="bop-bjs-question">?</span><span class="bop-bjs-question">?</span></div><div class="bop-bjs-soon-rule"></div></div>';
 document.body.appendChild(page);return page;
 }
-function open(event){if(event){event.preventDefault();event.stopImmediatePropagation();}var page=ensure();page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden'}
+/* v221 (2026-09-18): the actual BJS Movie Picks feature (Tarantino's
+   picks, #boMoviePicksModal) was built and launched from its own button
+   on the Movies page a while back, but this "BJS PICK" word inside the
+   Thumb Your Luck modal was never repointed -- it still opened the old
+   placeholder page above, which nothing else links to anymore. Open the
+   real modal instead; ensure() and the placeholder page stay only as an
+   inert fallback if that modal isn't in the DOM yet for some reason. */
+function open(event){
+if(event){event.preventDefault();event.stopImmediatePropagation();}
+var real=document.getElementById('boMoviePicksModal');
+if(real){real.classList.add('open');return;}
+var page=ensure();page.classList.add('open');page.scrollTop=0;document.body.style.overflow='hidden';
+}
 function close(event){if(event){event.preventDefault();event.stopImmediatePropagation();}var page=ensure();page.classList.remove('open');document.body.style.overflow='hidden';var movies=document.getElementById('boMoviesPage');if(movies)movies.scrollTop=0}
 document.addEventListener('click',function(event){var pick=event.target.closest&&event.target.closest('#boMoviesPage .bop-inline-bjs-word,#bopMovieChoiceModal .bop-inline-bjs-word');if(pick)open(event);var back=event.target.closest&&event.target.closest('#bopMovieBjsSoon .bop-bjs-soon-back');if(back)close(event)},true);
 document.addEventListener('keydown',function(event){if((event.key==='Enter'||event.key===' ')&&event.target.matches&&event.target.matches('#boMoviesPage .bop-inline-bjs-word,#bopMovieChoiceModal .bop-inline-bjs-word'))open(event);if(event.key==='Escape'&&document.getElementById('bopMovieBjsSoon')&&document.getElementById('bopMovieBjsSoon').classList.contains('open'))close(event)},true);
@@ -36841,8 +36911,8 @@ var tile=document.createElement('button');
 tile.className='bop-golive-tile';
 tile.id='bopGoLiveCarForSale';
 tile.type='button';
-tile.setAttribute('aria-label','Car For Sale');
-tile.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true" class="bop-golive-anim-svg"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 65 L15 45 L30 35 L70 35 L85 45 L90 65 Z"/></g><g class="bo-ft-wheel"><circle cx="28" cy="70" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="28" y1="63" x2="28" y2="77" stroke="#F59E0B" stroke-width="2.5"/><line x1="21" y1="70" x2="35" y2="70" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="72" cy="70" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="72" y1="63" x2="72" y2="77" stroke="#F59E0B" stroke-width="2.5"/><line x1="65" y1="70" x2="79" y2="70" stroke="#F59E0B" stroke-width="2.5"/></g><line class="bop-golive-road" x1="2" y1="86" x2="98" y2="86" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-dasharray="9 7" opacity=".75"/></svg><span>CAR FOR SALE</span>';
+tile.setAttribute('aria-label','Autos For Sale');
+tile.innerHTML='<svg viewBox="0 0 100 100" aria-hidden="true" class="bop-golive-anim-svg"><g fill="none" stroke="#F59E0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 65 L15 45 L30 35 L70 35 L85 45 L90 65 Z"/></g><g class="bo-ft-wheel"><circle cx="28" cy="70" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="28" y1="63" x2="28" y2="77" stroke="#F59E0B" stroke-width="2.5"/><line x1="21" y1="70" x2="35" y2="70" stroke="#F59E0B" stroke-width="2.5"/></g><g class="bo-ft-wheel"><circle cx="72" cy="70" r="9" fill="#000" stroke="#F59E0B" stroke-width="6"/><line x1="72" y1="63" x2="72" y2="77" stroke="#F59E0B" stroke-width="2.5"/><line x1="65" y1="70" x2="79" y2="70" stroke="#F59E0B" stroke-width="2.5"/></g><line class="bop-golive-road" x1="2" y1="86" x2="98" y2="86" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-dasharray="9 7" opacity=".75"/></svg><span>AUTOS FOR SALE<span class="bo-golive-tile-sub">CARS &middot; RVS &middot; MOTOS</span></span>';
 grid.appendChild(tile);
 tile.addEventListener('click', function(){
 if(typeof window.bopOpenGoLivePage!=='undefined'){
@@ -36932,7 +37002,7 @@ if(s3[1]&&s3[1].innerHTML!==GOLIVE_HTML)s3[1].innerHTML=GOLIVE_HTML;
 }
 function install(){
 setTileLabel('bopGoLiveRealtor','OPEN HOUSES<span class="bo-golive-tile-sub">AND LISTINGS</span>');
-setTileLabel('bopGoLiveCarForSale','CARS FOR SALE');
+setTileLabel('bopGoLiveCarForSale','AUTOS FOR SALE<span class="bo-golive-tile-sub">CARS &middot; RVS &middot; MOTOS</span>');
 setTileLabel('bopGoLiveFoodTruck','FOOD TRUCKS');
 setTileLabel('bopGoLiveVendorStand','STREET VENDORS');
 setTileLabel('bopGoLiveYardSale','GARAGE SALES');
@@ -55471,6 +55541,13 @@ border-radius:18px!important;
 background:#050505!important;
 box-shadow:0 0 16px rgba(245,158,11,.2)!important;
 }
+</style>
+<style id="bop-osm-refresh-btn-v542">
+.bop-osm-refresh{display:inline-flex;align-items:center;gap:5px;margin:0 3px 10px;padding:6px 11px;border:1.5px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#F59E0B;font:900 10px/1 'Archivo Narrow',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
+.bop-osm-refresh:active{background:#F59E0B;color:#000}
+.bop-osm-refresh svg{width:13px;height:13px;flex:none;transition:transform .5s ease}
+.bop-osm-refresh.is-spinning svg{animation:bopOsmRefreshSpin .8s linear infinite}
+@keyframes bopOsmRefreshSpin{to{transform:rotate(360deg)}}
 </style>
 <style id="bop-vendor-stand-title-nudge-v540">
 #bopVendorStandOverlay .bop-world-hero{position:relative!important;top:5px!important}
