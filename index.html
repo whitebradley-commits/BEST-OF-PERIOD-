@@ -15350,7 +15350,29 @@ seen.add(String(r.name).trim().toLowerCase()+'|'+String(r.address||'').trim().to
 return seen.size;
 }
 if(cat==='bestof'){
-addList(boCategoryData[city]||[], city);
+/* Per Brad (2026-09-18): this badge used to read boCategoryData[city]
+   directly, which is a different (broader, unfiltered) bucket than the
+   'bestof<city>' list the actual page renders -- e.g. Brooklyn's real
+   page pulls from boCategoryData.bestofbrooklyn, filtered down to
+   $$$/$$$$ only with pizza/bagels/cheesesteak excluded (same rule as
+   the v524 Best-Of-page wrapper). Reading the wrong bucket with no
+   filter is exactly why the badge (10) and the real page (6, or 8)
+   disagreed. Point this at the same data the page uses and apply the
+   same price/category rule here, inline, since this function
+   deliberately avoids routing through boRankedRestaurantList. */
+const bestOfKey=(boCategoryData['bestof'+city]!==undefined)?('bestof'+city):city;
+const EXCL_CATS=['pizza','bagels','cheesesteak'];
+const excludedNames={};
+EXCL_CATS.forEach(ec=>{(boCategoryData[ec]||[]).forEach(r=>{if(r&&r.name)excludedNames[String(r.name).toLowerCase().trim()]=1;});});
+const priceOf=r=>{const p=r&&r.price;if(p==null||p==='')return null;if(typeof p==='number')return p;const s=String(p).trim();if(/^\$+$/.test(s))return s.length;const n=parseInt(s,10);return isNaN(n)?null:n;};
+const list=(boCategoryData[bestOfKey]||[]).filter(r=>{
+if(!r||!r.name)return false;
+if(excludedNames[String(r.name).toLowerCase().trim()])return false;
+const p=priceOf(r);
+if(p!=null&&p<3)return false;
+return true;
+});
+addList(list, bestOfKey);
 return seen.size;
 }
 if(cat==='bjspicks'){
@@ -15375,6 +15397,14 @@ return seen.size;
 function boTileCountBadgeHTML(cat, cityKey){
 if(cat==='foodtrucks'){
 return `<span class="bo-tile-count bo-ft-tile-count" aria-label="Live food trucks checked in">&hellip;</span>`;
+}
+if(cat==='teen'){
+/* Per Brad (2026-09-18): the TEEN tile isn't a restaurant category, so a
+   '?' there made no sense. Its number is the live Tag-the-World count --
+   how many people have been tagged -- kept current by the TAG game's
+   own 8-second poll (showCurrentCount updates every .bo-teen-tag-count). */
+const live=Number(window.tgLiveCountValue)||Number(String((document.getElementById('tgCurrentCount')||{}).textContent||'').replace(/[^\d]/g,''))||101;
+return `<span class="bo-tile-count bo-teen-tag-count" aria-label="${live.toLocaleString()} people tagged">${live.toLocaleString()}</span>`;
 }
 const count=boTileRestaurantCount(cat,cityKey);
 const pending=count===0;
@@ -15675,7 +15705,7 @@ const ls = leaves(opt.cat, 0);
 if(!ls.length) return true;
 return ls.some(l => (boCategoryData[l]||[]).some(r => r && r.name && (r.city||'bestof') === boCityContext));
 });
-const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','foodtrucks','streetvendors','cheesesteak','bjspicks'];
+const featuredCategoryOrder = ['newrestaurants','michelin','jamesbeard','steak','italian','mexican','pizza','foodtrucks','streetvendors','cheesesteak','bjspicks'];
 let featuredPickerOptions = [];
 let featuredBjsOption = null;
 if(cat === 'otheroptions'){
@@ -18127,7 +18157,7 @@ const icons=['🫠','🥸','👹','🧌','🦤','🪬','🗿','🪩','🦑','�
 function ordinal(n){let m=n%100,s=m>=11&&m<=13?'th':n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th';return n.toLocaleString()+s}
 function tagParams(){const h=tgEntryHash.replace(/^#\/?/,'');if(h.startsWith('tag')){const q=h.includes('?')?h.slice(h.indexOf('?')+1):h.replace(/^tag&?/,'');const p=new URLSearchParams(q);p.set('tag','1');return p}return new URLSearchParams(location.search)}
 function sbHeaders(json){const h={apikey:TG_SUPABASE_KEY};if(json)h['Content-Type']='application/json';return h}
-function showCurrentCount(n){const v=Math.max(101,Math.min(Number(n)||101,1000000000));tgLiveCount=Math.max(tgLiveCount,v);document.getElementById('tgCurrentCount').textContent=tgLiveCount.toLocaleString();return tgLiveCount}
+function showCurrentCount(n){const v=Math.max(101,Math.min(Number(n)||101,1000000000));tgLiveCount=Math.max(tgLiveCount,v);document.getElementById('tgCurrentCount').textContent=tgLiveCount.toLocaleString();window.tgLiveCountValue=tgLiveCount;document.querySelectorAll('.bo-teen-tag-count').forEach(function(el){el.textContent=tgLiveCount.toLocaleString();el.setAttribute('aria-label',tgLiveCount.toLocaleString()+' people tagged');});return tgLiveCount}
 async function loadLiveCount(){try{const r=await fetch(TG_SUPABASE_URL+'/rest/v1/tag_world_counter?id=eq.1&select=current_count',{headers:sbHeaders(false),cache:'no-store'});if(!r.ok)return;const rows=await r.json();if(rows&&rows[0])showCurrentCount(rows[0].current_count)}catch(e){}}
 function countryFallback(){const lang=(navigator.language||'en-US').split('-');return (lang[1]&&/^[A-Za-z]{2}$/.test(lang[1])?lang[1]:'US').toUpperCase()}
 async function countryFromPosition(pos){try{const q='https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+encodeURIComponent(pos.coords.latitude)+'&longitude='+encodeURIComponent(pos.coords.longitude)+'&localityLanguage=en';const r=await fetch(q);if(r.ok){const j=await r.json();if(j.countryCode&&/^[A-Za-z]{2}$/.test(j.countryCode))return j.countryCode.toUpperCase()}}catch(e){}return countryFallback()}
@@ -24317,7 +24347,112 @@ window.boOpenAllBjsPicks=open;
 overlay.querySelector('.bop-all-bjs-back').addEventListener('click',close);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.documentElement.classList.contains('bop-all-bjs-open'))close();});
 })();</script>
-<style id="bop-contained-external-links-style">#fntBack{display:none!important}#bopExternalOverlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;overflow:hidden}#bopExternalOverlay.open{display:block}#bopExternalFrame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#bopExternalClose{position:fixed;top:max(14px,env(safe-area-inset-top));right:16px;z-index:2147483002;width:54px;height:54px;border:3px solid #f4a300;border-radius:50%;background:#050505;color:#ff3347;font:900 34px/1 Arial,sans-serif;display:grid;place-items:center;box-shadow:0 0 18px rgba(244,163,0,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}#bopExternalFallback{position:absolute;inset:0;display:grid;place-items:center;padding:90px 28px 40px;color:#f4a300;background:#000;text-align:center;font:800 18px/1.5 Arial,sans-serif;letter-spacing:.04em}</style>
+<style id="bop-all-new-restaurants-style">
+#bopAllNewRestaurants{position:fixed;inset:0;z-index:2147483005;display:none;overflow:auto;-webkit-overflow-scrolling:touch;background:#050505;color:#fff;font-family:Arial,sans-serif}
+.bop-all-new-open #bopAllNewRestaurants{display:block}
+#bopAllNewRestaurants .bobb-city-name{cursor:default}
+#bopAllNewRestaurants .bobb-row{cursor:pointer;grid-template-columns:12px minmax(0,1fr) auto}
+#bopAllNewRestaurants .bobb-phone{color:#F59E0B;font-weight:700;white-space:nowrap;text-align:right;font-size:8px}
+#bopAllNewRestaurants .bobb-empty{color:#665;font-family:'Archivo Narrow',sans-serif;font-size:8px;letter-spacing:.04em;padding:2px 0;text-transform:uppercase}
+</style>
+<section id="bopAllNewRestaurants" role="dialog" aria-modal="true" aria-label="New Restaurants Worldwide"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to city">&larr;<br>Back</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">NEW RESTAURANTS</h2><p class="bop-all-bjs-sub">EVERY CITY IN OUR SYSTEM &middot; WHAT'S OPENING NOW</p><div class="bobb-grid" id="bopAllNewGrid"></div></div></section>
+<script id="bop-all-new-restaurants-script">(function(){
+var overlay=document.getElementById('bopAllNewRestaurants');
+var grid=document.getElementById('bopAllNewGrid');
+if(!overlay||!grid)return;
+var savedY=0,openPop=null,originIds=null;
+function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function price(p){p=parseInt(p,10);return p>0?'$'.repeat(Math.min(4,p)):'';}
+function cleanDesc(r){
+if(!r)return'';
+var SRC_RE=/(\bgoogle\b|\byelp\b|\btripadvisor\b|trip\.com|\bopentable\b|restaurant guru|restaurantji|wanderlog|\bsirved\b|\bzagat\b|thefork|uber eats|doordash|\bfacebook\b|hotels\.com|booking\.com|\baggregate\b|\baveraged?\b|\brated\b|surfaced this pass|\bprovisional\b|\bplaceholder\b|\d(?:\.\d)?\s*\/\s*5|\(\s*[\d,]+\+?\s*(?:reviews?|votes?)\s*\))/i;
+var parts=[];if(r.why)parts.push(String(r.why));if(r.note&&String(r.note)!==String(r.why||''))parts.push(String(r.note));
+var text=parts.join(' ');
+var sentences=text.split(/(?<=[.!?])\s+/).filter(function(s){return s&&!SRC_RE.test(s);});
+var seenS={};sentences=sentences.filter(function(s){var k=s.trim().toLowerCase();if(seenS[k])return false;seenS[k]=1;return true;});
+var out=sentences.join(' ').replace(/\s+/g,' ').trim();
+if(out&&!/[.!?]$/.test(out))out+='.';
+return out;
+}
+function build(){
+if(typeof BO_CITY_CONFIG!=='object'||!BO_CITY_CONFIG||typeof boCategoryData!=='object')return;
+var all=Array.isArray(boCategoryData.newrestaurants)?boCategoryData.newrestaurants:[];
+var cities=Object.keys(BO_CITY_CONFIG).map(function(k){var c=BO_CITY_CONFIG[k]||{};return {key:k,name:c.displayName||k};});
+cities.sort(function(a,b){return a.name.localeCompare(b.name);});
+var html='';
+cities.forEach(function(c){
+var rows=all.filter(function(r){return r&&r.name&&(r.city||'bestof')===c.key;});
+var seen={},uniq=[];
+rows.forEach(function(r){var k=r.name.toLowerCase();if(seen[k])return;seen[k]=1;uniq.push(r);});
+uniq.sort(function(a,b){return a.name.localeCompare(b.name);});
+html+='<div class="bobb-city"><div class="bobb-city-name">'+esc(c.name)+'</div>';
+if(!uniq.length){html+='<div class="bobb-empty">Nothing yet</div>';}
+uniq.forEach(function(r,i){
+var id=c.key+'-'+i;
+html+='<div class="bobb-row" data-id="'+id+'"><span class="bobb-rank">'+(i+1)+'.</span><span class="bobb-name">'+esc(r.name)+'</span><span class="bobb-phone">'+(r.phone?esc(r.phone):'&mdash;')+'</span></div>';
+html+='<div class="bobb-pop bobb-card" id="bopnewpop-'+id+'" style="display:none"><div class="bobb-pop-inner bobb-card-inner"><button type="button" class="bobb-pop-x" aria-label="Close">&times;</button>';
+var img=r.image||((typeof BUSINESS_PHOTOS==='object'&&BUSINESS_PHOTOS&&BUSINESS_PHOTOS[r.name]&&BUSINESS_PHOTOS[r.name][0])||'');
+var brandPlaceholder='<img class="bobb-card-placeholder" src="bop-placeholder-verified.png" alt="Best of Period \u2014 Verified Location" loading="lazy">';
+html+='<div class="bobb-card-media'+(img?'':' bobb-card-media-placeholder')+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(r.name)+'" loading="lazy">':brandPlaceholder)+'</div>';
+html+='<div class="bobb-card-body">';
+html+='<div class="bobb-card-name">'+esc(r.name)+'</div>';
+html+='<div class="bobb-card-meta"><span class="bobb-card-rating">'+esc(String(r.rating||'').replace(/\s*\/\s*5/,''))+'</span>'+(price(r.price)?'<span class="bobb-card-price">'+price(r.price)+'</span>':'')+'</div>';
+var desc=cleanDesc(r);if(desc)html+='<div class="bobb-card-desc">'+esc(desc)+'</div>';
+if(r.address)html+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
+if(r.phone)html+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a></div>';
+if(r.address)html+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
+if(r.url)html+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
+html+='</div></div></div>';
+});
+html+='</div>';
+});
+grid.innerHTML=html;
+}
+grid.addEventListener('click',function(e){
+var x=e.target.closest('.bobb-pop-x');
+if(x){var p=x.closest('.bobb-pop');if(p){p.style.display='none';if(openPop===p)openPop=null;}return;}
+var scrim=e.target.classList&&e.target.classList.contains('bobb-pop');
+if(scrim){e.target.style.display='none';if(openPop===e.target)openPop=null;return;}
+var row=e.target.closest('.bobb-row');
+if(!row)return;
+var pop=document.getElementById('bopnewpop-'+row.getAttribute('data-id'));
+if(!pop)return;
+if(openPop&&openPop!==pop)openPop.style.display='none';
+var show=pop.style.display==='none';
+pop.style.display=show?'block':'none';
+openPop=show?pop:null;
+});
+function open(){
+originIds=[].slice.call(document.querySelectorAll('.open')).map(function(e){return e.id;}).filter(function(id){return id&&id!=='bopAllNewRestaurants';});
+savedY=window.scrollY;build();
+document.documentElement.classList.add('bop-all-new-open');document.body.style.overflow='hidden';overlay.scrollTop=0;
+}
+function close(){
+document.documentElement.classList.remove('bop-all-new-open');document.body.style.overflow='';
+if(originIds&&originIds.length){originIds.forEach(function(id){var el=document.getElementById(id);if(el){el.classList.add('open');el.style.removeProperty('display');el.style.removeProperty('visibility');el.style.removeProperty('opacity');el.setAttribute('aria-hidden','false');}});}
+setTimeout(function(){
+function vis(el){if(!el)return false;var s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden';}
+var anyVisible=[].slice.call(document.querySelectorAll('.open')).some(vis);
+if(!anyVisible){var land=document.getElementById('bopLandingOverlay');if(land){land.classList.add('open');land.style.removeProperty('display');land.style.removeProperty('visibility');land.style.removeProperty('opacity');land.setAttribute('aria-hidden','false');}}
+window.scrollTo(0,savedY);
+},50);
+originIds=null;
+}
+overlay.querySelector('.bop-all-bjs-back').addEventListener('click',close);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.documentElement.classList.contains('bop-all-new-open'))close();});
+window.boOpenAllNewRestaurants=open;
+window.closeBopAllNewRestaurants=close;
+/* Route every "NEW" picker tile straight here instead of rendering the
+   per-city newrestaurants category or showing the still-digging popup --
+   per Brad (2026-09-18), this tile is now a worldwide destination. */
+document.addEventListener('click',function(e){
+var tile=e.target.closest&&e.target.closest('.bo-picker-btn[data-picker-cat="newrestaurants"]');
+if(!tile)return;
+e.preventDefault();e.stopImmediatePropagation();
+open();
+},true);
+})();</script>
+#fntBack{display:none!important}#bopExternalOverlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;overflow:hidden}#bopExternalOverlay.open{display:block}#bopExternalFrame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#bopExternalClose{position:fixed;top:max(14px,env(safe-area-inset-top));right:16px;z-index:2147483002;width:54px;height:54px;border:3px solid #f4a300;border-radius:50%;background:#050505;color:#ff3347;font:900 34px/1 Arial,sans-serif;display:grid;place-items:center;box-shadow:0 0 18px rgba(244,163,0,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}#bopExternalFallback{position:absolute;inset:0;display:grid;place-items:center;padding:90px 28px 40px;color:#f4a300;background:#000;text-align:center;font:800 18px/1.5 Arial,sans-serif;letter-spacing:.04em}</style>
 <div aria-hidden="true" id="bopExternalOverlay">
   <div id="bopExternalFallback">Loading this website inside Best Of, Period.<br>You can close it at any time and return exactly where you were.</div>
   <iframe id="bopExternalFrame" name="bopExternalFrame" title="External website"></iframe>
@@ -42544,7 +42679,7 @@ document.addEventListener('click',function(e){
 var btn=e.target&&e.target.closest?e.target.closest('#bestOfOverlay .bo-picker-btn[data-picker-cat]'):null;
 if(!btn)return;
 var cat=btn.dataset.pickerCat||'';
-if(/^(cannabisinfused|foodtrucks|streetvendors|bestof|bjspicks|allbjspicks|nearme|closest|24hours|nations?|teen|notquiteopen|newrestaurants|dogfriendly|offstrip|undernewownership)$/.test(cat))return;
+if(/^(foodtrucks|streetvendors|bestof|bjspicks|allbjspicks|nearme|closest|teen|newrestaurants)$/.test(cat))return;
 var badge=btn.querySelector('.bo-tile-count');
 if(!badge||badge.textContent.trim()!=='?')return;
 var label=(btn.textContent||'').replace(/\?/g,'').replace(/BJS\s*VS\s*ONE\s*BITE/ig,'').replace(/\s+/g,' ').trim();
@@ -43114,8 +43249,16 @@ if(viewBtnEl)viewBtnEl.addEventListener('click',function(){
 backdrop.classList.remove('open');
 /* Close whichever analog-list overlay this card was opened from
 so it isn't left stacked underneath the restaurant's card --
-otherwise Back from the card would surface a stale list behind it. */
+otherwise Back from the card would surface a stale list behind it.
+v2 (2026-09-18): the class removal alone wasn't reliably taking
+effect in time -- #bopAllPizzaScores sits at a z-index in the
+billions (2147483004) versus #bestOfOverlay's 200, so even a brief
+race left the pizza list visually on top of the restaurant page
+that had actually opened underneath it. Forcing display:none
+directly, not just via the class, closes the gap. */
 document.documentElement.classList.remove('bop-all-pizza-open');
+var pizzaScoresPage=document.getElementById('bopAllPizzaScores');
+if(pizzaScoresPage){pizzaScoresPage.style.display='none';requestAnimationFrame(function(){pizzaScoresPage.style.removeProperty('display');});}
 document.body.style.overflow='';
 var analogListPage=document.getElementById('bopAnalogList');
 if(analogListPage){analogListPage.classList.remove('open');}
