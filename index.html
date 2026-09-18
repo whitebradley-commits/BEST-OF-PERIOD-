@@ -21666,21 +21666,28 @@ window.addEventListener('click',remember,true);
 function returnFromWorldwide(event){
 var button=event.target.closest&&event.target.closest('#bopWorldwideLanding .bop-world-back');if(!button)return;
 event.preventDefault();event.stopImmediatePropagation();
-var world=document.getElementById('bopWorldwideLanding');if(world)world.classList.remove('open');
+/* Per Brad (2026-09-18): the "remember the exact previous page and
+   category, then reconstruct it" approach above kept leaving a blank
+   shell -- it's been rewritten and re-broken enough times. Dropping all
+   of that in favor of one thing that can never fail: close Worldwide
+   and Movies, and always land cleanly back on the landing page. This
+   gives up returning to the exact scroll position/category a user was
+   on before opening Worldwide, but it can't produce a blank screen. */
+['bopWorldwideLanding','boMoviesPage','boWorldwidePage'].forEach(function(id){
+var el=document.getElementById(id);
+if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true');}
+});
 document.body.style.overflow='';
-var state=snapshot;
-if(state&&(state.pageId==='boMoviesPage'||state.pageId==='boWorldwidePage'))state=null;
-var mvp=document.getElementById('boMoviesPage');if(mvp)mvp.classList.remove('open');
-if(!state){var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.add('open');try{history.replaceState(null,'',location.pathname)}catch(_e){}return}
-if(state.city){if(typeof boCityContext!=='undefined')boCityContext=state.city;window.boCityContext=state.city}
-var page=document.getElementById(state.pageId);
-if(page){page.classList.add('open');page.setAttribute('aria-hidden','false')}
-if(state.pageId==='bestOfOverlay'){
-if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(state.category||'otheroptions',state.city);
-if(typeof boRenderCategory==='function')boRenderCategory(state.category||'otheroptions');
+document.documentElement.style.overflow='';
+var best=document.getElementById('bestOfOverlay');
+var landing=document.getElementById('bopLandingOverlay');
+if(landing&&!(best&&best.classList.contains('open'))){
+landing.classList.add('open');
+landing.setAttribute('aria-hidden','false');
+landing.scrollTop=0;
 }
-try{history.replaceState(null,'',state.url)}catch(_e){}
-requestAnimationFrame(function(){if(page)page.scrollTop=state.scrollTop||0;else window.scrollTo(0,state.scrollTop||0)});
+try{history.replaceState(null,'',location.pathname);}catch(_e){}
+window.scrollTo(0,0);
 }
 window.addEventListener('click',returnFromWorldwide,true);
 function removeNearDock(){document.querySelectorAll('#boNearMapPage .bop-icons-only-dock,#boNearInfoCard .bop-icons-only-dock').forEach(function(dock){dock.remove()})}
@@ -54936,7 +54943,7 @@ overlay.scrollTop=0;
 /* Brad (2026-09-17): Worldwide page hero -- bring "Best Of" down closer to
    the globe / "Period" line, and raise the globe by a bit over 10%. */
 #bopWorldwideLanding .bop-world-hero .bop-world-best{position:relative!important;top:12px!important}
-#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12 + 2px)!important}
+#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12 + 5px)!important;left:2px!important}
 </style>
 <script id="bop-worldwide-back-restore-v528">(function(){
 /* Brad (2026-09-17): the Worldwide page's own "Back" button closed the page
