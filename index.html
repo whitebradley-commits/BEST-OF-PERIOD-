@@ -1228,10 +1228,10 @@ var OC_CITIES = [
 {n:"San Francisco",la:37.77,lo:-122.42,t:"live",dest:"sanfrancisco"},
 {n:"Silicon Valley",la:37.39,lo:-122.06,t:"live",dest:"siliconvalley"},
 {n:"Idaho",la:43.62,lo:-116.2,t:"live",dest:"idaho"},
-{n:"Phoenix",la:33.45,lo:-112.07,t:"2027"},
-{n:"Denver",la:39.74,lo:-104.99,t:"2027"},
+{n:"Phoenix",la:33.45,lo:-112.07,t:"live",dest:"phoenix"},
+{n:"Denver",la:39.74,lo:-104.99,t:"live",dest:"denver"},
 {n:"Salt Lake City",la:40.76,lo:-111.89,t:"2027"},
-{n:"Dallas",la:32.78,lo:-96.8,t:"2027"},
+{n:"Dallas",la:32.78,lo:-96.8,t:"live",dest:"dallas"},
 {n:"Houston",la:29.76,lo:-95.37,t:"2027"},
 {n:"Austin",la:30.2672,lo:-97.7431,t:"live",dest:"austin"},
 {n:"Chicago",la:41.88,lo:-87.63,t:"live",dest:"chicago"},
@@ -3015,6 +3015,30 @@ tickerMessages: ['AUSTIN IS LIVE!', 'KEEP AUSTIN YUMMY'],
 useNameCycler: true,
 bjsPicksCat: 'bjspicksaustin',
 countryLabel: 'Texas'
+},
+denver: {
+displayName: 'Denver',
+areaList: ['Denver', 'Boulder', 'Aspen & Snowmass', 'Vail & Beaver Creek', 'Breckenridge & Telluride'],
+tickerMessages: ['DENVER IS LIVE!', 'MILE HIGH, YUMMY SOON!'],
+useNameCycler: true,
+bjsPicksCat: 'bjspicksdenver',
+countryLabel: 'Colorado'
+},
+dallas: {
+displayName: 'Dallas',
+areaList: ['Dallas', 'Uptown', 'Deep Ellum', 'Bishop Arts District', 'Fort Worth'],
+tickerMessages: ['DALLAS IS LIVE!', 'Y\'ALL COME EAT'],
+useNameCycler: true,
+bjsPicksCat: 'bjspicksdallas',
+countryLabel: 'Texas'
+},
+phoenix: {
+displayName: 'Phoenix',
+areaList: ['Phoenix', 'Scottsdale', 'Tempe', 'Mesa', 'Flagstaff'],
+tickerMessages: ['PHOENIX IS LIVE!', 'VALLEY OF THE YUMMY'],
+useNameCycler: true,
+bjsPicksCat: 'bjspicksphoenix',
+countryLabel: 'Arizona'
 }
 };
 /* Michelin-first launch roster — August 2026. Every city below is live;
@@ -54874,5 +54898,268 @@ var landing=document.getElementById('bopLandingOverlay');
 if(landing&&!(best&&best.classList.contains('open'))){landing.classList.add('open');landing.scrollTop=0;}
 window.scrollTo(0,0);
 },true);
+})();</script>
+<script id="bop-denver-buildout-v531-script">(function(){
+/* v531 (2026-09-18): Denver build-out, per Brad's "trifecta" rule --
+   only build a city once it has real Michelin + James Beard + One Bite/
+   Dave presence. Denver has all three:
+   - MICHELIN Colorado Guide (statewide since 2026): 2-star The Wolf's
+     Tailor, seven 1-star rooms, Bib Gourmand and Recommended lists.
+   - 2026 James Beard semifinalists: Alma Fonda Fina, Restaurant Olivia,
+     The Wolf's Tailor, Kizaki, Barolo Grill, Hop Alley, Yacht Club,
+     Lady Jane, and more.
+   - Every Denver pizzeria Dave Portnoy has personally One-Bite reviewed,
+     sorted highest to lowest by his own score. Marco's Coal Fired is the
+     rare double-hit: a Dave score AND a 2026 MICHELIN Recommended listing. */
+var PIZZA=[
+{name:"Blue Pan Pizza",address:"3930 W 32nd Ave, Denver, CO 80211",oneBiteDaveScore:7.9,
+why:"Detroit-style pies since 2015 in West Highland (second location in Congress Park). Dave: \u201cThis is a very good, if not great Detroit style pizza because it's so light.\u201d"},
+{name:"Redeemer Pizza",address:"2705 Larimer St, Denver, CO 80205",phone:"(720) 780-1379",oneBiteDaveScore:7.8,
+why:"RiNo's sourdough-tang \u201cNew York 2.0\u201d slices, by the slice from the alley window or as a 16-inch pie inside. Dave's favorite stop on his Colorado trip: \u201cThis is really great stuff!\u201d"},
+{name:"Famous Original J's Pizza",address:"715 E 26th Ave, Denver, CO 80205",oneBiteDaveScore:7.4,
+why:"Five Points window-service NYC-style slices \u2014 owner Joshua Pollack runs Denver tap water through reverse osmosis to match NYC's mineral blend. Dave: \u201cSo far, I think this is my favorite traditional slice.\u201d"},
+{name:"Marco's Coal Fired",address:"2129 Larimer St, Denver, CO 80205",phone:"(303) 296-7000",url:"http://www.marcoscoalfiredpizza.com",oneBiteDaveScore:7.2,
+why:"Colorado's only Associazione Verace Pizza Napoletana-certified pizzeria, in Ballpark. Also MICHELIN Recommended in the 2026 Colorado Guide \u2014 a rare Dave-score-and-Michelin double hit. Dave: \u201cDoes not taste like coal fired to me\u2026\u201d"},
+{name:"Amore Pizza Truck",oneBiteDaveScore:7.2,
+why:"Dave on the crust: \u201cReally good crisp, no flop.\u201d"},
+{name:"Slice Works",oneBiteDaveScore:7.2,
+why:"Dave: \u201cIt tastes like a slice that you have to produce at mass quantity, in mass crowds.\u201d"},
+{name:"Joy Hill",oneBiteDaveScore:6.7,
+why:"Dave: \u201cIt's basically Neapolitan.\u201d"},
+{name:"Marquis Pizza",oneBiteDaveScore:6.66,
+why:"Dave: \u201cThis is a napkin pizza. You need a napkin to sauce it down a little bit. Good undercarriage!\u201d"},
+{name:"White Pie",address:"1702 Humboldt St, Denver, CO 80218",oneBiteDaveScore:6.2,
+why:"Dave: \u201cThis is the floppiest pizza I've ever had!\u201d"}
+];
+PIZZA.forEach(function(p){p.city='denver';p.rating=p.oneBiteDaveScore.toFixed(2).replace(/0$/,'')+' / 10';p.ratingSource='Dave Portnoy \u2014 One Bite';p.note=p.why;p.phone=p.phone||'';p.address=p.address||'';p.url=p.url||'';});
+
+var MICHELIN=[
+{name:"The Wolf's Tailor",michelinStars:2,address:"4058 Tejon St, Denver, CO 80211",
+why:"Colorado's only two-MICHELIN-star restaurant. Chef Taylor Stark's tasting menu draws on Chinese, Japanese, Italian, Thai and Nordic technique; part of Kelly Whitaker's id est Hospitality Group."},
+{name:"Alma Fonda Fina",michelinStars:1,address:"LoHi, Denver, CO",
+why:"Chef Johnny Curiel's Guadalajara-rooted \u201cfonda\u201d cooking \u2014 Colorado's first MICHELIN star (2024). Also a 2026 James Beard semifinalist."},
+{name:"Beckon",michelinStars:1,address:"2843 Larimer St, Denver, CO 80205",
+why:"18-seat RiNo tasting counter from Chef Duncan Holmes."},
+{name:"Brut\u00f8",michelinStars:1,
+why:"Kelly Whitaker's id est Hospitality Group; open-fire, whole-animal cooking."},
+{name:"Mezcaleria Alma",michelinStars:1,
+why:"Johnny Curiel's second Denver MICHELIN star \u2014 agave-forward modern Mexican."},
+{name:"Margot",michelinStars:1,
+why:"One-MICHELIN-star Denver dining room."},
+{name:"Kizaki",michelinStars:1,
+why:"One-MICHELIN-star Denver dining room; also the 2026 James Beard semifinalist for Best New Restaurant."},
+{name:"Milpero",michelinStars:1,
+why:"Denver's newest MICHELIN star, awarded 2026."}
+];
+MICHELIN.forEach(function(r){r.city='denver';r.michelinGuide=true;r.note=r.why;r.address=r.address||'';});
+
+var JAMESBEARD=[
+{name:"Restaurant Olivia",why:"2026 James Beard semifinalist \u2014 Outstanding Hospitality."},
+{name:"Barolo Grill",why:"2026 James Beard semifinalist \u2014 Ryan Fletter, Outstanding Professional in Beverage Service."},
+{name:"Hop Alley",why:"Tommy Lee's Sichuan restaurant \u2014 part of the 2026 James Beard semifinalist Outstanding Restaurateur nod (with Uncle and Molino Chido)."},
+{name:"Yacht Club",why:"2026 James Beard semifinalist \u2014 McLain Hedges & Mary Allison Wright, Outstanding Professional in Cocktail Service."},
+{name:"Lady Jane",why:"2026 James Beard semifinalist \u2014 Outstanding Bar."}
+];
+JAMESBEARD.forEach(function(r){r.city='denver';r.jamesBeard=true;r.note=r.why;r.address='';});
+
+var STEAK=[
+{name:"A5 Steakhouse",why:"MICHELIN Recommended in the 2026 Colorado Guide \u2014 Denver's A5 wagyu specialist."}
+];
+STEAK.forEach(function(r){r.city='denver';r.note=r.why;r.address='';});
+
+function push(cat,rows){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+rows.forEach(function(r){
+var key=(r.name||'').toLowerCase();
+if(boCategoryData[cat].some(function(x){return x&&x.name&&x.name.toLowerCase()===key&&(x.city||'')===(r.city||'denver');}))return;
+boCategoryData[cat].push(JSON.parse(JSON.stringify(r)));
+});
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+push('pizza',PIZZA);
+push('michelin',MICHELIN);
+push('jamesbeard',JAMESBEARD);
+push('steakhighend',STEAK);
+push('bestofdenver',MICHELIN.concat(STEAK));
+return true;
+}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+<script id="bop-dallas-buildout-v532-script">(function(){
+/* v532 (2026-09-18): Dallas build-out -- same trifecta rule as Denver.
+   - MICHELIN Texas Guide: Tatsu and Mamani (1-star each), plus Stillwell's,
+     the Michelin-recognized steakhouse inside Hotel Swexan.
+   - 2026 James Beard semifinalists: Far-Out, Mabo, Lucia, Ayahuasca
+     Cantina, Midnight Rambler, Starship Bagel.
+   - Every DFW pizzeria Dave Portnoy has personally One-Bite reviewed,
+     highest to lowest. */
+var PIZZA=[
+{name:"Fortunate Son",address:"Garland, TX",oneBiteDaveScore:8.1,
+why:"New Haven-style beer garden pizzeria in Garland. Dave: \u201cGreat undercarriage... passes the muster,\u201d and his favorite of the trip."},
+{name:"Cenzo's Pizza & Deli",address:"West Dallas, TX",oneBiteDaveScore:7.6,
+why:"Dave, on a Mattress Firm employee's recommendation: \u201cGood, flavorful, really good crust.\u201d"},
+{name:"Louie's",address:"Knox-Henderson, Dallas, TX",oneBiteDaveScore:7.6,
+why:"Old-school Chicago-vibe bar and restaurant on Henderson Ave \u2014 the top-ranked pizza in Dallas on Dave's own One Bite app. Dave: \u201cPeople know my tavern score... 7.5 is like the baseline. This is better.\u201d"},
+{name:"Thunderbird Pies",address:"Lakewood, Dallas, TX",oneBiteDaveScore:7.3,
+why:"Cane Rosso's Detroit-style spinoff. Dave: \u201cPretty good pizza \u2014 at least for Texas.\u201d"},
+{name:"Pizza Leila",address:"Arts District, Dallas, TX",oneBiteDaveScore:7.2,
+why:"Sicilian-style square pies off Flora Street. Dave: \u201ca mix between good and cafeteria pizza\u201d \u2014 still top 500 of the 1,000+ pizzas he's reviewed."}
+];
+PIZZA.forEach(function(p){p.city='dallas';p.rating=p.oneBiteDaveScore.toFixed(2).replace(/0$/,'')+' / 10';p.ratingSource='Dave Portnoy \u2014 One Bite';p.note=p.why;p.phone=p.phone||'';p.address=p.address||'';p.url=p.url||'';});
+
+var MICHELIN=[
+{name:"Tatsu Dallas",michelinStars:1,address:"3309 Elm St, Dallas, TX 75226",
+why:"10-seat Edomae sushi counter from Chef Tatsuya \u201cTatsu\u201d Sekiguchi in the historic Continental Gin Building, Deep Ellum."},
+{name:"Mamani",michelinStars:1,address:"2828 Routh St, Dallas, TX 75201",
+why:"French-Italian Riviera-glam Uptown room \u2014 earned its MICHELIN Star just 57 days after opening."}
+];
+MICHELIN.forEach(function(r){r.city='dallas';r.michelinGuide=true;r.note=r.why;r.address=r.address||'';});
+
+var JAMESBEARD=[
+{name:"Far-Out",why:"2026 James Beard semifinalist \u2014 Best New Restaurant. Chef Misti Norris, Quonset-hut restaurant and bar in Fair Park."},
+{name:"Mabo",why:"2026 James Beard semifinalist \u2014 Masayuki Otaka, Best Chef: Texas. Charcoal-grill skewer restaurant in Preston Center."},
+{name:"Lucia",why:"2026 James Beard semifinalist \u2014 Maggie Huff, Outstanding Pastry Chef or Baker. Bishop Arts Italian from David & Jennifer Uygur; also a MICHELIN Bib Gourmand."},
+{name:"Ayahuasca Cantina",why:"2026 James Beard semifinalist \u2014 Outstanding Bar. Bishop Arts bar built around the flavors of Mexico."},
+{name:"Midnight Rambler",why:"2026 James Beard semifinalist \u2014 Gabe Sanchez, Outstanding Professional in Cocktail Service."},
+{name:"Starship Bagel",why:"2026 James Beard semifinalist \u2014 Outstanding Bakery. Lewisville bagel shop, back-to-back nominee."}
+];
+JAMESBEARD.forEach(function(r){r.city='dallas';r.jamesBeard=true;r.note=r.why;r.address='';});
+
+var STEAK=[
+{name:"Stillwell's",address:"2575 Mckinnon St, Dallas, TX 75201",
+why:"MICHELIN-recognized steakhouse on the 7th floor of Hotel Swexan, named for rancher Hallie Stillwell \u2014 in-house HWD Akaushi beef from their own breeding program."}
+];
+STEAK.forEach(function(r){r.city='dallas';r.note=r.why;});
+
+function push(cat,rows){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+rows.forEach(function(r){
+var key=(r.name||'').toLowerCase();
+if(boCategoryData[cat].some(function(x){return x&&x.name&&x.name.toLowerCase()===key&&(x.city||'')===(r.city||'dallas');}))return;
+boCategoryData[cat].push(JSON.parse(JSON.stringify(r)));
+});
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+push('pizza',PIZZA);
+push('michelin',MICHELIN);
+push('jamesbeard',JAMESBEARD);
+push('steakhighend',STEAK);
+push('bestofdallas',MICHELIN.concat(STEAK));
+return true;
+}
+function ready2(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready2(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+<script id="bop-phoenix-buildout-v533-script">(function(){
+/* v533 (2026-09-18): Phoenix build-out -- same trifecta rule.
+   - MICHELIN Southwest Guide (2026, no AZ stars yet): 7 Bib Gourmand,
+     12 Recommended. Three of these -- FnB, Kid Sister, Little Miss BBQ --
+     are ALSO 2026 James Beard semifinalists, a genuine double-hit.
+   - 2026 James Beard Arizona semifinalists.
+   - Only the Valley pizzerias Dave Portnoy has personally One-Bite scored
+     that are still open (Andiamo Pizzeria also scored 8.2 but has since
+     permanently closed, so it's left off). Thinner list than Denver or
+     Dallas -- this is genuinely all that's confirmed and still operating. */
+var PIZZA=[
+{name:"Trevor's Liquor",address:"Arcadia, Phoenix, AZ (near 36th St & Indian School Rd)",oneBiteDaveScore:8.3,
+why:"Liquor store/restaurant hybrid with three Valley locations. Dave: \u201cHow did we not know about this? This is great\u201d \u2014 his highest-ever Arizona score."},
+{name:"Craft 64",city:"phoenix",oneBiteDaveScore:7.5,
+why:"Reviewed the same weekend as Pizzeria Bianco during Super Bowl week 2023."}
+];
+PIZZA.forEach(function(p){p.city='phoenix';p.rating=p.oneBiteDaveScore.toFixed(2).replace(/0$/,'')+' / 10';p.ratingSource='Dave Portnoy \u2014 One Bite';p.note=p.why;p.phone=p.phone||'';p.address=p.address||'';p.url=p.url||'';});
+
+var MICHELIN=[
+{name:"FnB",why:"MICHELIN Bib Gourmand AND a 2026 James Beard semifinalist (Charleen Badman, Outstanding Chef) \u2014 farm-to-table Scottsdale pioneer."},
+{name:"Kid Sister",why:"MICHELIN Bib Gourmand AND a 2026 James Beard semifinalist (Zac Adcox, Outstanding Professional in Beverage Service) \u2014 Phoenix wine bar."},
+{name:"Little Miss BBQ",why:"MICHELIN Bib Gourmand AND a 2026 James Beard semifinalist (Scott Holmes, Best Chef: Southwest) \u2014 Phoenix barbecue, two locations."},
+{name:"Huarachis Taqueria",why:"MICHELIN Bib Gourmand, Phoenix \u2014 Chef Ren\u00e9 Andrade, 2026 Michelin Young Chef Award winner."},
+{name:"Lom Wong",why:"MICHELIN Bib Gourmand, Phoenix \u2014 Chef Yotaka \u201cSunny\u201d Martin, 2025 James Beard Best Chef: Southwest winner."},
+{name:"Pizzeria Bianco",why:"MICHELIN Bib Gourmand, Phoenix \u2014 Chris Bianco's pizzeria, widely considered among the best in the country. Also personally reviewed by Dave Portnoy during 2023 Super Bowl week."},
+{name:"Valentine",why:"MICHELIN Bib Gourmand, Phoenix."}
+];
+MICHELIN.forEach(function(r){r.city='phoenix';r.michelinGuide=true;r.note=r.why;r.address=r.address||'';});
+
+var JAMESBEARD=[
+{name:"Indibar",why:"2026 James Beard semifinalist \u2014 Best New Restaurant, Scottsdale."},
+{name:"Highball",why:"2026 James Beard semifinalist \u2014 Outstanding Bar, Phoenix."},
+{name:"Little Rituals",why:"2026 James Beard semifinalist \u2014 Ross Simon, Outstanding Professional in Cocktail Service, Phoenix."},
+{name:"Espiritu",why:"2026 James Beard semifinalist \u2014 Roberto Centeno, Best Chef: Southwest, Mesa."},
+{name:"Restaurant Progress",why:"2026 James Beard semifinalist \u2014 TJ Culp, Best Chef: Southwest, Phoenix."},
+{name:"Chula Seafood",why:"2026 James Beard semifinalist \u2014 Kyle Kent, Best Chef: Southwest, Phoenix."},
+{name:"Tacos Chiwas",why:"2026 James Beard semifinalist \u2014 Armando Hernandez & Nadia Holguin, Best Chef: Southwest, Phoenix."}
+];
+JAMESBEARD.forEach(function(r){r.city='phoenix';r.jamesBeard=true;r.note=r.why;r.address='';});
+
+function push(cat,rows){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+rows.forEach(function(r){
+var key=(r.name||'').toLowerCase();
+if(boCategoryData[cat].some(function(x){return x&&x.name&&x.name.toLowerCase()===key&&(x.city||'')===(r.city||'phoenix');}))return;
+boCategoryData[cat].push(JSON.parse(JSON.stringify(r)));
+});
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+push('pizza',PIZZA);
+push('michelin',MICHELIN);
+push('jamesbeard',JAMESBEARD);
+push('bestofphoenix',MICHELIN);
+return true;
+}
+function ready3(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready3(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+<script id="bop-best-of-tier-buildout-v534-script">(function(){
+/* v534 (2026-09-18): Per Brad's clarification, each new city also gets its
+   own general "Best Of" top tier -- high-end ($$$-$$$$), highly-rated
+   restaurants independent of Michelin or James Beard status. Sourced from
+   OpenTable's real, current rating + review-count data for each city. */
+var DENVER=[
+{name:"Mizuna",rating:"4.9 / 5",reviews:2516,price:4,why:"Central Denver's flagship of Bonanno Concepts \u2014 French-technique contemporary American, monthly-changing menu. Consistently rated among the best restaurants in the country."},
+{name:"Ocean Prime \u2014 Denver",rating:"4.8 / 5",reviews:7839,price:4,why:"Larimer Square seafood-and-steak from Cameron Mitchell Restaurants; Wine Spectator-honored list."},
+{name:"Fleming's Steakhouse \u2014 Denver",rating:"4.8 / 5",reviews:2355,price:4,why:"Englewood prime steakhouse."},
+{name:"Elway's Downtown",rating:"4.6 / 5",reviews:4356,price:4,why:"John Elway's steakhouse inside the Ritz-Carlton Denver; Colorado Chic dining room, signature Lamb Chop Fondue."},
+{name:"Le Bilboquet \u2014 Denver",rating:"4.6 / 5",reviews:2293,price:4,why:"Cherry Creek North French-American bistro, white linens and velvet seats."}
+];
+DENVER.forEach(function(r){r.city='denver';r.ratingSource='OpenTable';r.note=r.why;r.address=r.address||'';});
+
+var DALLAS=[
+{name:"The Mansion Restaurant",rating:"4.7 / 5",reviews:3409,price:4,why:"Rosewood Mansion on Turtle Creek \u2014 opened 1980, French-leaning New American in an opulent 1920s dining room."},
+{name:"Bob's Steak & Chop House \u2014 Grapevine",rating:"4.9 / 5",reviews:7380,price:4,why:"Texas steakhouse institution with a devoted following."},
+{name:"Nobu Dallas",rating:"4.7 / 5",reviews:3237,price:4,why:"Uptown outpost of the global Japanese-Peruvian fine-dining brand."},
+{name:"Drake's Hollywood \u2014 Dallas",rating:"4.7 / 5",reviews:1151,price:4,why:"Park Cities Old Hollywood steakhouse \u2014 dry-aged steaks, cold martinis."},
+{name:"Ocean Prime \u2014 Dallas",rating:"4.6 / 5",reviews:6144,price:4,why:"Uptown seafood-and-steak from Cameron Mitchell Restaurants."}
+];
+DALLAS.forEach(function(r){r.city='dallas';r.ratingSource='OpenTable';r.note=r.why;r.address=r.address||'';});
+
+var PHOENIX=[
+{name:"Cafe Monarch",rating:"4.9 / 5",reviews:8497,price:4,why:"Old Town Scottsdale prix-fixe and tasting-menu room \u2014 named one of TripAdvisor's Top Three Fine Dining Restaurants in the Nation."},
+{name:"Voil\u00e0 French Bistro \u2014 Scottsdale",rating:"4.9 / 5",reviews:1813,price:4,why:"Classic French bistro \u2014 foie gras, escargot, a proper seafood tower."},
+{name:"The Capital Grille \u2014 Phoenix",rating:"4.8 / 5",reviews:3440,price:4,why:"Central Phoenix steakhouse, dry-aged in-house 18 to 24 days."},
+{name:"Ocean Prime \u2014 Phoenix",rating:"4.8 / 5",reviews:4138,price:4,why:"North Scottsdale seafood-and-steak from Cameron Mitchell Restaurants."},
+{name:"Wrigley Mansion \u2014 Geordie's",rating:"4.8 / 5",reviews:2234,price:4,why:"1930s-grandeur dining room inside the historic Wrigley Mansion, Biltmore; Wine Spectator Top 100 Wine Restaurant."}
+];
+PHOENIX.forEach(function(r){r.city='phoenix';r.ratingSource='OpenTable';r.note=r.why;r.address=r.address||'';});
+
+function push(cat,rows){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+rows.forEach(function(r){
+var key=(r.name||'').toLowerCase();
+if(boCategoryData[cat].some(function(x){return x&&x.name&&x.name.toLowerCase()===key&&(x.city||'')===r.city;}))return;
+boCategoryData[cat].push(JSON.parse(JSON.stringify(r)));
+});
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+push('bestofdenver',DENVER);
+push('bestofdallas',DALLAS);
+push('bestofphoenix',PHOENIX);
+return true;
+}
+function ready4(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready4(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
 </body></html>
