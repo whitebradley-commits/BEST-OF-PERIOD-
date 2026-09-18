@@ -12710,7 +12710,7 @@ if(nearLower){
 const closest=document.createElement('section');
 closest.className='bo-near-closest';
 closest.setAttribute('aria-label','Closest restaurants by dining type');
-closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Choose Dive, Casual, Fine, or All.</p><p class="bo-near-tap-hint">Tap to view.</p><div class="bo-near-closest-list" id="boNearClosestList"></div><div class="bo-near-osm-block"><div class="bo-near-osm-heading">Closest Nearby — Any Restaurant</div><div class="bo-near-closest-filters" role="group" aria-label="Filter any-restaurant results by estimated tier"><button type="button" class="bo-near-closest-filter" data-near-osm-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter is-active" data-near-osm-tier="all" aria-pressed="true">ALL</button></div><p class="bo-near-closest-status" id="boNearOsmStatus">Finding the closest restaurants near you…</p><div class="bo-near-closest-list" id="boNearOsmList"></div></div>';
+closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Loading closest restaurants…</p><p class="bo-near-tap-hint">Tap to view.</p><div class="bo-near-closest-list" id="boNearClosestList"></div><div class="bo-near-osm-block"><div class="bo-near-osm-heading">Closest Nearby — Any Restaurant</div><div class="bo-near-closest-filters" role="group" aria-label="Filter any-restaurant results by estimated tier"><button type="button" class="bo-near-closest-filter" data-near-osm-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter is-active" data-near-osm-tier="all" aria-pressed="true">ALL</button></div><p class="bo-near-closest-status" id="boNearOsmStatus">Finding the closest restaurants near you…</p><div class="bo-near-closest-list" id="boNearOsmList"></div></div>';
 nearLower.insertBefore(closest,nearLower.firstChild);
 closest.querySelectorAll('[data-near-tier]').forEach(btn=>btn.addEventListener('click',()=>{
 boNearClosestTier=btn.dataset.nearTier||'';
@@ -13271,7 +13271,7 @@ boNearOsmAllPlaces=[];
 const closestList=document.getElementById('boNearClosestList');
 const closestStatus=document.getElementById('boNearClosestStatus');
 if(closestList) closestList.innerHTML='';
-if(closestStatus) closestStatus.textContent='Choose Dive, Casual, Fine, or All.';
+if(closestStatus) closestStatus.textContent='Loading closest restaurants…';
 const closestTitle=document.getElementById('boNearClosestTitle');
 if(closestTitle) closestTitle.textContent='CLOSEST';
 document.querySelectorAll('#boNearMapPage [data-near-tier]').forEach(btn=>btn.setAttribute('aria-pressed','false'));
@@ -13470,7 +13470,8 @@ if(run!==boNearMapGeocodeRun) return;
 const r=geocodeQueue[i];
 let geo=null;
 const property=boNearPropertyRuleForRestaurant(r,(r.city&&BO_CITY_CONFIG[r.city])?r.city:cityKey);
-const usedSavedPropertyLocation=!!property;
+const hasSavedCoords=r.lat!=null&&r.lon!=null&&Number.isFinite(Number(r.lat))&&Number.isFinite(Number(r.lon));
+const usedSavedPropertyLocation=!!property||hasSavedCoords;
 if(property){
 geo={lat:Number(property.lat),lon:Number(property.lon)};
 }else{
@@ -24959,7 +24960,6 @@ return '<span class="bop-all-pizza-row-score'+(has?'':' is-dash')+'">'+(has?Numb
 }
 function daveChip(val,daveHasEaten,isBjsPick){
 if(daveHasEaten)return '<span class="bop-all-pizza-row-score">'+Number(val).toFixed(1)+'</span>';
-if(isBjsPick)return '<span class="bop-all-pizza-row-score is-dash bop-want-dave" title="This BJS Pick hasn\u2019t been scored by Dave yet">WANT<br>DAVE?</span>';
 return '<span class="bop-all-pizza-row-score is-dash">\u2014</span>';
 }
 var firstSuggestIdx=-1;
@@ -55163,4 +55163,171 @@ return true;
 function ready4(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
 ready4(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
+<style id="bop-closest-flat-distance-v535-style">
+/* Per Brad (2026-09-18): BJS Directory Closest drops the Dive/Casual/Fine/
+   All price-tier picker entirely -- it's now pure distance, start-with-5,
+   with a doubling SHOW MORE button. Only hides the BJS Directory's own
+   filter row ([data-near-tier]); the separate "Closest Nearby -- Any
+   Restaurant" OSM section below keeps its own dive/casual/fine filters
+   ([data-near-osm-tier]) untouched. */
+#boNearMapPage .bo-near-closest-filters:has([data-near-tier]){display:none!important}
+.bop-closest-show-more{display:none;width:100%;margin:14px 0 4px;padding:13px;border:1.5px solid #F59E0B;border-radius:12px;background:#0a0a0a;color:#F59E0B;font:900 13px/1 'Archivo Narrow',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
+.bop-closest-show-more:active{background:#F59E0B;color:#000}
+</style>
+<script id="bop-closest-flat-distance-v535-script">(function(){
+function esc(v){return typeof boNearEscape==='function'?boNearEscape(v):String(v==null?'':v).replace(/[&<>"']/g,'');}
+var showCount=5;
+var lastRun=null;
+function nearParent(k){
+k=String(k||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+if(!k)return '';
+if(k==='vegas'||k==='lasvegas')return 'bestof';
+if(k==='la')return 'losangeles';
+if(k==='sd')return 'sandiego';
+var cfg=(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG&&BO_CITY_CONFIG[k])||null;
+if(cfg&&(cfg.parentCity||cfg.parent))return String(cfg.parentCity||cfg.parent).toLowerCase();
+if(/^sd[a-z]/.test(k))return 'sandiego';
+if(/^la[a-z]/.test(k))return 'losangeles';
+return k;
+}
+function render(){
+var list=document.getElementById('boNearClosestList'),status=document.getElementById('boNearClosestStatus');
+if(!list||!status)return;
+if(typeof boNearMapGeocodeRun!=='undefined'&&boNearMapGeocodeRun!==lastRun){lastRun=boNearMapGeocodeRun;showCount=5;}
+if(!boNearUserLatLng){
+list.innerHTML='';status.innerHTML='LOCATING YOUR POSITION\u2026';status.classList.add('is-locating');
+var moreEl0=document.getElementById('bopClosestShowMore');if(moreEl0)moreEl0.style.display='none';
+return;
+}
+if(!boNearGeocodingComplete && boNearMappedRestaurants.length===0){
+list.innerHTML='';
+status.textContent='LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026';
+status.classList.add('is-locating');
+var moreEl1=document.getElementById('bopClosestShowMore');if(moreEl1)moreEl1.style.display='none';
+return;
+}
+var physCity=(typeof boNearClosestPlatformCity==='function')?boNearClosestPlatformCity(boNearUserLatLng):null;
+var available=boNearMappedRestaurants.map(function(item){
+var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)},hours=boNearHoursState(item.restaurant);
+return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
+}).filter(function(item){
+if(!Number.isFinite(item.distance))return false;
+if(!physCity)return true;
+var rc=nearParent(item.restaurant&&item.restaurant.city);
+if(!rc)return physCity==='bestof'||item.distance<=60;
+return rc===physCity;
+}).sort(function(a,b){return a.distance-b.distance;});
+var open=available.filter(function(i){return i.hoursState.state!=='closed';});
+var closed=available.filter(function(i){return i.hoursState.state==='closed';});
+var ordered=(!boNearGeocodingComplete)?open:open.concat(closed);
+var candidates=ordered.slice(0,showCount);
+var moreEl=document.getElementById('bopClosestShowMore');
+if(!candidates.length){
+list.innerHTML='';
+status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026':'No restaurants are mapped near this location yet.';
+status.classList.toggle('is-locating',!boNearGeocodingComplete);
+if(moreEl)moreEl.style.display='none';
+return;
+}
+status.classList.remove('is-locating');
+status.textContent=(boNearGeocodingComplete?'Showing ':'Still mapping \u2014 currently showing ')+candidates.length+' closest restaurants.';
+list.innerHTML=candidates.map(function(item,index){
+var r=item.restaurant,level=boNearPriceLevel(r)||1,tier=level>=4?'fine':(level<=1?'dive':'casual');
+var pill='<span class="bo-near-osm-tier bo-near-osm-tier-'+tier+'">'+'$'.repeat(level)+'</span>';
+var distance=item.distance<.05?'under 0.1 mi':item.distance.toFixed(1)+' mi';
+return '<button type="button" class="bo-near-closest-row" data-near-flat="'+index+'"><span><span class="bo-near-closest-name">'+esc(r.name)+' '+pill+'</span><span class="bo-near-closest-meta">\u2605 '+esc(r.ratingText||item.rating.toFixed(1))+'</span></span><span class="bo-near-closest-distance">'+distance+'</span></button>';
+}).join('');
+list.querySelectorAll('[data-near-flat]').forEach(function(btn){
+btn.addEventListener('click',function(){
+var item=candidates[Number(btn.dataset.nearFlat)];if(!item)return;
+if(boNearMap)boNearMap.setView([item.geo.lat,item.geo.lon],Math.max(boNearMap.getZoom(),16));
+boShowNearRestaurantCard(item.restaurant,String(item.restaurant.cat||'')+'||'+String(item.restaurant.name||'')+'||'+String(item.restaurant.address||''));
+});
+});
+if(!moreEl){
+moreEl=document.createElement('button');
+moreEl.type='button';
+moreEl.id='bopClosestShowMore';
+moreEl.className='bop-closest-show-more';
+list.insertAdjacentElement('afterend',moreEl);
+moreEl.addEventListener('click',function(){showCount=showCount*2;render();});
+}
+if(ordered.length>showCount){
+moreEl.style.display='block';
+moreEl.textContent='SHOW MORE ('+Math.min(showCount*2,ordered.length)+')';
+}else{
+moreEl.style.display='none';
+}
+}
+window.boRenderNearClosestFive=render;
+})();</script>
+<script id="bop-north-county-buildout-v536-script">(function(){
+/* v536 (2026-09-18): North County (Carlsbad / Oceanside / Vista / San
+   Marcos / Bonsall) build-out per Brad. Real, currently-open, high-end
+   spots not previously in the system. Only Campfire and Vigilucci's have
+   a genuine 3-source aggregate; the rest are PROVISIONAL (thinner public
+   data) and labeled as such, same convention used elsewhere in this file.
+   Vista and Bonsall turned up nothing that cleared the high-end bar with
+   real multi-source data -- left out rather than padded. */
+var ROWS=[
+{name:"Campfire",city:"sdcarlsbad",cats:["newamericanfine","sdcarlsbad"],
+address:"2725 State St, Carlsbad, CA 92008",phone:"(760) 637-5121",url:"https://thisiscampfire.com/",
+rating:4.7,reviews:5900,
+ratingNote:"BJS aggregate: OpenTable 4.8 (~5,900 reviews) + Google 4.6 (2,480 ratings) + MICHELIN Plate recognition (2024 and 2025).",
+why:"Live-fire American cooking from Chef Andrew Bachelier on a custom 12-foot hearth, in a former auto shop with a WWII Quonset arch from Camp Pendleton. Sits alongside Jeune et Jolie and Lilo as part of Carlsbad's small cluster of genuinely ambitious kitchens.",
+price:3},
+{name:"Ember & Rye",city:"sdcarlsbad",cats:["steakhighend","sdcarlsbad"],
+address:"7447 Batiquitos Dr, Carlsbad, CA 92011",phone:"(760) 603-6908",url:"https://parkhyattaviara.com/eat-drink/ember-and-rye/",
+rating:4.6,reviews:1195,jamesBeard:true,
+ratingNote:"BJS aggregate: OpenTable 4.6 (1,195+ reviews, up to 1,276 in later snapshots). Executive Chef Jonathan Bautista is a 2023 James Beard Award nominee, Best Chef West.",
+why:"Steaks and coastal seafood on the 18th green of Aviara Golf Club, inside the Park Hyatt Aviara, overlooking Batiquitos Lagoon.",
+price:4},
+{name:"Vigilucci's Seafood & Steakhouse",city:"sdcarlsbad",cats:["seafoodhighend","steakhighend","sdcarlsbad"],
+address:"3878 Carlsbad Blvd, Carlsbad, CA 92008",
+rating:4.6,reviews:5000,
+ratingNote:"BJS aggregate: OpenTable 4.6\u20134.8 (~4,600\u20135,000 reviews across snapshots) + Tripadvisor 4.4 (738 reviews); Yelp/Google review volume also in the thousands.",
+why:"Northern Italian-inflected seafood and steak across from the Pacific on historic Highway 101 \u2014 one of the best ocean views in San Diego, oyster and seafood towers, prime steaks.",
+price:4},
+{name:"264 Fresco",city:"sdcarlsbad",cats:["italianfine","sdcarlsbad"],
+rating:4.5,reviews:2800,
+ratingNote:"PROVISIONAL. OpenTable 4.4\u20134.6 (~2,600\u20132,900 reviews across regional snapshots) \u2014 single confirmed source so far.",
+why:"Upscale Italian dining room, Carlsbad.",
+price:4},
+{name:"Little Victory Wine Bar",city:"sdcarlsbad",cats:["bars","sdcarlsbad"],
+address:"505 Oak Ave, Ste B, Carlsbad, CA 92008",
+rating:4.9,reviews:94,
+ratingNote:"PROVISIONAL. OpenTable 4.9 (94 reviews) \u2014 small, newer, single confirmed source so far.",
+why:"Natural wine bar in Carlsbad Village with a full farm-to-table food menu; intentionally scaled to about 24-28 seats inside plus patio.",
+price:3},
+{name:"The Rooftop Bar at Mission Pacific",city:"sdoceanside",cats:["bars","sdoceanside"],
+rating:4.6,reviews:150,
+ratingNote:"PROVISIONAL. OpenTable 4.6\u20134.7 (~140\u2013175 reviews across snapshots) \u2014 single confirmed numeric source, plus Mission Pacific Beach Resort was named the #1 resort hotel in Travel + Leisure's World's Best Awards, 2024.",
+why:"Rooftop lounge above Mission Pacific Beach Resort \u2014 Oceanside coastline views, cabanas, fire pits, small Mediterranean bites from Chef Alec Vasquez.",
+price:4},
+{name:"Buona Forchetta \u2014 San Marcos",city:"sdsanmarcos",cats:["italiancasual","sdsanmarcos"],
+rating:4.4,reviews:450,
+ratingNote:"PROVISIONAL. OpenTable 4.4 (~441\u2013477 reviews across snapshots) \u2014 single confirmed source so far. Fifth location of the acclaimed Neapolitan-pizza group already on our site (South Park, North Park).",
+why:"Award-winning Neapolitan-style pizza and upscale Northern Italian entrees in San Marcos' North City.",
+price:3}
+];
+function push(row){
+var cats=row.cats;
+cats.forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var key=row.name.toLowerCase();
+if(boCategoryData[cat].some(function(x){return x&&x.name&&x.name.toLowerCase()===key&&(x.city||'')===row.city;}))return;
+var rec={name:row.name,city:row.city,rating:row.rating.toFixed(1)+' / 5',reviews:row.reviews,ratingSource:'BJS aggregate',ratingNote:row.ratingNote,address:row.address||'',phone:row.phone||'',url:row.url||'',why:row.why,note:row.why,price:row.price||3};
+if(row.jamesBeard)rec.jamesBeard=true;
+boCategoryData[cat].push(rec);
+});
+}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+ROWS.forEach(push);
+return true;
+}
+function ready5(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready5(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
 </body></html>
