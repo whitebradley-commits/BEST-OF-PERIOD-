@@ -8322,6 +8322,7 @@ why: "A genuine Las Vegas pizza institution from noted local pizzaiolo John Aren
 note: "Tavern-style pizza with toppings like sausage, broccolini, and burrata kissed with citrus. Fresh-baked bread loaves and a Dominica Salad with house dressing that regulars specifically call out.",
 url: "",
 address: "6720 Sky Pointe Dr, Las Vegas, NV 89131",
+phone: "(702) 564-6726",
 hue: "18, 38%, 28%",
 price: 2,
 instagram: null,
@@ -8570,7 +8571,7 @@ if(!boCategoryData.pizza.some(existing => existing && existing.name === record.n
 })();
 (function rapidlyExpandPizzaCities(){
 const additions = [
-['miami','Lucali Miami Beach',8.8,null,null,'1930 Bay Rd, Miami Beach, FL 33139','Brooklyn-born whole-pie destination with a major Miami following'],
+['miami','Lucali Miami Beach',8.8,null,null,'1930 Bay Rd, Miami Beach, FL 33139','Brooklyn-born whole-pie destination with a major Miami following','(305) 695-4441'],
 ['miami','Eleventh Street Pizza',8.7,null,null,'1035 N Miami Ave, Miami, FL 33136','Downtown slice shop known for crisp New York-style pies'],
 ['miami','La Leggenda Pizzeria',8.6,null,null,'224 Española Way, Miami Beach, FL 33139','Neapolitan pizza from a respected Miami Beach specialist'],
 ['miami','Mister O1 Extraordinary Pizza',8.5,null,null,'1680 Michigan Ave, Miami Beach, FL 33139','Thin creative pies with broad local and national recognition'],
@@ -8631,7 +8632,7 @@ additions.forEach((r,index)=>{
 const city=r[0],name=r[1];
 if(boCategoryData.pizza.some(x=>x&&x.name===name&&(x.city||'bestof')===city)) return;
 const existingCount=boCategoryData.pizza.filter(x=>(x.city||'bestof')===city).length;
-boCategoryData.pizza.push({rank:existingCount+1,name,city,image:'',rating:(r[2]/2).toFixed(2)+' / 5',reviews:null,price:2,hue:'18, 42%, 27%',why:r[6],note:'Rapid pizza expansion listing. Broader details and restaurant media are coming later.',url:'',address:r[5],phone:'',hours:[],bjsPizzaScore:r[2].toFixed(1),oneBiteScore:r[3],oneBiteReviews:null,oneBiteDaveScore:r[4]});
+boCategoryData.pizza.push({rank:existingCount+1,name,city,image:'',rating:(r[2]/2).toFixed(2)+' / 5',reviews:null,price:2,hue:'18, 42%, 27%',why:r[6],note:'Rapid pizza expansion listing. Broader details and restaurant media are coming later.',url:'',address:r[5],phone:r[7]||'',hours:[],bjsPizzaScore:r[2].toFixed(1),oneBiteScore:r[3],oneBiteReviews:null,oneBiteDaveScore:r[4]});
 });
 })();
 (function pushPizzaPastOneHundred(){
@@ -25158,9 +25159,9 @@ function pizza(name,url,address,bjs,oneBite,dave,reviews,why,phone){
 return restaurant(name,url,address,why,2,{phone:phone||'',rating:(bjs/2).toFixed(2)+' / 5',bjsPizzaScore:bjs.toFixed(1),oneBiteScore:oneBite,oneBiteDaveScore:dave,oneBiteReviews:reviews});
 }
 [
-pizza('Sammataro Pizza','https://www.sammataro.pizza/','2907 E 12th St, Austin, TX 78702',8.6,8.1,7.9,75,'Coal-fired Austin pizza with the strongest verified Dave and community convergence.',''),
+pizza('Sammataro Pizza','https://www.sammataro.pizza/','2907 E 12th St, Austin, TX 78702',8.6,8.1,7.9,75,'Coal-fired Austin pizza with the strongest verified Dave and community convergence.','(917) 652-1835'),
 pizza("Pedroso’s Pizza",'https://www.pedrosospizza.com/','8315 Burnet Rd, Austin, TX 78757',8.5,7.7,7.7,49,'Balanced New York-style pizza with crisp structure and an official Dave review.','(737) 600-1107'),
-pizza('Via 313 Pizza','https://www.via313.com/','12005 US-290, Austin, TX 78737',8.3,7.4,7.5,56,'Austin’s Detroit-style standard-bearer with verified Dave and community scores.',''),
+pizza('Via 313 Pizza','https://www.via313.com/','12005 US-290, Austin, TX 78737',8.3,7.4,7.5,56,'Austin’s Detroit-style standard-bearer with verified Dave and community scores.','(512) 609-9405'),
 pizza('Small’s Pizza','https://www.smallspizza.com/','1023 Springdale Rd, Austin, TX 78721',8.8,8.6,null,7,'Thin, highly charred pizza with an exceptional early One Bite community score.','(203) 903-1224'),
 pizza('Allday Pizza — Tarrytown','https://www.alldaypizza.com/','3111 W 35th St, Austin, TX 78703',8.7,8.9,null,2,'New-school Austin pizza with an elite but still small One Bite sample.','(512) 222-8750'),
 pizza('Home Slice Pizza — North Loop','https://homeslicepizza.com/','501 E 53rd St, Austin, TX 78751',8.2,7.1,5.8,52,'Austin institution whose broader BJS result substantially outpaces Dave’s original review.','(512) 707-7437'),
@@ -29394,7 +29395,7 @@ image:'', imagePosition:'center',
 rating:'4.3 / 5', reviews:20, ratingSource:'BJS aggregate: Yelp, Apple Maps, One Bite community', price:1, hue:'18, 42%, 27%',
 why:'Fishtown/Kensington NYC-style slices \u2014 One Bite community 8.4.',
 note:'Sourdough-crust NYC-style pizzeria; press-reported Dave score pending app update.',
-url:'', address:'1826 Frankford Ave, Philadelphia, PA 19125', phone:null, hours:[],
+url:'', address:'1826 Frankford Ave, Philadelphia, PA 19125', phone:'(215) 315-8352', hours:[],
 bjsPizzaScore: blendedBjs.toFixed(1),
 oneBiteScore: community, oneBiteReviews: 5, oneBiteDaveScore: daveFromPress,
 bjsPick:false, bjsPickCity:null, bjsPickLabel:null, bjsSources:[],
@@ -34430,7 +34431,7 @@ neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}},
 ratingNote:"4.6 referenced across review aggregators; verified source count pending per standard \u2014 provisional.",
 why:"A San Diego institution since 1950 \u2014 walk through the attached Italian grocery to reach the dining room.",
 note:"Red-and-white checkered tablecloths, hanging salamis, and classic New York-style pies that have barely changed in decades. The original Little Italy location and the one that started the local chain.",
-url:"",address:"1747 India St, San Diego, CA 92101",phone:"",hue:"5, 45%, 30%",price:1,
+url:"",address:"1747 India St, San Diego, CA 92101",phone:"(619) 232-5094",hue:"5, 45%, 30%",price:1,
 neighborhood:"Little Italy",neighborhoodCity:"sddowntown"}}
 ];
 LITTLEITALY_SD_ROWS.forEach(function(e){e.cats.forEach(function(c){addTo(c,e.r);});});
@@ -47932,10 +47933,10 @@ greek:[
 {name:"Yaya",city:"paris",rating:"4.5 / 5",reviews:680,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.3 (390 reviews), Google 4.6 (290 reviews).",price:2,address:"29 Rue de la Villette, 75019 Paris, France",phone:"",why:"A casual, colorful Greek restaurant in Belleville focused on mezze-style small plates",note:"Sharing-plate mezze format in a bright, casual Belleville dining room."}
 ],
 pizza:[
-{name:"Peppe Pizzeria Étienne Marcel",city:"paris",rating:"4.7 / 5",bjsPizzaScore:9.4,reviews:568,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (568 reviews).",price:2,address:"Paris, France",phone:"",why:"A highly rated Paris pizzeria from pizza champion Giuseppe Cutraro",note:"The Étienne Marcel location is among the city's strongest-reviewed pizza destinations."},
+{name:"Peppe Pizzeria Étienne Marcel",city:"paris",rating:"4.7 / 5",bjsPizzaScore:9.4,reviews:568,ratingSource:"Tripadvisor",ratingNote:"Tripadvisor 4.7 (568 reviews).",price:2,address:"11 Rue Étienne Marcel, 75001 Paris, France",phone:"+33 1 59 16 87 06",why:"A highly rated Paris pizzeria from pizza champion Giuseppe Cutraro",note:"The Étienne Marcel location is among the city's strongest-reviewed pizza destinations."},
 {name:"Popine",city:"paris",rating:"4.6 / 5",bjsPizzaScore:9.2,reviews:920,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.4 (520 reviews), Google 4.7 (400 reviews).",price:2,address:"20 Rue Servan, 75011 Paris, France",phone:"",why:"A well-regarded Paris pizzeria known for naturally fermented dough",note:"A neighborhood pizzeria frequently cited for its dough and seasonal toppings."},
 {name:"Louie Louie",city:"paris",rating:"4.4 / 5",bjsPizzaScore:8.8,reviews:1812,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.2 (326 reviews), Google 4.5 (1,486 reviews).",price:2,address:"78 Rue de Charonne, 75011 Paris, France",phone:"+33 1 43 43 96 09",why:"A popular Rue de Charonne pizzeria known for thin-crust pizzas and a lively neighborhood dining room",note:"Its large combined review count makes it one of the more time-tested pizza choices in Paris."},
-{name:"Iovine's",city:"paris",rating:"4.6 / 5",bjsPizzaScore:9.2,reviews:0,ratingSource:"Google",ratingNote:"Google 4.6.",price:2,address:"7 bis Rue du Colonel Driant, 75001 Paris, France",phone:"",why:"A Neapolitan pizzeria near the Louvre with an additional Paris Opéra location",note:"Known for Neapolitan-style pizza and a central location near the Louvre."},
+{name:"Iovine's",city:"paris",rating:"4.6 / 5",bjsPizzaScore:9.2,reviews:0,ratingSource:"Google",ratingNote:"Google 4.6.",price:2,address:"7 bis Rue du Colonel Driant, 75001 Paris, France",phone:"+33 1 47 03 92 09",why:"A Neapolitan pizzeria near the Louvre with an additional Paris Opéra location",note:"Known for Neapolitan-style pizza and a central location near the Louvre."},
 {name:"Pizzeria Popolare",city:"paris",rating:"4.4 / 5",bjsPizzaScore:8.8,reviews:2357,ratingSource:"BJS aggregate",ratingNote:"Tripadvisor 4.1 (2,357 reviews); additional platform ratings contribute to the BJS aggregate.",price:2,address:"111 Rue Réaumur, 75002 Paris, France",phone:"+33 1 42 21 30 91",why:"Big Mamma's large, lively Paris pizzeria serving Neapolitan-style pizzas and Italian dishes",note:"A high-volume communal-table restaurant known for its energetic room and long queues."}
 ]
 };
