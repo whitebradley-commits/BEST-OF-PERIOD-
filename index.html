@@ -54903,7 +54903,7 @@ overlay.scrollTop=0;
 /* Brad (2026-09-17): Worldwide page hero -- bring "Best Of" down closer to
    the globe / "Period" line, and raise the globe by a bit over 10%. */
 #bopWorldwideLanding .bop-world-hero .bop-world-best{position:relative!important;top:12px!important}
-#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12)!important}
+#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12 + 2px)!important}
 </style>
 <script id="bop-worldwide-back-restore-v528">(function(){
 /* Brad (2026-09-17): the Worldwide page's own "Back" button closed the page
@@ -55198,12 +55198,24 @@ ready4(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clea
 .bop-closest-show-more:active{background:#F59E0B;color:#000}
 .bop-closest-collapse{margin-top:8px;background:transparent;border-color:rgba(245,158,11,.55);color:rgba(245,158,11,.85);font-size:11px}
 .bop-closest-collapse:active{background:rgba(245,158,11,.18);color:#F59E0B}
+.bop-closest-price-filters{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.bop-closest-price-filter{min-height:40px;border:1.5px solid #F59E0B;border-radius:999px;background:#090909;color:#F59E0B;font:900 12px/1 'Archivo Narrow',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
+.bop-closest-price-filter[data-price-level="1"]{border-color:#39D1B4;color:#39D1B4}
+.bop-closest-price-filter[data-price-level="1"].is-active{background:#39D1B4;color:#000;box-shadow:0 0 12px rgba(57,209,180,.58)}
+.bop-closest-price-filter[data-price-level="2"]{border-color:#F59E0B;color:#F59E0B}
+.bop-closest-price-filter[data-price-level="2"].is-active{background:#F59E0B;color:#000;box-shadow:0 0 12px rgba(245,158,11,.58)}
+.bop-closest-price-filter[data-price-level="3"]{border-color:#FF7A1A;color:#FF7A1A}
+.bop-closest-price-filter[data-price-level="3"].is-active{background:#FF7A1A;color:#000;box-shadow:0 0 12px rgba(255,122,26,.58)}
+.bop-closest-price-filter[data-price-level="4"]{border-color:#FF073A;color:#FF073A}
+.bop-closest-price-filter[data-price-level="4"].is-active{background:#FF073A;color:#fff;box-shadow:0 0 12px rgba(255,7,58,.58)}
+.bop-closest-price-filter[data-price-level="all"].is-active{background:#FF073A;color:#fff;box-shadow:0 0 12px rgba(255,7,58,.58)}
 </style>
 <script id="bop-closest-flat-distance-v535-script">(function(){
 function esc(v){return typeof boNearEscape==='function'?boNearEscape(v):String(v==null?'':v).replace(/[&<>"']/g,'');}
 var INITIAL_COUNT=5;
 var showCount=INITIAL_COUNT;
 var lastRun=null;
+var activeLevel=null;
 function nearParent(k){
 k=String(k||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 if(!k)return '';
@@ -55219,6 +55231,34 @@ return k;
 function render(){
 var list=document.getElementById('boNearClosestList'),status=document.getElementById('boNearClosestStatus');
 if(!list||!status)return;
+var filterRow=document.getElementById('bopClosestPriceFilters');
+if(!filterRow){
+filterRow=document.createElement('div');
+filterRow.id='bopClosestPriceFilters';
+filterRow.className='bop-closest-price-filters';
+filterRow.setAttribute('role','group');
+filterRow.setAttribute('aria-label','Filter by price');
+filterRow.innerHTML='<button type="button" class="bop-closest-price-filter" data-price-level="1">$</button><button type="button" class="bop-closest-price-filter" data-price-level="2">$$</button><button type="button" class="bop-closest-price-filter" data-price-level="3">$$$</button><button type="button" class="bop-closest-price-filter" data-price-level="4">$$$$</button><button type="button" class="bop-closest-price-filter" data-price-level="all">ALL</button>';
+list.insertAdjacentElement('beforebegin',filterRow);
+filterRow.addEventListener('click',function(e){
+var btn=e.target&&e.target.closest?e.target.closest('[data-price-level]'):null;
+if(!btn)return;
+var lvl=btn.dataset.priceLevel;
+if(lvl==='all'){activeLevel=null;}
+else{
+var n=Number(lvl);
+activeLevel=(activeLevel===n)?null:n;
+}
+showCount=INITIAL_COUNT;
+render();
+});
+}
+Array.prototype.forEach.call(filterRow.querySelectorAll('[data-price-level]'),function(btn){
+var lvl=btn.dataset.priceLevel;
+var isActive=(lvl==='all')?(activeLevel===null):(Number(lvl)===activeLevel);
+btn.classList.toggle('is-active',isActive);
+btn.setAttribute('aria-pressed',String(isActive));
+});
 if(typeof boNearMapGeocodeRun!=='undefined'&&boNearMapGeocodeRun!==lastRun){lastRun=boNearMapGeocodeRun;showCount=INITIAL_COUNT;}
 if(!boNearUserLatLng){
 list.innerHTML='';status.innerHTML='LOCATING YOUR POSITION\u2026';status.classList.add('is-locating');
@@ -55238,6 +55278,7 @@ var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)
 return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
 }).filter(function(item){
 if(!Number.isFinite(item.distance))return false;
+if(activeLevel!=null&&(boNearPriceLevel(item.restaurant)||1)!==activeLevel)return false;
 if(!physCity)return true;
 var rc=nearParent(item.restaurant&&item.restaurant.city);
 if(!rc)return physCity==='bestof'||item.distance<=60;
@@ -55250,7 +55291,7 @@ var candidates=ordered.slice(0,showCount);
 var moreEl=document.getElementById('bopClosestShowMore');
 if(!candidates.length){
 list.innerHTML='';
-status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026':'No restaurants are mapped near this location yet.';
+status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026':(activeLevel!=null?'No '+'$'.repeat(activeLevel)+' restaurants mapped near this location yet.':'No restaurants are mapped near this location yet.');
 status.classList.toggle('is-locating',!boNearGeocodingComplete);
 if(moreEl)moreEl.style.display='none';
 var collapseEl0=document.getElementById('bopClosestCollapse');if(collapseEl0)collapseEl0.style.display='none';
