@@ -41597,6 +41597,121 @@ function ready(fn){if(document.readyState==='loading')document.addEventListener(
 ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
 })();</script>
 
+<script id="bop-chicago-michelin-2026-v560-script">(function(){
+/* v560 (2026-09-18): Chicago has carried a MICHELIN Guide since 2011 but
+   had zero restaurants tagged michelinGuide:true on the site. Building out
+   the 2026 starred selection (21 restaurants: 1 three-star, 4 two-star,
+   16 one-star). Bib Gourmand pass to follow separately. Same pattern as
+   the Vegas Southwest build: each restaurant lands in its own cuisine
+   category, in "michelin", and in "chicago" (Chicago's own Best-Of-page
+   category key) -- exactly like Vegas used "bestof" for its own key. */
+var ROWS=[
+{name:"Smyth",rating:4.4,reviews:1332,address:"177 N Ada St, Chicago, IL 60607",phone:"(773) 913-3773",url:"https://www.smythandtheloyalist.com/",
+ratingNote:"BJS aggregate: Google 4.6 (1,332 reviews), Tripadvisor 4.3 (192 reviews), Yelp 4.1 (338 reviews). Three MICHELIN Stars, MICHELIN Guide Chicago 2026 -- the city's only three-star restaurant. Chefs John and Karen Urie Shields' ingredient-driven tasting menu, much of the produce foraged or grown on their own Michigan farm.",
+stars:3,cats:["newamerican","michelin","chicago"]},
+{name:"Alinea",rating:4.6,reviews:1641,address:"1723 N Halsted St, Chicago, IL 60614",phone:"(312) 867-0110",url:"https://www.alinearestaurant.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (1,641 reviews), Yelp 2,759 reviews (star to confirm). Two MICHELIN Stars, MICHELIN Guide Chicago 2026 (demoted from three in Nov. 2025). Chef Grant Achatz's theatrical, immersive tasting menu -- scented vapors, hidden ingredients, tableside service.",
+stars:2,cats:["newamerican","michelin","chicago"]},
+{name:"Ever",rating:4.8,reviews:180,address:"1340 W Fulton St, Chicago, IL 60607",phone:"(312) 766-9577",url:"https://www.everrestaurant.com/",
+ratingNote:"BJS aggregate: Google 4.8 (180 reviews), Tripadvisor 4.7 (38 reviews). Two MICHELIN Stars, MICHELIN Guide Chicago 2026. Chef Curtis Duffy's hushed Fulton Market tasting room; deliberate, tightly controlled plates.",
+stars:2,cats:["newamerican","michelin","chicago"]},
+{name:"Kasama",rating:4.5,reviews:2213,address:"1001 N Winchester Ave, Chicago, IL 60622",phone:"(773) 512-0524",url:"https://www.kasamachicago.com/",
+ratingNote:"BJS aggregate: Google 4.5 (2,213 reviews), Yelp 1,474 reviews (star to confirm). Two MICHELIN Stars, MICHELIN Guide Chicago 2026 (promoted from one). Chefs Genie Kwon and Tim Flores' Filipino tasting menu -- the first Filipino restaurant in the world to earn a MICHELIN Star.",
+stars:2,cats:["filipino","michelin","chicago"]},
+{name:"Oriole",rating:5.0,reviews:381,address:"661 W Walnut St, Chicago, IL 60661",phone:"(312) 877-5339",url:"https://www.oriolechicago.com/",
+ratingNote:"BJS aggregate: Yelp 5.0 (381 reviews). Two MICHELIN Stars, MICHELIN Guide Chicago 2026. Chef Noah Sandoval's contemporary tasting menu, French and Japanese influences, entered through a freight elevator in a converted West Loop warehouse.",
+stars:2,cats:["newamerican","michelin","chicago"]},
+{name:"Boka",rating:4.5,reviews:740,address:"1729 N Halsted St, Chicago, IL 60614",phone:"(312) 337-6070",url:"https://www.bokachicago.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (740 reviews), Yelp 1,914 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026 -- a two-decade Lincoln Park mainstay. Chef-partner Lee Wolen's contemporary American menu, from chilled beef tartare to dry-aged duck.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"EL Ideas",rating:4.6,reviews:98,address:"2419 W 14th St, Chicago, IL 60623",phone:"(312) 226-8144",url:"https://www.elideas.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (98 reviews). One MICHELIN Star, MICHELIN Guide Chicago 2026. A single seating per night, no servers, open kitchen, BYOB -- a dinner-party format built around one long tasting menu.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Elske",rating:4.3,reviews:101,address:"1350 W Randolph St, Chicago, IL 60607",phone:"(312) 733-1314",url:"https://www.elskerestaurant.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (101 reviews), Yelp 331 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chefs David and Anna Posey's Scandinavian-leaning tasting menu -- the city's lone Nordic-influenced starred kitchen.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Esmé",rating:4.3,reviews:449,address:"2200 N Clark St, Chicago, IL 60614",phone:"",url:"https://www.esmechicago.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.3 (449 reviews), Yelp 154 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Jenner Tomaska and Katrina Bravo's artist-collaboration tasting menu in Lincoln Park.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Feld",rating:4.3,reviews:49,address:"2018 W Chicago Ave, Chicago, IL 60622",phone:"",url:"https://www.feldrestaurant.com/",
+ratingNote:"BJS aggregate: Yelp 4.3 (49 reviews). One MICHELIN Star and a Green Star, MICHELIN Guide Chicago 2026. Chef Jacob Potashnick's West Town farm-to-table tasting menu; Potashnick won the 2026 James Beard Award for Best Chef: Great Lakes.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Galit",rating:4.4,reviews:1457,address:"2429 N Lincoln Ave, Chicago, IL 60614",phone:"(773) 360-8755",url:"https://www.galitrestaurant.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.4 (1,457 reviews), Yelp 552 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Zach Engel's Middle Eastern and Israeli menu in Lincoln Park.",
+stars:1,cats:["mediterranean","michelin","chicago"]},
+{name:"Goosefoot",rating:5.0,reviews:121,address:"4520 N Lincoln Ave, Chicago, IL 60625",phone:"(773) 754-0368",url:"https://www.goosefoot.net/",
+ratingNote:"BJS aggregate: Tripadvisor 5.0 (121 reviews), Yelp 345 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Chris Nugent's multi-course tasting menu built on artisan farm ingredients.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Indienne",rating:4.6,reviews:305,address:"217 W Huron St, Chicago, IL 60654",phone:"(312) 291-9427",url:"https://www.indiennechicago.com/",
+ratingNote:"One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Sujan Sarkar's progressive Indian tasting menu in a converted 19th-century River North print warehouse.",
+stars:1,cats:["indian","michelin","chicago"]},
+{name:"Mako",rating:3.9,reviews:12,address:"731 W Lake St, Chicago, IL 60661",phone:"(312) 988-0687",url:"https://www.makochicago.com/",
+ratingNote:"BJS aggregate: Tripadvisor 3.9 (12 reviews), Yelp 195 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. West Loop omakase-style Japanese tasting counter.",
+stars:1,cats:["sushihighend","michelin","chicago"]},
+{name:"Omakase Yume",rating:4.9,reviews:647,address:"651 W Washington Blvd Ste 101, Chicago, IL 60661",phone:"(312) 265-1610",url:"https://www.omakaseyume.com/",
+ratingNote:"BJS aggregate: Restaurant Guru 4.9 (647 reviews), Tripadvisor 5.0 (4 reviews), Yelp 186 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Sangtae Park's sushi-focused omakase counter blending traditional and Korean-influenced technique.",
+stars:1,cats:["sushihighend","michelin","chicago"]},
+{name:"Schwa",rating:4.3,reviews:89,address:"1466 N Ashland Ave, Chicago, IL 60622",phone:"(773) 252-1466",url:"https://schwarestaurant.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.3 (89 reviews), Yelp 615 reviews (star to confirm). One MICHELIN Star, MICHELIN Guide Chicago 2026. Chef Michael Carlson's intimate, globally-inspired Wicker Park tasting menu.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Sepia",rating:4.2,reviews:471,address:"123 N Jefferson St, Chicago, IL 60661",phone:"(312) 441-1920",url:"https://www.sepiachicago.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.2 (471 reviews). One MICHELIN Star, MICHELIN Guide Chicago 2026. American cooking with Southeast Asian, Korean and Mediterranean influences inside a converted 19th-century print shop.",
+stars:1,cats:["newamerican","michelin","chicago"]},
+{name:"Topolobampo",rating:4.5,reviews:753,address:"445 N Clark St, Chicago, IL 60654",phone:"(312) 661-1434",url:"https://www.rickbayless.com/restaurants/topolobampo/",
+ratingNote:"BJS aggregate: Google 4.5 (753 reviews), Tripadvisor 4.4 (454 reviews). One MICHELIN Star, MICHELIN Guide Chicago 2026 -- held nearly continuously since the Chicago guide launched in 2010, the longest-running star on the list. Chef Rick Bayless' regional Mexican tasting menu.",
+stars:1,cats:["mexicanhighend","michelin","chicago"]},
+{name:"Moody Tongue",rating:4.5,reviews:628,address:"2515 S Wabash Ave, Chicago, IL 60616",phone:"(312) 600-5111",url:"https://www.moodytongue.com/",
+ratingNote:"BJS aggregate: Google 4.5 (628 reviews). One MICHELIN Star, MICHELIN Guide Chicago 2026. A South Loop tasting menu paired with the restaurant's own house-brewed beer program.",
+stars:1,cats:["newamerican","michelin","chicago"]}
+];
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var exists=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;if(arr.some(function(r){return r&&r.name===v.name&&r.city==='chicago';}))exists=true;});
+if(exists)return;
+var rec={name:v.name,city:'chicago',rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:v.phone||'',url:v.url||'',michelinGuide:true,michelinStars:v.stars,__v560:true};
+if(v.reviews)rec.reviews=v.reviews;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));});
+hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
+<script id="bop-chicago-bib-gourmand-2026-v561-script">(function(){
+/* v561 (2026-09-18): Chicago Bib Gourmand pass, batch 1 -- real, sourced
+   ratings only. Full current Bib Gourmand list runs ~30 restaurants; this
+   is the first verified batch (well-known, high-confidence names), more
+   to follow rather than guess at the rest. */
+var ROWS=[
+{name:"Girl & The Goat",rating:4.6,reviews:3471,address:"809 W Randolph St, Chicago, IL 60607",phone:"(312) 492-6262",url:"https://www.girlandthegoat.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (3,471 reviews). MICHELIN Bib Gourmand, MICHELIN Guide Chicago 2026. Stephanie Izard's West Loop shared-plates restaurant, globally-inspired bold flavors since 2010.",
+cats:["newamerican","michelin","chicago"]},
+{name:"Longman & Eagle",rating:4.5,reviews:389,address:"2657 N Kedzie Ave, Chicago, IL 60647",phone:"(773) 276-7110",url:"https://www.longmanandeagle.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.5 (389 reviews). MICHELIN Bib Gourmand, MICHELIN Guide Chicago 2026 -- previously held a MICHELIN Star for seven consecutive years. Logan Square gastropub and six-room inn known for its whiskey list and tongue hash.",
+cats:["newamerican","michelin","chicago"]},
+{name:"Lula Cafe",rating:4.6,reviews:361,address:"2537 N Kedzie Blvd, Chicago, IL 60647",phone:"(773) 489-9554",url:"https://www.lulacafe.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.6 (361 reviews). MICHELIN Bib Gourmand, MICHELIN Guide Chicago 2026. Logan Square farm-to-table mainstay since 1999 from chef Jason Hammel.",
+cats:["breakfastcasual","michelin","chicago"]},
+{name:"HaiSous Vietnamese Kitchen",rating:4.4,reviews:99,address:"1800 S Carpenter St, Chicago, IL 60608",phone:"(312) 702-1303",url:"https://www.haisous.com/",
+ratingNote:"BJS aggregate: Tripadvisor 4.4 (99 reviews). MICHELIN Bib Gourmand, MICHELIN Guide Chicago 2026 -- five-time recipient. Chef Thai and Danielle Dang's refined Pilsen Vietnamese kitchen.",
+cats:["vietnamese","michelin","chicago"]},
+{name:"Frontera Grill",rating:4.5,reviews:0,address:"445 N Clark St, Chicago, IL 60654",phone:"(312) 661-1434",url:"https://www.rickbayless.com/restaurants/frontera-grill/",
+ratingNote:"MICHELIN Bib Gourmand, MICHELIN Guide Chicago 2026. Rick Bayless' original 1987 River North restaurant, sharing a building with Topolobampo.",
+cats:["mexicancasual","michelin","chicago"]}
+];
+function apply(){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var hit=false;
+ROWS.forEach(function(v){var exists=false;
+Object.keys(boCategoryData).forEach(function(cat){var arr=boCategoryData[cat];if(!Array.isArray(arr))return;if(arr.some(function(r){return r&&r.name===v.name&&r.city==='chicago';}))exists=true;});
+if(exists)return;
+var rec={name:v.name,city:'chicago',rating:v.rating.toFixed(1)+' / 5',ratingSource:'BJS aggregate',ratingNote:v.ratingNote,address:v.address,phone:v.phone||'',url:v.url||'',michelinGuide:true,__v561:true};
+if(v.reviews)rec.reviews=v.reviews;
+v.cats.forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];boCategoryData[cat].push(JSON.parse(JSON.stringify(rec)));});
+hit=true;});
+return hit;}
+function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clearInterval(t);},300);});
+})();</script>
+
 <script id="bop-denver-steak-tier-v557-script">(function(){
 /* v557 (2026-09-02): Denver was fully empty (0 of 39 categories). Building
 Fine Steak first -- three verified spots. */
@@ -51507,7 +51622,12 @@ all.sort();
 var ours=ITEMS.length, worldTotal=0, worldKnown=0;
 Object.keys(TOTALS).forEach(function(c){worldTotal+=TOTALS[c].total;worldKnown++;});
 var stat=document.getElementById('bopMwStat');
-if(stat)stat.innerHTML='<b>'+ours+'</b>IN OUR SYSTEM<small>'+worldTotal.toLocaleString()+'+ WORLDWIDE IN PROCESS</small><small style="color:#6e6e6e">totals verified for '+worldKnown+' of '+all.length+' countries</small>';
+/* Debug build marker (2026-09-18, Brad): a visible, unmissable tag so it's
+   obvious at a glance whether the page just opened is running this build
+   or a stale cached copy -- no guessing about GitHub Pages deploy timing
+   or browser cache required. Safe to remove once the count issue is
+   confirmed resolved. */
+if(stat)stat.innerHTML='<b>'+ours+'</b>IN OUR SYSTEM<small>'+worldTotal.toLocaleString()+'+ WORLDWIDE IN PROCESS</small><small style="color:#6e6e6e">totals verified for '+worldKnown+' of '+all.length+' countries</small><small style="display:block;margin-top:10px;color:#F59E0B;font-weight:900;letter-spacing:.05em">BUILD CHECK: v561 &middot; '+ours+' STARRED RESTAURANTS LOADED</small>';
 var html='';
 all.forEach(function(c){
 var list=(byCountry[c]||[]).slice().sort(function(a,b){return (b.stars-a.stars)||String(a.r.name).localeCompare(String(b.r.name));});
