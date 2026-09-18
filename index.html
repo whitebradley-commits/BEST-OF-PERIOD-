@@ -40926,6 +40926,13 @@ var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.classList.remove('o
 var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
 var pop=document.getElementById('bopPickCardPop');if(pop)pop.classList.remove('open');
 var bobb=document.getElementById('bopBestOfBestOverlay');if(bobb){bobb.classList.remove('open');bobb.style.display='none';}
+/* Brad (2026-09-17): tapping View Category from a card popped up on top of
+   the full-screen "ALL BJS PICKS" grid rendered the right category
+   underneath just fine -- but that grid (z-index 2147483005, far above
+   #bestOfOverlay's 160) was never told to close, so it kept covering the
+   whole screen and looked exactly like nothing had happened. */
+document.documentElement.classList.remove('bop-all-bjs-open');
+var allBjs=document.getElementById('bopAllBjsPicks');if(allBjs)allBjs.classList.remove('open');
 /* v-sep11: View Category tapped from inside the Michelin Worldwide page (or
    any other full-screen overlay stacked above bestOfOverlay) has to actually
    drop that overlay, not just close the small voice-card sitting on top of
@@ -50903,10 +50910,25 @@ try{if(typeof synth!=='undefined'&&synth&&(synth.speaking||synth.pending))synth.
 if(typeof window.bopGoToCategory==='function')window.bopGoToCategory(vc.dataset.catKey,vc.dataset.catCity);
 if(vc.dataset.catName){
 (function(targetName){
+var needle=targetName.toLowerCase();
 setTimeout(function(){
 var headings=Array.prototype.slice.call(document.querySelectorAll('#boList h3'));
-var target=headings.find(function(h){return h.textContent.toLowerCase().indexOf(targetName.toLowerCase())!==-1;});
-if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+var target=headings.find(function(h){return h.textContent.toLowerCase().indexOf(needle)!==-1;});
+if(target){target.scrollIntoView({behavior:'smooth',block:'center'});return;}
+/* Brad (2026-09-17): restaurants that only live in the collapsed
+   Top 100/extended list (not a featured card) use .bo-extended-name
+   rows instead of <h3> -- expand that list and scroll there too. */
+var extended=Array.prototype.slice.call(document.querySelectorAll('.bo-extended-name,.bo-extended-name-link'));
+var row=extended.find(function(el){return el.textContent.toLowerCase().indexOf(needle)!==-1;});
+if(!row)return;
+var list=row.closest('.bo-extended-list');
+var toggle=document.querySelector('.bo-top100-toggle');
+if(list&&list.classList.contains('bo-extended-list-collapsed')&&toggle){
+toggle.click();
+setTimeout(function(){row.scrollIntoView({behavior:'smooth',block:'center'});},260);
+return;
+}
+(row.closest('.bo-extended-row')||row).scrollIntoView({behavior:'smooth',block:'center'});
 },450);
 })(vc.dataset.catName);
 }
