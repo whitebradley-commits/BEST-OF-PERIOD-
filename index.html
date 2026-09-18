@@ -96,15 +96,16 @@ section, with the small gray range text under each shield removed; and
 out. Registered on the shared page-wide observer so it re-runs whenever
 the overlay content changes, same as before. */
 function arrangeLegend(){
-var content=document.querySelector('#legendOverlay .ty-content'),
-title=content&&content.querySelector('.bo-legend-title'),
-disclaimer=content&&content.querySelector('.bop-legend-disclaimer'),
-badges=document.getElementById('boLegendBadges');
-if(!content||!title||!badges)return;
-var anchor=disclaimer||title;
-if(anchor.nextElementSibling!==badges)anchor.insertAdjacentElement('afterend',badges);
-var badgeTitle=badges.querySelector(':scope > h3'),key=badges.querySelector('.bo-verification-key');
-if(badgeTitle&&key&&badgeTitle.nextElementSibling!==key)badgeTitle.insertAdjacentElement('afterend',key);
+/* v2: badges/apple-key ordering is now owned entirely by the
+   bop-legend-badges-first-v211 arrange() function below, which also
+   places whyP between the disclaimer and badges. This function used to
+   force badges directly after the disclaimer too, fighting that script
+   for the same slot on every mutation each one caused -- constant
+   back-and-forth reinsertion that read as flicker and swallowed taps on
+   the WHY button mid-move. Only this function's own unique job (pruning
+   the small range text under each shield) remains here. */
+var badges=document.getElementById('boLegendBadges');
+if(!badges)return;
 badges.querySelectorAll('.bo-verification-key-item small').forEach(function(node){node.remove()});
 }
 function cleanVendor(){
@@ -21606,7 +21607,7 @@ copy.className='bop-legend-disclaimer';
 copy.innerHTML='<span class="bop-legend-disclaimer-star" aria-hidden="true">★</span><strong>Best of <span class="period">Period<span class="bop-brand-copyright">©</span></span></strong> is an independent listing service developed by BJS Co. and is not affiliated with, endorsed by, or operated on behalf of any business shown here. Specials are submitted by businesses or their staff and may change without notice — always confirm details directly. 21+ only for alcohol and cannabis listings.<br>Please consume responsibly.';
 if(title)title.insertAdjacentElement('afterend',copy);else content.insertAdjacentElement('afterbegin',copy);
 var whyWrap=document.createElement('p');
-whyWrap.style.cssText='text-align:center;margin:14px 0 6px;';
+whyWrap.style.cssText='text-align:center;margin:6px 0 6px;';
 whyWrap.innerHTML='<button aria-label="Why BJS" class="bjs-why-trigger" type="button"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">→</span>WHY<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">←</span></button>';
 copy.insertAdjacentElement('afterend',whyWrap);
 }
@@ -31045,7 +31046,7 @@ window.dispatchEvent(new Event('bop-foodtruck-database-ready'));
 console.error('Food-truck database initialization failed',error);
 }</script>
 
-<style id="bop-foodtruck-hero-globe-tight-v420">@keyframes bopFoodTruckGlobeTurn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#bopFoodTruckOverlay .bop-world-hero-globe{--ftg:clamp(170px,54vw,250px);flex:0 0 auto!important;width:var(--ftg)!important;height:var(--ftg)!important;margin:0 calc(var(--ftg) * -0.11) 0 calc(var(--ftg) * -0.21)!important;animation:bopFoodTruckGlobeTurn 18s linear infinite!important}#bopFoodTruckOverlay .bop-world-title-line{margin-top:calc(clamp(170px,54vw,250px) * -0.11 - 6px)!important;gap:0!important;flex-wrap:nowrap!important;align-items:center!important}#bopFoodTruckOverlay .bop-world-period{margin-left:0!important;flex:0 0 auto!important}</style>
+<style id="bop-foodtruck-hero-globe-tight-v420">@keyframes bopFoodTruckGlobeTurn{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#bopFoodTruckOverlay .bop-world-hero-globe{--ftg:clamp(170px,54vw,250px);flex:0 0 auto!important;width:var(--ftg)!important;height:var(--ftg)!important;margin:0 calc(var(--ftg) * -0.11) 0 calc(var(--ftg) * -0.21)!important;animation:bopFoodTruckGlobeTurn 18s linear infinite!important}#bopFoodTruckOverlay .bop-world-title-line{margin-top:calc(clamp(170px,54vw,250px) * -0.11 - 6px)!important;gap:0!important;flex-wrap:nowrap!important;align-items:center!important}#bopFoodTruckOverlay .bop-world-period{margin-left:-1px!important;flex:0 0 auto!important}</style>
 
 
 <style id="bop-foodtruck-golive-map-orb-v421">#bopFtGoToMapOrb{display:none;width:118px;height:118px;margin:22px auto 0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#FF073A;font:900 .78rem/1.12 'Archivo Black',sans-serif;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 0 14px rgba(245,158,11,.72);cursor:pointer;-webkit-tap-highlight-color:transparent;animation:bopFtOrbPulse 2.4s ease-in-out infinite}#bopFtGoToMapOrb.bop-ft-orb-show{display:block;animation:bopFtOrbPop .45s cubic-bezier(.2,1.4,.4,1) 1,bopFtOrbPulse 2.4s ease-in-out .45s infinite}#bopFtGoToMapOrb span{display:block;font-size:1.35em;line-height:1;margin-bottom:5px}@keyframes bopFtOrbPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}@keyframes bopFtOrbPulse{0%,100%{box-shadow:0 0 14px rgba(245,158,11,.72)}50%{box-shadow:0 0 26px rgba(245,158,11,1)}}</style>
@@ -31179,7 +31180,7 @@ if(window.bopFtMapInstance)hook(window.bopFtMapInstance);
 })();</script>
 
 
-<style id="bop-foodtruck-globe-trim-and-city-own-line-v423">#bopFoodTruckOverlay .bop-world-hero-globe{--ftg:clamp(108px,32vw,155px)!important;width:var(--ftg)!important;height:var(--ftg)!important;margin:0 6px 0 calc(var(--ftg) * -0.16)!important}#bopFoodTruckOverlay .bop-world-title-line{margin-top:calc(clamp(136px,42vw,200px) * -0.11 + 2px)!important}.bop-splash-line2.bo-city-own-line{width:calc(100vw - 28px)!important;grid-template-columns:1fr!important;justify-items:center!important;column-gap:0!important;row-gap:.06em!important;max-width:calc(100vw - 28px)!important}.bop-splash-line2.bo-city-own-line .bop-splash-city-col{width:100%!important;text-align:center!important;max-width:none!important}.bop-splash-line2.bo-city-own-line .bop-splash-city{display:inline-block;white-space:nowrap!important;word-spacing:normal!important}.bop-splash-line2.bo-city-own-line .bop-splash-period{margin:0!important}</style>
+<style id="bop-foodtruck-globe-trim-and-city-own-line-v423">#bopFoodTruckOverlay .bop-world-hero-globe{--ftg:clamp(118.8px,35.2vw,170.5px)!important;width:var(--ftg)!important;height:var(--ftg)!important;margin:0 6px 0 calc(var(--ftg) * -0.16)!important}#bopFoodTruckOverlay .bop-world-title-line{margin-top:calc(clamp(136px,42vw,200px) * -0.11 + 2px)!important}.bop-splash-line2.bo-city-own-line{width:calc(100vw - 28px)!important;grid-template-columns:1fr!important;justify-items:center!important;column-gap:0!important;row-gap:.06em!important;max-width:calc(100vw - 28px)!important}.bop-splash-line2.bo-city-own-line .bop-splash-city-col{width:100%!important;text-align:center!important;max-width:none!important}.bop-splash-line2.bo-city-own-line .bop-splash-city{display:inline-block;white-space:nowrap!important;word-spacing:normal!important}.bop-splash-line2.bo-city-own-line .bop-splash-period{margin:0!important}</style>
 <script id="bop-foodtruck-globe-trim-and-city-own-line-v423-script">(function(){
 /* (b) measure-and-stack for long city names in the subcategory lockup */
 function fitCityLines(){
@@ -54943,7 +54944,7 @@ overlay.scrollTop=0;
 /* Brad (2026-09-17): Worldwide page hero -- bring "Best Of" down closer to
    the globe / "Period" line, and raise the globe by a bit over 10%. */
 #bopWorldwideLanding .bop-world-hero .bop-world-best{position:relative!important;top:12px!important}
-#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12 + 5px)!important;left:2px!important}
+#bopWorldwideLanding .bop-world-hero .bop-world-hero-globe{top:calc(clamp(170px,48vw,260px) * -0.12 + 16px)!important;left:5px!important}
 </style>
 <script id="bop-worldwide-back-restore-v528">(function(){
 /* Brad (2026-09-17): the Worldwide page's own "Back" button closed the page
@@ -55464,5 +55465,14 @@ border-radius:18px!important;
 background:#050505!important;
 box-shadow:0 0 16px rgba(245,158,11,.2)!important;
 }
+</style>
+<style id="bop-vendor-stand-title-nudge-v540">
+#bopVendorStandOverlay .bop-world-hero{position:relative!important;top:5px!important}
+</style>
+<style id="bop-worldwide-period-nudge-v541">
+#bopWorldwideLanding .bop-world-hero .bop-world-period{position:relative!important;top:4px!important}
+</style>
+<style id="bop-vendorstand-period-nudge-v541">
+#bopVendorStandOverlay .bop-world-period{margin-left:2px!important}
 </style>
 </body></html>
