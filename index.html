@@ -12710,7 +12710,7 @@ if(nearLower){
 const closest=document.createElement('section');
 closest.className='bo-near-closest';
 closest.setAttribute('aria-label','Closest restaurants by dining type');
-closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Loading closest restaurants…</p><p class="bo-near-tap-hint">*Tap restaurant for more info.</p><div class="bo-near-closest-list" id="boNearClosestList"></div><div class="bo-near-osm-block"><div class="bo-near-osm-heading">Closest Nearby — Any Restaurant</div><div class="bo-near-closest-filters" role="group" aria-label="Filter any-restaurant results by estimated tier"><button type="button" class="bo-near-closest-filter" data-near-osm-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter is-active" data-near-osm-tier="all" aria-pressed="true">ALL</button></div><p class="bo-near-closest-status" id="boNearOsmStatus">Finding the closest restaurants near you…</p><div class="bo-near-closest-list" id="boNearOsmList"></div></div>';
+closest.innerHTML='<div class="bo-near-closest-filters" role="group" aria-label="Choose a restaurant type"><button type="button" class="bo-near-closest-filter" data-near-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-tier="casual" aria-pressed="false">$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="fine" aria-pressed="false">$$$</button><button type="button" class="bo-near-closest-filter" data-near-tier="all" aria-pressed="false">ALL</button></div><p class="bo-near-closest-status" id="boNearClosestStatus">Loading closest restaurants…</p><p class="bo-near-tap-hint">*Tap restaurant for more info.</p><div class="bo-near-closest-list" id="boNearClosestList"></div><div class="bo-near-osm-block"><div class="bo-near-osm-heading">Closest Nearby — Any Restaurant</div><div class="bo-near-closest-filters" role="group" aria-label="Filter any-restaurant results by estimated tier"><button type="button" class="bo-near-closest-filter" data-near-osm-tier="dive" aria-pressed="false">$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="casual" aria-pressed="false">$$-$$$</button><button type="button" class="bo-near-closest-filter" data-near-osm-tier="fine" aria-pressed="false">$$$$</button></div><p class="bo-near-closest-status" id="boNearOsmStatus">Finding the closest restaurants near you…</p><div class="bo-near-closest-list" id="boNearOsmList"></div></div>';
 nearLower.insertBefore(closest,nearLower.firstChild);
 closest.querySelectorAll('[data-near-tier]').forEach(btn=>btn.addEventListener('click',()=>{
 boNearClosestTier=btn.dataset.nearTier||'';
@@ -12720,9 +12720,10 @@ if(closestTitle) closestTitle.textContent='CLOSEST';
 boRenderNearClosestFive();
 }));
 closest.querySelectorAll('[data-near-osm-tier]').forEach(btn=>btn.addEventListener('click',()=>{
-boNearOsmTier=btn.dataset.nearOsmTier||'all';
+var tapped=btn.dataset.nearOsmTier||'all';
+boNearOsmTier=(boNearOsmTier===tapped)?'all':tapped;
 closest.querySelectorAll('[data-near-osm-tier]').forEach(item=>{
-const active=item===btn;
+const active=item.dataset.nearOsmTier===boNearOsmTier;
 item.classList.toggle('is-active',active);
 item.setAttribute('aria-pressed',String(active));
 });
@@ -55210,17 +55211,14 @@ ready4(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clea
 .bop-closest-show-more:active{background:#F59E0B;color:#000}
 .bop-closest-collapse{margin-top:8px;background:transparent;border-color:rgba(245,158,11,.55);color:rgba(245,158,11,.85);font-size:11px}
 .bop-closest-collapse:active{background:rgba(245,158,11,.18);color:#F59E0B}
-.bop-closest-price-filters{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.bop-closest-price-filters{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
 .bop-closest-price-filter{min-height:40px;border:1.5px solid #F59E0B;border-radius:999px;background:#090909;color:#F59E0B;font:900 12px/1 'Archivo Narrow',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;touch-action:manipulation}
 .bop-closest-price-filter[data-price-level="1"]{border-color:#39D1B4;color:#39D1B4}
 .bop-closest-price-filter[data-price-level="1"].is-active{background:#39D1B4;color:#000;box-shadow:0 0 12px rgba(57,209,180,.58)}
-.bop-closest-price-filter[data-price-level="2"]{border-color:#F59E0B;color:#F59E0B}
-.bop-closest-price-filter[data-price-level="2"].is-active{background:#F59E0B;color:#000;box-shadow:0 0 12px rgba(245,158,11,.58)}
-.bop-closest-price-filter[data-price-level="3"]{border-color:#FF7A1A;color:#FF7A1A}
-.bop-closest-price-filter[data-price-level="3"].is-active{background:#FF7A1A;color:#000;box-shadow:0 0 12px rgba(255,122,26,.58)}
+.bop-closest-price-filter[data-price-level="mid"]{border-color:#F59E0B;color:#F59E0B}
+.bop-closest-price-filter[data-price-level="mid"].is-active{background:#F59E0B;color:#000;box-shadow:0 0 12px rgba(245,158,11,.58)}
 .bop-closest-price-filter[data-price-level="4"]{border-color:#FF073A;color:#FF073A}
 .bop-closest-price-filter[data-price-level="4"].is-active{background:#FF073A;color:#fff;box-shadow:0 0 12px rgba(255,7,58,.58)}
-.bop-closest-price-filter[data-price-level="all"].is-active{background:#FF073A;color:#fff;box-shadow:0 0 12px rgba(255,7,58,.58)}
 </style>
 <script id="bop-closest-flat-distance-v535-script">(function(){
 function esc(v){return typeof boNearEscape==='function'?boNearEscape(v):String(v==null?'':v).replace(/[&<>"']/g,'');}
@@ -55250,24 +55248,22 @@ filterRow.id='bopClosestPriceFilters';
 filterRow.className='bop-closest-price-filters';
 filterRow.setAttribute('role','group');
 filterRow.setAttribute('aria-label','Filter by price');
-filterRow.innerHTML='<button type="button" class="bop-closest-price-filter" data-price-level="1">$</button><button type="button" class="bop-closest-price-filter" data-price-level="2">$$</button><button type="button" class="bop-closest-price-filter" data-price-level="3">$$$</button><button type="button" class="bop-closest-price-filter" data-price-level="4">$$$$</button><button type="button" class="bop-closest-price-filter" data-price-level="all">ALL</button>';
+filterRow.innerHTML='<button type="button" class="bop-closest-price-filter" data-price-level="1">$</button><button type="button" class="bop-closest-price-filter" data-price-level="mid">$$-$$$</button><button type="button" class="bop-closest-price-filter" data-price-level="4">$$$$</button>';
 list.insertAdjacentElement('beforebegin',filterRow);
 filterRow.addEventListener('click',function(e){
 var btn=e.target&&e.target.closest?e.target.closest('[data-price-level]'):null;
 if(!btn)return;
 var lvl=btn.dataset.priceLevel;
-if(lvl==='all'){activeLevel=null;}
-else{
-var n=Number(lvl);
-activeLevel=(activeLevel===n)?null:n;
-}
+var tapped=(lvl==='mid')?'mid':Number(lvl);
+activeLevel=(activeLevel===tapped)?null:tapped;
 showCount=INITIAL_COUNT;
 render();
 });
 }
 Array.prototype.forEach.call(filterRow.querySelectorAll('[data-price-level]'),function(btn){
 var lvl=btn.dataset.priceLevel;
-var isActive=(lvl==='all')?(activeLevel===null):(Number(lvl)===activeLevel);
+var val=(lvl==='mid')?'mid':Number(lvl);
+var isActive=(activeLevel===val);
 btn.classList.toggle('is-active',isActive);
 btn.setAttribute('aria-pressed',String(isActive));
 });
@@ -55290,7 +55286,11 @@ var point={lat:Number(item.geo&&item.geo.lat),lng:Number(item.geo&&item.geo.lon)
 return Object.assign({},item,{rating:Number(item.restaurant&&item.restaurant.rating)||0,distance:boNearDistanceMiles(boNearUserLatLng,point),hoursState:hours});
 }).filter(function(item){
 if(!Number.isFinite(item.distance))return false;
-if(activeLevel!=null&&(boNearPriceLevel(item.restaurant)||1)!==activeLevel)return false;
+if(activeLevel!=null){
+var lvl=boNearPriceLevel(item.restaurant)||1;
+if(activeLevel==='mid'){if(lvl<2||lvl>3)return false;}
+else if(lvl!==activeLevel){return false;}
+}
 if(!physCity)return true;
 var rc=nearParent(item.restaurant&&item.restaurant.city);
 if(!rc)return physCity==='bestof'||item.distance<=60;
@@ -55303,7 +55303,7 @@ var candidates=ordered.slice(0,showCount);
 var moreEl=document.getElementById('bopClosestShowMore');
 if(!candidates.length){
 list.innerHTML='';
-status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026':(activeLevel!=null?'No '+'$'.repeat(activeLevel)+' restaurants mapped near this location yet.':'No restaurants are mapped near this location yet.');
+status.textContent=!boNearGeocodingComplete?'LOCATING AND MAPPING THE CLOSEST RESTAURANTS\u2026':(activeLevel!=null?'No '+(activeLevel==='mid'?'$$-$$$':'$'.repeat(activeLevel))+' restaurants mapped near this location yet.':'No restaurants are mapped near this location yet.');
 status.classList.toggle('is-locating',!boNearGeocodingComplete);
 if(moreEl)moreEl.style.display='none';
 var collapseEl0=document.getElementById('bopClosestCollapse');if(collapseEl0)collapseEl0.style.display='none';
