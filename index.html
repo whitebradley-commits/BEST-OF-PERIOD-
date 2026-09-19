@@ -15559,6 +15559,16 @@ if(cat==='teen'){
 const live=Number(window.tgLiveCountValue)||Number(String((document.getElementById('tgCurrentCount')||{}).textContent||'').replace(/[^\d]/g,''))||101;
 return `<span class="bo-tile-count bo-teen-tag-count" aria-label="${live.toLocaleString()} people tagged">${live.toLocaleString()}</span>`;
 }
+if(cat==='newrestaurants'||cat==='notquiteopen'){
+/* Per Brad (2026-09-19): these two are worldwide destinations, not a
+   per-city category, so a count scoped to whichever city the picker
+   happens to be showing was almost always 0 (hence the endless "?").
+   Show the real total across every city in the system instead. */
+const arr=(typeof boCategoryData==='object'&&boCategoryData&&Array.isArray(boCategoryData[cat]))?boCategoryData[cat]:[];
+const seen={};let total=0;
+arr.forEach(function(r){if(!r||!r.name)return;const k=(r.name+'|'+(r.city||'')).toLowerCase();if(seen[k])return;seen[k]=1;total++;});
+return `<span class="bo-tile-count" aria-label="${total} restaurants worldwide">${total}</span>`;
+}
 const count=boTileRestaurantCount(cat,cityKey);
 const pending=count===0;
 return `<span class="bo-tile-count" aria-label="${pending?'Category count pending':count+' restaurants'}">${pending?'?':count}</span>`;
@@ -24516,8 +24526,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.do
 .bobb-cross-link-tile{background:#050505;border:2px solid #F59E0B;border-radius:14px;color:#F59E0B;font:900 .78rem/1.1 'Archivo Black',Arial,sans-serif;letter-spacing:.05em;padding:14px 26px;cursor:pointer;box-shadow:0 0 10px rgba(245,158,11,.35)}
 .bobb-cross-link-tile:active{opacity:.8}
 </style>
-<section id="bopAllNewRestaurants" role="dialog" aria-modal="true" aria-label="New Restaurants Worldwide"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to city">&larr;<br>Back</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">NEW RESTAURANTS</h2><p class="bop-all-bjs-sub">EVERY CITY IN OUR SYSTEM &middot; <button type="button" id="bopGoNotQuiteOpen" class="bop-bjs-cross-link"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">&rarr;</span>NOT QUITE OPEN<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">&larr;</span></button></p><div class="bobb-grid" id="bopAllNewGrid"></div><div class="bobb-cross-link-wrap"><button type="button" id="bopNewToNotQuiteOpen" class="bobb-cross-link-tile">NOT QUITE OPEN YET</button></div></div></section>
-<section id="bopAllNotQuiteOpen" role="dialog" aria-modal="true" aria-label="Not Quite Open Worldwide"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to city">&larr;<br>Back</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">NOT QUITE OPEN</h2><p class="bop-all-bjs-sub">EVERY CITY IN OUR SYSTEM<br>WHAT'S COMING TO YOU!</p><div class="bobb-grid" id="bopAllNotQuiteOpenGrid"></div><div class="bobb-cross-link-wrap"><button type="button" id="bopNotQuiteOpenToNew" class="bobb-cross-link-tile">NEW RESTAURANTS</button></div></div></section>
+<section id="bopAllNewRestaurants" role="dialog" aria-modal="true" aria-label="New Restaurants Worldwide"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to city">&larr;<br>Back</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">NEW RESTAURANTS</h2><p class="bop-all-bjs-sub">EVERY CITY IN OUR SYSTEM &middot; <button type="button" id="bopGoNotQuiteOpen" class="bop-bjs-cross-link"><span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-left">&rarr;</span>NOT QUITE OPEN<span aria-hidden="true" class="bjs-why-arrow bjs-why-arrow-right">&larr;</span></button></p><div class="bobb-grid" id="bopAllNewGrid"></div><div class="bobb-cross-link-wrap"><button type="button" class="bo-picker-btn" data-picker-cat="notquiteopen" id="bopNewToNotQuiteOpen"></button></div></div></section>
+<section id="bopAllNotQuiteOpen" role="dialog" aria-modal="true" aria-label="Not Quite Open Worldwide"><div class="bop-all-bjs-shell"><button type="button" class="bop-all-bjs-back" aria-label="Back to city">&larr;<br>Back</button><div class="bop-golive-lockup bop-golive-lockup-sub bop-all-bjs-lockup"><span class="bo-golive-best">Best of</span> <span class="bo-golive-period">Period<span class="period-mark">&copy;</span></span></div><h2 class="bop-all-bjs-title">NOT QUITE OPEN</h2><p class="bop-all-bjs-sub">EVERY CITY IN OUR SYSTEM<br>WHAT'S COMING TO YOU!</p><div class="bobb-grid" id="bopAllNotQuiteOpenGrid"></div><div class="bobb-cross-link-wrap"><button type="button" class="bo-picker-btn" data-picker-cat="newrestaurants" id="bopNotQuiteOpenToNew"></button></div></div></section>
 <script id="bop-all-new-restaurants-script">(function(){
 var overlay=document.getElementById('bopAllNewRestaurants');
 var grid=document.getElementById('bopAllNewGrid');
@@ -24569,6 +24579,7 @@ html+='</div></div></div>';
 html+='</div>';
 });
 grid.innerHTML=html;
+var crossBtn=document.getElementById('bopNewToNotQuiteOpen');if(crossBtn&&typeof boTileCountBadgeHTML==='function')crossBtn.innerHTML='<span class="bo-not-quite-open-label"><span class="bo-opening-beacon" aria-hidden="true"></span><strong>NOT QUITE OPEN</strong><small>ANNOUNCED</small></span>'+boTileCountBadgeHTML('notquiteopen',(typeof boCityContext!=='undefined'?boCityContext:window.boCityContext));
 }
 grid.addEventListener('click',function(e){
 var x=e.target.closest('.bobb-pop-x');
@@ -24653,6 +24664,7 @@ html+='</div></div></div>';
 html+='</div>';
 });
 grid.innerHTML=html;
+var crossBtn=document.getElementById('bopNotQuiteOpenToNew');if(crossBtn&&typeof boTileCountBadgeHTML==='function')crossBtn.innerHTML='<span class="bo-special-tile-badge bo-special-tile-badge-new">NEW</span>'+boTileCountBadgeHTML('newrestaurants',(typeof boCityContext!=='undefined'?boCityContext:window.boCityContext));
 }
 grid.addEventListener('click',function(e){
 var x=e.target.closest('.bobb-pop-x');
@@ -24697,14 +24709,6 @@ open();
 document.getElementById('bopGoNotQuiteOpen').addEventListener('click',function(){
 if(typeof window.closeBopAllNewRestaurants==='function')window.closeBopAllNewRestaurants();
 open();
-});
-document.getElementById('bopNewToNotQuiteOpen').addEventListener('click',function(){
-if(typeof window.closeBopAllNewRestaurants==='function')window.closeBopAllNewRestaurants();
-open();
-});
-document.getElementById('bopNotQuiteOpenToNew').addEventListener('click',function(){
-close();
-if(typeof window.boOpenAllNewRestaurants==='function')window.boOpenAllNewRestaurants();
 });
 })();</script>
 #fntBack{display:none!important}#bopExternalOverlay{position:fixed;inset:0;z-index:2147483000;background:#000;display:none;overflow:hidden}#bopExternalOverlay.open{display:block}#bopExternalFrame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}#bopExternalClose{position:fixed;top:max(14px,env(safe-area-inset-top));right:16px;z-index:2147483002;width:54px;height:54px;border:3px solid #f4a300;border-radius:50%;background:#050505;color:#ff3347;font:900 34px/1 Arial,sans-serif;display:grid;place-items:center;box-shadow:0 0 18px rgba(244,163,0,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}#bopExternalFallback{position:absolute;inset:0;display:grid;place-items:center;padding:90px 28px 40px;color:#f4a300;background:#000;text-align:center;font:800 18px/1.5 Arial,sans-serif;letter-spacing:.04em}</style>
@@ -43065,7 +43069,7 @@ document.addEventListener('click',function(e){
 var btn=e.target&&e.target.closest?e.target.closest('#bestOfOverlay .bo-picker-btn[data-picker-cat]'):null;
 if(!btn)return;
 var cat=btn.dataset.pickerCat||'';
-if(/^(foodtrucks|streetvendors|bestof|bjspicks|allbjspicks|nearme|closest|teen|newrestaurants)$/.test(cat))return;
+if(/^(foodtrucks|streetvendors|bestof|bjspicks|allbjspicks|nearme|closest|teen|newrestaurants|notquiteopen)$/.test(cat))return;
 var badge=btn.querySelector('.bo-tile-count');
 if(!badge||badge.textContent.trim()!=='?')return;
 var label=(btn.textContent||'').replace(/\?/g,'').replace(/BJS\s*VS\s*ONE\s*BITE/ig,'').replace(/\s+/g,' ').trim();
