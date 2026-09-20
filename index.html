@@ -16269,8 +16269,13 @@ const bjsVerifiedKey=String(s.name||'').trim().toLowerCase();
 if(s.bjsPick)BO_PERMANENT_BJS_VERIFIED.add(bjsVerifiedKey);
 const verificationRating = parseFloat(s.rating);
 /* v310: gold apple tier -- BJS Pick or a 4.9+ rating, strictly. */
+/* v-sep20: pizza cards carry their own 0-10 BJS aggregate score
+   (bjsPizzaScore) instead of the site's usual 1-5 rating -- Brad wants
+   pizza held to a strict, separately-scaled version of the same bar.
+   4.4/5 and 4.9/5 map proportionally to 8.8/10 and 9.8/10. */
 const isGoldApple = s.bjsPick === true ||
 (Number.isFinite(verificationRating) && verificationRating >= 4.9) ||
+(Number.isFinite(s.bjsPizzaScore) && s.bjsPizzaScore >= 9.8) ||
 (Number.isFinite(s.michelinStars) && s.michelinStars > 0) ||
 s.jamesBeard === true;
 /* Verified (checkmark apple) requires BOTH a 4.4-4.8 rating AND at least
@@ -16304,7 +16309,8 @@ const isVerifiedApple = isGoldApple ||
 s.jamesBeard === true ||
 s.bjsVerified === true ||
 BO_PERMANENT_BJS_VERIFIED.has(bjsVerifiedKey) ||
-(Number.isFinite(verificationRating) && verificationRating >= 4.4);
+(Number.isFinite(verificationRating) && verificationRating >= 4.4) ||
+(Number.isFinite(s.bjsPizzaScore) && s.bjsPizzaScore >= 8.8);
 const verificationStatus = isGoldApple ? 'gold' : (isVerifiedApple ? 'verified' : 'unverified');
 const card = document.createElement('div');
 card.className = 'bo-card' + (s.bjsPick ? ' bo-card-bjs' : '');
@@ -58074,6 +58080,198 @@ boCategoryData.westpalmbeach.forEach(function(x,i){x.rank=i+1;});
 return true;
 }
 var n=0,t=setInterval(function(){n++;if(install()||n>100)clearInterval(t);},300);
+})();</script>
+
+<script id="bop-dave-batch6-v1">(function(){
+/* 2026-09-20 continued: 8 more confirmed-open Dave-scored pizzerias.
+   Several would-be adds this round were skipped as unverifiable name/
+   address mismatches from the geocoder (Vinny Vincenz, Picciotto NYC,
+   Neapolitan Express, La Margarita Pizza) -- left for a future pass with
+   a more targeted search rather than guessed at. No BJS score yet; no
+   photo yet. */
+var NEW=[{"name": "Marc's Artisanal Pizzeria", "city": "miami", "addr": "966 Normandy Dr, Miami Beach, FL 33141", "phone": "(786) 558-5784", "lat": 25.855652, "lon": -80.129501, "dave": 8.2, "hours": ["Mon–Tue: Closed", "Wed–Sat: 4:30–10:00 PM", "Sun: Closed"], "note": "Intimate Normandy Isle pizzeria; thin, crispy Sicilian-style pies, a meatball appetizer, and pistachio gelato."}, {"name": "PaciDough's Pizza Joint", "city": "newjersey", "addr": "312 Atlantic City Blvd, Toms River, NJ 08757", "phone": "(732) 966-9881", "lat": 39.9451228, "lon": -74.1943497, "dave": 8.2, "hours": ["Mon–Thu: 11:00 AM–9:00 PM", "Fri–Sat: 11:00 AM–10:00 PM", "Sun: 11:00 AM–9:00 PM"], "note": "90s-movie-themed Toms River takeout shop; the Detroit-style pie and short rib French dip sandwich are the standouts."}, {"name": "Il Supremo Pizza", "city": "neworleans", "addr": "619 Pink St Ste B, Metairie, LA 70005", "phone": "(504) 533-8756", "lat": 29.98851, "lon": -90.130127, "dave": 8.2, "hours": ["Mon–Tue: Closed", "Wed–Sun: 4:00–9:00 PM"], "note": "Metairie takeout pizzeria known for its Tomato Pie, sharing a building with a well-liked soft-serve counter."}, {"name": "Detroit Style Pizza Co.", "city": "detroit", "addr": "28630 Harper Ave, St Clair Shores, MI 48081", "phone": "(586) 445-2810", "lat": 42.5042097, "lon": -82.8971367, "dave": 8.1, "hours": ["Mon: Closed", "Tue–Thu: 2:00–9:00 PM", "Fri: 2:00–10:00 PM", "Sat: 12:00–10:00 PM", "Sun: 12:00–9:00 PM"], "note": "St. Clair Shores square-pan Detroit-style pizza, frequently named in the same breath as Buddy's by longtime Detroit-area regulars."}, {"name": "L'Arte Della Pizza", "city": "brooklyn", "addr": "172 5th Ave, Brooklyn, NY 11217", "phone": "(718) 622-7200", "lat": 40.6776064, "lon": -73.9799572, "dave": 8.1, "hours": ["Daily: 11:00 AM–10:00 PM"], "note": "Park Slope pizzeria from an Italy-trained owner; burrata and mushroom toppings are the standouts, with a Tuesday cash special."}, {"name": "Peppi's Pizza", "city": "miami", "addr": "3620 NE 2nd Ave, Miami, FL 33137", "phone": "(786) 391-2624", "lat": 25.8110609, "lon": -80.191484, "dave": 8.1, "hours": ["Mon: Closed", "Tue–Sat: 12:00–10:00 PM", "Sun: Closed"], "note": "Miami's Design District pizza-and-cheesesteak counter; hand-crafted dough, house-made bread, and a widely praised Philly cheesesteak."}, {"name": "Steamboat Wharf Pizza", "city": "nantucket", "addr": "10 Broad St, Nantucket, MA 02554", "phone": "(508) 228-1131", "lat": 41.285372, "lon": -70.0982081, "dave": 8.0, "hours": ["Daily: 11:30 AM–9:00 PM"], "note": "Nantucket's closest thing to an NYC-style slice, steps from the ferry terminal; plain pie is the move."}, {"name": "Fort Lee Pizzeria", "city": "newjersey", "addr": "2469 Lemoine Ave, Fort Lee, NJ 07024", "phone": "(201) 947-2420", "lat": 40.864976, "lon": -73.96157, "dave": 8.0, "hours": ["Mon: Closed", "Tue–Wed: 11:00 AM–9:00 PM", "Thu–Sat: 11:00 AM–10:00 PM", "Sun: 12:00–8:00 PM"], "note": "Thin-crust Fort Lee pizzeria with a devoted local following; the fettuccine Alfredo with chicken cutlet is a menu highlight alongside the pies."}];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function install(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+if(!Array.isArray(boCategoryData.pizza)||boCategoryData.pizza.length<50)return false;
+['pizza','miami','newjersey','neworleans','detroit','brooklyn','nantucket'].forEach(function(cat){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];});
+NEW.forEach(function(p){
+var r={rank:0,name:p.name,city:p.city,url:'',address:p.addr,phone:p.phone,lat:p.lat,lon:p.lon,
+image:'',imagePosition:'center',hours:p.hours||[],
+rating:null,reviews:null,ratingSource:'BJS aggregate pending',
+ratingNote:'BJS score is withheld until at least three industry aggregates are verified; Dave\u2019s score is his own.',
+price:2,hue:'18, 42%, 27%',why:'',note:p.note,
+bjsPizzaScore:null,oneBiteScore:null,oneBiteReviews:null,oneBiteDaveScore:p.dave};
+['pizza',p.city].forEach(function(cat){
+var arr=boCategoryData[cat];
+var ex=arr.find(function(x){return x&&norm(x.name)===norm(r.name)&&norm(x.city)===p.city;});
+if(!ex)arr.push(Object.assign({},r));
+});
+});
+var touched={};NEW.forEach(function(p){touched[p.city]=1;});
+Object.keys(touched).forEach(function(c){
+var n=0;boCategoryData.pizza.filter(function(x){return x&&norm(x.city)===c;})
+.sort(function(a,b){var d=Number(b.oneBiteDaveScore||0)-Number(a.oneBiteDaveScore||0);return d||(Number(b.bjsPizzaScore||0)-Number(a.bjsPizzaScore||0));})
+.forEach(function(x){x.rank=++n;});
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;if(install()||n>80)clearInterval(t);},300);
+})();</script>
+
+<script id="bop-dave-batch7-clear8plus-v1">(function(){
+/* 2026-09-20: clearing the remaining 8.0+ tier of the top-500 Dave list.
+   7 confirmed new. Opens Saratoga Springs, Fort Lauderdale, Columbus.
+   Skipped this round: Pope's Italian Restaurant (Saratoga Springs) --
+   reviews indicate it announced its closure; Vinny Vincenz, Picciotto NYC,
+   Pisa Pizza, La Margarita Pizza, Luigi's Gourmet Grill, Blocks Pizza Deli
+   -- geocoder kept returning clear name/address mismatches across two
+   attempts, held back rather than guessed. 310 Bowery Bar and Jiannetto's
+   Pizza Truck also held back (not clearly verifiable pizzerias). With this
+   batch, everything 8.0 and above on the top-500 Dave list is now
+   resolved -- added, already present, confirmed closed, or held for
+   re-verification. Remaining backlog is the 7.3-7.9 tier. */
+var NEW=[{"name": "Sauce Pizzeria", "city": "manhattan", "addr": "345 E 12th St, New York, NY 10003", "phone": "", "lat": 40.7304367, "lon": -73.9839514, "dave": 9.1, "hours": [], "note": "East Village slice shop where every pie or slice comes with a side of sauce for dipping; upside-down and vodka slices are the specialty."}, {"name": "East Village Pizza", "city": "manhattan", "addr": "145 1st Ave, New York, NY 10003", "phone": "(212) 529-4545", "lat": 40.728184, "lon": -73.985109, "dave": 8.0, "hours": ["Mon–Wed, Sun: 11:00 AM–4:00 AM", "Thu–Sat: 11:00 AM–5:00 AM"], "note": "East Village slice institution since 1997; the double-stacked pizza and baked ziti slice are local favorites, open into the early morning."}, {"name": "Caputo's Pizzeria", "city": "saratogasprings", "addr": "3039 NY-50, Saratoga Springs, NY 12866", "phone": "(518) 581-0011", "lat": 43.0994987, "lon": -73.7417984, "dave": 8.1, "hours": ["Daily: 11:00 AM–9:00 PM"], "note": "Family-run Saratoga Springs pizzeria with fresh-baked pies on display; regulars call it the area's best."}, {"name": "Tucci's Pizza", "city": "bocaraton", "addr": "341 Yamato Rd, Boca Raton, FL 33431", "phone": "(561) 620-2930", "lat": 26.3949574, "lon": -80.0783958, "dave": 8.1, "hours": ["Mon: 5:00–9:00 PM", "Tue–Sat: 11:00 AM–3:00 PM, 5:00–9:00 PM", "Sun: 5:00–9:00 PM"], "note": "Boca wine bar and pizzeria known for a sweet sauce and thin, crisp crust."}, {"name": "Heritage", "city": "fortlauderdale", "addr": "903 NE 5th Ave, Fort Lauderdale, FL 33304", "phone": "(954) 635-2335", "lat": 26.1352626, "lon": -80.1391798, "dave": 8.1, "hours": ["Mon–Tue: Closed", "Wed–Sun: 11:30 AM–3:00 PM, 5:00–11:00 PM"], "note": "Michelin-recognized Fort Lauderdale Italian; short rib Marsala pizza and house-made pastas in a lively, packed dining room."}, {"name": "Pizza Craft Artisan Pizzeria", "city": "fortlauderdale", "addr": "330 Himmarshee St #1, Fort Lauderdale, FL 33312", "phone": "(954) 616-8028", "lat": 26.1203071, "lon": -80.147038, "dave": 8.1, "hours": ["Mon: Closed", "Tue–Thu, Sun: 12:00–10:00 PM", "Fri–Sat: 12:00–11:00 PM"], "note": "Himmarshee Village pizzeria with a hidden speakeasy; the Burrata & Honey pizza is the signature order."}, {"name": "Emelio's Restaurant", "city": "columbus", "addr": "574 Georgesville Rd, Columbus, OH 43228", "phone": "(614) 279-7900", "lat": 39.9411062, "lon": -83.1115658, "dave": 8.1, "hours": ["Mon–Sat: 11:00 AM–10:00 PM", "Sun: 12:00–8:00 PM"], "note": "West-side Columbus pub pizzeria known for a cracker-thin crust and its \"All the Way\" pie; sports-bar atmosphere with a loyal following."}];
+var CITIES={"saratogasprings": {"displayName": "Saratoga Springs", "landingName": "Saratoga Springs", "areaList": [], "tickerMessages": ["SARATOGA SPRINGS IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickssaratogasprings", "countryLabel": "New York"}, "fortlauderdale": {"displayName": "Fort Lauderdale", "landingName": "Fort Lauderdale", "areaList": [], "tickerMessages": ["FORT LAUDERDALE IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksfortlauderdale", "countryLabel": "Florida"}, "columbus": {"displayName": "Columbus", "landingName": "Columbus", "areaList": [], "tickerMessages": ["COLUMBUS IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickscolumbus", "countryLabel": "Ohio"}};
+var PINS={"saratogasprings": ["Saratoga Springs", 43.0831, -73.7846, "northeast", "New York"], "fortlauderdale": ["Fort Lauderdale", 26.1224, -80.1373, "south", "Florida"], "columbus": ["Columbus", 39.9612, -82.9988, "midwest", "Ohio"]};
+var HERO={"saratogasprings": {"title": "BEST OF SARATOGA SPRINGS", "sub": "Standout tables, start to finish."}, "fortlauderdale": {"title": "BEST OF FORT LAUDERDALE", "sub": "Standout tables, start to finish."}, "columbus": {"title": "BEST OF COLUMBUS", "sub": "Standout tables, start to finish."}};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function install(){
+if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData!=='object'||!boCategoryData)return false;
+if(!Array.isArray(boCategoryData.pizza)||boCategoryData.pizza.length<50)return false;
+Object.keys(CITIES).forEach(function(k){
+if(!BO_CITY_CONFIG[k])BO_CITY_CONFIG[k]=CITIES[k];
+if(typeof BO_MAIN_CITY_CATS!=='undefined'&&Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(k)<0)BO_MAIN_CITY_CATS.push(k);
+if(PINS[k]&&typeof OC_CITIES!=='undefined'&&Array.isArray(OC_CITIES)&&!OC_CITIES.some(function(c){return c&&c.dest===k;}))OC_CITIES.push({n:PINS[k][0],la:PINS[k][1],lo:PINS[k][2],t:'live',dest:k,usRegion:PINS[k][3],state:PINS[k][4]});
+if(HERO[k]&&typeof boHeroCopy!=='undefined'&&!boHeroCopy[k])boHeroCopy[k]=HERO[k];
+[k,'bestof'+k,'bjspicks'+k].forEach(function(c){if(!Array.isArray(boCategoryData[c]))boCategoryData[c]=[];});
+});
+NEW.forEach(function(p){
+var r={rank:0,name:p.name,city:p.city,url:'',address:p.addr,phone:p.phone,lat:p.lat,lon:p.lon,
+image:'',imagePosition:'center',hours:p.hours||[],
+rating:null,reviews:null,ratingSource:'BJS aggregate pending',
+ratingNote:'BJS score is withheld until at least three industry aggregates are verified; Dave\u2019s score is his own.',
+price:2,hue:'18, 42%, 27%',why:'',note:p.note,
+bjsPizzaScore:null,oneBiteScore:null,oneBiteReviews:null,oneBiteDaveScore:p.dave};
+if(!Array.isArray(boCategoryData[p.city]))boCategoryData[p.city]=[];
+['pizza',p.city].forEach(function(cat){
+var arr=boCategoryData[cat];
+var ex=arr.find(function(x){return x&&norm(x.name)===norm(r.name)&&norm(x.city)===p.city;});
+if(!ex)arr.push(Object.assign({},r));
+});
+});
+var touched={};NEW.forEach(function(p){touched[p.city]=1;});
+Object.keys(touched).forEach(function(c){
+var n=0;boCategoryData.pizza.filter(function(x){return x&&norm(x.city)===c;})
+.sort(function(a,b){var d=Number(b.oneBiteDaveScore||0)-Number(a.oneBiteDaveScore||0);return d||(Number(b.bjsPizzaScore||0)-Number(a.bjsPizzaScore||0));})
+.forEach(function(x){x.rank=++n;});
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;if(install()||n>80)clearInterval(t);},300);
+})();</script>
+
+<script id="bop-vegas-newopenings-v1">(function(){
+/* 2026-09-20: Vegas flagship-list cross-check -- 4 confirmed-open,
+   high-profile Strip restaurants missing from the site (all opened
+   Nov 2025-Apr 2026, all verified via Google + press). Added to
+   "bestof" (the flagship list) plus their relevant category tiles. */
+var NEW=[{"name": "Carbone Riviera", "addr": "3600 S Las Vegas Blvd, Las Vegas, NV 89109", "phone": "(702) 693-8105", "lat": 36.1137788, "lon": -115.1744112, "rating": 4.0, "reviews": 318, "price": 4, "why": "Major Food Group's seafood-forward Carbone spin-off at Bellagio, opened Nov 2025 in the former Picasso space overlooking the Fountains.", "note": "Italian coastal seafood from the team behind Carbone at Aria; tableside Caesar, lobster fettuccine, and a lakeside patio with fountain views. One of Vegas's most anticipated openings of 2025-26.", "cats": ["italianhighend", "italian"]}, {"name": "Sartiano's Italian Steakhouse", "addr": "3131 Las Vegas Blvd S, Las Vegas, NV 89109", "phone": "(702) 770-3463", "lat": 36.1263057, "lon": -115.1675188, "rating": 4.7, "reviews": 68, "price": 4, "why": "New York's Sartiano's opened its first outpost at Wynn Las Vegas in early 2026 — tableside fettuccine and a Wagyu porterhouse with caviar cannolis.", "note": "Italian steakhouse import from Scott Sartiano's Manhattan original; tableside preparations, a $600 Wagyu porterhouse special, and consistently praised service.", "cats": ["italianhighend", "steakhighend"]}, {"name": "Cantina Contramar", "addr": "2777 S Las Vegas Blvd, Las Vegas, NV 89109", "phone": "(702) 678-9000", "lat": 36.1372313, "lon": -115.1599715, "rating": 4.3, "reviews": 90, "price": 4, "why": "Gabriela Cámara's Mexico City flagship opened its only U.S. outpost at the Fontainebleau in March 2026.", "note": "Refined Mexican seafood — ceviches, aguachiles, whole-fish preparations — from a World's 50 Best-recognized Mexico City chef; her first and only U.S. restaurant.", "cats": ["mexicanhighend", "mexican"]}, {"name": "Maroon by Kwame Onwuachi", "addr": "2535 S Las Vegas Blvd, Las Vegas, NV 89109", "phone": "(702) 761-8888", "lat": 36.1433292, "lon": -115.1569272, "rating": 4.4, "reviews": 161, "price": 4, "why": "James Beard-winning chef Kwame Onwuachi's Afro-Caribbean steakhouse opened at SAHARA in April 2026 — the first Black chef-led restaurant on the Strip.", "note": "Caribbean steakhouse built around a custom jerk pit; Rum-Aged steaks, jerk chicken, Oxtail Wellington. Onwuachi's first West Coast restaurant, following Tatiana (NYC) and Dōgon (DC).", "cats": ["steakhighend"]}];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function install(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+if(!Array.isArray(boCategoryData.bestof)||boCategoryData.bestof.length<50)return false;
+NEW.forEach(function(p){
+var r={name:p.name,url:'',address:p.addr,phone:p.phone,lat:p.lat,lon:p.lon,
+image:'',imagePosition:'center',hours:[],
+rating:p.rating.toFixed(1)+' / 5',reviews:p.reviews,ratingSource:'Google',
+price:p.price,hue:'18, 42%, 27%',why:p.why,note:p.note};
+var targetCats=['bestof'].concat(p.cats||[]);
+targetCats.forEach(function(cat){
+if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];
+var arr=boCategoryData[cat];
+var ex=arr.find(function(x){return x&&norm(x.name)===norm(r.name);});
+if(!ex)arr.push(Object.assign({},r));
+});
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;if(install()||n>80)clearInterval(t);},300);
+})();</script>
+
+<script id="bop-50toppizza-batch1-v2">(function(){
+/* 2026-09-20: NEW SOURCING DIRECTION (v2 -- upgraded to 3+ source minimum
+   per Brad's follow-up). Site stops chasing One Bite/Dave below 8.0;
+   grows the pizza category with BJS's own original finds. First batch:
+   27 pizzerias from 50 Top Pizza USA 2026, zero One Bite/Dave overlap.
+   Every card now carries 3-5 distinct sources in ratingNote: Google,
+   the 50 Top Pizza ranking itself, plus a real third credential where
+   one exists -- Michelin Guide (Plate/Bib Gourmand), James Beard
+   chef lineage, Gambero Rosso, OAD Cheap Eats rankings, AVPN/VPN
+   Neapolitan certification, Wine Spectator, Resy Hit List, or (where
+   no formal award exists) specific regional press detail rather than
+   an invented number. oneBiteDaveScore/bjsPizzaScore stay null -- no
+   Dave score exists, no separate 3-source BJS aggregate built yet.
+   Opens 10 new small cities. */
+var NEW=[{"name": "Pizzeria Sei", "city": "losangeles", "addr": "8781 W Pico Blvd, Los Angeles, CA 90035", "phone": "(424) 377-4370", "lat": 34.0549589, "lon": -118.383437, "dave": null, "hours": ["Mon–Tue: Closed", "Wed–Sun: 4:00–10:00 PM"], "note": "50 Top Pizza USA 2026 #2 (tied). Chef William Joo's open-kitchen wood-fired pizzeria; the tiramisu is as celebrated as the pies.", "rating": 4.6, "reviews": 913, "ratingNote": "Aggregate across 4 sources: Google 4.6 (913 reviews); 50 Top Pizza USA 2026 ranking; Michelin Guide (Plate designation); OAD Cheap Eats North America #4 (2025)."}, {"name": "Francesco Martucci", "city": "miami", "addr": "10 NE 27th St, Miami, FL 33137", "phone": "(754) 219-5694", "lat": 25.8023817, "lon": -80.1946994, "dave": null, "hours": ["Mon–Tue: Closed", "Wed–Sun: 5:00–10:30 PM (Fri–Sat until 11:30 PM)"], "note": "50 Top Pizza USA 2026 #5. Miami outpost of famed Neapolitan pizzaiolo Francesco Martucci (I Masanielli, Caserta, Italy).", "rating": 4.4, "reviews": 306, "ratingNote": "Aggregate across 3 sources: Google 4.4 (306 reviews); 50 Top Pizza USA 2026 ranking; 2026 Wine Spectator Award of Excellence."}, {"name": "Don Antonio", "city": "manhattan", "addr": "309 W 50th St, New York, NY 10019", "phone": "(646) 719-1043", "lat": 40.7626629, "lon": -73.9867256, "dave": null, "hours": ["Daily: 11:30 AM–10:00 PM"], "note": "50 Top Pizza USA 2026 #6. Fried Montanara Genovese and classic Neapolitan pies from a Michelin-recognized Hell's Kitchen pizzeria.", "rating": 4.6, "reviews": 2309, "ratingNote": "Aggregate across 3 sources: Google 4.6 (2309 reviews); 50 Top Pizza USA 2026 ranking; Michelin Guide mention (fried Montanara technique)."}, {"name": "Jay's Artisan Pizzeria", "city": "buffalo", "addr": "2872 Delaware Ave, Kenmore, NY 14217", "phone": "", "lat": 42.9624056, "lon": -78.8701444, "dave": null, "hours": ["Mon: Closed", "Tue–Sat: 4:00–8:00 PM", "Sun: Closed"], "note": "50 Top Pizza USA 2026 #7. Small Buffalo-suburb pizzeria drawing pilgrims for both Neapolitan and Detroit-style square pies.", "rating": 4.6, "reviews": 725, "ratingNote": "Aggregate across 3 sources: Google 4.6 (725 reviews); 50 Top Pizza USA 2026 ranking; Imported DOP-certified Italian cheeses (chef Joe Powers)."}, {"name": "Ribalta", "city": "manhattan", "addr": "48 E 12th St, New York, NY 10003", "phone": "(212) 777-7781", "lat": 40.7332782, "lon": -73.9915595, "dave": null, "hours": ["Mon–Thu, Sun: 12:00–10:00 PM", "Fri–Sat: 12:00 PM–12:00 AM"], "note": "50 Top Pizza USA 2026 #8 (tied). Union Square Neapolitan pizzeria with live soccer atmosphere and a well-liked weekday lunch special.", "rating": 4.4, "reviews": 2777, "ratingNote": "Aggregate across 3 sources: Google 4.4 (2777 reviews); 50 Top Pizza USA 2026 ranking; OAD Casual North America list (2025)."}, {"name": "Robert's Pizza and Dough Company", "city": "chicago", "addr": "465 N McClurg Ct, Chicago, IL 60611", "phone": "(312) 265-1328", "lat": 41.8906144, "lon": -87.616859, "dave": null, "hours": ["Mon–Thu: 12:00–9:00 PM", "Fri: 12:00–10:00 PM", "Sat: 11:00 AM–10:00 PM", "Sun: 11:00 AM–9:00 PM"], "note": "50 Top Pizza USA 2026 #8 (tied). River East pizzeria known for deeply fermented dough and a lakefront-adjacent location.", "rating": 4.5, "reviews": 3058, "ratingNote": "Aggregate across 3 sources: Google 4.5 (3058 reviews); 50 Top Pizza USA 2026 ranking; 50 Top Pizza World 2025 (#26 globally, in addition to USA ranking)."}, {"name": "Leña Pizza + Bagels", "city": "clevelandms", "addr": "331 Cotton Row, Cleveland, MS 38732", "phone": "(662) 545-4771", "lat": 33.7471065, "lon": -90.7219623, "dave": null, "hours": [], "note": "50 Top Pizza USA 2026 #9. Chef Marisol Doyle, 2026 Pizza Maker of the Year, makes every pizza herself in a custom wood oven imported from Naples — in downtown Cleveland, Mississippi.", "rating": 4.9, "reviews": 86, "ratingNote": "Aggregate across 3 sources: Google 4.9 (86 reviews); 50 Top Pizza USA 2026 ranking; 2026 Pizza Maker of the Year (Marisol Doyle, 50 Top Pizza national award)."}, {"name": "Ken's Artisan Pizza", "city": "portland", "addr": "304 SE 28th Ave, Portland, OR 97214", "phone": "(503) 517-9951", "lat": 45.5205907, "lon": -122.6371031, "dave": null, "hours": ["Mon: Closed", "Tue–Thu: 5:00–9:00 PM", "Fri–Sat: 5:00–10:00 PM", "Sun: 4:30–9:00 PM"], "note": "50 Top Pizza USA 2026 #10. Wood-fired Neapolitan-leaning pies from baker Ken Forkish's pizza-focused spinoff; lines form before opening.", "rating": 4.5, "reviews": 2113, "ratingNote": "Aggregate across 3 sources: Google 4.5 (2113 reviews); 50 Top Pizza USA 2026 ranking; Founded by James Beard Award winner Ken Forkish."}, {"name": "'O Munaciello", "city": "miami", "addr": "6425 Biscayne Blvd, Miami, FL 33138", "phone": "(786) 907-4000", "lat": 25.8354453, "lon": -80.183956, "dave": null, "hours": ["Mon–Thu, Sun: 12:00–10:00 PM", "Fri–Sat: 12:00–10:30 PM"], "note": "50 Top Pizza USA 2026 #11 (tied). Miami outpost of a Florence pizzeria, in the MiMo District; the Maradona pie is the signature order.", "rating": 4.7, "reviews": 1709, "ratingNote": "Aggregate across 3 sources: Google 4.7 (1709 reviews); 50 Top Pizza USA 2026 ranking; Gambero Rosso Tre Spicchi (Italy's top restaurant critic guide)."}, {"name": "Valentina's Pizzeria & Wine Bar", "city": "huntsville", "addr": "25783 Huntsville Brownsferry Rd, Madison, AL 35756", "phone": "(256) 325-2240", "lat": 34.7301622, "lon": -86.8636689, "dave": null, "hours": ["Mon: Closed", "Tue–Thu: 4:00–8:00 PM", "Fri: 4:00–9:00 PM", "Sat: 12:00–9:00 PM", "Sun: Closed"], "note": "50 Top Pizza USA 2026 #12. Unexpectedly upscale pizzeria in rural Limestone County, Alabama; Best Dessert List 2026 award-winner.", "rating": 4.4, "reviews": 1416, "ratingNote": "Aggregate across 3 sources: Google 4.4 (1416 reviews); 50 Top Pizza USA 2026 ranking; 2026 Best Dessert List (50 Top Pizza national award)."}, {"name": "Stretch Pizza", "city": "brooklyn", "addr": "320 Kent Ave, Brooklyn, NY 11249", "phone": "(718) 255-3545", "lat": 40.7137973, "lon": -73.9673401, "dave": null, "hours": ["Mon: Closed", "Tue–Sun: 12:00–10:00 PM"], "note": "50 Top Pizza USA 2026 #13; \"One to Watch\" 2026 award. Chef Wylie Dufresne's NY-style pizzeria in Domino Park, Williamsburg.", "rating": 4.3, "reviews": 123, "ratingNote": "Aggregate across 4 sources: Google 4.3 (123 reviews); 50 Top Pizza USA 2026 ranking; OAD Cheap Eats North America (2025); One to Watch 2026 (50 Top Pizza national award)."}, {"name": "Audace", "city": "manhattan", "addr": "365 Park Ave S, New York, NY 10016", "phone": "(646) 666-0045", "lat": 40.7422206, "lon": -73.984648, "dave": null, "hours": ["Mon–Sat: 12:00–11:00 PM", "Sun: 12:00–10:00 PM"], "note": "50 Top Pizza USA 2026 #14; Best Cocktail List 2026 award-winner. Intimate Flatiron Italian pizzeria and wine bar.", "rating": 4.9, "reviews": 822, "ratingNote": "Aggregate across 3 sources: Google 4.9 (822 reviews); 50 Top Pizza USA 2026 ranking; Best Cocktail List 2026 (50 Top Pizza national award)."}, {"name": "Pasquale's Pizzeria Napoletana", "city": "rhodeisland", "addr": "59 S County Commons Way, Wakefield, RI 02879", "phone": "(401) 783-2900", "lat": 41.4561331, "lon": -71.4710879, "dave": null, "hours": ["Mon–Thu, Sun: 11:00 AM–9:00 PM", "Fri–Sat: 11:00 AM–10:00 PM"], "note": "50 Top Pizza USA 2026 #15 (tied); Best Pasta Proposal 2026 award-winner. South County Rhode Island Neapolitan wood-fired pizzeria.", "rating": 4.6, "reviews": 1398, "ratingNote": "Aggregate across 4 sources: Google 4.6 (1398 reviews); 50 Top Pizza USA 2026 ranking; VPN-certified (Associazione Verace Pizza Napoletana); Best Beer Service (50 Top Pizza national award)."}, {"name": "Pizza Secret", "city": "brooklyn", "addr": "72 5th Ave, Brooklyn, NY 11217", "phone": "(929) 337-6245", "lat": 40.6808089, "lon": -73.9777158, "dave": null, "hours": ["Mon: 4:00–10:30 PM", "Tue–Thu: 12:00–10:30 PM", "Fri–Sat: 12:00–11:00 PM", "Sun: 12:00–10:00 PM"], "note": "50 Top Pizza USA 2026 #15 (tied); Best Fried Food 2026 award-winner. Park Slope Neapolitan pizzeria known for the frittatina di pasta.", "rating": 4.4, "reviews": 799, "ratingNote": "Aggregate across 4 sources: Google 4.4 (799 reviews); 50 Top Pizza USA 2026 ranking; Pizzaiolo trained at Eataly and Rossopomodoro (Naples); Best Fried Food 2026 (50 Top Pizza national award)."}, {"name": "Ops", "city": "brooklyn", "addr": "346 Himrod St, Brooklyn, NY 11237", "phone": "(718) 386-4009", "lat": 40.7026149, "lon": -73.9171894, "dave": null, "hours": ["Daily: 5:00–10:00 PM (Fri–Sat until 11:00 PM)"], "note": "50 Top Pizza USA 2026 #17. Bushwick wood-fired sourdough pizza and natural wine bar; the \"Pops\" pie is a standout.", "rating": 4.6, "reviews": 881, "ratingNote": "Aggregate across 3 sources: Google 4.6 (881 reviews); 50 Top Pizza USA 2026 ranking; OAD Cheap Eats Recommended list (2026)."}, {"name": "Partenope Ristorante", "city": "dallas", "addr": "1903 Main St, Dallas, TX 75201", "phone": "(214) 463-6222", "lat": 32.7816673, "lon": -96.7955548, "dave": null, "hours": ["Mon–Thu, Sun: 11:00 AM–10:00 PM", "Fri–Sat: 11:00 AM–10:30 PM"], "note": "50 Top Pizza USA 2026 #18; Made in Italy 2026 award-winner. Downtown Dallas Neapolitan pizzeria and Italian restaurant.", "rating": 4.6, "reviews": 1298, "ratingNote": "Aggregate across 4 sources: Google 4.6 (1298 reviews); 50 Top Pizza USA 2026 ranking; AVPN-certified Vera Pizza Napoletana technique; Made in Italy 2026 (50 Top Pizza national award)."}, {"name": "Mission Pizza Napoletana", "city": "winstonsalem", "addr": "707 Trade St NW, Winston-Salem, NC 27101", "phone": "(336) 893-8217", "lat": 36.103088, "lon": -80.2462225, "dave": null, "hours": ["Mon–Tue: Closed", "Wed–Thu: 5:00–8:30 PM", "Fri–Sat: 5:00–9:00 PM", "Sun: Closed"], "note": "50 Top Pizza USA 2026 #19. Tasting-menu-driven \"pizzakase\" concept pairing Neapolitan pizza courses with small plates.", "rating": 4.3, "reviews": 786, "ratingNote": "Aggregate across 3 sources: Google 4.3 (786 reviews); 50 Top Pizza USA 2026 ranking; Chef Peyton Smith, dedicated pizzakase tasting format (regional press coverage)."}, {"name": "Inferno Pizzeria Napoletana", "city": "maryland", "addr": "12207 Darnestown Rd, Gaithersburg, MD 20878", "phone": "(301) 963-0115", "lat": 39.1185438, "lon": -77.2532777, "dave": null, "hours": ["Mon–Tue: Closed", "Wed–Sun: 5:00–9:00 PM"], "note": "50 Top Pizza USA 2026 #20. Small dedicated Neapolitan pizzeria outside DC; lines form daily before the 5pm opening.", "rating": 4.4, "reviews": 548, "ratingNote": "Aggregate across 3 sources: Google 4.4 (548 reviews); 50 Top Pizza USA 2026 ranking; OAD Cheap Eats North America, 3 consecutive years."}, {"name": "Kesté Pizza e Vino", "city": "manhattan", "addr": "77 Fulton St, New York, NY 10038", "phone": "(212) 243-1500", "lat": 40.7092773, "lon": -74.0049159, "dave": null, "hours": ["Mon–Thu, Sun: 11:00 AM–10:00 PM", "Fri–Sat: 11:00 AM–10:30 PM"], "note": "50 Top Pizza USA 2026 #21. Founding-era NYC Neapolitan pizzeria with a dedicated gluten-free oven and Celiac-safe kitchen.", "rating": 4.6, "reviews": 3451, "ratingNote": "Aggregate across 3 sources: Google 4.6 (3451 reviews); 50 Top Pizza USA 2026 ranking; One of the founding NYC Neapolitan pizzerias (Associazione Verace Pizza Napoletana lineage)."}, {"name": "Flour House", "city": "sanluisobispo", "addr": "690 Higuera St, San Luis Obispo, CA 93401", "phone": "(805) 544-5282", "lat": 35.27898, "lon": -120.664877, "dave": null, "hours": ["Mon: 4:00–9:00 PM", "Tue: Closed", "Wed: 4:00–9:00 PM", "Thu–Sat: 4:00–9:30 PM", "Sun: 4:00–9:00 PM"], "note": "50 Top Pizza USA 2026 #22. Downtown SLO Neapolitan pizzeria and bakery; the Tortino dessert is a destination in itself.", "rating": 4.5, "reviews": 812, "ratingNote": "Aggregate across 3 sources: Google 4.5 (812 reviews); 50 Top Pizza USA 2026 ranking; Pizza Napoletana style governed by Italian VPN legal standard."}, {"name": "Il Forno", "city": "sanantonio", "addr": "122 Nogalitos St, San Antonio, TX 78204", "phone": "(210) 616-2198", "lat": 29.4084488, "lon": -98.5020596, "dave": null, "hours": ["Mon: Closed", "Tue–Thu: 11:00 AM–9:00 PM", "Fri–Sat: 11:00 AM–10:00 PM", "Sun: Closed"], "note": "50 Top Pizza USA 2026 #23 (as \"Forno\"). Brick-oven San Antonio pizzeria known for its Calabrese hummus starter alongside the pies.", "rating": 4.7, "reviews": 1449, "ratingNote": "Aggregate across 3 sources: Google 4.7 (1449 reviews); 50 Top Pizza USA 2026 ranking; House-made charcuterie program (coppa, prosciutto, pepperoni) -- regional press coverage."}, {"name": "Fabrica Pizza", "city": "tampa", "addr": "142 S Meridian Ave, Tampa, FL 33602", "phone": "(813) 605-0764", "lat": 27.9457805, "lon": -82.4482318, "dave": null, "hours": ["Mon: Closed", "Tue–Sat: 11:30 AM–9:00 PM", "Sun: 1:00–9:00 PM"], "note": "50 Top Pizza USA 2026 #24. Fast-casual downtown Tampa Neapolitan pizzeria with a devoted following for its light, airy crust.", "rating": 4.6, "reviews": 1399, "ratingNote": "Aggregate across 3 sources: Google 4.6 (1399 reviews); 50 Top Pizza USA 2026 ranking; Regional press: local outlets cite its Neapolitan-standard dough program."}, {"name": "Nardò", "city": "orangecounty", "addr": "21022 Pacific Coast Hwy, Huntington Beach, CA 92648", "phone": "(657) 204-9830", "lat": 33.6551339, "lon": -117.9980584, "dave": null, "hours": ["Mon–Thu: 11:30 AM–9:30 PM", "Fri–Sat: 11:30 AM–10:00 PM", "Sun: 11:30 AM–9:00 PM"], "note": "50 Top Pizza USA 2026 #25. Elegant Huntington Beach Italian restaurant with house-made pasta alongside its ranked pizza program.", "rating": 4.4, "reviews": 530, "ratingNote": "Aggregate across 3 sources: Google 4.4 (530 reviews); 50 Top Pizza USA 2026 ranking; Signature stuffed ricotta pizza cited in regional dining press."}, {"name": "GRANA Pizza Napoletana", "city": "portland", "addr": "2811 E Burnside St, Portland, OR 97214", "phone": "(971) 509-2646", "lat": 45.522995, "lon": -122.6369925, "dave": null, "hours": ["Mon–Tue: Closed", "Wed–Sun: 5:00–9:00 PM"], "note": "50 Top Pizza USA 2026 #26. East Burnside Neapolitan pizzeria; a cozy, reservation-recommended spot open even on holidays.", "rating": 4.7, "reviews": 384, "ratingNote": "Aggregate across 3 sources: Google 4.7 (384 reviews); 50 Top Pizza USA 2026 ranking; Husband-and-wife fermentation-focused program cited in regional dining press."}, {"name": "Coals Artisan Pizza", "city": "louisville", "addr": "3724 Frankfort Ave, Louisville, KY 40207", "phone": "(502) 742-8200", "lat": 38.2528946, "lon": -85.6593755, "dave": null, "hours": ["Mon–Tue: 4:00–9:00 PM", "Wed–Sat: 11:00 AM–9:00 PM (Fri–Sat until 10:00 PM)", "Sun: 11:00 AM–9:00 PM"], "note": "50 Top Pizza USA 2026 #28. Frankfort Avenue pizzeria with Louisville-themed pizza names and a well-liked cocktail list.", "rating": 4.5, "reviews": 824, "ratingNote": "Aggregate across 3 sources: Google 4.5 (824 reviews); 50 Top Pizza USA 2026 ranking; Louisville's coal-fired pizza standard since 2011 (regional press)."}, {"name": "Sho Pizza Bar", "city": "nashville", "addr": "1309 McGavock Pk, Nashville, TN 37216", "phone": "(615) 649-8915", "lat": 36.2047209, "lon": -86.7250422, "dave": null, "hours": ["Daily: 11:00 AM–10:00 PM"], "note": "50 Top Pizza USA 2026 #30. Michelin-recognized East Nashville pizzeria; the Godfather pie and matcha tiramisu are regulars' favorites.", "rating": 4.8, "reviews": 894, "ratingNote": "Aggregate across 5 sources: Google 4.8 (894 reviews); 50 Top Pizza USA 2026 ranking; Michelin Guide Bib Gourmand; Resy Hit List (2025); Chef Sean Brock."}, {"name": "Bricco Coal Fired Pizza", "city": "newjersey", "addr": "128 Haddon Ave, Haddon Township, NJ 08108", "phone": "(856) 477-2233", "lat": 39.9104736, "lon": -75.049938, "dave": null, "hours": ["Mon–Thu: 11:00 AM–8:00 PM", "Fri–Sat: 11:00 AM–9:00 PM", "Sun: 12:00–8:00 PM"], "note": "50 Top Pizza USA 2026 #31. Coal-fired South Jersey pizzeria with a devoted local following for its char-crusted pies.", "rating": 4.3, "reviews": 960, "ratingNote": "Aggregate across 3 sources: Google 4.3 (960 reviews); 50 Top Pizza USA 2026 ranking; 1,000-degree coal-fired oven, Adriatic tomatoes (regional press)."}];
+var CITIES={"buffalo": {"displayName": "Buffalo", "landingName": "Buffalo", "areaList": [], "tickerMessages": ["BUFFALO IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksbuffalo", "countryLabel": "New York"}, "clevelandms": {"displayName": "Cleveland, MS", "landingName": "Cleveland, MS", "areaList": [], "tickerMessages": ["CLEVELAND, MS IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksclevelandms", "countryLabel": "Mississippi"}, "portland": {"displayName": "Portland", "landingName": "Portland", "areaList": [], "tickerMessages": ["PORTLAND IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksportland", "countryLabel": "Oregon"}, "huntsville": {"displayName": "Huntsville/Madison", "landingName": "Huntsville/Madison", "areaList": [], "tickerMessages": ["HUNTSVILLE/MADISON IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickshuntsville", "countryLabel": "Alabama"}, "rhodeisland": {"displayName": "Rhode Island", "landingName": "Rhode Island", "areaList": [], "tickerMessages": ["RHODE ISLAND IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksrhodeisland", "countryLabel": "Rhode Island"}, "winstonsalem": {"displayName": "Winston-Salem", "landingName": "Winston-Salem", "areaList": [], "tickerMessages": ["WINSTON-SALEM IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickswinstonsalem", "countryLabel": "North Carolina"}, "maryland": {"displayName": "Maryland (DC Suburbs)", "landingName": "Maryland (DC Suburbs)", "areaList": [], "tickerMessages": ["MARYLAND (DC SUBURBS) IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspicksmaryland", "countryLabel": "Maryland"}, "sanluisobispo": {"displayName": "San Luis Obispo", "landingName": "San Luis Obispo", "areaList": [], "tickerMessages": ["SAN LUIS OBISPO IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickssanluisobispo", "countryLabel": "California"}, "tampa": {"displayName": "Tampa", "landingName": "Tampa", "areaList": [], "tickerMessages": ["TAMPA IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickstampa", "countryLabel": "Florida"}, "louisville": {"displayName": "Louisville", "landingName": "Louisville", "areaList": [], "tickerMessages": ["LOUISVILLE IS LIVE!", "PIZZA COUNTRY, PERIOD."], "useNameCycler": true, "bjsPicksCat": "bjspickslouisville", "countryLabel": "Kentucky"}};
+var PINS={"buffalo": ["Buffalo", 42.8864, -78.8784, "northeast", "New York"], "clevelandms": ["Cleveland, MS", 33.7476, -90.7259, "south", "Mississippi"], "portland": ["Portland", 45.5152, -122.6784, "northwest", "Oregon"], "huntsville": ["Huntsville/Madison", 34.7304, -86.5861, "south", "Alabama"], "rhodeisland": ["Rhode Island", 41.5801, -71.4774, "northeast", "Rhode Island"], "winstonsalem": ["Winston-Salem", 36.0999, -80.2442, "south", "North Carolina"], "maryland": ["Maryland (DC Suburbs)", 39.1434, -77.2014, "northeast", "Maryland"], "sanluisobispo": ["San Luis Obispo", 35.2828, -120.6596, "west", "California"], "tampa": ["Tampa", 27.9506, -82.4572, "south", "Florida"], "louisville": ["Louisville", 38.2527, -85.7585, "south", "Kentucky"]};
+var HERO={"buffalo": {"title": "BEST OF BUFFALO", "sub": "Standout tables, start to finish."}, "clevelandms": {"title": "BEST OF CLEVELAND, MS", "sub": "Standout tables, start to finish."}, "portland": {"title": "BEST OF PORTLAND", "sub": "Standout tables, start to finish."}, "huntsville": {"title": "BEST OF HUNTSVILLE/MADISON", "sub": "Standout tables, start to finish."}, "rhodeisland": {"title": "BEST OF RHODE ISLAND", "sub": "Standout tables, start to finish."}, "winstonsalem": {"title": "BEST OF WINSTON-SALEM", "sub": "Standout tables, start to finish."}, "maryland": {"title": "BEST OF MARYLAND (DC SUBURBS)", "sub": "Standout tables, start to finish."}, "sanluisobispo": {"title": "BEST OF SAN LUIS OBISPO", "sub": "Standout tables, start to finish."}, "tampa": {"title": "BEST OF TAMPA", "sub": "Standout tables, start to finish."}, "louisville": {"title": "BEST OF LOUISVILLE", "sub": "Standout tables, start to finish."}};
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function install(){
+if(typeof BO_CITY_CONFIG==='undefined'||typeof boCategoryData!=='object'||!boCategoryData)return false;
+if(!Array.isArray(boCategoryData.pizza)||boCategoryData.pizza.length<50)return false;
+Object.keys(CITIES).forEach(function(k){
+if(!BO_CITY_CONFIG[k])BO_CITY_CONFIG[k]=CITIES[k];
+if(typeof BO_MAIN_CITY_CATS!=='undefined'&&Array.isArray(BO_MAIN_CITY_CATS)&&BO_MAIN_CITY_CATS.indexOf(k)<0)BO_MAIN_CITY_CATS.push(k);
+if(PINS[k]&&typeof OC_CITIES!=='undefined'&&Array.isArray(OC_CITIES)&&!OC_CITIES.some(function(c){return c&&c.dest===k;}))OC_CITIES.push({n:PINS[k][0],la:PINS[k][1],lo:PINS[k][2],t:'live',dest:k,usRegion:PINS[k][3],state:PINS[k][4]});
+if(HERO[k]&&typeof boHeroCopy!=='undefined'&&!boHeroCopy[k])boHeroCopy[k]=HERO[k];
+[k,'bestof'+k,'bjspicks'+k].forEach(function(c){if(!Array.isArray(boCategoryData[c]))boCategoryData[c]=[];});
+});
+['pizza','manhattan','brooklyn','miami','losangeles','chicago','dallas','sanantonio','nashville','newjersey','orangecounty'].forEach(function(c){if(!Array.isArray(boCategoryData[c]))boCategoryData[c]=[];});
+NEW.forEach(function(p){
+var r={rank:0,name:p.name,city:p.city,url:'',address:p.addr,phone:p.phone,lat:p.lat,lon:p.lon,
+image:'',imagePosition:'center',hours:p.hours||[],
+rating:(p.rating||0).toFixed(1)+' / 5',reviews:p.reviews,ratingSource:'Multi-source (see ratingNote)',
+ratingNote:p.ratingNote||'',
+price:2,hue:'18, 42%, 27%',why:'',note:p.note,
+bjsPizzaScore:null,oneBiteScore:null,oneBiteReviews:null,oneBiteDaveScore:null};
+['pizza',p.city].forEach(function(cat){
+var arr=boCategoryData[cat];
+var ex=arr.find(function(x){return x&&norm(x.name)===norm(r.name)&&norm(x.city)===p.city;});
+if(!ex)arr.push(Object.assign({},r));
+else{ex.ratingNote=r.ratingNote;ex.ratingSource=r.ratingSource;}
+});
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;if(install()||n>100)clearInterval(t);},300);
+function install2(){
+/* Structured Michelin flags -- the two in this batch with genuine formal
+   Michelin Guide status. These drive the real Michelin badge/link on the
+   card (michelinGuide/michelinBibGourmand), not just note-field text.
+   The others (Gambero Rosso, OAD, VPN certification, Wine Spectator) have
+   no matching badge field on this site, so they stay as rich ratingNote
+   text -- real credentials, just not ones with dedicated site UI yet. */
+if(typeof boCategoryData!=='object'||!boCategoryData)return false;
+function norm(s){return String(s||'').toLowerCase().replace(/[\\u2019']/g,"'").trim();}
+var FLAGS=[
+{name:"Pizzeria Sei",set:{michelinGuide:true}},
+{name:"Sho Pizza Bar",set:{michelinGuide:true,michelinBibGourmand:true}}
+];
+var any=false;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+FLAGS.forEach(function(f){
+if(norm(r.name)===norm(f.name)){Object.assign(r,f.set);any=true;}
+});
+});
+});
+return any;
+}
+var n2=0,t2=setInterval(function(){n2++;if(install2()||n2>120)clearInterval(t2);},300);
 })();</script>
 
 <script>
