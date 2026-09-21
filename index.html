@@ -58404,7 +58404,7 @@ if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
 r.bjsPizzaScore=f.bjs;
 if(f.ob!=null)r.oneBiteScore=f.ob;
 if(f.obReviews!=null)r.oneBiteReviews=f.obReviews;
-if(f.note)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
+if(f.note&&(!r.ratingNote||r.ratingNote.indexOf(f.note)===-1))r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
 });
 });
 return true;
@@ -58433,7 +58433,7 @@ if(!r||norm(r.name)!==norm(f.name))return;
 if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
 r.bjsPizzaScore=f.bjs;
 if(f.ob!=null)r.oneBiteScore=f.ob;
-if(f.note)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
+if(f.note&&(!r.ratingNote||r.ratingNote.indexOf(f.note)===-1))r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
 });
 });
 return true;
@@ -58458,7 +58458,7 @@ arr.forEach(function(r){
 if(!r||norm(r.name)!==norm(f.name))return;
 if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
 r.bjsPizzaScore=f.bjs;
-if(f.note)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
+if(f.note&&(!r.ratingNote||r.ratingNote.indexOf(f.note)===-1))r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
 });
 });
 return true;
@@ -58508,7 +58508,7 @@ if(!r||norm(r.name)!==norm(f.name))return;
 if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
 if(f.phone&&!r.phone)r.phone=f.phone;
 if(f.bjs)r.bjsPizzaScore=f.bjs;
-if(f.note)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
+if(f.note&&(!r.ratingNote||r.ratingNote.indexOf(f.note)===-1))r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
 });
 });
 return true;
@@ -58535,11 +58535,104 @@ if(!r||norm(r.name)!==norm(f.name))return;
 if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
 if(f.phone&&!r.phone)r.phone=f.phone;
 if(f.bjs)r.bjsPizzaScore=f.bjs;
-if(f.note)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
+if(f.note&&(!r.ratingNote||r.ratingNote.indexOf(f.note)===-1))r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+f.note;
 });
 });
 return true;
 }
 var n=0,t=setInterval(function(){n++;run();if(n>200)clearInterval(t);},300);
+})();</script>
+<script id="bop-pizzeria-sei-address-fix-v1">(function(){
+/* 2026-09-20: Resolved the Pizzeria Sei / Sei Pizza Bar mystery. Chef
+   William Joo opened a SECOND Pizzeria Sei location at 10700 Tabor St,
+   Palms in mid-2025-26 -- and the original Pico Blvd spot was rebranded
+   "Sei Pizza Bar" (takeout/delivery/catering focus). The "Pizzeria Sei"
+   name and its full reputation (50 Top Pizza USA #2, Michelin Guide,
+   Time Out #1 LA pizza) moved with the brand to the new Tabor St
+   address -- the 8781 W Pico Blvd address used earlier this session was
+   the old, now-superseded one. Phone number was actually already
+   correct (it carried over). Updating address/coords and using the new
+   location's own fresh Google numbers rather than the old address's
+   review pool, which really belongs to Sei Pizza Bar now. Sei Pizza Bar
+   itself is left as-is -- it's a real, distinct sibling concept, not a
+   duplicate. */
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function run(){
+if(typeof boCategoryData!=='object'||!boCategoryData||!Array.isArray(boCategoryData.pizza))return false;
+if(boCategoryData.pizza.length<300)return false;
+var arr=boCategoryData.pizza;
+arr.forEach(function(r){
+if(!r||norm(r.name)!=='pizzeria sei')return;
+r.address='10700 Tabor St, Los Angeles, CA 90034';
+r.lat=34.0230269; r.lon=-118.4105963;
+r.rating='4.40 / 5'; r.reviews=69;
+var addNote='2026-09-20: moved to a second location at 10700 Tabor St (Palms) when the Pico Blvd original was rebranded Sei Pizza Bar; rating reflects the new location\u2019s own reviews.';
+if(!r.ratingNote||r.ratingNote.indexOf(addNote)===-1)r.ratingNote=(r.ratingNote?r.ratingNote+' ':'')+addNote;
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;run();if(n>200)clearInterval(t);},300);
+})();</script>
+<script id="bop-view-category-universal-dismiss-v1">(function(){
+/* 2026-09-21: ROOT-CAUSE FIX for the weeks-long "View Category sends me
+   back to the page I was on, then the category shows up after I X out"
+   bug. #bestOfOverlay (the category page) sits at z-index 160. The
+   site has dozens of full-screen overlays stacked ABOVE it (city gates,
+   ALL BJS PICKS grid, Michelin Worldwide, franchise page, Founders, TPA,
+   Concepts, member pages, gallery, etc.). Every previous fix only closed
+   one specific overlay by ID -- so each NEW page type added to the site
+   broke View Category all over again, because it wasn't on the list.
+   The category was always rendering correctly underneath; it was just
+   covered. This closes ANYTHING covering the category generically,
+   by geometry (fixed, above z-160, visible, full-screen-sized), so it
+   works for every existing overlay and every future one, with no list
+   to maintain. Small floating controls (music button, badges, toasts)
+   are left alone by the size check. */
+var CATEGORY_Z=160;
+function isViewCategoryTarget(el){
+if(!el||!el.closest)return false;
+var b=el.closest('button,a,[role="button"]');
+if(!b)return false;
+if(b.classList&&(b.classList.contains('cp-view-cat')||b.classList.contains('cp-view-cat-mini')))return true;
+if(b.id==='boNearOpenBestOf'||b.id==='bopAnalogInfoViewBtn')return true;
+var txt=(b.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
+return txt==='VIEW CATEGORY';
+}
+function dismissCoveringOverlays(){
+var best=document.getElementById('bestOfOverlay');
+var vw=window.innerWidth,vh=window.innerHeight;
+var all=document.body.querySelectorAll('*');
+for(var i=0;i<all.length;i++){
+var el=all[i];
+if(el===best||(best&&best.contains(el)))continue;
+var cs;try{cs=getComputedStyle(el);}catch(e){continue;}
+if(cs.position!=='fixed')continue;
+var z=parseInt(cs.zIndex,10);
+if(!(z>CATEGORY_Z))continue;
+if(cs.display==='none'||cs.visibility==='hidden'||parseFloat(cs.opacity)===0)continue;
+var r=el.getBoundingClientRect();
+if(r.width<vw*0.6||r.height<vh*0.6)continue; /* leave small controls alone */
+/* it's a full-screen overlay covering the category: close it */
+el.classList.remove('open');
+try{if(getComputedStyle(el).display!=='none')el.style.display='none';}catch(e2){}
+}
+/* known body/html state locks that some overlays set */
+document.documentElement.classList.remove('bop-all-bjs-open');
+document.body.classList.remove('bop-mw-open');
+document.documentElement.style.overflow='';
+document.body.style.overflow='';
+/* make absolutely sure the category page itself is showing */
+if(best){best.classList.add('open');best.style.display='';}
+}
+function onAnyViewCategory(e){
+if(!isViewCategoryTarget(e.target))return;
+/* run after the specific handler has rendered the category, and again
+   a beat later in case that handler re-opened something on top */
+setTimeout(dismissCoveringOverlays,60);
+setTimeout(dismissCoveringOverlays,320);
+}
+document.addEventListener('click',onAnyViewCategory,true);
+document.addEventListener('pointerup',onAnyViewCategory,true);
+window.bopDismissCoveringOverlays=dismissCoveringOverlays;
 })();</script>
 </body></html>
