@@ -58651,4 +58651,32 @@ window.bopDismissCoveringOverlays=dismissCoveringOverlays;
    specificity. */
 #bjsWhyOverlay.open{z-index:2147483647!important}
 </style>
+<script id="bop-london-pizza-photos-v1">(function(){
+/* 2026-09-21: real, source-credited photos for the London pizza category,
+   sourced from The Infatuation's London coverage (same publication
+   already used for the other verified photos on this list). Each was
+   confirmed against that restaurant's own review page and photo credit
+   before use -- Napoli on the Road's only available credited photo was
+   for their separate Soho branch, not the Chiswick address on file, so
+   it was deliberately left out rather than misattributed. */
+var PHOTOS=[
+{name:"Zia Lucia",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/cms/IMG_7816"},
+{name:"Franco Manca Brixton",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/cms/reviews/franco-manca-brixton/RobGreig_FrancoManca011"}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2019']/g,"'").trim();}
+function run(){
+if(typeof boCategoryData!=='object'||!boCategoryData||!Array.isArray(boCategoryData.pizza))return false;
+if(boCategoryData.pizza.length<300)return false;
+var arr=boCategoryData.pizza;
+PHOTOS.forEach(function(f){
+arr.forEach(function(r){
+if(!r||norm(r.name)!==norm(f.name))return;
+if(f.city&&r.city&&norm(r.city)!==norm(f.city))return;
+if(!r.image)r.image=f.image;
+});
+});
+return true;
+}
+var n=0,t=setInterval(function(){n++;run();if(n>200)clearInterval(t);},300);
+})();</script>
 </body></html>
