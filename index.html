@@ -58635,4 +58635,20 @@ document.addEventListener('click',onAnyViewCategory,true);
 document.addEventListener('pointerup',onAnyViewCategory,true);
 window.bopDismissCoveringOverlays=dismissCoveringOverlays;
 })();</script>
+<style id="bop-why-orb-absolute-top-final-v1">
+/* 2026-09-21: root cause of "WHY does nothing on the Legend page" (and,
+   by the same mechanism, potentially any other page). #bjsWhyOverlay had
+   picked up THREE separate z-index overrides over past sessions (50,
+   950, 2147483450) from three different "it's covered, bump it" patches
+   -- and #legendOverlay.open was bumped even higher afterward
+   (2147483646), so WHY still lost on that one page. The click handler
+   itself was firing fine the whole time (four redundant copies of it
+   exist); the popup was just opening invisibly underneath. Rather than
+   add a fourth escalating number, this pins bjsWhyOverlay to the actual
+   maximum 32-bit z-index (2147483647) -- nothing can ever outrank it --
+   and this rule is placed last in the document so it also wins the
+   cascade tie-break against every earlier rule at the same selector
+   specificity. */
+#bjsWhyOverlay.open{z-index:2147483647!important}
+</style>
 </body></html>
