@@ -54877,7 +54877,15 @@ return '<svg viewBox="0 0 64 64" width="'+size+'" height="'+size+'" aria-hidden=
 function injectDessertExtras(){
 var overlay=document.getElementById('bestOfOverlay');
 if(!overlay||!overlay.classList.contains('open'))return;
-if(typeof boCurrentCat==='undefined'||boCurrentCat!=='dessert')return;
+if(typeof boCurrentCat==='undefined'||boCurrentCat!=='dessert'){
+/* Per Brad (2026-09-22): Cone Central is dessert-page-only. It was inserted
+   outside #boList, so it survived navigation and showed up on other pages.
+   Tear it (and the dessert subnote) down whenever we're not on Dessert. */
+var stale=document.getElementById('bopIceCreamConeCentralWrap');if(stale)stale.remove();
+var staleBtn=document.getElementById('bopIceCreamConeCentral');if(staleBtn)staleBtn.remove();
+document.querySelectorAll('.bop-dessert-subnote').forEach(function(n){n.remove();});
+return;
+}
 var heroSection=document.getElementById('boHeroSection');
 if(heroSection&&!heroSection.querySelector('.bop-dessert-subnote')){
 var taglineP=Array.from(heroSection.querySelectorAll('p')).find(function(p){return p.textContent.indexOf('WE DID THE DIGGING')>-1;});
@@ -54900,13 +54908,18 @@ link.innerHTML=coneIconSVG(22)+'<span style="font:900 .32rem/1 \'Archivo Black\'
 link.addEventListener('click',function(){
 if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecreamtogo');
 });
-/* Brad's request (2026-09-18): this was sitting after the whole restaurant
-   list -- way too far down. Move it up to sit right under the featured
-   tiles/hero area, before the list of dessert spots even starts. */
-var sectionHead=document.getElementById('boSectionHead');
-if(sectionHead&&sectionHead.parentElement){sectionHead.insertAdjacentElement('afterend',link);}
-else if(heroSection){heroSection.insertAdjacentElement('afterend',link);}
-else{list.insertAdjacentElement('afterend',link);}
+/* Per Brad (2026-09-22): reversing the 09-18 move -- Cone Central lives at
+   the BOTTOM, directly under the dessert cards, with little arrows pointing
+   at it and a pulse so it reads as the next stop. */
+link.classList.add('bop-cone-central-pulse');
+var wrap=document.createElement('div');
+wrap.id='bopIceCreamConeCentralWrap';
+wrap.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:14px;margin:18px auto 26px;');
+var arrowStyle='color:#F59E0B;font:900 1.1rem/1 Arial,sans-serif;text-shadow:0 0 8px rgba(245,158,11,.7);';
+var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.setAttribute('style',arrowStyle);la.textContent='\u2192';
+var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle);ra.textContent='\u2190';
+wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);
+list.insertAdjacentElement('afterend',wrap);
 }
 }
 if(typeof window.boRenderCategory==='function'&&!window.__bopDessertLinkPatched){
@@ -58824,17 +58837,37 @@ var city=hero.querySelector('.bop-splash-city');
 if(!lock||!city)return;
 var target=lock.getBoundingClientRect().width;
 if(!(target>60))return;
-city.style.removeProperty('font-size');
+city.style.removeProperty('font-size');city.style.removeProperty('max-width');city.style.setProperty('white-space','nowrap','important');
 var fs=parseFloat(getComputedStyle(city).fontSize);if(!(fs>0))return;
 var range=document.createRange();range.selectNodeContents(city);
 var w=range.getBoundingClientRect().width;
 if(!(w>0))return;
-var next=fs*target/w;
-next=Math.max(fs*0.55,Math.min(fs*4.5,next));
+city.style.setProperty('word-spacing','0','important');
+var scale=target/w;
+var next;
+if(scale<0.62){
+/* Per Brad (2026-09-22): long combined titles ("Best Desserts Copenhagen")
+   were hitting the shrink floor and running off both edges. Let them wrap
+   to two centered lines at a readable size instead, each line within the
+   lockup width. */
+next=Math.min(fs*0.8,fs*scale*1.9);
 city.style.setProperty('font-size',next+'px','important');
-try{var r2=document.createRange();r2.selectNodeContents(city);var w2=r2.getBoundingClientRect().width;if(w2>0){var adj=next*target/w2;if(Math.abs(adj-next)>0.5){next=Math.max(fs*0.55,Math.min(fs*4.5,adj));city.style.setProperty('font-size',next+'px','important');}}}catch(e){}
+city.style.setProperty('display','inline-block','important');
+city.style.setProperty('white-space','normal','important');
+city.style.setProperty('max-width',target+'px','important');
+city.style.setProperty('text-align','center','important');
+city.style.setProperty('line-height','1','important');
+city.style.setProperty('overflow-wrap','normal','important');
+for(var k=0;k<8;k++){if(city.scrollWidth<=city.clientWidth+1)break;next*=0.93;city.style.setProperty('font-size',next+'px','important');}
+}else{
+next=fs*scale;
+next=Math.max(fs*0.62,Math.min(fs*4.5,next));
+city.style.setProperty('font-size',next+'px','important');
+try{var r2=document.createRange();r2.selectNodeContents(city);var w2=r2.getBoundingClientRect().width;if(w2>0){var adj=next*target/w2;if(Math.abs(adj-next)>0.5){next=Math.max(fs*0.62,Math.min(fs*4.5,adj));city.style.setProperty('font-size',next+'px','important');}}}catch(e){}
 city.style.setProperty('display','inline-block','important');
 city.style.setProperty('white-space','nowrap','important');
+city.style.removeProperty('max-width');
+}
 var col=city.parentElement;if(col&&col.classList.contains('bop-splash-city-col')){col.style.setProperty('overflow','visible','important');col.style.setProperty('text-align','center','important');}
 }
 function fit(){try{document.querySelectorAll('#boHeroTitle .bop-splash-hero, #bopLandingOverlay .bop-splash-hero').forEach(fitOne);}catch(e){}}
@@ -59013,9 +59046,45 @@ animation:none!important;transform:translateY(-1px)!important;
 .call-btn:hover,.directions-btn:hover{background:#4A90D9!important;border-color:#4A90D9!important;color:#000!important}
 .call-btn svg,.directions-btn svg{color:#F59E0B!important;fill:#F59E0B!important;stroke:#F59E0B!important}
 </style>
+<style id="bop-cone-central-pulse-v1">@keyframes bopConePulse{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(245,158,11,.55)}50%{transform:scale(1.07);box-shadow:0 0 22px rgba(245,158,11,.95)}}
+#bopIceCreamConeCentral.bop-cone-central-pulse{animation:bopConePulse 1.6s ease-in-out infinite!important}
+</style>
+<style id="bop-back-dedupe-v1">/* Per Brad (2026-09-22): one back button per page. Overlays that carry their
+   own back control were stacking on top of the city page's #boBackBtn. */
+body:has(#bopWorldwideLanding.open) #boBackBtn,
+body:has(#bopMichelinWorldwide.open) #boBackBtn,
+body.bop-mw-open #boBackBtn,
+body:has(#bopAllBjsPicks.open) #boBackBtn,
+body:has(#bopAllPizzaScores.open) #boBackBtn,
+body:has(#boMoviesPage.open) #boBackBtn,
+body:has(#legendOverlay.open) #boBackBtn{display:none!important}
+</style>
+<script id="bop-back-uniform-enforcer-v1">(function(){
+/* Per Brad (2026-09-22): the readability-enlarger scripts write inline
+   font-size !important onto every element, which beat the universal back
+   button CSS and pushed "Back" outside its circle. Re-assert the uniform
+   size inline (also !important) after every render, and relabel the one
+   "Main" variant to "Back" so every page reads identically. */
+var SEL='.backBtn,.bo-back-btn,.bo-cfs-back,.bo-ft-back,.bo-golive-back,.bo-hfs-back,.bo-movies-back,.bo-other-leaders-back,.bo-rt-back,.bo-sm-back,.bo-ys-back,.bop-all-bjs-back,.bop-all-pizza-back,.bop-bjs-soon-back,.bop-city-gate-back,.bop-ticket-hub-back,.bop-world-back,.cp-back,.map-back,.tg-back,#aboutUsBack,#backHome,#boBackBtn,#bopReturnToLandingBtn,#boMoviesBack,#boNearMapBack,#boWorldwideBack,#bopCarForSaleBack,#bopGoLiveBack,#bopHomesForSaleBack,#bopMemberBack,#bopMichelinWorldwideBack,#bopRealtorBack,#bopSafeMeetupBack,#bopYardSaleBack,#conceptsBack,#directoryBack,#fntBack,#legendBack,#lvMemberBack,#noBaxsyzBack,#promotionsBack,#thc24Back,#tpaAffiliateBack,#tpaCoachingBack,#tpaJoinBack,#tpaStakingBack,#tyBackBtn';
+function fix(){
+try{
+document.querySelectorAll(SEL).forEach(function(el){
+el.style.setProperty('font-size','.52rem','important');
+el.style.setProperty('line-height','1','important');
+el.style.setProperty('width','52px','important');el.style.setProperty('height','52px','important');
+el.querySelectorAll('*').forEach(function(k){k.style.setProperty('font-size','inherit','important');k.style.setProperty('line-height','1','important');k.style.setProperty('color','#FF073A','important');});
+if(el.id==='bopReturnToLandingBtn'){
+el.childNodes.forEach(function(n){if(n.nodeType===3&&/main/i.test(n.textContent))n.textContent=n.textContent.replace(/main/i,'Back');});
+el.querySelectorAll('span').forEach(function(sp){if(/^\s*main\s*$/i.test(sp.textContent))sp.textContent='Back';});
+}
+});
+}catch(e){}
+}
+setInterval(fix,500);fix();
+})();</script>
 <style id="bop-period-mark-universal-fix-v1">.period-mark{display:inline!important;position:static!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;margin:0 0 0 .03em!important;font-family:inherit!important;font-style:normal!important;font-weight:400!important;font-size:.5em!important;line-height:1!important;letter-spacing:0!important;text-transform:none!important;vertical-align:super!important;transform:none!important;text-shadow:none!important}</style>
 <style id="bop-period-apple-logo-universal-fix-v1">.bop-period-apple-i{display:block!important;position:absolute!important;left:50%!important;top:calc(.11em + 1px)!important;width:.30em!important;height:.30em!important;transform:translateX(-50%)!important;pointer-events:none!important;margin:0!important}.bop-period-apple-o{display:inline-block!important;position:relative!important;width:.9em!important;height:.97em!important;vertical-align:-0.2em!important;line-height:0!important;margin:0 -0.15em!important;top:auto!important;left:auto!important;transform:none!important}</style>
-<style id="bop-period-mark-FINAL-consolidated-v2">/* Per Brad (2026-09-22, second pass): the v1 consolidation still lost to
+<style id="bop-period-mark-FINAL-consolidated-v3">/* v3: several legacy rules are ID-scoped (e.g. "#boHeroTitle .bop-splash-period .bop-period-apple-i{transform:...}") and an ID beats any number of classes. :is(#id, .class) carries ID-level specificity while still matching by class, so this rule now outranks every legacy rule in every context. *//* Per Brad (2026-09-22, second pass): the v1 consolidation still lost to
    older compound selectors like ".bop-period-i-wrap:not(.bop-i-exempt)
    .bop-period-apple-i" -- those have HIGHER CSS SPECIFICITY (multiple
    classes) than a bare ".bop-period-apple-i" rule, so they kept winning
@@ -59024,33 +59093,33 @@ animation:none!important;transform:translateY(-1px)!important;
    still being last in the document too -- belt and suspenders.
    Per Brad's exact latest direction: pin was too big, too low, too far
    right -> smaller, higher, shifted left. Apple shifted left a touch too. */
-.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o{
+:is(#bop-spec-boost,.bop-period-apple-o):is(#bop-spec-boost,.bop-period-apple-o).bop-period-apple-o{
   display:inline-block!important;position:relative!important;
   width:.885em!important;height:.885em!important;
-  vertical-align:-.12em!important;line-height:0!important;
+  vertical-align:baseline!important;line-height:0!important;
   margin:0 -.155em 0 -.095em!important;top:auto!important;left:-.03em!important;
-  transform:translateY(4px)!important;
+  transform:translateY(-.02em)!important;
 }
-.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o>svg,
-.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o svg{
+:is(#bop-spec-boost,.bop-period-apple-o):is(#bop-spec-boost,.bop-period-apple-o).bop-period-apple-o>svg,
+:is(#bop-spec-boost,.bop-period-apple-o):is(#bop-spec-boost,.bop-period-apple-o).bop-period-apple-o svg{
   display:block!important;width:100%!important;height:100%!important;
 }
-.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o>svg path,
-.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o svg path{
+:is(#bop-spec-boost,.bop-period-apple-o):is(#bop-spec-boost,.bop-period-apple-o).bop-period-apple-o>svg path,
+:is(#bop-spec-boost,.bop-period-apple-o):is(#bop-spec-boost,.bop-period-apple-o).bop-period-apple-o svg path{
   fill:currentColor!important;stroke:currentColor!important;
 }
-.bop-period-i-wrap.bop-period-i-wrap.bop-period-i-wrap{
+:is(#bop-spec-boost,.bop-period-i-wrap):is(#bop-spec-boost,.bop-period-i-wrap).bop-period-i-wrap{
   position:relative!important;display:inline-block!important;
 }
-.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i{
-  position:absolute!important;left:50%!important;top:calc(-.06em - .5px)!important;
+:is(#bop-spec-boost,.bop-period-apple-i):is(#bop-spec-boost,.bop-period-apple-i).bop-period-apple-i{
+  position:absolute!important;left:50%!important;top:auto!important;bottom:.76em!important;
   transform:translateX(-50%)!important;
   width:.30em!important;height:.30em!important;
   pointer-events:none!important;
 }
-.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i svg{width:100%!important;height:100%!important;display:block!important}
-.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i svg path{fill:currentColor!important}
-.period-mark.period-mark.period-mark{
+:is(#bop-spec-boost,.bop-period-apple-i):is(#bop-spec-boost,.bop-period-apple-i).bop-period-apple-i svg{width:100%!important;height:100%!important;display:block!important}
+:is(#bop-spec-boost,.bop-period-apple-i):is(#bop-spec-boost,.bop-period-apple-i).bop-period-apple-i svg path{fill:currentColor!important}
+:is(#bop-spec-boost,.period-mark):is(#bop-spec-boost,.period-mark).period-mark{
   display:inline-block!important;position:relative!important;
   inset:auto!important;top:-.05em!important;right:auto!important;bottom:auto!important;left:auto!important;
   margin:0 0 0 .05em!important;width:auto!important;height:auto!important;
@@ -59059,6 +59128,6 @@ animation:none!important;transform:translateY(-1px)!important;
   vertical-align:baseline!important;text-transform:none!important;transform:none!important;
   text-shadow:none!important;-webkit-text-stroke:0!important;
 }
-.period-mark.period-mark.period-mark>svg,.bop-brand-copyright.bop-brand-copyright>svg{display:none!important}
+:is(#bop-spec-boost,.period-mark):is(#bop-spec-boost,.period-mark).period-mark>svg,:is(#bop-spec-boost,.bop-brand-copyright).bop-brand-copyright>svg{display:none!important}
 </style>
 </body></html>
