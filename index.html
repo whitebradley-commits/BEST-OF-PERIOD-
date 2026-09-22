@@ -15904,7 +15904,7 @@ boCityContext = cat;
 const otherBestsCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
 const otherBestsCity = otherBestsCfg.landingName || otherBestsCfg.displayName;
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">Best Of</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1 bop-hub-bestof"><span class="bop-hub-best">Best</span><span class="bop-hub-of">Of</span></span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(otherBestsCity)}" id="bopMainCityText">${otherBestsCity}</span></span>
 ${(function(){
@@ -59083,6 +59083,11 @@ el.querySelectorAll('span').forEach(function(sp){if(/^\s*main\s*$/i.test(sp.text
 }
 setInterval(fix,500);fix();
 })();</script>
+<style id="bop-hub-bestof-kern-v1">/* Per Brad (2026-09-22): rotating-cities-hub page only -- "Best" 1px left,
+   "Of" 2px left, so "Best Of" sits centered over "Period" below it. */
+.bop-hub-best{display:inline-block!important;transform:translateX(-1px)!important}
+.bop-hub-of{display:inline-block!important;margin-left:.28em!important;transform:translateX(-2px)!important}
+</style>
 <style id="bop-period-mark-universal-fix-v1">.period-mark{display:inline!important;position:static!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;margin:0 0 0 .03em!important;font-family:inherit!important;font-style:normal!important;font-weight:400!important;font-size:.5em!important;line-height:1!important;letter-spacing:0!important;text-transform:none!important;vertical-align:super!important;transform:none!important;text-shadow:none!important}</style>
 <style id="bop-period-apple-logo-universal-fix-v1">.bop-period-apple-i{display:block!important;position:absolute!important;left:50%!important;top:calc(.11em + 1px)!important;width:.30em!important;height:.30em!important;transform:translateX(-50%)!important;pointer-events:none!important;margin:0!important}.bop-period-apple-o{display:inline-block!important;position:relative!important;width:.9em!important;height:.97em!important;vertical-align:-0.2em!important;line-height:0!important;margin:0 -0.15em!important;top:auto!important;left:auto!important;transform:none!important}</style>
 <style id="bop-period-mark-FINAL-consolidated-v3">/* v3: several legacy rules are ID-scoped (e.g. "#boHeroTitle .bop-splash-period .bop-period-apple-i{transform:...}") and an ID beats any number of classes. :is(#id, .class) carries ID-level specificity while still matching by class, so this rule now outranks every legacy rule in every context. *//* Per Brad (2026-09-22, second pass): the v1 consolidation still lost to
