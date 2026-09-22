@@ -3234,9 +3234,12 @@ function isBjsPicksCat(cat){
 return Object.values(BO_CITY_CONFIG).some(c => c.bjsPicksCat === cat);
 }
 function boMainCityIntroHTML(cfg){
-const areasHTML = cfg.areaList
-.map(a => `<strong style='font-weight:700;'>${a}</strong>`)
-.join('&nbsp; ');
+/* Per Brad (2026-09-22): cities with no defined neighborhoods (empty
+   areaList, e.g. Buffalo) rendered "across . Ranked..." with the city
+   name missing entirely. Fall back to the city's own name. */
+const areasHTML = (cfg.areaList && cfg.areaList.length)
+? cfg.areaList.map(a => `<strong style='font-weight:700;'>${a}</strong>`).join('&nbsp; ')
+: `<strong style='font-weight:700;'>${cfg.displayName}</strong>`;
 return "⭐ <strong style='font-weight:700;color:#fff;font-family:Fraunces,serif;text-shadow:0 0 16px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.2);'>Best Of</strong> "
 + `<span style='color:#FF073A;font-style:italic;font-weight:600;font-family:Fraunces,serif;font-size:1.2em;'>${cfg.displayName}</span> `
 + "<span style='color:var(--gold);font-weight:700;font-family:Fraunces,serif;white-space:nowrap;'>Period<span class='period-mark'>&copy;</span></span>"
@@ -59009,35 +59012,38 @@ animation:none!important;
 </style>
 <style id="bop-period-mark-universal-fix-v1">.period-mark{display:inline!important;position:static!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;margin:0 0 0 .03em!important;font-family:inherit!important;font-style:normal!important;font-weight:400!important;font-size:.5em!important;line-height:1!important;letter-spacing:0!important;text-transform:none!important;vertical-align:super!important;transform:none!important;text-shadow:none!important}</style>
 <style id="bop-period-apple-logo-universal-fix-v1">.bop-period-apple-i{display:block!important;position:absolute!important;left:50%!important;top:calc(.11em + 1px)!important;width:.30em!important;height:.30em!important;transform:translateX(-50%)!important;pointer-events:none!important;margin:0!important}.bop-period-apple-o{display:inline-block!important;position:relative!important;width:.9em!important;height:.97em!important;vertical-align:-0.2em!important;line-height:0!important;margin:0 -0.15em!important;top:auto!important;left:auto!important;transform:none!important}</style>
-<style id="bop-period-mark-FINAL-consolidated-v1">/* Per Brad (2026-09-22): the Period(c) mark has 38 separate, often-
-   contradictory patches layered in across past sessions -- pin position,
-   apple size, copyright placement -- each fixing one page and breaking
-   another. This is the single, final, authoritative rule: appended dead
-   last in the document so it wins over every one of those 37 older
-   rules, everywhere the mark appears, no exceptions.
-   Layout: "Peri" + apple-body (replacing the o) with the pin/leaf
-   centered just above it, + "d" + a small raised (c) hugging the d. */
-.bop-period-apple-o{
+<style id="bop-period-mark-FINAL-consolidated-v2">/* Per Brad (2026-09-22, second pass): the v1 consolidation still lost to
+   older compound selectors like ".bop-period-i-wrap:not(.bop-i-exempt)
+   .bop-period-apple-i" -- those have HIGHER CSS SPECIFICITY (multiple
+   classes) than a bare ".bop-period-apple-i" rule, so they kept winning
+   regardless of being earlier in the file. Fixing that here by repeating
+   the class selector to push specificity above every one of those, while
+   still being last in the document too -- belt and suspenders.
+   Per Brad's exact latest direction: pin was too big, too low, too far
+   right -> smaller, higher, shifted left. Apple shifted left a touch too. */
+.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o{
   display:inline-block!important;position:relative!important;
-  width:.86em!important;height:.86em!important;
+  width:.82em!important;height:.82em!important;
   vertical-align:-.12em!important;line-height:0!important;
-  margin:0 -.09em!important;top:auto!important;left:auto!important;transform:none!important;
+  margin:0 -.13em 0 -.07em!important;top:auto!important;left:-.03em!important;transform:none!important;
 }
-.bop-period-apple-o>svg,.bop-period-apple-o svg{
+.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o>svg,
+.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o svg{
   display:block!important;width:100%!important;height:100%!important;
 }
-.bop-period-apple-o>svg path,.bop-period-apple-o svg path{
+.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o>svg path,
+.bop-period-apple-o.bop-period-apple-o.bop-period-apple-o svg path{
   fill:currentColor!important;stroke:currentColor!important;
 }
-.bop-period-apple-i{
-  position:absolute!important;left:50%!important;top:-.20em!important;
+.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i{
+  position:absolute!important;left:42%!important;top:-.34em!important;
   transform:translateX(-50%)!important;
-  width:.24em!important;height:.24em!important;
+  width:.19em!important;height:.19em!important;
   pointer-events:none!important;
 }
-.bop-period-apple-i svg{width:100%!important;height:100%!important;display:block!important}
-.bop-period-apple-i svg path{fill:currentColor!important}
-.period-mark{
+.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i svg{width:100%!important;height:100%!important;display:block!important}
+.bop-period-apple-i.bop-period-apple-i.bop-period-apple-i svg path{fill:currentColor!important}
+.period-mark.period-mark.period-mark{
   display:inline-block!important;position:relative!important;
   inset:auto!important;top:-.05em!important;right:auto!important;bottom:auto!important;left:auto!important;
   margin:0 0 0 .05em!important;width:auto!important;height:auto!important;
@@ -59046,6 +59052,6 @@ animation:none!important;
   vertical-align:baseline!important;text-transform:none!important;transform:none!important;
   text-shadow:none!important;-webkit-text-stroke:0!important;
 }
-.period-mark>svg,.bop-brand-copyright>svg{display:none!important}
+.period-mark.period-mark.period-mark>svg,.bop-brand-copyright.bop-brand-copyright>svg{display:none!important}
 </style>
 </body></html>
