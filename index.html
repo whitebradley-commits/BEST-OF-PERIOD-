@@ -22376,8 +22376,12 @@ function isOpen(id){var node=document.getElementById(id);return !!node&&(node.cl
 function sync(){
 var restaurantOpen=restaurantPages.some(isOpen);
 var outsideOpen=outsidePages.some(isOpen);
-document.body.classList.toggle('bop-restaurant-dock-visible',restaurantOpen&&!outsideOpen);
-if(restaurantOpen&&!outsideOpen)document.body.classList.remove('bop-content-open');
+/* Per Brad (2026-09-21): the four orbs live on the main rotating-cities
+   landing page only; they no longer follow into city, category or any
+   other page. */
+var landingOnly=isOpen('bopLandingOverlay')&&!outsideOpen;
+document.body.classList.toggle('bop-restaurant-dock-visible',landingOnly);
+if(landingOnly)document.body.classList.remove('bop-content-open');
 }
 function start(){
 sync();
@@ -58920,6 +58924,11 @@ window.__bopRenderedCounts[cur]=n;
 }catch(e){}
 },700);
 })();</script>
+<style id="bop-dock-landing-only-v1">/* Per Brad (2026-09-21): dock orbs only on the main rotating landing page. */
+body:not(:has(#bopLandingOverlay.open)) #bopStaticLandingDock.bop-static-landing-dock,
+body:not(:has(#bopLandingOverlay.open)) #bopStaticLandingDock{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+body:not(.bop-restaurant-dock-visible) #bopStaticLandingDock.bop-static-landing-dock{display:none!important;visibility:hidden!important;pointer-events:none!important}
+</style>
 <style id="bop-period-mark-universal-fix-v1">.period-mark{display:inline!important;position:static!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;margin:0 0 0 .03em!important;font-family:inherit!important;font-style:normal!important;font-weight:400!important;font-size:.5em!important;line-height:1!important;letter-spacing:0!important;text-transform:none!important;vertical-align:super!important;transform:none!important;text-shadow:none!important}</style>
 <style id="bop-period-apple-logo-universal-fix-v1">.bop-period-apple-i{display:block!important;position:absolute!important;left:50%!important;top:calc(.11em + 1px)!important;width:.30em!important;height:.30em!important;transform:translateX(-50%)!important;pointer-events:none!important;margin:0!important}.bop-period-apple-o{display:inline-block!important;position:relative!important;width:.9em!important;height:.97em!important;vertical-align:-0.2em!important;line-height:0!important;margin:0 -0.15em!important;top:auto!important;left:auto!important;transform:none!important}</style>
 </body></html>
