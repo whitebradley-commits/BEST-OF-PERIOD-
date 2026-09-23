@@ -77,6 +77,7 @@ takeRecords(){return this.native.takeRecords()}
 <style id="bop-infinite-city-stacking-v172">#bopLandingCityText,#bopSplashCityText,#hubBestMiniCity,#conceptsBestMiniCity,#bjsWhyRotatingCity{position:relative !important;z-index:0 !important}.bop-splash-line2:has(#bopLandingCityText) .bop-splash-city-col,.bop-splash-line2:has(#bopSplashCityText) .bop-splash-city-col{z-index:0 !important}.bop-splash-line2:has(#bopLandingCityText) .bop-splash-period,.bop-splash-line2:has(#bopSplashCityText) .bop-splash-period,.hub-best-mini-badge:has(#hubBestMiniCity) .hub-best-mini-period,.hub-best-mini-badge:has(#conceptsBestMiniCity) .hub-best-mini-period,.bjs-why-city-period-lockup:has(#bjsWhyRotatingCity) .bjs-why-inline-period{position:relative !important;z-index:8 !important}.bop-special-orb{position:fixed;left:18px;bottom:22px;z-index:1200010;display:none;align-items:center;justify-content:center;width:88px;height:88px;border-radius:50%;background:#0a0a0a;border:2.5px solid #F3AB19;box-shadow:0 8px 24px rgba(0,0,0,0.55),0 0 16px rgba(243,171,25,0.35);font-family:inherit;cursor:pointer;padding:0;text-align:center}.bop-special-orb.open{display:flex}.bop-special-orb-close{position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:50%;border:1.5px solid #F3AB19;background:#050505;color:#F3AB19;font:800 14px/1 Arial;cursor:pointer;display:grid;place-items:center;padding:0}.bop-special-orb-label{display:none}.bop-special-orb-btn{border:none;cursor:pointer;background:transparent;font:900 13px/1.2 Arial;letter-spacing:0.04em;color:#FF073A;text-shadow:0 0 6px rgba(255,7,58,0.35);padding:0;width:100%;height:100%;border-radius:50%}@media(prefers-reduced-motion:reduce){.bop-special-orb-btn{animation:none}}.bop-promo-modal{position:fixed;inset:0;z-index:1200011;display:none;place-items:center;padding:26px;background:rgba(5,5,5,0.22);backdrop-filter:blur(13px) brightness(0.85);-webkit-backdrop-filter:blur(13px) brightness(0.85)}.bop-promo-modal.open{display:grid}.bop-promo-modal-inner{position:relative;width:min(720px,92vw);max-height:90vh;background:#000;border-radius:16px;overflow:hidden;border:2px solid #F3AB19;box-shadow:0 20px 60px rgba(0,0,0,0.6);padding-top:52px}.bop-promo-headline{position:absolute;top:0;left:0;right:0;padding:14px 56px 10px 16px;color:#F3AB19;font-weight:900;font-size:clamp(15px,4vw,20px);letter-spacing:0.06em;text-transform:uppercase;text-align:center;text-shadow:0 0 10px rgba(243,171,25,0.5);background:linear-gradient(#000 60%,rgba(0,0,0,0))}.bop-promo-video{display:block;width:100%;height:auto;max-height:calc(90vh - 52px);background:#000}.bop-promo-footnote{padding:6px 14px 10px;text-align:center;color:#888;font-size:10px;letter-spacing:0.02em;background:#000}.bop-promo-sound-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:2;pointer-events:none;background:rgba(0,0,0,0.7);border:1.5px solid #F3AB19;border-radius:999px;color:#F3AB19;font:800 12px Arial;letter-spacing:0.04em;padding:7px 16px;display:none;white-space:nowrap}.bop-promo-modal-inner.is-muted .bop-promo-sound-hint{display:block}.bop-promo-modal-close{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;border:2px solid #F3AB19;background:rgba(5,5,5,0.85);color:#F3AB19;font:900 20px/1 Arial;cursor:pointer;display:grid;place-items:center}.bop-special-orb{display:none !important}</style>
 <style id="bop-hero-subareas-v1">.bop-hero-subareas{text-align:center;margin-top:4px;margin-left:-0.35em;color:#FF073A!important;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.03em;line-height:1.1;white-space:nowrap;-webkit-text-stroke:0.6px #F59E0B;paint-order:stroke fill;text-shadow:0 0 14px rgba(255,7,58,.76),0 0 34px rgba(255,7,58,.34)}@media(max-width:390px){.bop-hero-subareas{font-size:1.32rem}}</style>
 <style id="bop-michelin-silver-v1">.bop-michelin-silver{color:#C9CCD1!important;text-shadow:0 0 6px rgba(255,255,255,.35),0 0 14px rgba(200,205,215,.25);letter-spacing:.06em}</style>
+<style id="bop-michelin-banner-push-down-v1">#boHeroSection:has(> #vegasMichelinBannerSlot .bo-michelin-cloud-wrap){padding-top:3.6rem}</style>
 <style id="bop-appvice-v1">.bo-appvice-apple{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:.3em;filter:drop-shadow(0 0 4px rgba(255,7,58,.55))}.bo-red-callout-pending{color:#f2f2f2!important;font-weight:600!important}.bo-red-callout-pending .bo-red-callout-label{color:#FF073A!important}</style>
 </head>
 <body>
@@ -13097,7 +13098,7 @@ let boNearOsmAllPlaces = [];
 let boNearOsmShowCount = 5;
 let boNearOsmLastLat = null;
 let boNearOsmLastLon = null;
-function boGuessOsmTier(tags){
+function boGuessOsmTier(tags,name){
 tags = tags || {};
 const priceRange = String(tags.price_range||'').toLowerCase();
 if(priceRange){
@@ -13107,9 +13108,16 @@ return 'casual';
 }
 const amenity = tags.amenity||'';
 if(amenity==='fast_food') return 'dive';
+/* Per Brad (2026-09-23): amenity/name checked BEFORE the cuisine guess, and
+   any name that reads casual (diner, cafe, bakery, deli, pizzeria...)
+   overrides a cuisine match -- a cuisine tag alone (e.g. "italian" on an
+   actual diner) was pushing casual spots into the $$$$ "fine" bucket. */
+if(amenity==='cafe'||amenity==='bakery'||amenity==='fast_casual') return 'casual';
+const nm = String(name||'').toLowerCase();
+const looksCasual = /\bdiner\b|\bcaf[ée]\b|\bbakery\b|\bpizzeria\b|\bdeli\b|\btaco\b|\bburger\b|\bsandwich\b|\bgrill\b|\bbar\s*&|\bbar and\b|\bbistro\b|\bkitchen\b|\bshack\b|\btruck\b|\bstand\b/.test(nm);
+if(looksCasual) return 'casual';
 const cuisine = String(tags.cuisine||'').toLowerCase();
 if(/steak_house|steakhouse|fine_dining|french|sushi|seafood|italian/.test(cuisine)) return 'fine';
-if(amenity==='cafe') return 'casual';
 return 'casual';
 }
 function boRenderOsmList(){
@@ -13159,7 +13167,10 @@ const phoneDigits = (p.phone||'').replace(/[^+\d]/g,'');
 const callBtn = phoneDigits ? '<a class="bo-near-osm-action" href="tel:'+boNearEscape(phoneDigits)+'" aria-label="Call" title="Call"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.25 1.01z"/></svg></a>' : '';
 const dirBtn = '<button type="button" class="bo-near-osm-action" data-directions-popup="'+boNearEscape(p.lat+','+p.lon)+'" data-directions-name="'+boNearEscape(p.name)+'" aria-label="Directions" title="Directions"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.72 11.19 7.01 11.44a1.5 1.5 0 0 0 1.98 0C13.28 21.19 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg></button>';
 return '<div class="bo-near-osm-item">'+
-'<div class="bo-near-osm-item-name">'+boNearEscape(p.name)+' <span class="bo-near-osm-tier bo-near-osm-tier-'+(p.tier==='fine'?'casual':p.tier)+'">'+'$'.repeat(p.tier==='dive'?1:p.tier==='casual'?2:3)+'</span></div>'+
+/* Per Brad (2026-09-23): the badge showed 3 $ for a "fine" item even
+   though the fine filter button reads $$$$ -- align the badge count with
+   the button's own label so a tapped $$$$ filter only ever shows $$$$. */
+'<div class="bo-near-osm-item-name">'+boNearEscape(p.name)+' <span class="bo-near-osm-tier bo-near-osm-tier-'+p.tier+'">'+(p.tier==='dive'?'$':p.tier==='casual'?'$$':'$$$$')+'</span></div>'+
 '<div class="bo-near-osm-item-meta">'+distanceText+(p.cuisine?' · '+boNearEscape(p.cuisine):'')+'</div>'+
 '<div class="bo-near-osm-item-actions">'+callBtn+dirBtn+'</div>'+
 '</div>';
@@ -13245,7 +13256,7 @@ distance: boNearDistanceMiles(userPoint,{lat:el.lat,lng:el.lon}),
 website: el.tags.website || el.tags['contact:website'] || '',
 phone: el.tags.phone || el.tags['contact:phone'] || el.tags['phone:mobile'] || '',
 cuisine: el.tags.cuisine ? String(el.tags.cuisine).replace(/_/g,' ') : '',
-tier: boGuessOsmTier(el.tags),
+tier: boGuessOsmTier(el.tags, el.tags.name),
 mapsUrl: 'https://www.google.com/maps/search/?api=1&query='+el.lat+','+el.lon,
 lat: el.lat,
 lon: el.lon
@@ -15842,7 +15853,7 @@ boCurrentCat = cat;
 const vegasMichelinSlot = document.getElementById('vegasMichelinBannerSlot');
 if(vegasMichelinSlot){
 vegasMichelinSlot.innerHTML = (cat === 'michelin' && boCityContext === 'bestof')
-? `<div class="bo-michelin-cloud-wrap" style="position:relative;margin:0 auto 50px;max-width:400px;width:78vw;">
+? `<div class="bo-michelin-cloud-wrap" style="position:relative;margin:100px auto 50px;max-width:400px;width:78vw;">
 <svg viewBox="0 0 640 512" style="width:100%;height:auto;filter:drop-shadow(0 0 14px rgba(245,158,11,0.4));">
 <path fill="#0a0a0a" stroke="#F59E0B" stroke-width="9" stroke-linejoin="round" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.1C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"/>
 </svg>
@@ -18989,7 +19000,8 @@ openFnt();
 },180);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
-})();</script> <style id="bjs-why-rotating-city-style">#bjsWhyOverlay .bjs-why-city-period-lockup{display:grid;grid-template-columns:max-content 62px max-content;align-items:baseline;justify-content:center;column-gap:3px;white-space:nowrap;font-size:1rem;line-height:1.15;position:relative;margin:1px auto 8px}#bjsWhyOverlay .bjs-why-best-of{color:#fff;font-family:'Fraunces',serif;font-weight:900;text-transform:uppercase;position:relative;z-index:1;text-shadow:0 0 10px rgba(255,255,255,.22)}#bjsWhyOverlay #bjsWhyRotatingCity{display:block;width:62px;min-width:0;text-align:center;overflow:visible;position:relative;z-index:2;color:#FF073A;font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:1.14em;text-shadow:0 0 7px rgba(255,7,58,.5);transition:opacity .08s ease,filter .08s ease}#bjsWhyOverlay #bjsWhyRotatingCity.changing{opacity:0;filter:blur(2px)}#bjsWhyOverlay .bjs-why-inline-period{color:#F59E0B;font-family:'Fraunces',serif;font-weight:700;text-shadow:0 0 12px rgba(245,158,11,.45);position:relative;z-index:1}#bjsWhyOverlay .bjs-why-inline-period .period-mark{font-size:.34em;vertical-align:baseline;line-height:1;letter-spacing:0;margin-left:.04em}#bjsWhyOverlay .bjs-why-orb-text>p:last-child span[aria-hidden="true"]{font-weight:300!important;opacity:.68;margin:0 .55em;display:inline-block}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(2)>span{font-size:calc(1em + 2pt)}#bjsWhyOverlay .bjs-why-orb-text>p:first-child{display:none!important}#bjsWhyOverlay .bjs-why-orb-text{transform:translateY(-10px)}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="white-space"]{white-space:normal!important}#bjsWhyOverlay .bjs-why-direction-line{font-size:.68rem!important;margin-bottom:8px!important;transform:translateY(-3px)}#bjsWhyOverlay .bjs-why-direction-line{display:none!important}#bjsWhyOverlay .bjs-why-final-line{display:block;margin-top:1px;font-size:.68rem;line-height:1.2;letter-spacing:.01em}#bjsWhyOverlay .bjs-why-final-line strong{font-family:'Archivo Black',sans-serif;font-weight:900}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="inline-flex"]{white-space:nowrap!important}</style> <style id="sitewide-close-back-style">#picsGalleryClose,#directoryClose,#shuttleClose,#menuPopupCloseBtn,#socialPopupCloseBtn,#bjsWhyCloseBtn,#directionsPopupCloseBtn,#phonePopupCloseBtn,#webPopupCloseBtn,#restaurantMenuCloseBtn,#thc24Back,#hhClose,#boNearInfoClose,#bestHotelsPreviewClose{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:50%!important;box-shadow:0 0 9px rgba(245,158,11,.72),inset 0 0 5px rgba(245,158,11,.12)!important}.backBtn,.bo-back-btn,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:999px!important;box-shadow:0 0 9px rgba(245,158,11,.72),inset 0 0 5px rgba(245,158,11,.12)!important}.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#FF073A!important}</style>
+})();</script> <style id="bjs-why-rotating-city-style">#bjsWhyOverlay .bjs-why-city-period-lockup{display:grid;grid-template-columns:max-content 62px max-content;align-items:baseline;justify-content:center;column-gap:3px;white-space:nowrap;font-size:1rem;line-height:1.15;position:relative;margin:1px auto 8px}#bjsWhyOverlay .bjs-why-best-of{color:#fff;font-family:'Fraunces',serif;font-weight:900;text-transform:uppercase;position:relative;z-index:1;text-shadow:0 0 10px rgba(255,255,255,.22)}#bjsWhyOverlay #bjsWhyRotatingCity{display:block;width:62px;min-width:0;text-align:center;overflow:visible;position:relative;z-index:2;color:#FF073A;font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:1.14em;text-shadow:0 0 7px rgba(255,7,58,.5);transition:opacity .08s ease,filter .08s ease}#bjsWhyOverlay #bjsWhyRotatingCity.changing{opacity:0;filter:blur(2px)}#bjsWhyOverlay .bjs-why-inline-period{color:#F59E0B;font-family:'Fraunces',serif;font-weight:700;text-shadow:0 0 12px rgba(245,158,11,.45);position:relative;z-index:1}#bjsWhyOverlay .bjs-why-inline-period .period-mark{font-size:.34em;vertical-align:baseline;line-height:1;letter-spacing:0;margin-left:.04em}#bjsWhyOverlay .bjs-why-orb-text>p:last-child span[aria-hidden="true"]{font-weight:300!important;opacity:.68;margin:0 .55em;display:inline-block}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(2)>span{font-size:calc(1em + 2pt)}#bjsWhyOverlay .bjs-why-orb-text>p:first-child{display:none!important}#bjsWhyOverlay .bjs-why-orb-text{transform:translateY(-10px)}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="white-space"]{white-space:normal!important}#bjsWhyOverlay .bjs-why-direction-line{font-size:.68rem!important;margin-bottom:8px!important;transform:translateY(-3px)}#bjsWhyOverlay .bjs-why-direction-line{display:none!important}#bjsWhyOverlay .bjs-why-final-line{display:block;margin-top:1px;font-size:.68rem;line-height:1.2;letter-spacing:.01em}#bjsWhyOverlay .bjs-why-final-line strong{font-family:'Archivo Black',sans-serif;font-weight:900}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="inline-flex"]{white-space:nowrap!important}</style> <style id="sitewide-close-back-style">#picsGalleryClose,#directoryClose,#shuttleClose,#menuPopupCloseBtn,#socialPopupCloseBtn,#bjsWhyCloseBtn,#directionsPopupCloseBtn,#phonePopupCloseBtn,#webPopupCloseBtn,#restaurantMenuCloseBtn,#thc24Back,#hhClose,#boNearInfoClose,#bestHotelsPreviewClose{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:50%!important;box-shadow:0 0 9px rgba(245,158,11,.72),inset 0 0 5px rgba(245,158,11,.12)!important}.backBtn,/* Per Brad (2026-09-23): unify every back button to the Other Cities page's dimmer static glow (was 0.72 alpha here vs 0.48 there, making the word unreadable on every page except Other Cities). */
+.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:999px!important;box-shadow:0 0 10px rgba(245,158,11,.48),inset 0 0 12px rgba(245,158,11,.05)!important;text-shadow:none!important}.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#FF073A!important}</style>
 <style id="bo-near-title-and-back-final">.bo-near-map-back::before{content:none !important;display:none !important}.bo-near-map-back{box-shadow:0 0 9px rgba(245,158,11,.72) !important}#aboutUsBack{color:#FF073A !important;border-color:#F59E0B !important;background:#050505 !important}#aboutUsBack::before{content:none !important;display:none !important}.bo-near-map-title{top:calc(33.333vh - 94px) !important;left:9vw !important;right:auto !important;align-items:flex-start !important;text-align:left !important}.bo-near-map-title strong{font-size:clamp(2.8rem,11.75vw,5.5rem) !important}.bo-near-map-title .bo-near-closest-title{margin-top:5px;color:#F59E0B !important;font-size:clamp(2.8rem,11.75vw,5.5rem) !important}.bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *){display:none !important}
 .bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *)::before{content:none !important}
 .bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *)::after{content:none !important}
@@ -59358,4 +59370,67 @@ window.bopBjsPickConflicts=function(){var picksCats={};Object.keys(BO_CITY_CONFI
 setTimeout(function(){try{var c=(typeof boCurrentCat!=='undefined')?boCurrentCat:null;var isPicks=c&&Object.keys(BO_CITY_CONFIG).some(function(k){return BO_CITY_CONFIG[k].bjsPicksCat===c;});var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');var onPicksPage=isPicks&&best&&best.classList.contains('open')&&!(landing&&landing.classList.contains('open'));if(onPicksPage){window.boRenderCategory(c);}}catch(e){}},900);
 })();</script>
 
+<style id="bop-backbtn-final-glow-2026-09-23">/* Per Brad (2026-09-23): a late "master appearance" block was zeroing every back button's glow to box-shadow:none, so the strength actually shown depended on which rule happened to load last -- not the intended Other Cities level. Placed at the true end of the document so this wins the tie every time and every back button matches Other Cities exactly. */.backBtn,.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack,#boBackBtn,#bopReturnToLandingBtn,#aboutUsBack,#backHome,#boMoviesBack,#boNearMapBack,#boWorldwideBack,#bopCarForSaleBack,#bopGoLiveBack,#bopHomesForSaleBack,#bopMemberBack,#bopMichelinWorldwideBack,#bopRealtorBack,#bopSafeMeetupBack,#bopYardSaleBack,#conceptsBack,#directoryBack,#fntBack,#lvMemberBack,#noBaxsyzBack,#promotionsBack,#thc24Back,#tpaAffiliateBack,#tpaCoachingBack,#tpaJoinBack,#tpaStakingBack,#tyBackBtn,.bop-zone-close,.cp-back,.tg-back,.bo-cfs-back,.bo-ft-back,.bo-golive-back,.bo-hfs-back,.bo-movies-back,.bo-other-leaders-back,.bo-rt-back,.bo-sm-back,.bo-ys-back,.bop-all-bjs-back,.bop-all-pizza-back,.bop-bjs-soon-back,.bop-city-gate-back,.bop-ticket-hub-back,.bop-world-back{box-shadow:0 0 10px rgba(245,158,11,.48),inset 0 0 12px rgba(245,158,11,.05)!important;text-shadow:none!important}</style><style id="bop-action-popups-always-on-top-2026-09-23">
+/* 2026-09-23: ROOT CAUSE of "I tap a phone number / directions / website /
+   menu / social button and nothing shows until I X out of the page."
+   These action popups were at z-index 5,000,000 (phone, social), 400
+   (web) or 50 (menu) -- but nearly every full-screen page they get tapped
+   from (Michelin Worldwide, All BJS Picks, pick-card pop, voice card,
+   Worldwide landing, city gates, Near Me, celeb chef...) sits at
+   2,147,483,000+. The popup opened fine, just underneath. Directions had
+   already been bumped; this pins ALL of them to the max z-index whenever
+   they're open, and the script below also moves them to the end of <body>
+   so they win the tie-break against equal-z pages. */
+#phonePopupOverlay.open,#directionsPopupOverlay.open,#socialPopupOverlay.open,#webPopupOverlay.open,#menuPopupOverlay.open,#restaurantMenuOverlay.open{position:fixed!important;z-index:2147483647!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+</style>
+<script id="bop-action-popups-always-on-top-2026-09-23-script">(function(){
+var IDS=['phonePopupOverlay','directionsPopupOverlay','socialPopupOverlay','webPopupOverlay','menuPopupOverlay','restaurantMenuOverlay'];
+var MAXZ='2147483647';
+function isShown(el){
+if(el.classList.contains('open'))return true;
+try{var cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden';}catch(e){return false;}
+}
+function coveredByLaterSibling(el){
+var n=el.nextElementSibling,vw=window.innerWidth,vh=window.innerHeight;
+while(n){
+try{
+var cs=getComputedStyle(n);
+if(cs.position==='fixed'&&cs.display!=='none'&&cs.visibility!=='hidden'&&parseFloat(cs.opacity)!==0&&parseInt(cs.zIndex,10)>=2147483000){
+var r=n.getBoundingClientRect();
+if(r.width>=vw*0.6&&r.height>=vh*0.6)return true;
+}
+}catch(e){}
+n=n.nextElementSibling;
+}
+return false;
+}
+function lift(el){
+if(el.style.zIndex!==MAXZ)el.style.setProperty('z-index',MAXZ,'important');
+if(el===document.body.lastElementChild)return;
+/* Move to the end of <body> so it also beats equal-z pages. Elements with
+   an iframe (directions map, website preview) reload on move, so only move
+   those when something later in the DOM would actually cover them. */
+if(!el.querySelector('iframe')||coveredByLaterSibling(el))document.body.appendChild(el);
+}
+/* NOTE: the site's mobile-performance gate (bop-mobile-performance-gate-v186)
+   throttles every MutationObserver -- records are dropped during a 700ms
+   cooldown and entirely while the landing page is open -- so an observer
+   is not reliable here. Hook classList.add('open') directly instead. */
+var origAdd=DOMTokenList.prototype.add;
+DOMTokenList.prototype.add=function(){
+var r=origAdd.apply(this,arguments);
+for(var a=0;a<arguments.length;a++){
+if(arguments[a]==='open'){
+for(var i=0;i<IDS.length;i++){var el=document.getElementById(IDS[i]);if(el&&el.classList===this){lift(el);break;}}
+break;
+}
+}
+return r;
+};
+function sweep(){for(var i=0;i<IDS.length;i++){var el=document.getElementById(IDS[i]);if(el&&isShown(el)&&(el.style.zIndex!==MAXZ||(el!==document.body.lastElementChild&&!el.querySelector('iframe'))))lift(el);}}
+setInterval(sweep,250);
+/* belt and braces: also catch opens that happen before the observer fires */
+document.addEventListener('click',function(){setTimeout(function(){IDS.forEach(function(id){var el=document.getElementById(id);if(el&&isShown(el))lift(el);});},40);},true);
+window.bopLiftActionPopups=function(){IDS.forEach(function(id){var el=document.getElementById(id);if(el&&isShown(el))lift(el);});};
+})();</script>
 </body></html>
