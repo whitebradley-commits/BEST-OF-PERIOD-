@@ -41875,8 +41875,12 @@ qualify, and pizza, bagel and cheesesteak places never appear there — they
 live in their own categories (and BJS Picks). Category tiles, Michelin,
 James Beard and BJS Picks lists are untouched. */
 /* Per Brad (2026-09-22): dessert/ice cream spots (Salt & Straw etc.) are
-   dessert-category only, never Best Of, same rule as pizza/bagels/cheesesteak. */
-var EXCL=['pizza','bagels','cheesesteak','dessert'];
+   dessert-category only, never Best Of, same rule as pizza/bagels/cheesesteak.
+   Per Brad (2026-09-23): ice cream shops (Salt & Straw — One Paseo showing in
+   Del Mar's Best Of, etc.) live in their own 'icecreamtogo' category, not
+   'dessert' -- so the dessert-only exclusion never caught them. Both category
+   arrays are excluded now. */
+var EXCL=['pizza','bagels','cheesesteak','dessert','icecreamtogo'];
 function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
 function excludedNames(){var set={};EXCL.forEach(function(cat){var arr=boCategoryData&&boCategoryData[cat];if(!Array.isArray(arr))return;arr.forEach(function(r){if(r&&r.name)set[norm(r.name)]=1;});});return set;}
 function priceNum(r){var p=r&&r.price;if(p==null||p==='')return null;if(typeof p==='number')return p;var s=String(p).trim();if(/^\$+$/.test(s))return s.length;var n=parseInt(s,10);return isNaN(n)?null:n;}
