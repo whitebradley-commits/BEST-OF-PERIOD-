@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark;-webkit-text-size-adjust:100%;text-size-adjust:100%}</style><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}if(p.get('vendorcheckin')==='1'||h==='vendorcheckin'){window.__BOP_VS_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-vendorcheckin-pass','1');}
+<!DOCTYPE html><html lang="en"><head><style id="bop-first-paint">html,body{margin:0;min-height:100%;background:#000;color:#f4a300}html{color-scheme:dark;-webkit-text-size-adjust:100%;text-size-adjust:100%}</style><script id="bop-entry-url-capture-v2026-09-23">/* Per Brad (2026-09-23): snapshot the URL the visitor actually arrived on, before later scripts rewrite it, so shared card links (Tell Dave / SEND) can be told apart from a plain visit. */window.__bopEntrySearch=location.search||"";window.__bopEntryHash=location.hash||"";</script><script id="tag-world-founder-early-capture">(function(){var p=new URLSearchParams(location.search),h=location.hash||'',i=h.indexOf('?');if(i>=0)new URLSearchParams(h.slice(i+1)).forEach(function(v,k){if(!p.has(k))p.set(k,v)});var f=p.get('founder')||'';if(!f)return;window.__TAG_WORLD_FOUNDER=f;try{sessionStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{localStorage.setItem('tag-world-founder-pass',f)}catch(e){}try{document.cookie='tag_world_founder='+encodeURIComponent(f)+'; Max-Age=2592000; Path=/; SameSite=Lax'}catch(e){}})();</script><script id="bop-foodtruck-checkin-early-capture">(function(){try{var p=new URLSearchParams(location.search);var h=(location.hash||'').replace(/^#/,'');if(p.get('checkin')==='1'||h==='checkin'){window.__BOP_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-checkin-pass','1');}if(p.get('vendorsignup')==='1'||h==='vendorsignup'){window.__BOP_VENDORSIGNUP_REQUESTED=true;sessionStorage.setItem('bop-vendorsignup-pass','1');}if(p.get('vendorcheckin')==='1'||h==='vendorcheckin'){window.__BOP_VS_CHECKIN_REQUESTED=true;sessionStorage.setItem('bop-vendorcheckin-pass','1');}
 if(window.__BOP_CHECKIN_REQUESTED||window.__BOP_VS_CHECKIN_REQUESTED){window.__bopArrivedViaQr=true;}
 /* v308: hard bypass. Every previous attempt closed the invitation/promo
 gates AFTER they had already rendered, which kept failing on real
@@ -16253,6 +16253,10 @@ if(cat === 'michelin' && boCityContext === 'bestof'){
 boListEl.innerHTML = '';
 return;
 }
+/* Per Brad (2026-09-23): an empty list was returning early before the
+   section title got rewritten, so it kept whatever the previous page said
+   ("The Top 1, Right Now" over "0 current Bronx BJS Picks"). Clear it. */
+if(boSectionHeadTitleEl){boSectionHeadTitleEl.textContent='';boSectionHeadTitleEl.classList.remove('bo-brewery-ranking-title');}
 const comingSoonCity = (BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof).displayName;
 const comingSoonMsg = boCityContext !== 'bestof'
 ? `Coming soon to ${comingSoonCity} — we're still researching this list there.`
@@ -20609,7 +20613,16 @@ every other check on this page — including the reload/clean-entry
 logic above. Without forcing the landing page here too, reopening a
 tab the browser kept in memory can silently drop someone back into
 whatever city page they'd left open last time. The rotating landing
-page must always be what a person sees when they arrive, no exceptions. */
+page must always be what a person sees when they arrive, no exceptions.
+   Per Brad (2026-09-23): pageshow ALSO fires on every normal first load,
+   so this was force-resetting to the landing page and wiping the
+   ?page=&city=&restaurant= query on every shared card link (the "Tell
+   Dave" message, SEND links). Only the bfcache case (event.persisted)
+   should force the landing; a fresh load with a deep link must keep it. */
+var entryParams=new URLSearchParams(typeof window.__bopEntrySearch==='string'?window.__bopEntrySearch:location.search);
+var entryHash=typeof window.__bopEntryHash==='string'?window.__bopEntryHash:location.hash;
+var entryWasDeepLink=!!entryHash||routedKeys.some(function(key){return entryParams.has(key);});
+if(!(event&&event.persisted)&&entryWasDeepLink)return;
 showTrueLanding(true);
 setTimeout(function(){showTrueLanding(true)},120);
 });
@@ -27290,9 +27303,26 @@ match.setAttribute('data-shared-destination','true');
 match.scrollIntoView({behavior:attempt>1?'auto':'smooth',block:'center'});
 match.style.transition='box-shadow .35s ease';
 match.style.boxShadow='0 0 0 3px #F59E0B,0 0 30px rgba(245,158,11,.92),0 0 48px rgba(255,7,58,.42)';
-setTimeout(function(){match.style.boxShadow=''},4200);return;
+setTimeout(function(){match.style.boxShadow=''},4200);
+/* Later init steps re-render the list and reset the overlay scroll, which
+   was throwing the visitor back to the top after we'd found the card.
+   Re-assert the landing spot a few times as the page settles. */
+if(attempt<100){
+var started=Date.now(),hold=setInterval(function(){
+var again=null,all=document.querySelectorAll('#boList .bo-card');
+for(var j=0;j<all.length;j++){var hh=all[j].querySelector('.bo-card-body h3');if(hh&&hh.textContent.trim().toLowerCase().indexOf(wanted)===0){again=all[j];break;}}
+if(again){
+var r=again.getBoundingClientRect(),vh=window.innerHeight||800;
+if(r.top<0||r.bottom>vh){again.scrollIntoView({behavior:'auto',block:'center'});}
+if(!again.style.boxShadow){again.style.transition='box-shadow .35s ease';again.style.boxShadow='0 0 0 3px #F59E0B,0 0 30px rgba(245,158,11,.92),0 0 48px rgba(255,7,58,.42)';setTimeout(function(){again.style.boxShadow=''},4200);}
+again.setAttribute('data-shared-destination','true');
 }
-if(attempt<12)setTimeout(function(){locate(attempt+1)},180);
+if(Date.now()-started>6500)clearInterval(hold);
+},250);
+}
+return;
+}
+if(attempt<100&&attempt<20)setTimeout(function(){locate(attempt+1)},180);
 }
 setTimeout(function(){locate(0)},80);return true;
 }
@@ -27315,7 +27345,12 @@ if(typeof boRenderCategory==='function')boRenderCategory(category);
 setTimeout(function(){window.scrollTo(0,0)},60);return true;
 }
 function restore(){
-var params=new URLSearchParams(location.search);
+/* Per Brad (2026-09-23): by the time this runs, boReplaceBestOfRoute has
+   already rewritten the URL and dropped ?restaurant=, so a shared card
+   link (Tell Dave / SEND) never found its restaurant and just opened the
+   top of the category. Read the URL the visitor actually arrived on. */
+var entrySearch=(typeof window.__bopEntrySearch==='string'&&/[?&]page=/.test(window.__bopEntrySearch))?window.__bopEntrySearch:location.search;
+var params=new URLSearchParams(entrySearch);
 if(!params.get('page'))return;
 if(openRestaurant(params)||openMovie(params)||openPage(params))return;
 /* A city package can finish a beat after DOMContentLoaded on older phones. */
@@ -59212,4 +59247,115 @@ setInterval(fix,500);fix();
   color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;font-size:inherit!important;line-height:inherit!important;text-shadow:none!important;
 }
 </style>
+<script id="bop-bjs-picks-single-source-2026-09-23">(function(){
+/* Per Brad (2026-09-23): BJS Picks lived in three places that never agreed —
+   a hand-typed bjspicks<city> list (what the picks page rendered), the
+   bjsPick flag on each restaurant card (what the gold apple / summary list /
+   badge counts used), and nothing keeping them in sync. 19 cities disagreed.
+   From now on the card flag is the ONLY source of truth: every city's picks
+   list is rebuilt from "restaurants flagged bjsPick for this city", deduped
+   by name. Hand-list entries with no flag (e.g. the six Best Of London
+   restaurants that had been pasted into London's picks) drop out. */
+var CANON_DUPES=[ /* same restaurant entered twice under two names (same address). [keep, drop] */
+ ['CUT by Wolfgang Puck','CUT Beverly Hills'],
+ ["Mastro's Steakhouse — Beverly Hills","Mastro's Steakhouse Beverly Hills"],
+ ['Peter Luger Steak House','Peter Luger'],
+ ["Hodad's Ocean Beach","Hodad's"],
+ ['Puesto La Jolla','Puesto'],
+ ['Born & Raised','Born and Raised'],
+ ['Buona Forchetta - South Park','Buona Forchetta'],
+ ['Sea Harbour Seafood Restaurant','Sea Harbour'],
+ ['Tsujita LA Artisan Noodle','Tsujita LA'],
+ ["Dalessandro's Steaks","Dalessandro's"],
+ ["Rosa's Thai — Spitalfields","Rosa's Thai Spitalfields"],
+ ['PopUp Bagels — Oceanside','Pop Up Bagels — Oceanside']
+];
+var LONDON_NO_PICKS=true; /* Brad: no BJS Picks in London yet */
+var MYKA_BEATS_HANDELS=true; /* Brad: MYKA and Handel's in the same city -> MYKA is the pick, Handel's is not */
+function norm(a){return String(a||'').toLowerCase().replace(/,?\s*(united states|usa|united kingdom|uk)\s*$/,'').replace(/[^a-z0-9]/g,'');}
+function pickCity(r){return r.bjsPickCity||r.city||'bestof';}
+function mergeInto(keep,drop){Object.keys(drop).forEach(function(k){if(keep[k]==null||keep[k]===''||keep[k]===false)keep[k]=drop[k];});}
+function dedupeCategory(list){
+  if(!Array.isArray(list))return;
+  CANON_DUPES.forEach(function(pair){
+    var keepByCity={},dropIdx=[];
+    list.forEach(function(r){if(r&&r.name&&r.name.trim()===pair[0]){var c=pickCity(r);if(!keepByCity[c])keepByCity[c]=r;}});
+    list.forEach(function(r,i){if(!r||!r.name)return;var n=r.name.trim(),c=pickCity(r);
+      if(n===pair[0]&&keepByCity[c]&&keepByCity[c]!==r){mergeInto(keepByCity[c],r);dropIdx.push(i);return;}
+      if(n!==pair[1])return;
+      var keep=keepByCity[c];
+      if(keep){ if(!r.address||!keep.address||norm(r.address).slice(0,10)===norm(keep.address).slice(0,10)){mergeInto(keep,r);dropIdx.push(i);} }
+      else { r.name=pair[0]; keepByCity[c]=r; } /* only the old spelling lives here: rename it to the canonical name */
+    });
+    dropIdx.sort(function(a,b){return b-a;}).forEach(function(i){list.splice(i,1);});
+  });
+}
+/* Per Brad (2026-09-23): picks still tagged to the retired parent cities
+   ("losangeles" / "sandiego") showed nowhere. Re-home each to the
+   neighborhood its address sits in. */
+var REHOME={losangeles:{'Jade Rabbit':'lasantamonicavenice','HiHo Cheeseburger':'lasantamonicavenice','Philippe the Original':'ladowntown',"Lenny's Casita":'labeveryhillswestside',"Vito's Pizza":'laweho','The Butcher, The Baker, The Cappuccino Maker':'laweho','Chateau Marmont':'laweho'},
+             sandiego:{'Din Tai Fung':'sdlajolla','Sushi Ota':'sdpacificbeach','Stone Brewing World Bistro — Liberty Station':'sdobpointloma','The Lafayette Hotel & Club':'sduptown','Pho Hoa':'sduptown'}};
+function rehomeOrphans(){
+  try{var up=BO_CITY_CONFIG.sduptown;if(up&&Array.isArray(up.areaList)&&up.areaList.indexOf('City Heights')<0)up.areaList.push('City Heights');}catch(e){}
+  Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.name)return;var parent=r.bjsPickCity||r.city;var map=REHOME[parent];if(!map)return;var to=map[r.name.trim()];if(!to)return;r.city=to;if(r.bjsPickCity)r.bjsPickCity=to;});});
+  /* same name, same city, same category list = the same restaurant twice; keep the richest copy */
+  Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l)||/^bjspicks/.test(cat))return;var seen={},drop=[];l.forEach(function(r,i){if(!r||!r.name)return;var k=pickCity(r)+'|'+r.name.trim().toLowerCase();if(seen[k]!=null){var a=l[seen[k]];if(Object.keys(r).length>Object.keys(a).length){mergeInto(r,a);drop.push(seen[k]);seen[k]=i;}else{mergeInto(a,r);drop.push(i);}}else seen[k]=i;});drop.sort(function(a,b){return b-a;}).forEach(function(i){l.splice(i,1);});});
+}
+function applyEditorialRules(){
+  rehomeOrphans();
+  var handelsByCity={},mykaCities={};
+  Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.bjsPick)return;var c=pickCity(r);
+    if(LONDON_NO_PICKS&&c==='london'){r.bjsPick=false;delete r.bjsPickLabel;}
+    if(/myka/i.test(r.name||''))mykaCities[c]=true;
+  });});
+  if(MYKA_BEATS_HANDELS)Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(r&&r.bjsPick&&/handel'?s homemade/i.test(r.name||'')&&mykaCities[pickCity(r)]){r.bjsPick=false;delete r.bjsPickLabel;}});});
+}
+function rebuildPicks(){
+  if(typeof boCategoryData!=='object'||typeof BO_CITY_CONFIG!=='object')return;
+  Object.keys(boCategoryData).forEach(function(cat){dedupeCategory(boCategoryData[cat]);});
+  /* every copy of a merged restaurant carries the same flags and rating */
+  CANON_DUPES.forEach(function(pair){var best={};Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.name||r.name.trim()!==pair[0])return;var c=pickCity(r);var score=(r.bjsPick?4:0)+(r.michelinGuide||r.michelinStars?2:0)+(r.rating?1:0);if(!best[c]||score>best[c].s)best[c]={s:score,r:r};});});
+    Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.name||r.name.trim()!==pair[0])return;var src=best[pickCity(r)]&&best[pickCity(r)].r;if(!src||src===r)return;['bjsPick','bjsPickLabel','bjsPickCity','michelinGuide','michelinStars','jamesBeard','rating','reviews','phone','address','image'].forEach(function(k){if(src[k]!=null&&src[k]!=='')r[k]=src[k];});});});});
+  applyEditorialRules();
+  var byCity={};
+  Object.keys(boCategoryData).forEach(function(cat){var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.name||r.bjsPick!==true)return;var c=pickCity(r);var key=r.name.trim().toLowerCase();byCity[c]=byCity[c]||{};
+    /* prefer the richest copy of a restaurant (more filled fields) */
+    var cur=byCity[c][key];if(!cur||Object.keys(r).length>Object.keys(cur).length)byCity[c][key]=r;});});
+  Object.keys(BO_CITY_CONFIG).forEach(function(cityKey){var cat=BO_CITY_CONFIG[cityKey].bjsPicksCat;if(!cat)return;
+    var picks=byCity[cityKey]?Object.keys(byCity[cityKey]).map(function(k){return byCity[cityKey][k];}):[];
+    /* keep hand-list order where it still applies, then anything new */
+    var old=Array.isArray(boCategoryData[cat])?boCategoryData[cat]:[];var ordered=[];
+    old.forEach(function(r){var m=r&&r.name&&picks.find(function(p){return p.name.trim().toLowerCase()===r.name.trim().toLowerCase();});if(m&&ordered.indexOf(m)<0)ordered.push(m);});
+    picks.forEach(function(p){if(ordered.indexOf(p)<0)ordered.push(p);});
+    boCategoryData[cat]=ordered;
+  });
+  window.__bopPicksRebuilt=Date.now();
+}
+var lastRebuild=0;function rebuildThrottled(){if(Date.now()-lastRebuild<500)return;lastRebuild=Date.now();try{rebuildPicks();}catch(e){console.warn('picks rebuild',e);}}
+rebuildThrottled();
+/* City packages keep arriving for several seconds after first paint. */
+function picksSig(cat){return (boCategoryData[cat]||[]).map(function(r){return r&&r.name;}).join('|');}
+function onPicksPage(){var c=(typeof boCurrentCat!=='undefined')?boCurrentCat:null;var isPicks=c&&Object.keys(BO_CITY_CONFIG).some(function(k){return BO_CITY_CONFIG[k].bjsPicksCat===c;});var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');return isPicks&&best&&best.classList.contains('open')&&!(landing&&landing.classList.contains('open'))?c:null;}
+[1500,3000,5000,8000].forEach(function(ms){setTimeout(function(){var c=onPicksPage(),before=c?picksSig(c):'';lastRebuild=0;rebuildThrottled();
+  /* a city package landed after the picks page painted: repaint it */
+  if(c&&picksSig(c)!==before){try{orig.call(window,c);}catch(e){}}},ms);});
+if(typeof window.boComputePageEntries==='function'&&!window.boComputePageEntries.__bopPicks){var origCount=window.boComputePageEntries;var wc=function(){rebuildThrottled();return origCount.apply(this,arguments);};wc.__bopPicks=true;window.boComputePageEntries=wc;}
+/* Data packages can keep landing after this runs; rebuild right before any
+   picks page or city hub renders so badge counts and the page always agree. */
+var orig=window.boRenderCategory;
+if(typeof orig==='function'&&!orig.__bopPicksSingleSource){
+  var wrapped=function(cat){lastRebuild=0;rebuildThrottled();return orig.apply(this,arguments);};
+  wrapped.__bopPicksSingleSource=true;window.boRenderCategory=wrapped;
+}
+window.bopRebuildBjsPicks=rebuildPicks;
+/* Per Brad (2026-09-23): a chain pick may float to every city in the state;
+   the one hard rule is never two BJS Picks in the same category in one city.
+   This audit lists any city/category with 2+ picks (award lists excluded). */
+window.bopBjsPickConflicts=function(){var picksCats={};Object.keys(BO_CITY_CONFIG).forEach(function(k){picksCats[BO_CITY_CONFIG[k].bjsPicksCat]=1;});var m={};
+  Object.keys(boCategoryData).forEach(function(cat){if(picksCats[cat]||BO_CITY_CONFIG[cat]||/^bestof/.test(cat)||/^nation/.test(cat)||cat==='michelin'||cat==='jamesbeard')return;var l=boCategoryData[cat];if(!Array.isArray(l))return;l.forEach(function(r){if(!r||!r.bjsPick)return;var k=pickCity(r)+'|'+cat;m[k]=m[k]||{};m[k][r.name]=1;});});
+  return Object.keys(m).filter(function(k){return Object.keys(m[k]).length>1;}).map(function(k){return k+' -> '+Object.keys(m[k]).join(' / ');});};
+/* If the first paint already happened, refresh it once with the rebuilt data. */
+setTimeout(function(){try{var c=(typeof boCurrentCat!=='undefined')?boCurrentCat:null;var isPicks=c&&Object.keys(BO_CITY_CONFIG).some(function(k){return BO_CITY_CONFIG[k].bjsPicksCat===c;});var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');var onPicksPage=isPicks&&best&&best.classList.contains('open')&&!(landing&&landing.classList.contains('open'));if(onPicksPage){window.boRenderCategory(c);}}catch(e){}},900);
+})();</script>
+
 </body></html>
