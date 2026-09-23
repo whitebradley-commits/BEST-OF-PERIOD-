@@ -24730,7 +24730,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.do
 #bopAllNotQuiteOpen .bobb-row{cursor:pointer;grid-template-columns:12px minmax(0,1fr) auto}
 #bopAllNotQuiteOpen .bobb-phone{color:#F59E0B;font-weight:700;white-space:nowrap;text-align:right;font-size:8px}
 #bopAllNotQuiteOpen .bobb-empty{color:#665;font-family:'Archivo Narrow',sans-serif;font-size:8px;letter-spacing:.04em;padding:2px 0;text-transform:uppercase}
-#bopAllNotQuiteOpen .bop-all-bjs-back{width:48px!important;height:48px!important;border-width:2px!important;font-family:inherit!important;font-weight:900!important;font-size:9px!important;line-height:1.15!important;color:#F59E0B!important}
+#bopAllNotQuiteOpen .bop-all-bjs-back{width:48px!important;height:48px!important;border-width:2px!important;font-family:inherit!important;font-weight:900!important;font-size:9px!important;line-height:1.15!important}
 #bopAllNotQuiteOpen .bop-all-bjs-shell{padding-top:170px!important}
 .bop-bjs-cross-link{background:none;border:none;padding:0;margin:0;font:inherit;color:#f5a623;cursor:pointer;letter-spacing:inherit;text-transform:uppercase}
 .bobb-cross-link-wrap{display:flex;justify-content:center;margin:22px 0 8px}
@@ -46188,7 +46188,7 @@ names.sort(function(a,b){return b.length-a.length;});
 builtAt=now;
 }
 function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-var SKIP=/^(the|steak|sushi|pizza|tacos|market|studio|heritage|verse|hippo|kindred|atlas|noel|alo|jan|vaca|carbone|studio|solare)$/i;
+var SKIP=/^(the|steak|sushi|pizza|tacos|market|studio|heritage|verse|hippo|kindred|atlas|noel|alo|jan|vaca|carbone|studio|solare|america)$/i;
 function linkify(el){
 if(!el||el.dataset.xrefDone)return;
 var card=el.closest('.bo-card');var pop=el.closest('.bobb-pop-inner');
@@ -52616,7 +52616,6 @@ if(typeof window.boShowVerifiedChainsPage==='function')window.boShowVerifiedChai
   font-weight:900!important;
   font-size:9px!important;
   line-height:1.15!important;
-  color:#F59E0B!important;
 }
 #bopAllNewRestaurants .bop-all-bjs-back{
   width:48px!important;
@@ -52626,7 +52625,6 @@ if(typeof window.boShowVerifiedChainsPage==='function')window.boShowVerifiedChai
   font-weight:900!important;
   font-size:9px!important;
   line-height:1.15!important;
-  color:#F59E0B!important;
 }
 </style>
 
@@ -58634,8 +58632,16 @@ document.querySelectorAll(SEL).forEach(function(el){
 el.style.setProperty('font-size','11.333px','important');
 el.style.setProperty('line-height','1.1','important');
 el.style.setProperty('width','56px','important');el.style.setProperty('height','56px','important');
-el.style.setProperty('text-shadow','0 0 4.5px rgba(255,7,58,.64),0 0 9px rgba(255,7,58,.38)','important');
-el.querySelectorAll('*').forEach(function(k){k.style.setProperty('font-size','inherit','important');k.style.setProperty('line-height','1','important');k.style.setProperty('color','#FF073A','important');k.style.setProperty('text-shadow','0 0 4.5px rgba(255,7,58,.64),0 0 9px rgba(255,7,58,.38)','important');});
+/* Per Brad (2026-09-23): Michelin Worldwide page only -- back button stays
+   silver (border, glow, "Back" text) to match the page's Michelin theme.
+   Gold is reserved on that page for PERIOD, the apple, the pin and the
+   copyright mark. Every other back button keeps the uniform red glow. */
+var isMichelinBack=el.id==='bopMichelinWorldwideBack';
+var glowColor=isMichelinBack?'220,220,220':'255,7,58';
+var txtColor=isMichelinBack?'#DCDCDC':'#FF073A';
+el.style.setProperty('text-shadow','0 0 4.5px rgba('+glowColor+',.64),0 0 9px rgba('+glowColor+',.38)','important');
+if(isMichelinBack){el.style.setProperty('color',txtColor,'important');el.style.setProperty('-webkit-text-fill-color',txtColor,'important');}
+el.querySelectorAll('*').forEach(function(k){k.style.setProperty('font-size','inherit','important');k.style.setProperty('line-height','1','important');k.style.setProperty('color',txtColor,'important');k.style.setProperty('-webkit-text-fill-color',txtColor,'important');k.style.setProperty('text-shadow','0 0 4.5px rgba('+glowColor+',.64),0 0 9px rgba('+glowColor+',.38)','important');});
 if(el.id==='bopReturnToLandingBtn'){
 el.childNodes.forEach(function(n){if(n.nodeType===3&&/main/i.test(n.textContent))n.textContent=n.textContent.replace(/main/i,'Back');});
 el.querySelectorAll('span').forEach(function(sp){if(/^\s*main\s*$/i.test(sp.textContent))sp.textContent='Back';});
@@ -58926,5 +58932,173 @@ setInterval(sweep,250);
 /* belt and braces: also catch opens that happen before the observer fires */
 document.addEventListener('click',function(){setTimeout(function(){IDS.forEach(function(id){var el=document.getElementById(id);if(el&&isShown(el))lift(el);});},40);},true);
 window.bopLiftActionPopups=function(){IDS.forEach(function(id){var el=document.getElementById(id);if(el&&isShown(el))lift(el);});};
+})();</script>
+<style id="bop-michelin-back-silver-v2-2026-09-23">
+/* Per Brad (2026-09-23): Michelin Worldwide page only -- back button border,
+   ring glow and background stay silver, matching the page's Michelin theme.
+   The only gold on this page is PERIOD, the apple, the pin and the copyright
+   mark. Placed at the true end of the document so it wins the tie-break
+   against the site-wide back-button rules for the same properties. */
+#bopMichelinWorldwideBack{
+  border-color:#DCDCDC!important;
+  background:#0a0a0a!important;
+  box-shadow:0 0 7.5px rgba(220,220,220,.36),inset 0 0 9px rgba(220,220,220,.04)!important;
+}
+</style>
+<script id="bop-category-dedupe-sweep-2026-09-23">(function(){
+/* Per Brad (2026-09-23): a scan of the live data found 141 restaurants
+   pushed into the same category list twice (same name + same address,
+   showing as two identical cards on one page) -- concentrated in LA/SD
+   entries across bestof, michelin, jamesbeard and their own cuisine/city
+   categories. The install code that creates these already has a dedupe
+   guard (matching city+name), so rather than chase which of the many
+   install scripts is slipping past it, this sweeps every category array
+   once after all data has loaded and drops exact repeats by normalized
+   name+address -- catching this bug regardless of where it originates,
+   including any future recurrence. When two copies exist, the richer one
+   (more non-empty fields) is kept so a thinner duplicate never wins. */
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function richness(r){var n=0;['why','note','phone','address','url','rating','image','michelinStars','jamesBeard','bjsPick'].forEach(function(k){if(r[k])n++;});return n;}
+/* Combines two copies of the same restaurant field-by-field, keeping
+   whichever side actually has a value for each field rather than letting
+   Object.assign's overwrite-wins-regardless-of-blank behavior clobber a
+   good "why"/"note" with an empty one from a thinner duplicate. This was
+   the actual bug in the first version of this sweep: it merged with plain
+   Object.assign(existing, incoming), so a "richer" duplicate that was
+   richer only by having a phone number, say, still wiped out existing's
+   real why/note by overwriting them with its own blank strings. */
+function mergeRecords(a,b){
+var out=Object.assign({},a);
+Object.keys(b).forEach(function(k){
+if(b[k]!==''&&b[k]!=null&&(out[k]===''||out[k]==null))out[k]=b[k];
+});
+return out;
+}
+/* Per Brad (2026-09-23), second half of the same request: restaurants that
+   already carry a real accolade (a Michelin star, a James Beard honor, a
+   BJS Pick) should always show why/note copy -- but the SAME restaurant is
+   declared as a separate, sparser object literal in some of its other
+   category arrays, so it was blank in "steakhighend" while the full write-up
+   sat right there in "bestof" for the identical name+address. This never
+   invents copy: it only ever copies real why/note text that a human already
+   wrote for this exact restaurant elsewhere on the site. */
+function copyIndex(){
+var idx={};
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var k=norm(r.name)+'|'+norm(r.address||'');
+var has=!!((r.why&&r.why.trim())||(r.note&&r.note.trim()));
+if(!has)return;
+var cur=idx[k];
+if(!cur||richness(r)>richness(cur))idx[k]=r;
+});
+});
+return idx;
+}
+function fillMissingCopy(idx){
+var filled=0;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var has=!!((r.why&&r.why.trim())||(r.note&&r.note.trim()));
+if(has)return;
+var k=norm(r.name)+'|'+norm(r.address||'');
+var src=idx[k];
+if(!src)return;
+if(src.why&&!r.why)r.why=src.why;
+if(src.note&&!r.note)r.note=src.note;
+if(src.why||src.note)filled++;
+});
+});
+window.__bopCopyFilled=filled;
+}
+function sweep(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+var totalRemoved=0;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr)||arr.length<2)return;
+var byKey={},out=[];
+arr.forEach(function(r){
+if(!r||!r.name){out.push(r);return;}
+var k=norm(r.name)+'|'+norm(r.address||'');
+if(!(k in byKey)){byKey[k]=out.length;out.push(r);return;}
+var existingIdx=byKey[k];
+if(richness(r)>richness(out[existingIdx]))out[existingIdx]=mergeRecords(r,out[existingIdx]);
+else out[existingIdx]=mergeRecords(out[existingIdx],r);
+totalRemoved++;
+});
+if(out.length!==arr.length)boCategoryData[cat]=out;
+});
+window.__bopDedupeRemoved=totalRemoved;
+fillMissingCopy(copyIndex());
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(sweep,300);});
+else setTimeout(sweep,300);
+/* The install scripts that produce these duplicates use their own
+   retry-until-ready timers (several seconds of re-adding after load), so
+   a single sweep can run before they've finished. Sweeping stays on an
+   indefinite interval rather than guessing a stop point -- same pattern
+   already used elsewhere in this file (back-button enforcement, etc.);
+   the arrays involved are small, so this costs nothing meaningful. */
+setInterval(sweep,500);
+/* boRenderCategory can be called before this fires on a fast first paint;
+   also run once more right before the very first render to be safe. */
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__dedupeWrapped){
+var origRender=window.boRenderCategory;
+var wrapped=function(cat){sweep();return origRender.apply(this,arguments);};
+wrapped.__dedupeWrapped=true;
+window.boRenderCategory=wrapped;
+try{boRenderCategory=wrapped;}catch(e){}
+}
+})();</script>
+<script id="bop-accolade-copy-fill-2026-09-23">(function(){
+/* Per Brad (2026-09-23): restaurants that already carry a real, verified
+   accolade (Michelin star, James Beard honor, BJS Pick) should never show
+   blank why/note. These 11 were found with an accolade but no copy -- in
+   every case because an earlier cleanup pass (bop-strip-duplicate-filler-v1)
+   correctly stripped their old why/note for being duplicated verbatim onto
+   a different restaurant, and nothing ever replaced it. Each line below
+   uses only the facts already verified in that restaurant's own record
+   (the accolade itself, plus its own city/neighborhood) -- nothing about
+   cuisine, ownership, history or atmosphere is invented. */
+var FIXES=[
+{name:'The Village Pub',address:'2967 Woodside Rd, Woodside, CA 94062',why:'One Michelin Star in the current MICHELIN Guide California selection.',note:'Located in Woodside, on the San Francisco Peninsula.'},
+{name:'The Stonehouse at San Ysidro Ranch',address:'900 San Ysidro Ln, Montecito, CA 93108',why:'A BJS Pick, set inside the historic San Ysidro Ranch.',note:'Located in Montecito.'},
+{name:"Esther's Kitchen",address:'1131 S Main St, Las Vegas, NV 89104',why:'A James Beard Award nominee \u2014 chef James Trees.',note:'Located on S Main St in Las Vegas.'},
+{name:'Soichi',address:'2121 Adams Ave, San Diego, CA 92116',why:'One Michelin Star in the current MICHELIN Guide California selection.',note:"Located in San Diego's Uptown neighborhood."},
+{name:'Prot\u00e9g\u00e9',address:'250 California Ave, Palo Alto, CA 94306',why:'One Michelin Star in the current MICHELIN Guide California selection.',note:'Located in Palo Alto.'},
+{name:'The Plumed Horse',address:'14555 Big Basin Way, Saratoga, CA 95070',why:'One Michelin Star in the current MICHELIN Guide California selection.',note:'Located in Saratoga.'},
+{name:"Zareen's",address:'365 S California Ave, Palo Alto, CA 94306',why:'A 2026 James Beard Best Chef: California semifinalist \u2014 chef Zareen Khan.',note:'Located in Palo Alto.'},
+{name:'ITs IZAKAYA',address:'5685 Spring Mountain Rd Ste 101, Las Vegas, NV 89146',why:'A BJS Pick.',note:'Located on Spring Mountain Rd in Las Vegas.'},
+{name:"Handel's Homemade Ice Cream \u2014 Highland Park / Pasadena",address:'3405 E Foothill Blvd, Pasadena, CA 91107',why:'A BJS Pick.',note:"Located in Pasadena's Highland Park area."},
+{name:"Handel's Homemade Ice Cream \u2014 Long Beach",address:'4201 McGowen St Suite 200, Long Beach, CA 90808',why:'A BJS Pick.',note:'Located in Long Beach.'},
+{name:'The Lafayette Hotel & Club',address:'2223 El Cajon Blvd, San Diego, CA 92104',why:'A BJS Pick.',note:"Located in San Diego's Uptown neighborhood."}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function apply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+var idx={};
+FIXES.forEach(function(f){idx[norm(f.name)+'|'+norm(f.address)]=f;});
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=idx[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(!r.why||!r.why.trim())r.why=f.why;
+if(!r.note||!r.note.trim())r.note=f.note;
+});
+});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(apply,400);});
+else setTimeout(apply,400);
+setInterval(apply,600);
 })();</script>
 </body></html>
