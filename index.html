@@ -46037,7 +46037,7 @@ if(r.address)h+='<div class="bobb-card-line">'+esc(r.address)+'</div>';
 if(r.phone)h+='<div class="bobb-card-line"><a href="tel:'+esc(String(r.phone).replace(/[^\d+]/g,''))+'">Call '+esc(r.phone)+'</a></div>';
 if(r.address)h+='<div class="bobb-card-line"><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(r.address))+'" target="_blank" rel="noopener" data-no-popup="1">Directions</a></div>';
 if(r.url)h+='<div class="bobb-card-line"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">Website</a></div>';
-h+=(typeof window.bopCardViewCatBtn==='function'?window.bopCardViewCatBtn(r):'')+(typeof window.bopCardAllPicksBtn==='function'?window.bopCardAllPicksBtn(r):'');
+h+=(typeof window.bopCardViewCatBtn==='function'&&!r.suppressViewCat?window.bopCardViewCatBtn(r):'')+(typeof window.bopCardAllPicksBtn==='function'?window.bopCardAllPicksBtn(r):'');
 h+='</div>';
 body.innerHTML=h;var im=body.querySelector('.bobb-card-media img:not(.bobb-card-placeholder)');if(im)im.addEventListener('error',function(){var pe=im.parentElement;if(!pe)return;pe.classList.add('bobb-card-media-placeholder');pe.innerHTML=brand;var ph=pe.querySelector('.bobb-card-placeholder');if(ph)ph.addEventListener('error',function(){if(ph.parentElement)ph.parentElement.innerHTML=brandText;});});var ph0=body.querySelector('.bobb-card-placeholder');if(ph0)ph0.addEventListener('error',function(){if(ph0.parentElement)ph0.parentElement.innerHTML=brandText;});pop.classList.add('open');pop.scrollTop=0;
 }
@@ -49664,7 +49664,17 @@ if(!row)return;
    city label was going in as .name and matching nothing, so no button
    ever rendered. locationLabel keeps the city text for display. */
 var chainName=(modal.dataset.chainLabel||'').trim();
-var r={name:chainName||row.dataset.locCity,locationLabel:row.dataset.locCity,address:row.dataset.locAddress,phone:row.dataset.locPhone||'',bjsVerified:true};
+/* Per Brad (2026-09-23): View Category was routing to the wrong chain
+   location entirely -- e.g. tapping Tuscaloosa's Baked Bear opened
+   Encinitas instead. Root cause: this card has no real .city (most
+   franchise towns, like Tuscaloosa, don't have a category page on the
+   site at all), so the generic View Category matcher fell back to
+   scanning for ANY city with a same-named chain entry and grabbed
+   whichever one happened to come first -- completely ignoring which
+   location was actually tapped. There's no honest destination for most
+   individual chain locations, so the button is suppressed here rather
+   than risk it silently landing on a different location's city again. */
+var r={name:chainName||row.dataset.locCity,locationLabel:row.dataset.locCity,address:row.dataset.locAddress,phone:row.dataset.locPhone||'',bjsVerified:true,suppressViewCat:true};
 if(typeof window.bopShowPickCard==='function')window.bopShowPickCard(r,chainName||'CHAIN LOCATION');
 /* Per Brad (2026-09-21): the pick card was opening BEHIND this modal
    (this modal sits at the max z-index and is re-appended to <body> on
@@ -52194,6 +52204,15 @@ function close(){
 document.body.classList.remove('bop-mw-open');
 document.body.style.overflow='';
 }
+/* Per Brad (2026-09-23): the Michelin page's own count ("380 IN OUR
+   SYSTEM") was visibly changing between visits (and even mid-session) --
+   this page has its own open()/build() that never went through the
+   category-dedupe sweep the rest of the site now runs before every
+   render, so it could catch the data mid-way through a background
+   re-add/re-dedupe cycle. Force a sweep immediately before build() runs
+   so the number on screen always reflects the current, deduped count. */
+var origMwOpen=open;
+open=function(){if(typeof window.bopCategoryDedupeSweep==='function')window.bopCategoryDedupeSweep();origMwOpen();};
 window.bopOpenMichelinWorldwide=open;
 window.bopCloseMichelinWorldwide=close;
 document.addEventListener('click',function(e){
@@ -59038,6 +59057,7 @@ if(out.length!==arr.length)boCategoryData[cat]=out;
 window.__bopDedupeRemoved=totalRemoved;
 fillMissingCopy(copyIndex());
 }
+window.bopCategoryDedupeSweep=sweep;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(sweep,300);});
 else setTimeout(sweep,300);
 /* The install scripts that produce these duplicates use their own
@@ -59101,4 +59121,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 else setTimeout(apply,400);
 setInterval(apply,600);
 })();</script>
+<style id="bop-return-btn-clear-ticker-2026-09-23">
+/* Per Brad (2026-09-23): #bopReturnToLandingBtn sits directly beside the
+   flip-board announcements ticker (#sfBoard) at the top of every "Best
+   Of <city>" page -- same shared #bestOfOverlay markup on all of them --
+   and the site-wide uniform back-button position (top:10px, same as
+   every other page's back button) put it right on top of the ticker's
+   left edge. Every OTHER back button stays exactly where the master
+   rule puts it; only this one specific button, which is the only one
+   that shares a page with this ticker, moves down to clear it. Placed
+   after the master rule so it wins the tie-break for just this ID. */
+#bopReturnToLandingBtn{top:64px!important}
+</style>
 </body></html>
