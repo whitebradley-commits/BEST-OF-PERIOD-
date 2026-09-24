@@ -22483,34 +22483,15 @@ document.addEventListener('click',openConcepts,true);
 function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();</script>
-<script id="bop-landing-splash-spade-2026-09-23">(function(){
-/* Per Brad (2026-09-23): the spade-in-the-O linking to WTFDD only ever
-   existed on #boHeroTitle's "Best Of Vegas" state (a sub-page header) --
-   the actual main landing splash ("Best of <cycling city name> Period",
-   #bopLandingOverlay, the first thing anyone sees) never had it at all.
-   Reuses the exact same SVG and .bop-vegas-concepts-o class as the
-   working version so the existing global click handler (which opens
-   wtfdd.com) picks it up automatically -- no separate click logic
-   needed here. Re-installs on every mutation since the landing splash's
-   name-cycler rewrites this text periodically. */
-var svg='<svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
-function install(){
-var line=document.querySelector('#bopLandingOverlay .bop-splash-line1');
-if(!line)return;
-if(line.querySelector('.bop-vegas-concepts-o'))return;
-Array.from(line.childNodes).some(function(node){
-if(node.nodeType!==3)return false;
-var match=node.nodeValue.match(/\bof\b/i);
-if(!match)return false;
-var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
-var button=document.createElement('button');button.type='button';button.className='bop-vegas-concepts-o';button.setAttribute('aria-label','Open WTFDD');button.innerHTML=svg;
-node.replaceWith(document.createTextNode(value.slice(0,oIndex)),button,document.createTextNode(value.slice(oIndex+1)));
-return true;
-});
-}
-function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
-})();</script>
+<script id="bop-landing-splash-spade-2026-09-25-REMOVED">/* Per Brad (2026-09-25): reversing the 2026-09-23 change below. Brad
+   confirmed the spade-in-the-O linking to WTFDD belongs ONLY on Vegas
+   tiles/pages (see bop-vegas-concepts-spade-final-v240-script, which is
+   already correctly scoped to #boHeroTitle when the city is Vegas) --
+   never on the main landing splash (#bopLandingOverlay), which cycles
+   through every city name including non-Vegas ones like The Hamptons.
+   This script now does nothing; left in place (inert) rather than
+   deleted so the history is visible. */</script>
+
 <script id="bop-ticket-vendor-repair-v235">(function(){
 function cleanZip(value){return String(value||'').replace(/\D/g,'').slice(0,5)}
 function ticketUrl(provider,movie,zip){
@@ -60202,6 +60183,17 @@ btn.scrollIntoView({behavior:'smooth',block:'center'});
 .bop-vegas-concepts-o .o-body,.bop-concepts-o .bop-o-body{fill:currentColor!important;stroke:none!important}
 .bop-vegas-concepts-o .o-spade,.bop-concepts-o .bop-o-spade{fill:#0a0a0a!important;transform:translateY(-3%) scale(.9025)!important;transform-origin:center!important;transform-box:fill-box!important}
 </style>
+<style id="bop-tbotr-vegas-spade-css-2026-09-25">
+/* Per Brad (2026-09-25): same visual treatment as .bop-vegas-concepts-o
+   above, under its own class name -- kept separate on purpose. The
+   bop-vegas-concepts-o cleanup routine (v240) strips any button of that
+   class whose parent isn't the #boHeroTitle Vegas line, which would
+   otherwise delete this one on the very next DOM mutation. */
+.bop-tbotr-vegas-o{all:unset!important;display:inline-block!important;position:relative!important;box-sizing:content-box!important;width:.8em!important;height:.8em!important;vertical-align:-.035em!important;cursor:pointer!important;background:transparent!important;border:0!important}
+.bop-tbotr-vegas-o svg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important}
+.bop-tbotr-vegas-o .o-body{fill:currentColor!important;stroke:none!important}
+.bop-tbotr-vegas-o .o-spade{fill:#0a0a0a!important;transform:translateY(-3%) scale(.9025)!important;transform-origin:center!important;transform-box:fill-box!important}
+</style>
 <script id="bop-plates-london-note-fix-2026-09-25">(function(){
 /* Per Brad (2026-09-25): Plates London's gray note was an exact copy of
    the red why line -- same "continuously researching"-style bug pattern,
@@ -60496,5 +60488,59 @@ wrappedRU.__rulesImgWrapped=true;
 window.boRenderCategory=wrappedRU;
 try{boRenderCategory=wrappedRU;}catch(e){}
 }
+})();</script>
+<script id="bop-tbotr-vegas-spade-2026-09-25">(function(){
+/* Per Brad (2026-09-25): the spade belongs on Vegas tiles/pages only,
+   and specifically nowhere on the main rotating-cities homepage. That
+   rule was already correctly enforced for #boHeroTitle (the in-site
+   "Best Of Vegas" sub-page header) -- but #tbotrLandingOverlay (the
+   "Vegas is live!" city-entry screen shown after picking Vegas, with
+   "Best Of Period." + a separate big city word underneath) had no
+   spade logic at all, which is why it showed a plain O. This adds the
+   same spade-in-the-O treatment there, gated on the city word actually
+   reading "Vegas" (so if this same template is reused for a future
+   city, the spade won't follow it there). Uses its own class
+   (.bop-tbotr-vegas-o, styled in bop-tbotr-vegas-spade-css-2026-09-25)
+   rather than .bop-vegas-concepts-o, because the existing v240 cleanup
+   routine strips any .bop-vegas-concepts-o button whose parent isn't
+   the #boHeroTitle Vegas line -- it was deleting this one on the very
+   next mutation. Its own click handler opens wtfdd.com directly. */
+var svg='<svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
+function isVegas(){
+var city=document.getElementById('bopSplashCityText')||document.querySelector('#tbotrLandingOverlay .bop-splash-city');
+return !!city&&String(city.textContent||'').trim().toLowerCase()==='vegas';
+}
+function targetLine(){
+return document.querySelector('#tbotrLandingOverlay .bop-splash-line1');
+}
+function removeIfWrong(){
+document.querySelectorAll('#tbotrLandingOverlay .bop-tbotr-vegas-o').forEach(function(button){
+if(!isVegas())button.replaceWith(document.createTextNode('O'));
+});
+}
+function install(){
+removeIfWrong();
+if(!isVegas())return;
+var line=targetLine();
+if(!line||line.querySelector('.bop-tbotr-vegas-o'))return;
+Array.from(line.childNodes).some(function(node){
+if(node.nodeType!==3)return false;
+var match=node.nodeValue.match(/\bof\b/i);
+if(!match)return false;
+var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
+var button=document.createElement('button');button.type='button';button.className='bop-tbotr-vegas-o';button.setAttribute('aria-label','Open WTFDD');button.innerHTML=svg;
+node.replaceWith(document.createTextNode(value.slice(0,oIndex)),button,document.createTextNode(value.slice(oIndex+1)));
+return true;
+});
+}
+function openConcepts(event){
+var hit=event.target.closest&&event.target.closest('.bop-tbotr-vegas-o');if(!hit)return;
+event.preventDefault();event.stopImmediatePropagation();
+if(window.bopOpenExternal){window.bopOpenExternal('https://wtfdd.com','WTFDD');return;}
+window.open('https://wtfdd.com','bopExternalViewer');
+}
+document.addEventListener('click',openConcepts,true);
+function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();</script>
 </body></html>
