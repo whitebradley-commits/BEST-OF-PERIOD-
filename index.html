@@ -54583,7 +54583,7 @@ link.type='button';
 link.id='bopIceCreamConeCentral';
 link.setAttribute('aria-label','Cups \u0026 Cones Central \u2014 Cups \u0026 Cones To Go');
 link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:80px;height:80px;margin:0;flex-shrink:0;padding:0;border:2px solid #FF1493;border-radius:50%;background:#050505;color:#FF1493;box-shadow:0 0 11px rgba(255,20,147,.72),inset 0 0 11px rgba(255,20,147,.06);cursor:pointer;');
-link.innerHTML=coneIconSVG(21)+'<span style="font:900 .3rem/1.15 \'Archivo Black\',sans-serif;letter-spacing:.02em;color:#FF1493;text-align:center;" aria-hidden="true">CUPS &amp; CONES<br>CENTRAL</span>';
+link.innerHTML=coneIconSVG(21)+'<span style="font:900 .6rem/1.15 \'Archivo Black\',sans-serif;letter-spacing:.02em;color:#FF1493;text-align:center;" aria-hidden="true">CUPS &amp; CONES<br>CENTRAL</span>';
 link.addEventListener('click',function(){
 if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecreamtogo');
 });
@@ -54593,14 +54593,29 @@ if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecream
 link.classList.add('bop-cone-central-pulse');
 var wrap=document.createElement('div');
 wrap.id='bopIceCreamConeCentralWrap';
-wrap.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:1px;margin:18px auto 26px;');
+/* Per Brad (2026-09-25): a plain flex row with justify-content:center
+   centers the ROW as a block, not the cone itself -- since "CLICK
+   HERE" is wider than "TO GO", the cone always sat visibly right of
+   true center (and off from the globe row below it). A 3-column grid
+   with the cone pinned to the middle column guarantees the cone is
+   dead center no matter how wide either hint label is. */
+wrap.setAttribute('style','display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:18px auto 26px;max-width:340px;');
 var arrowStyle='color:#FF1493;font:900 1.1rem/1 Arial,sans-serif;text-shadow:0 0 8px rgba(255,20,147,.7);';
-var hintStyle='color:#FF1493;font:900 .55rem/1 \'Archivo Black\',sans-serif;letter-spacing:.03em;text-shadow:0 0 6px rgba(255,20,147,.6);white-space:nowrap;';
-var lHint=document.createElement('span');lHint.setAttribute('aria-hidden','true');lHint.setAttribute('style',hintStyle);lHint.textContent='CLICK HERE';
-var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.setAttribute('style',arrowStyle+'margin-right:8px;');la.textContent='\u2192';
-var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle+'margin-left:8px;');ra.textContent='\u2190';
-var rHint=document.createElement('span');rHint.setAttribute('aria-hidden','true');rHint.setAttribute('style',hintStyle);rHint.textContent='TO GO';
-wrap.appendChild(lHint);wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);wrap.appendChild(rHint);
+var hintStyle='color:#FF1493;font:900 .55rem/1.25 \'Archivo Black\',sans-serif;letter-spacing:.03em;text-shadow:0 0 6px rgba(255,20,147,.6);text-align:center;';
+var leftGroup=document.createElement('div');
+leftGroup.setAttribute('aria-hidden','true');
+leftGroup.setAttribute('style','display:flex;align-items:center;justify-self:end;gap:8px;');
+var lHint=document.createElement('span');lHint.setAttribute('style',hintStyle);lHint.innerHTML='CLICK<br>HERE';
+var la=document.createElement('span');la.setAttribute('style',arrowStyle);la.textContent='\u2192';
+leftGroup.appendChild(lHint);leftGroup.appendChild(la);
+var rightGroup=document.createElement('div');
+rightGroup.setAttribute('aria-hidden','true');
+rightGroup.setAttribute('style','display:flex;align-items:center;justify-self:start;gap:8px;');
+var ra=document.createElement('span');ra.setAttribute('style',arrowStyle);ra.textContent='\u2190';
+var rHint=document.createElement('span');rHint.setAttribute('style',hintStyle);rHint.innerHTML='TO<br>GO';
+rightGroup.appendChild(ra);rightGroup.appendChild(rHint);
+link.style.justifySelf='center';
+wrap.appendChild(leftGroup);wrap.appendChild(link);wrap.appendChild(rightGroup);
 /* Per Brad (2026-09-25): Cone Central needs to sit directly under the
    last restaurant card, above the ALL BJS PICKS / BEST OF ALL CITIES /
    MICHELIN GUIDE row -- that row (.bo-bottom-tile-row) is appended as
