@@ -15305,11 +15305,12 @@ const combined=(category+' '+String(cityName||'').trim()).trim();
    template, which this one doesn't share code with, so none of
    those sub-pages ever got the spade at all. Same treatment, same
    gate (only when the active city context is Vegas). */
-const bopBestOfLine1=(typeof boCityContext!=='undefined'&&boCityContext==='bestof')
+const bopIsVegas=(typeof boCityContext!=='undefined'&&boCityContext==='bestof');
+const bopBestOfLine1=bopIsVegas
 ? 'Best <button type="button" class="bop-vegas-concepts-o" aria-label="Open WTFDD"><svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg></button>f'
 : 'Best Of';
 return `<div class="bop-splash-hero bop-splash-hero-nocircle bop-unified-subcategory-hero" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${bopBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1${bopIsVegas?' bop-vegas-best-of-line':''}">${bopBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-unified-subcategory-title" data-fit="${boCityFitValue(combined)}">${combined}</span></span>
 </div>`;
@@ -15879,8 +15880,9 @@ if(cat === 'otheroptions'){
 const immediateCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
 const immediateCity = immediateCfg.landingName || immediateCfg.displayName;
 const immediateBestOfLine1 = boCityContext === 'bestof' ? bopVegasSpadeLine1 : 'Best Of';
+const immediateLine1Class = boCityContext === 'bestof' ? ' bop-vegas-best-of-line' : '';
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${immediateBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1${immediateLine1Class}">${immediateBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(immediateCity)}" id="bopMainCityText">${immediateCity}</span></span>
 </div>`;
@@ -15895,8 +15897,9 @@ const sanDiegoHeroClass = '';
 const heroDisplayName = cityCfg.landingName || cityCfg.displayName;
 const finalCityText = cat === 'sandiego' ? 'S.D.' : heroDisplayName;
 const bestOfLine1 = cat === 'bestof' ? bopVegasSpadeLine1 : 'Best Of';
+const line1Class = cat === 'bestof' ? ' bop-vegas-best-of-line' : '';
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${bestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1${line1Class}">${bestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(heroDisplayName)}"${cityElId}>${finalCityText}</span></span>
 ${(function(){
@@ -22467,25 +22470,24 @@ sync();
 })();</script>
 <style id="bop-vegas-concepts-spade-final-v240">#boHeroTitle .bop-vegas-concepts-o{appearance:none!important;-webkit-appearance:none!important;display:inline-block!important;position:relative!important;width:.76em!important;height:.88em!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;vertical-align:-.035em!important;cursor:pointer!important;font:inherit!important;line-height:1!important;color:inherit!important}#boHeroTitle .bop-vegas-concepts-o svg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important;filter:drop-shadow(0 0 .07em rgba(255,255,255,.46))!important;pointer-events:none!important}#boHeroTitle .bop-vegas-concepts-o .o-body{fill:#fff!important}#boHeroTitle .bop-vegas-concepts-o .o-spade{fill:#050505!important;stroke:#050505!important;stroke-width:1!important;stroke-linejoin:round!important}#boHeroTitle .bop-vegas-concepts-o:focus-visible{outline:2px solid #F59E0B!important;outline-offset:3px!important}</style>
 <script id="bop-vegas-concepts-spade-final-v240-script">(function(){
-var svg='<svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg>';
-function vegasTitle(){
-var title=document.getElementById('boHeroTitle');if(!title)return null;
-var city=title.querySelector('.bop-splash-city,.bo-line2');
-if(!city||String(city.textContent||'').trim().toLowerCase()!=='vegas')return null;
-return title.querySelector('.bop-splash-line1')||title;
-}
-function restorePlainOutsideVegas(){
-document.querySelectorAll('.bop-vegas-concepts-o').forEach(function(button){if(button.parentElement!==vegasTitle())button.replaceWith(document.createTextNode('O'))});
-}
-function install(){
-var line=vegasTitle();restorePlainOutsideVegas();if(!line)return;line.classList.add('bop-vegas-best-of-line');if(line.querySelector('.bop-vegas-concepts-o'))return;
-Array.from(line.childNodes).some(function(node){
-if(node.nodeType!==3)return false;var match=node.nodeValue.match(/\bBest Of\b/i);if(!match)return false;
-var value=node.nodeValue,oIndex=match.index+match[0].toLowerCase().lastIndexOf('o');
-var button=document.createElement('button');button.type='button';button.className='bop-vegas-concepts-o';button.setAttribute('aria-label','Open WTFDD');button.innerHTML=svg;
-node.replaceWith(document.createTextNode(value.slice(0,oIndex)),button,document.createTextNode(value.slice(oIndex+1)));return true;
-});
-}
+/* Per Brad (2026-09-25): this script used to be the ONLY thing that
+   inserted the spade -- it patched it in after the fact, and its
+   vegasTitle() check required the hero's city text to read exactly
+   "vegas". That worked for the main Vegas landing page, but broke on
+   every sub-category page (Steak, Pizza, Michelin, etc.), whose city
+   text reads combined strings like "Best Pizza Las Vegas" -- never an
+   exact "vegas" match. Since the spade is now baked directly into
+   both hero templates at render time (see boRenderCategory's
+   bopVegasSpadeLine1 and boUniformSubcategoryHeader's
+   bopBestOfLine1), this script's install()/restorePlainOutsideVegas()
+   patching is not just redundant, it's actively destructive: its
+   global MutationObserver fires on every DOM change anywhere on the
+   page, and each time, restorePlainOutsideVegas() stripped the
+   already-correct baked-in spade back to plain text the instant its
+   own (too-narrow) detection failed to recognize the page -- which is
+   exactly the "disappears after half a second on all the Vegas pages"
+   bug. Only the click-to-WTFDD delegation survives here now; nothing
+   in this file inserts or removes the spade markup anymore. */
 function openConcepts(event){
 var hit=event.target.closest&&event.target.closest('.bop-vegas-concepts-o');if(!hit)return;
 event.preventDefault();event.stopImmediatePropagation();
@@ -22493,8 +22495,6 @@ if(window.bopOpenExternal){window.bopOpenExternal('https://wtfdd.com','WTFDD');r
 window.open('https://wtfdd.com','bopExternalViewer');
 }
 document.addEventListener('click',openConcepts,true);
-function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();</script>
 <script id="bop-landing-splash-spade-2026-09-25-REMOVED">/* Per Brad (2026-09-25): reversing the 2026-09-23 change below. Brad
    confirmed the spade-in-the-O linking to WTFDD belongs ONLY on Vegas
