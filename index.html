@@ -12511,7 +12511,7 @@ legend.innerHTML = `
 </section>
 <section class="bo-legend-section bo-source-ack">
 <p class="bo-source-ack-title">Once again, we'd like to acknowledge the following industry leaders.</p>
-<div class="bo-source-leaders"><span class="bo-source-name">Google Menu</span><span class="bo-source-diamond">◆</span><span>Tripadvisor</span><span class="bo-source-diamond">◆</span><span>OpenTable</span><span class="bo-source-diamond">◆</span><span>Yelp</span><span class="bo-source-diamond">◆</span><span>Sirved</span><span class="bo-source-diamond">◆</span><span>Resy</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">One Bite</span><span class="bo-source-diamond">◆</span><span>Uber Eats</span><span class="bo-source-diamond">◆</span><span>DoorDash</span><span class="bo-source-diamond">◆</span><span>Grubhub</span><span class="bo-source-diamond">◆</span><span>Slice</span><span class="bo-source-diamond">◆</span><span>Restaurant Guru</span><span class="bo-source-diamond">◆</span><span>Facebook</span><span class="bo-source-diamond">◆</span><span>Zagat</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Michelin Guide</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">World's 50 Best</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Trip.com</span><span class="bo-source-diamond">◆</span><span>TheFork</span><span class="bo-source-diamond">◆</span><span>Restaurantji</span><span class="bo-source-diamond">◆</span><span>Wanderlog</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Gault &amp; Millau</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">James Beard</span> <span class="bo-plus-more">+ MORE</span></div>
+<div class="bo-source-leaders"><span class="bo-source-name">Google Menu</span><span class="bo-source-diamond">◆</span><span>Tripadvisor</span><span class="bo-source-diamond">◆</span><span>OpenTable</span><span class="bo-source-diamond">◆</span><span>Yelp</span><span class="bo-source-diamond">◆</span><span>Sirved</span><span class="bo-source-diamond">◆</span><span>Resy</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">One Bite</span><span class="bo-source-diamond">◆</span><span>Uber Eats</span><span class="bo-source-diamond">◆</span><span>DoorDash</span><span class="bo-source-diamond">◆</span><span>Grubhub</span><span class="bo-source-diamond">◆</span><span>Slice</span><span class="bo-source-diamond">◆</span><span>Restaurant Guru</span><span class="bo-source-diamond">◆</span><span>Facebook</span><span class="bo-source-diamond">◆</span><span>Zagat</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Michelin Guide</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">World's 50 Best</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Trip.com</span><span class="bo-source-diamond">◆</span><span>TheFork</span><span class="bo-source-diamond">◆</span><span>Restaurantji</span><span class="bo-source-diamond">◆</span><span>Wanderlog</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">Gault &amp; Millau</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">James Beard</span><span class="bo-source-diamond">◆</span><span class="bo-source-name">The Infatuation</span><span class="bo-source-diamond">◆</span><span>Time Out</span><span class="bo-source-diamond">◆</span><span>Eater</span><span class="bo-source-diamond">◆</span><span>Wikipedia</span><span class="bo-source-diamond">◆</span><span>The Vendry</span><span class="bo-source-diamond">◆</span><span>Hearst Newspapers</span> <span class="bo-plus-more">+ MORE</span></div>
 <p class="bo-source-ack-copy"><span aria-label="BJS" style="display:inline-block;vertical-align:-5px;margin-right:3px;"><svg height="19" viewBox="0 0 40 40" width="19"><circle cx="20" cy="20" fill="#0a0a0a" r="18" stroke="#F59E0B" stroke-width="2"></circle><text fill="#F59E0B" font-family="Archivo Black, sans-serif" font-size="12" text-anchor="middle" x="20" y="24">BJS</text></svg></span> relies on organizations like these to provide the best possible results for our customers. We thank you all!</p>
 </section>
 <section class="bo-legend-section bop-teen-legend-entry" style="text-align:center;">
@@ -13449,30 +13449,7 @@ boCityContext=resolvedCity;
 if(typeof window!=='undefined')window.boCityContext=resolvedCity;
 }
 boRenderCategory(cat || boCityContext || 'bestof');
-setTimeout(()=>{
-var needle=String(name).toLowerCase();
-var headings=[...document.querySelectorAll('#boList h3')];
-var target=headings.find(h=>h.textContent.trim().toLowerCase().startsWith(needle));
-if(!target){
-// Not in the main showcase — it may only be in the collapsed
-// extended/Top 100 list, which uses .bo-extended-name spans
-// instead of <h3> cards. Expand that list first if so, then
-// scroll to the matching row.
-var extended=[...document.querySelectorAll('.bo-extended-name,.bo-extended-name-link')];
-var row=extended.find(el=>el.textContent.trim().toLowerCase().startsWith(needle));
-if(row){
-var list=row.closest('.bo-extended-list');
-var toggle=document.querySelector('.bo-top100-toggle');
-if(list && list.classList.contains('bo-extended-list-collapsed') && toggle){
-toggle.click();
-setTimeout(()=>{ row.scrollIntoView({behavior:'smooth',block:'center'}); },260);
-return;
-}
-target=row.closest('.bo-extended-row')||row;
-}
-}
-if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
-},180);
+if(name&&typeof window.bopScrollToCard==='function')window.bopScrollToCard(name);
 }
 window.boOpenRestaurantFromMap=boOpenRestaurantFromMap;
 async function boGeocodeRestaurant(r,cityLabel,cityDefaults){
@@ -16473,7 +16450,6 @@ if(!noteTxt||noteTxt===whyTxt)return '';
 return '<button type="button" class="bo-more-btn" aria-expanded="false">MORE <span class="bo-more-caret">&#9660;</span></button><div class="bo-note bo-note-collapsed">'+s.note+'</div>';
 })()}
 ${s.chefName ? `<div class="bo-chef-line"><span class="bo-chef-badge">CHEF</span><button type="button" class="bo-chef-name-link" data-chef-url="${(s.chefUrl || '').replace(/"/g,'&quot;')}" data-chef-name="${String(s.chefName).replace(/"/g,'&quot;')}">${s.chefName}</button></div>` : ''}
-${`<div class="bo-bjs-tip"><span class="bo-bjs-tip-label">\u{1F34E} APPVICE</span> ${s.bjsTip ? s.bjsTip : 'An apple a day keeps the doctor away\u2026'}</div>`}
 ${s.redCallout
 ? `<div class="bo-red-callout${s.redCalloutImage ? ' bo-red-callout-with-photo' : ''}">${s.redCalloutImage ? `<button type="button" class="bo-red-callout-photo" aria-label="Enlarge reservation photo" aria-expanded="false"><img src="${s.redCalloutImage}" alt="${s.redCalloutImageAlt || 'Special restaurant note photo'}"></button>` : ''}<span class="bo-red-callout-copy">${'redCalloutLabel' in s ? (s.redCalloutLabel ? `<span class="bo-red-callout-label">${s.redCalloutLabel}</span>` : '') : `<span class="bo-red-callout-label"><svg class="bo-appvice-apple" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#FF073A"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#FF073A" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#4C8055"/></svg>APPVICE</span>`}${s.redCallout}${s.redCalloutCaption ? `<small class="bo-red-callout-caption">${s.redCalloutCaption}</small>` : ''}</span></div>`
 : `<div class="bo-red-callout bo-red-callout-pending"><span class="bo-red-callout-label"><svg class="bo-appvice-apple" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z" fill="#FF073A"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="#FF073A" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="#4C8055"/></svg>APPVICE</span> An Apple a day keeps the Dr. away\u2026 more to come\u2026</div>`}
@@ -19009,7 +18985,7 @@ openFnt();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
 })();</script> <style id="bjs-why-rotating-city-style">#bjsWhyOverlay .bjs-why-city-period-lockup{display:grid;grid-template-columns:max-content 62px max-content;align-items:baseline;justify-content:center;column-gap:3px;white-space:nowrap;font-size:1rem;line-height:1.15;position:relative;margin:1px auto 8px}#bjsWhyOverlay .bjs-why-best-of{color:#fff;font-family:'Fraunces',serif;font-weight:900;text-transform:uppercase;position:relative;z-index:1;text-shadow:0 0 10px rgba(255,255,255,.22)}#bjsWhyOverlay #bjsWhyRotatingCity{display:block;width:62px;min-width:0;text-align:center;overflow:visible;position:relative;z-index:2;color:#FF073A;font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:1.14em;text-shadow:0 0 7px rgba(255,7,58,.5);transition:opacity .08s ease,filter .08s ease}#bjsWhyOverlay #bjsWhyRotatingCity.changing{opacity:0;filter:blur(2px)}#bjsWhyOverlay .bjs-why-inline-period{color:#F59E0B;font-family:'Fraunces',serif;font-weight:700;text-shadow:0 0 12px rgba(245,158,11,.45);position:relative;z-index:1}#bjsWhyOverlay .bjs-why-inline-period .period-mark{font-size:.34em;vertical-align:baseline;line-height:1;letter-spacing:0;margin-left:.04em}#bjsWhyOverlay .bjs-why-orb-text>p:last-child span[aria-hidden="true"]{font-weight:300!important;opacity:.68;margin:0 .55em;display:inline-block}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(2)>span{font-size:calc(1em + 2pt)}#bjsWhyOverlay .bjs-why-orb-text>p:first-child{display:none!important}#bjsWhyOverlay .bjs-why-orb-text{transform:translateY(-10px)}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="white-space"]{white-space:normal!important}#bjsWhyOverlay .bjs-why-direction-line{font-size:.68rem!important;margin-bottom:8px!important;transform:translateY(-3px)}#bjsWhyOverlay .bjs-why-direction-line{display:none!important}#bjsWhyOverlay .bjs-why-final-line{display:block;margin-top:1px;font-size:.68rem;line-height:1.2;letter-spacing:.01em}#bjsWhyOverlay .bjs-why-final-line strong{font-family:'Archivo Black',sans-serif;font-weight:900}#bjsWhyOverlay .bjs-why-orb-text>p:nth-of-type(3)>span[style*="inline-flex"]{white-space:nowrap!important}</style> <style id="sitewide-close-back-style">#picsGalleryClose,#directoryClose,#shuttleClose,#menuPopupCloseBtn,#socialPopupCloseBtn,#bjsWhyCloseBtn,#directionsPopupCloseBtn,#phonePopupCloseBtn,#webPopupCloseBtn,#restaurantMenuCloseBtn,#thc24Back,#hhClose,#boNearInfoClose,#bestHotelsPreviewClose{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:50%!important;box-shadow:0 0 9px rgba(245,158,11,.72),inset 0 0 5px rgba(245,158,11,.12)!important}.backBtn,
-.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:999px!important;box-shadow:0 0 7.5px rgba(245,158,11,.36),inset 0 0 9px rgba(245,158,11,.04)!important;text-shadow:none!important}.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#FF073A!important}</style>
+.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack{background:#050505!important;color:#FF073A!important;border:2px solid #F59E0B!important;border-radius:999px!important;box-shadow:0 0 7.5px rgba(245,158,11,.36)!important;text-shadow:none!important}.backBtn *,.bo-back-btn *,.map-back *,.bo-near-map-back *,#ocWorldClose *,#bjsHomeBtn *,#lvBjsHomeBtn *,#legendBack *{color:#FF073A!important}</style>
 <style id="bo-near-title-and-back-final">.bo-near-map-back::before{content:none !important;display:none !important}.bo-near-map-back{box-shadow:0 0 9px rgba(245,158,11,.72) !important}#aboutUsBack{color:#FF073A !important;border-color:#F59E0B !important;background:#050505 !important}#aboutUsBack::before{content:none !important;display:none !important}.bo-near-map-title{top:calc(33.333vh - 94px) !important;left:9vw !important;right:auto !important;align-items:flex-start !important;text-align:left !important}.bo-near-map-title strong{font-size:clamp(2.8rem,11.75vw,5.5rem) !important}.bo-near-map-title .bo-near-closest-title{margin-top:5px;color:#F59E0B !important;font-size:clamp(2.8rem,11.75vw,5.5rem) !important}.bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *){display:none !important}
 .bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *)::before{content:none !important}
 .bo-near-map-title span:not(.bo-near-bop-header *):not(.bo-near-price-key *)::after{content:none !important}
@@ -19384,7 +19360,7 @@ var oldOpen=window.openTagGame;window.openTagGame=function(){var r=oldOpen&&oldO
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();</script>
 <style id="tag-world-emoji-prompt">#tagGameOverlay .tg-emoji-prompt{display:flex;flex-direction:column;align-items:center;gap:3px;margin:18px 0 5px;text-align:center;color:#FF073A;font:1000 14px/1 Arial,sans-serif;letter-spacing:.08em;animation:tg-choice-pulse 1.45s ease-in-out infinite}#tagGameOverlay .tg-emoji-prompt small{color:#17274c;font-size:8px;letter-spacing:.16em}@keyframes tg-choice-pulse{0%,100%{opacity:.76;text-shadow:0 0 3px rgba(255,7,58,.28);transform:scale(.985)}50%{opacity:1;text-shadow:0 0 7px rgba(255,7,58,.8),0 0 14px rgba(255,7,58,.38);transform:scale(1.025)}}@media(prefers-reduced-motion:reduce){#tagGameOverlay .tg-emoji-prompt{animation:none}}</style>
-<style id="other-cities-numbered-destination-clusters">#ocWorldOverlay .oc-pin-destination-group{z-index:12!important;width:34px!important;height:34px!important;margin:-17px 0 0 -17px!important;color:#fff!important;font:900 12px/1 'Archivo Black',Arial,sans-serif!important;text-shadow:0 1px 2px #000!important}#ocWorldOverlay .oc-pin-destination-group::before{width:25px!important;height:25px!important;background:#3b9dff!important;border:2px solid #fff!important;box-shadow:0 0 16px rgba(59,157,255,1),0 0 5px #fff!important}#ocWorldOverlay .oc-pin-destination-group::after{width:25px!important;height:25px!important;border-color:rgba(59,157,255,.92)!important}#ocWorldOverlay .oc-pin-destination-group span{position:relative;z-index:2;pointer-events:none}#ocWorldOverlay #ocCityCard.oc-city-choice-card{position:fixed!important;left:50%!important;top:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%)!important;z-index:12000!important;display:block!important;width:min(84vw,231px)!important;margin:0!important;padding:17px 14px 14px!important;border:1.5px solid #F59E0B!important;border-radius:13px!important;background:rgba(4,4,4,.96)!important;box-shadow:0 0 0 9999px rgba(0,0,0,.52)!important;text-align:center!important}#ocWorldOverlay .oc-choice-title{margin:0 27px 13px;color:#F59E0B;font:800 13px/1.08 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-shadow:none!important}#ocWorldOverlay .oc-choice-close{position:absolute;right:7px;top:7px;width:24px;height:24px;border-radius:50%;border:1.5px solid #F59E0B;background:#050505;color:#FF073A;font:900 14px/1 Arial,sans-serif;box-shadow:none!important}#ocWorldOverlay .oc-choice-list{display:grid;gap:7px}#ocWorldOverlay .oc-choice-city{width:100%;padding:9px 11px;border:1px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:900 10px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.07em;box-shadow:none!important;text-shadow:none!important}#ocWorldOverlay .oc-choice-city:active{transform:scale(.98);background:#F59E0B;color:#000}#ocWorldOverlay .oc-map-tap-note{position:relative;z-index:4;display:block;width:100%;margin:7px 0 0;padding:0 0 0 3px;box-sizing:border-box;color:#3b9dff;font:700 8px/1.2 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-align:left;text-shadow:0 0 4px rgba(59,157,255,.32);animation:ocMapTapHintPulse 2s ease-in-out infinite}#ocWorldOverlay .oc-map-tap-note::before{content:'*';display:inline-block;margin-right:3px;color:#3b9dff;font-weight:900}#ocWorldOverlay button.oc-map-tap-note{border:0!important;background:transparent!important;box-shadow:none!important;cursor:pointer!important;-webkit-appearance:none!important}#ocWorldOverlay .oc-map-tap-note strong{color:#3b9dff;text-decoration:underline;text-underline-offset:2px;font-weight:900}#ocWorldOverlay .oc-map-tap-note span{display:inline-block;margin-left:3px;font-size:11px;animation:ocNearArrow 1s ease-in-out infinite}@keyframes ocMapTapHintPulse{0%,100%{opacity:.62;text-shadow:0 0 2px rgba(59,157,255,.18)}50%{opacity:1;text-shadow:0 0 5px rgba(59,157,255,.48)}}@keyframes ocNearArrow{0%,100%{transform:translateX(3px)}50%{transform:translateX(-2px);text-shadow:0 0 6px #3b9dff}}#ocWorldOverlay #ocWorldClose{border:2px solid #F59E0B!important;background:#050505!important;color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;box-shadow:0 0 7.5px rgba(245,158,11,.36),inset 0 0 9px rgba(245,158,11,.04)!important;text-shadow:none!important;animation:none!important}#ocWorldOverlay #ocWorldClose:hover,#ocWorldOverlay #ocWorldClose:focus-visible{border-color:#FFC04A!important;color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;box-shadow:0 0 14px rgba(245,158,11,.68),inset 0 0 14px rgba(245,158,11,.07)!important}@media(prefers-reduced-motion:reduce){#ocWorldOverlay .oc-map-tap-note{animation:none}}</style>
+<style id="other-cities-numbered-destination-clusters">#ocWorldOverlay .oc-pin-destination-group{z-index:12!important;width:34px!important;height:34px!important;margin:-17px 0 0 -17px!important;color:#fff!important;font:900 12px/1 'Archivo Black',Arial,sans-serif!important;text-shadow:0 1px 2px #000!important}#ocWorldOverlay .oc-pin-destination-group::before{width:25px!important;height:25px!important;background:#3b9dff!important;border:2px solid #fff!important;box-shadow:0 0 16px rgba(59,157,255,1),0 0 5px #fff!important}#ocWorldOverlay .oc-pin-destination-group::after{width:25px!important;height:25px!important;border-color:rgba(59,157,255,.92)!important}#ocWorldOverlay .oc-pin-destination-group span{position:relative;z-index:2;pointer-events:none}#ocWorldOverlay #ocCityCard.oc-city-choice-card{position:fixed!important;left:50%!important;top:50%!important;bottom:auto!important;right:auto!important;transform:translate(-50%,-50%)!important;z-index:12000!important;display:block!important;width:min(84vw,231px)!important;margin:0!important;padding:17px 14px 14px!important;border:1.5px solid #F59E0B!important;border-radius:13px!important;background:rgba(4,4,4,.96)!important;box-shadow:0 0 0 9999px rgba(0,0,0,.52)!important;text-align:center!important}#ocWorldOverlay .oc-choice-title{margin:0 27px 13px;color:#F59E0B;font:800 13px/1.08 'Archivo Narrow',Arial,sans-serif;letter-spacing:.08em;text-shadow:none!important}#ocWorldOverlay .oc-choice-close{position:absolute;right:7px;top:7px;width:24px;height:24px;border-radius:50%;border:1.5px solid #F59E0B;background:#050505;color:#FF073A;font:900 14px/1 Arial,sans-serif;box-shadow:none!important}#ocWorldOverlay .oc-choice-list{display:grid;gap:7px}#ocWorldOverlay .oc-choice-city{width:100%;padding:9px 11px;border:1px solid #F59E0B;border-radius:999px;background:#0a0a0a;color:#fff;font:900 10px/1 'Archivo Narrow',Arial,sans-serif;letter-spacing:.07em;box-shadow:none!important;text-shadow:none!important}#ocWorldOverlay .oc-choice-city:active{transform:scale(.98);background:#F59E0B;color:#000}#ocWorldOverlay .oc-map-tap-note{position:relative;z-index:4;display:block;width:100%;margin:7px 0 0;padding:0 0 0 3px;box-sizing:border-box;color:#3b9dff;font:700 8px/1.2 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-align:left;text-shadow:0 0 4px rgba(59,157,255,.32);animation:ocMapTapHintPulse 2s ease-in-out infinite}#ocWorldOverlay .oc-map-tap-note::before{content:'*';display:inline-block;margin-right:3px;color:#3b9dff;font-weight:900}#ocWorldOverlay button.oc-map-tap-note{border:0!important;background:transparent!important;box-shadow:none!important;cursor:pointer!important;-webkit-appearance:none!important}#ocWorldOverlay .oc-map-tap-note strong{color:#3b9dff;text-decoration:underline;text-underline-offset:2px;font-weight:900}#ocWorldOverlay .oc-map-tap-note span{display:inline-block;margin-left:3px;font-size:11px;animation:ocNearArrow 1s ease-in-out infinite}@keyframes ocMapTapHintPulse{0%,100%{opacity:.62;text-shadow:0 0 2px rgba(59,157,255,.18)}50%{opacity:1;text-shadow:0 0 5px rgba(59,157,255,.48)}}@keyframes ocNearArrow{0%,100%{transform:translateX(3px)}50%{transform:translateX(-2px);text-shadow:0 0 6px #3b9dff}}#ocWorldOverlay #ocWorldClose{border:2px solid #F59E0B!important;background:#050505!important;color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;box-shadow:0 0 7.5px rgba(245,158,11,.36)!important;text-shadow:none!important;animation:none!important}#ocWorldOverlay #ocWorldClose:hover,#ocWorldOverlay #ocWorldClose:focus-visible{border-color:#FFC04A!important;color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;box-shadow:0 0 14px rgba(245,158,11,.68),inset 0 0 14px rgba(245,158,11,.07)!important}@media(prefers-reduced-motion:reduce){#ocWorldOverlay .oc-map-tap-note{animation:none}}</style>
 <script id="other-cities-numbered-destination-clusters">(function(){
 var originalShowCity=window.ocShowCity;
 var groups=[
@@ -41731,7 +41707,7 @@ document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList
 var ny=document.getElementById('bopNewYorkGateway');if(ny&&(ny.classList.contains('open')||ny.getAttribute('aria-hidden')==='false')){ny.__picksReturn=true;ny.classList.remove('open');ny.setAttribute('aria-hidden','true');ny.style.display='none';}
 p.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';p.scrollTop=0;
 p.querySelector('.cp-back').onclick=function(){closePicks(true);};
-p.querySelectorAll('.cp-view-cat').forEach(function(vb){vb.onclick=function(e){e.preventDefault();e.stopPropagation();var catKey=vb.dataset.catKey,cityKey=vb.dataset.catCity,restName=vb.dataset.catName;if(!catKey)return;closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);window.scrollTo(0,0);if(restName){setTimeout(function(){var headings=Array.prototype.slice.call(document.querySelectorAll('#boList h3'));var target=headings.find(function(h){return h.textContent.trim().toLowerCase().startsWith(restName.toLowerCase());});if(target)target.scrollIntoView({behavior:'smooth',block:'center'});},250);}};});
+p.querySelectorAll('.cp-view-cat').forEach(function(vb){vb.onclick=function(e){e.preventDefault();e.stopPropagation();var catKey=vb.dataset.catKey,cityKey=vb.dataset.catCity,restName=vb.dataset.catName;if(!catKey)return;closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);window.scrollTo(0,0);if(restName&&typeof window.bopScrollToCard==='function')window.bopScrollToCard(restName);};});
 p.querySelector('.cp-all').onclick=function(){closePicks(false);if(typeof window.boOpenAllBjsPicks==='function'){window.boOpenAllBjsPicks();return;}var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');window.scrollTo(0,0);};}
 function closePicks(back){if(!page)return;page.classList.remove('open');document.documentElement.style.overflow='';document.body.style.overflow='';
 if(!back){var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');}
@@ -51918,29 +51894,8 @@ if(voiceCard)voiceCard.style.display='none';
 ['bopVoicePanel','bopVoiceOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open','is-open');el.style.display='none';}});
 try{if(typeof synth!=='undefined'&&synth&&(synth.speaking||synth.pending))synth.cancel();}catch(e1){}
 if(typeof window.bopGoToCategory==='function')window.bopGoToCategory(vc.dataset.catKey,vc.dataset.catCity);
-if(vc.dataset.catName){
-(function(targetName){
-var needle=targetName.toLowerCase();
-setTimeout(function(){
-var headings=Array.prototype.slice.call(document.querySelectorAll('#boList h3'));
-var target=headings.find(function(h){return h.textContent.toLowerCase().indexOf(needle)!==-1;});
-if(target){target.scrollIntoView({behavior:'smooth',block:'center'});return;}
-/* Brad (2026-09-17): restaurants that only live in the collapsed
-   Top 100/extended list (not a featured card) use .bo-extended-name
-   rows instead of <h3> -- expand that list and scroll there too. */
-var extended=Array.prototype.slice.call(document.querySelectorAll('.bo-extended-name,.bo-extended-name-link'));
-var row=extended.find(function(el){return el.textContent.toLowerCase().indexOf(needle)!==-1;});
-if(!row)return;
-var list=row.closest('.bo-extended-list');
-var toggle=document.querySelector('.bo-top100-toggle');
-if(list&&list.classList.contains('bo-extended-list-collapsed')&&toggle){
-toggle.click();
-setTimeout(function(){row.scrollIntoView({behavior:'smooth',block:'center'});},260);
-return;
-}
-(row.closest('.bo-extended-row')||row).scrollIntoView({behavior:'smooth',block:'center'});
-},450);
-})(vc.dataset.catName);
+if(vc.dataset.catName&&typeof window.bopScrollToCard==='function'){
+window.bopScrollToCard(vc.dataset.catName);
 }
 return;
 }
@@ -54626,11 +54581,14 @@ if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecream
 link.classList.add('bop-cone-central-pulse');
 var wrap=document.createElement('div');
 wrap.id='bopIceCreamConeCentralWrap';
-wrap.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:14px;margin:18px auto 26px;');
+wrap.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:4px;margin:18px auto 26px;');
 var arrowStyle='color:#F59E0B;font:900 1.1rem/1 Arial,sans-serif;text-shadow:0 0 8px rgba(245,158,11,.7);';
+var hintStyle='color:#F59E0B;font:900 .55rem/1 \'Archivo Black\',sans-serif;letter-spacing:.03em;text-shadow:0 0 6px rgba(245,158,11,.6);white-space:nowrap;';
+var lHint=document.createElement('span');lHint.setAttribute('aria-hidden','true');lHint.setAttribute('style',hintStyle);lHint.textContent='CLICK HERE';
 var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.setAttribute('style',arrowStyle);la.textContent='\u2192';
 var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle);ra.textContent='\u2190';
-wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);
+var rHint=document.createElement('span');rHint.setAttribute('aria-hidden','true');rHint.setAttribute('style',hintStyle);rHint.textContent='CLICK HERE';
+wrap.appendChild(lHint);wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);wrap.appendChild(rHint);
 list.insertAdjacentElement('afterend',wrap);
 }
 }
@@ -57459,7 +57417,7 @@ var n=0,t=setInterval(function(){n++;if(run()||n>60)clearInterval(t);},300);
    Applied at end of script so it runs after all pizza data is loaded,
    regardless of which block originally added the restaurant. */
 var PATCHES=[
-{name:"Crisp Pizza W6",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/images/Crisp_Pizza_Interior_Aleksandra_Boruch_London2_galv3m"},
+{name:"Crisp Pizza W6",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/images/Crisp_Pizza_CHEESE_PIE_Aleksandra_Boruch_London17_hmqeqq"},
 {name:"Breadstall",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/images/Breadstall_Interior_AleksandraBoruch_London-17_smnkok"},
 {name:"Bad Boy Pizza Society — Seven Dials",city:"london",image:"https://res.cloudinary.com/the-infatuation/image/upload/c_fill,w_1200,ar_4:3,g_center,f_webp/images/Bad_Boy_Pizza_Society_Internal_Nic_Crilly-Hargrave_London-4_hzeuue"},
 {name:"Oliveto",city:"london",image:"https://resizer.otstatic.com/v4/photos/94025491-1?width=1200&height=900&format=avif"},
@@ -58948,7 +58906,7 @@ window.bopBjsPickConflicts=function(){var picksCats={};Object.keys(BO_CITY_CONFI
 setTimeout(function(){try{var c=(typeof boCurrentCat!=='undefined')?boCurrentCat:null;var isPicks=c&&Object.keys(BO_CITY_CONFIG).some(function(k){return BO_CITY_CONFIG[k].bjsPicksCat===c;});var landing=document.getElementById('bopLandingOverlay'),best=document.getElementById('bestOfOverlay');var onPicksPage=isPicks&&best&&best.classList.contains('open')&&!(landing&&landing.classList.contains('open'));if(onPicksPage){window.boRenderCategory(c);}}catch(e){}},900);
 })();</script>
 
-<style id="bop-backbtn-final-glow-2026-09-23">.backBtn,.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack,#boBackBtn,#bopReturnToLandingBtn,#aboutUsBack,#backHome,#boMoviesBack,#boNearMapBack,#boWorldwideBack,#bopCarForSaleBack,#bopGoLiveBack,#bopHomesForSaleBack,#bopMemberBack,#bopMichelinWorldwideBack,#bopRealtorBack,#bopSafeMeetupBack,#bopYardSaleBack,#conceptsBack,#directoryBack,#fntBack,#lvMemberBack,#noBaxsyzBack,#promotionsBack,#thc24Back,#tpaAffiliateBack,#tpaCoachingBack,#tpaJoinBack,#tpaStakingBack,#tyBackBtn,.bop-zone-close,.cp-back,.tg-back,.bo-cfs-back,.bo-ft-back,.bo-golive-back,.bo-hfs-back,.bo-movies-back,.bo-other-leaders-back,.bo-rt-back,.bo-sm-back,.bo-ys-back,.bop-all-bjs-back,.bop-all-pizza-back,.bop-bjs-soon-back,.bop-city-gate-back,.bop-ticket-hub-back,.bop-world-back,#bopBestOfBestClose{box-shadow:0 0 7.5px rgba(245,158,11,.36),inset 0 0 9px rgba(245,158,11,.04)!important;text-shadow:none!important}</style><style id="bop-action-popups-always-on-top-2026-09-23">
+<style id="bop-backbtn-final-glow-2026-09-23">.backBtn,.bo-back-btn,.lv-logo-circle,.map-back,.bo-near-map-back,#ocWorldClose,#bjsHomeBtn,#lvBjsHomeBtn,#legendBack,#boBackBtn,#bopReturnToLandingBtn,#aboutUsBack,#backHome,#boMoviesBack,#boNearMapBack,#boWorldwideBack,#bopCarForSaleBack,#bopGoLiveBack,#bopHomesForSaleBack,#bopMemberBack,#bopMichelinWorldwideBack,#bopRealtorBack,#bopSafeMeetupBack,#bopYardSaleBack,#conceptsBack,#directoryBack,#fntBack,#lvMemberBack,#noBaxsyzBack,#promotionsBack,#thc24Back,#tpaAffiliateBack,#tpaCoachingBack,#tpaJoinBack,#tpaStakingBack,#tyBackBtn,.bop-zone-close,.cp-back,.tg-back,.bo-cfs-back,.bo-ft-back,.bo-golive-back,.bo-hfs-back,.bo-movies-back,.bo-other-leaders-back,.bo-rt-back,.bo-sm-back,.bo-ys-back,.bop-all-bjs-back,.bop-all-pizza-back,.bop-bjs-soon-back,.bop-city-gate-back,.bop-ticket-hub-back,.bop-world-back,#bopBestOfBestClose{box-shadow:0 0 7.5px rgba(245,158,11,.36)!important;text-shadow:none!important}</style><style id="bop-action-popups-always-on-top-2026-09-23">
 
 #phonePopupOverlay.open,#directionsPopupOverlay.open,#socialPopupOverlay.open,#webPopupOverlay.open,#menuPopupOverlay.open,#restaurantMenuOverlay.open{position:fixed!important;z-index:2147483647!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
 </style>
@@ -59818,5 +59776,406 @@ wrapped2.__bjsTipWrapped=true;
 window.boRenderCategory=wrapped2;
 try{boRenderCategory=wrapped2;}catch(e){}
 }
+})();</script>
+<script id="bop-viewcat-scroll-fix-2026-09-25">(function(){
+/* Per Brad (2026-09-25): "View Category" from a restaurant popup is
+   supposed to land right on that restaurant's own card in the category
+   list (not just the top of the page) -- and it mostly does, via the
+   scroll-to-card logic already built into each of the three places this
+   button exists. But from the "All Cities" (Best Of Best) overlay
+   specifically, it was landing on the category page without reaching the
+   card. Traced it: scrollIntoView itself works fine here (tested it
+   directly), but the existing calls fire on a short one-shot setTimeout
+   right after the destination category renders -- and on a heavy render
+   (lots of cards, images still loading and shifting layout underneath),
+   the scroll lands correctly for a moment and then the page keeps
+   growing under it, pushing the target back out of view by the time
+   everything settles. Rather than guess a longer fixed delay (still
+   fragile on a slow connection or a very long list), this keeps
+   correcting the scroll position for a few seconds after any
+   scroll-to-card attempt, the same "don't outguess the timing, just keep
+   winning" approach already used elsewhere in this file for similar
+   async-layout races. Exposed as one shared function so all three
+   existing scroll-to-card call sites can use it instead of their own
+   one-shot setTimeout. */
+function findCardHeading(name){
+if(!name)return null;
+var needle=String(name).toLowerCase().trim();
+var headings=Array.prototype.slice.call(document.querySelectorAll('#boList h3'));
+var target=headings.find(function(h){return h.textContent.trim().toLowerCase().indexOf(needle)===0;});
+if(target)return target;
+var extended=Array.prototype.slice.call(document.querySelectorAll('.bo-extended-name,.bo-extended-name-link'));
+var row=extended.find(function(el){return el.textContent.trim().toLowerCase().indexOf(needle)===0;});
+if(row){
+var list=row.closest('.bo-extended-list');
+if(list&&list.classList.contains('bo-extended-list-collapsed')){
+var toggle=document.querySelector('.bo-top100-toggle');
+if(toggle)toggle.click();
+}
+return row;
+}
+return null;
+}
+function scrollToCard(name,attemptsLeft){
+if(attemptsLeft==null)attemptsLeft=14;
+var target=findCardHeading(name);
+if(!target){
+if(attemptsLeft>0)setTimeout(function(){scrollToCard(name,attemptsLeft-1);},250);
+return;
+}
+target.scrollIntoView({behavior:'smooth',block:'center'});
+if(attemptsLeft>0)setTimeout(function(){scrollToCard(name,attemptsLeft-1);},250);
+}
+window.bopScrollToCard=scrollToCard;
+})();</script>
+<script id="bop-blank-copy-fix-batch11-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented.
+   Same render-safe force-apply pattern as the rest of this session. */
+var ALL_FIXES=[
+{name:'The Avery',address:'',city:'idaho',why:'A French brasserie inside a restored 1910 boutique hotel, led by James Beard semifinalist chef Cal Elliott (multiple years running, most recently 2026)',note:'Elliott earned a Michelin star as executive chef of Dressler in New York before opening Rye in Brooklyn and returning to his hometown. Seasonal, Idaho-sourced brasserie fare \u2014 house-braised meats, handmade pastas \u2014 opened 2023.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy9Wrapped){
+var origRender10=window.boRenderCategory;
+var wrapped10=function(cat){forceApply();return origRender10.apply(this,arguments);};
+wrapped10.__blankCopy9Wrapped=true;
+window.boRenderCategory=wrapped10;
+try{boRenderCategory=wrapped10;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch12-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Vincenzo Trattoria',address:'',city:'idaho',why:'An authentic Italian trattoria in Boise, founded 2017 by chef Vincenzo Nicoletta, now run by owners Natasha Getchell and Colton Messa',note:'Hand-rolled pasta and bread made from scratch daily, plus nightly dinner specials using locally sourced meats and produce.'},
+{name:"Luciano's Italian Restaurant",address:'',city:'idaho',why:'A cozy, family-run Italian restaurant in Boise serving Southern and Northern Italian classics',note:'Known for warm, fresh-baked bread, a hearty lasagna and chicken parmesan, and an extensive wine list at an affordable price point.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy10Wrapped){
+var origRender11=window.boRenderCategory;
+var wrapped11=function(cat){forceApply();return origRender11.apply(this,arguments);};
+wrapped11.__blankCopy10Wrapped=true;
+window.boRenderCategory=wrapped11;
+try{boRenderCategory=wrapped11;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch13-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'ROMi\u00d3S Greek and Italian Restaurant',address:'',city:'idaho',why:'A Greek and Italian family restaurant in Boise since 2006, opened by a Greek family originally from New York',note:'Known for gyros, pizza and pasta with homemade sauces; the owners are longtime fixtures of Boise\u2019s annual Greek Food Festival.'},
+{name:'Carniceria Coalcoman',address:'',city:'idaho',why:'A Michoac\u00e1n-style Mexican taqueria and butcher shop in Boise, formerly known as El Pueblo and Nuestro Pueblo under the same owners',note:'Order at the counter, then work the salsa bar \u2014 six house-made salsas alongside onions, cilantro and pico de gallo. A carniceria (meat market) operates out of the same space.'},
+{name:'Bronco Tacos',address:'',city:'idaho',why:'A family-owned Boise food truck serving birria tacos in the Sinaloa, Mexico style',note:'Built a local reputation specifically around its birria \u2014 quesabirria tacos dipped in consomm\u00e9.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy11Wrapped){
+var origRender12=window.boRenderCategory;
+var wrapped12=function(cat){forceApply();return origRender12.apply(this,arguments);};
+wrapped12.__blankCopy11Wrapped=true;
+window.boRenderCategory=wrapped12;
+try{boRenderCategory=wrapped12;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch14-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Egg Mann and Earl',address:'',city:'idaho',why:'An eclectic, scratch-kitchen breakfast spot in Boise, known for house-cured bacon and a complimentary warm scone with every meal',note:'Made-from-scratch comfort dishes like the Hangover Hash and eggs benedict, served in a quirky, globally-decorated dining room.'},
+{name:"Goldy's Breakfast Bistro",address:'',city:'idaho',why:'A downtown Boise breakfast institution since 1999, named one of Bon App\u00e9tit\u2019s Top Ten Breakfasts in America',note:'Made-to-order breakfast with local ingredients \u2014 known for its homemade hollandaise, Spinach Frittata and Andalusia Eggs. Family-owned by Randy and Wanda Martinat.'},
+{name:"Moe Joe's Breakfast Eatery",address:'',city:'idaho',why:'A from-scratch breakfast eatery in Meridian, Idaho, owned by Joe Boyd',note:'Known for playful originals like jalape\u00f1o berry pancakes and \u201cdonuts and a cup of joe\u201d \u2014 pancakes topped with coffee syrup and a candied-almond doughnut glaze.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy12Wrapped){
+var origRender13=window.boRenderCategory;
+var wrapped13=function(cat){forceApply();return origRender13.apply(this,arguments);};
+wrapped13.__blankCopy12Wrapped=true;
+window.boRenderCategory=wrapped13;
+try{boRenderCategory=wrapped13;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch15-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Neckar Coffee',address:'',city:'idaho',why:'A downtown Boise coffee shop and micro-roaster, roasting on-site since its first brick-and-mortar opened in 2018',note:'Espresso pulled on a manual lever machine, with room for up to five manual pour-overs at once. Grew out of pop-ups and farmers-market stands before opening its permanent shop.'},
+{name:'Slow by Slow Coffee',address:'',city:'idaho',why:'A specialty coffee bar in Boise\u2019s BoDo district, rebuilt from the ground up after ten years with a hand-carved walnut burl brew bar',note:'Curates beans from roasters around the country rather than roasting its own; known for inventive drinks like a spiced honey and pistachio latte.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy13Wrapped){
+var origRender14=window.boRenderCategory;
+var wrapped14=function(cat){forceApply();return origRender14.apply(this,arguments);};
+wrapped14.__blankCopy13Wrapped=true;
+window.boRenderCategory=wrapped14;
+try{boRenderCategory=wrapped14;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch16-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:"Han's Chimaek Korean Fried Chicken & Beer",address:'',city:'idaho',why:'A Korean fried chicken and beer bar in Boise, opened 2020 by a former international student who missed the chimaek culture of home',note:'Double-fried, beef-tallow-fried Korean fried chicken in classic yangnyeom and soy glazes; the Idaho Statesman named it Boise\u2019s best fried chicken.'},
+{name:'Form & Function',address:'',city:'idaho',why:'A Boise-based specialty coffee roaster and caf\u00e9 with several locations around the city',note:'House-roasted beans on a zero-emission fluid bed roaster, seasonal house-made syrups, and a rotating pastry and light-food menu.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy14Wrapped){
+var origRender15=window.boRenderCategory;
+var wrapped15=function(cat){forceApply();return origRender15.apply(this,arguments);};
+wrapped15.__blankCopy14Wrapped=true;
+window.boRenderCategory=wrapped15;
+try{boRenderCategory=wrapped15;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch17-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Magnificent Garden',address:'',city:'idaho',why:'A family-owned, all-you-can-eat Korean BBQ restaurant in Boise with cook-at-your-table grills',note:'30-40+ dishes on the AYCE menu, from beef and pork to seafood, plus a food-delivery robot that\u2019s become something of a local novelty.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy15Wrapped){
+var origRender16=window.boRenderCategory;
+var wrapped16=function(cat){forceApply();return origRender16.apply(this,arguments);};
+wrapped16.__blankCopy15Wrapped=true;
+window.boRenderCategory=wrapped16;
+try{boRenderCategory=wrapped16;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch18-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Bamboo Sushi and Asian Bistro',address:'',city:'idaho',why:'A fusion Chinese and Japanese restaurant in Boise\u2019s Towne Square area, known for affordable, fresh sushi',note:'Warm wood tones, lantern lighting and an Asian landscape mural give the dining room an upscale feel that belies its casual prices.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy16Wrapped){
+var origRender17=window.boRenderCategory;
+var wrapped17=function(cat){forceApply();return origRender17.apply(this,arguments);};
+wrapped17.__blankCopy16Wrapped=true;
+window.boRenderCategory=wrapped17;
+try{boRenderCategory=wrapped17;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch19-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Wok-Inn Noodle',address:'',city:'idaho',why:'A one-man Chinese restaurant in Boise, run by chef-owner Chan who hand-makes the noodles and won-ton wrappers himself',note:'Believed to be the only Chinese restaurant in Idaho making its own noodles and wrappers in-house. Cozy, retro decor with red accents and Chinese umbrellas hanging from the ceiling \u2014 come patient, it\u2019s a one-man kitchen.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy17Wrapped){
+var origRender18=window.boRenderCategory;
+var wrapped18=function(cat){forceApply();return origRender18.apply(this,arguments);};
+wrapped18.__blankCopy17Wrapped=true;
+window.boRenderCategory=wrapped18;
+try{boRenderCategory=wrapped18;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch20-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Yoi Tomo Sushi and Grill',address:'',city:'idaho',why:'Widely considered Boise\u2019s best sushi spot, an all-you-can-eat sushi and Japanese restaurant downtown',note:'A big, fast-paced dining room with a large team of sushi chefs \u2014 come with a reservation, it fills up.'},
+{name:'Island Sushi and Ramen',address:'',city:'idaho',why:'A Boise sushi and ramen spot known locally for arguably the best bowl of ramen in the valley',note:'Fresh tuna and well-priced rolls alongside the ramen menu; a favorite for weekly regulars, not just special occasions.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy18Wrapped){
+var origRender19=window.boRenderCategory;
+var wrapped19=function(cat){forceApply();return origRender19.apply(this,arguments);};
+wrapped19.__blankCopy18Wrapped=true;
+window.boRenderCategory=wrapped19;
+try{boRenderCategory=wrapped19;}catch(e){}
+}
+})();</script>
+<script id="bop-why-more-toggle-fix-2026-09-25">(function(){
+/* Per Brad (2026-09-25): tapping "MORE" under the why/note text felt like
+   nothing happened -- the toggle was actually working (confirmed: the
+   class does flip and the text does become display:block), but the
+   reveal was an instant, jarring display:none->block snap with zero
+   visual transition, and on a long list the newly-revealed text can land
+   off the bottom of the screen with no cue that anything changed. Closing
+   and reopening the popup forced a fresh render, which is why it looked
+   like it "worked" only that way. Fix: a soft fade-in on reveal, plus
+   scrolling the button back into a comfortable view after expanding so
+   the change is always visible right where the tap happened. */
+var css=document.createElement('style');
+css.id='bop-why-more-toggle-fix-css';
+css.textContent='.bo-note{transition:opacity .25s ease}.bo-note-collapsed{display:none;opacity:0}';
+document.head.appendChild(css);
+document.addEventListener('click',function(e){
+var btn=e.target.closest('.bo-more-btn');
+if(!btn)return;
+setTimeout(function(){
+var note=btn.nextElementSibling;
+if(note&&note.classList.contains('bo-note')&&!note.classList.contains('bo-note-collapsed')){
+note.style.opacity='0';
+requestAnimationFrame(function(){note.style.opacity='1';});
+var rect=btn.getBoundingClientRect();
+if(rect.top<0||rect.top>window.innerHeight-80){
+btn.scrollIntoView({behavior:'smooth',block:'center'});
+}
+}
+},20);
+});
 })();</script>
 </body></html>
