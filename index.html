@@ -41707,7 +41707,7 @@ document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList
 var ny=document.getElementById('bopNewYorkGateway');if(ny&&(ny.classList.contains('open')||ny.getAttribute('aria-hidden')==='false')){ny.__picksReturn=true;ny.classList.remove('open');ny.setAttribute('aria-hidden','true');ny.style.display='none';}
 p.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';p.scrollTop=0;
 p.querySelector('.cp-back').onclick=function(){closePicks(true);};
-p.querySelectorAll('.cp-view-cat').forEach(function(vb){vb.onclick=function(e){e.preventDefault();e.stopPropagation();var catKey=vb.dataset.catKey,cityKey=vb.dataset.catCity,restName=vb.dataset.catName;if(!catKey)return;closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);window.scrollTo(0,0);if(restName&&typeof window.bopScrollToCard==='function')window.bopScrollToCard(restName);};});
+p.querySelectorAll('.cp-view-cat').forEach(function(vb){vb.onclick=function(e){e.preventDefault();e.stopPropagation();var catKey=vb.dataset.catKey,cityKey=vb.dataset.catCity,restName=vb.dataset.catName;if(!catKey)return;var bestPre=document.getElementById('bestOfOverlay');if(bestPre&&bestPre.classList.contains('open')&&typeof boCurrentCat!=='undefined'&&boCurrentCat&&boCurrentCat!==catKey){window.boReturnBackCategory=boCurrentCat;}closePicks(false);var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(cityKey){window.boCityContext=cityKey;try{boCityContext=cityKey;}catch(e2){}}if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute(catKey,cityKey||boCityContext);if(typeof window.boRenderCategory==='function')window.boRenderCategory(catKey);window.scrollTo(0,0);if(restName&&typeof window.bopScrollToCard==='function')window.bopScrollToCard(restName);};});
 p.querySelector('.cp-all').onclick=function(){closePicks(false);if(typeof window.boOpenAllBjsPicks==='function'){window.boOpenAllBjsPicks();return;}var best=document.getElementById('bestOfOverlay');if(best)best.classList.add('open');if(typeof boRenderCategory==='function')boRenderCategory('bjspicks');window.scrollTo(0,0);};}
 function closePicks(back){if(!page)return;page.classList.remove('open');document.documentElement.style.overflow='';document.body.style.overflow='';
 if(!back){var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');}
@@ -41718,6 +41718,17 @@ window.bopOpenCityPicks=openPicks;
 window.bopPickCategory=pickCategory;
 window.bopGoToCategory=function(catKey,cityKey){
 if(!catKey)return;
+/* Per Brad (2026-09-25): View Category on a restaurant whose real home
+   is a different city than the page you're viewing (e.g. tapping a
+   Paris restaurant from London's list) correctly jumped to that
+   restaurant's own category -- but Back then kept going deeper into
+   the new city instead of returning to the city you actually came
+   from. Save the category you're leaving so Back can return to it,
+   same pattern already used elsewhere (openAt) for this exact case. */
+var best0=document.getElementById('bestOfOverlay');
+if(best0&&best0.classList.contains('open')&&typeof boCurrentCat!=='undefined'&&boCurrentCat&&boCurrentCat!==catKey){
+window.boReturnBackCategory=boCurrentCat;
+}
 document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');});
 var ny=document.getElementById('bopNewYorkGateway');if(ny)ny.classList.remove('open');
 var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
@@ -45776,10 +45787,7 @@ new MutationObserver(install).observe(document.documentElement,{childList:true,s
 @keyframes bopVegasLvPulse{0%,100%{box-shadow:0 0 10px rgba(245,158,11,.5),0 0 20px rgba(245,158,11,.2)}50%{box-shadow:0 0 16px rgba(245,158,11,.85),0 0 30px rgba(245,158,11,.4)}}
 </style>
 <div id="bopVegasLvNewsRow">
-<button type="button" class="bop-vegas-lvnews-orb" id="bopVegasLvNewsOrb" aria-label="LV News video">LV<br>NEWS</button>
-<button type="button" class="bop-vegas-bjs-orb" id="bopVegasBjsOrb" aria-label="BJS Co. — watch the video">
-<svg aria-hidden="true" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#0a0a0a" stroke="#F59E0B" stroke-width="2"></circle><text x="20" y="17" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="10.5" font-weight="900" fill="#F59E0B">BJS</text><text x="20" y="27" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="7.5" font-weight="900" fill="#FF073A">CO.</text></svg>
-</button>
+<button type="button" class="bop-vegas-lvnews-orb" id="bopVegasLvNewsOrb" aria-label="LV Promo video">LV<br>PROMO VID</button>
 </div>
 <script id="bop-vegas-lvnews-orb-script-v412">(function(){
 function isVegasOpen(){
@@ -60178,4 +60186,20 @@ btn.scrollIntoView({behavior:'smooth',block:'center'});
 },20);
 });
 })();</script>
+<style id="bop-vegas-o-spade-final-fix-2026-09-25">
+/* Per Brad (2026-09-25): on the default/rotating landing splash (any city
+   before a specific hero container ID applies), the "O" button was
+   falling all the way back to plain browser button chrome -- a gray
+   fill with a white 3D outset border -- because every earlier fix for
+   this element scoped its CSS to a specific ancestor ID (#boHeroTitle)
+   that this page doesn't have. The SVG inside was also rendering at
+   0x0, so the spade never had a chance to show either. This rule is
+   deliberately unscoped so it applies everywhere the class is used,
+   with enough !important weight to beat the browser's native button
+   styling and the earlier partial fixes it was losing to. */
+.bop-vegas-concepts-o,.bop-concepts-o{all:unset!important;display:inline-block!important;position:relative!important;box-sizing:content-box!important;width:.8em!important;height:.8em!important;vertical-align:-.035em!important;cursor:pointer!important;background:transparent!important;border:0!important}
+.bop-vegas-concepts-o svg,.bop-concepts-o svg{display:block!important;width:100%!important;height:100%!important;overflow:visible!important}
+.bop-vegas-concepts-o .o-body,.bop-concepts-o .bop-o-body{fill:currentColor!important;stroke:none!important}
+.bop-vegas-concepts-o .o-spade,.bop-concepts-o .bop-o-spade{fill:#0a0a0a!important;transform:translateY(-3%) scale(.9025)!important;transform-origin:center!important;transform-box:fill-box!important}
+</style>
 </body></html>
