@@ -206,6 +206,7 @@ var splash=document.getElementById('bopOrbSplashOverlay');if(splash){splash.clas
 var landing=document.getElementById('bopLandingOverlay');
 if(landing){landing.classList.add('open');landing.style.removeProperty('display');landing.scrollTop=0;}
 document.body.style.overflow='';
+try{sessionStorage.setItem('bopOrbSplashSeen','1');}catch(e){}
 }
 document.getElementById('bopOrbEnterBtn').addEventListener('click',goToLanding);
 document.getElementById('bopOrbMicBtn').addEventListener('click',function(e){
@@ -215,6 +216,7 @@ if(realMic)realMic.click();
 });
 document.getElementById('bopOrbLiveBtn').addEventListener('click',function(){
 document.getElementById('bopOrbSplashOverlay').classList.remove('open');
+try{sessionStorage.setItem('bopOrbSplashSeen','1');}catch(e){}
 if(typeof window.bopOpenGoLivePage==='function')window.bopOpenGoLivePage();
 });
 })();
@@ -55057,10 +55059,25 @@ if(isSpecialUrlFlow())return;
 document.querySelectorAll('.open,.active,.is-open').forEach(function(el){
 if(el.id!=='bopOrbSplashOverlay')el.classList.remove('open','active','is-open');
 });
+/* Per Brad (2026-09-25): once the person has already tapped through
+   the ENTER gate this session, a bfcache restore (backgrounding the
+   app, switching tabs -- very common mid-session on mobile) should
+   NOT force that full-screen splash back open on top of everything.
+   It was doing that here every single time, and since nothing else
+   in the app ever re-closes it outside of its own three buttons, it
+   silently sat there (z-index above everything) intercepting every
+   tap -- including the search bar -- while whatever overlay was
+   already open underneath kept rendering normally. Only show it
+   again if this is genuinely a first-time-this-session restore. */
+var alreadySeenSplash=false;
+try{alreadySeenSplash=sessionStorage.getItem('bopOrbSplashSeen')==='1';}catch(e){}
 var splash=document.getElementById('bopOrbSplashOverlay');
-if(splash){
+if(splash&&!alreadySeenSplash){
 splash.classList.add('open');
 splash.style.removeProperty('display');
+}else if(splash){
+var landing=document.getElementById('bopLandingOverlay');
+if(landing){landing.classList.add('open');landing.style.removeProperty('display');landing.scrollTop=0;}
 }
 document.body.style.overflow='';
 window.scrollTo(0,0);
