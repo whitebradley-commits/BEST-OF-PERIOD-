@@ -15864,13 +15864,23 @@ boReplaceBestOfRoute(cat, boImmediateRouteCity);
 const titleCityKey = BO_CITY_CONFIG[cat] ? cat : boCityContext;
 const titleCityLabel = (BO_CITY_CONFIG[titleCityKey] || BO_CITY_CONFIG.bestof).displayName;
 document.title = `Best of Period`;
+/* Per Brad (2026-09-25): the spade-in-the-O only ever got added after
+   the fact by a separate MutationObserver-based patch script (v240),
+   patching in a plain-text "Best Of" every time this function
+   rebuilds the hero's innerHTML. That's a race it can lose -- any
+   render here that lands after the patch's last reaction (e.g. the
+   text-fit sizing pass that follows) leaves the O plain, which is
+   why it was flashing in then vanishing. Baking it in at the source
+   removes the race entirely. */
+const bopVegasSpadeLine1 = 'Best <button type="button" class="bop-vegas-concepts-o" aria-label="Open WTFDD"><svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg></button>f';
 boHeroTitleEl.style.opacity = 0;
 boHeroSubEl.style.opacity = 0;
 if(cat === 'otheroptions'){
 const immediateCfg = BO_CITY_CONFIG[boCityContext] || BO_CITY_CONFIG.bestof;
 const immediateCity = immediateCfg.landingName || immediateCfg.displayName;
+const immediateBestOfLine1 = boCityContext === 'bestof' ? bopVegasSpadeLine1 : 'Best Of';
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">Best Of</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${immediateBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active" data-fit="${boCityFitValue(immediateCity)}" id="bopMainCityText">${immediateCity}</span></span>
 </div>`;
@@ -15884,8 +15894,9 @@ const cityElId = ' id="bopResultsCityText"';
 const sanDiegoHeroClass = '';
 const heroDisplayName = cityCfg.landingName || cityCfg.displayName;
 const finalCityText = cat === 'sandiego' ? 'S.D.' : heroDisplayName;
+const bestOfLine1 = cat === 'bestof' ? bopVegasSpadeLine1 : 'Best Of';
 boHeroTitleEl.innerHTML = `<div class="bop-splash-hero bop-splash-hero-nocircle${sanDiegoHeroClass}" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">Best Of</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${bestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-city-landed" data-fit="${boCityFitValue(heroDisplayName)}"${cityElId}>${finalCityText}</span></span>
 ${(function(){
