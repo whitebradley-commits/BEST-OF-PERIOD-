@@ -14563,8 +14563,8 @@ otheroptions: [
 { label: 'Cheesesteak', cat: 'cheesesteak' },
 { label: 'Breakfast', cat: 'breakfast' },
 { label: 'Burgers', cat: 'burgers' },
-{ label: 'Cups & Cones / Cookies<br><small style="font-size:.55em;letter-spacing:.08em;">TO GO</small>', cat: 'icecreamtogo' },
-{ label: 'Asian', cat: 'asian' },
+{ label: '<span class="bo-cupscones-tile"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M20 22c2 4 7 6 12 6s10-2 12-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M22 26l10 30 10-30" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="bo-cupscones-tile-main">Cups &amp; Cones<br>Cookies</span><small class="bo-cupscones-tile-sub">TO GO</small></span>', cat: 'icecreamtogo' },
+{ label: '<span class="bo-asian-tile"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 14v10M28 14v10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M16 24c0 10 6 18 16 18s16-8 16-18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M20 24h24" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg><span class="bo-asian-tile-main">ASIAN</span></span>', cat: 'asian' },
 { label: 'Seafood', cat: 'seafood' },
 { label: 'BBQ', cat: 'bbq' },
 { label: 'Bagels', cat: 'bagels' },
@@ -15299,8 +15299,17 @@ let category=(scratch.textContent||scratch.innerText||'').replace(/^\s*BEST\s+OF
 category=category.toLowerCase().replace(/\b[a-z]/g,function(ch){return ch.toUpperCase();})
 .replace(/\bBjs\b/g,'BJS').replace(/\bNyc\b/g,'NYC');
 const combined=(category+' '+String(cityName||'').trim()).trim();
+/* Per Brad (2026-09-25): this shared header builder is what actually
+   renders every Vegas sub-page (Steak, Pizza, Sushi, Michelin, etc.)
+   -- the earlier spade fix only touched the main city-landing
+   template, which this one doesn't share code with, so none of
+   those sub-pages ever got the spade at all. Same treatment, same
+   gate (only when the active city context is Vegas). */
+const bopBestOfLine1=(typeof boCityContext!=='undefined'&&boCityContext==='bestof')
+? 'Best <button type="button" class="bop-vegas-concepts-o" aria-label="Open WTFDD"><svg aria-hidden="true" viewBox="0 0 82 100" preserveAspectRatio="none"><ellipse class="o-body" cx="41" cy="50" rx="39" ry="49"/><path class="o-spade" d="M41 17C35 29 18 39 18 57c0 13 11 21 22 15-1 7-5 12-10 17h22c-5-5-9-10-10-17 11 6 22-2 22-15 0-18-17-28-23-40Z"/></svg></button>f'
+: 'Best Of';
 return `<div class="bop-splash-hero bop-splash-hero-nocircle bop-unified-subcategory-hero" style="padding:0;">
-<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">Best Of</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
+<div class="bop-lockup-wrap"><div class="bop-lockup-static"><span class="bop-splash-line1">${bopBestOfLine1}</span><span class="bop-splash-period">Period<span class="period-mark">&copy;</span></span></div>
 <div class="bop-lockup-goldline"></div></div>
 <span class="bop-splash-city-col"><span class="bop-splash-city is-active bop-unified-subcategory-title" data-fit="${boCityFitValue(combined)}">${combined}</span></span>
 </div>`;
@@ -15839,21 +15848,12 @@ if(bestOfOverlayEl) bestOfOverlayEl.scrollTop = 0;
 boCurrentCat = cat;
 const vegasMichelinSlot = document.getElementById('vegasMichelinBannerSlot');
 if(vegasMichelinSlot){
-vegasMichelinSlot.innerHTML = (cat === 'michelin' && boCityContext === 'bestof')
-? `<div class="bo-michelin-cloud-wrap" style="position:relative;margin:100px auto 50px;max-width:400px;width:78vw;">
-<svg viewBox="0 0 640 512" style="width:100%;height:auto;filter:drop-shadow(0 0 14px rgba(245,158,11,0.4));">
-<path fill="#0a0a0a" stroke="#F59E0B" stroke-width="9" stroke-linejoin="round" d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.1C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"/>
-</svg>
-<div style="position:absolute;top:58%;left:50%;transform:translate(-50%,-35%);width:64%;text-align:center;">
-<p style="margin:0;color:#F59E0B;font-size:0.82rem;font-weight:800;line-height:1.4;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 0 6px rgba(0,0,0,0.8);">
-<span class="bo-michelin-badge" style="margin-left:0;text-shadow:none;"><span class="bo-michelin-m">M</span><span class="bo-michelin-stars">&#9733;</span></span> Check back for Michelin-star-rated Las Vegas restaurants — the new MICHELIN Guide Southwest debuts August 26, 2026, the first official Vegas guide in over 15 years.
-</p>
-</div>
-<div style="position:absolute;bottom:-20px;left:70px;width:20px;height:20px;border-radius:50%;background:#0a0a0a;border:3px solid #F59E0B;"></div>
-<div style="position:absolute;bottom:-38px;left:52px;width:13px;height:13px;border-radius:50%;background:#0a0a0a;border:3px solid #F59E0B;"></div>
-<div style="position:absolute;bottom:-52px;left:40px;width:8px;height:8px;border-radius:50%;background:#0a0a0a;border:2px solid #F59E0B;"></div>
-</div>`
-: '';
+/* Per Brad (2026-09-25): MICHELIN Guide Southwest has now published
+   (Aug 26, 2026) and Vegas restaurants are rated in the site's own
+   data, so this "check back later" placeholder banner is stale --
+   removed. The Michelin category page now just shows the normal
+   header + the real rated restaurant list below it. */
+vegasMichelinSlot.innerHTML = '';
 }
 if(BO_CITY_CONFIG[cat]){
 boCityContext = cat;
@@ -16037,7 +16037,7 @@ const ls = leaves(opt.cat, 0);
 if(!ls.length) return true;
 return ls.some(l => (boCategoryData[l]||[]).some(r => r && r.name && (r.city||'bestof') === boCityContext));
 });
-const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','cheesesteak','foodtrucks','streetvendors','newrestaurants','notquiteopen','bjspicks'];
+const featuredCategoryOrder = ['michelin','jamesbeard','steak','italian','mexican','pizza','asian','icecreamtogo','cheesesteak','foodtrucks','streetvendors','newrestaurants','notquiteopen','bjspicks'];
 let featuredPickerOptions = [];
 let featuredBjsOption = null;
 if(cat === 'otheroptions'){
@@ -36180,6 +36180,16 @@ ready(function(){var n=0;var t=setInterval(function(){n++;if(apply()||n>40)clear
 
 
 <style id="bop-coffee-plus-more-tile-v487">.bo-coffee-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;gap:1px}.bo-coffee-tile-main{font-family:'Archivo Black',sans-serif;font-weight:900;color:#F59E0B;letter-spacing:.03em;text-shadow:0 0 6px rgba(245,158,11,.55)}.bo-coffee-tile-plus{font-family:'Archivo Narrow',sans-serif;font-weight:800;color:#FF073A;font-size:.7em;letter-spacing:.06em;text-shadow:0 0 5px rgba(255,7,58,.4)}</style>
+<style id="bop-asian-cupscones-featured-tiles-v1">
+.bo-asian-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05}
+.bo-asian-tile svg{width:22px;height:22px;flex:0 0 22px;color:#FF073A;filter:drop-shadow(0 0 5px rgba(255,7,58,.55))}
+.bo-asian-tile-main{font-family:'Archivo Black',sans-serif;font-weight:900;letter-spacing:.05em;background:linear-gradient(90deg,#FF073A,#F59E0B);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:none}
+.bo-cupscones-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.08}
+.bo-cupscones-tile svg{width:20px;height:20px;flex:0 0 20px;color:#6effa0;filter:drop-shadow(0 0 5px rgba(110,255,160,.5));margin-bottom:1px}
+.bo-cupscones-tile-main{font-family:'Pacifico',cursive;font-weight:400;letter-spacing:.01em;background:linear-gradient(90deg,#FF073A,#ffd23f,#6effa0,#4ecdc4,#6a8dff,#c86bff);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:bo-label-shimmer 4s linear infinite;font-size:.92em}
+.bo-cupscones-tile-sub{font-family:'Archivo Narrow',sans-serif;font-weight:800;color:#F59E0B;font-size:.58em;letter-spacing:.1em;text-shadow:0 0 4px rgba(245,158,11,.5)}
+@media (prefers-reduced-motion:reduce){.bo-cupscones-tile-main{animation:none}}
+</style>
 
 
 
@@ -54572,8 +54582,8 @@ var link=document.createElement('button');
 link.type='button';
 link.id='bopIceCreamConeCentral';
 link.setAttribute('aria-label','Cups \u0026 Cones Central \u2014 Cups \u0026 Cones To Go');
-link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:68px;height:68px;margin:0;flex-shrink:0;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 11px rgba(245,158,11,.06);cursor:pointer;');
-link.innerHTML=coneIconSVG(18)+'<span style="font:900 .26rem/1.15 \'Archivo Black\',sans-serif;letter-spacing:.02em;color:#F59E0B;text-align:center;" aria-hidden="true">CUPS &amp; CONES<br>CENTRAL</span>';
+link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:80px;height:80px;margin:0;flex-shrink:0;padding:0;border:2px solid #FF1493;border-radius:50%;background:#050505;color:#FF1493;box-shadow:0 0 11px rgba(255,20,147,.72),inset 0 0 11px rgba(255,20,147,.06);cursor:pointer;');
+link.innerHTML=coneIconSVG(21)+'<span style="font:900 .3rem/1.15 \'Archivo Black\',sans-serif;letter-spacing:.02em;color:#FF1493;text-align:center;" aria-hidden="true">CUPS &amp; CONES<br>CENTRAL</span>';
 link.addEventListener('click',function(){
 if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecreamtogo');
 });
@@ -54584,11 +54594,11 @@ link.classList.add('bop-cone-central-pulse');
 var wrap=document.createElement('div');
 wrap.id='bopIceCreamConeCentralWrap';
 wrap.setAttribute('style','display:flex;align-items:center;justify-content:center;gap:1px;margin:18px auto 26px;');
-var arrowStyle='color:#F59E0B;font:900 1.1rem/1 Arial,sans-serif;text-shadow:0 0 8px rgba(245,158,11,.7);';
-var hintStyle='color:#F59E0B;font:900 .55rem/1 \'Archivo Black\',sans-serif;letter-spacing:.03em;text-shadow:0 0 6px rgba(245,158,11,.6);white-space:nowrap;';
+var arrowStyle='color:#FF1493;font:900 1.1rem/1 Arial,sans-serif;text-shadow:0 0 8px rgba(255,20,147,.7);';
+var hintStyle='color:#FF1493;font:900 .55rem/1 \'Archivo Black\',sans-serif;letter-spacing:.03em;text-shadow:0 0 6px rgba(255,20,147,.6);white-space:nowrap;';
 var lHint=document.createElement('span');lHint.setAttribute('aria-hidden','true');lHint.setAttribute('style',hintStyle);lHint.textContent='CLICK HERE';
-var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.setAttribute('style',arrowStyle);la.textContent='\u2192';
-var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle);ra.textContent='\u2190';
+var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.setAttribute('style',arrowStyle+'margin-right:8px;');la.textContent='\u2192';
+var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle+'margin-left:8px;');ra.textContent='\u2190';
 var rHint=document.createElement('span');rHint.setAttribute('aria-hidden','true');rHint.setAttribute('style',hintStyle);rHint.textContent='TO GO';
 wrap.appendChild(lHint);wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);wrap.appendChild(rHint);
 /* Per Brad (2026-09-25): Cone Central needs to sit directly under the
@@ -58660,7 +58670,7 @@ animation:none!important;transform:translateY(-1px)!important;
 .call-btn:hover,.directions-btn:hover{background:#4A90D9!important;border-color:#4A90D9!important;color:#000!important}
 .call-btn svg,.directions-btn svg{color:#F59E0B!important;fill:#F59E0B!important;stroke:#F59E0B!important}
 </style>
-<style id="bop-cone-central-pulse-v1">@keyframes bopConePulse{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(245,158,11,.55)}50%{transform:scale(1.07);box-shadow:0 0 22px rgba(245,158,11,.95)}}
+<style id="bop-cone-central-pulse-v1">@keyframes bopConePulse{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(255,20,147,.55)}50%{transform:scale(1.07);box-shadow:0 0 22px rgba(255,20,147,.95)}}
 #bopIceCreamConeCentral.bop-cone-central-pulse{animation:bopConePulse 1.6s ease-in-out infinite!important}
 </style>
 <style id="bop-back-dedupe-v1">
