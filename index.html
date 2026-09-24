@@ -46197,7 +46197,7 @@ names.sort(function(a,b){return b.length-a.length;});
 builtAt=now;
 }
 function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
-var SKIP=/^(the|steak|sushi|pizza|tacos|market|studio|heritage|verse|hippo|kindred|atlas|noel|alo|jan|vaca|carbone|studio|solare|america)$/i;
+var SKIP=/^(the|steak|sushi|pizza|tacos|market|studio|heritage|verse|hippo|kindred|atlas|noel|alo|jan|vaca|carbone|studio|solare|america|central)$/i;
 function linkify(el){
 if(!el||el.dataset.xrefDone)return;
 var card=el.closest('.bo-card');var pop=el.closest('.bobb-pop-inner');
@@ -60202,4 +60202,195 @@ btn.scrollIntoView({behavior:'smooth',block:'center'});
 .bop-vegas-concepts-o .o-body,.bop-concepts-o .bop-o-body{fill:currentColor!important;stroke:none!important}
 .bop-vegas-concepts-o .o-spade,.bop-concepts-o .bop-o-spade{fill:#0a0a0a!important;transform:translateY(-3%) scale(.9025)!important;transform-origin:center!important;transform-box:fill-box!important}
 </style>
+<script id="bop-plates-london-note-fix-2026-09-25">(function(){
+/* Per Brad (2026-09-25): Plates London's gray note was an exact copy of
+   the red why line -- same "continuously researching"-style bug pattern,
+   just with real text on both sides instead of a placeholder. Real
+   sources, nothing invented. */
+var NEW_NOTE="Chef Kirk Haworth founded Plates with his sister Keeley after training at The French Laundry, Pied \u00e0 Terre and The Square. He went fully plant-based following a 2016 Lyme disease diagnosis. Just 25 covers in Shoreditch, and the word \u2018vegan\u2019 never appears on the menu \u2014 dishes like the maitake mushroom with black bean mole are simply described by what they are.";
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+if(norm(r.name)==='plates london'&&r.note&&r.why&&norm(r.note)===norm(r.why)){
+r.note=NEW_NOTE;
+}
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__platesNoteFixed){
+var origRenderPL=window.boRenderCategory;
+var wrappedPL=function(cat){forceApply();return origRenderPL.apply(this,arguments);};
+wrappedPL.__platesNoteFixed=true;
+window.boRenderCategory=wrappedPL;
+try{boRenderCategory=wrappedPL;}catch(e){}
+}
+})();</script>
+<script id="bop-appvice-batch2-2026-09-25">(function(){
+/* Per Brad (2026-09-25): picked AppVice content for Plates London and
+   St. JOHN, plus folded the "no music/no art/phones off" detail into
+   St. JOHN's gray note since it's info worth knowing, not a tip. */
+var FIXES=[
+{name:'plates london',bjsTip:'Just 25 covers, and the phone is famously always engaged \u2014 book well ahead of when you actually want to go.'},
+{name:'st. john',bjsTip:'Ask about the off-menu madeleines \u2014 a dozen airy ones straight from St. JOHN\u2019s own bakery, not on the printed menu.',note:'Roast bone marrow with parsley salad and toast is the dish everyone orders first. White walls, no fuss, an all-French wine list, and one Michelin star nearly three decades on. No music plays and there\u2019s no art on the walls \u2014 a sign at the door asks diners to turn their phones off, and the room looks almost exactly as it did when it opened in 1994.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+var IDX={};
+FIXES.forEach(function(f){IDX[f.name]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)];
+if(!f)return;
+if(f.bjsTip&&r.bjsTip!==f.bjsTip)r.bjsTip=f.bjsTip;
+if(f.note&&r.note!==f.note)r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__appviceBatch2){
+var origRenderAV2=window.boRenderCategory;
+var wrappedAV2=function(cat){forceApply();return origRenderAV2.apply(this,arguments);};
+wrappedAV2.__appviceBatch2=true;
+window.boRenderCategory=wrappedAV2;
+try{boRenderCategory=wrappedAV2;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch21-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Tavol\u00e0ta Boise',address:'',city:'idaho',why:'A Boise outpost of Seattle chef Ethan Stowell\u2019s house-made pasta restaurant, in the Basque Block downtown',note:'An open kitchen and pasta station let you watch the pappardelle and rigatoni get made to order. Stowell has run this concept since 2007, with locations across Seattle, Redmond and Spokane before Boise.'},
+{name:'\u00c0LAVITA',address:'',city:'idaho',why:'A cozy, brick-walled Italian osteria in downtown Boise built around locally sourced ingredients',note:'House-made pasta using Northwest flour and local eggs, with about 90% of the menu adaptable gluten-free on request. Billed as \u201can Italian Joint,\u201d not a formal Italian restaurant.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy19Wrapped){
+var origRender20=window.boRenderCategory;
+var wrapped20=function(cat){forceApply();return origRender20.apply(this,arguments);};
+wrapped20.__blankCopy19Wrapped=true;
+window.boRenderCategory=wrapped20;
+try{boRenderCategory=wrapped20;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch22-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Capri Restaurant',address:'',city:'idaho',why:'Boise\u2019s self-described \u201cOriginal Breakfast Place,\u201d serving the city since 1943',note:'Known for Cowboy Potatoes, Loaded Biscuits and Gravy, and homemade cinnamon rolls \u2014 a diner-style spot with a loyal, decades-long local following.'},
+{name:"Chef's Hut",address:'',city:'idaho',why:'A homestyle breakfast and lunch spot on the Boise Bench since 1974',note:'Long known as one of Boise\u2019s quieter breakfast institutions \u2014 a neighborhood diner more than a destination, and locals like it that way.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy20Wrapped){
+var origRender21=window.boRenderCategory;
+var wrapped21=function(cat){forceApply();return origRender21.apply(this,arguments);};
+wrapped21.__blankCopy20Wrapped=true;
+window.boRenderCategory=wrapped21;
+try{boRenderCategory=wrapped21;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch23-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Madhuban Indian Cuisine',address:'',city:'idaho',why:'A longtime Boise Indian restaurant voted Best of Boise for 18 years running',note:'Order your heat level by name \u2014 Mild, Medium, Boise Hot, New York Hot, or Bombay Hot. Regulars swear by the chicken vindaloo and the Mughlai Saag.'},
+{name:'Bombay Grill',address:'',city:'idaho',why:'A family-run Indian restaurant in downtown Boise\u2019s historic Idanha Building, open since 2009',note:'Runs the only Indian lunch buffet in Boise, Tuesday through Sunday from 11am to 2pm, alongside a full dinner menu of butter chicken, saag paneer and tandoori classics.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy21Wrapped){
+var origRender22=window.boRenderCategory;
+var wrapped22=function(cat){forceApply();return origRender22.apply(this,arguments);};
+wrapped22.__blankCopy21Wrapped=true;
+window.boRenderCategory=wrapped22;
+try{boRenderCategory=wrapped22;}catch(e){}
+}
+})();</script>
+<script id="bop-blank-copy-fix-batch24-2026-09-25">(function(){
+/* Per Brad, continuing the same pass. Real sources, nothing invented. */
+var ALL_FIXES=[
+{name:'Kabob House',address:'',city:'idaho',why:'An Afghan restaurant in Boise, family-run by owner Shams for over 20 years, representing the cuisine of the Khyber Pass',note:'Persian, Afghan, Indian and Central Asian dishes alongside namesake kabobs, with naan made fresh in-house and walls filled with art from the owner\u2019s home country.'},
+{name:'Coa de Jima',address:'',city:'idaho',why:'A Mexican Riviera-inspired restaurant and agave bar in downtown Boise\u2019s Historic District, the sister restaurant to Barbacoa Grill',note:'Named for the tool used to harvest agave; chef Enrique Martinez, 25 years with the Castoro restaurant family, built the menu around mezcal and tequila. Look for the floor-to-ceiling \u201cArbol de la Vida\u201d art installation at the bar.'}
+];
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim();}
+var IDX={};
+ALL_FIXES.forEach(function(f){IDX[norm(f.name)+'|'+norm(f.address)]=f;});
+function forceApply(){
+if(typeof boCategoryData!=='object'||!boCategoryData)return;
+Object.keys(boCategoryData).forEach(function(cat){
+var arr=boCategoryData[cat];
+if(!Array.isArray(arr))return;
+arr.forEach(function(r){
+if(!r||!r.name)return;
+var f=IDX[norm(r.name)+'|'+norm(r.address||'')];
+if(!f)return;
+if(f.why&&(!r.why||!r.why.trim()||/locally distinctive restaurant selected/i.test(r.why)))r.why=f.why;
+if(f.note&&(!r.note||!r.note.trim()||/continuously researching/i.test(r.note)))r.note=f.note;
+});
+});
+}
+setInterval(forceApply,600);
+if(typeof window.boRenderCategory==='function'&&!window.boRenderCategory.__blankCopy22Wrapped){
+var origRender23=window.boRenderCategory;
+var wrapped23=function(cat){forceApply();return origRender23.apply(this,arguments);};
+wrapped23.__blankCopy22Wrapped=true;
+window.boRenderCategory=wrapped23;
+try{boRenderCategory=wrapped23;}catch(e){}
+}
+})();</script>
 </body></html>
