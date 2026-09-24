@@ -54559,7 +54559,7 @@ var link=document.createElement('button');
 link.type='button';
 link.id='bopIceCreamConeCentral';
 link.setAttribute('aria-label','Cups \u0026 Cones Central \u2014 Cups \u0026 Cones To Go');
-link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:68px;height:68px;margin:10px auto 18px;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 11px rgba(245,158,11,.06);cursor:pointer;');
+link.setAttribute('style','display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:68px;height:68px;margin:0;flex-shrink:0;padding:0;border:2px solid #F59E0B;border-radius:50%;background:#050505;color:#F59E0B;box-shadow:0 0 11px rgba(245,158,11,.72),inset 0 0 11px rgba(245,158,11,.06);cursor:pointer;');
 link.innerHTML=coneIconSVG(18)+'<span style="font:900 .26rem/1.15 \'Archivo Black\',sans-serif;letter-spacing:.02em;color:#F59E0B;text-align:center;" aria-hidden="true">CUPS &amp; CONES<br>CENTRAL</span>';
 link.addEventListener('click',function(){
 if(typeof window.boRenderCategory==='function')window.boRenderCategory('icecreamtogo');
@@ -54578,7 +54578,16 @@ var la=document.createElement('span');la.setAttribute('aria-hidden','true');la.s
 var ra=document.createElement('span');ra.setAttribute('aria-hidden','true');ra.setAttribute('style',arrowStyle);ra.textContent='\u2190';
 var rHint=document.createElement('span');rHint.setAttribute('aria-hidden','true');rHint.setAttribute('style',hintStyle);rHint.textContent='TO GO';
 wrap.appendChild(lHint);wrap.appendChild(la);wrap.appendChild(link);wrap.appendChild(ra);wrap.appendChild(rHint);
-list.insertAdjacentElement('afterend',wrap);
+/* Per Brad (2026-09-25): Cone Central needs to sit directly under the
+   last restaurant card, above the ALL BJS PICKS / BEST OF ALL CITIES /
+   MICHELIN GUIDE row -- that row (.bo-bottom-tile-row) is appended as
+   the LAST CHILD of #boList itself (see renderBjsPickFooter), so
+   inserting after #boList (the old behavior) landed Cone Central below
+   it instead of above. Insert before that row when present; fall back
+   to right after #boList otherwise. */
+var bottomTileRow=list.querySelector('.bo-bottom-tile-row');
+if(bottomTileRow)bottomTileRow.parentElement.insertBefore(wrap,bottomTileRow);
+else list.insertAdjacentElement('afterend',wrap);
 }
 }
 if(typeof window.boRenderCategory==='function'&&!window.__bopDessertLinkPatched){
