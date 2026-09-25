@@ -60442,4 +60442,53 @@ document.addEventListener('click',openConcepts,true);
 function start(){install();new MutationObserver(function(){requestAnimationFrame(install)}).observe(document.body,{subtree:true,childList:true,characterData:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();</script>
+
+<style id="bop-new-main-landing-fix-v3">
+/* 2026-09-25: landing-only visual correction. No other site pages changed. */
+#bopOrbSplashOverlay .bop-new-landing-art::before{
+ content:"";position:absolute;z-index:2;left:4%;right:4%;top:52.5%;height:15.8%;
+ background:linear-gradient(180deg,rgba(0,0,0,.97) 0%,#000 48%,rgba(0,0,0,.96) 100%);
+ pointer-events:none;
+}
+#bopOrbSplashOverlay .bop-new-landing-art::after{
+ content:"";position:absolute;z-index:2;right:4%;top:77.5%;width:24%;height:19%;
+ background:#000;pointer-events:none;
+}
+#bopOrbSplashOverlay .bop-hotspot{z-index:5!important;display:grid!important;place-items:center!important;
+ background:radial-gradient(circle at 38% 28%,#202020 0%,#090909 48%,#000 72%)!important;
+ border:2px solid #f5a20b!important;box-shadow:0 0 9px rgba(245,162,11,.7),inset 0 0 9px rgba(255,255,255,.08)!important;
+ color:#f5a20b;font-family:Arial Black,Arial,sans-serif;font-weight:900;text-decoration:none;
+}
+#bopOrbEnterBtn,#bopOrbMicBtn,#bopOrbLiveBtn{top:59.2%!important;width:13.2%!important;aspect-ratio:1!important}
+#bopOrbEnterBtn{left:16.0%!important;font-size:clamp(10px,2.1vw,17px)!important;animation:bopEnterAlive 2s ease-in-out infinite!important}
+#bopOrbEnterBtn::before{content:"ENTER";position:relative;z-index:2}
+#bopOrbMicBtn{left:43.4%!important;color:#ff1682!important;animation:bopMicAlive 1.55s ease-in-out infinite!important}
+#bopOrbLiveBtn{left:70.8%!important;color:#ff174f!important;font-size:clamp(11px,2.3vw,18px)!important;animation:bopLiveAlive 1.25s ease-in-out infinite!important}
+#bopOrbLiveBtn::before{content:"LIVE!";position:relative;z-index:2}
+#bopOrbMicBtn::before{content:"🎙"!important;position:relative!important;inset:auto!important;border:0!important;border-radius:0!important;
+ font-size:clamp(24px,6.3vw,43px)!important;line-height:1!important;animation:bopMicIcon 1.55s ease-in-out infinite!important;filter:saturate(1.4)}
+#bopOrbMicBtn::after{content:""!important;position:absolute!important;inset:15%!important;border:0!important;border-radius:50%!important;
+ box-shadow:-12px 0 0 -10px #ff1682,12px 0 0 -10px #ff1682,-19px 0 0 -16px rgba(255,22,130,.75),19px 0 0 -16px rgba(255,22,130,.75)!important;
+ animation:bopMicSides 1.15s ease-in-out infinite!important;pointer-events:none!important}
+#bopOrbEnterBtn::after,#bopOrbLiveBtn::after{content:""!important;position:absolute!important;inset:-8%!important;border:1px solid rgba(245,162,11,.55)!important;border-radius:50%!important;pointer-events:none!important;animation:bopOrbRing 1.7s ease-out infinite!important}
+#bopOrbLiveBtn::after{border-color:rgba(255,23,79,.72)!important;animation-duration:1.25s!important}
+#bopOrbMusicBtn{left:auto!important;right:5.2%!important;top:auto!important;bottom:4.7%!important;width:11.5%!important;aspect-ratio:1!important;
+ color:#176bff!important;border-color:#f5a20b!important;animation:bopMusicAlive 1.8s ease-in-out infinite!important}
+#bopOrbMusicBtn::before{content:"♫";font-family:Arial,sans-serif;font-size:clamp(24px,6vw,42px);font-weight:900;color:#176bff;text-shadow:0 0 8px #176bff,0 0 18px rgba(23,107,255,.9)}
+#bopOrbMusicBtn::after{display:none!important}
+@keyframes bopEnterAlive{0%,100%{transform:scale(1);box-shadow:0 0 8px rgba(245,162,11,.6),inset 0 0 8px rgba(255,255,255,.06)}50%{transform:scale(1.055);box-shadow:0 0 20px rgba(245,162,11,.95),0 0 34px rgba(245,162,11,.32),inset 0 0 11px rgba(255,255,255,.12)}}
+@keyframes bopLiveAlive{0%,100%{transform:scale(1);box-shadow:0 0 8px rgba(255,23,79,.55),0 0 7px rgba(245,162,11,.55)}50%{transform:scale(1.09);box-shadow:0 0 24px rgba(255,23,79,.95),0 0 38px rgba(255,23,79,.35),0 0 9px rgba(245,162,11,.8)}}
+@keyframes bopMicAlive{0%,100%{transform:scale(.98)}50%{transform:scale(1.045)}}
+@keyframes bopMicIcon{0%,100%{transform:scale(.94)}50%{transform:scale(1.08)}}
+@keyframes bopMicSides{0%,100%{transform:scaleX(.82);opacity:.45}50%{transform:scaleX(1.18);opacity:1}}
+@keyframes bopOrbRing{0%{transform:scale(.84);opacity:.75}100%{transform:scale(1.18);opacity:0}}
+@keyframes bopMusicAlive{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(23,107,255,.55),0 0 8px rgba(245,162,11,.55)}50%{transform:scale(1.055);box-shadow:0 0 22px rgba(23,107,255,.95),0 0 32px rgba(23,107,255,.35),0 0 10px rgba(245,162,11,.8)}}
+/* Never show the site's separate floating music control on top of this splash. */
+body:has(#bopOrbSplashOverlay.open) .site-sound-toggle,
+body:has(#bopOrbSplashOverlay.open) #bopMusicToggle,
+body:has(#bopOrbSplashOverlay.open) #bopStaticMusic,
+body:has(#bopOrbSplashOverlay.open) .bop-music-orb,
+body:has(#bopOrbSplashOverlay.open) [data-bop-music-toggle]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+</style>
+
 </body></html>
