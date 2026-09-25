@@ -85,20 +85,18 @@ takeRecords(){return this.native.takeRecords()}
 
 
 <style id="bop-v12">
-:root{--orange:#F59E0B;--pink:#ff0f63}
+:root{--orange:#F59E0B;--pink:#ff315f}
 
 /* True viewport overlay, centered independently of site/footer layout. */
 #bopOrbSplashOverlay.open{
- position:fixed!important; inset:0!important; width:100vw!important; height:100dvh!important;
- z-index:2147483647!important; display:grid!important; place-items:end center!important;
+ position:relative!important; inset:auto!important; width:100%!important; height:auto!important;
+ z-index:20!important; display:grid!important; place-items:end center!important;
  background:#000!important; overflow:hidden!important; margin:0!important; padding:0!important;
  transform:none!important; opacity:1!important;
 }
-body.bopV12{overflow:hidden!important}
+body.bopV12{overflow-x:hidden!important;background:#000!important}
 
 /* Hide underlying site while splash is active without changing its layout. */
-body.bopV12 > *:not(#bopOrbSplashOverlay){visibility:hidden!important}
-body.bopV12 #bopOrbSplashOverlay,body.bopV12 #bopOrbSplashOverlay *{visibility:visible!important}
 
 /* Size from WIDTH first on phones so no horizontal crop can occur. */
 #bopOrbSplashOverlay.open #bopApprovedLandingArt{
@@ -132,14 +130,14 @@ body.bopV12 #bopMusicCorner{display:none!important}
  position:absolute!important; left:50%!important; top:5%!important; width:27%!important; height:8%!important;
  border:1.4px solid rgba(245,158,11,.32)!important; border-radius:50%!important;
  box-shadow:0 0 6px rgba(245,158,11,.22)!important;
- animation:v12Ripple 5.2s ease-out infinite!important;
+ animation:v12Ripple 6.8s ease-in-out infinite!important;
 }
 #bopMotionWater .wb2{animation-delay:-1.73s!important}
 #bopMotionWater .wb3{animation-delay:-3.46s!important}
 #bopMotionWater .water-glint{
  position:absolute!important; top:0!important; bottom:-5%!important; width:13%!important;
  background:linear-gradient(90deg,transparent,rgba(245,158,11,.05),rgba(255,215,120,.20),rgba(245,158,11,.05),transparent)!important;
- filter:blur(7px)!important; animation:v12Glint 6s ease-in-out infinite alternate!important;
+ filter:blur(7px)!important; animation:v12Glint 7.5s ease-in-out infinite alternate!important;
 }
 #bopMotionWater .wg1{left:27%!important}
 #bopMotionWater .wg2{left:62%!important;animation-delay:-3s!important}
@@ -154,13 +152,13 @@ body.bopV12 #bopMusicCorner{display:none!important}
 .bop-word-pulse{
  position:absolute!important; z-index:12!important; pointer-events:none!important;
  text-align:center!important; font-family:Arial,Helvetica,sans-serif!important; font-weight:900!important;
- line-height:1!important; animation:v12Word 4.8s ease-in-out infinite!important;
+ line-height:1!important; animation:v12Word 5.8s ease-in-out infinite!important;
 }
 #bopEnterPulse{left:15%!important;top:69%!important;width:19%!important;color:#F59E0B!important;font-size:clamp(10px,2.4vw,24px)!important}
-#bopLivePulse{left:65.7%!important;top:69%!important;width:18%!important;color:#ff0f63!important;font-size:clamp(10px,2.4vw,24px)!important;animation-delay:-2.4s!important}
+#bopLivePulse{left:65.7%!important;top:69%!important;width:18%!important;color:#ff315f!important;font-size:clamp(10px,2.4vw,24px)!important;animation-delay:-2.4s!important}
 @keyframes v12Word{
  0%,100%{opacity:.10;text-shadow:0 0 1px currentColor}
- 50%{opacity:.52;text-shadow:0 0 3px currentColor,0 0 7px currentColor}
+ 50%{opacity:.42;text-shadow:0 0 3px currentColor,0 0 6px currentColor}
 }
 
 /* Tight, slow mic movement */
@@ -170,8 +168,8 @@ body.bopV12 #bopMusicCorner{display:none!important}
 }
 #bopMicWaves i{
  position:absolute!important; top:39%!important; height:23%!important; width:5%!important;
- border:1.4px solid #ff0f63!important; border-top-color:transparent!important; border-bottom-color:transparent!important;
- animation:v12Mic 3.8s ease-in-out infinite!important;
+ border:1.4px solid #ff315f!important; border-top-color:transparent!important; border-bottom-color:transparent!important;
+ animation:v12Mic 5.2s ease-in-out infinite!important;
 }
 #bopMicWaves .ml1{left:23%!important;border-right:0!important}
 #bopMicWaves .ml2{left:16%!important;border-right:0!important;animation-delay:-1.1s!important}
@@ -179,7 +177,7 @@ body.bopV12 #bopMusicCorner{display:none!important}
 #bopMicWaves .mr2{right:16%!important;border-left:0!important;animation-delay:-1.1s!important}
 @keyframes v12Mic{
  0%,100%{opacity:.10;transform:scale(.92)}
- 50%{opacity:.52;transform:scale(1.04);filter:drop-shadow(0 0 2px #ff0f63)}
+ 50%{opacity:.42;transform:scale(1.025);filter:drop-shadow(0 0 2px #ff315f)}
 }
 
 /* On short/wide screens, height becomes the limiting dimension but still never crop. */
@@ -188,6 +186,22 @@ body.bopV12 #bopMusicCorner{display:none!important}
    height:90dvh!important; width:auto!important; max-width:88vw!important;
  }
 }
+</style>
+
+
+<style id="bop-v13-footer-music-red">
+/* Footer stays. Old music controls are hidden only while the landing artwork is showing. */
+body.bopV12 #bopMusicCorner,
+body.bopV12 .music-orb,
+body.bopV12 .musicOrb,
+body.bopV12 [data-music-orb]:not(#bopOrbMusicBtn) {
+ display:none!important; visibility:hidden!important; opacity:0!important; pointer-events:none!important;
+}
+/* New artwork music orb remains the one visible/active landing-page control. */
+body.bopV12 #bopOrbMusicBtn{display:block!important;pointer-events:auto!important}
+/* Match landing red accents to footer red. */
+#bopLivePulse{color:#ff315f!important}
+#bopMicWaves i{border-color:#ff315f!important;border-top-color:transparent!important;border-bottom-color:transparent!important}
 </style>
 
 </head>
