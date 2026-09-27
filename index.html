@@ -61399,4 +61399,68 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
  }
 })();
 </script>
+
+<style id="bop-site-gold-shimmer-20260927">
+@keyframes bopGoldLivingShimmer{
+  0%,100%{filter:brightness(1) saturate(1) hue-rotate(0deg)}
+  25%{filter:brightness(1.22) saturate(1.12) hue-rotate(6deg)}
+  50%{filter:brightness(1.4) saturate(1.2) hue-rotate(-4deg)}
+  75%{filter:brightness(1.18) saturate(1.08) hue-rotate(3deg)}
+}
+.bop-gold-shimmer-applied{
+  animation:bopGoldLivingShimmer 3.6s ease-in-out infinite;
+  will-change:filter;
+}
+@media(prefers-reduced-motion:reduce){
+  .bop-gold-shimmer-applied{animation:none!important}
+}
+</style>
+<script id="bop-site-gold-shimmer-script-20260927">
+(function(){
+  var GOLD = 'rgb(227, 160, 43)';
+  var CLASS = 'bop-gold-shimmer-applied';
+  var SKIP_TAGS = {SVG:1,PATH:1,CIRCLE:1,RECT:1,SCRIPT:1,STYLE:1,BUTTON:0};
+
+  function hasDirectText(el){
+    for (var i=0;i<el.childNodes.length;i++){
+      var n = el.childNodes[i];
+      if (n.nodeType === 3 && n.textContent && n.textContent.trim().length > 0) return true;
+    }
+    return false;
+  }
+
+  function consider(el){
+    if (!el || el.nodeType !== 1) return;
+    if (el.classList.contains(CLASS)) return;
+    if (SKIP_TAGS[el.tagName]) return;
+    if (!hasDirectText(el)) return;
+    var cs;
+    try { cs = getComputedStyle(el); } catch(e) { return; }
+    if (!cs || cs.color !== GOLD) return;
+    if (cs.animationName && cs.animationName !== 'none') return; // don't fight an existing animation
+    el.classList.add(CLASS);
+  }
+
+  function scan(root){
+    var nodes = root.querySelectorAll('*');
+    for (var i=0;i<nodes.length;i++) consider(nodes[i]);
+  }
+
+  function run(){ try { scan(document.body || document.documentElement); } catch(e){} }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(run, 300); });
+  } else {
+    setTimeout(run, 300);
+  }
+
+  var pending = false;
+  var mo = new MutationObserver(function(){
+    if (pending) return;
+    pending = true;
+    setTimeout(function(){ pending = false; run(); }, 800);
+  });
+  mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
 </body></html>
