@@ -28120,7 +28120,13 @@ var music=document.createElement('audio');
 music.id='bopBgMusic';music.loop=true;music.preload='auto';music.volume=0.55;
 music.src='bop-bg-music.m4a';
 document.body.appendChild(music);
-(function(){try{if(localStorage.getItem('bop-music-muted-v1')===null)localStorage.setItem('bop-music-muted-v1','yes');}catch(_e){}})();
+(function(){try{
+if(localStorage.getItem('bop-music-default-on-v1')!=='1'){
+localStorage.setItem('bop-music-muted-v1','no');
+localStorage.setItem('bop-music-default-on-v1','1');
+}
+if(localStorage.getItem('bop-music-muted-v1')===null)localStorage.setItem('bop-music-muted-v1','no');
+}catch(_e){}})();
 var muted=(function(){try{return localStorage.getItem('bop-music-muted-v1')==='yes'}catch(_e){return false}})();
 var pausedForVideo=false;
 function sync(){
