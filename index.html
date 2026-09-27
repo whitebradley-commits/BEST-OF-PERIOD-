@@ -61140,4 +61140,172 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
 }
 </style>
 
+
+<style id="bop-landing-polish-20260926-1841">
+/* Landing-only polish requested from the 6:40 screenshot. No layout/content changes elsewhere. */
+
+/* 1) Footer: full-width black backing so water never shows through at either side. */
+#bopPhotoLanding .bop-exact-old-footer{
+  left:0!important;
+  right:0!important;
+  width:100%!important;
+  bottom:0!important;
+  background:#000!important;
+  border-radius:0!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-bottom:0!important;
+  border-top:1px solid #b78335!important;
+  padding-left:4%!important;
+  padding-right:4%!important;
+  box-shadow:0 -10px 30px rgba(0,0,0,.72),0 -2px 14px rgba(227,160,43,.13)!important;
+  overflow:visible!important;
+}
+@media(max-width:430px){
+ #bopPhotoLanding .bop-exact-old-footer{padding-left:3.5%!important;padding-right:3.5%!important}
+}
+
+/* 2) Real, subtle water ripple: highlights only. The artwork/logo/buttons do not translate. */
+#bopPhotoLanding .bop-water-ripple-visible{
+  position:absolute!important;
+  left:0!important;right:0!important;
+  top:calc(var(--bop-hero-h) * .682)!important;
+  bottom:0!important;
+  z-index:8!important;
+  pointer-events:none!important;
+  overflow:hidden!important;
+  mix-blend-mode:screen!important;
+  opacity:.8!important;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 7%,#000 78%,transparent 96%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 7%,#000 78%,transparent 96%);
+}
+#bopPhotoLanding .bop-water-ripple-visible::before,
+#bopPhotoLanding .bop-water-ripple-visible::after{
+  content:""!important;
+  position:absolute!important;
+  left:-8%!important;right:-8%!important;
+  height:115%!important;
+  background-image:
+    repeating-linear-gradient(179deg,
+      transparent 0 9px,
+      rgba(255,196,75,.00) 10px,
+      rgba(255,196,75,.16) 11px,
+      rgba(255,225,160,.055) 12px,
+      transparent 13px 25px),
+    repeating-linear-gradient(1deg,
+      transparent 0 15px,
+      rgba(255,255,255,.045) 16px,
+      transparent 17px 31px)!important;
+  background-size:102% 100%,98% 100%!important;
+  filter:blur(.35px)!important;
+  transform-origin:center top!important;
+  animation:bopWaterRippleVisible 2.6s ease-in-out infinite alternate!important;
+}
+#bopPhotoLanding .bop-water-ripple-visible::before{top:-7%!important;opacity:.84!important}
+#bopPhotoLanding .bop-water-ripple-visible::after{top:-3%!important;opacity:.44!important;animation-duration:3.7s!important;animation-direction:alternate-reverse!important}
+@keyframes bopWaterRippleVisible{
+  0%{background-position:0 0,0 0;transform:skewX(-.10deg) scaleY(.998)}
+  35%{background-position:2px 2px,-2px 1px;transform:skewX(.08deg) scaleY(1.002)}
+  70%{background-position:-2px 4px,2px 3px;transform:skewX(-.06deg) scaleY(.999)}
+  100%{background-position:1px 6px,-1px 5px;transform:skewX(.05deg) scaleY(1.001)}
+}
+
+/* A second very soft reflection shimmer gives the gold/red mirror a living-water feel. */
+#bopPhotoLanding .bop-water-reflection-shimmer{
+  position:absolute!important;
+  left:7%!important;right:7%!important;
+  top:calc(var(--bop-hero-h) * .704)!important;
+  bottom:8%!important;
+  z-index:9!important;
+  pointer-events:none!important;
+  background:linear-gradient(90deg,
+    transparent 0 18%,rgba(227,160,43,.08) 26%,transparent 35% 43%,
+    rgba(255,195,75,.12) 50%,transparent 58% 67%,rgba(255,7,58,.085) 75%,transparent 84%)!important;
+  filter:blur(7px)!important;
+  opacity:.55!important;
+  animation:bopReflectionBreath 2.8s ease-in-out infinite!important;
+}
+@keyframes bopReflectionBreath{0%,100%{opacity:.40;filter:blur(8px)}50%{opacity:.70;filter:blur(5.5px)}}
+
+/* 3) Hands-free: three little animated sound marks on EACH side of the microphone. */
+#bopPhotoLanding .bop-mic-waves::before,#bopPhotoLanding .bop-mic-waves::after{display:none!important}
+#bopPhotoLanding .bop-mic-soundmarks{position:absolute!important;inset:0!important;pointer-events:none!important}
+#bopPhotoLanding .bop-mic-soundmark{
+  position:absolute!important;
+  top:50%!important;
+  width:11%!important;
+  height:34%!important;
+  margin-top:-17%!important;
+  border:2px solid #f4b844!important;
+  border-top-color:transparent!important;
+  border-bottom-color:transparent!important;
+  border-radius:50%!important;
+  opacity:.28!important;
+  filter:drop-shadow(0 0 4px rgba(227,160,43,.75))!important;
+  animation:bopMicMarkPulse 1.18s ease-in-out infinite!important;
+}
+#bopPhotoLanding .bop-mic-soundmark.left{border-right:0!important}
+#bopPhotoLanding .bop-mic-soundmark.right{border-left:0!important}
+#bopPhotoLanding .bop-mic-soundmark.l1{left:17%!important;animation-delay:0s!important}
+#bopPhotoLanding .bop-mic-soundmark.l2{left:10%!important;animation-delay:.12s!important;transform:scale(1.12)}
+#bopPhotoLanding .bop-mic-soundmark.l3{left:3%!important;animation-delay:.24s!important;transform:scale(1.24)}
+#bopPhotoLanding .bop-mic-soundmark.r1{right:17%!important;animation-delay:0s!important}
+#bopPhotoLanding .bop-mic-soundmark.r2{right:10%!important;animation-delay:.12s!important;transform:scale(1.12)}
+#bopPhotoLanding .bop-mic-soundmark.r3{right:3%!important;animation-delay:.24s!important;transform:scale(1.24)}
+@keyframes bopMicMarkPulse{0%,100%{opacity:.18;filter:drop-shadow(0 0 2px rgba(227,160,43,.45))}50%{opacity:.95;filter:drop-shadow(0 0 6px rgba(244,184,68,1))}}
+
+/* 4) LIVE: glow pulse only — no positional movement and no size jump. */
+#bopPhotoLanding .bop-live-pulse{
+  transform:none!important;
+  animation:bopLiveSoftPulse 1.55s ease-in-out infinite!important;
+}
+@keyframes bopLiveSoftPulse{
+  0%,100%{box-shadow:0 0 7px rgba(255,7,58,.36),0 0 13px rgba(255,7,58,.15);opacity:.72}
+  50%{box-shadow:0 0 18px rgba(255,7,58,.92),0 0 32px rgba(255,7,58,.34);opacity:1}
+}
+
+/* 5) ENTER: a little stronger gold glow, still completely stationary. */
+#bopPhotoLanding .bop-enter-glow{
+  position:absolute!important;
+  z-index:31!important;
+  pointer-events:none!important;
+  left:41.2%!important;
+  top:calc(var(--bop-hero-h) * .589)!important;
+  width:17.6%!important;
+  height:calc(var(--bop-hero-h) * .123)!important;
+  border-radius:50%!important;
+  transform:none!important;
+  box-shadow:0 0 11px rgba(227,160,43,.52),0 0 21px rgba(227,160,43,.18)!important;
+  animation:bopEnterGlow 1.9s ease-in-out infinite!important;
+}
+@keyframes bopEnterGlow{
+  0%,100%{box-shadow:0 0 10px rgba(227,160,43,.48),0 0 18px rgba(227,160,43,.15);opacity:.74}
+  50%{box-shadow:0 0 19px rgba(244,184,68,.95),0 0 34px rgba(227,160,43,.31);opacity:1}
+}
+
+@media(prefers-reduced-motion:reduce){
+ #bopPhotoLanding .bop-water-ripple-visible::before,#bopPhotoLanding .bop-water-ripple-visible::after,
+ #bopPhotoLanding .bop-water-reflection-shimmer,#bopPhotoLanding .bop-mic-soundmark,
+ #bopPhotoLanding .bop-live-pulse,#bopPhotoLanding .bop-enter-glow{animation:none!important}
+}
+</style>
+<script id="bop-landing-polish-script-20260926-1841">
+(function(){
+ function install(){
+  var wrap=document.getElementById('bopPhotoLanding');if(!wrap)return;
+  if(!wrap.querySelector('.bop-water-ripple-visible')){var r=document.createElement('div');r.className='bop-water-ripple-visible';wrap.appendChild(r);}
+  if(!wrap.querySelector('.bop-water-reflection-shimmer')){var rs=document.createElement('div');rs.className='bop-water-reflection-shimmer';wrap.appendChild(rs);}
+  if(!wrap.querySelector('.bop-enter-glow')){var eg=document.createElement('div');eg.className='bop-enter-glow';wrap.appendChild(eg);}
+  var mw=wrap.querySelector('.bop-mic-waves');
+  if(mw&&!mw.querySelector('.bop-mic-soundmarks')){
+    var box=document.createElement('div');box.className='bop-mic-soundmarks';
+    ['l3','l2','l1','r1','r2','r3'].forEach(function(c){var sp=document.createElement('i');sp.className='bop-mic-soundmark '+(c[0]==='l'?'left ':'right ')+c;box.appendChild(sp)});
+    mw.appendChild(box);
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(install,80)});else setTimeout(install,80);
+ new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body></html>
