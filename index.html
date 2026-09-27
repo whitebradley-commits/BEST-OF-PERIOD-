@@ -61869,4 +61869,106 @@ var mo = new MutationObserver(function(){ run(); });
 mo.observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
+
+<style id="bop-golive-lockup-hide-fix-20260927">
+/* The generic .bop-golive-lockup{display:block!important} rule (with a
+   :not(#fake-id) specificity boost) was out-specifying our hide rule, so
+   "Best of Period" kept showing above the new badge images. Match that
+   same specificity trick here so ours wins regardless of source order. */
+#bopGoLiveOverlay .bop-golive-lockup:not(#bop-hide-a):not(#bop-hide-b),
+#bopAllBjsPicks .bop-golive-lockup:not(#bop-hide-a):not(#bop-hide-b){
+  display:none!important;
+}
+</style>
+
+<style id="bop-golive-teal-recolor-20260927">
+/* Go Live page: swap the page's gold accents for the new teal that matches
+   the LIVE! badge now at the top. Tighten the gap the removed header left
+   behind so the badge sits higher. */
+#bopGoLiveOverlay .bop-badge-header-img{margin:6px auto 10px!important}
+#bopGoLiveOverlay .bo-golive-back{border-color:#2EE9C9!important;color:#2EE9C9!important}
+#bopGoLiveOverlay .bop-golive-title{color:#2EE9C9!important}
+#bopGoLiveOverlay .bop-golive-red{color:#FF073A!important}
+#bopGoLiveOverlay .bop-golive-gold,
+#bopGoLiveOverlay .bop-gold-checker-applied{
+  background-image:repeating-conic-gradient(#0A6B5E 0% 25%,#2EE9C9 0% 50%)!important;
+  background-size:9px 9px!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  color:transparent!important;
+  text-shadow:none!important;
+}
+#bopGoLiveOverlay .bop-golive-tile{border-color:#2EE9C9!important;box-shadow:0 0 10px rgba(46,233,201,.4)!important;color:#fff!important}
+#bopGoLiveOverlay .bop-golive-tile svg *{stroke:#2EE9C9!important}
+#bopGoLiveOverlay .bop-golive-tile .bo-golive-tile-sub{color:#2EE9C9!important}
+</style>
+
+<style id="bop-allcities-red-recolor-20260927">
+/* All Cities page: swap gold accents for the red used in the ALL CITIES
+   badge now at the top. */
+#bopBestOfBestOverlay .bobb-rule{background:#FF073A!important;box-shadow:0 0 10px rgba(255,7,58,.7)!important}
+#bopBestOfBestOverlay .bobb-threes-mark{color:#FF073A!important;text-shadow:0 0 14px rgba(255,7,58,.55),0 0 34px rgba(255,7,58,.24)!important}
+#bopBestOfBestOverlay .bobb-threes-caption{color:#FF073A!important}
+#bopBestOfBestOverlay .bobb-close{border-color:#FF073A!important;color:#FF073A!important}
+</style>
+
+<style id="bop-worldwide-blue-recolor-20260927">
+/* Best Links / Worldwide page: swap gold accents for the blue used in the
+   BEST LINKS badge now at the top. */
+#bopWorldwideLanding .bop-world-back{border-color:#4FC3F7!important;color:#4FC3F7!important}
+#bopWorldwideLanding .bop-world-why{color:#4FC3F7!important;text-shadow:0 0 8px rgba(79,195,247,.72)!important}
+#bopWorldwideLanding .bop-world-divider{background:#4FC3F7!important;box-shadow:0 0 9px rgba(79,195,247,.8)!important}
+#bopWorldwideLanding .bop-world-tiles-title{color:#4FC3F7!important}
+#bopWorldwideLanding .bop-world-tile{border-color:#4FC3F7!important;color:#4FC3F7!important;box-shadow:0 0 12px rgba(79,195,247,.42),inset 0 0 14px rgba(79,195,247,.06)!important}
+#bopWorldwideLanding .bop-world-tile:hover,#bopWorldwideLanding .bop-world-tile:focus-visible{box-shadow:0 0 21px rgba(79,195,247,.8),inset 0 0 18px rgba(79,195,247,.1)!important}
+#bopWorldwideLanding .bop-world-icon{color:#4FC3F7!important}
+</style>
+
+<style id="bop-best-links-cleanup-20260927">
+/* Requested 2026-09-27: simplify BEST LINKS and color its tiles to the page badge. */
+#bopWorldwideLanding .bop-world-divider,
+#bopWorldwideLanding .bop-world-tiles-title{display:none!important}
+
+/* Pull the grid up after removing the divider/title. */
+#bopWorldwideLanding .bop-world-tiles{margin-top:6px!important}
+
+/* BEST LINKS badge is blue: use that blue instead of gold on this page's tiles. */
+#bopWorldwideLanding .bop-world-tile{
+  border:2px solid #2AA8FF!important;
+  box-shadow:0 0 12px rgba(42,168,255,.44),inset 0 0 14px rgba(42,168,255,.07)!important;
+}
+#bopWorldwideLanding .bop-world-tile .bop-world-line-icon{
+  stroke:#2AA8FF!important;
+  filter:drop-shadow(0 0 5px rgba(42,168,255,.55))!important;
+}
+
+/* Top three are image-only: their wording already exists inside each badge. */
+#bopWorldwideLanding .bop-world-tile.bop-world-all-cities,
+#bopWorldwideLanding .bop-world-tile.bop-world-all-bjs,
+#bopWorldwideLanding .bop-world-tile.bop-world-michelin{
+  font-size:0!important;
+  line-height:0!important;
+  padding:4px!important;
+}
+#bopWorldwideLanding .bop-world-tile-badge-img{
+  width:108%!important;
+  max-width:112px!important;
+  margin:0 auto!important;
+}
+
+/* Identical tile borders, with each one matching its own badge color. */
+#bopWorldwideLanding .bop-world-tile.bop-world-all-cities{
+  border:2px solid #FF1E2D!important;
+  box-shadow:0 0 12px rgba(255,30,45,.48),inset 0 0 14px rgba(255,30,45,.08)!important;
+}
+#bopWorldwideLanding .bop-world-tile.bop-world-all-bjs{
+  border:2px solid #E3A02B!important;
+  box-shadow:0 0 12px rgba(227,160,43,.48),inset 0 0 14px rgba(227,160,43,.08)!important;
+}
+#bopWorldwideLanding .bop-world-tile.bop-world-michelin{
+  border:2px solid #E7E7E7!important;
+  box-shadow:0 0 12px rgba(231,231,231,.46),inset 0 0 14px rgba(231,231,231,.08)!important;
+}
+</style>
 </body></html>
