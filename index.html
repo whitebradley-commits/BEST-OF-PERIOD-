@@ -61710,4 +61710,72 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
   background-image:repeating-conic-gradient(#8B5E10 0% 25%,#C98A1C 0% 50%)!important;
 }
 </style>
+
+<style id="bop-landing-motion-v2-supersede-20260927">
+/* v2 (bop-landing-motion-v2-20260927) is now the single source of truth for
+   the moon / water / mic / live glow on the photo landing. The older
+   percentage-based effects computed their position off the wrong wrapper
+   box and were showing up as stray red/gold glow down near the footer
+   dock -- turn them off entirely so only the correctly-positioned v2
+   versions render. */
+#bopPhotoLanding .bop-moon-motion,
+#bopPhotoLanding .bop-wave-motion,
+#bopPhotoLanding .bop-wave-motion::before,
+#bopPhotoLanding .bop-wave-motion::after,
+#bopPhotoLanding .bop-water-ripple-visible,
+#bopPhotoLanding .bop-water-ripple-visible::before,
+#bopPhotoLanding .bop-water-ripple-visible::after,
+#bopPhotoLanding .bop-water-reflection-shimmer,
+#bopPhotoLanding .bop-mic-waves,
+#bopPhotoLanding .bop-mic-waves::before,
+#bopPhotoLanding .bop-mic-waves::after,
+#bopPhotoLanding .bop-mic-soundmarks,
+#bopPhotoLanding .bop-mic-soundmark,
+#bopPhotoLanding .bop-live-pulse,
+#bopPhotoLanding .bop-enter-glow{
+  display:none!important;
+  animation:none!important;
+}
+
+/* Faint twinkle reflections inside the v2 water band, echoing the sky stars. */
+#bopPhotoLanding .bop-v2-wave-star{
+  position:absolute;z-index:4;pointer-events:none;border-radius:50%;
+  background:rgba(255,235,190,.85);
+  box-shadow:0 0 3px rgba(255,220,150,.7);
+  animation:bopV2WaveTwinkle 2.4s ease-in-out infinite;
+  opacity:0;
+}
+@keyframes bopV2WaveTwinkle{0%,100%{opacity:0;transform:scaleY(.5)}50%{opacity:.6;transform:scaleY(1.3)}}
+@media(prefers-reduced-motion:reduce){#bopPhotoLanding .bop-v2-wave-star{animation:none!important}}
+</style>
+<script id="bop-landing-motion-v2-supersede-script-20260927">
+(function(){
+  function addWaveStars(wrap){
+    var wave = wrap.querySelector('.bop-v2-wave');
+    if (!wave || wave.dataset.waveStars === '1') return;
+    wave.dataset.waveStars = '1';
+    for (var i = 0; i < 6; i++){
+      var s = document.createElement('div');
+      s.className = 'bop-v2-wave-star';
+      var left = 8 + (i * 15) + (Math.abs(Math.sin(i*37))*6);
+      var top = 20 + Math.abs(Math.sin(i*53))*55;
+      var size = 1.5 + Math.abs(Math.sin(i*19))*1.6;
+      s.style.left = left + '%';
+      s.style.top = top + '%';
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.animationDelay = (Math.abs(Math.sin(i*71))*2.4) + 's';
+      s.style.animationDuration = (1.8 + Math.abs(Math.sin(i*61))*1.8) + 's';
+      wave.appendChild(s);
+    }
+  }
+  function tick(){
+    var wrap = document.getElementById('bopPhotoLanding');
+    if (wrap) addWaveStars(wrap);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(tick, 400); });
+  else setTimeout(tick, 400);
+  new MutationObserver(tick).observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
 </body></html>
