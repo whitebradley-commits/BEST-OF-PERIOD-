@@ -60922,4 +60922,145 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
 })();
 </script>
 
+
+<style id="bop-final-landing-water-controls-fix-20260926">
+/* Landing-only correction: keep the approved hero exactly where it is, anchor its
+   controls to the hero image (not the taller page), and continue the water below. */
+#bopPhotoLanding{
+  --bop-hero-w:min(100vw,1024px);
+  --bop-hero-h:calc(var(--bop-hero-w) * 1.5);
+  min-height:100svh!important;
+  height:max(var(--bop-hero-h),100svh)!important;
+  background:#000!important;
+  overflow:hidden!important;
+}
+#bopPhotoLanding>img:first-child{
+  width:100%!important;
+  height:var(--bop-hero-h)!important;
+  object-fit:cover!important;
+  object-position:top center!important;
+}
+/* Remove the temporary radial/sonar-looking continuation layers. */
+#bopPhotoLanding .bop-water-extension,
+#bopPhotoLanding .bop-water-glow,
+#bopPhotoLanding .bop-wave-motion{display:none!important}
+/* Real continuation made from the supplied landing artwork's water area. */
+#bopPhotoLanding .bop-water-continuation-real{
+  position:absolute;z-index:3;left:0;right:0;
+  top:calc(var(--bop-hero-h) * .785);
+  bottom:0;
+  overflow:hidden;pointer-events:none;background:#000;
+}
+#bopPhotoLanding .bop-water-continuation-real .bop-water-photo-layer{
+  position:absolute;inset:-6% -5% -8%;
+  background-repeat:no-repeat;
+  background-size:110% auto;
+  background-position:center 70%;
+  filter:brightness(.72) saturate(1.12) contrast(1.06);
+  transform-origin:50% 30%;
+  animation:bopRealWaterShimmy 3.2s ease-in-out infinite alternate;
+}
+#bopPhotoLanding .bop-water-continuation-real:before{
+  content:"";position:absolute;inset:0;z-index:2;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.08) 20%,rgba(0,0,0,.32) 76%,rgba(0,0,0,.64) 100%),
+    repeating-linear-gradient(178deg,transparent 0 12px,rgba(255,195,77,.045) 13px 14px,transparent 15px 28px);
+  mix-blend-mode:screen;
+  animation:bopWaterLightDrift 4.1s ease-in-out infinite alternate;
+}
+#bopPhotoLanding .bop-water-continuation-real:after{
+  content:"";position:absolute;z-index:3;left:5%;right:5%;top:2%;height:70%;
+  background:
+    linear-gradient(90deg,transparent 0 18%,rgba(227,160,43,.15) 26%,transparent 35% 43%,rgba(255,195,75,.20) 50%,transparent 58% 66%,rgba(255,7,58,.13) 75%,transparent 84%);
+  filter:blur(9px);opacity:.72;
+  animation:bopMirrorShimmy 2.45s ease-in-out infinite alternate;
+}
+@keyframes bopRealWaterShimmy{
+  0%{transform:translate3d(-1.8%,0,0) scaleX(1.035) scaleY(1.015) skewX(-.35deg)}
+  50%{transform:translate3d(.8%,3px,0) scaleX(.995) scaleY(.99) skewX(.25deg)}
+  100%{transform:translate3d(1.8%,-2px,0) scaleX(1.025) scaleY(1.01) skewX(-.2deg)}
+}
+@keyframes bopWaterLightDrift{from{transform:translateX(-1.2%);opacity:.55}to{transform:translateX(1.2%);opacity:.9}}
+@keyframes bopMirrorShimmy{from{transform:translateX(-2%) scaleX(.985);opacity:.5}to{transform:translateX(2%) scaleX(1.025);opacity:.92}}
+/* Hotspots and effects stay locked to the visible artwork even though the page is taller. */
+#bopPhotoLanding [data-go="mic"]{top:calc(var(--bop-hero-h) * .590)!important;height:calc(var(--bop-hero-h) * .117)!important;z-index:40!important}
+#bopPhotoLanding [data-go="enter"]{top:calc(var(--bop-hero-h) * .589)!important;height:calc(var(--bop-hero-h) * .123)!important;z-index:40!important}
+#bopPhotoLanding [data-go="live"]{top:calc(var(--bop-hero-h) * .590)!important;height:calc(var(--bop-hero-h) * .117)!important;z-index:40!important}
+#bopPhotoLanding [data-go="music"]{top:calc(var(--bop-hero-h) * .792)!important;height:calc(var(--bop-hero-h) * .080)!important;z-index:40!important}
+#bopPhotoLanding .bop-mic-waves{top:calc(var(--bop-hero-h) * .590)!important;height:calc(var(--bop-hero-h) * .117)!important;z-index:32!important;display:block!important}
+#bopPhotoLanding .bop-live-pulse{top:calc(var(--bop-hero-h) * .590)!important;height:calc(var(--bop-hero-h) * .117)!important;z-index:31!important;display:block!important}
+#bopPhotoLanding .bop-moon-motion{top:calc(var(--bop-hero-h) * .064)!important;z-index:15!important;display:block!important}
+/* Stronger little sound marks at both sides of the microphone. */
+#bopPhotoLanding .bop-mic-waves:before,#bopPhotoLanding .bop-mic-waves:after{
+  top:23%!important;width:22%!important;height:54%!important;
+  border-width:2.5px!important;border-color:#f4b844!important;
+  border-top-color:transparent!important;border-bottom-color:transparent!important;
+  filter:drop-shadow(0 0 5px rgba(227,160,43,.8));
+  animation:bopMicWaveFinal 1.05s ease-in-out infinite!important;
+}
+#bopPhotoLanding .bop-mic-waves:before{left:4%!important;border-right:0!important}
+#bopPhotoLanding .bop-mic-waves:after{right:4%!important;border-left:0!important;animation-delay:.16s!important}
+@keyframes bopMicWaveFinal{0%,100%{transform:scale(.72);opacity:.30}50%{transform:scale(1.18);opacity:1}}
+/* LIVE visibly breathes without moving its center. */
+#bopPhotoLanding .bop-live-pulse{animation:bopLivePulseFinal 1.25s ease-in-out infinite!important}
+@keyframes bopLivePulseFinal{0%,100%{transform:scale(.965);box-shadow:0 0 8px rgba(255,7,58,.45)}50%{transform:scale(1.045);box-shadow:0 0 25px rgba(255,7,58,1),0 0 46px rgba(255,7,58,.45)}}
+/* Keep the requested old footer above the continued water. */
+#bopPhotoLanding .bop-exact-old-footer{z-index:50!important}
+</style>
+<script id="bop-final-landing-water-controls-fix-script-20260926">
+(function(){
+ function openRotatingCities(){
+   var splash=document.getElementById('bopOrbSplashOverlay');
+   var landing=document.getElementById('bopLandingOverlay');
+   if(splash){splash.classList.remove('open');splash.style.display='none';}
+   if(landing){landing.classList.add('open');landing.style.removeProperty('display');landing.scrollTop=0;}
+   document.body.style.overflow='';
+   try{sessionStorage.setItem('bopOrbSplashSeen','1');}catch(_e){}
+ }
+ function runMic(){
+   var real=document.getElementById('bopExclusiveVoiceMic')||document.getElementById('bopStaticVoiceMic')||document.getElementById('bopVoiceMicBtn');
+   if(real){real.click();return true}return false;
+ }
+ function runLive(){
+   var splash=document.getElementById('bopOrbSplashOverlay');
+   if(splash)splash.classList.remove('open');
+   try{sessionStorage.setItem('bopOrbSplashSeen','1');}catch(_e){}
+   if(typeof window.bopOpenGoLivePage==='function'){window.bopOpenGoLivePage();return true}
+   var real=document.getElementById('bopOrbLiveBtn');if(real){real.click();return true}return false;
+ }
+ function runMusic(){
+   var real=document.getElementById('bopMusicCorner');
+   if(real){real.click();return true}
+   var old=document.getElementById('bopOrbMusicHotspot');
+   if(old){old.click();return true}
+   return false;
+ }
+ function install(){
+   var wrap=document.getElementById('bopPhotoLanding');if(!wrap)return;
+   var img=wrap.querySelector('img');
+   var water=wrap.querySelector('.bop-water-continuation-real');
+   if(!water){
+     water=document.createElement('div');water.className='bop-water-continuation-real';
+     var layer=document.createElement('div');layer.className='bop-water-photo-layer';water.appendChild(layer);
+     wrap.insertBefore(water,wrap.querySelector('.bop-exact-old-footer')||null);
+   }
+   var layer=water.querySelector('.bop-water-photo-layer');
+   if(img&&layer)layer.style.backgroundImage='url("'+String(img.src).replace(/"/g,'%22')+'")';
+   wrap.querySelectorAll('.bop-photo-hot[data-go]').forEach(function(h){
+     if(h.dataset.finalWired==='1')return;h.dataset.finalWired='1';
+     h.addEventListener('click',function(e){
+       var go=h.dataset.go;
+       if(go!=='mic'&&go!=='enter'&&go!=='live'&&go!=='music')return;
+       e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+       if(go==='enter')return openRotatingCities();
+       if(go==='mic')return runMic();
+       if(go==='live')return runLive();
+       if(go==='music')return runMusic();
+     },true);
+   });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(install,80)});else setTimeout(install,80);
+ new MutationObserver(function(){install()}).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </body></html>
