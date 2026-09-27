@@ -61559,25 +61559,17 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
   }
 
   function getContentBox(wrap, img){
-    var wrapRect = {width: wrap.clientWidth, height: wrap.clientHeight};
-    var nw = img.naturalWidth || 1024, nh = img.naturalHeight || 1536;
-    var boxAspect = wrapRect.width / wrapRect.height;
-    var imgAspect = nw / nh;
-    var cw, ch, ox, oy;
-    if (imgAspect > boxAspect) {
-      // image is relatively wider than the box -> width-constrained
-      cw = wrapRect.width;
-      ch = cw / imgAspect;
-      ox = 0;
-      oy = (wrapRect.height - ch) / 2;
-    } else {
-      // height-constrained -> letterboxed left/right, or exactly fits
-      ch = wrapRect.height;
-      cw = ch * imgAspect;
-      oy = 0;
-      ox = (wrapRect.width - cw) / 2;
-    }
-    return {width:cw, height:ch, offsetX:ox, offsetY:oy};
+    /* The photo is top-anchored and the landing wrapper extends below it for
+       the water/footer. Using the wrapper height here shifted every motion
+       effect downward. Measure the ACTUAL rendered photo rectangle instead. */
+    var wr = wrap.getBoundingClientRect();
+    var ir = img.getBoundingClientRect();
+    return {
+      width: ir.width,
+      height: ir.height,
+      offsetX: ir.left - wr.left,
+      offsetY: ir.top - wr.top
+    };
   }
 
   function px(v){ return v + 'px'; }
@@ -61624,6 +61616,7 @@ filter:drop-shadow(0 0 4px rgba(227,160,43,.6))!important;
     var moon = document.createElement('div'); moon.className = 'bop-v2-moon';
     var wave = document.createElement('div'); wave.className = 'bop-v2-wave';
     var mic = document.createElement('div'); mic.className = 'bop-v2-mic';
+    ['l2','l1','r1','r2'].forEach(function(c){var m=document.createElement('i');m.className='bop-v2-mic-mark '+c;mic.appendChild(m);});
     var live = document.createElement('div'); live.className = 'bop-v2-live';
     wrap.appendChild(moon); wrap.appendChild(wave); wrap.appendChild(mic); wrap.appendChild(live);
     var stars = [];
@@ -61970,5 +61963,66 @@ mo.observe(document.documentElement, {childList:true, subtree:true});
   border:2px solid #E7E7E7!important;
   box-shadow:0 0 12px rgba(231,231,231,.46),inset 0 0 14px rgba(231,231,231,.08)!important;
 }
+</style>
+
+<style id="bop-landing-motion-alignment-fix-20260927">
+/* Landing motion alignment only — no content/layout changes. */
+#bopPhotoLanding .bop-v2-moon{
+  background:repeating-conic-gradient(from 0deg,rgba(255,220,140,0) 0 18deg,rgba(255,225,145,.20) 24deg 34deg,rgba(255,220,140,0) 42deg 80deg)!important;
+  box-shadow:inset 0 0 10px rgba(255,215,125,.13),0 0 8px rgba(255,180,70,.08)!important;
+  animation:bopMoonRealTurn 18s linear infinite!important;
+  opacity:.62!important;
+}
+@keyframes bopMoonRealTurn{to{transform:rotate(360deg)}}
+
+/* Water: shimmer the reflected light only; the artwork itself stays fixed. */
+#bopPhotoLanding .bop-v2-wave{opacity:.50!important;mix-blend-mode:screen!important;}
+#bopPhotoLanding .bop-v2-wave::before,#bopPhotoLanding .bop-v2-wave::after{
+  left:-6%!important;width:112%!important;height:54%!important;
+  background-image:
+    repeating-linear-gradient(178deg,transparent 0 9px,rgba(255,196,75,.00) 10px,rgba(255,196,75,.15) 11px,rgba(255,234,180,.05) 12px,transparent 13px 24px),
+    repeating-linear-gradient(2deg,transparent 0 14px,rgba(255,255,255,.04) 15px,transparent 16px 29px)!important;
+  background-size:101% 100%,99% 100%!important;
+  filter:blur(.35px)!important;
+  animation:bopV2WaterShimmer 3.2s ease-in-out infinite alternate!important;
+}
+#bopPhotoLanding .bop-v2-wave::before{top:10%!important;opacity:.76!important}
+#bopPhotoLanding .bop-v2-wave::after{top:40%!important;opacity:.42!important;animation-duration:4.4s!important;animation-direction:alternate-reverse!important}
+@keyframes bopV2WaterShimmer{
+  0%{background-position:0 0,0 0;transform:skewX(-.08deg) scaleY(.999)}
+  50%{background-position:3px 2px,-2px 1px;transform:skewX(.07deg) scaleY(1.002)}
+  100%{background-position:-2px 5px,2px 3px;transform:skewX(-.05deg) scaleY(1)}
+}
+
+/* Hands-free microphone: two small moving marks per side, close to the mic. */
+#bopPhotoLanding .bop-v2-mic::before,#bopPhotoLanding .bop-v2-mic::after{display:none!important}
+#bopPhotoLanding .bop-v2-mic-mark{
+  position:absolute!important;top:35%!important;width:8%!important;height:28%!important;
+  border:1.6px solid #F3B849!important;border-top-color:transparent!important;border-bottom-color:transparent!important;
+  border-radius:50%!important;opacity:.30!important;filter:drop-shadow(0 0 2px rgba(227,160,43,.7))!important;
+  animation:bopV2MicTight 1.05s ease-in-out infinite!important;
+}
+#bopPhotoLanding .bop-v2-mic-mark.l1,#bopPhotoLanding .bop-v2-mic-mark.l2{border-right:0!important}
+#bopPhotoLanding .bop-v2-mic-mark.r1,#bopPhotoLanding .bop-v2-mic-mark.r2{border-left:0!important}
+#bopPhotoLanding .bop-v2-mic-mark.l1{left:29%!important}
+#bopPhotoLanding .bop-v2-mic-mark.l2{left:22%!important;animation-delay:.14s!important}
+#bopPhotoLanding .bop-v2-mic-mark.r1{right:29%!important}
+#bopPhotoLanding .bop-v2-mic-mark.r2{right:22%!important;animation-delay:.14s!important}
+@keyframes bopV2MicTight{0%,100%{opacity:.20;transform:scale(.84)}50%{opacity:.95;transform:scale(1.05)}}
+
+/* LIVE: pulse the word only; no glow ring around the orb. */
+#bopPhotoLanding .bop-v2-live{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:0!important;box-shadow:none!important;animation:none!important;
+}
+#bopPhotoLanding .bop-v2-live::before{
+  content:'LIVE!'!important;display:block!important;transform:translateY(-1%)!important;
+  color:#ff1847!important;font-family:Georgia,'Times New Roman',serif!important;font-weight:700!important;
+  font-size:clamp(13px,3.25vw,29px)!important;line-height:1!important;letter-spacing:-.03em!important;
+  opacity:.38!important;text-shadow:0 0 4px rgba(255,7,58,.6),0 0 10px rgba(255,7,58,.28)!important;
+  animation:bopV2LiveWord 1.55s ease-in-out infinite!important;
+}
+@keyframes bopV2LiveWord{0%,100%{opacity:.34;text-shadow:0 0 3px rgba(255,7,58,.48),0 0 7px rgba(255,7,58,.18)}50%{opacity:.92;text-shadow:0 0 8px rgba(255,7,58,.95),0 0 16px rgba(255,7,58,.42)}}
+@media(prefers-reduced-motion:reduce){#bopPhotoLanding .bop-v2-moon,#bopPhotoLanding .bop-v2-wave::before,#bopPhotoLanding .bop-v2-wave::after,#bopPhotoLanding .bop-v2-mic-mark,#bopPhotoLanding .bop-v2-live::before{animation:none!important}}
 </style>
 </body></html>
