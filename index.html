@@ -69637,21 +69637,6 @@ html body :is(#bopRealtorOverlay,#bopCarForSaleOverlay,#bopYardSaleOverlay,#bopS
 })();
 </script>
 <style id="concept-popup-guard-style">#conceptWebPopup{position:fixed;inset:0;z-index:1200000;display:none;background:rgba(0,0,0,.92);padding-top:max(58px,env(safe-area-inset-top))}#conceptWebPopup.is-open{display:block}#conceptWebPopup .conceptWebBar{position:absolute;left:0;right:0;top:0;height:max(58px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px;padding:8px 12px;background:#080808;border-bottom:1px solid #E3A02B;color:#fff;z-index:2}#conceptWebPopup .conceptWebClose{width:42px;height:42px;border-radius:50%;border:2px solid #E3A02B;background:#111;color:#E3A02B;font-size:25px;font-weight:900}.conceptWebTitle{font-weight:900;flex:1}.conceptWebDirect{color:#E3A02B;font-size:11px;font-weight:900;text-decoration:none}.conceptWebFrame{width:100%;height:100%;border:0;background:#000}#tagGameOverlay .tg-back{position:fixed!important;top:max(12px,env(safe-area-inset-top))!important;right:14px!important;z-index:1200001!important;width:48px!important;height:48px!important;border-radius:50%!important;border:2px solid #fff!important;background:rgba(0,0,0,.82)!important;color:#fff!important;font-size:28px!important;display:grid!important;place-items:center!important}#tpaOverlay.open{z-index:60000!important}</style>
-<style id="bop-music-orb-not-on-landing-v3">
-body.bop-orb-hide-on-landing #bopMusicCorner,
-body.bop-orb-hide-on-landing #bopV3Music,
-body.bop-orb-hide-on-landing .bop-v3-music,
-body.bop-orb-hide-on-landing .bop-v2-music,
-body.bop-orb-hide-on-landing #bopOrbMusicMuteIndicator,
-body.bop-orb-hide-on-landing .site-sound-toggle{
-display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
-/* every other page: the real music orb always shows, plain note, bottom right */
-body:not(.bop-orb-hide-on-landing) #bopMusicCorner{
-display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;
-align-items:center!important;justify-content:center!important}
-body:not(.bop-orb-hide-on-landing) #bopMusicCorner::before{content:none!important;display:none!important}
-body:not(.bop-orb-hide-on-landing) #bopMusicCorner > *{display:revert!important}
-</style>
 <script id="bop-music-orb-not-on-landing-v3-script">(function(){
 /* Music orb: hidden only while the main landing / rotating-cities screens are showing, visible on every other page. */
 function sync(){try{
@@ -69663,5 +69648,51 @@ document.body.classList.toggle('bop-orb-hide-on-landing',on);}catch(x){}}
 sync();setInterval(sync,400);
 document.addEventListener('click',function(){setTimeout(sync,120);setTimeout(sync,600)},true);
 window.addEventListener('pageshow',sync);
+})();</script>
+<style id="bop-music-orb-v4-style">
+/* The old corner orb (smiley / blank circle / flicker) is retired. Kept in the page only so the existing music code can still be triggered. */
+html body #bopMusicCorner,html body #bopMusicCorner.bop-hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;position:fixed!important;right:-400px!important;bottom:-400px!important;left:auto!important;top:auto!important;width:0!important;height:0!important;border:0!important;padding:0!important;overflow:hidden!important;clip-path:inset(100%)!important;box-shadow:none!important}
+html body.bop-orb-hide-on-landing #bopV3Music,html body.bop-orb-hide-on-landing .bop-v3-music,html body.bop-orb-hide-on-landing .bop-v2-music,html body.bop-orb-hide-on-landing .site-sound-toggle{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+#bopMusicOrbV4{position:fixed!important;right:14px!important;left:auto!important;top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;
+width:46px!important;height:46px!important;margin:0!important;padding:0!important;border-radius:50%!important;box-sizing:border-box!important;
+background:#0a0a0a!important;border:1.5px solid #E3A02B!important;box-shadow:0 0 10px rgba(227,160,43,.45)!important;
+display:flex!important;align-items:center!important;justify-content:center!important;z-index:2147483647!important;cursor:pointer;
+-webkit-tap-highlight-color:transparent;animation:none!important;transition:none!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+html body.bop-orb-hide-on-landing #bopMusicOrbV4{display:none!important}
+#bopMusicOrbV4 svg{display:block!important;width:24px!important;height:24px!important;pointer-events:none}
+#bopMusicOrbV4 .v4-x{display:none}
+#bopMusicOrbV4.is-muted .v4-note{display:none}
+#bopMusicOrbV4.is-muted .v4-x{display:inline}
+</style>
+<script id="bop-music-orb-v4-script">(function(){
+var KEY='bop-music-muted-v1';
+function isMuted(){try{return localStorage.getItem(KEY)==='yes'}catch(e){return false}}
+var SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><g class="v4-note"><path d="M9 18.5V6.2l9-2v10.8" fill="none" stroke="#E3A02B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.8" cy="18.5" r="2.4" fill="#E3A02B"/><circle cx="15.8" cy="15" r="2.4" fill="#E3A02B"/></g><g class="v4-x"><path d="M9 18.5V6.2l9-2v10.8" fill="none" stroke="#E3A02B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="6.8" cy="18.5" r="2.4" fill="#E3A02B" opacity=".55"/><circle cx="15.8" cy="15" r="2.4" fill="#E3A02B" opacity=".55"/><line x1="4" y1="4" x2="20" y2="20" stroke="#E3A02B" stroke-width="2.4" stroke-linecap="round"/></g></svg>';
+var orb=null;
+function paint(){if(!orb)return;orb.classList.toggle('is-muted',isMuted());orb.setAttribute('aria-label',isMuted()?'Turn music on':'Turn music off');}
+function direct(){
+  var m=!isMuted();try{localStorage.setItem(KEY,m?'yes':'no')}catch(e){}
+  var a=document.getElementById('bopBgMusic');
+  if(a){if(m)a.pause();else{var p=a.play();if(p&&p.catch)p.catch(function(){});}}
+}
+function press(e){
+  e.preventDefault();e.stopPropagation();
+  var before=isMuted();
+  var old=document.getElementById('bopMusicCorner');
+  if(old){try{old.click()}catch(x){}}
+  setTimeout(function(){ if(isMuted()===before) direct(); paint(); },120);
+  setTimeout(paint,400);
+}
+function build(){
+  orb=document.createElement('button');orb.id='bopMusicOrbV4';orb.type='button';orb.innerHTML=SVG;
+  orb.addEventListener('click',press);paint();document.body.appendChild(orb);
+}
+function keep(){
+  if(!document.body)return;
+  if(!orb||!orb.isConnected){var dup=document.getElementById('bopMusicOrbV4');if(dup&&dup!==orb){orb=dup}else build();}
+  paint();
+}
+if(document.body)keep();else document.addEventListener('DOMContentLoaded',keep);
+setInterval(keep,700);
 })();</script>
 </body></html>
