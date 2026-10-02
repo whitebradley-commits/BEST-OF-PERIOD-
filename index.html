@@ -25172,6 +25172,7 @@ var size=parseFloat(getComputedStyle(el).fontSize);
 var parent=el.parentElement?parseFloat(getComputedStyle(el.parentElement).fontSize):NaN;
 return {el:el,size:size,parent:parent};
 }).filter(function(x){return isFinite(x.size)&&x.size>0;});
+var touched=[];
 snapshots.forEach(function(x){
 /* New text that simply inherits from an already-enlarged parent is
 already one point larger and must not receive a second increase. */
@@ -25181,14 +25182,13 @@ return;
 }
 x.el.style.setProperty('font-size',(x.size+POINT_IN_PX).toFixed(3)+'px','important');
 x.el.dataset.bopOnePoint='direct';
-/* Per Brad (2026-09-22): on iOS Safari, changing font-size on a
-   Fraunces (variable-font) element via JS can leave certain glyphs
-   -- accented characters like æ especially -- mis-shaped/overlapping
-   until the next full repaint. Force one immediately. */
-x.el.style.setProperty('-webkit-transform','translateZ(0)');
-void x.el.offsetHeight;
-x.el.style.removeProperty('-webkit-transform');
+touched.push(x.el);
 });
+/* Per Brad (2026-09-22): iOS Safari variable-font repaint nudge. Same nudge, now done ONCE for the
+   whole batch instead of forcing a full page layout after every single element (that made startup take minutes). */
+touched.forEach(function(el){el.style.setProperty('-webkit-transform','translateZ(0)');});
+if(touched.length)void document.body.offsetHeight;
+touched.forEach(function(el){el.style.removeProperty('-webkit-transform');});
 busy=false;
 }
 function start(){
@@ -25211,18 +25211,19 @@ function enlargeCard(card){
 if(!card||busy)return;busy=true;
 var nodes=[card].concat(Array.from(card.querySelectorAll('*'))).filter(eligible);
 var sizes=nodes.map(function(el){return {el:el,size:parseFloat(getComputedStyle(el).fontSize)}});
+var touched=[];
 sizes.forEach(function(item){
 var el=item.el,size=item.size;
 if(isFinite(size)&&size>0){
 el.style.setProperty('font-size',(size+THREE_POINTS_PX).toFixed(3)+'px','important');
 el.dataset.bopCardTwoPoint='true';
-/* Per Brad (2026-09-22): same WebKit variable-font repaint nudge as the
-   one-point pass -- prevents glyph overlap (e.g. \u00e6) after resize. */
-el.style.setProperty('-webkit-transform','translateZ(0)');
-void el.offsetHeight;
-el.style.removeProperty('-webkit-transform');
+touched.push(el);
 }
 });
+/* Same WebKit variable-font repaint nudge, done once per card instead of after every element. */
+touched.forEach(function(el){el.style.setProperty('-webkit-transform','translateZ(0)');});
+if(touched.length)void card.offsetHeight;
+touched.forEach(function(el){el.style.removeProperty('-webkit-transform');});
 card.dataset.bopCardTextVerified='plus-3pt';
 busy=false;
 }
