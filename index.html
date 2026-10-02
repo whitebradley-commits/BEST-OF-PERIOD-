@@ -69636,6 +69636,29 @@ html body :is(#bopRealtorOverlay,#bopCarForSaleOverlay,#bopYardSaleOverlay,#bopS
 })();
 </script>
 <style id="concept-popup-guard-style">#conceptWebPopup{position:fixed;inset:0;z-index:1200000;display:none;background:rgba(0,0,0,.92);padding-top:max(58px,env(safe-area-inset-top))}#conceptWebPopup.is-open{display:block}#conceptWebPopup .conceptWebBar{position:absolute;left:0;right:0;top:0;height:max(58px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px;padding:8px 12px;background:#080808;border-bottom:1px solid #E3A02B;color:#fff;z-index:2}#conceptWebPopup .conceptWebClose{width:42px;height:42px;border-radius:50%;border:2px solid #E3A02B;background:#111;color:#E3A02B;font-size:25px;font-weight:900}.conceptWebTitle{font-weight:900;flex:1}.conceptWebDirect{color:#E3A02B;font-size:11px;font-weight:900;text-decoration:none}.conceptWebFrame{width:100%;height:100%;border:0;background:#000}#tagGameOverlay .tg-back{position:fixed!important;top:max(12px,env(safe-area-inset-top))!important;right:14px!important;z-index:1200001!important;width:48px!important;height:48px!important;border-radius:50%!important;border:2px solid #fff!important;background:rgba(0,0,0,.82)!important;color:#fff!important;font-size:28px!important;display:grid!important;place-items:center!important}#tpaOverlay.open{z-index:60000!important}</style>
-<style id="bop-no-corner-circle-v1">#bopMusicCorner,[id="bopMusicCorner"]{display:none!important;visibility:hidden!important;pointer-events:none!important;width:0!important;height:0!important;border:0!important;opacity:0!important}</style>
-<script id="bop-no-corner-circle-v1-script">(function(){function kill(){document.querySelectorAll("#bopMusicCorner").forEach(function(e){e.remove()})}kill();new MutationObserver(kill).observe(document.documentElement,{childList:true,subtree:true})})();</script>
+<style id="bop-no-corner-circle-v2">
+#bopMusicCorner,#bopV3Music,.bop-v3-music,.bop-v2-music,#bopOrbMusicHotspot,#bopOrbMusicMuteIndicator,
+.site-sound-toggle,#bopCornerBjsBadge,#bopExclusiveInviteBjsBadge,#bopExclusiveInviteBjsBadge2,#bopInviteCornerRow,#bopInviteCornerRow2,.bop-corner-circle-hidden{
+display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+</style>
+<script id="bop-no-corner-circle-v2-script">(function(){
+/* Hide (never remove) any small round button parked in the bottom-right corner of the landing screens,
+   so nothing ever sits on top of VENDOR. Hidden, not deleted, so music code that clicks them still works. */
+function sweep(){try{
+var vw=innerWidth,vh=innerHeight;
+document.querySelectorAll('button,div,a,span').forEach(function(e){
+if(e.closest('#bopVerifiedChainsPage,#boMoviesPage,#boWorldwidePage,#bopGoLiveOverlay'))return;
+var cs=getComputedStyle(e);
+if(cs.position!=='fixed'&&cs.position!=='absolute')return;
+if(cs.display==='none')return;
+var r=e.getBoundingClientRect();
+if(r.width<26||r.width>66||Math.abs(r.width-r.height)>4)return;
+if(parseFloat(cs.borderRadius)<r.width*0.4&&cs.borderRadius.indexOf('%')<0)return;
+if(r.right<vw-130||r.bottom<vh-190||r.right>vw+4)return;
+if(e.id==='bopVoiceMicBtn'||e.id==='landingSharePage'||e.id==='globalSharePage')return;
+e.classList.add('bop-corner-circle-hidden');
+});}catch(x){}}
+[1200,3500,7000,15000].forEach(function(ms){setTimeout(sweep,ms)});
+document.addEventListener('click',function(){setTimeout(sweep,300)},true);
+})();</script>
 </body></html>
