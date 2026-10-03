@@ -70490,4 +70490,30 @@ html body .bo-ft-pinch-hint.bo-ft-hide{opacity:0!important;visibility:hidden!imp
 /* Food Trucks and Street Vendors: the globe sits 1.5px higher and 1.5px further right, tucked into the words */
 html body #bopFoodTruckOverlay svg.bop-world-hero-globe,html body #bopVendorStandOverlay svg.bop-world-hero-globe{left:1.5px!important;top:-1.5px!important}
 </style>
+<style id="bop-founders-pill-removed-style">
+/* the gold star FOUNDERS pill under the three founder photos is removed */
+html body #bopFoundersRowLabel,html body #bopFoundersToggle #bopFoundersRowLabel,html body #bopFoundersRowLabel[hidden]{display:none!important;visibility:hidden!important;height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}
+</style>
+<script id="bop-card-fixes-v1-script">(function(){
+/* One-restaurant-at-a-time fixes to the red line and the AppVice tip. Each entry was approved by Brad. */
+var FIX=[{"name": "The Stonehouse at San Ysidro Ranch", "why": "Dining inside a 19th-century citrus packing house beside a 16,000-bottle wine cellar at the historic San Ysidro Ranch.", "tip": "Go for the Sunday Champagne Brunch, or book a private cellar experience."}, {"name": "Bitterroot", "tip": "Order the charred house-made biscuit with bone marrow and black pepper gravy, the Gulf shrimp and grits, and the pecan pie with brown butter ice cream."}, {"name": "The Lark", "tip": "“Go straight to The Lark — it is always great.” Ask for a seat at the 24-seat live-edge communal table."}, {"name": "Mustangs & Burros — Estancia La Jolla", "why": "Chef Kaitlyn Weber's Baja-inspired, seasonally sourced California ranch cooking, with a deep tequila collection."}, {"name": "Handel's Homemade Ice Cream — Charleston", "city": "bestof", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Culver City", "city": "laculvercity", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Irvine", "city": "lairvine", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Vista", "city": "sdcarlsbad", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Encinitas", "city": "sdencinitas", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Pacific Beach", "city": "sdpacificbeach", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Del Mar Highlands", "city": "sddelmar", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Handel's Homemade Ice Cream — Oceanside", "city": "sdoceanside", "why": "BJS Pick — small-batch ice cream, made daily since 1945."}, {"name": "Shun Lee Palace", "city": "manhattan", "tip": "Order General Tso's Chicken or the Orange Beef — they were born here."}, {"name": "An's Hatmakers", "city": "sddelmar", "tip": "Ask for a full flavor sampling first, then try Canvas (olive oil and rosemary) or Leather (brown butter and chocolate chip cookie)."}, {"name": "Cedric Grolet Opera", "city": "paris", "tip": "Go for the trompe-l'œil fruit pastries and plan on a long line."}, {"name": "Din Tai Fung", "city": "sdlajolla", "tip": "Order the xiao long bao and hand-pulled noodles, and book ahead — walk-in waits run long."}, {"name": "NAOE", "city": "miami", "tip": "Book well ahead — one seating a night, omakase only."}, {"name": "Jade Rabbit", "city": "losangeles", "tip": "Build a bowl: chow mein or fried rice, two veggie sides and a main like the orange-mango chicken or Sichuan spicy minced lamb. Add the scallion garlic cheese toast."}, {"name": "HiHo Cheeseburger", "city": "losangeles", "tip": "Order the double-patty Wagyu cheeseburger with the twice-fried fries; try the Wagyu pastrami add-on."}, {"name": "The Lafayette Hotel & Club", "city": "sduptown", "tip": "Look in on Lou Lou's Jungle Room supper club."}, {"name": "MYKA Greek Frozen Yogurt — La Jolla", "city": "sdlajolla", "append": "Get the baklava topping — it's the one."}];
+function mk(txt){var g=function(){return txt};g.__bopFix=1;return g}
+function pass(){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return;
+  Object.keys(boCategoryData).forEach(function(cat){
+    var arr=boCategoryData[cat];if(!Array.isArray(arr))return;
+    for(var i=0;i<arr.length;i++){
+      var r=arr[i];if(!r||!r.name)continue;
+      for(var k=0;k<FIX.length;k++){
+        var f=FIX[k];if(r.name!==f.name)continue;if(f.city&&r.city&&r.city!==f.city)continue;
+        if(f.why){var d=Object.getOwnPropertyDescriptor(r,'why');if(!(d&&d.get&&d.get.__bopFix)){try{Object.defineProperty(r,'why',{configurable:true,enumerable:true,get:mk(f.why),set:function(){}})}catch(e){}}}
+        if(f.tip&&r.redCallout!==f.tip){try{r.redCallout=f.tip}catch(e){}}
+        if(f.append){var cur=String(r.redCallout||'');if(cur&&cur.indexOf(f.append)<0){try{r.redCallout=cur+' '+f.append}catch(e){}}else if(!cur){try{r.redCallout=f.append}catch(e){}}}
+      }
+    }
+  });
+}
+pass();[400,1200,3000,6000,12000].forEach(function(ms){setTimeout(pass,ms)});setInterval(pass,1800);
+['click','touchend'].forEach(function(ev){document.addEventListener(ev,pass,true)});
+})();</script>
 </body></html>
