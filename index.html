@@ -70115,7 +70115,7 @@ wrap();wrapTile();setTimeout(function(){wrap();wrapTile()},500);setTimeout(funct
 })();</script>
 <style id="bop-michelin-tile-text-fit-v1-style">
 /* MICHELIN stars tile: smaller text so it fits inside the tile */
-html body .bo-picker-btn[data-picker-cat="michelin"] .bop-tile-michelin-text,html body .bo-picker-btn[data-picker-cat="michelin"] .bop-tile-michelin-text *{font-size:.74rem!important;letter-spacing:0!important;white-space:nowrap!important}
+html body .bo-picker-btn[data-picker-cat="michelin"] .bop-tile-michelin-text,html body .bo-picker-btn[data-picker-cat="michelin"] .bop-tile-michelin-text *{font-size:.82rem!important;letter-spacing:0!important;white-space:nowrap!important}
 html body .bo-picker-btn[data-picker-cat="michelin"]{padding-left:6px!important;padding-right:6px!important;overflow:hidden!important}
 </style>
 <style id="bop-map-pinch-hint-v1-style">
@@ -70156,7 +70156,7 @@ setInterval(sweep,3000);
 .leaflet-container>.bo-ft-pinch-hint.bop-pinch-generic{position:absolute!important;inset:0!important;z-index:650!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:10px!important;background:rgba(0,0,0,.5)!important;pointer-events:none!important;transition:opacity .5s ease!important;color:#E3A02B!important;font:900 .85rem/1.3 'Archivo Black',sans-serif!important;text-align:center!important;text-shadow:0 0 8px rgba(0,0,0,.85)!important}
 .leaflet-container>.bo-ft-pinch-hint.bop-pinch-generic.bo-ft-hide{opacity:0!important}
 /* James Beard tile: same fit as the Michelin tile */
-html body .bo-picker-btn[data-picker-cat="jamesbeard"] .bop-tile-jb-text{font-size:.8rem!important;letter-spacing:0!important;white-space:nowrap!important}
+html body .bo-picker-btn[data-picker-cat="jamesbeard"] .bop-tile-jb-text{font-size:.86rem!important;letter-spacing:0!important;white-space:nowrap!important}
 html body .bo-picker-btn[data-picker-cat="jamesbeard"]{padding-left:6px!important;padding-right:6px!important;overflow:hidden!important}
 </style>
 <script id="bop-pinch-hint-all-maps-v1-script">(function(){
@@ -70179,7 +70179,7 @@ function tick(){
     var m=maps[i];
     /* the Food Trucks and Street Vendors pages already carry their own hint: just use the same words */
     var wrap=m.closest('.bo-ft-map-wrap');var own=wrap&&wrap.querySelector('.bo-ft-pinch-hint:not(.bop-pinch-generic)');
-    if(own){var sp=own.querySelector('span');if(sp&&sp.textContent!==TXT)sp.textContent=TXT;continue;}
+    if(own){var sp=own.querySelector('span');if(sp&&sp.textContent!==TXT)sp.textContent=TXT;if(visible(m)){if(!m.__pinchSession){m.__pinchSession=true;own.classList.remove('bo-ft-hide');if(!m.__pinchOwnBound){m.__pinchOwnBound=true;(function(mm,oo){var hd=function(){oo.classList.add('bo-ft-hide')};['touchstart','mousedown','wheel'].forEach(function(ev){mm.addEventListener(ev,hd,{passive:true});if(mm.parentElement)mm.parentElement.addEventListener(ev,hd,{passive:true})})})(m,own);}clearTimeout(m.__pinchOwnT);m.__pinchOwnT=setTimeout(function(){own.classList.add('bo-ft-hide')},5000);}}else if(m.__pinchSession){m.__pinchSession=false;}continue;}
     if(visible(m)){ if(!m.__pinchSession){m.__pinchSession=true;show(m);} }
     else if(m.__pinchSession){m.__pinchSession=false;}
   }
@@ -70373,4 +70373,121 @@ function fix(){
 }
 setInterval(fix,1000);setTimeout(fix,500);
 })();</script>
+<style id="bop-topthrees-page-purple-final">
+/* Top Threes page: the reds are purple. This sheet is kept last in the page so nothing can turn them back. */
+html body #bopBestOfBestOverlay .bobb-close,html body #bopBestOfBestOverlay #bopBestOfBestClose{border-color:#A55CFF!important;box-shadow:0 0 12px rgba(165,92,255,.55),inset 0 0 8px rgba(165,92,255,.14)!important}
+html body #bopBestOfBestOverlay .bobb-threes-caption{color:#A55CFF!important;-webkit-text-fill-color:#A55CFF!important;text-shadow:0 0 10px rgba(165,92,255,.4)!important}
+html body #bopBestOfBestOverlay .bobb-rule{background:#A55CFF!important;background-color:#A55CFF!important;box-shadow:0 0 8px rgba(165,92,255,.55)!important;border-color:#A55CFF!important}
+html body #bopBestOfBestOverlay .bobb-city-name,html body #bopBestOfBestOverlay .bobb-city-name *,html body #bopBestOfBestOverlay .bobb-city-link,html body #bopBestOfBestOverlay .bobb-rank,html body #bopBestOfBestOverlay .bobb-rating{color:#A55CFF!important;-webkit-text-fill-color:#A55CFF!important;text-shadow:none!important}
+html body #bopBestOfBestOverlay .bobb-pop-x,html body #bopPickCardPop .bobb-pop-x{color:#A55CFF!important;border-color:#A55CFF!important}
+</style>
+<script id="bop-topthrees-page-purple-final-script">(function(){
+/* keep the purple sheet last in the page (cheap: moves one style tag) */
+function keep(){var s=document.getElementById('bop-topthrees-page-purple-final');if(s&&document.body&&document.body.lastElementChild!==s)document.body.appendChild(s)}
+setInterval(keep,1500);setTimeout(keep,300);
+})();</script>
+<style id="bop-ticket-hub-down-15-style">
+/* Movie tickets page: everything starts 15px lower; the helper line under the title is gold */
+html body #bopTicketHub{padding-top:15px!important;box-sizing:border-box!important}
+html body #bopTicketHub #bopTicketHubSub{color:#E3A02B!important;-webkit-text-fill-color:#E3A02B!important}
+</style>
+<style id="bop-scene-engine-v1-style">
+/* smoother scenes: the world map picture is one still layer; the apples move on their own light layer */
+.bop-wm-backdrop{-webkit-mask-image:none!important;mask-image:none!important;contain:paint}
+.bop-wm-img{position:absolute;left:0;top:0;width:100%;height:100%;background-repeat:no-repeat;background-position:center top;background-size:100% auto;-webkit-mask-image:linear-gradient(#000 72%,transparent 100%);mask-image:linear-gradient(#000 72%,transparent 100%)}
+.bop-sc-layer{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
+.bop-sc-apple{position:absolute;left:0;top:0;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0yMCAtMjIgNDAgNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Y4ZGE3MiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q0OGExNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxwYXRoIGQ9Ik0wLC04IEMtNCwtMTMgLTE0LC0xMSAtMTUsLTIgQy0xNiw4IC04LDE1IDAsMTIgQzgsMTUgMTYsOCAxNSwtMiBDMTQsLTExIDQsLTEzIDAsLTggWiIgZmlsbD0idXJsKCNnKSIvPjxwYXRoIGQ9Ik0xLC0xMCBDNiwtMTcgMTQsLTE3IDE3LC0xMiBDMTIsLTcgNSwtNiAxLC0xMFoiIGZpbGw9IiNkOTk4MWMiLz48cGF0aCBkPSJNMCwtOSBMLTEsLTE3IiBzdHJva2U9IiM4YTVhMTAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+PC9zdmc+") center/contain no-repeat;opacity:0;will-change:transform,opacity;pointer-events:none}
+</style>
+<script id="bop-scene-engine-v1-script">(function(){
+var APPLE="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0yMCAtMjIgNDAgNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2Y4ZGE3MiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q0OGExNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxwYXRoIGQ9Ik0wLC04IEMtNCwtMTMgLTE0LC0xMSAtMTUsLTIgQy0xNiw4IC04LDE1IDAsMTIgQzgsMTUgMTYsOCAxNSwtMiBDMTQsLTExIDQsLTEzIDAsLTggWiIgZmlsbD0idXJsKCNnKSIvPjxwYXRoIGQ9Ik0xLC0xMCBDNiwtMTcgMTQsLTE3IDE3LC0xMiBDMTIsLTcgNSwtNiAxLC0xMFoiIGZpbGw9IiNkOTk4MWMiLz48cGF0aCBkPSJNMCwtOSBMLTEsLTE3IiBzdHJva2U9IiM4YTVhMTAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIi8+PC9zdmc+";
+var NS=null;
+function miller(la){return 1.25*Math.log(Math.tan(Math.PI/4+0.4*la*Math.PI/180))}
+var MT=170,MB=720,Y0=miller(80),Y1=miller(-57);
+function mpx(lo,la){return[(lo+180)/360*1170,MT+(Y0-miller(la))/(Y0-Y1)*(MB-MT)]}
+var ARCS=[[[-74,40.7],[-0.1,51.5],150],[[-118,34],[2.3,48.8],200],[[-87.6,41.8],[13.4,52.5],170],[[-80,25.8],[-3.7,40.4],110],[[-74,40.7],[37.6,55.7],210],[[-0.1,51.5],[55.3,25.2],0],[[55.3,25.2],[72.9,19.1],0],[[72.9,19.1],[103.8,1.35],0],[[103.8,1.35],[151.2,-33.9],0],[[139.7,35.7],[103.8,1.35],0],[[116.4,39.9],[37.6,55.7],0],[[31.2,30.0],[28.0,-26.2],0],[[-46.6,-23.5],[3.4,6.5],0],[[-74,40.7],[-46.6,-23.5],0],[[-99.1,19.4],[-118,34],0],[[139.7,35.7],[245,34],0],[[-118,34],[-220,35.7],0],[[151.2,-33.9],[174.8,-36.8],0],[[2.3,48.8],[116.4,39.9],0],[[-46.6,-23.5],[-3.7,40.4],0],[[28.0,-26.2],[55.3,25.2],0],[[121.5,31.2],[151.2,-33.9],0]];
+function seeded(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var scenes=[];
+function addScene(host,pageSel){
+  if(host.__bopScene)return;host.__bopScene=1;
+  var layer=document.createElement('div');layer.className='bop-sc-layer';
+  var list=[];
+  ARCS.forEach(function(a,i){
+    var p0=mpx(a[0][0],a[0][1]),p1=mpx(a[1][0],a[1][1]);
+    var dd=Math.sqrt(Math.pow(p1[0]-p0[0],2)+Math.pow(p1[1]-p0[1],2)),lift=a[2]||Math.min(230,Math.max(30,dd*0.3));
+    var c=[(p0[0]+p1[0])/2,(p0[1]+p1[1])/2-lift],n=dd>300?2:1;
+    for(var k=0;k<n;k++){
+      var el=document.createElement('i');el.className='bop-sc-apple';layer.appendChild(el);
+      list.push({el:el,p0:p0,c:c,p1:p1,rev:i%2===1,dur:7+(i%8)*0.8+dd/250,ph:(k*0.5+i*0.173)%1});
+    }
+  });
+  host.appendChild(layer);
+  scenes.push({host:host,page:pageSel,layer:layer,list:list,vis:false,sc:1});
+}
+var lastCheck=0;
+function check(now){
+  scenes.forEach(function(s){
+    var ok=false;
+    if(s.host.isConnected){
+      var r=s.host.getBoundingClientRect();
+      var pg=s.page?s.host.closest(s.page):null;
+      var shown=r.width>50&&r.height>50&&r.bottom>0&&r.top<innerHeight;
+      if(shown){var a=s.host,hid=false;while(a&&a!==document.body){var cs=getComputedStyle(a);if(cs.display==='none'||cs.visibility==='hidden'){hid=true;break}a=a.parentElement}ok=!hid}
+      if(ok){s.sc=r.width/1170;var sz=Math.max(14,34*s.sc);if(s.sz!==Math.round(sz)){s.sz=Math.round(sz);s.list.forEach(function(o){o.el.style.width=s.sz+'px';o.el.style.height=s.sz+'px'})}}
+    }
+    s.vis=ok;
+  });
+}
+function frame(ts){
+  if(ts-lastCheck>500){lastCheck=ts;check(ts)}
+  var sec=ts/1000;
+  for(var i=0;i<scenes.length;i++){
+    var s=scenes[i];if(!s.vis)continue;
+    var h=s.sz/2;
+    for(var j=0;j<s.list.length;j++){
+      var o=s.list[j],u=(sec/o.dur+o.ph)%1,t=o.rev?1-u:u,a=1-t;
+      var x=(a*a*o.p0[0]+2*a*t*o.c[0]+t*t*o.p1[0])*s.sc-h,y=(a*a*o.p0[1]+2*a*t*o.c[1]+t*t*o.p1[1])*s.sc-h;
+      o.el.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0)';
+      o.el.style.opacity=u<0.08?(u/0.08).toFixed(2):(u>0.92?((1-u)/0.08).toFixed(2):'1');
+    }
+  }
+  requestAnimationFrame(frame);
+}
+function thin(sel,keepEvery){var all=document.querySelectorAll(sel);for(var i=0;i<all.length;i++){if(i%keepEvery!==0)all[i].remove()}}
+function rebuildBackdrop(d){
+  if(d.getAttribute('data-eng')==='1')return;
+  var src=d.style.backgroundImage;if(!d.getAttribute('data-set')||!src)return;
+  d.setAttribute('data-eng','1');
+  var img=document.createElement('div');img.className='bop-wm-img';img.style.setProperty('background-image',src,'important');
+  d.style.setProperty('background-image','none','important');
+  var old=d.querySelectorAll(':scope>.bop-wm-svg,:scope>.bop-wm-pops');
+  var pops=d.querySelector(':scope>.bop-wm-pops');
+  old.forEach(function(x){if(x!==pops)x.remove()});
+  d.insertBefore(img,d.firstChild);
+  if(pops){var sp=pops.querySelectorAll('.bop-wm-pop');for(var i=0;i<sp.length;i++){if(i%5>=3)sp[i].remove()}}
+  addScene(d,'#bopWorldZoneNavigator, #ocWorldOverlay, #boNearMapPage');
+}
+function tick(){
+  document.querySelectorAll('.bop-wm-backdrop').forEach(rebuildBackdrop);
+  var top=document.querySelector('#vendorOverlay .bv2-top');
+  if(top&&top.getAttribute('data-eng')!=='1'&&top.querySelector('.bv2-pop')){
+    top.setAttribute('data-eng','1');
+    var sv=top.querySelector('.bv2-svg');if(sv){sv.querySelectorAll('.bv2-apples animateMotion,.bv2-apples animate').forEach(function(x){x.remove()});sv.querySelectorAll('.bv2-apples g').forEach(function(g){if(g.querySelector('path[fill^="url"]'))g.remove()})}
+    thin('#vendorOverlay .bv2-pop',2);
+    top.style.position='relative';
+    addScene(top,'#vendorOverlay');
+  }
+}
+tick();setInterval(tick,700);requestAnimationFrame(frame);
+})();</script>
+<style id="bop-near-map-size-and-hint-style">
+/* Near Me map: same size as the Food Trucks and Street Vendors maps */
+html body #boNearMapPage #boNearMapCanvas{height:56vh!important;min-height:340px!important}
+/* the pinch reminder always lets touches through and disappears when told to */
+html body .bo-ft-pinch-hint{pointer-events:none!important;transition:opacity .5s ease!important}
+html body .bo-ft-pinch-hint.bo-ft-hide{opacity:0!important;visibility:hidden!important}
+</style>
+<style id="bop-world-globe-nudge-v1-style">
+/* Food Trucks and Street Vendors: the globe sits 1.5px higher and 1.5px further right, tucked into the words */
+html body #bopFoodTruckOverlay svg.bop-world-hero-globe,html body #bopVendorStandOverlay svg.bop-world-hero-globe{left:1.5px!important;top:-1.5px!important}
+</style>
 </body></html>
