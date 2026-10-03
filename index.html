@@ -70186,32 +70186,7 @@ function tick(){
 }
 setInterval(tick,800);
 })();</script>
-<style id="bop-world-map-backdrop-v1-style">
-/* the Vendor page's red dotted world map as a backdrop at the top of Closest and All Cities: it sits behind everything and moves nothing */
-html body .bop-wm-backdrop.bop-wm-backdrop{background-color:transparent!important;box-shadow:none!important;border:0!important}
-.bop-wm-backdrop{position:absolute!important;left:0!important;top:0!important;width:100%!important;aspect-ratio:1170/760;max-height:62vh;background-repeat:no-repeat!important;background-position:center top!important;background-size:100% auto!important;opacity:.62;pointer-events:none!important;z-index:-1!important;-webkit-mask-image:linear-gradient(#000 70%,transparent 100%);mask-image:linear-gradient(#000 70%,transparent 100%)}
-#ocWorldOverlay,#boNearMapPage{isolation:isolate}
-</style>
-<script id="bop-world-map-backdrop-v1-script">(function(){
-var SRC=null;
-function mapSrc(){
-  if(SRC)return SRC;
-  var im=document.querySelector('#vendorOverlay .bv2-map');
-  if(im&&im.getAttribute('src')){SRC=im.getAttribute('src');}
-  return SRC;
-}
-function ensure(sel){
-  var page=document.querySelector(sel);if(!page)return;
-  var src=mapSrc();if(!src)return;
-  var d=page.querySelector(':scope>.bop-wm-backdrop');
-  if(!d){d=document.createElement('div');d.className='bop-wm-backdrop';d.setAttribute('aria-hidden','true');page.insertBefore(d,page.firstChild);}
-  if(!d.getAttribute('data-set')){d.style.setProperty('background-image','url("'+src+'")','important');d.style.setProperty('background-color','transparent','important');d.style.setProperty('background-size','100% auto','important');d.style.setProperty('background-repeat','no-repeat','important');d.style.setProperty('background-position','center top','important');d.setAttribute('data-set','1');}
-  var cs=getComputedStyle(page);
-  if(cs.position==='static')page.style.position='relative';
-}
-function tick(){ensure('#ocWorldOverlay');ensure('#boNearMapPage');}
-tick();setInterval(tick,1000);
-})();</script>
+
 <style id="bop-orb-motion-and-label-fix-v1-style">
 /* Hands Free: microphone stays red, the words are gold */
 html body #bopStaticVoiceMic > span,html body #bopStaticVoiceMic span.bop-static-label,html body #bopStaticVoiceMic > .bop-static-text{color:#E3A02B!important;-webkit-text-fill-color:#E3A02B!important}
@@ -70282,5 +70257,94 @@ function build(){
 function go(){try{build()}catch(e){}}
 if(document.readyState==='complete')setTimeout(go,300);else window.addEventListener('load',function(){setTimeout(go,300)});
 setTimeout(go,2500);setTimeout(go,8000);
+})();</script>
+<style id="bop-world-map-scene-v2-style">
+/* Closest and All Cities: the Vendor page's red dotted world map as a backdrop, with gold apples flying and YUMMY! popping. It sits behind everything and moves nothing. */
+.bop-wm-backdrop{--u:calc(min(100vw,620px)/1170);position:absolute!important;left:0!important;top:0!important;width:100%!important;aspect-ratio:1170/760;max-height:62vh;background-repeat:no-repeat!important;background-position:center top!important;background-size:100% auto!important;opacity:.7;pointer-events:none!important;z-index:-1!important;overflow:hidden;-webkit-mask-image:linear-gradient(#000 72%,transparent 100%);mask-image:linear-gradient(#000 72%,transparent 100%)}
+html body .bop-wm-backdrop.bop-wm-backdrop{background-color:transparent!important;box-shadow:none!important;border:0!important}
+#bopWorldZoneNavigator,#boNearMapPage,#ocWorldOverlay{isolation:isolate}
+.bop-wm-backdrop .bop-wm-svg{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none}
+.bop-wm-backdrop .bop-wm-pops{position:absolute;left:0;top:0;width:100%;height:100%}
+.bop-wm-backdrop .bop-wm-pop{position:absolute;white-space:nowrap;font:800 max(6px,calc(var(--u)*17))/1 Arial,Helvetica,sans-serif;letter-spacing:.02em;color:#f0be46;opacity:0;transform:translate(-50%,-50%) scale(.55);animation:bopWmPop var(--d,8s) ease-in-out var(--l,0s) infinite}
+.bop-wm-backdrop .bop-wm-pop.c1{color:#ffecc4}.bop-wm-backdrop .bop-wm-pop.c2{color:#ff4a4a}
+@keyframes bopWmPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}8%{opacity:.62;transform:translate(-50%,-50%) scale(1.1)}22%{opacity:.62;transform:translate(-50%,-56%) scale(1.04)}34%{opacity:0;transform:translate(-50%,-62%) scale(1)}100%{opacity:0;transform:translate(-50%,-62%) scale(1)}}
+@media(prefers-reduced-motion:reduce){.bop-wm-backdrop .bop-wm-pops,.bop-wm-backdrop .bop-wm-apples{display:none!important}}
+</style>
+<script id="bop-world-map-scene-v2-script">(function(){
+var SRC=null,NS='http://www.w3.org/2000/svg';
+function mapSrc(){if(SRC)return SRC;var im=document.querySelector('#vendorOverlay .bv2-map');if(im&&im.getAttribute('src'))SRC=im.getAttribute('src');return SRC}
+function seeded(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function miller(la){return 1.25*Math.log(Math.tan(Math.PI/4+0.4*la*Math.PI/180))}
+var MT=170,MB=720,y0=miller(80),y1=miller(-57);
+function mpx(lo,la){return[(lo+180)/360*1170,MT+(y0-miller(la))/(y0-y1)*(MB-MT)]}
+function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+var ARCS=[[[-74,40.7],[-0.1,51.5],150],[[-118,34],[2.3,48.8],200],[[-87.6,41.8],[13.4,52.5],170],[[-80,25.8],[-3.7,40.4],110],[[-74,40.7],[37.6,55.7],210],[[-0.1,51.5],[55.3,25.2],0],[[55.3,25.2],[72.9,19.1],0],[[72.9,19.1],[103.8,1.35],0],[[103.8,1.35],[151.2,-33.9],0],[[139.7,35.7],[103.8,1.35],0],[[116.4,39.9],[37.6,55.7],0],[[31.2,30.0],[28.0,-26.2],0],[[-46.6,-23.5],[3.4,6.5],0],[[-74,40.7],[-46.6,-23.5],0],[[-99.1,19.4],[-118,34],0],[[139.7,35.7],[245,34],0],[[-118,34],[-220,35.7],0],[[151.2,-33.9],[174.8,-36.8],0],[[2.3,48.8],[116.4,39.9],0],[[-46.6,-23.5],[-3.7,40.4],0],[[28.0,-26.2],[55.3,25.2],0],[[121.5,31.2],[151.2,-33.9],0]];
+var uid=0;
+function scene(d){
+  var id='wm'+(++uid);
+  var svg=el('svg',{'class':'bop-wm-svg',viewBox:'0 0 1170 760','aria-hidden':'true'});
+  var defs=el('defs',{},svg),gr=el('linearGradient',{id:id+'g',x1:0,y1:0,x2:0,y2:1},defs);
+  el('stop',{offset:'0','stop-color':'#f8da72'},gr);el('stop',{offset:'1','stop-color':'#d48a14'},gr);
+  var g=el('g',{'class':'bop-wm-apples'},svg);
+  ARCS.forEach(function(a,i){
+    var rev=i%2===1,p0=mpx(a[0][0],a[0][1]),p1=mpx(a[1][0],a[1][1]);
+    var dd=Math.sqrt(Math.pow(p1[0]-p0[0],2)+Math.pow(p1[1]-p0[1],2)),lift=a[2]||Math.min(230,Math.max(30,dd*0.3));
+    var c=[(p0[0]+p1[0])/2,(p0[1]+p1[1])/2-lift];
+    var path=rev?('M'+p1[0]+','+p1[1]+' Q'+c[0]+','+c[1]+' '+p0[0]+','+p0[1]):('M'+p0[0]+','+p0[1]+' Q'+c[0]+','+c[1]+' '+p1[0]+','+p1[1]);
+    el('path',{id:id+'a'+i,d:path,fill:'none',stroke:'#ffcd78','stroke-opacity':'.22','stroke-width':'2'},g);
+    for(var k=0;k<(dd>300?2:1);k++){
+      var dur=(7+(i%8)*0.8+dd/250).toFixed(1),begin=(-(k*dur/2+i*1.3)).toFixed(2);
+      var ap=el('g',{},g);
+      el('path',{d:'M0,-8 C-4,-13 -14,-11 -15,-2 C-16,8 -8,15 0,12 C8,15 16,8 15,-2 C14,-11 4,-13 0,-8 Z',fill:'url(#'+id+'g)'},ap);
+      el('path',{d:'M1,-10 C6,-17 14,-17 17,-12 C12,-7 5,-6 1,-10Z',fill:'#d9981c'},ap);
+      el('path',{d:'M0,-9 L-1,-17',stroke:'#8a5a10','stroke-width':'2','stroke-linecap':'round',fill:'none'},ap);
+      var m=el('animateMotion',{dur:dur+'s',repeatCount:'indefinite',begin:begin+'s',rotate:'0'},ap);
+      var mp=el('mpath',{},m);mp.setAttribute('href','#'+id+'a'+i);mp.setAttributeNS('http://www.w3.org/1999/xlink','href','#'+id+'a'+i);
+      el('animate',{attributeName:'opacity',values:'0;1;1;0',keyTimes:'0;.08;.92;1',dur:dur+'s',repeatCount:'indefinite',begin:begin+'s'},ap);
+    }
+  });
+  d.appendChild(svg);
+  var pops=document.createElement('div');pops.className='bop-wm-pops';
+  var r=seeded(12),pos=[],tries=0;
+  while(pos.length<150&&tries<20000){tries++;var x=25+r()*1120,y=20+r()*670;
+    if(x<250&&y>160&&y<380)continue;
+    var ok=true;for(var i=0;i<pos.length;i++){var dx=pos[i][0]-x,dy=pos[i][1]-y;if(dx*dx+dy*dy<52*52){ok=false;break}}
+    if(ok)pos.push([x,y]);}
+  pos.forEach(function(p){var s=document.createElement('span');var q=r();s.className='bop-wm-pop'+(q<0.18?' c1':q<0.30?' c2':'');s.textContent='YUMMY!';
+    s.style.left=(p[0]/1170*100)+'%';s.style.top=(p[1]/760*100)+'%';
+    s.style.setProperty('--d',(6+r()*5).toFixed(2)+'s');s.style.setProperty('--l',(-r()*11).toFixed(2)+'s');pops.appendChild(s)});
+  d.appendChild(pops);
+}
+function ensure(sel){
+  var page=document.querySelector(sel);if(!page)return;
+  var src=mapSrc();if(!src)return;
+  var d=page.querySelector(':scope>.bop-wm-backdrop');
+  if(!d){d=document.createElement('div');d.className='bop-wm-backdrop';d.setAttribute('aria-hidden','true');page.insertBefore(d,page.firstChild);}
+  if(!d.getAttribute('data-set')){
+    d.style.setProperty('background-image','url("'+src+'")','important');d.style.setProperty('background-color','transparent','important');
+    d.style.setProperty('background-size','100% auto','important');d.style.setProperty('background-repeat','no-repeat','important');d.style.setProperty('background-position','center top','important');
+    d.setAttribute('data-set','1');
+    try{scene(d)}catch(e){}
+  }
+  if(getComputedStyle(page).position==='static')page.style.position='relative';
+}
+function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');}
+tick();setInterval(tick,1000);
+})();</script>
+<style id="bop-misc-fixes-20261003b-style">
+html body button[aria-label*="Top Threes"],html body button:has(img[alt*="Top Threes"]),html body .bo-extra-topthrees-btn{border-color:#A55CFF!important;box-shadow:0 0 14px rgba(165,92,255,.55),inset 0 0 8px rgba(165,92,255,.18)!important}
+/* a little more room under the Period logos so nothing under them can clip the letters */
+html body #boHeroTitle .bop-lockup-static > .bop-splash-period{margin-bottom:10px!important}
+html body #bopVerifiedChainsPage .bop-franchise-period-logo{margin-bottom:10px!important}
+html body #bopStaticWorld > svg,html body #bopStaticWorld > svg.bop-main-foodtruck-globe.bop-main-foodtruck-globe{animation:none!important;rotate:none!important}
+</style>
+<script id="bop-top-orb-globe-spin-v1-script">(function(){
+/* The globe in the top-right orb turns by script, so it keeps turning even when a phone ignores the CSS animation. One turn every 18 seconds. */
+function frame(ts){
+  var g=document.querySelector('#bopStaticWorld > svg');
+  if(g&&g.getBoundingClientRect().width>0){g.style.setProperty('transform','rotate('+(((ts/18000)%1)*360).toFixed(2)+'deg)','important');g.style.setProperty('transform-origin','50% 50%','important');}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
 })();</script>
 </body></html>
