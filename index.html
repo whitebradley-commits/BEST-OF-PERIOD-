@@ -70224,18 +70224,27 @@ html body #bopLandingV3 #bopV3Live > svg path{animation:none!important}
 
 <script id="bop-live-icon-pulse-js-v1-script">(function(){
 /* The LIVE icon on the main landing page pulses by script, so no style rule or phone setting that ignores CSS animation can freeze it. */
-var P=1700;
+var P=3400;
 function frame(ts){
   var el=document.querySelector('#bopV3Live > svg');
   if(el&&el.getBoundingClientRect().width>0){
     var p=(Math.sin(ts/P*2*Math.PI)+1)/2;
-    el.style.setProperty('transform','scale('+(1+0.18*p).toFixed(3)+')','important');
-    el.style.setProperty('opacity',(0.78+0.22*p).toFixed(2),'important');
+    el.style.setProperty('transform','scale('+(1+0.10*p).toFixed(3)+')','important');
+    el.style.setProperty('opacity',(0.9+0.1*p).toFixed(2),'important');
     var ph=(Math.sin(ts/P*2*Math.PI-1.2)+1)/2,paths=el.querySelectorAll('path');
-    for(var i=0;i<paths.length;i++)paths[i].style.setProperty('opacity',(0.3+0.7*ph).toFixed(2),'important');
+    for(var i=0;i<paths.length;i++)paths[i].style.setProperty('opacity',(0.72+0.28*ph).toFixed(2),'important');
   }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 })();</script>
+<style id="bop-slow-orb-pulses-v1-style">
+/* Hands Free and LIVE icons: same slow pulse (3.4s) and they never fade to black */
+@keyframes bopV3MicLSlow{0%,100%{opacity:.72;transform:translateX(0)}50%{opacity:1;transform:translateX(-1.8px)}}
+@keyframes bopV3MicRSlow{0%,100%{opacity:.72;transform:translateX(0)}50%{opacity:1;transform:translateX(1.8px)}}
+@keyframes bopMicWaveSlow34{0%,100%{opacity:.72}50%{opacity:1}}
+html body #bopLandingV3 .mic-wave-l{animation:bopV3MicLSlow 3.4s ease-in-out infinite!important}
+html body #bopLandingV3 .mic-wave-r{animation:bopV3MicRSlow 3.4s ease-in-out infinite!important}
+html body #bopStaticVoiceMic .bop-mic-wave,html body #bopStaticVoiceMic .bop-mic-wave.bop-mic-wave-l,html body #bopStaticVoiceMic .bop-mic-wave.bop-mic-wave-r{animation:bopMicWaveSlow34 3.4s ease-in-out infinite!important}
+</style>
 </body></html>
