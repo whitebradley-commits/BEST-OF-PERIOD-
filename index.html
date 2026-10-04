@@ -70769,7 +70769,7 @@ function fillLive(listEl){
   listEl.__bopLiveSub=true;
   window.bopFtDb.collection('realtors').onSnapshot(function(snap){
     var rows=[];
-    snap.forEach(function(doc){var d=doc.data();if(!d||!d.checkedInAt)return;if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d))return;rows.push(d)});
+    snap.forEach(function(doc){var d=doc.data();if(!d||!d.checkedInAt)return;if(typeof window.bopIsLive==='function'&&!window.bopIsLive(d))return;var row=Object.assign({},d);row.__id=doc.id;rows.push(row)});
     rows.sort(function(a,b){return (a.listingType==='openhouse'?0:1)-(b.listingType==='openhouse'?0:1)});
     if(!rows.length){listEl.innerHTML='<div class="bo-rt-analog-empty">Nothing live right now \u2014 check back soon.</div>';return}
     listEl.innerHTML=rows.map(function(d){
@@ -70777,10 +70777,74 @@ function fillLive(listEl){
       var links=[];if(d.phone&&d.phoneVisible!==false)links.push('<a href="tel:'+esc(d.phone)+'">'+esc(d.phone)+'</a>');if(d.website)links.push('<a href="'+esc(d.website)+'" target="_blank" rel="noopener">Listing / Website</a>');
       return '<div class="bo-rt-analog-card">'+(d.photo?'<img src="'+esc(d.photo)+'" alt="" style="display:block;width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-bottom:6px;" onerror="this.style.display=\'none\'">':'')
         +'<div class="bo-rt-analog-name">'+esc(d.name||'Open House')+'</div>'+(facts.length?'<div class="bo-rt-analog-facts">'+facts.join(' &middot; ')+'</div>':'')
-        +(d.description?'<div class="bo-rt-analog-desc">'+esc(d.description)+'</div>':'')+(links.length?'<div class="bo-rt-analog-links">'+links.join('<br>')+'</div>':'')+'</div>';
+        +(d.description?'<div class="bo-rt-analog-desc">'+esc(d.description)+'</div>':'')+(links.length?'<div class="bo-rt-analog-links">'+links.join('<br>')+'</div>':'')+'<span class="bo-share-btn" data-key="realtor" data-id="'+esc(d.__id||'')+'" data-title="'+esc(d.name||'Open house')+'">SHARE</span></div>';
     }).join('');
   });
 }
 setInterval(function(){fillLive(document.getElementById('bopRtAnalogListEl'))},500);
+})();</script>
+<style id="bop-share-live-v1-style">
+.bo-share-btn{display:block;margin-top:9px;padding:9px 10px;text-align:center;border:1.5px solid #E3A02B;border-radius:9px;background:rgba(227,160,43,.1);color:#E3A02B;font:900 .8rem/1 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bo-share-btn:active{background:rgba(227,160,43,.3)}
+.leaflet-popup-content .bo-share-btn{margin-top:10px}
+</style>
+<script id="bop-share-live-v1-script">(function(){
+/* SHARE on every live card (Open Houses, Yard Sales, Autos, Meet-Ups): it sends a link that opens that exact listing on its live page. */
+var SECTIONS={
+  realtor:{map:'bopRealtorMapInstance',markers:'bopRealtorMarkers',open:'boOpenRealtorMap',label:'Open house'},
+  yardsale:{map:'bopYardSaleMapInstance',markers:'bopYardSaleMarkers',open:'boOpenYardSaleMap',label:'Yard sale'},
+  cars:{map:'bopCarForSaleMapInstance',markers:'bopCarForSaleMarkers',open:'boOpenCarForSaleMap',label:'Car for sale'},
+  meetup:{map:'bopSafeMeetupMapInstance',markers:'bopSafeMeetupMarkers',open:'boOpenSafeMeetupMap',label:'Item for sale'}
+};
+function shareUrl(key,id){return location.origin+location.pathname+'?page='+encodeURIComponent(key)+'&id='+encodeURIComponent(id)}
+function flash(btn,txt){var old=btn.getAttribute('data-label')||btn.textContent;btn.setAttribute('data-label',old);btn.textContent=txt;setTimeout(function(){btn.textContent=old},1800)}
+function doShare(btn){
+  var key=btn.getAttribute('data-key'),id=btn.getAttribute('data-id');if(!key||!id)return;
+  var url=shareUrl(key,id),title=btn.getAttribute('data-title')||'Best of Period';
+  if(navigator.share){navigator.share({title:title,text:title+' \u2014 on Best of Period',url:url}).catch(function(){})}
+  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){flash(btn,'LINK COPIED')},function(){window.prompt('Copy this link:',url)})}
+  else{window.prompt('Copy this link:',url)}
+}
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.bo-share-btn');if(!b)return;e.preventDefault();e.stopPropagation();doShare(b)},true);
+window.bopShareLive=doShare;window.bopShareLiveUrl=shareUrl;
+/* 1) a SHARE button inside every live pin's popup */
+var hooked={};
+function hook(key){
+  var S=SECTIONS[key],map=window[S.map];if(!map||hooked[key]===map||!map.on)return;hooked[key]=map;
+  map.on('popupopen',function(e){
+    var popup=e.popup,src=popup&&popup._source,M=window[S.markers]||{},id=null;
+    Object.keys(M).forEach(function(k){if(M[k]===src)id=k});if(!id)return;
+    var root=popup.getElement&&popup.getElement(),content=root&&root.querySelector('.leaflet-popup-content');
+    if(!content||content.querySelector('.bo-share-btn'))return;
+    var nameEl=content.querySelector('div[style*="font:800"]'),title=(nameEl&&nameEl.textContent.trim())||S.label;
+    var b=document.createElement('span');b.className='bo-share-btn';b.setAttribute('data-key',key);b.setAttribute('data-id',id);b.setAttribute('data-title',title);b.textContent='SHARE';
+    content.appendChild(b);setTimeout(function(){try{popup.update()}catch(_e){}},0);
+  });
+}
+setInterval(function(){Object.keys(SECTIONS).forEach(hook)},400);
+/* 2) arriving from a shared link: open the right live page, fly to the listing and open its card */
+function openSharedLive(){
+  var p=new URLSearchParams(location.search),key=p.get('page'),id=p.get('id');
+  if(!key||!id||!SECTIONS[key])return;
+  var S=SECTIONS[key];
+  var gate=document.getElementById('bopExclusiveInvitation');if(gate){gate.classList.add('bop-invite-closed');gate.setAttribute('aria-hidden','true')}
+  document.documentElement.classList.remove('bop-invite-active');
+  var landing=document.getElementById('bopLandingOverlay');if(landing)landing.classList.remove('open');
+  var promo=document.getElementById('bopPromoModal');if(promo&&promo.classList.contains('open')){promo.classList.remove('open');var v=document.getElementById('bopPromoVideo');if(v)v.pause()}
+  var opened=false,tries=0;
+  (function go(){
+    tries++;
+    if(!opened&&typeof window[S.open]==='function'){try{window[S.open]();opened=true}catch(e){}}
+    var M=window[S.markers]||{},mk=M[id],map=window[S.map];
+    if(mk&&map){
+      try{if(mk.getLatLng)map.setView(mk.getLatLng(),15)}catch(e){}
+      setTimeout(function(){try{mk.openPopup()}catch(e){}},400);
+      return;
+    }
+    if(tries<80)setTimeout(go,400);
+  })();
+}
+window.bopOpenSharedLive=openSharedLive;
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(openSharedLive,350)});else setTimeout(openSharedLive,350);
 })();</script>
 </body></html>
