@@ -37744,7 +37744,7 @@ new MutationObserver(install).observe(document.documentElement,{childList:true,s
     if(label.dataset.bopV528final)return;
     label.dataset.bopV528final='1';
     label.innerHTML='LIVE!';
-    label.style.fontSize='1.44em';
+    label.style.fontSize='1.25em';
     label.style.lineHeight='1';
     label.classList.remove('bop-golive-orb-label');
     label.className='bop-golive-orb-label-final';
@@ -70949,15 +70949,15 @@ html body #bopStaticLandingDock #bopStaticVoiceMic span:not(#x):not(#y){font-siz
 var TO='info@bestofperiod.com';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim()}
-var INDEX=null,N=0;
+var INDEX=null,N=0,cur=[];
 function build(){
   if(INDEX&&N===Object.keys(boCategoryData).length)return INDEX;
   var seen={},out=[];
   try{Object.keys(boCategoryData).forEach(function(k){var a=boCategoryData[k];if(!Array.isArray(a))return;a.forEach(function(r){
     if(!r||!r.name||!/^\s*\d/.test(r.rating||''))return;
-    var key=norm(r.name)+'|'+(r.city||'bestof');if(seen[key])return;seen[key]=1;
+    var key=norm(r.name)+'|'+(r.city||'bestof');if(seen[key]){seen[key].k.push(k);return}
     var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[r.city||'bestof'])||{};
-    out.push({n:r.name,c:cfg.displayName||'',r:r.rating,h:norm(r.name),bjs:!!r.bjsPick})})})}catch(e){}
+    var o={n:r.name,c:cfg.displayName||'',r:r.rating,h:norm(r.name),bjs:!!r.bjsPick,city:r.city||'bestof',k:[k]};seen[key]=o;out.push(o)})})}catch(e){}
   INDEX=out;N=Object.keys(boCategoryData).length;return out;
 }
 var modal=document.getElementById('bopYummySearch');if(!modal)return;
@@ -70978,7 +70978,7 @@ function search(){
   hits.sort(function(a,b){return (b.h.indexOf(q)===0)-(a.h.indexOf(q)===0)||parseFloat(b.r)-parseFloat(a.r)});
   if(hits.length){
     stat.textContent=hits.length+(hits.length===1?' match':' matches')+' in the system';if(rb)rb.style.display='block';
-    res.innerHTML=hits.slice(0,12).map(function(x){return '<div class="bop-ys-row"><span>'+esc(x.n)+'<small>'+esc(x.c)+''+'</small></span><b>'+esc(x.r.replace(/\s*\/.*$/,''))+' ★</b></div>'}).join('');
+    cur=hits.slice(0,12);res.innerHTML=cur.map(function(x,i){return '<div class="bop-ys-row" data-i="'+i+'" role="button" tabindex="0" style="cursor:pointer"><span>'+esc(x.n)+'<small>'+esc(x.c)+''+'</small></span><b>'+esc(x.r.replace(/\s*\/.*$/,''))+' ★</b></div>'}).join('');
   }else{
     stat.textContent="Not in our system yet.";res.innerHTML='';if(rb)rb.style.display='none';
   }
@@ -70994,6 +70994,21 @@ mail.addEventListener('click',function(){
   var txt=message(input.value);
   try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt)}catch(e){}
 });
+function pickCat(x){
+  var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG)||{};
+  var ks=x.k.filter(function(k){return !/bjspick/i.test(k)&&!cfg[k]});
+  if(ks.indexOf('michelin')>-1)return 'michelin';
+  if(ks.length)return ks[0];
+  if(x.city==='bestof')return 'bestof';
+  var city=x.city;return cfg[city]?city:(x.k[0]||'bestof');
+}
+function go(x){
+  close();
+  var cat=pickCat(x);
+  setTimeout(function(){try{boOpenRestaurantFromMap(cat,x.n,x.city)}catch(e){}},50);
+}
+res.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.bop-ys-row');if(!r)return;var x=cur[+r.getAttribute('data-i')];if(x)go(x)});
+res.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var r=e.target.closest&&e.target.closest('.bop-ys-row');if(!r)return;var x=cur[+r.getAttribute('data-i')];if(x)go(x)});
 window.bopOpenYummySearch=open;
 /* the orb */
 function mapSrc(){var im=document.querySelector('#vendorOverlay .bv2-map');return im&&im.getAttribute('src')}
