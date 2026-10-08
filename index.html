@@ -16187,7 +16187,7 @@ if(boSectionHeadParaEl){
 boSectionHeadParaEl.innerHTML = BO_CITY_CONFIG[cat]
 ? boMainCityIntroHTML(BO_CITY_CONFIG[cat])
 : isBjsPicksCat(cat)
-? (()=>{const pickCount=(boCategoryData[cat]||[]).filter(Boolean).length;const pickCity=(BO_CITY_CONFIG[boCityContext]||BO_CITY_CONFIG.bestof).displayName;return "⭐ <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#E3A02B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#E3A02B'>BJS</text></svg> <strong>"+pickCount+" current "+pickCity+" BJS "+(pickCount===1?'Pick':'Picks')+".</strong> Every selection is chosen directly by BJS—not ranked by aggregate review data. Ratings are shown only as additional reference.";})()
+? (()=>{let pickCount;try{pickCount=boComputePageEntries(cat,boCityContext).length;}catch(e){pickCount=(boCategoryData[cat]||[]).filter(r=>r&&r.rating&&!/pending/i.test(r.rating)).length;}const pickCity=(BO_CITY_CONFIG[boCityContext]||BO_CITY_CONFIG.bestof).displayName;return "⭐ <svg viewBox='0 0 40 40' width='24' height='24' style='vertical-align:-6px;margin:0 3px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#E3A02B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#E3A02B'>BJS</text></svg> <strong>"+pickCount+" current "+pickCity+" BJS "+(pickCount===1?'Pick':'Picks')+".</strong> Every selection is chosen directly by BJS—not ranked by aggregate review data. Ratings are shown only as additional reference.";})()
 : "⭐ Ranked by aggregate review data across <span class='bo-source-name'><strong style='font-weight:700;'>Google</strong> <strong style='font-weight:700;'>Menu</strong></span> <strong style='font-weight:700;'>Tripadvisor</strong> <strong style='font-weight:700;'>OpenTable</strong> <strong style='font-weight:700;'>Uber Eats</strong> <strong style='font-weight:700;'>Yelp</strong> <svg viewBox='0 0 40 40' width='16' height='16' style='vertical-align:-2px;margin:0 2px;'><circle cx='20' cy='20' r='18' fill='#0a0a0a' stroke='#E3A02B' stroke-width='2'/><text x='20' y='24' text-anchor='middle' font-family='Archivo Black, sans-serif' font-size='12' fill='#E3A02B'>BJS</text></svg> <span class='bo-plus-more'>+ more</span>";
 if(cat === 'pizza'){
 boSectionHeadParaEl.innerHTML = boSectionHeadParaEl.innerHTML.replace(
@@ -16355,7 +16355,7 @@ pickerDirectoryHTML = `<section class="bo-alpha-quadrant bo-featured-category-gr
 `<section class="bo-alpha-quadrant" aria-label="Categories A through J"><div class="bo-alpha-quadrant-label">A–J</div><div class="bo-picker-grid bo-picker-grid-below-fold">${firstHalf.map(pickerButtonHTML).join('')}</div></section>`+
 `<section class="bo-alpha-quadrant bo-alpha-quadrant-second" aria-label="Categories K through Z"><div class="bo-alpha-quadrant-label">K–Z</div><div class="bo-picker-grid bo-picker-grid-below-fold">${secondHalf.map(pickerButtonHTML).join('')}</div></section>`;
 }else{
-pickerDirectoryHTML = nationDirectoryNoteHTML + `<div class="bo-picker-grid">${pickerOptions.map(pickerButtonHTML).join('')}</div>`;
+pickerDirectoryHTML = nationDirectoryNoteHTML + `<div class="bo-picker-grid">${pickerOptions.filter(opt => opt.cat !== 'bjspicks').map(pickerButtonHTML).join('')}</div>`;
 }
 const badgesBottomHTML = cat === 'otheroptions' ? `<div class="bo-badges-page-link-wrap"><button type="button" class="bo-badges-page-link" id="boBadgesPageBtn">BADGES</button></div>` : '';
 boListEl.innerHTML = specialCirclesHTML + pickerDirectoryHTML + moneyLegendHTML + blueScrollCueHTML + mainHubFooterHTML + badgesBottomHTML;
@@ -41692,16 +41692,17 @@ var modal=document.getElementById('bopEmptyCatSuggest');if(!modal)return;
 var catEl=document.getElementById('bopEcsCat'),cityEl=document.getElementById('bopEcsCity'),mail=document.getElementById('bopEcsMail');
 function cityName(){var k=(typeof boCityContext!=='undefined')?boCityContext:window.boCityContext;var c=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[k])||{};return c.displayName||c.landingName||(k==='bestof'?'Las Vegas':k)||'this city';}
 function open(label){
-var city=cityName();
-catEl.textContent=label||'this';cityEl.textContent=city;
-mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Suggestion: '+(label||'restaurant')+' in '+city)+'&body='+encodeURIComponent('Restaurant name:\nAddress:\nWhy it belongs on Best of Period:\n');
+window.__bopEcsDirect=false;var city=cityName();
+catEl.textContent=(function(t){var d=document.createElement('textarea');d.innerHTML=String(t||'').replace(/<[^>]*>/g,'');return d.value;})(label)||'this';cityEl.textContent=city;
+mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Suggestion: '+(label||'restaurant')+' in '+city)+'&body='+encodeURIComponent('Restaurant name:\nAddress:\nWhy it belongs in the directory:\n');
 modal.classList.add('open');modal.setAttribute('aria-hidden','false');
 }
 function close(){
 modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
 /* go back to where they were: the city's main tile page */
-try{if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');}catch(e){}
-try{window.scrollTo(0,0);}catch(e){}
+if(!window.__bopEcsDirect){try{if(typeof boRenderCategory==='function')boRenderCategory('otheroptions');}catch(e){}
+try{window.scrollTo(0,0);}catch(e){}}
+window.__bopEcsDirect=false;
 }
 modal.querySelector('.bop-ecs-close').addEventListener('click',close);
 modal.addEventListener('click',function(e){if(e.target===modal)close();});
@@ -41720,7 +41721,7 @@ if(!label)label=(btn.getAttribute('aria-label')||btn.textContent||'').replace(/\
 if(cat==='pizza')label='Pizza';
 if(!label)label=cat.charAt(0).toUpperCase()+cat.slice(1);
 /* let the (empty) page render underneath, then fog it with the popup */
-setTimeout(function(){open(label);},220);
+e.preventDefault();e.stopImmediatePropagation();open(label);window.__bopEcsDirect=true;
 },true);
 window.bopShowEmptyCategorySuggest=open;
 })();</script>
@@ -49924,7 +49925,7 @@ var modal=document.getElementById('bopZoneSoonModal');if(!modal)return;
 var nameEl=document.getElementById('bopZoneSoonName'),mail=document.getElementById('bopZoneSoonMail');
 function open(label){
 nameEl.textContent=label||'this area';
-mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Suggestion: '+(label||'this area'))+'&body='+encodeURIComponent('Restaurant name:\nAddress:\nWhy it belongs on Best of Period:\n');
+mail.href='mailto:info@bestofperiod.com?subject='+encodeURIComponent('Suggestion: '+(label||'this area'))+'&body='+encodeURIComponent('Restaurant name:\nAddress:\nWhy it belongs in the directory:\n');
 modal.classList.add('open');modal.setAttribute('aria-hidden','false');
 }
 function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
@@ -70332,7 +70333,7 @@ function ensure(sel){
   }
   if(getComputedStyle(page).position==='static')page.style.position='relative';
 }
-function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');}
+function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');}
 tick();setInterval(tick,1000);
 })();</script>
 <style id="bop-misc-fixes-20261003b-style">
@@ -70498,6 +70499,10 @@ tick();setInterval(tick,700);requestAnimationFrame(frame);
 <style id="bop-near-map-size-and-hint-style">
 /* Near Me map: same size as the Food Trucks and Street Vendors maps */
 html body #boNearMapPage #boNearMapCanvas{height:56vh!important;min-height:340px!important}
+/* keep the loading panel, legend and list locked to the bigger map so nothing spills out of the box */
+html body.bo-near-map-active #boNearMapPage #boNearMapLoading{height:56vh!important;min-height:340px!important}
+html body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-meta{top:max(calc(30vh + 56vh + 8px),calc(30vh + 348px))!important}
+html body.bo-near-map-active:not(.bo-closest-five-active) #boNearMapPage .bo-near-map-lower{top:max(calc(30vh + 56vh + 48px),calc(30vh + 388px))!important}
 /* the pinch reminder always lets touches through and disappears when told to */
 html body .bo-ft-pinch-hint{pointer-events:none!important;transition:opacity .5s ease!important}
 html body .bo-ft-pinch-hint.bo-ft-hide{opacity:0!important;visibility:hidden!important}
@@ -70889,4 +70894,125 @@ function pass(){if(typeof boCategoryData!=='object'||!boCategoryData)return;
    try{Object.defineProperty(r,'why',{configurable:true,enumerable:true,get:mk(f.why),set:function(){}})}catch(e){}}})})}
 pass();[400,1200,3000,6000,12000].forEach(function(ms){setTimeout(pass,ms)});setInterval(pass,2000);
 ['click','touchend'].forEach(function(ev){document.addEventListener(ev,pass,true)});})();</script>
+<style id="bop-allpages-lockup-center-v1">
+/* New Restaurants / Not Quite Open / All BJS Picks: Period-only logo, centered. The bulletproof lockup rule was winning on specificity and left "Best of" invisible and Period pushed right. */
+#bopAllNewRestaurants .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-best,
+#bopAllNotQuiteOpen .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-best,
+#bopAllBjsPicks .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-best{display:none!important;visibility:hidden!important;width:0!important;height:0!important;margin:0!important;padding:0!important}
+#bopAllNewRestaurants .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-period,
+#bopAllNotQuiteOpen .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-period,
+#bopAllBjsPicks .bop-all-bjs-lockup:not(#bop-x):not(#bop-y) .bo-golive-period{display:block!important;margin:0 auto!important;left:auto!important;right:auto!important;transform:none!important}
+/* Near Me map: bigger box, pinch stays on the map instead of scrolling the page */
+html body #boNearMapPage #boNearMapCanvas,html body #boNearMapPage #boNearMapCanvas *{touch-action:none!important}
+html body #boNearMapPage #boNearMapCanvas{overscroll-behavior:contain!important}
+</style>
+<style id="bop-yummy-orb-v1-style">
+/* YUMMY orb: sits in the top orb row right before the globe */
+#bopStaticLandingDock .bop-static-yummy{position:relative!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#000!important;padding:0!important;cursor:pointer}
+#bopStaticLandingDock .bop-static-yummy .bop-ym-map{position:absolute;inset:0;background-size:210% auto;background-repeat:no-repeat;background-position:50% 38%;opacity:.75;filter:saturate(1.1)}
+#bopStaticLandingDock .bop-static-yummy .bop-ym-tiny{position:absolute;white-space:nowrap;font:800 3.4px/1 Arial,Helvetica,sans-serif;letter-spacing:.02em;color:#f0be46;opacity:0;animation:bopYmTiny 5s ease-in-out infinite}
+#bopStaticLandingDock .bop-static-yummy .bop-ym-tiny.r{color:#ff4a4a}
+#bopStaticLandingDock .bop-static-yummy .bop-ym-apple{position:absolute;width:6px;height:6px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 35% 30%,#f8da72,#d48a14);opacity:0;animation:bopYmTiny 6s ease-in-out infinite}
+@keyframes bopYmTiny{0%,100%{opacity:0;transform:translateY(2px)}25%,60%{opacity:.85;transform:translateY(0)}85%{opacity:0;transform:translateY(-3px)}}
+#bopStaticLandingDock .bop-static-yummy .bop-ym-big{position:relative;z-index:2;font:900 13.5px/1 'Fraunces','Playfair Display',Georgia,serif;font-style:italic;color:#f6c04a;text-shadow:0 0 4px #000,0 0 3px #000,0 1px 5px rgba(0,0,0,.95);letter-spacing:-.02em}
+#bopStaticLandingDock.bop-has-yummy{gap:3px!important}
+html body #bopStaticLandingDock.bop-has-yummy .bop-static-landing-button:not(.bop-static-bjs):not(#bop-x):not(#bop-y){max-height:min(58px,calc((100vw - 34px) / 6))!important;aspect-ratio:1/1!important;min-height:0!important;align-self:center!important;flex:0 0 auto!important;width:min(58px,calc((100vw - 34px) / 6))!important;height:min(58px,calc((100vw - 34px) / 6))!important;min-width:0!important}
+@media(prefers-reduced-motion:reduce){#bopStaticLandingDock .bop-static-yummy .bop-ym-tiny,#bopStaticLandingDock .bop-static-yummy .bop-ym-apple{animation:none;opacity:.5}}
+
+#bopYummySearch{position:fixed!important;inset:0;z-index:2147483647;display:none;align-items:flex-start;justify-content:center;padding:84px 16px 24px;background:#000;overflow:auto;isolation:isolate}
+#bopYummySearch .bop-wm-backdrop{position:fixed!important;max-height:none!important;opacity:1;top:6vh!important}
+#bopYummySearch.open{display:flex}
+#bopYummySearch .bop-ys-panel{position:relative;z-index:1;width:min(560px,100%);border:2px solid #E3A02B;border-radius:22px;background:rgba(5,5,5,.5);box-shadow:0 0 22px rgba(227,160,43,.45);padding:26px 18px 20px;color:#E3A02B;text-align:center}
+#bopYummySearch .bop-ys-close{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:50%;border:2px solid #E3A02B;background:#000;color:#FF073A;font:900 20px/1 Arial;cursor:pointer}
+#bopYummySearch .bop-ys-title{margin:2px 40px 6px;font:900 3.4rem/1 'Fraunces',Georgia,serif;font-style:italic;color:#f6c04a;text-shadow:0 0 14px rgba(227,160,43,.55)}
+#bopYummySearch .bop-ys-sub{margin:0 8px 14px;font:700 1.3rem/1.25 Arial,sans-serif;color:#f3e3b8}
+#bopYummySearch input{width:100%;box-sizing:border-box;padding:13px 14px;border-radius:14px;border:2px solid #E3A02B;background:#111;color:#fff;font:600 20px Arial,sans-serif;outline:none}
+#bopYummySearch .bop-ys-results{margin-top:12px;text-align:left}
+#bopYummySearch .bop-ys-row{display:flex;justify-content:space-between;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(227,160,43,.25);color:#f3e3b8;font:600 1.1rem/1.25 Arial,sans-serif}
+#bopYummySearch .bop-ys-row small{display:block;color:#a99a72;font-weight:500}
+#bopYummySearch .bop-ys-row b{color:#E3A02B;white-space:nowrap}
+#bopYummySearch .bop-ys-status{margin:12px 2px 0;font:800 1.15rem/1.3 Arial,sans-serif;color:#E3A02B;text-align:center}
+#bopYummySearch .bop-ys-miss{margin-top:16px;padding-top:14px;border-top:1px solid rgba(227,160,43,.35)}
+#bopYummySearch .bop-ys-miss h3{margin:0 0 8px;font:900 1.7rem/1.1 'Fraunces',Georgia,serif;color:#f6c04a}
+#bopYummySearch .bop-ys-mail{display:inline-block;margin-top:6px;padding:12px 18px;border-radius:14px;border:2px solid #E3A02B;background:#1a1203;color:#f6c04a;font:800 1.15rem/1.2 Arial,sans-serif;text-decoration:none;cursor:pointer}
+#bopYummySearch .bop-ys-note{margin:8px 6px 0;font:500 .95rem/1.35 Arial,sans-serif;color:#cdbf94}
+</style>
+<div id="bopYummySearch" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Search any restaurant"><div class="bop-ys-panel"><button type="button" class="bop-ys-close" aria-label="Close">&times;</button><h2 class="bop-ys-title">Yummy</h2><p class="bop-ys-sub">Search for restaurants in our directory only.</p><input id="bopYsInput" type="search" inputmode="search" autocomplete="off" autocapitalize="words" placeholder="Restaurant name" aria-label="Restaurant name"><div class="bop-ys-results" id="bopYsResults"></div><div class="bop-ys-status" id="bopYsStatus"></div><div class="bop-ys-miss" id="bopYsMiss"><h3>Don't see your restaurant?</h3><a class="bop-ys-mail" id="bopYsMail" href="#">Email us to check it out</a><div class="bop-ys-note">Opens an email with the message already written for you and copied to your clipboard, so you can just send or paste it.</div></div></div></div>
+<script id="bop-yummy-orb-v1-script">(function(){
+var TO='info@bestofperiod.com';
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim()}
+var INDEX=null,N=0;
+function build(){
+  if(INDEX&&N===Object.keys(boCategoryData).length)return INDEX;
+  var seen={},out=[];
+  try{Object.keys(boCategoryData).forEach(function(k){var a=boCategoryData[k];if(!Array.isArray(a))return;a.forEach(function(r){
+    if(!r||!r.name||!/^\s*\d/.test(r.rating||''))return;
+    var key=norm(r.name)+'|'+(r.city||'bestof');if(seen[key])return;seen[key]=1;
+    var cfg=(typeof BO_CITY_CONFIG!=='undefined'&&BO_CITY_CONFIG[r.city||'bestof'])||{};
+    out.push({n:r.name,c:cfg.displayName||'',r:r.rating,h:norm(r.name),bjs:!!r.bjsPick})})})}catch(e){}
+  INDEX=out;N=Object.keys(boCategoryData).length;return out;
+}
+var modal=document.getElementById('bopYummySearch');if(!modal)return;
+var input=document.getElementById('bopYsInput'),res=document.getElementById('bopYsResults'),stat=document.getElementById('bopYsStatus'),mail=document.getElementById('bopYsMail');
+function message(name){
+  var n=(name||'').trim();
+  return "Hi team,\n\nYou don't see "+(n||'[restaurant name]')+", and I'd like you to check it out.\n\nRestaurant name: "+(n||'')+"\nCity / address:\nWhy it belongs in the directory:\n\n(This message was copied and pasted automatically from the Yummy search.)";
+}
+function setMail(){
+  var n=input.value.trim();
+  mail.href='mailto:'+TO+'?subject='+encodeURIComponent("Don't see "+(n||'my restaurant')+"? Please check it out")+'&body='+encodeURIComponent(message(n));
+}
+function search(){
+  var q=norm(input.value);setMail();
+  if(q.length<2){res.innerHTML='';stat.textContent='';return}
+  var toks=q.split(' ');
+  var hits=build().filter(function(x){return toks.every(function(t){return x.h.indexOf(t)>-1})});
+  hits.sort(function(a,b){return (b.h.indexOf(q)===0)-(a.h.indexOf(q)===0)||parseFloat(b.r)-parseFloat(a.r)});
+  if(hits.length){
+    stat.textContent=hits.length+(hits.length===1?' match':' matches')+' in the system';
+    res.innerHTML=hits.slice(0,12).map(function(x){return '<div class="bop-ys-row"><span>'+esc(x.n)+'<small>'+esc(x.c)+''+'</small></span><b>'+esc(x.r.replace(/\s*\/.*$/,''))+' ★</b></div>'}).join('');
+  }else{
+    stat.textContent="Not in our system yet.";res.innerHTML='';
+  }
+}
+function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');input.value='';res.innerHTML='';stat.textContent='';setMail();setTimeout(function(){try{input.focus()}catch(e){}},120)}
+function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}
+modal.querySelector('.bop-ys-close').addEventListener('click',close);
+modal.addEventListener('click',function(e){if(e.target===modal)close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close()});
+input.addEventListener('input',search);
+mail.addEventListener('click',function(){
+  var txt=message(input.value);
+  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt)}catch(e){}
+});
+window.bopOpenYummySearch=open;
+/* the orb */
+function mapSrc(){var im=document.querySelector('#vendorOverlay .bv2-map');return im&&im.getAttribute('src')}
+function makeOrb(){
+  var b=document.createElement('button');b.type='button';b.id='bopStaticYummy';b.className='bop-static-landing-button bop-static-yummy';b.setAttribute('aria-label','Yummy — search any restaurant');
+  var m=document.createElement('span');m.className='bop-ym-map';b.appendChild(m);
+  var s=1234567;function r(){s=(s*1664525+1013904223)%4294967296;return s/4294967296}
+  for(var i=0;i<16;i++){var t=document.createElement('span');t.className='bop-ym-tiny'+(i%4===0?' r':'');t.textContent='YUMMY';t.style.left=(r()*80)+'%';t.style.top=(8+r()*80)+'%';t.style.animationDelay=(-r()*5).toFixed(2)+'s';b.appendChild(t)}
+  for(var j=0;j<6;j++){var a=document.createElement('span');a.className='bop-ym-apple';a.style.left=(8+r()*76)+'%';a.style.top=(8+r()*76)+'%';a.style.animationDelay=(-r()*6).toFixed(2)+'s';b.appendChild(a)}
+  var big=document.createElement('span');big.className='bop-ym-big';big.textContent='Yummy';b.appendChild(big);
+  b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();open()});
+  return b;
+}
+function ensure(){
+  var dock=document.getElementById('bopStaticLandingDock');if(!dock)return;
+  var world=document.getElementById('bopStaticWorld');if(!world)return;
+  var b=document.getElementById('bopStaticYummy');
+  if(!b){b=makeOrb()}
+  if(b.nextElementSibling!==world||b.parentNode!==dock)dock.insertBefore(b,world);
+  /* only on the rotating-cities page (the city page with the four orbs) - never on the main landing page */
+  var bo=document.getElementById('bestOfOverlay');
+  var on=!!(bo&&bo.classList.contains('open'))&&!document.body.classList.contains('bop-on-landing');
+  b.style.setProperty('display',on?'flex':'none','important');
+  dock.classList.toggle('bop-has-yummy',on);
+  var src=mapSrc();var mp=b.querySelector('.bop-ym-map');
+  if(src&&!mp.getAttribute('data-set')){mp.style.backgroundImage='url("'+src+'")';mp.setAttribute('data-set','1')}
+}
+ensure();setInterval(ensure,1000);
+})();</script>
 </body></html>
