@@ -70944,7 +70944,7 @@ html body #bopStaticLandingDock.bop-has-yummy .bop-static-landing-button:not(.bo
 #bopYummySearch .bop-ys-note{margin:12px 8px 0;color:#E3A02B;font:400 .95rem/1.3 'Archivo Narrow',Arial,sans-serif}
 html body #bopStaticLandingDock #bopStaticVoiceMic span:not(#x):not(#y){font-size:5px!important;letter-spacing:0!important}
 </style>
-<div id="bopYummySearch" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Search restaurants in our directory"><div class="bop-ys-shell"><button type="button" class="bop-ys-close" aria-label="Back">&larr;<br>Back</button><h2 class="bop-ys-title bop-gold-checker-applied">YUMMY</h2><p class="bop-ys-sub">Search for restaurants in our directory only.</p><input id="bopYsInput" type="search" inputmode="search" autocomplete="off" autocapitalize="words" placeholder="search restaurants" aria-label="Restaurant name"><div class="bop-ys-box" id="bopYsResultsBox" style="display:none"><div class="bop-ys-results" id="bopYsResults"></div></div><div class="bop-ys-status" id="bopYsStatus"></div><div class="bop-ys-box bop-ys-miss" id="bopYsMiss"><h3>DON'T SEE YOUR RESTAURANT?</h3><a class="bop-ys-mail" id="bopYsMail" href="#">Click here</a><div class="bop-ys-note">* Opens an email with the message already written for you.</div></div></div></div>
+<div id="bopYummySearch" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Search restaurants in our directory"><div class="bop-ys-shell"><button type="button" class="bop-ys-close" aria-label="Back">&larr;<br>Back</button><h2 class="bop-ys-title bop-gold-checker-applied">YUMMY</h2><p class="bop-ys-sub">Search for restaurants in our directory only.</p><input id="bopYsInput" type="search" inputmode="search" autocomplete="off" autocapitalize="words" placeholder="search restaurants" aria-label="Restaurant name"><div class="bop-ys-box" id="bopYsResultsBox" style="display:none"><div class="bop-ys-results" id="bopYsResults"></div></div><div class="bop-ys-status" id="bopYsStatus"></div><div class="bop-ys-box bop-ys-miss" id="bopYsMiss"><h3>DON'T SEE A RESTAURANT WE SHOULD KNOW ABOUT?</h3><a class="bop-ys-mail" id="bopYsMail" href="#">Click here</a><div class="bop-ys-note">* Opens an email with the message already written for you.</div></div></div></div>
 <script id="bop-yummy-orb-v1-script">(function(){
 var TO='info@bestofperiod.com';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -71037,5 +71037,22 @@ function ensure(){
   if(src&&!mp.getAttribute('data-set')){mp.style.backgroundImage='url("'+src+'")';mp.setAttribute('data-set','1')}
 }
 ensure();setInterval(ensure,1000);
+/* react the instant the page state changes (before the browser paints), so the old orb row never flashes */
+try{new MutationObserver(ensure).observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});}catch(e){}
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#bopV3Enter')){ensure();setTimeout(ensure,0);}},true);
 })();</script>
+<style id="bop-legend-gold-v1-style">
+/* Legend page: every white word and box outline is gold. */
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section p,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section b,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section small,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section span:not(.bo-legend-bestof-top):not(.bo-legend-bestof-city),
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section li,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-section a,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-list > div,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-list > div *:not(img):not(.bo-legend-bestof-top):not(.bo-legend-bestof-city){color:#E3A02B!important;-webkit-text-fill-color:#E3A02B!important}
+html body #legendOverlay:not(#x):not(#y) .bo-legend-list > div,
+html body #legendOverlay:not(#x):not(#y) .bo-legend-michelin-row{border-color:rgba(227,160,43,.55)!important;box-shadow:none!important}
+html body #legendOverlay:not(#x):not(#y) .bo-legend-list > div:hover{border-color:#E3A02B!important}
+</style>
 </body></html>
