@@ -70927,6 +70927,7 @@ html body #bopStaticLandingDock.bop-has-yummy .bop-static-landing-button:not(.bo
 #bopYummySearch .bop-ys-title{margin:2px 40px 6px;font:900 3.4rem/1 'Fraunces',Georgia,serif;font-style:italic;color:#f6c04a;text-shadow:0 0 14px rgba(227,160,43,.55)}
 #bopYummySearch .bop-ys-sub{margin:0 8px 14px;font:700 1.3rem/1.25 Arial,sans-serif;color:#f3e3b8}
 #bopYummySearch input{width:100%;box-sizing:border-box;padding:13px 14px;border-radius:14px;border:2px solid #E3A02B;background:#111;color:#fff;font:600 20px Arial,sans-serif;outline:none}
+#bopYummySearch #bopYsCity{margin-bottom:10px}
 #bopYummySearch .bop-ys-results{margin-top:12px;text-align:left}
 #bopYummySearch .bop-ys-row{display:flex;justify-content:space-between;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(227,160,43,.25);color:#f3e3b8;font:600 1.1rem/1.25 Arial,sans-serif}
 #bopYummySearch .bop-ys-row small{display:block;color:#a99a72;font-weight:500}
@@ -70936,8 +70937,9 @@ html body #bopStaticLandingDock.bop-has-yummy .bop-static-landing-button:not(.bo
 #bopYummySearch .bop-ys-miss h3{margin:0 0 8px;font:900 1.7rem/1.1 'Fraunces',Georgia,serif;color:#f6c04a}
 #bopYummySearch .bop-ys-mail{display:inline-block;margin-top:6px;padding:12px 18px;border-radius:14px;border:2px solid #E3A02B;background:#1a1203;color:#f6c04a;font:800 1.15rem/1.2 Arial,sans-serif;text-decoration:none;cursor:pointer}
 #bopYummySearch .bop-ys-note{margin:8px 6px 0;font:500 .95rem/1.35 Arial,sans-serif;color:#cdbf94}
+html body #bopStaticLandingDock #bopStaticVoiceMic span:not(#x):not(#y){font-size:5px!important;letter-spacing:0!important}
 </style>
-<div id="bopYummySearch" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Search any restaurant"><div class="bop-ys-panel"><button type="button" class="bop-ys-close" aria-label="Close">&times;</button><h2 class="bop-ys-title">Yummy</h2><p class="bop-ys-sub">Search for restaurants in our directory only.</p><input id="bopYsInput" type="search" inputmode="search" autocomplete="off" autocapitalize="words" placeholder="Restaurant name" aria-label="Restaurant name"><div class="bop-ys-results" id="bopYsResults"></div><div class="bop-ys-status" id="bopYsStatus"></div><div class="bop-ys-miss" id="bopYsMiss"><h3>Don't see your restaurant?</h3><a class="bop-ys-mail" id="bopYsMail" href="#">Email us to check it out</a><div class="bop-ys-note">Opens an email with the message already written for you and copied to your clipboard, so you can just send or paste it.</div></div></div></div>
+<div id="bopYummySearch" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Search any restaurant"><div class="bop-ys-panel"><button type="button" class="bop-ys-close" aria-label="Close">&times;</button><h2 class="bop-ys-title">Yummy</h2><p class="bop-ys-sub">Search for restaurants in our directory only.</p><input id="bopYsInput" type="search" inputmode="search" autocomplete="off" autocapitalize="words" placeholder="Restaurant name" aria-label="Restaurant name"><div class="bop-ys-results" id="bopYsResults"></div><div class="bop-ys-status" id="bopYsStatus"></div><div class="bop-ys-miss" id="bopYsMiss"><h3>Don't see your restaurant?</h3><input id="bopYsCity" type="text" autocomplete="off" autocapitalize="words" placeholder="City, State" aria-label="City, State"><a class="bop-ys-mail" id="bopYsMail" href="#">Email us to check it out</a><div class="bop-ys-note">Opens an email with the message already written for you and copied to your clipboard, so you can just send or paste it.</div></div></div></div>
 <script id="bop-yummy-orb-v1-script">(function(){
 var TO='info@bestofperiod.com';
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -70956,12 +70958,12 @@ function build(){
 var modal=document.getElementById('bopYummySearch');if(!modal)return;
 var input=document.getElementById('bopYsInput'),res=document.getElementById('bopYsResults'),stat=document.getElementById('bopYsStatus'),mail=document.getElementById('bopYsMail');
 function message(name){
-  var n=(name||'').trim();
-  return "Hi team,\n\nYou don't see "+(n||'[restaurant name]')+", and I'd like you to check it out.\n\nRestaurant name: "+(n||'')+"\nCity / address:\nWhy it belongs in the directory:\n\n(This message was copied and pasted automatically from the Yummy search.)";
+  var n=(name||'').trim(),c=((document.getElementById('bopYsCity')||{}).value||'').trim();
+  return "Hi team,\n\nI don't see "+(n||'[restaurant name]')+(c?" in "+c:"")+".\n\n"+(c?"":"City, State: \n\n")+"Thank you!";
 }
 function setMail(){
   var n=input.value.trim();
-  mail.href='mailto:'+TO+'?subject='+encodeURIComponent("Don't see "+(n||'my restaurant')+"? Please check it out")+'&body='+encodeURIComponent(message(n));
+  mail.href='mailto:'+TO+'?subject='+encodeURIComponent("I don't see "+(n||'my restaurant'))+'&body='+encodeURIComponent(message(n));
 }
 function search(){
   var q=norm(input.value);setMail();
@@ -70976,12 +70978,13 @@ function search(){
     stat.textContent="Not in our system yet.";res.innerHTML='';
   }
 }
-function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');input.value='';res.innerHTML='';stat.textContent='';setMail();setTimeout(function(){try{input.focus()}catch(e){}},120)}
+function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');input.value='';if(cityIn)cityIn.value='';res.innerHTML='';stat.textContent='';setMail();setTimeout(function(){try{input.focus()}catch(e){}},120)}
 function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}
 modal.querySelector('.bop-ys-close').addEventListener('click',close);
 modal.addEventListener('click',function(e){if(e.target===modal)close()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close()});
 input.addEventListener('input',search);
+var cityIn=document.getElementById('bopYsCity');if(cityIn)cityIn.addEventListener('input',setMail);
 mail.addEventListener('click',function(){
   var txt=message(input.value);
   try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt)}catch(e){}
