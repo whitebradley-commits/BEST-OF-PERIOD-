@@ -71927,4 +71927,22 @@ var R=[["CORE by Clare Smyth","london","OpenTable","https://www.opentable.com/r/
 function pass(){try{if(typeof boCategoryData==='undefined')return;Object.keys(boCategoryData).forEach(function(k){var a=boCategoryData[k];if(!Array.isArray(a))return;a.forEach(function(r){if(!r||!r.name||r.reserveUrl)return;var c=r.city||'bestof',m=M[r.name+'|'+c]||(/^sd/.test(c)?M[r.name+'|sandiego']:null);if(m){r.reserveVia=m[2];r.reserveUrl=m[3]}})})}catch(e){}}
 pass();[300,900,1800,3500,6000,9500,14000].forEach(function(t){setTimeout(pass,t)});setInterval(pass,5000);
 })();</script>
+<style id="bop-yummy-apple-small-v1-style">
+html body #bopStaticLandingDock .bop-static-yummy .bop-ym-apple{width:7px!important;height:7px!important;border-radius:0!important;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z' fill='%23f0be46'/><path d='M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z' fill='%23f0be46'/></svg>") center/contain no-repeat!important;box-shadow:none!important;filter:none!important;opacity:.9!important;z-index:1!important}
+html body #bopStaticLandingDock .bop-static-yummy .bop-ym-big{z-index:5!important}
+</style>
+<script id="bop-dedupe-chain-cards-v1-script">(function(){
+/* Per Brad (2026-10-14): one card per chain per city. Extra locations of the same chain in one city list fold into the first card's "Other locations" pop-down. */
+function norm(n){n=String(n||'').split(/\s[—–-]\s|\s\(/)[0];return n.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]/g,'')}
+function pass(){try{if(typeof boCategoryData==='undefined')return;Object.keys(boCategoryData).forEach(function(k){try{var a=boCategoryData[k];if(!Array.isArray(a))return;var seen={};
+for(var i=0;i<a.length;i++){var r=a[i];if(!r||!r.name)continue;var key=(r.city||'bestof')+'|'+norm(r.name);var kp=seen[key];
+if(!kp){seen[key]=r;continue}
+if(kp===r)continue;
+var addr=String(r.address||'').toLowerCase().slice(0,12),have=String(kp.address||'').toLowerCase().slice(0,12);
+if(addr&&addr!==have){var ol=kp.otherLocations||(kp.otherLocations=[]);if(!ol.some(function(o){return String(o.address||'').toLowerCase().slice(0,12)===addr}))ol.push({name:r.name,address:r.address,phone:r.phone||null,rating:(r.rating&&/^\s*\d/.test(r.rating))?r.rating:null});
+(r.otherLocations||[]).forEach(function(o){var oa=String(o.address||'').toLowerCase().slice(0,12);if(oa&&oa!==have&&!ol.some(function(x){return String(x.address||'').toLowerCase().slice(0,12)===oa}))ol.push(o)});kp.__noChain=0}
+a.splice(i,1);i--}
+}catch(e){}})}catch(e){}}
+pass();[1200,2500,4500,7000,10000,14000,20000].forEach(function(t){setTimeout(pass,t)});setInterval(pass,5000);
+})();</script>
 </body></html>
