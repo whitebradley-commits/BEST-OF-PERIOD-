@@ -70460,7 +70460,7 @@ function ensure(sel){
   }
   if(getComputedStyle(page).position==='static')page.style.position='relative';
 }
-function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');}
+function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');ensure('#bopWorldwideLanding');}
 tick();setInterval(tick,1000);
 })();</script>
 <style id="bop-misc-fixes-20261003b-style">
@@ -71944,5 +71944,26 @@ if(addr&&addr!==have){var ol=kp.otherLocations||(kp.otherLocations=[]);if(!ol.so
 a.splice(i,1);i--}
 }catch(e){}})}catch(e){}}
 pass();[1200,2500,4500,7000,10000,14000,20000].forEach(function(t){setTimeout(pass,t)});setInterval(pass,5000);
+})();</script>
+<style id="bop-bestlinks-yummy-hero-v1-style">
+/* Best Links page: Yummy-style hero in Best Links blue. No orb; blue dotted map, gold apples, blue YUMMY! pops, checkered BEST LINKS, WHY underneath. */
+html body #bopWorldwideLanding{isolation:isolate}
+html body #bopWorldwideLanding .bop-badge-header-img{display:none!important}
+html body #bopWorldwideLanding>.bop-wm-backdrop{top:24px!important;opacity:.95!important}
+html body #bopWorldwideLanding .bop-wm-backdrop .bop-wm-img{filter:hue-rotate(205deg) saturate(1.35) brightness(1.3)!important}
+html body #bopWorldwideLanding .bop-wm-backdrop .bop-wm-pop{color:#3FB4FF!important;opacity:0}
+html body #bopWorldwideLanding .bop-wm-backdrop .bop-wm-pop.c1{color:#CFEFFF!important}
+html body #bopWorldwideLanding .bop-wm-backdrop .bop-wm-pop.c2{color:#1E78D0!important}
+html body #bopWorldwideLanding .bop-bl-title{position:relative;z-index:2;margin:158px 0 18px;padding:0;text-align:center;font:900 clamp(44px,16.5vw,96px)/.92 'Archivo Black',Arial,sans-serif;letter-spacing:.005em;background-image:repeating-conic-gradient(#0A4F8F 0% 25%,#3FB4FF 0% 50%);background-size:9px 9px;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+html body #bopWorldwideLanding .bop-world-why{position:relative;z-index:2;margin-top:16px!important}
+</style>
+<script id="bop-bestlinks-yummy-hero-v1-script">(function(){
+/* Adds the checkered BEST LINKS title above WHY and swaps the backdrop map to a blue <img> so the apples stay gold. */
+function run(){
+  var w=document.getElementById('bopWorldwideLanding');if(!w)return;
+  var hero=w.querySelector('.bop-world-hero'),why=w.querySelector('.bop-world-why');
+  if(hero&&why&&!hero.querySelector('.bop-bl-title')){var h=document.createElement('h2');h.className='bop-bl-title';h.innerHTML='BEST<br>LINKS';hero.insertBefore(h,why)}
+}
+run();setInterval(run,1000);
 })();</script>
 </body></html>
