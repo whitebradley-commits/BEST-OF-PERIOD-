@@ -72020,10 +72020,33 @@ function findCard(name){
   for(var i=0;i<cards.length;i++){var h=cards[i].querySelector('.bo-card-body h3');if(h&&norm(h.textContent).indexOf(w)===0)return cards[i]}
   return null;
 }
+function parkVoice(){
+  window.__bopVoiceParked=true;
+  try{window.speechSynthesis&&window.speechSynthesis.cancel()}catch(e){}
+  ['bopVoiceResults','bopVoiceReply'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true');if(id==='bopVoiceReply')el.style.setProperty('display','none','important')}});
+  document.body.classList.remove('bop-apple-page-open');document.body.style.overflow='';
+}
+function unparkVoice(){
+  window.__bopVoiceParked=false;
+  try{if(window.__bopVoiceGuard)window.__bopVoiceGuard.disconnect()}catch(e){}
+  document.body.classList.remove('bop-voice-landed');
+  document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open')});
+  var best=document.getElementById('bestOfOverlay');if(best)best.classList.remove('open');
+  var rc=document.getElementById('bopVoiceRestaurantCard');if(rc)rc.style.display='none';
+  var v3=document.getElementById('bopLandingV3');if(v3)v3.style.setProperty('display','none','important');
+  ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
+  var vr=document.getElementById('bopVoiceReply'),res=document.getElementById('bopVoiceResults');
+  if(vr){vr.classList.add('open');vr.setAttribute('aria-hidden','false');vr.style.setProperty('display','block','important');vr.style.setProperty('visibility','visible','important');vr.style.setProperty('opacity','1','important');vr.style.setProperty('z-index','2147483647','important');vr.scrollTop=0}
+  if(res){res.classList.add('open');res.setAttribute('aria-hidden','false')}
+  window.__bopAppleOpenedFromV3=true;
+  document.body.classList.add('bop-apple-page-open');document.body.style.overflow='hidden';
+  window.scrollTo(0,0);
+}
+window.__bopUnparkVoice=unparkVoice;
 function hideLand(){var v=document.getElementById('bopLandingV3');if(v)v.style.setProperty('display','none','important');document.body.classList.remove('bop-v3-approved-landing');var vr=document.getElementById('bopVoiceReply');if(vr&&vr.classList.contains('open')){vr.classList.remove('open');vr.style.setProperty('display','none','important')}}
 function closeVoice(){
   try{var c=document.getElementById('bopVoiceRestaurantCard');if(c)c.style.display='none'}catch(e){}
-  window.__bopAppleOpenedFromV3=false;window.__bopVoiceOpenedFromV3=false;document.body.classList.remove('bop-apple-page-open');try{document.getElementById('bopVoiceClose').click()}catch(e){}hideLand();
+  window.__bopAppleOpenedFromV3=false;window.__bopVoiceOpenedFromV3=false;document.body.classList.remove('bop-apple-page-open');parkVoice();hideLand();
   ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
   document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';
 }
@@ -72074,12 +72097,28 @@ function land(card,name){
     try{if(window.__bopVoiceGuard)window.__bopVoiceGuard.disconnect()}catch(e){}
     document.body.classList.remove('bop-voice-landed');
     try{var d=window.BOP_DISMISSED_GATES;if(d)Object.keys(d).forEach(function(k){d[k]=false})}catch(e){}
-    var v=document.getElementById('bopLandingV3');
+    /* After Back, if no city/category page is showing, the real main landing (V3) must be what you see, not the old landing layers. */
+    [250,700,1500,3000].forEach(function(ms){setTimeout(function(){
+      var best=document.getElementById('bestOfOverlay'),bo=best&&best.classList.contains('open');
+      var gate=document.querySelector('.bop-city-gate.open');
+      var vr=document.getElementById('bopVoiceReply'),vopen=vr&&vr.classList.contains('open');
+      if(bo||gate||vopen)return;
+      var v=document.getElementById('bopLandingV3');if(!v)return;
+      ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
+      v.style.removeProperty('display');v.style.setProperty('display','grid','important');
+      document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';window.scrollTo(0,0);
+    },ms)});
   }
   ['pointerdown','touchstart','mousedown','click'].forEach(function(ev){window.addEventListener(ev,function(e){
     var t=e.target;if(!t||!t.closest)return;
-    if(t.closest('#boBackBtn,.bo-back-btn,.bop-city-gate-back'))restore();
-  },{capture:true,passive:true})});
+    if(t.closest('#boBackBtn,.bo-back-btn,.bop-city-gate-back')){
+      if(window.__bopVoiceParked){
+        if(e.type==='click'){try{e.preventDefault();e.stopImmediatePropagation()}catch(x){}unparkVoice();}
+        return;
+      }
+      restore();
+    }
+  },{capture:true,passive:false})});
 })();
 window.__bopVoiceDirect=function(x){
   try{
