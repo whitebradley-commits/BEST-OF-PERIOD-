@@ -72444,10 +72444,12 @@ function start(){if(go)return;go=true;
 function ask(){var mp=root.querySelector('.mp');mp.style.display='flex';
  mp.querySelector('.on').addEventListener('click',function(){setMuted(false);try{A.muted=false;var p=A.play();if(p&&p.catch)p.catch(function(){})}catch(e){}mp.style.display='none';start()});
  mp.querySelector('.off').addEventListener('click',function(){setMuted(true);try{A.pause()}catch(e){}mp.style.display='none';start()})}
-(function(){if(window.__bopIntroT!=null||!A||isMuted()){start();return}
- var settled=false;function ok(){if(settled)return;settled=true;start()}function no(){if(settled)return;settled=true;ask()}
- try{A.muted=false;var p=A.play();if(p&&p.then)p.then(ok,no);else ok()}catch(e){no()}
- setTimeout(ok,2500)})();
+(function(){if(window.__bopIntroT!=null||!A){start();return}
+ var shown=false;function ok(){if(go)return;var mp=root.querySelector('.mp');if(mp)mp.style.display='none';start()}
+ function no(){if(go||shown)return;shown=true;ask()}
+ if(isMuted()){no();return}
+ try{A.muted=false;var p=A.play();if(p&&p.then)p.then(ok,no);else no()}catch(e){no()}
+ setTimeout(no,1200)})();
 /* bodies: D = distance beyond Earth along the flight line, x/y = lateral offset, Rr = radius (Earth = 1) */
 var BODY=[
  {k:'saturn',mode:1,D:90,x:-20,y:5.5,Rr:7,tilt:.42,roll:-.32,spin:.12,gc:[.9,.78,.5],gl:.25},
