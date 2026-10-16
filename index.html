@@ -72035,7 +72035,7 @@ function land(card,name){
   function stopPull(){touched=true}
   ['touchstart','wheel','pointerdown'].forEach(function(ev){window.addEventListener(ev,stopPull,{passive:true,once:true,capture:true})});
   /* keep the city page from re-opening on top of the card for a minute, without touching scrolling */
-  var guard=new MutationObserver(function(){document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');document.body.style.overflow=''});var v=document.getElementById('bopLandingV3');if(v&&v.style.display!=='none')v.style.setProperty('display','none','important')});
+  var guard=window.__bopVoiceGuard=new MutationObserver(function(){document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');document.body.style.overflow=''});var v=document.getElementById('bopLandingV3');if(v&&v.style.display!=='none')v.style.setProperty('display','none','important')});
   guard.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class']});
   var v3=document.getElementById('bopLandingV3');if(v3)guard.observe(v3,{attributes:true,attributeFilter:['style']});
   setTimeout(function(){guard.disconnect();document.body.classList.remove('bop-voice-landed')},60000);
@@ -72066,6 +72066,20 @@ function land(card,name){
       if(r.top<0||r.bottom>vh)c.scrollIntoView({behavior:'auto',block:'center'});
     })();
   };
+})();
+
+(function(){
+  /* Back must undo everything the tap-to-card handoff did, so the city page Back leads to actually shows. */
+  function restore(){
+    try{if(window.__bopVoiceGuard)window.__bopVoiceGuard.disconnect()}catch(e){}
+    document.body.classList.remove('bop-voice-landed');
+    try{var d=window.BOP_DISMISSED_GATES;if(d)Object.keys(d).forEach(function(k){d[k]=false})}catch(e){}
+    var v=document.getElementById('bopLandingV3');
+  }
+  ['pointerdown','touchstart','mousedown','click'].forEach(function(ev){window.addEventListener(ev,function(e){
+    var t=e.target;if(!t||!t.closest)return;
+    if(t.closest('#boBackBtn,.bo-back-btn,.bop-city-gate-back'))restore();
+  },{capture:true,passive:true})});
 })();
 window.__bopVoiceDirect=function(x){
   try{
