@@ -52508,7 +52508,9 @@ if(myToken!==renderToken||window.__boLastRenderedCat!==cat){clearInterval(interv
 var len=currentLen();
 if(len!==-1&&len!==lenAtRender){
 lenAtRender=len;
-original.apply(self,args);
+/* Per Brad 2026-10-16: background data tidy-ups (duplicate sweeps) re-rendered the open category every few seconds, snapping the page back to the top while he was reading a card. Never re-render under someone who has scrolled. */
+var ovS=document.getElementById('bestOfOverlay');
+if(!((ovS&&ovS.scrollTop>40)||(window.scrollY>40)))original.apply(self,args);
 }
 if(checks>=maxChecks)clearInterval(interval);
 },350);
