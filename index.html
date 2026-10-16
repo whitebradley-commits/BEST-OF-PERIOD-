@@ -72027,20 +72027,45 @@ function closeVoice(){
   document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';
 }
 function land(card,name){
-  var t0=Date.now(),last=0;document.body.classList.add('bop-voice-landed');
-  setTimeout(function(){document.body.classList.remove('bop-voice-landed')},9000);
+  var t0=Date.now(),last=0,touched=false,scrolled=0;
+  document.body.classList.add('bop-voice-landed');
+  /* mark this city's gate as dismissed so the site's gate-enforcer stops re-opening it */
+  try{var dm=document.createElement('span');dm.className='bop-nyli-zone';dm.style.display='none';document.body.appendChild(dm);dm.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));dm.remove()}catch(e){}
+  function stopPull(){touched=true}
+  ['touchstart','wheel','pointerdown'].forEach(function(ev){window.addEventListener(ev,stopPull,{passive:true,once:true,capture:true})});
+  /* keep the city page from re-opening on top of the card for a minute, without touching scrolling */
+  var guard=new MutationObserver(function(){document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');document.body.style.overflow=''});var v=document.getElementById('bopLandingV3');if(v&&v.style.display!=='none')v.style.setProperty('display','none','important')});
+  guard.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class']});
+  var v3=document.getElementById('bopLandingV3');if(v3)guard.observe(v3,{attributes:true,attributeFilter:['style']});
+  setTimeout(function(){guard.disconnect();document.body.classList.remove('bop-voice-landed')},60000);
   function step(){
     var now=Date.now();
     if(now-last>120){last=now;
       var c=findCard(name);
       hideLand();document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');document.body.style.overflow=''});
-      if(c){var r=c.getBoundingClientRect(),vh=window.innerHeight||800;if(r.top<0||r.bottom>vh)c.scrollIntoView({behavior:'auto',block:'center'});
+      if(c&&!touched){var r=c.getBoundingClientRect(),vh=window.innerHeight||800;if((r.top<0||r.bottom>vh)&&scrolled<6){scrolled++;c.scrollIntoView({behavior:'auto',block:'center'})}
         if(!c.__glow){c.__glow=1;c.style.transition='box-shadow .35s ease';c.style.boxShadow='0 0 0 3px #E3A02B,0 0 30px rgba(227,160,43,.92)';setTimeout(function(){c.style.boxShadow=''},4200)}}
     }
-    if(now-t0<9000)requestAnimationFrame(step);
+    if(now-t0<3000&&!touched)requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
 }
+
+(function(){
+  var touched=false;
+  ['touchstart','wheel','pointerdown'].forEach(function(ev){window.addEventListener(ev,function(){touched=true},{passive:true,capture:true})});
+  window.bopScrollToCard=function(name,n){
+    touched=false;
+    var tries=0;
+    (function go(){
+      if(touched)return;
+      var c=findCard(name);
+      if(!c){if(++tries<16)setTimeout(go,250);return}
+      var r=c.getBoundingClientRect(),vh=window.innerHeight||800;
+      if(r.top<0||r.bottom>vh)c.scrollIntoView({behavior:'auto',block:'center'});
+    })();
+  };
+})();
 window.__bopVoiceDirect=function(x){
   try{
     var rec=x&&x.r;if(!rec||!rec.name||typeof boOpenRestaurantFromMap!=='function'||typeof boCategoryData==='undefined')return false;
@@ -72048,7 +72073,7 @@ window.__bopVoiceDirect=function(x){
     var ctxs=[];[parentOf(rec.city||''),rec.city,parentOf(city),city].forEach(function(c){if(c&&ctxs.indexOf(c)<0)ctxs.push(c)});
     var tries=[];cats.forEach(function(k){ctxs.forEach(function(c){tries.push([k,c])})});
     window.BOP_DISMISSED_GATES=window.BOP_DISMISSED_GATES||{};['sandiego','losangeles','newyork'].concat(ctxs).forEach(function(k){window.BOP_DISMISSED_GATES[k]=true});
-    closeVoice();document.body.classList.add('bop-voice-landed');setTimeout(function(){document.body.classList.remove('bop-voice-landed')},9000);
+    closeVoice();document.body.classList.add('bop-voice-landed');
     var i=0;
     (function next(){
       if(i>=tries.length){try{boOpenRestaurantFromMap(cats[0],rec.name,ctxs[0])}catch(e){}return}
