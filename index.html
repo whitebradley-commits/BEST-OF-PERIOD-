@@ -50004,7 +50004,7 @@ guard++;
 }
 }
 function fitAll(){
-document.querySelectorAll('#boHeroTitle .bop-splash-city[data-fit],.bop-unified-subcategory-title[data-fit],#bopCelebChefOverlay .bop-splash-city[data-fit],#bopCelebChefPage .bop-splash-city[data-fit]').forEach(fitOne);
+document.querySelectorAll('.bop-unified-subcategory-title[data-fit]:not(#boHeroTitle .bop-splash-city),#bopCelebChefOverlay .bop-splash-city[data-fit],#bopCelebChefPage .bop-splash-city[data-fit]').forEach(fitOne);
 }
 var pending=0;
 function schedule(){if(!pending)pending=requestAnimationFrame(function(){pending=0;fitAll();});}
@@ -56675,6 +56675,7 @@ var city=hero.querySelector('.bop-splash-city');
 if(!lock||!city)return;
 var target=lock.getBoundingClientRect().width;
 if(!(target>60))return;
+var cfk=city.textContent+'|'+Math.round(target);if(city.__cfKey===cfk&&city.style.getPropertyValue('font-size'))return;city.__cfKey=cfk;
 city.style.removeProperty('font-size');city.style.removeProperty('max-width');city.style.setProperty('white-space','nowrap','important');
 var fs=parseFloat(getComputedStyle(city).fontSize);if(!(fs>0))return;
 var range=document.createRange();range.selectNodeContents(city);
