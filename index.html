@@ -45712,7 +45712,7 @@ document.getElementById('bopVoiceSummary').innerHTML='';
 document.getElementById('bopVoiceNote').textContent='';
 window.__bopVoiceRows=rows;
 var lst=document.getElementById('bopVoiceList');
-if(lst){lst.innerHTML=rows.length?'<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">'+rows.map(function(x,vi){return '<div data-vi="'+vi+'" role="button" tabindex="0" style="cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid rgba(227,160,43,.55);border-radius:12px;color:#E3A02B;font:800 .85rem Archivo Narrow,Arial,sans-serif;"><span>'+esc(x.n)+(x.c?' <small style="opacity:.8">'+esc(x.c)+'</small>':'')+'</span><b>'+(x.r?esc(x.r)+' ★':'')+'</b></div>'}).join('')+'</div>':''}
+if(lst){lst.innerHTML=rows.length?'<div class="bop-voice-tap-hint">Tap a restaurant for more information</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">'+rows.map(function(x,vi){return '<div data-vi="'+vi+'" role="button" tabindex="0" style="cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid rgba(227,160,43,.55);border-radius:12px;color:#E3A02B;font:800 .85rem Archivo Narrow,Arial,sans-serif;"><span>'+esc(x.n)+(x.c?' <small style="opacity:.8">'+esc(x.c)+'</small>':'')+'</span><b>'+(x.r?esc(x.r)+' ★':'')+'</b></div>'}).join('')+'</div>':''}
 var rep=document.getElementById('bopVoiceReply'),lab=document.getElementById('bopVoiceReplyLabel'),bod=document.getElementById('bopVoiceReplyText');
 if(lab)lab.textContent=(function(){try{var __vn=localStorage.getItem('bopVoiceName')||'';return (/daniel/i.test(__vn)?'DANIEL':'APPLE')+' SAYS';}catch(__e){return 'APPLE SAYS';}})();
 if(rep)rep.classList.add('open');
@@ -46049,7 +46049,7 @@ list.innerHTML='<div class="bop-voice-empty">Nothing yet \u2014 the restaurants 
 }
 return;}
 function renderRows(){
-list.innerHTML=rows.map(function(x,i){
+list.innerHTML='<div class="bop-voice-tap-hint">Tap a restaurant for more information</div>'+rows.map(function(x,i){
 var r=x.r,lvl=0;try{lvl=boNearPriceLevel(r)||0;}catch(e){}
 var meta=[cityLabel(x.city),catLabel(r.cat)];
 if(r.bjsPick)meta.push('BJS PICK');
@@ -46102,7 +46102,7 @@ pizzaMini='<span class="bop-voice-pizza-mini">'
 }
 return '<button type="button" class="bop-voice-row" data-voice-idx="'+i+'"><span><span class="bop-voice-row-name">'+appleBadge+esc(r.name)+'</span><span class="bop-voice-row-meta">'+esc(meta.join(' \u00b7 '))+pizzaMini+'</span></span><span class="bop-voice-row-dist">'+dist+'</span></button>';
 }).join('');
-list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x)openRestaurant(x);});});
+list.querySelectorAll('[data-voice-idx]').forEach(function(btn){btn.addEventListener('click',function(){var x=rows[Number(btn.dataset.voiceIdx)];if(x){if(window.__bopVoiceDirect&&window.__bopVoiceDirect(x))return;openRestaurant(x);}});});
 /* Rows still without an exact distance after the pre-fetch window below
    just fell back to a rough city-center estimate, which used to render
    as a blank instead of a real number. Keep looking up the rest in the
@@ -71997,4 +71997,70 @@ var D=[{"c": "london", "k": "pho", "n": "Pho Soho", "r": 4.5, "rs": "Google 4.5,
 function push(cat,rec){if(!Array.isArray(boCategoryData[cat]))boCategoryData[cat]=[];var a=boCategoryData[cat];if(a.some(function(x){return x&&x.city===rec.city&&x.name===rec.name;}))return;var c=Object.assign({},rec);c.rank=a.filter(function(x){return x&&x.city===rec.city;}).length+1;a.push(c);}
 function pass(){try{if(typeof boCategoryData==='undefined')return;D.forEach(function(d){var rec={name:d.n,city:d.c,rating:d.r+' / 5',ratingSource:d.rs,reviews:d.rev||null,why:d.w,note:d.t,url:d.u,address:d.a,phone:d.p,price:d.pr,hue:'28, 34%, 24%',directionsUrl:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(d.n+' '+d.a)};if(d.tip)rec.redCallout=d.tip;(EX[d.k]||[d.k]).forEach(function(cat){push(cat,rec);});});}catch(e){}}
 pass();[500,1500,4000,9000].forEach(function(t){setTimeout(pass,t);});
+})();</script><style id="bop-voice-direct-card-v1-style">
+#bopVoiceResults .bop-voice-tap-hint{margin:10px 0 2px;text-align:center;color:#E3A02B;font:800 .8rem 'Archivo Narrow',Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase;opacity:.9}
+</style>
+<script id="bop-voice-direct-card-v1-script">(function(){
+/* Per Brad (2026-10-15): in Hands Free, tapping a restaurant went to the wrong page (an area's Top 4, a two-option parent page), bounced around, and never landed on the card. Now a tap goes straight to that restaurant's card in the right city and the right category, scrolls to it and stays. */
+function norm(s){return String(s||'').toLowerCase().replace(/[\u2018\u2019\u02BC]/g,"'").replace(/\s+/g,' ').trim()}
+function parentOf(k){var cfg=(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG)||{};var c=cfg[k];if(c&&(c.parentCity||c.parent))return c.parentCity||c.parent;if(/^sd[a-z]/.test(k))return 'sandiego';if(/^la[a-z]/.test(k))return 'losangeles';return k}
+function homes(rec){
+  var cfg=(typeof BO_CITY_CONFIG==='object'&&BO_CITY_CONFIG)||{},pk=(typeof boPickerConfig==='object'&&boPickerConfig)||{},leaf=[],pick=[],mich=[];
+  Object.keys(boCategoryData).forEach(function(k){
+    var a=boCategoryData[k];if(!Array.isArray(a)||cfg[k]||/bjspick|^bestof$|newrestaurants|notquiteopen|^otheroptions$/i.test(k))return;
+    var has=a.some(function(z){return z&&norm(z.name)===norm(rec.name)&&(!rec.city||!z.city||z.city===rec.city||parentOf(z.city)===parentOf(rec.city))});
+    if(!has)return;
+    if(k==='michelin')mich.push(k);else if(pk[k]&&pk[k].length)pick.push(k);else leaf.push(k);
+  });
+  return leaf.concat(mich,pick);
+}
+function findCard(name){
+  var cards=document.querySelectorAll('#boList .bo-card'),w=norm(name);
+  for(var i=0;i<cards.length;i++){var h=cards[i].querySelector('.bo-card-body h3');if(h&&norm(h.textContent).indexOf(w)===0)return cards[i]}
+  return null;
+}
+function closeVoice(){
+  try{var c=document.getElementById('bopVoiceRestaurantCard');if(c)c.style.display='none'}catch(e){}
+  try{document.getElementById('bopVoiceClose').click()}catch(e){}
+  ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
+  document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';
+}
+function land(card,name){
+  var n=0,t=setInterval(function(){
+    var c=findCard(name);n++;
+    document.querySelectorAll('.bop-city-gate.open').forEach(function(g){g.classList.remove('open');document.body.style.overflow=''});
+    if(c){var r=c.getBoundingClientRect(),vh=window.innerHeight||800;if(r.top<0||r.bottom>vh)c.scrollIntoView({behavior:'auto',block:'center'});
+      if(!c.__glow){c.__glow=1;c.style.transition='box-shadow .35s ease';c.style.boxShadow='0 0 0 3px #E3A02B,0 0 30px rgba(227,160,43,.92)';setTimeout(function(){c.style.boxShadow=''},4200)}}
+    if(n>24)clearInterval(t);
+  },250);
+}
+window.__bopVoiceDirect=function(x){
+  try{
+    var rec=x&&x.r;if(!rec||!rec.name||typeof boOpenRestaurantFromMap!=='function'||typeof boCategoryData==='undefined')return false;
+    var city=x.city||rec.city||'',cats=homes(rec);if(!cats.length)return false;
+    var ctxs=[];[parentOf(rec.city||''),rec.city,parentOf(city),city].forEach(function(c){if(c&&ctxs.indexOf(c)<0)ctxs.push(c)});
+    var tries=[];cats.forEach(function(k){ctxs.forEach(function(c){tries.push([k,c])})});
+    window.BOP_DISMISSED_GATES=window.BOP_DISMISSED_GATES||{};['sandiego','losangeles','newyork'].concat(ctxs).forEach(function(k){window.BOP_DISMISSED_GATES[k]=true});
+    closeVoice();
+    var i=0;
+    (function next(){
+      if(i>=tries.length){try{boOpenRestaurantFromMap(cats[0],rec.name,ctxs[0])}catch(e){}return}
+      var t=tries[i++];
+      try{boOpenRestaurantFromMap(t[0],rec.name,t[1])}catch(e){}
+      var a=0,p=setInterval(function(){
+        a++;var c=findCard(rec.name);
+        if(c){clearInterval(p);try{window.bopScrollToCard&&window.bopScrollToCard(rec.name)}catch(e){}land(c,rec.name);return}
+        if(a>=4){clearInterval(p);next()}
+      },150);
+    })();
+    return true;
+  }catch(e){return false}
+}
+function hint(){
+  var list=document.getElementById('bopVoiceList');if(!list)return;
+  var has=list.querySelector('.bop-voice-row'),h=document.getElementById('bopVoiceTapHint');
+  if(has&&!h){h=document.createElement('div');h.id='bopVoiceTapHint';h.className='bop-voice-tap-hint';h.textContent='Tap a restaurant for more information';list.parentNode.insertBefore(h,list)}
+  else if(!has&&h)h.remove();
+}
+(function(){var q=0;new MutationObserver(function(){if(q)return;q=1;requestAnimationFrame(function(){q=0;hint()})}).observe(document.body,{childList:true,subtree:true})})();
 })();</script></body></html>
