@@ -67904,6 +67904,7 @@ z-index:2147483647 !important;
       e.preventDefault();
       e.stopImmediatePropagation();
 
+      window.__bopEnterRot=1;
       hideV3();
 
       if(!clickReal('bopOrbEnterBtn') && rotating){
@@ -72174,7 +72175,8 @@ function broken(){
 }
 function fix(){
   var v=document.getElementById('bopLandingV3');if(!v)return;
-  if(getComputedStyle(v).display!=='none')return;
+  if(getComputedStyle(v).display!=='none'){window.__bopEnterRot=0;return}
+  if(window.__bopEnterRot){var rr=document.getElementById('bopLandingOverlay');if(rr&&rr.classList.contains('open')&&getComputedStyle(rr).display!=='none')return;}
   if(!broken())return;
   ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
   var vr=document.getElementById('bopVoiceReply');if(vr&&vr.classList.contains('open')){vr.classList.remove('open');vr.style.setProperty('display','none','important')}
