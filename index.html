@@ -71928,7 +71928,7 @@ function pass(){try{if(typeof boCategoryData==='undefined')return;D.forEach(func
 pass();[500,1500,4000,9000].forEach(function(t){setTimeout(pass,t);});
 })();</script><style id="bop-reserve-btn-v1-style">
 .bo-reserve-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;max-width:100%;margin:7px 0 2px;padding:5px 8px;border:1px solid #E3A02B;border-radius:6px;background:transparent;color:#E3A02B!important;font:700 .74rem 'Archivo Narrow',Arial,sans-serif;letter-spacing:.035em;text-transform:uppercase;text-decoration:none!important;box-sizing:border-box}
-.bo-reserve-btn img{display:inline-block;width:auto;height:14px;max-width:52px;object-fit:contain;flex:0 0 auto}.bo-reserve-btn:active{filter:brightness(.9)}.bo-reserve-btn[data-via=SevenRooms]{display:flex;width:100%;align-items:center;justify-content:center;gap:7px;min-height:52px;padding:8px 10px;background:#000;border-color:#fff;color:#fff!important}.bo-reserve-btn[data-via=SevenRooms] img{height:16px;max-width:56px}.bo-reserve-btn[data-via=Chope] img{padding:2px 3px;background:#111;border-radius:2px}
+.bo-reserve-btn img{display:inline-block;width:auto;height:14px;max-width:52px;object-fit:contain;flex:0 0 auto;transform:scale(1.8);transform-origin:center}.bo-reserve-btn:active{filter:brightness(.9)}.bo-reserve-btn[data-via=SevenRooms]{display:flex;width:100%;align-items:center;justify-content:center;gap:7px;min-height:52px;padding:8px 10px;background:#000;border-color:#fff;color:#fff!important}.bo-reserve-btn[data-via=SevenRooms] img{height:16px;max-width:56px;transform:scale(1.8)}.bo-reserve-btn[data-via=Chope] img{padding:2px 3px;background:#111;border-radius:2px}
 </style>
 <script id="bop-reserve-links-v1-script">(function(){
 
@@ -72639,5 +72639,13 @@ for(var cat in boCategoryData){var a=boCategoryData[cat];if(!Array.isArray(a))co
 a.forEach(function(x){if(!x||!x.name)return;var k=nz(x.name);
 for(var i=0;i<P.length;i++){var p=P[i];var ok=p.m==='eq'?k===p.n:k.indexOf(p.n)===0;if(!ok)continue;if(p.c&&p.c.indexOf(x.city)<0)continue;if(x.image!==p.u){x.image=p.u;x.imagePosition='center'}break}})}}catch(e){}}
 pass();[300,1000,2500,5000,9000,15000,25000].forEach(function(t){setTimeout(pass,t)});
+})();</script>
+<script id="bop-live-city-map-route-sync-v1">(function(){
+function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'')}
+function hasData(key){if(typeof boCategoryData!=='object'||!boCategoryData)return false;var cats=Object.keys(boCategoryData);for(var i=0;i<cats.length;i++){var list=boCategoryData[cats[i]];if(Array.isArray(list)&&list.some(function(row){return row&&norm(row.city)===norm(key)}))return true}return false}
+function sync(){if(typeof OC_CITIES==='undefined'||typeof BO_CITY_CONFIG==='undefined')return;OC_CITIES.forEach(function(city){if(!city||city.t==='live'&&city.dest)return;var label=norm(city.n),key='';Object.keys(BO_CITY_CONFIG).some(function(k){var cfg=BO_CITY_CONFIG[k]||{};if(label===norm(k)||label===norm(cfg.displayName)||label===norm(cfg.landingName)){key=k;return true}return false});if(key&&hasData(key)){city.t='live';city.dest=key}})}
+function wrap(name){var old=window[name];if(typeof old!=='function'||old.__bopLiveCitySync)return;var next=function(){sync();return old.apply(this,arguments)};next.__bopLiveCitySync=true;window[name]=next}
+function install(){sync();wrap('ocBuildPins');wrap('ocShowCity');wrap('ocLandOnCity')}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();[300,900,1800,3500,7000,12000].forEach(function(ms){setTimeout(sync,ms)});
 })();</script>
 </body></html>
