@@ -21786,9 +21786,8 @@ function destinationFor(button){
 var label=(button.textContent||'').trim();
 if(fixed[label])return fixed[label];
 if(typeof OC_CITIES!=='undefined'){
-var city=OC_CITIES.find(function(item){
-return item&&item.t==='live'&&((item.n||item.name||'').trim().toLowerCase()===label.toLowerCase());
-});
+var normalized=String(label).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''),cities=OC_CITIES.filter(function(item){return item&&item.t==='live'&&item.dest&&((item.n||item.name)||'').trim()}).sort(function(a,b){return String(b.n||b.name).length-String(a.n||a.name).length});
+var city=cities.find(function(item){var name=String(item.n||item.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');return normalized===name||normalized.indexOf(name)===0});
 if(city&&city.dest)return city.dest;
 }
 return '';
@@ -72680,7 +72679,7 @@ html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=SevenRooms]{width:
 html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=OpenTable]{width:74px!important;height:22px!important;filter:brightness(3.3)!important}
 html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=Resy]{width:20px!important;height:20px!important}
 html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=Tock]{width:38px!important;height:16px!important}
-html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=TableCheck]{width:58px!important;height:20px!important}
+html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=TableCheck]{width:86px!important;height:24px!important;filter:brightness(2.8)!important}
 html body .bo-reserve-row img.bo-reserve-logo-inside[data-via=Chope]{width:34px!important;height:18px!important}
 @media(prefers-reduced-motion:reduce){html body .bo-reserve-row a.bo-reserve-btn{animation:bopReservePulseFinal 2.4s ease-in-out infinite!important}}
 </style>
