@@ -71148,10 +71148,28 @@ function pickCat(x){
   if(x.city==='bestof')return 'bestof';
   var city=x.city;return cfg[city]?city:(x.k[0]||'bestof');
 }
+function findRestaurantRecord(x){
+  if(typeof boCategoryData!=='object'||!boCategoryData)return null;
+  var keys=(x.k||[]).concat(Object.keys(boCategoryData)),seen={},fallback=null,nn=norm(x.n),cc=norm(x.city);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];if(seen[k])continue;seen[k]=1;
+    var list=boCategoryData[k];if(!Array.isArray(list))continue;
+    for(var j=0;j<list.length;j++){
+      var r=list[j];if(!r||norm(r.name)!==nn)continue;
+      if(norm(r.city)===cc)return r;
+      if(!fallback)fallback=r;
+    }
+  }
+  return fallback;
+}
 function go(x){
   close();
+  /* Use the card-aware handoff so Yummy opens the selected restaurant instead of its city landing page. */
+  var record=findRestaurantRecord(x);
+  if(record&&typeof window.__bopVoiceDirect==='function'){
+    try{if(window.__bopVoiceDirect({r:record,city:x.city}))return}catch(e){}
+  }
   var cat=pickCat(x);
-  /* the cities page must come off first, or it sits on top of the restaurant card and eats every tap */
   ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
   document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';
   setTimeout(function(){try{boOpenRestaurantFromMap(cat,x.n,x.city)}catch(e){}},50);
