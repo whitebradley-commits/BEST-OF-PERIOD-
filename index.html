@@ -21129,6 +21129,7 @@ else last={id:id,time:now};
 <script id="bop-territory-choice-direct-city-v202">(function(){
 var destinationByName={London:'london',Paris:'paris',Zurich:'zurich','Zürich':'zurich',Lucerne:'lucerne',Geneva:'geneva',Zermatt:'zermatt'};
 function openCity(destination){
+window.__bopCameFromOtherCities=true;
 if((destination==='losangeles'||destination==='sandiego')&&typeof window.bopShowCityGate==='function'){
 var world0=document.getElementById('ocWorldOverlay'),card0=document.getElementById('ocCityCard');
 if(card0)card0.classList.remove('open','oc-city-choice-card','oc-territory-catch');
@@ -25526,6 +25527,7 @@ if(category==='sushi'){render('asian');return;}
 if(category==='asian'){render('otheroptions');return;}
 if(category==='otheroptions'){
 var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+if(window.__bopCameFromOtherCities&&typeof window.bopOpenWorldZoneNavigator==='function'){window.__bopCameFromOtherCities=false;if(best)best.classList.remove('open');window.bopOpenWorldZoneNavigator();return;}
 if(best)best.classList.remove('open');
 if(landing)landing.classList.add('open');
 if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
@@ -25857,6 +25859,7 @@ if(category==='sushi'){show('asian');return}
 if(category==='asian'){show('otheroptions');return}
 if(category==='otheroptions'){
 var best=document.getElementById('bestOfOverlay'),landing=document.getElementById('bopLandingOverlay');
+if(window.__bopCameFromOtherCities&&typeof window.bopOpenWorldZoneNavigator==='function'){window.__bopCameFromOtherCities=false;if(best)best.classList.remove('open');window.bopOpenWorldZoneNavigator();return;}
 if(best)best.classList.remove('open');
 if(landing)landing.classList.add('open');
 if(typeof boReplaceBestOfRoute==='function')boReplaceBestOfRoute('','');
@@ -72670,6 +72673,7 @@ html body .bo-reserve-row a.bo-reserve-btn{display:inline-flex!important;flex-di
 html body .bo-reserve-row a.bo-reserve-btn span{display:block!important;width:auto!important;max-width:100%!important;text-align:center!important;align-self:center!important}
 html body .bo-reserve-row a.bo-reserve-btn[data-via=SevenRooms]{--bop-reserve-glow:rgba(210,214,220,.72)!important;color:#d6d8dc!important;border:1px solid #c5c7ca!important;background:#050505!important}
 html body .bo-reserve-row a.bo-reserve-btn[data-via=OpenTable]{--bop-reserve-glow:rgba(180,184,190,.7)!important;color:#F28FBD!important;border:1px solid #999!important;background:#050505!important}
+html body .bo-reserve-row a.bo-reserve-btn[data-via=OpenTable] span{color:#F28FBD!important;-webkit-text-fill-color:#F28FBD!important}
 html body .bo-reserve-row a.bo-reserve-btn[data-via=Resy]{--bop-reserve-glow:rgba(239,55,75,.72)!important;color:#ef374b!important;border:1px solid #ef374b!important;background:#050505!important}
 html body .bo-reserve-row a.bo-reserve-btn[data-via=Tock]{--bop-reserve-glow:rgba(78,117,230,.68)!important}
 html body .bo-reserve-row a.bo-reserve-btn[data-via=TableCheck]{--bop-reserve-glow:rgba(90,177,185,.68)!important}
