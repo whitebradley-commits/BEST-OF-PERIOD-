@@ -71169,11 +71169,13 @@ function findRestaurantRecord(x){
   return fallback;
 }
 function go(x){
+  window.__bopYummyOpeningRestaurant=true;
   close();
-  var cat=pickCat(x);
+  var cat=pickCat(x),v3=document.getElementById('bopLandingV3');
+  if(v3)v3.style.setProperty('display','none','important');
   ['bopLandingOverlay','bopOrbSplashOverlay'].forEach(function(id){var el=document.getElementById(id);if(el){el.classList.remove('open');el.setAttribute('aria-hidden','true')}});
-  document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash');document.body.style.overflow='';
-  setTimeout(function(){try{boOpenRestaurantFromMap(cat,x.n,x.city)}catch(e){}},50);
+  document.body.classList.remove('bop-orb-hide-on-landing','bop-on-splash','bop-v3-approved-landing');document.body.style.overflow='';
+  setTimeout(function(){try{boOpenRestaurantFromMap(cat,x.n,x.city)}catch(e){console.error('Yummy restaurant route failed',e)}finally{setTimeout(function(){window.__bopYummyOpeningRestaurant=false},1200)}},50);
 }
 res.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.bop-ys-row');if(!r)return;var x=cur[+r.getAttribute('data-i')];if(x)go(x)});
 res.addEventListener('keydown',function(e){if(e.key!=='Enter')return;var r=e.target.closest&&e.target.closest('.bop-ys-row');if(!r)return;var x=cur[+r.getAttribute('data-i')];if(x)go(x)});
@@ -72193,6 +72195,8 @@ function broken(){
 }
 function fix(){
   var v=document.getElementById('bopLandingV3');if(!v)return;
+  var best=document.getElementById('bestOfOverlay');
+  if(window.__bopYummyOpeningRestaurant||(best&&best.classList.contains('open')))return;
   if(getComputedStyle(v).display!=='none'){window.__bopEnterRot=0;return}
   if(window.__bopEnterRot){var rr=document.getElementById('bopLandingOverlay');if(rr&&rr.classList.contains('open')&&getComputedStyle(rr).display!=='none')return;}
   if(!broken())return;
