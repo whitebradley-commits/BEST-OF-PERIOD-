@@ -4,17 +4,18 @@ var _si=window.setInterval,FLOOR=3000,KEEP=/bopStaticYummy|bopStaticLandingDock|
 window.__bopSI=_si;
 window.setInterval=function(f,d){var a=Array.prototype.slice.call(arguments,2);d=+d||0;if(typeof f!=='function')return _si.apply(window,arguments);
 if(d<FLOOR){var keep=false;try{keep=KEEP.test(Function.prototype.toString.call(f))}catch(e){}if(!keep)d=FLOOR}
-return _si.call(window,function(){if(document.hidden)return;return f.apply(this,a)},d)};
+return _si.call(window,function(){if(document.hidden||window.__bopIntroBusy)return;return f.apply(this,a)},d)};
 var _st=window.setTimeout;window.__bopST=_st;
-window.setTimeout=function(){return _st.apply(window,arguments)};
+window.setTimeout=function(f,d){if(typeof f!=='function'||!window.__bopIntroBusy)return _st.apply(window,arguments);var a=Array.prototype.slice.call(arguments,2);
+function g(){if(window.__bopIntroBusy)return _st.call(window,g,600);return f.apply(this,a)}return _st.call(window,g,Math.max(+d||0,0))};
 var _raf=window.requestAnimationFrame.bind(window);window.__bopRAF=_raf;
-window.requestAnimationFrame=function(f){return _raf(f)};
+window.requestAnimationFrame=function(f){if(!window.__bopIntroBusy)return _raf(f);return _st.call(window,function(){_raf(f)},700)};
 var MO=window.MutationObserver;
 if(MO){window.MutationObserver=function(cb){var q=[],t=0,self=this,oi=null,keep=false;
 try{keep=KEEP.test(Function.prototype.toString.call(cb))}catch(e){}
-var last=0,lastOb=null;function run(){t=0;last=Date.now();var r=q;q=[];try{cb.call(self,r,lastOb)}catch(e){}}
+var last=0,lastOb=null;function run(){if(window.__bopIntroBusy){t=setTimeout(run,600);return}t=0;last=Date.now();var r=q;q=[];try{cb.call(self,r,lastOb)}catch(e){}}
 var o=new MO(function(recs,ob){lastOb=ob;Array.prototype.push.apply(q,recs);if(t)return;var wait=700-(Date.now()-last);if(wait<=0)run();else t=setTimeout(run,wait)});
-this.observe=function(n,c){if(keep||(c&&c.attributeFilter)){if(!oi){var pend=0;oi=new MO(function(r,ob){try{cb.call(self,r,ob)}catch(e){}})}return oi.observe(n,c)}return o.observe(n,c)};
+this.observe=function(n,c){if(keep||(c&&c.attributeFilter)){if(!oi){var pend=0;oi=new MO(function(r,ob){if(window.__bopIntroBusy){if(!pend){pend=1;(function w(){if(window.__bopIntroBusy)return _st(w,600);pend=0;try{cb.call(self,[],ob)}catch(e){}})()}return}cb.call(self,r,ob)})}return oi.observe(n,c)}return o.observe(n,c)};
 this.disconnect=function(){o.disconnect();if(oi)oi.disconnect()};this.takeRecords=function(){return o.takeRecords()}};
 window.MutationObserver.prototype=MO.prototype}
 })();</script>
