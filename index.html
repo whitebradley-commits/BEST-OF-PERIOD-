@@ -72931,6 +72931,28 @@ html body #bopWorldwideLanding .bop-ap-tile .bop-apple{position:absolute!importa
 #bopMichelinWorldwideBack{border-color:#DCDCDC!important;color:#DCDCDC!important}
 #bopJamesBeardWorldwideBack{border-color:#FF3A58!important;color:#FF3A58!important}
 #bopAllBjsPicks,#bopAllBjsPicks *{color:#E3A02B!important}
+
+/* ===== v6 ===== */
+.bop-apple-hero{width:100%!important;align-self:center!important;justify-content:center!important;margin-left:auto!important;margin-right:auto!important}
+#bopBestOfBestOverlay .bop-apple-hero b,#bopMichelinWorldwide .bop-apple-hero b,#bopAllBjsPicks .bop-apple-hero b,#bopGoLiveOverlay .bop-apple-hero b,#bopWorldwideLanding .bop-apple-hero b{display:none!important}
+#bopWorldwideLanding .bop-world-hero .bop-apple-hero:not(.bop-bl-apple){display:none!important}
+#bopWorldwideLanding .bop-bl-title{margin:0 0 18px!important}
+#bopGoLiveOverlay .bop-golive-title{margin-top:0!important}
+#bopWorldwideLanding .bop-bl-apple svg,#bopGoLiveOverlay .bop-apple-hero svg{width:150px!important;height:150px!important}
+#bopAllBjsPicks .bop-apple-hero{margin-top:64px!important}
+#bopAllBjsPicks .bop-apple-hero svg{width:210px!important;height:210px!important}
+#bopAllBjsPicks .bop-all-bjs-shell,#bopAllBjsPicks .bop-all-bjs-shell *{color:#E3A02B!important}
+html.bop-sub-open #bopEndCapWrap551{display:none!important}
+html body #bopBestOfBestClose{border-color:#B77BFF!important}
+html body #bopMichelinWorldwideBack{border-color:#DCDCDC!important}
+html body #bopJamesBeardWorldwideBack{border-color:#FF3A58!important}
+html body #bopAllBjsPicks .bop-all-bjs-back{border-color:#E3A02B!important}
+html body #bopGoLiveBack{border-color:#2EE9C9!important}
+html body #bopWorldwideLanding .bop-world-back{border-color:#5DB2FF!important}
+html body #bopLandingV3 #bopV3Enter .globe-icon{animation:none!important;rotate:none!important;transform:none!important}
+html body #bopStaticLandingDock #bopStaticWorld{width:49px!important;height:49px!important;min-width:0!important;margin:4px 4.5px!important}
+html body #bopStaticLandingDock #bopStaticWorld > svg{width:38px!important;height:38px!important;margin:auto!important}
+.bop-t3-title{color:#CC92FF!important;text-shadow:0 0 14px rgba(176,102,255,.6)!important;margin:0 0 14px!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -73171,6 +73193,59 @@ document.addEventListener('click',function(e){
  var it=e.target.closest&&e.target.closest('#bopJamesBeardWorldwide .bop-mw-item');
  if(it){var o=JB_ITEMS[parseInt(it.getAttribute('data-jb-idx'),10)];if(o&&typeof window.openRestaurant==='function'){var rec=Object.assign({},o.r);if(!rec.cat)rec.cat=o.cat;window.openRestaurant({r:rec,city:o.r.city})}}
 });
+
+/* ---------- v6: page apple placement, stray dock, orbs ---------- */
+var PG=['bopBestOfBestOverlay','bopMichelinWorldwide','bopJamesBeardWorldwide','bopAllBjsPicks','bopWorldwideLanding','bopGoLiveOverlay'];
+function pvis(el){if(!el)return false;var cs=getComputedStyle(el);if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity<.05)return false;var r=el.getBoundingClientRect();return r.height>300&&r.width>300&&r.top<50}
+function snap(root,apple,title){
+ if(!root||!apple||!title)return;var bd=root.querySelector('.bop-wm-backdrop');if(!bd)return;
+ var sv=apple.querySelector('svg');if(!sv)return;
+ apple.style.setProperty('margin-top','0px','important');
+ var S=sv.getBoundingClientRect().height;if(!S)return;var pad=S*.175;
+ var bottom=bd.getBoundingClientRect().bottom,top0=apple.getBoundingClientRect().top;
+ var mt=Math.max(0,bottom+pad-S-top0);
+ apple.style.setProperty('margin-top',mt+'px','important');
+ apple.style.setProperty('margin-bottom',(5-pad)+'px','important');
+ title.style.setProperty('margin-top','0px','important')}
+function v6(){
+ try{
+  var W=document.getElementById('bopStaticWorld');if(W){var sg=W.querySelector(':scope > svg');['width','height','min-width','max-width','min-height'].forEach(function(p){W.style.setProperty(p,'49px','important')});W.style.setProperty('margin','4.5px 4.5px 4.5px 4.5px','important');W.style.setProperty('flex','0 0 49px','important');if(sg){sg.style.setProperty('width','38px','important');sg.style.setProperty('height','38px','important');sg.style.setProperty('margin','auto','important')}}
+  var any=PG.some(function(id){return pvis(document.getElementById(id))});
+  document.documentElement.classList.toggle('bop-sub-open',any);
+  var cap=document.getElementById('bopEndCapWrap551');if(cap){if(any){cap.style.setProperty('display','none','important');cap.dataset.bopHid='1'}else if(cap.dataset.bopHid){cap.style.removeProperty('display');delete cap.dataset.bopHid}}
+  if(any)document.querySelectorAll('.bop-apple-hero b').forEach(function(x){x.remove()});
+  var T=document.querySelector('#bopBestOfBestOverlay .bobb-shell > .bop-apple-hero');
+  if(T&&!document.querySelector('#bopBestOfBestOverlay .bop-t3-title')){var h=document.createElement('h1');h.className='bop-hero-title bop-t3-title';h.textContent='Top Threes';T.parentNode.insertBefore(h,T.nextSibling)}
+  var L=document.getElementById('bopWorldwideLanding');
+  if(L&&pvis(L)){var hero=L.querySelector('.bop-world-hero'),t=hero&&hero.querySelector('.bop-bl-title');
+   if(t&&!hero.querySelector('.bop-bl-apple')){hero.insertBefore(node('links','bop-apple-hero bop-bl-apple',false,150),t)}
+   if(t)snap(L,hero.querySelector('.bop-bl-apple'),t)}
+  var V=document.getElementById('bopGoLiveOverlay');
+  if(V&&pvis(V)){var a=V.querySelector('.bop-apple-hero'),tt=V.querySelector('.bop-golive-title');snap(V,a,tt)}
+ }catch(e){window.__apErr=String(e&&e.stack||e)}
+}
+/* Enter orb: bigger + a globe that visibly turns (animated meridians) */
+var gT0=performance.now(),gDone=null;
+function enterOrb(){
+ var b=document.getElementById('bopV3Enter');if(!b)return;
+ var w=b.getBoundingClientRect().width;
+ if(!b.dataset.bop15){ if(w<10)return; b.dataset.bop15='1'; b.dataset.base=Math.round(w)}
+ var base=+b.dataset.base||57,s=Math.round(base*1.15*10)/10;
+ b.style.setProperty('width',s+'px','important');b.style.setProperty('height',s+'px','important');
+ var lb=b.querySelector('.label');if(lb)lb.style.setProperty('font-size',(s*.17)+'px','important');
+ var ic=b.querySelector('.globe-icon');
+ if(ic&&!ic.dataset.bopSpin){ic.dataset.bopSpin='1';ic.setAttribute('data-ft-globe','1');
+  ic.innerHTML='<defs><clipPath id="bopEnterGlobeClip"><circle cx="32" cy="32" r="23.5"></circle></clipPath></defs><circle cx="32" cy="32" r="25" fill="none"></circle><g clip-path="url(#bopEnterGlobeClip)" fill="none"><path d="M8 32 H56"></path><path d="M12 20 Q32 25 52 20"></path><path d="M12 44 Q32 39 52 44"></path><ellipse class="bop-eg-a" cx="32" cy="32" rx="12" ry="24"></ellipse><ellipse class="bop-eg-b" cx="32" cy="32" rx="20" ry="24"></ellipse></g>'}
+}
+function spin(now){
+ var ic=document.querySelector('#bopV3Enter .globe-icon');
+ if(ic&&ic.dataset.bopSpin){var a=ic.querySelector('.bop-eg-a'),b=ic.querySelector('.bop-eg-b');
+  if(a&&b){var t=(now-gT0)/1500,c1=Math.cos(t),c2=Math.cos(t+Math.PI/2);
+   a.setAttribute('rx',(3+18*Math.abs(c1)).toFixed(2));a.setAttribute('cx',(32+4.2*Math.sin(t)).toFixed(2));
+   b.setAttribute('rx',(3+18*Math.abs(c2)).toFixed(2));b.setAttribute('cx',(32+4.2*Math.sin(t+Math.PI/2)).toFixed(2))}}
+ requestAnimationFrame(spin)}
+requestAnimationFrame(spin);
+(window.__bopSI||setInterval).call(window,function(){v6();enterOrb()},400);
 /* ---------- run ---------- */
 var busy=false;
 function run(){
