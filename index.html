@@ -72937,10 +72937,11 @@ html body #bopWorldwideLanding .bop-ap-tile .bop-apple{position:absolute!importa
 #bopBestOfBestOverlay .bop-apple-hero b,#bopMichelinWorldwide .bop-apple-hero b,#bopAllBjsPicks .bop-apple-hero b,#bopGoLiveOverlay .bop-apple-hero b,#bopWorldwideLanding .bop-apple-hero b{display:none!important}
 #bopWorldwideLanding .bop-world-hero .bop-apple-hero:not(.bop-bl-apple){display:none!important}
 #bopWorldwideLanding .bop-bl-title{margin:0 0 18px!important;white-space:nowrap!important;font-size:clamp(30px,10.4vw,44px)!important;line-height:1!important}
-html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{margin-top:0!important;white-space:nowrap!important;font-size:clamp(30px,9.4vw,40px)!important;line-height:1.1!important}
+html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{margin-top:309px!important;white-space:nowrap!important;font-size:clamp(32px,11.6vw,46px)!important;line-height:1.1!important}
 html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{width:100%!important;max-width:none!important}
 html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed > span{display:inline!important;margin:0 .1em!important}
-#bopWorldwideLanding .bop-bl-apple svg,#bopGoLiveOverlay .bop-apple-hero svg{width:150px!important;height:150px!important}
+#bopGoLiveOverlay .bop-apple-hero{display:none!important}
+#bopWorldwideLanding .bop-bl-apple svg{width:150px!important;height:150px!important}
 #bopAllBjsPicks .bop-apple-hero{margin-top:64px!important}
 #bopAllBjsPicks .bop-apple-hero svg{width:210px!important;height:210px!important}
 #bopAllBjsPicks .bop-all-bjs-shell,#bopAllBjsPicks .bop-all-bjs-shell *{color:#E3A02B!important}
@@ -73297,6 +73298,21 @@ function spin(now){
  requestAnimationFrame(spin)}
 requestAnimationFrame(spin);
 (window.__bopSI||setInterval).call(window,function(){v6();enterOrb()},400);
+/* Hands Free opened from the rotating cities page returns there, not to the main landing page */
+(function(){
+ function rot(){return document.getElementById('bopLandingOverlay')}
+ window.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;
+  if(t.closest('#bopStaticVoiceMic,#bopStaticLandingDock .bop-static-mic,#bopOrbMicBtn')){var r=rot(),v=document.getElementById('bopLandingV3');
+   window.__bopMicFromRot=!!(r&&r.classList.contains('open')&&(!v||getComputedStyle(v).display==='none'))&&!window.__bopVoiceOpenedFromV3}
+  if(t.closest('#bopVoiceClose')&&window.__bopMicFromRot){
+   function back(){var r=rot(),v=document.getElementById('bopLandingV3');if(!r)return;
+    r.classList.add('open');['display','visibility','opacity'].forEach(function(p){r.style.removeProperty(p)});r.setAttribute('aria-hidden','false');
+    if(v)v.style.setProperty('display','none','important');
+    document.body.classList.remove('bop-v3-approved-landing');document.body.classList.add('bop-main-landing-visible','bop-on-landing','bop-orb-hide-on-landing','bop-restaurant-dock-visible');
+    window.__bopEnterRot=1}
+   [0,40,95,160,255,405,555,805,1100,1600].forEach(function(ms){setTimeout(back,ms)});
+   setTimeout(function(){window.__bopMicFromRot=false},1800)}
+ },true)})();
 /* ---------- run ---------- */
 var busy=false;
 function run(){
