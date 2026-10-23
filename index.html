@@ -72921,6 +72921,17 @@ html body #bopWorldwideLanding .bop-ap-tile .bop-apple{position:absolute!importa
 .bop-apple-hero{display:flex!important;margin:14px auto 10px!important}
 #bopJamesBeardWorldwide .bop-jbw-head{align-items:center}
 </style>
+<style id="bop-apples-v5-fix">
+.bop-ap-row{display:inline-flex;flex-wrap:nowrap;align-items:center;gap:5px;margin-left:6px;vertical-align:middle}
+.bop-ap-row .bop-apple-mini{margin:0!important}
+.bop-apple-hero{margin:14px auto 2px!important}
+.bop-hero-title{margin:0 0 30px;text-align:center;color:#DCDCDC;font:900 clamp(26px,8vw,52px)/.95 'Archivo Black',Arial,sans-serif;letter-spacing:.03em;text-transform:uppercase;text-shadow:0 0 14px rgba(220,220,220,.55)}
+#bopJamesBeardWorldwide .bop-jbw-head{margin:70px 0 0}
+#bopJamesBeardWorldwide .bop-jbw-title{margin:0 0 30px}
+#bopMichelinWorldwideBack{border-color:#DCDCDC!important;color:#DCDCDC!important}
+#bopJamesBeardWorldwideBack{border-color:#FF3A58!important;color:#FF3A58!important}
+#bopAllBjsPicks,#bopAllBjsPicks *{color:#E3A02B!important}
+</style>
 
 <script id="bop-apples-v2-script">(function(){
 var APPLE='M12 7.5C10.5 5.8 8 5.5 6.3 7.2C4.3 9.3 4 12.8 5.5 15.8C6.7 18.2 8.3 19.8 10 19.8C10.8 19.8 11.2 19.5 12 19.5C12.8 19.5 13.2 19.8 14 19.8C15.7 19.8 17.3 18.2 18.5 15.8C20 12.8 19.7 9.3 17.7 7.2C16 5.5 13.5 5.8 12 7.5Z';
@@ -73052,8 +73063,8 @@ function swap(root){
   if(gold){n=node('gold','bop-apple-mini',false);gold.style.width='auto'}
   else if(card){n=node(k,'bop-apple-mini',false);card.style.cssText+=';width:auto!important;height:auto!important;min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important'}
   else if(leg){n=node(k,'bop-apple-legend',false)}
-  else{var big=img.closest('.bo-badges-logo-btn')?84:(img.closest('.bop-world-tile')?76:170);n=node(k,big>=120?'bop-apple-hero':'',true,big)}
-  if(img.parentNode){img.parentNode.insertBefore(n,img);img.style.display='none'}
+  else{var big=img.closest('.bo-badges-logo-btn')?84:(img.closest('.bop-world-tile')?76:170);var keepLabel=big<120||img.classList.contains('bop-topthrees-logo');n=node(k,big>=120?'bop-apple-hero':'',keepLabel,big)}
+  if(img.parentNode){img.parentNode.insertBefore(n,img);img.style.display='none';if(img.classList.contains('bop-mw-logo-img')){var t=document.createElement('h1');t.className='bop-hero-title';t.textContent='Michelin';img.parentNode.insertBefore(t,n.nextSibling)}}
  })}
 /* ---------- Top Threes membership (probe the Top Threes page once, invisibly) ---------- */
 var T3=null,t3busy=false;
@@ -73102,17 +73113,30 @@ function findRec(name){
 function cards(){
  document.querySelectorAll('.bo-card h3').forEach(function(h){
   h.querySelectorAll('img').forEach(function(im){im.remove()});
-  if(h.dataset.bopAp==='2')return;
+  if(h.dataset.bopAp==='4')return;
   var first=h.firstChild;var name=first&&first.nodeType===3?first.textContent.trim():'';
   if(!name)return;
   var rec=findRec(name);
-  h.querySelectorAll('.bo-apple-badge[data-verification-status="gold"]').forEach(function(g){if(!g.querySelector('.bop-apple')){var n=node('gold','bop-apple-mini',false);g.appendChild(n)}});
-  [['.bo-michelin-badge','silver'],['.bo-jb-badge','red']].forEach(function(p){h.querySelectorAll(p[0]).forEach(function(b){if(!b.querySelector('.bop-apple')){var n=node(p[1],'bop-apple-mini',false);b.appendChild(n)}b.style.cssText+=';width:auto!important;height:auto!important;min-width:0!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important'})});
+  function slot(b,kind){
+   if(!b.querySelector('.bop-apple'))b.appendChild(node(kind,'bop-apple-mini',false));
+   Array.prototype.slice.call(b.attributes).forEach(function(at){if(at.name!=='style')b.removeAttribute(at.name)});
+   b.className='bop-ap-slot';
+   b.style.cssText='display:inline-flex;width:auto;height:auto;min-width:0;background:transparent;border:0;box-shadow:none;padding:0;margin:0';
+  }
+  h.querySelectorAll('.bo-apple-badge[data-verification-status="gold"]').forEach(function(g){slot(g,'gold')});
+  h.querySelectorAll('.bo-michelin-badge').forEach(function(m){slot(m,'silver')});
+  h.querySelectorAll('.bo-jb-badge').forEach(function(m){slot(m,'red')});
   if(T3===null)return;
   h.querySelectorAll('.bop-card-t3,.bop-card-bjs').forEach(function(x){x.remove()});
-  if(isTop3(rec)){var w=document.createElement('span');w.className='bop-card-t3';w.appendChild(node('purple','bop-apple-mini',false));h.appendChild(w)}
-  if(rec&&rec.bjsPick){var w2=document.createElement('span');w2.className='bop-card-bjs';w2.appendChild(node('bjs','bop-apple-mini',false));h.appendChild(w2)}
-  h.dataset.bopAp='2';
+  if(isTop3(rec)){var w=document.createElement('span');w.className='bop-card-t3';w.style.cssText='display:inline-flex';w.appendChild(node('purple','bop-apple-mini',false));h.appendChild(w)}
+  if(rec&&rec.bjsPick){var w2=document.createElement('span');w2.className='bop-card-bjs';w2.style.cssText='display:inline-flex';w2.appendChild(node('bjs','bop-apple-mini',false));h.appendChild(w2)}
+  var row=h.querySelector('.bop-ap-row');
+  var items=h.querySelectorAll('.bop-ap-slot,.bop-card-t3,.bop-card-bjs');
+  if(items.length){
+   if(!row){row=document.createElement('span');row.className='bop-ap-row';h.appendChild(row)}
+   Array.prototype.forEach.call(items,function(x){if(x.parentNode!==row)row.appendChild(x)});
+  }
+  h.dataset.bopAp='4';
  })}
 /* ---------- James Beard worldwide page ---------- */
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
