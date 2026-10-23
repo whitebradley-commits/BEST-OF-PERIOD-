@@ -54679,6 +54679,7 @@ var tries=0,t=setInterval(function(){tries++;if(apply()||tries>35)clearInterval(
    top-right of the poster -- using inline !important styles so they
    win regardless of any older CSS on these classes. */
 function fixOverlaps(card){
+var _s0=card.querySelector('.bo-send-movie-btn'),_b0=card.querySelector('.bo-buy-tickets-btn');if(_s0&&_b0&&_b0.nextElementSibling!==_s0)_b0.insertAdjacentElement('afterend',_s0);
 var wrap=card.querySelector('.bo-movie-screen-wrap');
 if(!wrap) return;
 if(getComputedStyle(wrap).position==='static') wrap.style.setProperty('position','relative','important');
@@ -54704,7 +54705,9 @@ rank.style.setProperty('font','900 12px/1 "Archivo Narrow",sans-serif','importan
 rank.style.setProperty('box-shadow','0 0 6px rgba(227,160,43,.55)','important');
 }
 var send=card.querySelector('.bo-send-movie-btn');
-if(send && send.parentNode!==wrap){
+var _buy=card.querySelector('.bo-buy-tickets-btn');
+if(send&&_buy&&_buy.nextElementSibling!==send){_buy.insertAdjacentElement('afterend',send);}
+if(false){
 wrap.appendChild(send);
 send.style.setProperty('position','absolute','important');
 send.style.setProperty('top','6px','important');
@@ -72400,6 +72403,8 @@ html body .bo-pizza-score-vs{font-size:.5rem!important;transform:translateY(5px)
 #bopWorldwideLanding .bop-world-tiles{transition:opacity .12s linear}
 html body .bop-apple.bop-apple-live b{color:#FF073A!important;-webkit-text-fill-color:#FF073A!important;text-shadow:0 0 9px rgba(255,7,58,.7)!important;font-size:12.1px!important}
 html body #bopWorldwideLanding .bop-ap-tile .bop-apple.bop-apple-live b{font-size:11px!important}
+html body .bo-movies-kicker{display:none!important}
+html body .bo-current-card .bo-send-movie-btn,html body .bo-movie-card .bo-send-movie-btn{position:static!important;display:block!important;width:100%!important;max-width:100%!important;margin:8px 0 0!important;padding:9px 8px!important;background:#000!important;color:#E3A02B!important;-webkit-text-fill-color:#E3A02B!important;border:2px solid #E3A02B!important;border-radius:999px!important;box-shadow:0 0 8px rgba(227,160,43,.45)!important;text-shadow:none!important;font:900 .78rem/1.1 'Archivo Black',sans-serif!important;letter-spacing:.08em!important;text-align:center!important;min-height:0!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -72768,6 +72773,13 @@ setInterval(run,900);run();
   new MutationObserver(function(){if(p.classList.contains('open')&&!run){run=true;t0=lastCh=performance.now();lastSig='';requestAnimationFrame(tick)}else if(!p.classList.contains('open'))p.classList.remove('bop-tiles-ok')}).observe(p,{attributes:true,attributeFilter:['class']});
   if(p.classList.contains('open')&&!run){run=true;t0=lastCh=performance.now();lastSig='';requestAnimationFrame(tick)}}
  watch()})();
+(function(){
+ function mv(){document.querySelectorAll('.bo-send-movie-btn').forEach(function(s){
+  var card=s.closest('article,.bo-current-card,.bo-movie-card,[data-movie-title]');if(!card)return;
+  var b=card.querySelector('.bo-buy-tickets-btn');if(b&&b.nextElementSibling!==s)b.insertAdjacentElement('afterend',s)})}
+ var pend=0;function sch(){if(pend)return;pend=requestAnimationFrame(function(){pend=0;mv()})}
+ new MutationObserver(sch).observe(document.documentElement,{childList:true,subtree:true});
+ setInterval(mv,400);mv()})();
 })();</script>
 
 </body></html>
