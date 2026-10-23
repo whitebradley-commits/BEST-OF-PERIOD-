@@ -72330,7 +72330,7 @@ hook();setInterval(hook,3000);
 /* Opening space flight (per Brad 2026-10-16): plays by itself, no taps. Real star field and Milky Way, a spinning Earth, zoom to Las Vegas, flash, then the landing page. */
 var setTimeout=window.__bopST||window.setTimeout;var requestAnimationFrame=window.__bopRAF||window.requestAnimationFrame.bind(window);if(window.__bopSpaceIntro)return;window.__bopSpaceIntro=1;
 var T=24.4;
-var W=window.innerWidth||440,H=window.innerHeight||900,dpr=Math.min(window.devicePixelRatio||1,W<700?1:1.5);
+var W=window.innerWidth||440,H=window.innerHeight||900,dpr=Math.min(window.devicePixelRatio||1,2); /* sharp on retina phones; auto-drops if the device cannot keep up (see frame()) */
 var css='#bopSpaceIntro{position:fixed;inset:0;z-index:2147483647;background:#000;overflow:hidden;pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent}'
 +'#bopSpaceIntro canvas{position:absolute;display:block}'
 +'#bopSpaceIntro .sky{left:50%;top:50%;transform-origin:50% 50%;will-change:transform,opacity}#bopSpaceIntro .mp{position:absolute;left:0;right:0;bottom:15%;display:none;flex-direction:column;align-items:center;gap:12px}#bopSpaceIntro .mp .row{position:static;display:flex;gap:22px}#bopSpaceIntro .mp button{position:static;font:700 12px/1 Arial,sans-serif;letter-spacing:.18em;color:#ffe9a8;background:rgba(8,8,12,.72);border:1px solid rgba(243,171,25,.85);border-radius:50%;padding:0;width:80px;height:80px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;box-shadow:0 0 18px rgba(243,171,25,.65),0 0 38px rgba(243,171,25,.4),inset 0 0 10px rgba(255,211,106,.25);text-shadow:0 0 8px rgba(255,211,106,.7);animation:bsiGlow 2.2s ease-in-out infinite;pointer-events:auto;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}#bopSpaceIntro .mp button.on{background:linear-gradient(180deg,#ffd36a,#d99a1c);color:#140c00;border-color:#ffe9a8}#bopSpaceIntro .mp button.off{color:#e8dcc0;border-color:rgba(243,171,25,.7);box-shadow:0 0 14px rgba(243,171,25,.45),0 0 28px rgba(243,171,25,.25)}@keyframes bsiGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}#bopSpaceIntro .mp i{font:normal 700 30px/1 Arial,sans-serif;color:#fff;text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.95),0 0 28px rgba(255,255,255,.75),0 0 48px rgba(255,235,190,.6);letter-spacing:0}'
@@ -72435,7 +72435,11 @@ if(g){
  '   rc=t*1.25*(1.-.92*sh)*(.55+.45*smoothstep(0.,.5,abs(dot(axN,sun))+.3));zr=zz;}',
  ' }',
  ' vec4 o=vec4(0.);',
- ' if(as>0.){vec3 c=sc;float a=as;if(ra>0.&&zr>zs){c=mix(c,rc,ra);} o=vec4(c,a);}',
+ ' /* proper over-compositing of planet and ring (fixes the dark limb seam where the ring passes in front of the planet edge) */',
+ ' if(as>0.&&ra>0.){',
+ '  if(zr>zs){float a=ra+as*(1.-ra);o=vec4((rc*ra+sc*as*(1.-ra))/max(a,.001),a);}',
+ '  else{float a=as+ra*(1.-as);o=vec4((sc*as+rc*ra*(1.-as))/max(a,.001),a);}',
+ ' }else if(as>0.){o=vec4(sc,as);}',
  ' else if(ra>0.){o=vec4(rc,ra);}',
  ' float rim=exp(-(rr-1.)*18.)*step(1.,rr);float sd=.35+.65*clamp(dot(normalize(vec3(q,.0001)),normalize(sun.xy).xyx*vec3(1,1,0)),0.,1.);',
  ' float a2=rim*glow*(.25+.75*sd);vec3 ac=gcol;',
@@ -72462,7 +72466,7 @@ if(g){
  }catch(e){window.__bopIntroErr=String(e);g=null}
 }
 /* ---------- starfield push-in streaks ---------- */
-var nx=near.getContext('2d');near.width=W;near.height=H;
+var nx=near.getContext('2d');near.width=Math.round(W*dpr);near.height=Math.round(H*dpr);
 var NS=[];(function(){var sd=777;function r(){sd=(sd*16807)%2147483647;return sd/2147483647}for(var i=0;i<260;i++)NS.push({a:r()*6.2832,d:r(),m:.3+r()*.7,c:r()<.7?'255,255,255':'190,210,255'})})();
 /* ---------- timeline ---------- */
 function cl(x,a,b){return Math.max(0,Math.min(1,(x-a)/(b-a)))}
@@ -72511,12 +72515,14 @@ y.style.cssText='position:absolute;left:0;top:0;opacity:0;white-space:nowrap;wil
 YM.push({e:y,x:W*(0.14+0.72*R()),y:H*(0.12+0.72*R()),ts:18.4+j*0.2+R()*0.3,per:1.5+R()*1.1})}})();
 function frame(now){
  if(ended)return;if(!go||!ready){sky.style.opacity=go?0:.9;requestAnimationFrame(frame);return}if(t0===null)t0=now;var t=(window.__bopIntroT!=null)?window.__bopIntroT:(now-t0)/1000;
+ if(!window.__bopNoAdapt){var _pn=performance.now();if(window.__bfL){var _dt=_pn-window.__bfL;window.__bfA=(window.__bfA==null?_dt:window.__bfA*.9+_dt*.1);window.__bfN=(window.__bfN||0)+1;
+  if(window.__bfN>45&&window.__bfA>55&&dpr>1.05){dpr=Math.max(1,dpr*.65);try{gl.width=Math.round(W*dpr);gl.height=Math.round(H*dpr);near.width=Math.round(W*dpr);near.height=Math.round(H*dpr)}catch(e){}window.__bfN=-60;window.__bfA=30}}window.__bfL=_pn}
  var cx=W/2,cy0=H*0.5,Rv=Math.min(W,H),f=0.9*Rv;
  /* far stars: slow push-in */
  var fp=cl(t,0,16);sky.style.transform='translate3d(0,0,0) rotate('+(-10+9*cl(t,0,21))+'deg) scale('+(1.12+0.5*fp)+')';
  sky.style.opacity=(1-0.6*cl(t,15,19.5))*cl(t,0,0.9);
  /* near streaks */
- nx.clearRect(0,0,W,H);
+ nx.setTransform(dpr,0,0,dpr,0,0);nx.clearRect(0,0,W,H);
  var phi=0.3*(t<11?t:(11+2.2*(1-Math.exp(-(t-11)/2.2))));
  var nfade=(1-cl(t,12.5,15.5))*0.8;
  if(nfade>0.01){nx.lineCap='round';for(var i=0;i<NS.length;i++){var s=NS[i];var d=((s.d-phi)%1+1)%1;d=0.05+d*0.95;var rr=Math.min(W,H)*0.16/d;var x=cx+Math.cos(s.a)*rr,y=cy0+Math.sin(s.a)*rr;if(x<-20||x>W+20||y<-20||y>H+20)continue;var al=Math.min(1,(1-d)*1.4)*s.m*nfade*Math.min(1,cl(t,0.2,1.6));var ln=Math.min(12,2+3*(0.3/d)*(t<11?1:0.3));nx.strokeStyle='rgba('+s.c+','+al.toFixed(3)+')';nx.lineWidth=0.6+1.2*(1-d);nx.beginPath();nx.moveTo(x,y);nx.lineTo(cx+Math.cos(s.a)*(rr-ln),cy0+Math.sin(s.a)*(rr-ln));nx.stroke()}}
