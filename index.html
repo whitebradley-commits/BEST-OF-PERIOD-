@@ -70504,7 +70504,7 @@ function ensure(sel){
   }
   if(getComputedStyle(page).position==='static')page.style.position='relative';
 }
-function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');ensure('#bopWorldwideLanding');ensure('#bopBestOfBestOverlay');}
+function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');ensure('#bopWorldwideLanding');ensure('#bopBestOfBestOverlay');ensure('#bopMichelinWorldwide');ensure('#bopJamesBeardWorldwide');}
 tick();setInterval(tick,1000);
 })();</script>
 <style id="bop-misc-fixes-20261003b-style">
@@ -72936,8 +72936,8 @@ html body #bopWorldwideLanding .bop-ap-tile .bop-apple{position:absolute!importa
 .bop-apple-hero{width:100%!important;align-self:center!important;justify-content:center!important;margin-left:auto!important;margin-right:auto!important}
 #bopBestOfBestOverlay .bop-apple-hero b,#bopMichelinWorldwide .bop-apple-hero b,#bopAllBjsPicks .bop-apple-hero b,#bopGoLiveOverlay .bop-apple-hero b,#bopWorldwideLanding .bop-apple-hero b{display:none!important}
 #bopWorldwideLanding .bop-world-hero .bop-apple-hero:not(.bop-bl-apple){display:none!important}
-#bopWorldwideLanding .bop-bl-title{margin:0 0 18px!important}
-#bopGoLiveOverlay .bop-golive-title{margin-top:0!important}
+#bopWorldwideLanding .bop-bl-title{margin:40px 0 18px!important}
+html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{margin-top:95px!important}
 #bopWorldwideLanding .bop-bl-apple svg,#bopGoLiveOverlay .bop-apple-hero svg{width:150px!important;height:150px!important}
 #bopAllBjsPicks .bop-apple-hero{margin-top:64px!important}
 #bopAllBjsPicks .bop-apple-hero svg{width:210px!important;height:210px!important}
@@ -72968,6 +72968,20 @@ html body #bopJamesBeardWorldwide .bop-jbw-head{margin-top:76px!important}
 html body #bopAllPizzaScores .bop-pz-apple{margin:58px auto 0!important}
 html body #bopAllPizzaScores .bop-pz-apple svg{width:130px!important;height:130px!important}
 html body #bopAllPizzaScores .bop-all-pizza-title{margin-top:-4px!important}
+/* no big header apples on Best Links / Live */
+#bopWorldwideLanding .bop-world-hero .bop-apple,#bopGoLiveOverlay .bo-golive-shell > .bop-apple-hero{display:none!important}
+/* Michelin silver / James Beard red maps */
+html body #bopMichelinWorldwide>.bop-wm-backdrop,html body #bopJamesBeardWorldwide>.bop-wm-backdrop{top:60px!important;opacity:.95!important;z-index:0}
+html body #bopMichelinWorldwide .bop-mw-shell,html body #bopJamesBeardWorldwide .bop-mw-shell{position:relative;z-index:1}
+html body #bopMichelinWorldwide .bop-wm-backdrop .bop-wm-img{filter:grayscale(1) brightness(1.7) contrast(1.1)!important}
+html body #bopMichelinWorldwide .bop-wm-backdrop .bop-wm-pop{color:#DCDCDC!important;opacity:0}
+html body #bopMichelinWorldwide .bop-wm-backdrop .bop-wm-pop.c1{color:#FFFFFF!important}
+html body #bopMichelinWorldwide .bop-wm-backdrop .bop-wm-pop.c2{color:#8E949C!important}
+html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-img{filter:hue-rotate(352deg) saturate(1.6) brightness(1.2)!important}
+html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop{color:#FF3A58!important;opacity:0}
+html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop.c1{color:#FFB3BF!important}
+html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop.c2{color:#B3132E!important}
+html body #bopGoLiveOverlay #bopGoLiveBack,html body #bopGoLiveOverlay #bopGoLiveBack *{color:#2EE9C9!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -73248,10 +73262,9 @@ function v6(){
   obfix();
   var L=document.getElementById('bopWorldwideLanding');
   if(L&&pvis(L)){var hero=L.querySelector('.bop-world-hero'),t=hero&&hero.querySelector('.bop-bl-title');
-   if(t&&!hero.querySelector('.bop-bl-apple')){hero.insertBefore(node('links','bop-apple-hero bop-bl-apple',false,150),t)}
-   if(t)snap(L,hero.querySelector('.bop-bl-apple'),t)}
+   }
   var V=document.getElementById('bopGoLiveOverlay');
-  if(V&&pvis(V)){var a=V.querySelector('.bop-apple-hero'),tt=V.querySelector('.bop-golive-title');snap(V,a,tt)}
+  if(V&&pvis(V)){}
  }catch(e){window.__apErr=String(e&&e.stack||e)}
 }
 /* Enter orb: bigger + a globe that visibly turns (animated meridians) */
