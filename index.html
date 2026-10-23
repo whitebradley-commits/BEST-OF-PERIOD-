@@ -70504,7 +70504,7 @@ function ensure(sel){
   }
   if(getComputedStyle(page).position==='static')page.style.position='relative';
 }
-function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');ensure('#bopWorldwideLanding');}
+function tick(){ensure('#bopWorldZoneNavigator');ensure('#ocWorldOverlay');ensure('#boNearMapPage');ensure('#bopYummySearch');ensure('#bopGoLiveOverlay');ensure('#bopWorldwideLanding');ensure('#bopBestOfBestOverlay');}
 tick();setInterval(tick,1000);
 })();</script>
 <style id="bop-misc-fixes-20261003b-style">
@@ -72953,6 +72953,19 @@ html body #bopLandingV3 #bopV3Enter .globe-icon{animation:none!important;rotate:
 html.bop-t3-open #bopMusicOrbV5 *{fill:#B77BFF!important;stroke:#B77BFF!important;color:#B77BFF!important}
 #bopAllBjsPicks .bop-all-bjs-title{font:900 clamp(26px,8vw,52px)/.95 'Archivo Black',Arial,sans-serif!important;margin:-24px 0 8px!important}
 .bop-t3-title{color:#CC92FF!important;text-shadow:0 0 14px rgba(176,102,255,.6)!important;margin:0 0 14px!important}
+/* Top Threes: purple world map (gold apples stay gold) */
+html body #bopBestOfBestOverlay>.bop-wm-backdrop{top:60px!important;opacity:.95!important;z-index:0}
+html body #bopBestOfBestOverlay .bobb-shell{position:relative;z-index:1}
+html body #bopBestOfBestOverlay .bop-wm-backdrop .bop-wm-img{filter:hue-rotate(272deg) saturate(1.4) brightness(1.4)!important}
+html body #bopBestOfBestOverlay .bop-wm-backdrop .bop-wm-pop{color:#B77BFF!important;opacity:0}
+html body #bopBestOfBestOverlay .bop-wm-backdrop .bop-wm-pop.c1{color:#E7D2FF!important}
+html body #bopBestOfBestOverlay .bop-wm-backdrop .bop-wm-pop.c2{color:#7A3FD0!important}
+/* James Beard: all the white text goes JB red */
+html body #bopJamesBeardWorldwide .bop-mw-country,html body #bopJamesBeardWorldwide .bop-mw-item,html body #bopJamesBeardWorldwide .bop-mw-stat b,html body #bopJamesBeardWorldwide .bop-mw-stat{color:#FF3A58!important}
+/* Analog Pizza List apple */
+html body #bopAllPizzaScores .bop-pz-apple{margin:58px auto 0!important}
+html body #bopAllPizzaScores .bop-pz-apple svg{width:130px!important;height:130px!important}
+html body #bopAllPizzaScores .bop-all-pizza-title{margin-top:-4px!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -72965,6 +72978,7 @@ var K={
  bjs:{name:'BJS PICKS',tip:'BJS Picks',d:'Hand-picked by us. Rating is only one signal. These are our favorite places in the world.',lk:'Open all BJS Picks',pc:'#FFD36A',pg:'rgba(255,211,106,.55)',g:['#FFE9A0','#FFD36A','#B8741A'],edge:'#FFD36A',leaf:'#E3A02B',stem:'#7A4A10',chk:['#FFD36A','#B8741A']},
  gold:{name:'GOLDEN APPLE',tip:'Golden Apple',d:GA,lk:'',pc:'#FFC933',pg:'rgba(255,201,51,.55)',g:['#FFF3B0','#FFC933','#B8741A'],edge:'#FFD36A',leaf:'#E3A02B',stem:'#7A4A10'},
  live:{name:'LIVE',tip:'Live',d:'See what is happening right now.',lk:'Open Live',pc:'#2EE9C9',pg:'rgba(46,233,201,.55)',g:['#B6FFF3','#2EE9C9','#0B8F7C'],edge:'#2EE9C9',leaf:'#7CFFE9',stem:'#07574C'},
+ pizza:{name:'ANALOG PIZZA',tip:'Analog Pizza List',d:'Every pizza spot, scored.',lk:'',pc:'#F4B531',pg:'rgba(244,181,49,.55)',g:['#FFE48F','#F4B531','#D9811A'],edge:'#D7261E',leaf:'#2E9E3F',stem:'#7A3B12',pep:1},
  links:{name:'BEST LINKS',tip:'Best Links',d:'Our favorite links, worldwide.',lk:'Open Best Links',pc:'#5DB2FF',pg:'rgba(93,178,255,.55)',g:['#C3E2FF','#3C9BFF','#1B4F9C'],edge:'#5DB2FF',leaf:'#7CC0FF',stem:'#123B78'}
 };
 var GO={
@@ -72976,10 +72990,10 @@ var GO={
  links:function(){window.bopOpenWorldwideLanding&&window.bopOpenWorldwideLanding()}
 };
 var UID=0;
-function svg(k){var c=K[k],id='bopAG-'+k+'-'+(++UID),g=c.g,fill='url(#'+id+')',extra='';
+function svg(k){var c=K[k],id='bopAG-'+k+'-'+(++UID),g=c.g,fill='url(#'+id+')',extra='';if(c.pep)extra='<g fill="#C21F2B" stroke="#8E1019" stroke-width=".3"><circle cx="9.3" cy="12.6" r="1.55"/><circle cx="14.9" cy="11.7" r="1.45"/><circle cx="12" cy="16.3" r="1.65"/><circle cx="8.4" cy="16.4" r="1.1"/><circle cx="15.9" cy="15.9" r="1.15"/></g>';
  var defs='<linearGradient id="'+id+'" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="'+g[0]+'"/><stop offset=".5" stop-color="'+g[1]+'"/><stop offset="1" stop-color="'+g[2]+'"/></linearGradient>';
  if(c.chk){var pid=id+'p';defs+='<pattern id="'+pid+'" patternUnits="userSpaceOnUse" width="3.6" height="3.6"><rect width="3.6" height="3.6" fill="'+c.chk[0]+'"/><rect width="1.8" height="1.8" fill="'+c.chk[1]+'"/><rect x="1.8" y="1.8" width="1.8" height="1.8" fill="'+c.chk[1]+'"/></pattern>';fill='url(#'+pid+')'}
- return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><defs>'+defs+'</defs><path d="'+APPLE+'" fill="'+fill+'" stroke="'+c.edge+'" stroke-width=".8"/><path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="'+c.stem+'" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="'+c.leaf+'"/><ellipse cx="8.6" cy="11.2" rx="1.5" ry="2.6" transform="rotate(18 8.6 11.2)" fill="#fff" opacity=".4"/></svg>'}
+ return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><defs>'+defs+'</defs><path d="'+APPLE+'" fill="'+fill+'" stroke="'+c.edge+'" stroke-width="'+(c.pep?1.2:.8)+'"/>'+extra+'<path d="M12 7.5C12 6.2 12.4 5 13.2 4.3" stroke="'+c.stem+'" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M13.3 4.3C14.5 3.2 16 3.3 16.5 3.8C16.2 5 15 5.6 13.3 4.3Z" fill="'+c.leaf+'"/><ellipse cx="8.6" cy="11.2" rx="1.5" ry="2.6" transform="rotate(18 8.6 11.2)" fill="#fff" opacity=".4"/></svg>'}
 function node(k,cls,label,size){
  var s=document.createElement('span');s.className='bop-apple bop-apple-'+k+(cls?' '+cls:'');s.setAttribute('data-apple',k);s.setAttribute('role','img');s.setAttribute('aria-label',K[k].tip);
  if(size)s.style.setProperty('--as',size+'px');
@@ -73208,6 +73222,8 @@ function snap(root,apple,title){
  apple.style.setProperty('margin-top',mt+'px','important');
  apple.style.setProperty('margin-bottom',(5-pad)+'px','important');
  title.style.setProperty('margin-top','0px','important')}
+var OBU=[['Di Fara Pizza','brooklyn',8.7,926],["Pequod's Pizza",'chicago',7.9,356],["Vito & Nick's Pizzeria",'chicago',8.2,209]];
+function obfix(){try{if(typeof boCategoryData!=='object'||!Array.isArray(boCategoryData.pizza))return;OBU.forEach(function(u){boCategoryData.pizza.forEach(function(r){if(r&&r.name===u[0]&&String(r.city||'')===u[1]&&r.oneBiteScore==null){r.oneBiteScore=u[2];r.oneBiteReviews=u[3]}})})}catch(e){}}
 function v6(){
  try{
   var W=document.getElementById('bopStaticWorld');if(W){var sg=W.querySelector(':scope > svg');if(sg){sg.style.setProperty('width','42px','important');sg.style.setProperty('height','42px','important');sg.style.setProperty('margin','auto','important')}}
@@ -73225,6 +73241,9 @@ function v6(){
   if(any)document.querySelectorAll('.bop-apple-hero b').forEach(function(x){x.remove()});
   var T=document.querySelector('#bopBestOfBestOverlay .bobb-shell > .bop-apple-hero');
   if(T&&!document.querySelector('#bopBestOfBestOverlay .bop-t3-title')){var h=document.createElement('h1');h.className='bop-hero-title bop-t3-title';h.textContent='Top Threes';T.parentNode.insertBefore(h,T.nextSibling)}
+  var PZ=document.getElementById('bopAllPizzaScores');
+  if(PZ&&pvis(PZ)){var psh=PZ.querySelector('.bop-all-pizza-shell'),ptl=psh&&psh.querySelector('.bop-all-pizza-title');if(ptl&&!psh.querySelector('.bop-pz-apple')){psh.insertBefore(node('pizza','bop-apple-hero bop-pz-apple',false,130),ptl)}}
+  obfix();
   var L=document.getElementById('bopWorldwideLanding');
   if(L&&pvis(L)){var hero=L.querySelector('.bop-world-hero'),t=hero&&hero.querySelector('.bop-bl-title');
    if(t&&!hero.querySelector('.bop-bl-apple')){hero.insertBefore(node('links','bop-apple-hero bop-bl-apple',false,150),t)}
