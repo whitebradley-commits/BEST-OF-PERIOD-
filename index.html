@@ -72404,6 +72404,13 @@ html body #bopAllBjsPicks .bop-wm-backdrop .bop-wm-pop.c2{color:#C98A12!importan
 html body #bopJbwStat{transform:translateY(-90px)!important}
 #bopEndCapWrap551,button.footer-hotlink[aria-label="BJS CO."]{display:none!important}
 .bo-legend-orb-link{box-shadow:none!important}
+/* pizza score orb: keep everything inside the inner ring */
+html body .bo-pizza-scorecard{width:94px!important;height:94px!important;padding:17px 14px 12px!important;grid-template-columns:1fr 9px 1fr!important}
+html body .bo-pizza-score-logo{height:24px!important}
+html body .bo-pizza-score-logo svg,html body .bo-pizza-score-logo img{max-width:24px!important;max-height:24px!important}
+html body .bo-pizza-score-value{font-size:.84rem!important;letter-spacing:-.06em!important;white-space:nowrap}
+html body .bo-pizza-score-value small{font-size:.3rem!important}
+html body .bo-pizza-score-vs{font-size:.5rem!important;transform:translateY(5px)!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -72737,6 +72744,18 @@ function legendLinks(){
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.bop-leg-go');if(!a)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
  var fn=a.getAttribute('data-bop-go');var lg=document.getElementById('legendOverlay');if(lg){lg.classList.remove('open');lg.style.display='none';document.body.classList.remove('bo-legend-open')}
  setTimeout(function(){if(typeof window[fn]==='function')window[fn]()},10)},true);
+/* Analog Pizza List: Back from a restaurant opened out of the list returns to the list */
+(function(){
+ function bo(){return document.getElementById('bestOfOverlay')}
+ window.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;
+  if(t.closest('#bopAnalogInfoViewBtn')){var b=bo();window.__bopAnalogRet=1;window.__bopAnalogWasBO=!!(b&&b.classList.contains('open'));return}
+  if(t.closest('#bopAllPizzaScores .bop-all-pizza-back')){window.__bopAnalogRet=0;return}
+  var bk=t.closest('#boBackBtn');
+  if(bk&&window.__bopAnalogRet){var b2=bo();
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();window.__bopAnalogRet=0;
+   if(!window.__bopAnalogWasBO){b2.classList.remove('open');document.body.style.overflow=''}
+   [60,350,800].forEach(function(ms){setTimeout(function(){var r=document.documentElement;if(!r.classList.contains('bop-all-pizza-open')&&typeof window.boOpenAllPizzaScores==='function')window.boOpenAllPizzaScores()},ms)})}
+ },true)})();
 /* ---------- run ---------- */
 var busy=false;
 function run(){
