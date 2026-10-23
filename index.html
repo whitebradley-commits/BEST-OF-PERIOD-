@@ -72798,4 +72798,25 @@ for(var i=0;i<a.length;i++){var x=a[i];if(x&&x.name&&X.indexOf(x.name)>=0)x.open
 var n=boCategoryData.newrestaurants;if(Array.isArray(n)){for(var j=n.length-1;j>=0;j--){if(!isRecentlyOpened(n[j].openedDate))n.splice(j,1)}}}catch(e){}}
 pass();[200,600,1200,2500,4000,6000,9000,13000,20000,30000,45000,70000].forEach(function(t){setTimeout(pass,t)});
 })();</script>
+<style id="bop-live-tile-teal-v1-style">
+html body #bopWorldwideLanding .bop-world-tile.bop-world-live{border-color:#2EE9C9!important;color:#2EE9C9!important;-webkit-text-fill-color:#2EE9C9!important;text-shadow:0 0 8px rgba(46,233,201,.55)!important;animation:bopWorldLivePulseTeal 2.6s ease-in-out infinite!important}
+html body #bopWorldwideLanding .bop-world-tile.bop-world-live .bop-world-live-dot{background:#FF073A!important}
+@keyframes bopWorldLivePulseTeal{0%,100%{box-shadow:0 0 8px rgba(46,233,201,.35)}50%{box-shadow:0 0 18px rgba(46,233,201,.75)}}
+</style>
+<script id="bop-live-tile-teal-v1-script">(function(){
+/* Back from Go Live opened from the Best Links page returns to Best Links, not the rotating All Cities landing. */
+window.addEventListener('click',function(e){
+ var t=e.target&&e.target.closest?e.target:null;if(!t)return;
+ if(t.closest('#bopWorldwideLanding .bop-world-live')){window.__bopGoLiveFromBestLinks=true;return}
+ if(t.closest('#bopStaticGoLive')){window.__bopGoLiveFromBestLinks=false;return}
+ if(t.closest('#bopGoLiveBack')&&window.__bopGoLiveFromBestLinks){
+  window.__bopGoLiveFromBestLinks=false;e.preventDefault();e.stopImmediatePropagation();
+  var g=document.getElementById('bopGoLiveOverlay');if(g)g.classList.remove('open');
+  window.__bopGoLiveFromLanding=false;window.__bopGoLiveReturnId=null;
+  var w=document.getElementById('bopWorldwideLanding');
+  if(w){w.classList.add('open');w.scrollTop=0}
+  document.body.style.overflow='hidden';
+ }
+},true);
+})();</script>
 </body></html>
