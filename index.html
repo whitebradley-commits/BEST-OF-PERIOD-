@@ -72403,6 +72403,7 @@ html body #bopAllBjsPicks .bop-wm-backdrop .bop-wm-pop.c1{color:#FFD36A!importan
 html body #bopAllBjsPicks .bop-wm-backdrop .bop-wm-pop.c2{color:#C98A12!important}
 html body #bopJbwStat{transform:translateY(-90px)!important}
 #bopEndCapWrap551,button.footer-hotlink[aria-label="BJS CO."]{display:none!important}
+.bo-legend-orb-link{box-shadow:none!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -72722,11 +72723,25 @@ requestAnimationFrame(spin);
    [0,40,95,160,255,405,555,805,1100,1600].forEach(function(ms){setTimeout(back,ms)});
    setTimeout(function(){window.__bopMicFromRot=false},1800)}
  },true)})();
+/* Legend: every apple row links to its page */
+function legendLinks(){
+ var list=document.getElementById('legendOverlay');if(!list||!list.querySelector('.bo-legend-michelin-row'))return;
+ [].slice.call(list.querySelectorAll('.bo-legend-orb-link')).forEach(function(b){if(b.style.getPropertyValue('box-shadow')!=='none')b.style.setProperty('box-shadow','none','important')});
+ function btn(label,fn){return '<button type="button" class="bo-legend-michelin-full-link bop-leg-go" data-bop-go="'+fn+'">'+label+' &rsaquo;</button>'}
+ function addTo(title,label,fn){[].slice.call(list.querySelectorAll('p > b')).forEach(function(b){if(b.textContent.trim()===title){var sm=b.parentNode.querySelector('small');if(sm&&!sm.querySelector('.bop-leg-go'))sm.insertAdjacentHTML('beforeend',' '+btn(label,fn))}})}
+ addTo('BJS Pick','ALL BJS PICKS','boOpenAllBjsPicks');
+ addTo('James Beard Recognition','FULL JAMES BEARD LIST','bopOpenJamesBeardWorldwide');
+ addTo('Best Links','BEST LINKS','bopOpenWorldwideLanding');
+ addTo('Live','GO LIVE','bopOpenGoLivePage');
+ addTo('Top Threes','TOP THREES','openBopBestOfBest')}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.bop-leg-go');if(!a)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+ var fn=a.getAttribute('data-bop-go');var lg=document.getElementById('legendOverlay');if(lg){lg.classList.remove('open');lg.style.display='none';document.body.classList.remove('bo-legend-open')}
+ setTimeout(function(){if(typeof window[fn]==='function')window[fn]()},10)},true);
 /* ---------- run ---------- */
 var busy=false;
 function run(){
  if(busy)return;busy=true;
- requestAnimationFrame(function(){busy=false;try{var l=document.getElementById('boList');if(l)rows(l);landing();swap(document);cards();probeT3()}catch(e){window.__apErr=String(e&&e.stack||e)}});
+ requestAnimationFrame(function(){busy=false;try{var l=document.getElementById('boList');if(l)rows(l);landing();swap(document);cards();probeT3();legendLinks()}catch(e){window.__apErr=String(e&&e.stack||e)}});
 }
 new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
 setInterval(run,900);run();
