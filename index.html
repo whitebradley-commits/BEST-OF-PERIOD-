@@ -72374,7 +72374,7 @@ var root=document.createElement('div');root.id='bopSpaceIntro';root.setAttribute
 root.innerHTML='<canvas class="sky"></canvas><canvas class="near"></canvas><canvas class="gl"></canvas><div class="t"><span class="a">WORLDWIDE</span><span class="b">LAUNCH&nbsp;<em>2027</em></span><span class="l"></span></div><div class="fl"></div><div class="mp"><i>&#9835;</i><div class="row"><button class="on" type="button">MUSIC<br>ON</button><button class="off" type="button">MUSIC<br>OFF</button></div></div>';
 document.documentElement.appendChild(root);
 var near=root.querySelector('.near'),sky=root.querySelector('.sky'),gl=root.querySelector('.gl'),tx=root.querySelector('.t'),fl=root.querySelector('.fl');
-function done(){try{root.remove();st.remove()}catch(e){}try{var hh=document.getElementById('bopIntroHold');if(hh)hh.remove()}catch(e){}try{var os=document.getElementById('bop-intro-orb-style');if(os)os.remove()}catch(e){}window.__bopIntroBusy=0;}
+function done(){try{var LV=document.getElementById('bopLandingV3');if(LV){LV.style.transform='';LV.style.transformOrigin=''}}catch(e){}try{root.remove();st.remove()}catch(e){}try{var hh=document.getElementById('bopIntroHold');if(hh)hh.remove()}catch(e){}try{var os=document.getElementById('bop-intro-orb-style');if(os)os.remove()}catch(e){}window.__bopIntroBusy=0;}
 /* ---------- star field ---------- */
 var SW=Math.round(Math.hypot(W,H)*1.03),SH=SW;var sc=Math.min(dpr,2048/SW);var cw=Math.round(SW*sc);
 sky.width=cw;sky.height=cw;sky.style.width=SW+'px';sky.style.height=SW+'px';sky.style.marginLeft=(-SW/2)+'px';sky.style.marginTop=(-SW/2)+'px';
@@ -72610,8 +72610,8 @@ function frame(now){
  /* text */
  var ta=cl(t,14.4,15.2)*(1-cl(t,17.3,17.9));tx.style.opacity=ta;if(ta>0.01&&!tx.classList.contains('on'))tx.classList.add('on');tx.style.transform='scale('+(0.85+0.15*es(cl(t,14.4,15.4)))+')';
  /* boom + out */
- var fa=0.85*cl(t,22.0,22.8)*(1-cl(t,23.2,24.0));fl.style.opacity=fa;
- var fade=cl(t,22.7,T);root.style.opacity=1-es(fade);
+ var fa=0.3*cl(t,21.6,22.6)*(1-cl(t,22.8,24.0));fl.style.opacity=fa;
+ var fade=cl(t,21.8,T);var ef=es(fade);root.style.opacity=1-ef;root.style.transform='scale('+(1+0.45*ef)+')';root.style.transformOrigin='50% 50%';try{var LV=document.getElementById('bopLandingV3');if(LV&&t>=19.4){LV.style.transformOrigin='50% 50%';LV.style.transform='scale('+(1.22-0.22*ef)+')'}}catch(e){}
  if(t>=T&&window.__bopIntroT==null){ended=true;done();return}
  requestAnimationFrame(frame);
 }
@@ -72936,8 +72936,8 @@ html body #bopWorldwideLanding .bop-ap-tile .bop-apple{position:absolute!importa
 .bop-apple-hero{width:100%!important;align-self:center!important;justify-content:center!important;margin-left:auto!important;margin-right:auto!important}
 #bopBestOfBestOverlay .bop-apple-hero b,#bopMichelinWorldwide .bop-apple-hero b,#bopAllBjsPicks .bop-apple-hero b,#bopGoLiveOverlay .bop-apple-hero b,#bopWorldwideLanding .bop-apple-hero b{display:none!important}
 #bopWorldwideLanding .bop-world-hero .bop-apple-hero:not(.bop-bl-apple){display:none!important}
-#bopWorldwideLanding .bop-bl-title{margin:40px 0 18px!important}
-html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{margin-top:95px!important}
+#bopWorldwideLanding .bop-bl-title{margin:200px 0 18px!important}
+html body #bopGoLiveOverlay .bop-golive-title.bop-golive-title-fixed{margin-top:306px!important}
 #bopWorldwideLanding .bop-bl-apple svg,#bopGoLiveOverlay .bop-apple-hero svg{width:150px!important;height:150px!important}
 #bopAllBjsPicks .bop-apple-hero{margin-top:64px!important}
 #bopAllBjsPicks .bop-apple-hero svg{width:210px!important;height:210px!important}
@@ -72982,6 +72982,8 @@ html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop{color:#FF3A58!imp
 html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop.c1{color:#FFB3BF!important}
 html body #bopJamesBeardWorldwide .bop-wm-backdrop .bop-wm-pop.c2{color:#B3132E!important}
 html body #bopGoLiveOverlay #bopGoLiveBack,html body #bopGoLiveOverlay #bopGoLiveBack *{color:#2EE9C9!important}
+html #bopSpaceIntro .mp button,html #bopSpaceIntro .mp button.on,html #bopSpaceIntro .mp button.off{border:0!important;outline:0!important}
+html body #bopWorldwideLanding .bop-world-back,html body #bopWorldwideLanding .bop-world-back *{color:#3FB4FF!important}
 </style>
 
 <script id="bop-apples-v2-script">(function(){
@@ -73254,6 +73256,8 @@ function v6(){
   if(t3o){tint(document.getElementById('bopBestOfBestClose'),'#B77BFF');var mo=document.getElementById('bopMusicOrbV5');if(mo){mo.style.setProperty('border-color','#B77BFF','important');mo.style.setProperty('box-shadow','0 0 12px rgba(165,92,255,.55)','important');mo.dataset.bopT3='1'}}
   else{var mo2=document.getElementById('bopMusicOrbV5');if(mo2&&mo2.dataset.bopT3){mo2.style.removeProperty('border-color');mo2.style.removeProperty('box-shadow');delete mo2.dataset.bopT3}}
   if(pvis(document.getElementById('bopMichelinWorldwide')))tint(document.getElementById('bopMichelinWorldwideBack'),'#DCDCDC');
+  if(pvis(document.getElementById('bopWorldwideLanding')))tint(document.querySelector('#bopWorldwideLanding .bop-world-back'),'#4FC3F7');
+  if(pvis(document.getElementById('bopGoLiveOverlay')))tint(document.getElementById('bopGoLiveBack'),'#2EE9C9');
   if(any)document.querySelectorAll('.bop-apple-hero b').forEach(function(x){x.remove()});
   var T=document.querySelector('#bopBestOfBestOverlay .bobb-shell > .bop-apple-hero');
   if(T&&!document.querySelector('#bopBestOfBestOverlay .bop-t3-title')){var h=document.createElement('h1');h.className='bop-hero-title bop-t3-title';h.textContent='Top Threes';T.parentNode.insertBefore(h,T.nextSibling)}
